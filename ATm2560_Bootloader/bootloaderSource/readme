@@ -1,0 +1,58 @@
+make clean
+make mega2560
+cp ATmegaBOOT_168_mega2560.hex /home/kolja/arduino-0021/hardware/arduino/bootloaders/atmega/ATmegaBOOT_168_mega2560.hex
+
+-> arduino software -> dann über IDE Flashen, fertig
+
+
+boards.txt ==> für den 2560 das hier einsetzen
+
+##############################################################
+#	Added for Emartee in china
+#	by Mark Sproul msproul@skychariot.com June 2010
+mega2560.name=Arduino Mega2560 JKW
+mega2560.upload.protocol=stk500
+mega2560.upload.maximum_size=258048
+mega2560.upload.speed=57600
+mega2560.bootloader.low_fuses=0xFF
+mega2560.bootloader.high_fuses=0xD8
+mega2560.bootloader.extended_fuses=0xFD
+mega2560.bootloader.path=atmega
+mega2560.bootloader.file=ATmegaBOOT_168_mega2560.hex
+mega2560.bootloader.unlock_bits=0x3F
+mega2560.bootloader.lock_bits=0x0F
+mega2560.build.mcu=atmega2560
+mega2560.build.f_cpu=16000000L
+mega2560.build.core=arduino 
+
+
+
+#######################
+
+: 02 0000 02 1000 EC steht für:
+ adress erweiterung, 0000=adresse egal weil steuerkommando, 02=adresserweiterung, 1000 => alle kommenden adressen sind 1000+XXXX also z.b. 
+: 10 0010 00 CDB7DEB72F970FB6F894DEBF0FBECDB FBA
+kommt dann an adresse 10010 
+
+TODO: man müsste mal ein file erzeugen das über 128k geht, dann 1. checken ob man ein :02000002 2 000XX bekommt und 2. ob der Bootloader gegrillt wird
+--> das 2. sieht so aus 
+: 02 0000 02 2000 DC das klappt also, aber der bootloader wird gegrillt
+
+
+#####################
+der bootloadersize steht auf 4096 byte, der bootvector steht auf 128*1024-4096=126976 == 0x1f000 <-- ist dem wirklich so?  Jupp genau das
+demnach darf nicht in
+
+: 10 FXXX 00 XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX ??
+
+geschrieben werden nach dem :020000021000EC
+
+
+####################
+
+bootloader:
+:02000002 3000 CC
+ adresserweiterung auf 3000 => 3XXXX
+
+: 10 E000 00 0D9472F00D9493F00D9493F00D9493F0 A1
+0x3E000 => 253952 = 248kB 

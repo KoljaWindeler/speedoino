@@ -1,0 +1,30 @@
+/*
+ * reset.h
+ *
+ *  Created on: 02.06.2011
+ *      Author: kolja
+ */
+
+#ifndef RESET_H_
+#define RESET_H_
+class speedo_reset{
+#define reset_toogle_pin 6
+#define reset_enabled_pin 23
+#define rst_blink_freq 330
+public:
+	speedo_reset(void);
+	~speedo_reset();
+	void init();
+	void set_active(bool save_to_eeprom,bool save_to_var);
+	void set_deactive(bool save_to_eeprom,bool save_to_var);
+	void restore();
+	void toggle();
+	void ask_reset();
+
+	int last_reset;
+	unsigned long last_time;
+	bool toggle_high;
+	bool reset_enabled;
+};
+
+#endif /* RESET_H_ */

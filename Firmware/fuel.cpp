@@ -1,0 +1,54 @@
+/* Speedoino - This file is part of the firmware.
+ * Copyright (C) 2011 Kolja Windeler
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "global.h"
+/////////////// vars ///////////////////
+//unsigned int fuel_count; // preload anzahl von 10tel ml
+//int fuel_out; // preload (liter * 10) verbraucht
+//int fuel_max; // max
+/////////////// vars ///////////////////
+speedo_fuel::speedo_fuel(){
+};
+speedo_fuel::~speedo_fuel(){
+};
+
+
+float speedo_fuel::get_fuel(char char_buffer[]){
+	char local_buffer[6];
+	float fuel_diff=(float)round(pSpeedo->trip_dist[5]/1000);
+
+	if(fuel_diff>=blink_start && last_time+2*blink_freq<millis()){ // gib die Zahl aus wie z.B. "119" und schreib in den Buffer "119km"
+		last_time=millis();
+		sprintf(local_buffer,"%3ikm",((int)fuel_diff)%1000);
+		// gib die zahl zurück, alles easy
+	} else if(fuel_diff>=blink_start && last_time+blink_freq<millis()){ // wir sind mit dem Tank weiter gefahren als die Blinkgranze und wollen gerade mal nix anzeigen um das blinken zu symbolisieren
+		sprintf(local_buffer,"     ");
+		fuel_diff=-100;
+	} else {
+		sprintf(local_buffer,"%3ikm",((int)fuel_diff)%1000);
+	}
+	for(unsigned int i=0; i<6; i++){
+		char_buffer[i]=local_buffer[i];
+	}
+	return fuel_diff;
+};
+//
+void speedo_fuel::init(){
+	last_time=0;
+	blink_freq=10;	 // default value, überschreibt config
+	blink_start=100; // default value, überschreibt config
+}

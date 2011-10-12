@@ -1,0 +1,15 @@
+Installationsschritte:
+
+1. ATmega8 flashen
+2. ATmega2560 Bootloader flashen und Fuses setzen 
+3. Per FTDI Kabel Verbindung zum Bluetooth herstellen und folgende Einstellungen tätigen
+
+
+ATN=SpeedoinoV1 --> Name
+ATE0 --> echo off
+ATQ1 --> "OK" off
+ATL4 --> 57600 Baud
+
+4. Per USB Flashen, ohne Jumper
+5. Jumper setzen, Bluetooth flashen
+6. Fertig

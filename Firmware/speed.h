@@ -1,0 +1,35 @@
+/*
+ * speed.h
+ *
+ *  Created on: 01.06.2011
+ *      Author: kolja
+ */
+
+#ifndef SPEED_H_
+#define SPEED_H_
+
+class speedo_speed{
+#define SPEED_PIN 3
+public:
+	speedo_speed();
+	~speedo_speed();
+	void calc();
+	int get_mag_speed();
+	int getSpeed();
+	void init();
+	void check_umfang();
+	int get_sat_speed();
+	int 		  gps_takeover;
+	float 		  reifen_umfang;
+	// für die kalibrierung
+	float flat_value_calibrate_umfang;
+private:
+	int           reed_speed;  // speichere speed darin, wenn valid_time noch < 1000 ist gib das hier aus
+	unsigned long last_time;  // wenn dieser Zeitpunkt über 1000 msec her ist stehen wir
+	unsigned long prevent_double_count;
+	volatile unsigned int speed_peaks;
+	// für die kalibrierung
+	short flat_counter_calibrate_umfang;
+};
+
+#endif /* SPEED_H_ */
