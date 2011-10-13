@@ -6,9 +6,9 @@ inc/Sd2Card.d inc/Sd2Card.o: ../inc/Sd2Card.cpp \
   /home/kolja/links/eclipse/ArduinoCore/HardwareSerial.h \
   /home/kolja/links/eclipse/ArduinoCore/Stream.h \
   /home/kolja/links/eclipse/ArduinoCore/Print.h ../inc/Sd2Card.h \
-  /home/kolja/links/eclipse/Speedoino/inc/SdFatConfig.h \
-  /home/kolja/links/eclipse/Speedoino/inc/Sd2PinMap.h \
-  /home/kolja/links/eclipse/Speedoino/inc/SdInfo.h
+  /home/kolja/links/eclipse/Speedmaster/inc/SdFatConfig.h \
+  /home/kolja/links/eclipse/Speedmaster/inc/Sd2PinMap.h \
+  /home/kolja/links/eclipse/Speedmaster/inc/SdInfo.h
 
 /home/kolja/links/eclipse/ArduinoCore/WProgram.h:
 
@@ -26,8 +26,8 @@ inc/Sd2Card.d inc/Sd2Card.o: ../inc/Sd2Card.cpp \
 
 ../inc/Sd2Card.h:
 
-/home/kolja/links/eclipse/Speedoino/inc/SdFatConfig.h:
+/home/kolja/links/eclipse/Speedmaster/inc/SdFatConfig.h:
 
-/home/kolja/links/eclipse/Speedoino/inc/Sd2PinMap.h:
+/home/kolja/links/eclipse/Speedmaster/inc/Sd2PinMap.h:
 
-/home/kolja/links/eclipse/Speedoino/inc/SdInfo.h:
+/home/kolja/links/eclipse/Speedmaster/inc/SdInfo.h:

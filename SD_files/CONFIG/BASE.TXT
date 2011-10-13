@@ -1,0 +1,12 @@
+#This is an auto-generated file from (MonDay) 927
+startup=LG2_%i.TXT,1,2,400;
+blinker=200
+blinker_high=200
+fuel_blink_start=140
+fuel_blink_freq=500
+reifen_umfang=1.98
+gps_takeover=120
+refresh_cyle=-1
+active_navi_file=2
+skin_file=4
+oil_dist=4000
