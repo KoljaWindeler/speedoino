@@ -65,7 +65,7 @@ all: Speedoino.elf secondary-outputs
 Speedoino.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: AVR C++ Linker'
-	avr-g++  -lc -lm -Wl,-Map,Speedoino.map,--cref -L/home/kolja/links/eclipse/Speedmaster/inc -mmcu=atmega2560 -o"Speedoino.elf"  $(OBJS) $(USER_OBJS) $(LIBS)  -lc
+	avr-g++  -lc -lm -Wl,-Map,Speedoino.map,--cref -L"/home/jkw/Store/17 - Speedmaster/Firmware/inc" -mmcu=atmega2560 -o"Speedoino.elf"  $(OBJS) $(USER_OBJS) $(LIBS)  -lc
 	@echo 'Finished building target: $@'
 	@echo ' '
 
