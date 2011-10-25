@@ -1,0 +1,6 @@
+aalso 
+
+delta(t) = c*t  	=> c ist ein faktor der den Abstand von 2 Peak bestimmt
+alpha = 2*pi/spr	=> spr=steps_per_round .. alpha ist also quasi "ein grad" in stepper Sicht (0.4°)
+phi=n*alpha		=> aktuelle position ist ein vielfaches eines "motor grads" (n*0.4°)
+omega=alpha/delta(t)	=> "motor grad" pro faktor zwischen zwei schritten * sec => °/sec bzw 

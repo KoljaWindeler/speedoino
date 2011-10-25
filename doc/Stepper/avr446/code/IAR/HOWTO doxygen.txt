@@ -1,0 +1,9 @@
+How to generate source code documentation (MS Windows users):
+
+1. Install Doxygen (www.doxygen.org)
+2. Open the 'config.doxygen' file in the Doxygen Wizard.
+3. Generate documentation (Ctrl-R).
+4. Open the 'doxygen\refman.rtf' file.
+5. Strip off everything but the 'File Documentation' section.
+6. Save as 'source.doc' in MS Word format.
+7. Remove the 'doxygen' directory.

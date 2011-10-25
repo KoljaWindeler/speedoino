@@ -1,5 +1,5 @@
 version;4;2;http://eagleup.wordpress.com/;
-settings;C:/Speedmaster/schematics/models/;C:/Programme/ImageMagick-6.7.3-Q16/convert.exe;C:/Programme/ImageMagick-6.7.3-Q16/composite.exe;del;
+settings;/home/jkw/links/Speedmaster/schematics/models/;C:/Programme/ImageMagick-6.7.3-Q16/convert.exe;C:/Programme/ImageMagick-6.7.3-Q16/composite.exe;del;
 color;0x266844;0x208549;silver;ivory;
 images;C:/Speedmaster/schematics/;eagle_JKW_standalone;png;300;
 outline-line;-1.00;77.38;160.62;77.38;1.50;
