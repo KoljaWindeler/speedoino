@@ -1,8 +1,8 @@
-#Tue Jun 14 18:43:51 CEST 2011
-avrtarget/ClockFrequency=1000000
+#Wed Oct 26 09:23:45 CEST 2011
+avrtarget/ClockFrequency=16000000
 avrtarget/ExtRAMSize=0
 avrtarget/ExtendedRAM=false
-avrtarget/MCUType=atmega8
+avrtarget/MCUType=atmega1280
 avrtarget/UseEEPROM=false
 avrtarget/UseExtendedRAMforHeap=true
 avrtarget/avrdude/BitBangDelay=
@@ -16,7 +16,7 @@ avrtarget/avrdude/NoSigCheck=false
 avrtarget/avrdude/NoVerify=false
 avrtarget/avrdude/NoWrite=false
 avrtarget/avrdude/OtherOptions=
-avrtarget/avrdude/ProgrammerID=programmerconfig.5
+avrtarget/avrdude/ProgrammerID=programmerconfig.2
 avrtarget/avrdude/UseCounter=false
 avrtarget/avrdude/WriteEEPROM=false
 avrtarget/avrdude/WriteFlash=true
