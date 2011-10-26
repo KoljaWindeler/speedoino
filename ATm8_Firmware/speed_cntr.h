@@ -49,8 +49,8 @@ typedef struct {
  * Modify this according to frequency used. Because of the prescaler setting,
  * the timer1 frequency is the clock frequency divided by 8.
  */
-// Timer/Counter 1 running on 4*3,686MHz / 8 = 4*460,75kHz (2,17uS). (T1-FREQ 460750)
-#define T1_FREQ 1843000
+// Timer/Counter 1 running on 1mhz
+#define T1_FREQ 921500
 
 //! Number of (full)steps per round on stepper motor in use.
 #define FSPR 781

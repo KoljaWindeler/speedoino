@@ -38,12 +38,12 @@
  * Set the desired drive port and pins to support your device
  *
  */
-#define SM_PORT         PORTL
-#define SM_DRIVE        DDRL
-#define A1    PL4 //!< Stepper motor winding A positive pole.
-#define A2    PL5 //!< Stepper motor winding A negative pole.
-#define B1    PL6 //!< Stepper motor winding B positive pole.
-#define B2    PL7 //!< Stepper motor winding B negative pole.
+#define SM_PORT         PORTC
+#define SM_DRIVE        DDRC
+#define A1    PC0 //!< Stepper motor winding A positive pole.
+#define A2    PC1 //!< Stepper motor winding A negative pole.
+#define B1    PC2 //!< Stepper motor winding B positive pole.
+#define B2    PC3 //!< Stepper motor winding B negative pole.
 
 void sm_driver_Init_IO(void);
 unsigned char sm_driver_StepCounter(signed char inc);

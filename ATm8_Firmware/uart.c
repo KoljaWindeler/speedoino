@@ -53,11 +53,11 @@ void InitUART(void)
 	// interrupt + UART
 #ifndef F_CPU
 #warning "F_CPU war noch nicht definiert, wird nun nachgeholt mit 16Mhz"
-#define F_CPU 16000000UL // Systemtakt in Hz - Definition als unsigned long beachten
+#define F_CPU 1000000UL // Systemtakt in Hz - Definition als unsigned long beachten
 #endif
 
 	// Berechnungen
-#define BAUD 19200UL // Baudrate
+#define BAUD 4800UL // Baudrate
 #define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1) // clever runden
 #define BAUD_REAL (F_CPU/(16*(UBRR_VAL+1))) // Reale Baudrate
 #define BAUD_ERROR ((BAUD_REAL*1000)/BAUD) // Fehler in Promille, 1000 = kein Fehler.
@@ -65,13 +65,12 @@ void InitUART(void)
 #error Systematischer Fehler der Baudrate grsser 1% und damit zu hoch!
 #endif
 
-	UBRR0H = UBRR_VAL >> 8;
-	UBRR0L = UBRR_VAL & 0xFF;
+	UBRRH = UBRR_VAL >> 8;
+	UBRRL = UBRR_VAL & 0xFF;
 
 	//UCSR0A = 1<<UDRE0;
 	/* Enable receiver and transmitter, rx and tx int */
-	UCSR0B |= (1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0);
-
+	UCSRB |= (1<<RXEN)|(1<<TXEN)|(1<<RXCIE); // rx,tx,rx interrupt
 	/* Set frame format: 8data, 1stop bit */
 	//UCSR0C = (3<<UCSZ00);
 
@@ -92,8 +91,8 @@ void InitUART(void)
  *  \param data  Data to be sent.
  */
 void uart_SendByte(unsigned char data){
-	while((UCSR0A & (1<< UDRE0)) == 0) {};
-	UDR0=data;
+	while((UCSRA & (1<< UDRE)) == 0) {};
+	UDR=data;
 };
 
 /*! \brief Sends a string.
@@ -144,32 +143,22 @@ void uart_SendInt(int x)
 ISR(USART0_RX_vect){
 	unsigned char data;
 	// Read the received data.
-	data = UDR0;
+	data = UDR;
 	// Put the data into RxBuf
 	if(status.cmd == FALSE){
 		// and place 0x00 after it. If buffer is full,
 		// data is written to UART_RX_BUFFER_SIZE - 1.
-		if(UART_RxPtr < (UART_RX_BUFFER_SIZE - 1)){
-			UART_RxBuffer[UART_RxPtr] = data;
-			UART_RxBuffer[UART_RxPtr + 1]=0x00;
-			UART_RxPtr++;
-		}
-		else
-		{
-			UART_RxBuffer[UART_RxPtr - 1] = data;
-			uart_SendByte('\b');
-		}
-		// If '*'
+		UART_RxBuffer[UART_RxPtr % UART_RX_BUFFER_SIZE] = data;
+		UART_RxBuffer[(UART_RxPtr + 1) % UART_RX_BUFFER_SIZE]=0x00;
+		UART_RxPtr++;
+
+		// If '*'  or '$' ... format soll sein $m1231* für move , $y* die WHY abfrage
 		if(data =='*'){
 			status.cmd = TRUE;
-			UART_RxPtr=0;
+			UART_RxBuffer[0] = data;
+			UART_RxPtr=1;
 		} else if (data =='$'){
 			UART_RxPtr=0;
 		}
 	}
-
 }
-
-void set_tx(unsigned char value){
-	UART_RxPtr=value;
-};

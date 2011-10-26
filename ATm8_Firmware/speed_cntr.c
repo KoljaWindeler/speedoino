@@ -72,8 +72,8 @@ void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, un
 		srd.step_delay = 1000;
 		status.running = TRUE;
 		OCR1A = 10;
-		// Run Timer/Counter 1 with prescaler = 8.
-		TCCR1B |= ((0<<CS12)|(1<<CS11)|(0<<CS10));
+		// Run Timer/Counter 1 with prescaler = 1.
+		TCCR1B |= (0<<CS10);
 	}
 	// Only move if number of steps to move is not zero.
 	else if(step != 0){
@@ -133,8 +133,8 @@ void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, un
 		srd.accel_count = 0;
 		status.running = TRUE;
 		OCR1A = 10;
-		// Set Timer/Counter to divide clock by 8
-		TCCR1B |= ((0<<CS12)|(1<<CS11)|(0<<CS10));
+		// Set Timer/Counter to divide clock by 1
+		TCCR1B |= (0<<CS10);
 	}
 }
 
@@ -150,7 +150,7 @@ void speed_cntr_Init_Timer1(void)
 	// Timer/Counter 1 in mode 4 CTC (Not running).
 	TCCR1B = (1<<WGM12);
 	// Timer/Counter 1 Output Compare A Match Interrupt enable.
-	TIMSK1 = (1<<OCIE1A);
+	TIMSK = (1<<OCIE1A);
 }
 
 /*! \brief Timer/Counter1 Output Compare A Match Interrupt.
@@ -180,7 +180,7 @@ ISR(TIMER1_COMPA_vect){
 		step_count = 0;
 		rest = 0;
 		// Stop Timer/Counter 1.
-		TCCR1B &= ~((1<<CS12)|(1<<CS11)|(1<<CS10));
+		TCCR1B &= ~(1<<CS10);
 		status.running = FALSE;
 		break;
 
