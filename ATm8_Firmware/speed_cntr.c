@@ -61,6 +61,7 @@ void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, un
 	else{
 		srd.dir = CW;
 	}
+	speed_cntr_Move+=step; // globale var anpassen, damit wir wissen wo wir sind
 
 	// If moving only 1 step.
 	if(step == 1){
@@ -150,7 +151,7 @@ void speed_cntr_Init_Timer1(void)
 	// Timer/Counter 1 in mode 4 CTC (Not running).
 	TCCR1B = (1<<WGM12);
 	// Timer/Counter 1 Output Compare A Match Interrupt enable.
-	TIMSK = (1<<OCIE1A);
+	TIMSK |= (1<<OCIE1A);
 }
 
 /*! \brief Timer/Counter1 Output Compare A Match Interrupt.

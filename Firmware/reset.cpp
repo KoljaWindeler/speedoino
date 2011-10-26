@@ -22,6 +22,7 @@ speedo_reset::speedo_reset(){};
 speedo_reset::~speedo_reset(){};
 
 void speedo_reset::init(){
+	Serial3.begin(4800);
 	pinMode(reset_enabled_pin,OUTPUT);
 	pinMode(reset_toogle_pin,OUTPUT);
 	if(EEPROM.read(149)==1){ // glatte 1 heisst ist an, alle andere heisst ist aus
@@ -99,10 +100,9 @@ void speedo_reset::toggle(){
 
 void speedo_reset::ask_reset(){
 	if(last_reset==-1){
-		Serial3.begin(4800);
-		Serial3.println("y");
+		Serial3.print("$y*");
 		unsigned long time=millis();
-		char recv[3];
+		char recv[5];
 		unsigned int recv_counter=0;
 
 		while(recv_counter<2 && (millis()-time)<1000){ // max 1 sec auf ein zeichen warten
@@ -112,12 +112,11 @@ void speedo_reset::ask_reset(){
 			}
 		};
 
-		if(recv_counter>0){
+		if(recv_counter>0 && recv[0]=='$' && recv[1]=='y' && recv[3]=='*'){
 			//char to int
-			if(recv[0]=='0') last_reset=0;
-			else if(recv[0]=='1') last_reset=1;
-			else if(recv[0]=='2') last_reset=2;
+			if(recv[2]=='0') last_reset=0;
+			else if(recv[2]=='1') last_reset=1;
+			else if(recv[2]=='2') last_reset=2;
 		}
-		Serial3.end(); // brauchen wir erstmal nicht mehr, danke und byebye
 	}
 }

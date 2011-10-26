@@ -47,6 +47,8 @@ void Init(void)
 	//led_setup();
 
 	sei();
+	_delay_us(1000);
+	config_timer0();
 }
 
 /*! \brief Demo of linear speed controller.
@@ -58,13 +60,15 @@ int main(void)
 
 	// Tells if the received string was a valid command.
 	char okCmd = FALSE;
+	soll_pos = 1800;
+	speed_cntr_Move(-1800, 60, 100, 1000);
 
 	Init();
 
 
 	/* wir reduzieren hier die möglichkeiten:
-	 * - entweder wollte der große wissen ob wir noch da sind
-	 * - oder warum wir neu gestartet sind
+	 * - entweder wollte der große wissen ob wir noch da sind, das geht über die interrupts
+	 * - oder warum wir neu gestartet sind - uart "$y*"
 	 * - oder er sagt uns eine Position an.. was wohl fast zu 100% der Fall sein wird
 	 */
 
@@ -75,7 +79,7 @@ int main(void)
 				// Move with...
 				// ...number of steps given.
 				int steps = 1000*(UART_RxBuffer[2]-'0') + 100*(UART_RxBuffer[3]-'0') + 10*(UART_RxBuffer[4]-'0') + (UART_RxBuffer[5]-'0');
-				speed_cntr_Move(steps, 60, 100, 1000);
+				speed_cntr_Move(soll_pos-steps, 60, 100, 1000);
 				okCmd = TRUE;
 				uart_SendString("$k*"); // ACK
 			}

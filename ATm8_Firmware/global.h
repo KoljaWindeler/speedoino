@@ -35,4 +35,6 @@ struct GLOBAL_FLAGS {
   unsigned char dummy:6;
 };
 
+unsigned long soll_pos;
+
 #endif

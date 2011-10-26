@@ -264,7 +264,7 @@ int main(){
 	PORTC = 0xff; // alle auf high auch reset
 
 	DDRD = 0x00 |(1<<PD5) |(1<<PD6) |(1<<PD7); // 3x led AUSGANG
-	PORTD = 0x5f; // alle LEDs an, alle eingänge auf pullup, 20 - 50 kR => 0.1 - 0.25 mA
+	PORTD = 0x0F; // keine LEDs an, alle eingänge auf pullup, 20 - 50 kR => 0.1 - 0.25 mA
 
 	MCUCR |= (1<<ISC00) | (1<<ISC10);           //jede Flanke von INT0 oder INT1 als auslöser
 	MCUCR &= ~((1<<ISC01) | (1<<ISC11));        //jede Flanke von INT0 oder INT1 als auslöser
@@ -290,25 +290,8 @@ int main(){
 		}
 
 
-		// wenn wir mit dem AVRPIN höher gezählt haben als wir sollten
-		if((counter_avr>CYLCES_FOR_AVR) && AVR_RESET){
-			reset_avr_running=1;
-			reset(0); // run reset ohne langen bootloader quatsch
-			last_rst=1;
-		};
 
-		// anzahl an iterationen für bt erreicht
-		if((counter_bt>CYLCES_FOR_BT) && BT_RESET){
-			reset_bt_running=1;
-			reset(1);
-			last_rst=2;
-		};
-
-		// nur hochzählen wenn auch wirklich kein reset gerade am laufen ist, wir wollen ja kein reset beim flashen
-		if(reset_bt_running==0 && reset_avr_running==0){
-			counter_bt++;
-			counter_avr++;
-		};
+		
 
 		// show and shine
 		if(reset_led<1000){ // nach 0.5 sek reset led aus;
