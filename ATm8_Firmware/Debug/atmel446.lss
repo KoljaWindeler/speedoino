@@ -1,0 +1,2198 @@
+
+atmel446.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         000002c8  00800200  00000dce  00000e62  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         00000dce  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          0000003a  008004c8  008004c8  0000112a  2**0
+                  ALLOC
+  3 .stab         000020d0  00000000  00000000  0000112c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  4 .stabstr      00001167  00000000  00000000  000031fc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 72 00 	jmp	0xe4	; 0xe4 <__ctors_end>
+   4:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+   8:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+   c:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  10:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  14:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  18:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  1c:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  20:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  24:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  28:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  2c:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  30:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  34:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  38:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  3c:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  40:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  44:	0c 94 11 02 	jmp	0x422	; 0x422 <__vector_17>
+  48:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  4c:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  50:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  54:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  58:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  5c:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  60:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  64:	0c 94 ab 05 	jmp	0xb56	; 0xb56 <__vector_25>
+  68:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  6c:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  70:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  74:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  78:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  7c:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  80:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  84:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  88:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  8c:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  90:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  94:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  98:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  9c:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  a0:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  a4:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  a8:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  ac:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  b0:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  b4:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  b8:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  bc:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  c0:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  c4:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  c8:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  cc:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  d0:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  d4:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  d8:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  dc:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+  e0:	0c 94 91 00 	jmp	0x122	; 0x122 <__bad_interrupt>
+
+000000e4 <__ctors_end>:
+  e4:	11 24       	eor	r1, r1
+  e6:	1f be       	out	0x3f, r1	; 63
+  e8:	cf ef       	ldi	r28, 0xFF	; 255
+  ea:	d1 e2       	ldi	r29, 0x21	; 33
+  ec:	de bf       	out	0x3e, r29	; 62
+  ee:	cd bf       	out	0x3d, r28	; 61
+
+000000f0 <__do_copy_data>:
+  f0:	14 e0       	ldi	r17, 0x04	; 4
+  f2:	a0 e0       	ldi	r26, 0x00	; 0
+  f4:	b2 e0       	ldi	r27, 0x02	; 2
+  f6:	ee ec       	ldi	r30, 0xCE	; 206
+  f8:	fd e0       	ldi	r31, 0x0D	; 13
+  fa:	00 e0       	ldi	r16, 0x00	; 0
+  fc:	0b bf       	out	0x3b, r16	; 59
+  fe:	02 c0       	rjmp	.+4      	; 0x104 <__do_copy_data+0x14>
+ 100:	07 90       	elpm	r0, Z+
+ 102:	0d 92       	st	X+, r0
+ 104:	a8 3c       	cpi	r26, 0xC8	; 200
+ 106:	b1 07       	cpc	r27, r17
+ 108:	d9 f7       	brne	.-10     	; 0x100 <__do_copy_data+0x10>
+
+0000010a <__do_clear_bss>:
+ 10a:	15 e0       	ldi	r17, 0x05	; 5
+ 10c:	a8 ec       	ldi	r26, 0xC8	; 200
+ 10e:	b4 e0       	ldi	r27, 0x04	; 4
+ 110:	01 c0       	rjmp	.+2      	; 0x114 <.do_clear_bss_start>
+
+00000112 <.do_clear_bss_loop>:
+ 112:	1d 92       	st	X+, r1
+
+00000114 <.do_clear_bss_start>:
+ 114:	a2 30       	cpi	r26, 0x02	; 2
+ 116:	b1 07       	cpc	r27, r17
+ 118:	e1 f7       	brne	.-8      	; 0x112 <.do_clear_bss_loop>
+ 11a:	0e 94 f3 00 	call	0x1e6	; 0x1e6 <main>
+ 11e:	0c 94 e5 06 	jmp	0xdca	; 0xdca <_exit>
+
+00000122 <__bad_interrupt>:
+ 122:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000126 <ShowHelp>:
+/*! \brief Sends help message.
+ *
+ *  Outputs help message.
+ */
+void ShowHelp(void)
+{
+ 126:	cf 93       	push	r28
+ 128:	df 93       	push	r29
+ 12a:	cc e2       	ldi	r28, 0x2C	; 44
+ 12c:	d2 e0       	ldi	r29, 0x02	; 2
+	unsigned int i = 0;
+	while(Help[i] != 0)
+ 12e:	02 c0       	rjmp	.+4      	; 0x134 <ShowHelp+0xe>
+		uart_SendByte(Help[i++]);
+ 130:	0e 94 43 05 	call	0xa86	; 0xa86 <uart_SendByte>
+ *  Outputs help message.
+ */
+void ShowHelp(void)
+{
+	unsigned int i = 0;
+	while(Help[i] != 0)
+ 134:	89 91       	ld	r24, Y+
+ 136:	88 23       	and	r24, r24
+ 138:	d9 f7       	brne	.-10     	; 0x130 <ShowHelp+0xa>
+		uart_SendByte(Help[i++]);
+}
+ 13a:	df 91       	pop	r29
+ 13c:	cf 91       	pop	r28
+ 13e:	08 95       	ret
+
+00000140 <ShowData>:
+ *  \param deceleration Deceleration setting.
+ *  \param speed Speed setting.
+ *  \param steps Position of the stepper motor.
+ */
+void ShowData(int position, int acceleration, int deceleration, int speed, int steps)
+{
+ 140:	af 92       	push	r10
+ 142:	bf 92       	push	r11
+ 144:	cf 92       	push	r12
+ 146:	df 92       	push	r13
+ 148:	ef 92       	push	r14
+ 14a:	ff 92       	push	r15
+ 14c:	0f 93       	push	r16
+ 14e:	1f 93       	push	r17
+ 150:	cf 93       	push	r28
+ 152:	df 93       	push	r29
+ 154:	5c 01       	movw	r10, r24
+ 156:	6b 01       	movw	r12, r22
+ 158:	7a 01       	movw	r14, r20
+ 15a:	e9 01       	movw	r28, r18
+	uart_SendString("\n  Motor pos: ");
+ 15c:	80 e0       	ldi	r24, 0x00	; 0
+ 15e:	92 e0       	ldi	r25, 0x02	; 2
+ 160:	0e 94 4a 05 	call	0xa94	; 0xa94 <uart_SendString>
+	uart_SendInt(position);
+ 164:	c5 01       	movw	r24, r10
+ 166:	0e 94 5d 05 	call	0xaba	; 0xaba <uart_SendInt>
+	uart_SendString("    a:");
+ 16a:	8f e0       	ldi	r24, 0x0F	; 15
+ 16c:	92 e0       	ldi	r25, 0x02	; 2
+ 16e:	0e 94 4a 05 	call	0xa94	; 0xa94 <uart_SendString>
+	uart_SendInt(acceleration);
+ 172:	c6 01       	movw	r24, r12
+ 174:	0e 94 5d 05 	call	0xaba	; 0xaba <uart_SendInt>
+	uart_SendString("  d:");
+ 178:	86 e1       	ldi	r24, 0x16	; 22
+ 17a:	92 e0       	ldi	r25, 0x02	; 2
+ 17c:	0e 94 4a 05 	call	0xa94	; 0xa94 <uart_SendString>
+	uart_SendInt(deceleration);
+ 180:	c7 01       	movw	r24, r14
+ 182:	0e 94 5d 05 	call	0xaba	; 0xaba <uart_SendInt>
+	uart_SendString("  s:");
+ 186:	8b e1       	ldi	r24, 0x1B	; 27
+ 188:	92 e0       	ldi	r25, 0x02	; 2
+ 18a:	0e 94 4a 05 	call	0xa94	; 0xa94 <uart_SendString>
+	uart_SendInt(speed);
+ 18e:	ce 01       	movw	r24, r28
+ 190:	0e 94 5d 05 	call	0xaba	; 0xaba <uart_SendInt>
+	uart_SendString("  m:");
+ 194:	80 e2       	ldi	r24, 0x20	; 32
+ 196:	92 e0       	ldi	r25, 0x02	; 2
+ 198:	0e 94 4a 05 	call	0xa94	; 0xa94 <uart_SendString>
+	uart_SendInt(steps);
+ 19c:	c8 01       	movw	r24, r16
+ 19e:	0e 94 5d 05 	call	0xaba	; 0xaba <uart_SendInt>
+	uart_SendString("\n> ");
+ 1a2:	85 e2       	ldi	r24, 0x25	; 37
+ 1a4:	92 e0       	ldi	r25, 0x02	; 2
+ 1a6:	0e 94 4a 05 	call	0xa94	; 0xa94 <uart_SendString>
+}
+ 1aa:	df 91       	pop	r29
+ 1ac:	cf 91       	pop	r28
+ 1ae:	1f 91       	pop	r17
+ 1b0:	0f 91       	pop	r16
+ 1b2:	ff 90       	pop	r15
+ 1b4:	ef 90       	pop	r14
+ 1b6:	df 90       	pop	r13
+ 1b8:	cf 90       	pop	r12
+ 1ba:	bf 90       	pop	r11
+ 1bc:	af 90       	pop	r10
+ 1be:	08 95       	ret
+
+000001c0 <led_setup>:
+ * \todo Modify \ref A1, \ref A2, \ref B1 and \ref B2 to support the pins on the desired drive port.
+ * \todo Set the stepping mode in \ref HALFSTEPS to either halfsteps (HALFSTEPS) or fullsteps (FULLSTEPS)
+ */
+
+void led_setup(){
+	DDRB  |= 1<<PB7;
+ 1c0:	27 9a       	sbi	0x04, 7	; 4
+};
+ 1c2:	08 95       	ret
+
+000001c4 <Init>:
+ *  Setup IO, uart, stepper, timer and interrupt.
+ */
+void Init(void)
+{
+	// Init of IO pins
+	sm_driver_Init_IO();
+ 1c4:	0e 94 bf 01 	call	0x37e	; 0x37e <sm_driver_Init_IO>
+	// Init of uart
+	InitUART();
+ 1c8:	0e 94 32 05 	call	0xa64	; 0xa64 <InitUART>
+
+	// Set stepper motor driver output
+	sm_driver_StepOutput(0);
+ 1cc:	80 e0       	ldi	r24, 0x00	; 0
+ 1ce:	0e 94 ca 01 	call	0x394	; 0x394 <sm_driver_StepOutput>
+
+	// Init of Timer/Counter1
+	speed_cntr_Init_Timer1();
+ 1d2:	0e 94 05 02 	call	0x40a	; 0x40a <speed_cntr_Init_Timer1>
+
+	// activate LED
+	led_setup();
+ 1d6:	0e 94 e0 00 	call	0x1c0	; 0x1c0 <led_setup>
+
+	sei();
+ 1da:	78 94       	sei
+}
+ 1dc:	08 95       	ret
+
+000001de <led_on>:
+void led_setup(){
+	DDRB  |= 1<<PB7;
+};
+
+void led_on(){
+	PORTB |= 1<<PB7;
+ 1de:	2f 9a       	sbi	0x05, 7	; 5
+};
+ 1e0:	08 95       	ret
+
+000001e2 <led_off>:
+
+void led_off(){
+	PORTB &= ~(1<<PB7);
+ 1e2:	2f 98       	cbi	0x05, 7	; 5
+};
+ 1e4:	08 95       	ret
+
+000001e6 <main>:
+/*! \brief Demo of linear speed controller.
+ *
+ *  Serial interface frontend to test linear speed controller.
+ */
+int main(void)
+{
+ 1e6:	ef 92       	push	r14
+ 1e8:	ff 92       	push	r15
+ 1ea:	0f 93       	push	r16
+ 1ec:	1f 93       	push	r17
+ 1ee:	cf 93       	push	r28
+ 1f0:	df 93       	push	r29
+	int speed = 800;
+	// Tells if the received string was a valid command.
+	char okCmd = FALSE;
+
+
+	Init();
+ 1f2:	0e 94 e2 00 	call	0x1c4	; 0x1c4 <Init>
+
+	// Outputs help screen.
+	uart_SendString("\n\r");
+ 1f6:	89 e2       	ldi	r24, 0x29	; 41
+ 1f8:	92 e0       	ldi	r25, 0x02	; 2
+ 1fa:	0e 94 4a 05 	call	0xa94	; 0xa94 <uart_SendString>
+
+	ShowHelp();
+ 1fe:	0e 94 93 00 	call	0x126	; 0x126 <ShowHelp>
+	ShowData(stepPosition, acceleration, deceleration, speed, steps);
+ 202:	80 91 c9 04 	lds	r24, 0x04C9
+ 206:	90 91 ca 04 	lds	r25, 0x04CA
+ 20a:	64 e6       	ldi	r22, 0x64	; 100
+ 20c:	70 e0       	ldi	r23, 0x00	; 0
+ 20e:	44 e6       	ldi	r20, 0x64	; 100
+ 210:	50 e0       	ldi	r21, 0x00	; 0
+ 212:	20 e2       	ldi	r18, 0x20	; 32
+ 214:	33 e0       	ldi	r19, 0x03	; 3
+ 216:	08 ee       	ldi	r16, 0xE8	; 232
+ 218:	13 e0       	ldi	r17, 0x03	; 3
+ 21a:	0e 94 a0 00 	call	0x140	; 0x140 <ShowData>
+
+	speed_cntr_Move((signed)1728, (unsigned)60, (unsigned)100, (unsigned)1000);
+ 21e:	80 ec       	ldi	r24, 0xC0	; 192
+ 220:	96 e0       	ldi	r25, 0x06	; 6
+ 222:	6c e3       	ldi	r22, 0x3C	; 60
+ 224:	70 e0       	ldi	r23, 0x00	; 0
+ 226:	44 e6       	ldi	r20, 0x64	; 100
+ 228:	50 e0       	ldi	r21, 0x00	; 0
+ 22a:	28 ee       	ldi	r18, 0xE8	; 232
+ 22c:	33 e0       	ldi	r19, 0x03	; 3
+ 22e:	0e 94 ed 03 	call	0x7da	; 0x7da <speed_cntr_Move>
+	led_on();
+ 232:	0e 94 ef 00 	call	0x1de	; 0x1de <led_on>
+	// stopper
+	set_stopper();
+ 236:	0e 94 26 05 	call	0xa4c	; 0xa4c <set_stopper>
+	while(get_stopper());
+ 23a:	0e 94 2d 05 	call	0xa5a	; 0xa5a <get_stopper>
+ 23e:	00 97       	sbiw	r24, 0x00	; 0
+ 240:	e1 f7       	brne	.-8      	; 0x23a <main+0x54>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 242:	8f ef       	ldi	r24, 0xFF	; 255
+ 244:	99 ef       	ldi	r25, 0xF9	; 249
+ 246:	a0 e0       	ldi	r26, 0x00	; 0
+ 248:	81 50       	subi	r24, 0x01	; 1
+ 24a:	90 40       	sbci	r25, 0x00	; 0
+ 24c:	a0 40       	sbci	r26, 0x00	; 0
+ 24e:	e1 f7       	brne	.-8      	; 0x248 <main+0x62>
+ 250:	00 c0       	rjmp	.+0      	; 0x252 <main+0x6c>
+ 252:	00 00       	nop
+	_delay_ms(20);
+	// stopper
+	led_off();
+ 254:	0e 94 f1 00 	call	0x1e2	; 0x1e2 <led_off>
+	speed_cntr_Move((signed)-1728, (unsigned)60, (unsigned)100, (unsigned)1000);
+ 258:	80 e4       	ldi	r24, 0x40	; 64
+ 25a:	99 ef       	ldi	r25, 0xF9	; 249
+ 25c:	6c e3       	ldi	r22, 0x3C	; 60
+ 25e:	70 e0       	ldi	r23, 0x00	; 0
+ 260:	44 e6       	ldi	r20, 0x64	; 100
+ 262:	50 e0       	ldi	r21, 0x00	; 0
+ 264:	28 ee       	ldi	r18, 0xE8	; 232
+ 266:	33 e0       	ldi	r19, 0x03	; 3
+ 268:	0e 94 ed 03 	call	0x7da	; 0x7da <speed_cntr_Move>
+	// stopper
+	set_stopper();
+ 26c:	0e 94 26 05 	call	0xa4c	; 0xa4c <set_stopper>
+	while(get_stopper());
+ 270:	0e 94 2d 05 	call	0xa5a	; 0xa5a <get_stopper>
+ 274:	00 97       	sbiw	r24, 0x00	; 0
+ 276:	e1 f7       	brne	.-8      	; 0x270 <main+0x8a>
+ 278:	8f ef       	ldi	r24, 0xFF	; 255
+ 27a:	99 ef       	ldi	r25, 0xF9	; 249
+ 27c:	a0 e0       	ldi	r26, 0x00	; 0
+ 27e:	81 50       	subi	r24, 0x01	; 1
+ 280:	90 40       	sbci	r25, 0x00	; 0
+ 282:	a0 40       	sbci	r26, 0x00	; 0
+ 284:	e1 f7       	brne	.-8      	; 0x27e <main+0x98>
+ 286:	00 c0       	rjmp	.+0      	; 0x288 <main+0xa2>
+ 288:	00 00       	nop
+ 28a:	c2 e0       	ldi	r28, 0x02	; 2
+ 28c:	d0 e0       	ldi	r29, 0x00	; 0
+	_delay_ms(20);
+	// stopper
+	for(int i=0; i<2; i++){
+		speed_cntr_Move((signed)600, (unsigned)60, (unsigned)100, (unsigned)1000);
+ 28e:	88 e5       	ldi	r24, 0x58	; 88
+ 290:	92 e0       	ldi	r25, 0x02	; 2
+ 292:	6c e3       	ldi	r22, 0x3C	; 60
+ 294:	70 e0       	ldi	r23, 0x00	; 0
+ 296:	44 e6       	ldi	r20, 0x64	; 100
+ 298:	50 e0       	ldi	r21, 0x00	; 0
+ 29a:	28 ee       	ldi	r18, 0xE8	; 232
+ 29c:	33 e0       	ldi	r19, 0x03	; 3
+ 29e:	0e 94 ed 03 	call	0x7da	; 0x7da <speed_cntr_Move>
+		// stopper
+		set_stopper();
+ 2a2:	0e 94 26 05 	call	0xa4c	; 0xa4c <set_stopper>
+		while(get_stopper());
+ 2a6:	0e 94 2d 05 	call	0xa5a	; 0xa5a <get_stopper>
+ 2aa:	00 97       	sbiw	r24, 0x00	; 0
+ 2ac:	e1 f7       	brne	.-8      	; 0x2a6 <main+0xc0>
+ 2ae:	8f ef       	ldi	r24, 0xFF	; 255
+ 2b0:	99 ef       	ldi	r25, 0xF9	; 249
+ 2b2:	a0 e0       	ldi	r26, 0x00	; 0
+ 2b4:	81 50       	subi	r24, 0x01	; 1
+ 2b6:	90 40       	sbci	r25, 0x00	; 0
+ 2b8:	a0 40       	sbci	r26, 0x00	; 0
+ 2ba:	e1 f7       	brne	.-8      	; 0x2b4 <main+0xce>
+ 2bc:	00 c0       	rjmp	.+0      	; 0x2be <main+0xd8>
+ 2be:	00 00       	nop
+		_delay_ms(20);
+		// stopper
+		speed_cntr_Move((signed)-600, (unsigned)60, (unsigned)100, (unsigned)1000);
+ 2c0:	88 ea       	ldi	r24, 0xA8	; 168
+ 2c2:	9d ef       	ldi	r25, 0xFD	; 253
+ 2c4:	6c e3       	ldi	r22, 0x3C	; 60
+ 2c6:	70 e0       	ldi	r23, 0x00	; 0
+ 2c8:	44 e6       	ldi	r20, 0x64	; 100
+ 2ca:	50 e0       	ldi	r21, 0x00	; 0
+ 2cc:	28 ee       	ldi	r18, 0xE8	; 232
+ 2ce:	33 e0       	ldi	r19, 0x03	; 3
+ 2d0:	0e 94 ed 03 	call	0x7da	; 0x7da <speed_cntr_Move>
+		// stopper
+		set_stopper();
+ 2d4:	0e 94 26 05 	call	0xa4c	; 0xa4c <set_stopper>
+		while(get_stopper());
+ 2d8:	0e 94 2d 05 	call	0xa5a	; 0xa5a <get_stopper>
+ 2dc:	00 97       	sbiw	r24, 0x00	; 0
+ 2de:	e1 f7       	brne	.-8      	; 0x2d8 <main+0xf2>
+ 2e0:	8f ef       	ldi	r24, 0xFF	; 255
+ 2e2:	99 ef       	ldi	r25, 0xF9	; 249
+ 2e4:	a0 e0       	ldi	r26, 0x00	; 0
+ 2e6:	81 50       	subi	r24, 0x01	; 1
+ 2e8:	90 40       	sbci	r25, 0x00	; 0
+ 2ea:	a0 40       	sbci	r26, 0x00	; 0
+ 2ec:	e1 f7       	brne	.-8      	; 0x2e6 <main+0x100>
+ 2ee:	00 c0       	rjmp	.+0      	; 0x2f0 <main+0x10a>
+ 2f0:	00 00       	nop
+ 2f2:	21 97       	sbiw	r28, 0x01	; 1
+	// stopper
+	set_stopper();
+	while(get_stopper());
+	_delay_ms(20);
+	// stopper
+	for(int i=0; i<2; i++){
+ 2f4:	61 f6       	brne	.-104    	; 0x28e <main+0xa8>
+		// stopper
+	};
+
+	int temp;
+	while(1){
+		temp=random()%2000;
+ 2f6:	80 ed       	ldi	r24, 0xD0	; 208
+ 2f8:	e8 2e       	mov	r14, r24
+ 2fa:	87 e0       	ldi	r24, 0x07	; 7
+ 2fc:	f8 2e       	mov	r15, r24
+ 2fe:	01 2d       	mov	r16, r1
+ 300:	11 2d       	mov	r17, r1
+		while(temp<200){
+			temp=random()%2000;
+ 302:	0e 94 d7 06 	call	0xdae	; 0xdae <random>
+ 306:	a8 01       	movw	r20, r16
+ 308:	97 01       	movw	r18, r14
+ 30a:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ 30e:	eb 01       	movw	r28, r22
+	};
+
+	int temp;
+	while(1){
+		temp=random()%2000;
+		while(temp<200){
+ 310:	68 3c       	cpi	r22, 0xC8	; 200
+ 312:	71 05       	cpc	r23, r1
+ 314:	b4 f3       	brlt	.-20     	; 0x302 <main+0x11c>
+			temp=random()%2000;
+		}
+
+		speed_cntr_Move(temp, (unsigned)60, (unsigned)100, (unsigned)1000);
+ 316:	cb 01       	movw	r24, r22
+ 318:	6c e3       	ldi	r22, 0x3C	; 60
+ 31a:	70 e0       	ldi	r23, 0x00	; 0
+ 31c:	44 e6       	ldi	r20, 0x64	; 100
+ 31e:	50 e0       	ldi	r21, 0x00	; 0
+ 320:	28 ee       	ldi	r18, 0xE8	; 232
+ 322:	33 e0       	ldi	r19, 0x03	; 3
+ 324:	0e 94 ed 03 	call	0x7da	; 0x7da <speed_cntr_Move>
+		// stopper
+		set_stopper();
+ 328:	0e 94 26 05 	call	0xa4c	; 0xa4c <set_stopper>
+		while(get_stopper());
+ 32c:	0e 94 2d 05 	call	0xa5a	; 0xa5a <get_stopper>
+ 330:	00 97       	sbiw	r24, 0x00	; 0
+ 332:	e1 f7       	brne	.-8      	; 0x32c <main+0x146>
+ 334:	8f ef       	ldi	r24, 0xFF	; 255
+ 336:	93 ec       	ldi	r25, 0xC3	; 195
+ 338:	a9 e0       	ldi	r26, 0x09	; 9
+ 33a:	81 50       	subi	r24, 0x01	; 1
+ 33c:	90 40       	sbci	r25, 0x00	; 0
+ 33e:	a0 40       	sbci	r26, 0x00	; 0
+ 340:	e1 f7       	brne	.-8      	; 0x33a <main+0x154>
+ 342:	00 c0       	rjmp	.+0      	; 0x344 <main+0x15e>
+ 344:	00 00       	nop
+		_delay_ms(200);
+		// stopper
+		speed_cntr_Move(-temp, (unsigned)60, (unsigned)100, (unsigned)1000);
+ 346:	88 27       	eor	r24, r24
+ 348:	99 27       	eor	r25, r25
+ 34a:	8c 1b       	sub	r24, r28
+ 34c:	9d 0b       	sbc	r25, r29
+ 34e:	6c e3       	ldi	r22, 0x3C	; 60
+ 350:	70 e0       	ldi	r23, 0x00	; 0
+ 352:	44 e6       	ldi	r20, 0x64	; 100
+ 354:	50 e0       	ldi	r21, 0x00	; 0
+ 356:	28 ee       	ldi	r18, 0xE8	; 232
+ 358:	33 e0       	ldi	r19, 0x03	; 3
+ 35a:	0e 94 ed 03 	call	0x7da	; 0x7da <speed_cntr_Move>
+		// stopper
+		set_stopper();
+ 35e:	0e 94 26 05 	call	0xa4c	; 0xa4c <set_stopper>
+		while(get_stopper());
+ 362:	0e 94 2d 05 	call	0xa5a	; 0xa5a <get_stopper>
+ 366:	00 97       	sbiw	r24, 0x00	; 0
+ 368:	e1 f7       	brne	.-8      	; 0x362 <main+0x17c>
+ 36a:	8f ef       	ldi	r24, 0xFF	; 255
+ 36c:	93 ec       	ldi	r25, 0xC3	; 195
+ 36e:	a9 e0       	ldi	r26, 0x09	; 9
+ 370:	81 50       	subi	r24, 0x01	; 1
+ 372:	90 40       	sbci	r25, 0x00	; 0
+ 374:	a0 40       	sbci	r26, 0x00	; 0
+ 376:	e1 f7       	brne	.-8      	; 0x370 <main+0x18a>
+ 378:	00 c0       	rjmp	.+0      	; 0x37a <main+0x194>
+ 37a:	00 00       	nop
+		_delay_ms(200);
+		// stopper
+	}
+ 37c:	c2 cf       	rjmp	.-124    	; 0x302 <main+0x11c>
+
+0000037e <sm_driver_Init_IO>:
+/*! \brief Init of io-pins for stepper motor.
+ */
+void sm_driver_Init_IO(void)
+{
+  // Init of IO pins
+  SM_PORT &= ~((1<<A1) | (1<<A2) | (1<<B1) | (1<<B2)); // Set output pin registers to zero
+ 37e:	eb e0       	ldi	r30, 0x0B	; 11
+ 380:	f1 e0       	ldi	r31, 0x01	; 1
+ 382:	80 81       	ld	r24, Z
+ 384:	8f 70       	andi	r24, 0x0F	; 15
+ 386:	80 83       	st	Z, r24
+  SM_DRIVE |= ((1<<A1) | (1<<A2) | (1<<B1) | (1<<B2)); // Set output pin direction registers to output
+ 388:	ea e0       	ldi	r30, 0x0A	; 10
+ 38a:	f1 e0       	ldi	r31, 0x01	; 1
+ 38c:	80 81       	ld	r24, Z
+ 38e:	80 6f       	ori	r24, 0xF0	; 240
+ 390:	80 83       	st	Z, r24
+}
+ 392:	08 95       	ret
+
+00000394 <sm_driver_StepOutput>:
+  else
+    SM_PORT &= ~(1<<B2);
+  */
+
+  // Output the fast way
+  SM_PORT |= ((temp<<4)&0xF0);
+ 394:	eb e0       	ldi	r30, 0x0B	; 11
+ 396:	f1 e0       	ldi	r31, 0x01	; 1
+ 398:	90 81       	ld	r25, Z
+ *
+ *  \param pos  Stepcounter value.
+ */
+void sm_driver_StepOutput(unsigned char pos)
+{
+  unsigned char temp = steptab[pos];
+ 39a:	a0 eb       	ldi	r26, 0xB0	; 176
+ 39c:	b4 e0       	ldi	r27, 0x04	; 4
+ 39e:	a8 0f       	add	r26, r24
+ 3a0:	b1 1d       	adc	r27, r1
+  else
+    SM_PORT &= ~(1<<B2);
+  */
+
+  // Output the fast way
+  SM_PORT |= ((temp<<4)&0xF0);
+ 3a2:	8c 91       	ld	r24, X
+ 3a4:	82 95       	swap	r24
+ 3a6:	80 7f       	andi	r24, 0xF0	; 240
+ 3a8:	98 2b       	or	r25, r24
+ 3aa:	90 83       	st	Z, r25
+  SM_PORT &= ((temp<<4)|0x0F);
+ 3ac:	90 81       	ld	r25, Z
+ 3ae:	8f 60       	ori	r24, 0x0F	; 15
+ 3b0:	89 23       	and	r24, r25
+ 3b2:	80 83       	st	Z, r24
+}
+ 3b4:	08 95       	ret
+
+000003b6 <sm_driver_StepCounter>:
+ *
+ *  \param inc  Direction to move.
+ *  \return  Stepcounter value.
+ */
+unsigned char sm_driver_StepCounter(signed char inc)
+{
+ 3b6:	1f 93       	push	r17
+ 3b8:	20 91 c9 04 	lds	r18, 0x04C9
+ 3bc:	30 91 ca 04 	lds	r19, 0x04CA
+  // Counts 0-1-...-6-7 in halfstep, 0-2-4-6 in fullstep
+  static unsigned char counter = 0;
+  // Update
+  if(inc == CCW){
+ 3c0:	81 30       	cpi	r24, 0x01	; 1
+ 3c2:	39 f4       	brne	.+14     	; 0x3d2 <sm_driver_StepCounter+0x1c>
+    stepPosition--;
+ 3c4:	21 50       	subi	r18, 0x01	; 1
+ 3c6:	30 40       	sbci	r19, 0x00	; 0
+ 3c8:	30 93 ca 04 	sts	0x04CA, r19
+ 3cc:	20 93 c9 04 	sts	0x04C9, r18
+ 3d0:	08 c0       	rjmp	.+16     	; 0x3e2 <sm_driver_StepCounter+0x2c>
+  }
+  else{
+    stepPosition++;
+ 3d2:	2f 5f       	subi	r18, 0xFF	; 255
+ 3d4:	3f 4f       	sbci	r19, 0xFF	; 255
+ 3d6:	30 93 ca 04 	sts	0x04CA, r19
+ 3da:	20 93 c9 04 	sts	0x04C9, r18
+  }
+
+#ifdef HALFSTEPS
+  if(inc){
+ 3de:	88 23       	and	r24, r24
+ 3e0:	21 f0       	breq	.+8      	; 0x3ea <sm_driver_StepCounter+0x34>
+    counter++;
+ 3e2:	80 91 cb 04 	lds	r24, 0x04CB
+ 3e6:	8f 5f       	subi	r24, 0xFF	; 255
+ 3e8:	03 c0       	rjmp	.+6      	; 0x3f0 <sm_driver_StepCounter+0x3a>
+  }
+  else{
+    counter--;
+ 3ea:	80 91 cb 04 	lds	r24, 0x04CB
+ 3ee:	81 50       	subi	r24, 0x01	; 1
+ 3f0:	80 93 cb 04 	sts	0x04CB, r24
+    counter -= 2;
+  }
+#endif
+
+  // Stay within the steptab
+  counter &= 0x07;
+ 3f4:	10 91 cb 04 	lds	r17, 0x04CB
+ 3f8:	17 70       	andi	r17, 0x07	; 7
+ 3fa:	10 93 cb 04 	sts	0x04CB, r17
+  sm_driver_StepOutput(counter);
+ 3fe:	81 2f       	mov	r24, r17
+ 400:	0e 94 ca 01 	call	0x394	; 0x394 <sm_driver_StepOutput>
+  return(counter);
+}
+ 404:	81 2f       	mov	r24, r17
+ 406:	1f 91       	pop	r17
+ 408:	08 95       	ret
+
+0000040a <speed_cntr_Init_Timer1>:
+ *  enable Output Compare A Match Interrupt.
+ */
+void speed_cntr_Init_Timer1(void)
+{
+	// Tells what part of speed ramp we are in.
+	srd.run_state = STOP;
+ 40a:	80 91 d4 04 	lds	r24, 0x04D4
+ 40e:	88 7f       	andi	r24, 0xF8	; 248
+ 410:	80 93 d4 04 	sts	0x04D4, r24
+	// Timer/Counter 1 in mode 4 CTC (Not running).
+	TCCR1B = (1<<WGM12);
+ 414:	88 e0       	ldi	r24, 0x08	; 8
+ 416:	80 93 81 00 	sts	0x0081, r24
+	// Timer/Counter 1 Output Compare A Match Interrupt enable.
+	TIMSK1 = (1<<OCIE1A);
+ 41a:	82 e0       	ldi	r24, 0x02	; 2
+ 41c:	80 93 6f 00 	sts	0x006F, r24
+}
+ 420:	08 95       	ret
+
+00000422 <__vector_17>:
+ *  The \ref step_delay defines the period of this interrupt
+ *  and controls the speed of the stepper motor.
+ *  A new step delay is calculated to follow wanted speed profile
+ *  on basis of accel/decel parameters.
+ */
+ISR(TIMER1_COMPA_vect){
+ 422:	1f 92       	push	r1
+ 424:	0f 92       	push	r0
+ 426:	0f b6       	in	r0, 0x3f	; 63
+ 428:	0f 92       	push	r0
+ 42a:	0b b6       	in	r0, 0x3b	; 59
+ 42c:	0f 92       	push	r0
+ 42e:	11 24       	eor	r1, r1
+ 430:	4f 92       	push	r4
+ 432:	5f 92       	push	r5
+ 434:	6f 92       	push	r6
+ 436:	7f 92       	push	r7
+ 438:	8f 92       	push	r8
+ 43a:	9f 92       	push	r9
+ 43c:	af 92       	push	r10
+ 43e:	bf 92       	push	r11
+ 440:	cf 92       	push	r12
+ 442:	df 92       	push	r13
+ 444:	ef 92       	push	r14
+ 446:	ff 92       	push	r15
+ 448:	0f 93       	push	r16
+ 44a:	1f 93       	push	r17
+ 44c:	2f 93       	push	r18
+ 44e:	3f 93       	push	r19
+ 450:	4f 93       	push	r20
+ 452:	5f 93       	push	r21
+ 454:	6f 93       	push	r22
+ 456:	7f 93       	push	r23
+ 458:	8f 93       	push	r24
+ 45a:	9f 93       	push	r25
+ 45c:	af 93       	push	r26
+ 45e:	bf 93       	push	r27
+ 460:	cf 93       	push	r28
+ 462:	df 93       	push	r29
+ 464:	ef 93       	push	r30
+ 466:	ff 93       	push	r31
+	// Counting steps when moving.
+	static unsigned int step_count = 0;
+	// Keep track of remainder from new_step-delay calculation to incrase accurancy
+	static unsigned int rest = 0;
+
+	OCR1A = srd.step_delay;
+ 468:	80 91 d5 04 	lds	r24, 0x04D5
+ 46c:	90 91 d6 04 	lds	r25, 0x04D6
+ 470:	90 93 89 00 	sts	0x0089, r25
+ 474:	80 93 88 00 	sts	0x0088, r24
+
+	switch(srd.run_state) {
+ 478:	64 ed       	ldi	r22, 0xD4	; 212
+ 47a:	c6 2e       	mov	r12, r22
+ 47c:	64 e0       	ldi	r22, 0x04	; 4
+ 47e:	d6 2e       	mov	r13, r22
+ 480:	80 91 d4 04 	lds	r24, 0x04D4
+ 484:	28 2f       	mov	r18, r24
+ 486:	27 70       	andi	r18, 0x07	; 7
+ 488:	30 e0       	ldi	r19, 0x00	; 0
+ 48a:	21 30       	cpi	r18, 0x01	; 1
+ 48c:	31 05       	cpc	r19, r1
+ 48e:	19 f1       	breq	.+70     	; 0x4d6 <__vector_17+0xb4>
+ 490:	22 30       	cpi	r18, 0x02	; 2
+ 492:	31 05       	cpc	r19, r1
+ 494:	24 f4       	brge	.+8      	; 0x49e <__vector_17+0x7c>
+ 496:	21 15       	cp	r18, r1
+ 498:	31 05       	cpc	r19, r1
+ 49a:	51 f0       	breq	.+20     	; 0x4b0 <__vector_17+0x8e>
+ 49c:	2c c1       	rjmp	.+600    	; 0x6f6 <__vector_17+0x2d4>
+ 49e:	22 30       	cpi	r18, 0x02	; 2
+ 4a0:	31 05       	cpc	r19, r1
+ 4a2:	09 f4       	brne	.+2      	; 0x4a6 <__vector_17+0x84>
+ 4a4:	c8 c0       	rjmp	.+400    	; 0x636 <__vector_17+0x214>
+ 4a6:	23 30       	cpi	r18, 0x03	; 3
+ 4a8:	31 05       	cpc	r19, r1
+ 4aa:	09 f0       	breq	.+2      	; 0x4ae <__vector_17+0x8c>
+ 4ac:	24 c1       	rjmp	.+584    	; 0x6f6 <__vector_17+0x2d4>
+ 4ae:	92 c0       	rjmp	.+292    	; 0x5d4 <__vector_17+0x1b2>
+	case STOP:
+		step_count = 0;
+ 4b0:	10 92 cf 04 	sts	0x04CF, r1
+ 4b4:	10 92 ce 04 	sts	0x04CE, r1
+		rest = 0;
+ 4b8:	10 92 cd 04 	sts	0x04CD, r1
+ 4bc:	10 92 cc 04 	sts	0x04CC, r1
+		// Stop Timer/Counter 1.
+		TCCR1B &= ~((1<<CS12)|(1<<CS11)|(1<<CS10));
+ 4c0:	80 91 81 00 	lds	r24, 0x0081
+ 4c4:	88 7f       	andi	r24, 0xF8	; 248
+ 4c6:	80 93 81 00 	sts	0x0081, r24
+		status.running = FALSE;
+ 4ca:	80 91 c8 04 	lds	r24, 0x04C8
+ 4ce:	8e 7f       	andi	r24, 0xFE	; 254
+ 4d0:	80 93 c8 04 	sts	0x04C8, r24
+		break;
+ 4d4:	10 c1       	rjmp	.+544    	; 0x6f6 <__vector_17+0x2d4>
+
+	case ACCEL:
+		sm_driver_StepCounter(srd.dir);
+ 4d6:	86 95       	lsr	r24
+ 4d8:	86 95       	lsr	r24
+ 4da:	86 95       	lsr	r24
+ 4dc:	81 70       	andi	r24, 0x01	; 1
+ 4de:	0e 94 db 01 	call	0x3b6	; 0x3b6 <sm_driver_StepCounter>
+		step_count++;
+ 4e2:	00 91 ce 04 	lds	r16, 0x04CE
+ 4e6:	10 91 cf 04 	lds	r17, 0x04CF
+ 4ea:	0f 5f       	subi	r16, 0xFF	; 255
+ 4ec:	1f 4f       	sbci	r17, 0xFF	; 255
+ 4ee:	10 93 cf 04 	sts	0x04CF, r17
+ 4f2:	00 93 ce 04 	sts	0x04CE, r16
+		srd.accel_count++;
+ 4f6:	c0 90 dd 04 	lds	r12, 0x04DD
+ 4fa:	d0 90 de 04 	lds	r13, 0x04DE
+ 4fe:	08 94       	sec
+ 500:	c1 1c       	adc	r12, r1
+ 502:	d1 1c       	adc	r13, r1
+ 504:	d0 92 de 04 	sts	0x04DE, r13
+ 508:	c0 92 dd 04 	sts	0x04DD, r12
+		new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) + rest)/(4 * srd.accel_count + 1));
+ 50c:	c0 91 d5 04 	lds	r28, 0x04D5
+ 510:	d0 91 d6 04 	lds	r29, 0x04D6
+ 514:	4e 01       	movw	r8, r28
+ 516:	aa 24       	eor	r10, r10
+ 518:	bb 24       	eor	r11, r11
+ 51a:	40 90 cc 04 	lds	r4, 0x04CC
+ 51e:	50 90 cd 04 	lds	r5, 0x04CD
+ 522:	66 24       	eor	r6, r6
+ 524:	77 24       	eor	r7, r7
+ 526:	cc 0c       	add	r12, r12
+ 528:	dd 1c       	adc	r13, r13
+ 52a:	cc 0c       	add	r12, r12
+ 52c:	dd 1c       	adc	r13, r13
+ 52e:	08 94       	sec
+ 530:	c1 1c       	adc	r12, r1
+ 532:	d1 1c       	adc	r13, r1
+ 534:	ee 24       	eor	r14, r14
+ 536:	d7 fc       	sbrc	r13, 7
+ 538:	e0 94       	com	r14
+ 53a:	fe 2c       	mov	r15, r14
+ 53c:	c5 01       	movw	r24, r10
+ 53e:	b4 01       	movw	r22, r8
+ 540:	2e ef       	ldi	r18, 0xFE	; 254
+ 542:	3f ef       	ldi	r19, 0xFF	; 255
+ 544:	4f ef       	ldi	r20, 0xFF	; 255
+ 546:	5f ef       	ldi	r21, 0xFF	; 255
+ 548:	0e 94 16 06 	call	0xc2c	; 0xc2c <__mulsi3>
+ 54c:	64 19       	sub	r22, r4
+ 54e:	75 09       	sbc	r23, r5
+ 550:	86 09       	sbc	r24, r6
+ 552:	97 09       	sbc	r25, r7
+ 554:	a7 01       	movw	r20, r14
+ 556:	96 01       	movw	r18, r12
+ 558:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ 55c:	c2 0f       	add	r28, r18
+ 55e:	d3 1f       	adc	r29, r19
+		rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_count + 1);
+ 560:	c5 01       	movw	r24, r10
+ 562:	b4 01       	movw	r22, r8
+ 564:	66 0f       	add	r22, r22
+ 566:	77 1f       	adc	r23, r23
+ 568:	88 1f       	adc	r24, r24
+ 56a:	99 1f       	adc	r25, r25
+ 56c:	64 0d       	add	r22, r4
+ 56e:	75 1d       	adc	r23, r5
+ 570:	86 1d       	adc	r24, r6
+ 572:	97 1d       	adc	r25, r7
+ 574:	a7 01       	movw	r20, r14
+ 576:	96 01       	movw	r18, r12
+ 578:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ 57c:	70 93 cd 04 	sts	0x04CD, r23
+ 580:	60 93 cc 04 	sts	0x04CC, r22
+		// Chech if we should start decelration.
+		if(step_count >= srd.decel_start) {
+ 584:	80 91 d7 04 	lds	r24, 0x04D7
+ 588:	90 91 d8 04 	lds	r25, 0x04D8
+ 58c:	08 17       	cp	r16, r24
+ 58e:	19 07       	cpc	r17, r25
+ 590:	48 f0       	brcs	.+18     	; 0x5a4 <__vector_17+0x182>
+			srd.accel_count = srd.decel_val;
+ 592:	80 91 d9 04 	lds	r24, 0x04D9
+ 596:	90 91 da 04 	lds	r25, 0x04DA
+ 59a:	90 93 de 04 	sts	0x04DE, r25
+ 59e:	80 93 dd 04 	sts	0x04DD, r24
+ 5a2:	44 c0       	rjmp	.+136    	; 0x62c <__vector_17+0x20a>
+			srd.run_state = DECEL;
+		}
+		// Chech if we hitted max speed.
+		else if(new_step_delay <= srd.min_delay) {
+ 5a4:	80 91 db 04 	lds	r24, 0x04DB
+ 5a8:	90 91 dc 04 	lds	r25, 0x04DC
+ 5ac:	8c 17       	cp	r24, r28
+ 5ae:	9d 07       	cpc	r25, r29
+ 5b0:	08 f4       	brcc	.+2      	; 0x5b4 <__vector_17+0x192>
+ 5b2:	a1 c0       	rjmp	.+322    	; 0x6f6 <__vector_17+0x2d4>
+			last_accel_delay = new_step_delay;
+ 5b4:	d0 93 d1 04 	sts	0x04D1, r29
+ 5b8:	c0 93 d0 04 	sts	0x04D0, r28
+			new_step_delay = srd.min_delay;
+			rest = 0;
+ 5bc:	10 92 cd 04 	sts	0x04CD, r1
+ 5c0:	10 92 cc 04 	sts	0x04CC, r1
+			srd.run_state = RUN;
+ 5c4:	20 91 d4 04 	lds	r18, 0x04D4
+ 5c8:	28 7f       	andi	r18, 0xF8	; 248
+ 5ca:	23 60       	ori	r18, 0x03	; 3
+ 5cc:	20 93 d4 04 	sts	0x04D4, r18
+ 5d0:	ec 01       	movw	r28, r24
+ 5d2:	91 c0       	rjmp	.+290    	; 0x6f6 <__vector_17+0x2d4>
+		}
+		break;
+
+	case RUN:
+		sm_driver_StepCounter(srd.dir);
+ 5d4:	86 95       	lsr	r24
+ 5d6:	86 95       	lsr	r24
+ 5d8:	86 95       	lsr	r24
+ 5da:	81 70       	andi	r24, 0x01	; 1
+ 5dc:	0e 94 db 01 	call	0x3b6	; 0x3b6 <sm_driver_StepCounter>
+		step_count++;
+ 5e0:	80 91 ce 04 	lds	r24, 0x04CE
+ 5e4:	90 91 cf 04 	lds	r25, 0x04CF
+ 5e8:	01 96       	adiw	r24, 0x01	; 1
+ 5ea:	90 93 cf 04 	sts	0x04CF, r25
+ 5ee:	80 93 ce 04 	sts	0x04CE, r24
+		new_step_delay = srd.min_delay;
+ 5f2:	50 91 db 04 	lds	r21, 0x04DB
+ 5f6:	40 91 dc 04 	lds	r20, 0x04DC
+		// Chech if we should start decelration.
+		if(step_count >= srd.decel_start) {
+ 5fa:	20 91 d7 04 	lds	r18, 0x04D7
+ 5fe:	30 91 d8 04 	lds	r19, 0x04D8
+ 602:	82 17       	cp	r24, r18
+ 604:	93 07       	cpc	r25, r19
+ 606:	38 f4       	brcc	.+14     	; 0x616 <__vector_17+0x1f4>
+		break;
+
+	case RUN:
+		sm_driver_StepCounter(srd.dir);
+		step_count++;
+		new_step_delay = srd.min_delay;
+ 608:	ca 01       	movw	r24, r20
+ 60a:	e9 2e       	mov	r14, r25
+ 60c:	e7 01       	movw	r28, r14
+ 60e:	7e 01       	movw	r14, r28
+ 610:	f8 2e       	mov	r15, r24
+ 612:	e7 01       	movw	r28, r14
+ 614:	70 c0       	rjmp	.+224    	; 0x6f6 <__vector_17+0x2d4>
+		// Chech if we should start decelration.
+		if(step_count >= srd.decel_start) {
+			srd.accel_count = srd.decel_val;
+ 616:	80 91 d9 04 	lds	r24, 0x04D9
+ 61a:	90 91 da 04 	lds	r25, 0x04DA
+ 61e:	f6 01       	movw	r30, r12
+ 620:	92 87       	std	Z+10, r25	; 0x0a
+ 622:	81 87       	std	Z+9, r24	; 0x09
+			// Start decelration with same delay as accel ended with.
+			new_step_delay = last_accel_delay;
+ 624:	c0 91 d0 04 	lds	r28, 0x04D0
+ 628:	d0 91 d1 04 	lds	r29, 0x04D1
+			srd.run_state = DECEL;
+ 62c:	80 91 d4 04 	lds	r24, 0x04D4
+ 630:	88 7f       	andi	r24, 0xF8	; 248
+ 632:	82 60       	ori	r24, 0x02	; 2
+ 634:	5e c0       	rjmp	.+188    	; 0x6f2 <__vector_17+0x2d0>
+		}
+		break;
+
+	case DECEL:
+		sm_driver_StepCounter(srd.dir);
+ 636:	86 95       	lsr	r24
+ 638:	86 95       	lsr	r24
+ 63a:	86 95       	lsr	r24
+ 63c:	81 70       	andi	r24, 0x01	; 1
+ 63e:	0e 94 db 01 	call	0x3b6	; 0x3b6 <sm_driver_StepCounter>
+		step_count++;
+ 642:	80 91 ce 04 	lds	r24, 0x04CE
+ 646:	90 91 cf 04 	lds	r25, 0x04CF
+ 64a:	01 96       	adiw	r24, 0x01	; 1
+ 64c:	90 93 cf 04 	sts	0x04CF, r25
+ 650:	80 93 ce 04 	sts	0x04CE, r24
+		srd.accel_count++;
+ 654:	00 91 dd 04 	lds	r16, 0x04DD
+ 658:	10 91 de 04 	lds	r17, 0x04DE
+ 65c:	0f 5f       	subi	r16, 0xFF	; 255
+ 65e:	1f 4f       	sbci	r17, 0xFF	; 255
+ 660:	f6 01       	movw	r30, r12
+ 662:	12 87       	std	Z+10, r17	; 0x0a
+ 664:	01 87       	std	Z+9, r16	; 0x09
+		new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) + rest)/(4 * srd.accel_count + 1));
+ 666:	c0 91 d5 04 	lds	r28, 0x04D5
+ 66a:	d0 91 d6 04 	lds	r29, 0x04D6
+ 66e:	4e 01       	movw	r8, r28
+ 670:	aa 24       	eor	r10, r10
+ 672:	bb 24       	eor	r11, r11
+ 674:	40 90 cc 04 	lds	r4, 0x04CC
+ 678:	50 90 cd 04 	lds	r5, 0x04CD
+ 67c:	66 24       	eor	r6, r6
+ 67e:	77 24       	eor	r7, r7
+ 680:	68 01       	movw	r12, r16
+ 682:	cc 0c       	add	r12, r12
+ 684:	dd 1c       	adc	r13, r13
+ 686:	cc 0c       	add	r12, r12
+ 688:	dd 1c       	adc	r13, r13
+ 68a:	08 94       	sec
+ 68c:	c1 1c       	adc	r12, r1
+ 68e:	d1 1c       	adc	r13, r1
+ 690:	ee 24       	eor	r14, r14
+ 692:	d7 fc       	sbrc	r13, 7
+ 694:	e0 94       	com	r14
+ 696:	fe 2c       	mov	r15, r14
+ 698:	c5 01       	movw	r24, r10
+ 69a:	b4 01       	movw	r22, r8
+ 69c:	2e ef       	ldi	r18, 0xFE	; 254
+ 69e:	3f ef       	ldi	r19, 0xFF	; 255
+ 6a0:	4f ef       	ldi	r20, 0xFF	; 255
+ 6a2:	5f ef       	ldi	r21, 0xFF	; 255
+ 6a4:	0e 94 16 06 	call	0xc2c	; 0xc2c <__mulsi3>
+ 6a8:	64 19       	sub	r22, r4
+ 6aa:	75 09       	sbc	r23, r5
+ 6ac:	86 09       	sbc	r24, r6
+ 6ae:	97 09       	sbc	r25, r7
+ 6b0:	a7 01       	movw	r20, r14
+ 6b2:	96 01       	movw	r18, r12
+ 6b4:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ 6b8:	c2 0f       	add	r28, r18
+ 6ba:	d3 1f       	adc	r29, r19
+		rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_count + 1);
+ 6bc:	c5 01       	movw	r24, r10
+ 6be:	b4 01       	movw	r22, r8
+ 6c0:	66 0f       	add	r22, r22
+ 6c2:	77 1f       	adc	r23, r23
+ 6c4:	88 1f       	adc	r24, r24
+ 6c6:	99 1f       	adc	r25, r25
+ 6c8:	64 0d       	add	r22, r4
+ 6ca:	75 1d       	adc	r23, r5
+ 6cc:	86 1d       	adc	r24, r6
+ 6ce:	97 1d       	adc	r25, r7
+ 6d0:	a7 01       	movw	r20, r14
+ 6d2:	96 01       	movw	r18, r12
+ 6d4:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ 6d8:	70 93 cd 04 	sts	0x04CD, r23
+ 6dc:	60 93 cc 04 	sts	0x04CC, r22
+		// Check if we at last step
+		if(srd.accel_count >= 0){
+ 6e0:	17 fd       	sbrc	r17, 7
+ 6e2:	09 c0       	rjmp	.+18     	; 0x6f6 <__vector_17+0x2d4>
+			running_value=0;
+ 6e4:	10 92 e0 04 	sts	0x04E0, r1
+ 6e8:	10 92 df 04 	sts	0x04DF, r1
+			srd.run_state = STOP;
+ 6ec:	80 91 d4 04 	lds	r24, 0x04D4
+ 6f0:	88 7f       	andi	r24, 0xF8	; 248
+ 6f2:	80 93 d4 04 	sts	0x04D4, r24
+		}
+		break;
+	}
+	srd.step_delay = new_step_delay;
+ 6f6:	d0 93 d6 04 	sts	0x04D6, r29
+ 6fa:	c0 93 d5 04 	sts	0x04D5, r28
+}
+ 6fe:	ff 91       	pop	r31
+ 700:	ef 91       	pop	r30
+ 702:	df 91       	pop	r29
+ 704:	cf 91       	pop	r28
+ 706:	bf 91       	pop	r27
+ 708:	af 91       	pop	r26
+ 70a:	9f 91       	pop	r25
+ 70c:	8f 91       	pop	r24
+ 70e:	7f 91       	pop	r23
+ 710:	6f 91       	pop	r22
+ 712:	5f 91       	pop	r21
+ 714:	4f 91       	pop	r20
+ 716:	3f 91       	pop	r19
+ 718:	2f 91       	pop	r18
+ 71a:	1f 91       	pop	r17
+ 71c:	0f 91       	pop	r16
+ 71e:	ff 90       	pop	r15
+ 720:	ef 90       	pop	r14
+ 722:	df 90       	pop	r13
+ 724:	cf 90       	pop	r12
+ 726:	bf 90       	pop	r11
+ 728:	af 90       	pop	r10
+ 72a:	9f 90       	pop	r9
+ 72c:	8f 90       	pop	r8
+ 72e:	7f 90       	pop	r7
+ 730:	6f 90       	pop	r6
+ 732:	5f 90       	pop	r5
+ 734:	4f 90       	pop	r4
+ 736:	0f 90       	pop	r0
+ 738:	0b be       	out	0x3b, r0	; 59
+ 73a:	0f 90       	pop	r0
+ 73c:	0f be       	out	0x3f, r0	; 63
+ 73e:	0f 90       	pop	r0
+ 740:	1f 90       	pop	r1
+ 742:	18 95       	reti
+
+00000744 <sqrt_2>:
+ *
+ *  \param x  Value to find square root of.
+ *  \return  Square root of x.
+ */
+unsigned long sqrt_2(unsigned long x)
+{
+ 744:	af 92       	push	r10
+ 746:	bf 92       	push	r11
+ 748:	cf 92       	push	r12
+ 74a:	df 92       	push	r13
+ 74c:	ef 92       	push	r14
+ 74e:	ff 92       	push	r15
+ 750:	0f 93       	push	r16
+ 752:	1f 93       	push	r17
+ 754:	e0 e1       	ldi	r30, 0x10	; 16
+ 756:	f0 e0       	ldi	r31, 0x00	; 0
+	register unsigned long xr;  // result register
+	register unsigned long q2;  // scan-bit register
+	register unsigned char f;   // flag (one bit)
+
+	xr = 0;                     // clear result
+	q2 = 0x40000000L;           // higest possible result bit
+ 758:	a1 2c       	mov	r10, r1
+ 75a:	b1 2c       	mov	r11, r1
+ 75c:	c1 2c       	mov	r12, r1
+ 75e:	10 e4       	ldi	r17, 0x40	; 64
+ 760:	d1 2e       	mov	r13, r17
+{
+	register unsigned long xr;  // result register
+	register unsigned long q2;  // scan-bit register
+	register unsigned char f;   // flag (one bit)
+
+	xr = 0;                     // clear result
+ 762:	20 e0       	ldi	r18, 0x00	; 0
+ 764:	30 e0       	ldi	r19, 0x00	; 0
+ 766:	a9 01       	movw	r20, r18
+	q2 = 0x40000000L;           // higest possible result bit
+	do
+	{
+		if((xr + q2) <= x)
+ 768:	86 01       	movw	r16, r12
+ 76a:	75 01       	movw	r14, r10
+ 76c:	e2 0e       	add	r14, r18
+ 76e:	f3 1e       	adc	r15, r19
+ 770:	04 1f       	adc	r16, r20
+ 772:	15 1f       	adc	r17, r21
+ 774:	6e 15       	cp	r22, r14
+ 776:	7f 05       	cpc	r23, r15
+ 778:	80 07       	cpc	r24, r16
+ 77a:	91 07       	cpc	r25, r17
+ 77c:	30 f0       	brcs	.+12     	; 0x78a <sqrt_2+0x46>
+		{
+			x -= xr + q2;
+ 77e:	6e 19       	sub	r22, r14
+ 780:	7f 09       	sbc	r23, r15
+ 782:	80 0b       	sbc	r24, r16
+ 784:	91 0b       	sbc	r25, r17
+			f = 1;                  // set flag
+ 786:	a1 e0       	ldi	r26, 0x01	; 1
+ 788:	01 c0       	rjmp	.+2      	; 0x78c <sqrt_2+0x48>
+		}
+		else{
+			f = 0;                  // clear flag
+ 78a:	a0 e0       	ldi	r26, 0x00	; 0
+		}
+		xr >>= 1;
+ 78c:	56 95       	lsr	r21
+ 78e:	47 95       	ror	r20
+ 790:	37 95       	ror	r19
+ 792:	27 95       	ror	r18
+		if(f){
+ 794:	aa 23       	and	r26, r26
+ 796:	21 f0       	breq	.+8      	; 0x7a0 <sqrt_2+0x5c>
+			xr += q2;               // test flag
+ 798:	2a 0d       	add	r18, r10
+ 79a:	3b 1d       	adc	r19, r11
+ 79c:	4c 1d       	adc	r20, r12
+ 79e:	5d 1d       	adc	r21, r13
+		}
+	} while(q2 >>= 2);          // shift twice
+ 7a0:	a2 e0       	ldi	r26, 0x02	; 2
+ 7a2:	d6 94       	lsr	r13
+ 7a4:	c7 94       	ror	r12
+ 7a6:	b7 94       	ror	r11
+ 7a8:	a7 94       	ror	r10
+ 7aa:	aa 95       	dec	r26
+ 7ac:	d1 f7       	brne	.-12     	; 0x7a2 <sqrt_2+0x5e>
+ 7ae:	31 97       	sbiw	r30, 0x01	; 1
+ 7b0:	d9 f6       	brne	.-74     	; 0x768 <sqrt_2+0x24>
+	if(xr < x){
+ 7b2:	26 17       	cp	r18, r22
+ 7b4:	37 07       	cpc	r19, r23
+ 7b6:	48 07       	cpc	r20, r24
+ 7b8:	59 07       	cpc	r21, r25
+ 7ba:	20 f4       	brcc	.+8      	; 0x7c4 <sqrt_2+0x80>
+		return xr +1;             // add for rounding
+ 7bc:	2f 5f       	subi	r18, 0xFF	; 255
+ 7be:	3f 4f       	sbci	r19, 0xFF	; 255
+ 7c0:	4f 4f       	sbci	r20, 0xFF	; 255
+ 7c2:	5f 4f       	sbci	r21, 0xFF	; 255
+	}
+	else{
+		return xr;
+	}
+}
+ 7c4:	b9 01       	movw	r22, r18
+ 7c6:	ca 01       	movw	r24, r20
+ 7c8:	1f 91       	pop	r17
+ 7ca:	0f 91       	pop	r16
+ 7cc:	ff 90       	pop	r15
+ 7ce:	ef 90       	pop	r14
+ 7d0:	df 90       	pop	r13
+ 7d2:	cf 90       	pop	r12
+ 7d4:	bf 90       	pop	r11
+ 7d6:	af 90       	pop	r10
+ 7d8:	08 95       	ret
+
+000007da <speed_cntr_Move>:
+ *  \param accel  Accelration to use, in 0.01*rad/sec^2.
+ *  \param decel  Decelration to use, in 0.01*rad/sec^2.
+ *  \param speed  Max speed, in 0.01*rad/sec.
+ */
+void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, unsigned int speed)
+{
+ 7da:	2f 92       	push	r2
+ 7dc:	3f 92       	push	r3
+ 7de:	4f 92       	push	r4
+ 7e0:	5f 92       	push	r5
+ 7e2:	6f 92       	push	r6
+ 7e4:	7f 92       	push	r7
+ 7e6:	8f 92       	push	r8
+ 7e8:	9f 92       	push	r9
+ 7ea:	af 92       	push	r10
+ 7ec:	bf 92       	push	r11
+ 7ee:	cf 92       	push	r12
+ 7f0:	df 92       	push	r13
+ 7f2:	ef 92       	push	r14
+ 7f4:	ff 92       	push	r15
+ 7f6:	0f 93       	push	r16
+ 7f8:	1f 93       	push	r17
+ 7fa:	df 93       	push	r29
+ 7fc:	cf 93       	push	r28
+ 7fe:	00 d0       	rcall	.+0      	; 0x800 <speed_cntr_Move+0x26>
+ 800:	00 d0       	rcall	.+0      	; 0x802 <speed_cntr_Move+0x28>
+ 802:	00 d0       	rcall	.+0      	; 0x804 <speed_cntr_Move+0x2a>
+ 804:	cd b7       	in	r28, 0x3d	; 61
+ 806:	de b7       	in	r29, 0x3e	; 62
+ 808:	9e 83       	std	Y+6, r25	; 0x06
+ 80a:	8d 83       	std	Y+5, r24	; 0x05
+ 80c:	1b 01       	movw	r2, r22
+ 80e:	2a 01       	movw	r4, r20
+ 810:	80 91 d4 04 	lds	r24, 0x04D4
+	unsigned int max_s_lim;
+	//! Number of steps before we must start deceleration (if accel does not hit max speed).
+	unsigned int accel_lim;
+
+	// Set direction from sign on step value.
+	if(step < 0){
+ 814:	4d 81       	ldd	r20, Y+5	; 0x05
+ 816:	5e 81       	ldd	r21, Y+6	; 0x06
+ 818:	57 ff       	sbrs	r21, 7
+ 81a:	09 c0       	rjmp	.+18     	; 0x82e <speed_cntr_Move+0x54>
+		srd.dir = CCW;
+ 81c:	88 60       	ori	r24, 0x08	; 8
+ 81e:	80 93 d4 04 	sts	0x04D4, r24
+		step = -step;
+ 822:	50 95       	com	r21
+ 824:	41 95       	neg	r20
+ 826:	5f 4f       	sbci	r21, 0xFF	; 255
+ 828:	5e 83       	std	Y+6, r21	; 0x06
+ 82a:	4d 83       	std	Y+5, r20	; 0x05
+ 82c:	03 c0       	rjmp	.+6      	; 0x834 <speed_cntr_Move+0x5a>
+	}
+	else{
+		srd.dir = CW;
+ 82e:	87 7f       	andi	r24, 0xF7	; 247
+ 830:	80 93 d4 04 	sts	0x04D4, r24
+	}
+
+	// If moving only 1 step.
+	if(step == 1){
+ 834:	8d 81       	ldd	r24, Y+5	; 0x05
+ 836:	9e 81       	ldd	r25, Y+6	; 0x06
+ 838:	81 30       	cpi	r24, 0x01	; 1
+ 83a:	91 05       	cpc	r25, r1
+ 83c:	99 f4       	brne	.+38     	; 0x864 <speed_cntr_Move+0x8a>
+		// Move one step...
+		srd.accel_count = -1;
+ 83e:	8f ef       	ldi	r24, 0xFF	; 255
+ 840:	9f ef       	ldi	r25, 0xFF	; 255
+ 842:	90 93 de 04 	sts	0x04DE, r25
+ 846:	80 93 dd 04 	sts	0x04DD, r24
+		// ...in DECEL state.
+		srd.run_state = DECEL;
+ 84a:	80 91 d4 04 	lds	r24, 0x04D4
+ 84e:	88 7f       	andi	r24, 0xF8	; 248
+ 850:	82 60       	ori	r24, 0x02	; 2
+ 852:	80 93 d4 04 	sts	0x04D4, r24
+		// Just a short delay so main() can act on 'running'.
+		srd.step_delay = 1000;
+ 856:	88 ee       	ldi	r24, 0xE8	; 232
+ 858:	93 e0       	ldi	r25, 0x03	; 3
+ 85a:	90 93 d6 04 	sts	0x04D6, r25
+ 85e:	80 93 d5 04 	sts	0x04D5, r24
+ 862:	c3 c0       	rjmp	.+390    	; 0x9ea <speed_cntr_Move+0x210>
+		OCR1A = 10;
+		// Run Timer/Counter 1 with prescaler = 8.
+		TCCR1B |= ((0<<CS12)|(1<<CS11)|(0<<CS10));
+	}
+	// Only move if number of steps to move is not zero.
+	else if(step != 0){
+ 864:	ed 81       	ldd	r30, Y+5	; 0x05
+ 866:	fe 81       	ldd	r31, Y+6	; 0x06
+ 868:	30 97       	sbiw	r30, 0x00	; 0
+ 86a:	09 f4       	brne	.+2      	; 0x86e <speed_cntr_Move+0x94>
+ 86c:	ce c0       	rjmp	.+412    	; 0xa0a <speed_cntr_Move+0x230>
+		// Refer to documentation for detailed information about these calculations.
+
+		// Set max speed limit, by calc min_delay to use in timer.
+		// min_delay = (alpha / tt)/ w
+		srd.min_delay = A_T_x100 / speed;
+ 86e:	59 01       	movw	r10, r18
+ 870:	cc 24       	eor	r12, r12
+ 872:	dd 24       	eor	r13, r13
+ 874:	66 ee       	ldi	r22, 0xE6	; 230
+ 876:	7f e4       	ldi	r23, 0x4F	; 79
+ 878:	8b e0       	ldi	r24, 0x0B	; 11
+ 87a:	90 e0       	ldi	r25, 0x00	; 0
+ 87c:	a6 01       	movw	r20, r12
+ 87e:	95 01       	movw	r18, r10
+ 880:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ 884:	2b 83       	std	Y+3, r18	; 0x03
+ 886:	3c 83       	std	Y+4, r19	; 0x04
+ 888:	20 93 db 04 	sts	0x04DB, r18
+ 88c:	30 93 dc 04 	sts	0x04DC, r19
+
+		// Set accelration by calc the first (c0) step delay .
+		// step_delay = 1/tt * sqrt(2*alpha/accel)
+		// step_delay = ( tfreq*0.676/100 )*100 * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
+		srd.step_delay = (T1_FREQ_148 * sqrt_2(A_SQ / accel))/100;
+ 890:	31 01       	movw	r6, r2
+ 892:	88 24       	eor	r8, r8
+ 894:	99 24       	eor	r9, r9
+ 896:	60 e9       	ldi	r22, 0x90	; 144
+ 898:	73 e9       	ldi	r23, 0x93	; 147
+ 89a:	8b ec       	ldi	r24, 0xCB	; 203
+ 89c:	94 e0       	ldi	r25, 0x04	; 4
+ 89e:	a4 01       	movw	r20, r8
+ 8a0:	93 01       	movw	r18, r6
+ 8a2:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ 8a6:	ca 01       	movw	r24, r20
+ 8a8:	b9 01       	movw	r22, r18
+ 8aa:	0e 94 a2 03 	call	0x744	; 0x744 <sqrt_2>
+ 8ae:	2a ea       	ldi	r18, 0xAA	; 170
+ 8b0:	30 e3       	ldi	r19, 0x30	; 48
+ 8b2:	40 e0       	ldi	r20, 0x00	; 0
+ 8b4:	50 e0       	ldi	r21, 0x00	; 0
+ 8b6:	0e 94 16 06 	call	0xc2c	; 0xc2c <__mulsi3>
+ 8ba:	24 e6       	ldi	r18, 0x64	; 100
+ 8bc:	e2 2e       	mov	r14, r18
+ 8be:	f1 2c       	mov	r15, r1
+ 8c0:	01 2d       	mov	r16, r1
+ 8c2:	11 2d       	mov	r17, r1
+ 8c4:	a8 01       	movw	r20, r16
+ 8c6:	97 01       	movw	r18, r14
+ 8c8:	0e 94 49 06 	call	0xc92	; 0xc92 <__udivmodsi4>
+ 8cc:	3a 83       	std	Y+2, r19	; 0x02
+ 8ce:	29 83       	std	Y+1, r18	; 0x01
+ 8d0:	30 93 d6 04 	sts	0x04D6, r19
+ 8d4:	20 93 d5 04 	sts	0x04D5, r18
+
+		// Find out after how many steps does the speed hit the max speed limit.
+		// max_s_lim = speed^2 / (2*alpha*accel)
+		max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
+ 8d8:	c6 01       	movw	r24, r12
+ 8da:	b5 01       	movw	r22, r10
+ 8dc:	a6 01       	movw	r20, r12
+ 8de:	95 01       	movw	r18, r10
+ 8e0:	0e 94 16 06 	call	0xc2c	; 0xc2c <__mulsi3>
+ 8e4:	5b 01       	movw	r10, r22
+ 8e6:	6c 01       	movw	r12, r24
+ 8e8:	c4 01       	movw	r24, r8
+ 8ea:	b3 01       	movw	r22, r6
+ 8ec:	20 e5       	ldi	r18, 0x50	; 80
+ 8ee:	30 e0       	ldi	r19, 0x00	; 0
+ 8f0:	40 e0       	ldi	r20, 0x00	; 0
+ 8f2:	50 e0       	ldi	r21, 0x00	; 0
+ 8f4:	0e 94 16 06 	call	0xc2c	; 0xc2c <__mulsi3>
+ 8f8:	a8 01       	movw	r20, r16
+ 8fa:	97 01       	movw	r18, r14
+ 8fc:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ 900:	c6 01       	movw	r24, r12
+ 902:	b5 01       	movw	r22, r10
+ 904:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ 908:	89 01       	movw	r16, r18
+		// If we hit max speed limit before 0,5 step it will round to 0.
+		// But in practice we need to move atleast 1 step to get any speed at all.
+		if(max_s_lim == 0){
+ 90a:	21 15       	cp	r18, r1
+ 90c:	31 05       	cpc	r19, r1
+ 90e:	11 f4       	brne	.+4      	; 0x914 <speed_cntr_Move+0x13a>
+			max_s_lim = 1;
+ 910:	01 e0       	ldi	r16, 0x01	; 1
+ 912:	10 e0       	ldi	r17, 0x00	; 0
+		}
+
+		// Find out after how many steps we must start deceleration.
+		// n1 = (n1+n2)decel / (accel + decel)
+		accel_lim = ((long)step*decel) / (accel+decel);
+ 914:	62 01       	movw	r12, r4
+ 916:	ee 24       	eor	r14, r14
+ 918:	ff 24       	eor	r15, r15
+ 91a:	2d 81       	ldd	r18, Y+5	; 0x05
+ 91c:	3e 81       	ldd	r19, Y+6	; 0x06
+ 91e:	b9 01       	movw	r22, r18
+ 920:	88 27       	eor	r24, r24
+ 922:	77 fd       	sbrc	r23, 7
+ 924:	80 95       	com	r24
+ 926:	98 2f       	mov	r25, r24
+ 928:	a7 01       	movw	r20, r14
+ 92a:	96 01       	movw	r18, r12
+ 92c:	0e 94 16 06 	call	0xc2c	; 0xc2c <__mulsi3>
+ 930:	92 01       	movw	r18, r4
+ 932:	22 0d       	add	r18, r2
+ 934:	33 1d       	adc	r19, r3
+ 936:	40 e0       	ldi	r20, 0x00	; 0
+ 938:	50 e0       	ldi	r21, 0x00	; 0
+ 93a:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+		// We must accelrate at least 1 step before we can start deceleration.
+		if(accel_lim == 0){
+ 93e:	21 15       	cp	r18, r1
+ 940:	31 05       	cpc	r19, r1
+ 942:	21 f0       	breq	.+8      	; 0x94c <speed_cntr_Move+0x172>
+			accel_lim = 1;
+		}
+
+		// Use the limit we hit first to calc decel.
+		if(accel_lim <= max_s_lim){
+ 944:	02 17       	cp	r16, r18
+ 946:	13 07       	cpc	r17, r19
+ 948:	40 f0       	brcs	.+16     	; 0x95a <speed_cntr_Move+0x180>
+ 94a:	02 c0       	rjmp	.+4      	; 0x950 <speed_cntr_Move+0x176>
+		// Find out after how many steps we must start deceleration.
+		// n1 = (n1+n2)decel / (accel + decel)
+		accel_lim = ((long)step*decel) / (accel+decel);
+		// We must accelrate at least 1 step before we can start deceleration.
+		if(accel_lim == 0){
+			accel_lim = 1;
+ 94c:	21 e0       	ldi	r18, 0x01	; 1
+ 94e:	30 e0       	ldi	r19, 0x00	; 0
+		}
+
+		// Use the limit we hit first to calc decel.
+		if(accel_lim <= max_s_lim){
+			srd.decel_val = accel_lim - step;
+ 950:	4d 81       	ldd	r20, Y+5	; 0x05
+ 952:	5e 81       	ldd	r21, Y+6	; 0x06
+ 954:	24 1b       	sub	r18, r20
+ 956:	35 0b       	sbc	r19, r21
+ 958:	12 c0       	rjmp	.+36     	; 0x97e <speed_cntr_Move+0x1a4>
+		}
+		else{
+			srd.decel_val = -((long)max_s_lim*accel)/decel;
+ 95a:	b8 01       	movw	r22, r16
+ 95c:	80 e0       	ldi	r24, 0x00	; 0
+ 95e:	90 e0       	ldi	r25, 0x00	; 0
+ 960:	a4 01       	movw	r20, r8
+ 962:	93 01       	movw	r18, r6
+ 964:	0e 94 16 06 	call	0xc2c	; 0xc2c <__mulsi3>
+ 968:	90 95       	com	r25
+ 96a:	80 95       	com	r24
+ 96c:	70 95       	com	r23
+ 96e:	61 95       	neg	r22
+ 970:	7f 4f       	sbci	r23, 0xFF	; 255
+ 972:	8f 4f       	sbci	r24, 0xFF	; 255
+ 974:	9f 4f       	sbci	r25, 0xFF	; 255
+ 976:	a7 01       	movw	r20, r14
+ 978:	96 01       	movw	r18, r12
+ 97a:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ 97e:	30 93 da 04 	sts	0x04DA, r19
+ 982:	20 93 d9 04 	sts	0x04D9, r18
+		}
+		// We must decelrate at least 1 step to stop.
+		if(srd.decel_val == 0){
+ 986:	80 91 d9 04 	lds	r24, 0x04D9
+ 98a:	90 91 da 04 	lds	r25, 0x04DA
+ 98e:	00 97       	sbiw	r24, 0x00	; 0
+ 990:	31 f4       	brne	.+12     	; 0x99e <speed_cntr_Move+0x1c4>
+			srd.decel_val = -1;
+ 992:	8f ef       	ldi	r24, 0xFF	; 255
+ 994:	9f ef       	ldi	r25, 0xFF	; 255
+ 996:	90 93 da 04 	sts	0x04DA, r25
+ 99a:	80 93 d9 04 	sts	0x04D9, r24
+		}
+
+		// Find step to start decleration.
+		srd.decel_start = step + srd.decel_val;
+ 99e:	80 91 d9 04 	lds	r24, 0x04D9
+ 9a2:	90 91 da 04 	lds	r25, 0x04DA
+ 9a6:	ed 81       	ldd	r30, Y+5	; 0x05
+ 9a8:	fe 81       	ldd	r31, Y+6	; 0x06
+ 9aa:	8e 0f       	add	r24, r30
+ 9ac:	9f 1f       	adc	r25, r31
+ 9ae:	90 93 d8 04 	sts	0x04D8, r25
+ 9b2:	80 93 d7 04 	sts	0x04D7, r24
+
+		// If the maximum speed is so low that we dont need to go via accelration state.
+		if(srd.step_delay <= srd.min_delay){
+ 9b6:	8b 81       	ldd	r24, Y+3	; 0x03
+ 9b8:	9c 81       	ldd	r25, Y+4	; 0x04
+ 9ba:	29 81       	ldd	r18, Y+1	; 0x01
+ 9bc:	3a 81       	ldd	r19, Y+2	; 0x02
+ 9be:	82 17       	cp	r24, r18
+ 9c0:	93 07       	cpc	r25, r19
+ 9c2:	48 f0       	brcs	.+18     	; 0x9d6 <speed_cntr_Move+0x1fc>
+			srd.step_delay = srd.min_delay;
+ 9c4:	90 93 d6 04 	sts	0x04D6, r25
+ 9c8:	80 93 d5 04 	sts	0x04D5, r24
+			srd.run_state = RUN;
+ 9cc:	80 91 d4 04 	lds	r24, 0x04D4
+ 9d0:	88 7f       	andi	r24, 0xF8	; 248
+ 9d2:	83 60       	ori	r24, 0x03	; 3
+ 9d4:	04 c0       	rjmp	.+8      	; 0x9de <speed_cntr_Move+0x204>
+		}
+		else{
+			srd.run_state = ACCEL;
+ 9d6:	80 91 d4 04 	lds	r24, 0x04D4
+ 9da:	88 7f       	andi	r24, 0xF8	; 248
+ 9dc:	81 60       	ori	r24, 0x01	; 1
+ 9de:	80 93 d4 04 	sts	0x04D4, r24
+		}
+
+		// Reset counter.
+		srd.accel_count = 0;
+ 9e2:	10 92 de 04 	sts	0x04DE, r1
+ 9e6:	10 92 dd 04 	sts	0x04DD, r1
+		status.running = TRUE;
+ 9ea:	80 91 c8 04 	lds	r24, 0x04C8
+ 9ee:	81 60       	ori	r24, 0x01	; 1
+ 9f0:	80 93 c8 04 	sts	0x04C8, r24
+		OCR1A = 10;
+ 9f4:	8a e0       	ldi	r24, 0x0A	; 10
+ 9f6:	90 e0       	ldi	r25, 0x00	; 0
+ 9f8:	90 93 89 00 	sts	0x0089, r25
+ 9fc:	80 93 88 00 	sts	0x0088, r24
+		// Set Timer/Counter to divide clock by 8
+		TCCR1B |= ((0<<CS12)|(1<<CS11)|(0<<CS10));
+ a00:	80 91 81 00 	lds	r24, 0x0081
+ a04:	82 60       	ori	r24, 0x02	; 2
+ a06:	80 93 81 00 	sts	0x0081, r24
+	}
+}
+ a0a:	26 96       	adiw	r28, 0x06	; 6
+ a0c:	0f b6       	in	r0, 0x3f	; 63
+ a0e:	f8 94       	cli
+ a10:	de bf       	out	0x3e, r29	; 62
+ a12:	0f be       	out	0x3f, r0	; 63
+ a14:	cd bf       	out	0x3d, r28	; 61
+ a16:	cf 91       	pop	r28
+ a18:	df 91       	pop	r29
+ a1a:	1f 91       	pop	r17
+ a1c:	0f 91       	pop	r16
+ a1e:	ff 90       	pop	r15
+ a20:	ef 90       	pop	r14
+ a22:	df 90       	pop	r13
+ a24:	cf 90       	pop	r12
+ a26:	bf 90       	pop	r11
+ a28:	af 90       	pop	r10
+ a2a:	9f 90       	pop	r9
+ a2c:	8f 90       	pop	r8
+ a2e:	7f 90       	pop	r7
+ a30:	6f 90       	pop	r6
+ a32:	5f 90       	pop	r5
+ a34:	4f 90       	pop	r4
+ a36:	3f 90       	pop	r3
+ a38:	2f 90       	pop	r2
+ a3a:	08 95       	ret
+
+00000a3c <min>:
+ *  Returns the smallest value.
+ *
+ *  \return  Min(x,y).
+ */
+unsigned int min(unsigned int x, unsigned int y)
+{
+ a3c:	26 2f       	mov	r18, r22
+ a3e:	37 2f       	mov	r19, r23
+ a40:	82 17       	cp	r24, r18
+ a42:	93 07       	cpc	r25, r19
+ a44:	08 f4       	brcc	.+2      	; 0xa48 <min+0xc>
+ a46:	9c 01       	movw	r18, r24
+		return x;
+	}
+	else{
+		return y;
+	}
+}
+ a48:	c9 01       	movw	r24, r18
+ a4a:	08 95       	ret
+
+00000a4c <set_stopper>:
+
+void set_stopper(){
+	running_value=1;
+ a4c:	81 e0       	ldi	r24, 0x01	; 1
+ a4e:	90 e0       	ldi	r25, 0x00	; 0
+ a50:	90 93 e0 04 	sts	0x04E0, r25
+ a54:	80 93 df 04 	sts	0x04DF, r24
+}
+ a58:	08 95       	ret
+
+00000a5a <get_stopper>:
+
+int get_stopper(){
+	return running_value;
+}
+ a5a:	80 91 df 04 	lds	r24, 0x04DF
+ a5e:	90 91 e0 04 	lds	r25, 0x04E0
+ a62:	08 95       	ret
+
+00000a64 <InitUART>:
+#define BAUD_ERROR ((BAUD_REAL*1000)/BAUD) // Fehler in Promille, 1000 = kein Fehler.
+#if ((BAUD_ERROR<990) || (BAUD_ERROR>1010))
+#error Systematischer Fehler der Baudrate grsser 1% und damit zu hoch!
+#endif
+
+	UBRR0H = UBRR_VAL >> 8;
+ a64:	10 92 c5 00 	sts	0x00C5, r1
+	UBRR0L = UBRR_VAL & 0xFF;
+ a68:	83 e3       	ldi	r24, 0x33	; 51
+ a6a:	80 93 c4 00 	sts	0x00C4, r24
+
+	//UCSR0A = 1<<UDRE0;
+	/* Enable receiver and transmitter, rx and tx int */
+	UCSR0B |= (1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0);
+ a6e:	e1 ec       	ldi	r30, 0xC1	; 193
+ a70:	f0 e0       	ldi	r31, 0x00	; 0
+ a72:	80 81       	ld	r24, Z
+ a74:	88 69       	ori	r24, 0x98	; 152
+ a76:	80 83       	st	Z, r24
+	/* Set frame format: 8data, 1stop bit */
+	//UCSR0C = (3<<UCSZ00);
+
+
+	// Flush Buffers
+	UART_RxPtr = 0;
+ a78:	10 92 e1 04 	sts	0x04E1, r1
+	UART_TxTail = 0;
+ a7c:	10 92 d2 04 	sts	0x04D2, r1
+	UART_TxHead = 0;
+ a80:	10 92 d3 04 	sts	0x04D3, r1
+}
+ a84:	08 95       	ret
+
+00000a86 <uart_SendByte>:
+ *  If TX buffer is full it will hang until space.
+ *
+ *  \param data  Data to be sent.
+ */
+void uart_SendByte(unsigned char data){
+	while((UCSR0A & (1<< UDRE0)) == 0) {};
+ a86:	90 91 c0 00 	lds	r25, 0x00C0
+ a8a:	95 ff       	sbrs	r25, 5
+ a8c:	fc cf       	rjmp	.-8      	; 0xa86 <uart_SendByte>
+	UDR0=data;
+ a8e:	80 93 c6 00 	sts	0x00C6, r24
+};
+ a92:	08 95       	ret
+
+00000a94 <uart_SendString>:
+ *  If TX buffer is full it will hang until space.
+ *
+ *  \param Str  String to be sent.
+ */
+void uart_SendString(unsigned char Str[])
+{
+ a94:	1f 93       	push	r17
+ a96:	cf 93       	push	r28
+ a98:	df 93       	push	r29
+ a9a:	ec 01       	movw	r28, r24
+	unsigned char n = 0;
+ a9c:	10 e0       	ldi	r17, 0x00	; 0
+	while(Str[n])
+ a9e:	03 c0       	rjmp	.+6      	; 0xaa6 <uart_SendString+0x12>
+		uart_SendByte(Str[n++]);
+ aa0:	1f 5f       	subi	r17, 0xFF	; 255
+ aa2:	0e 94 43 05 	call	0xa86	; 0xa86 <uart_SendByte>
+ *  \param Str  String to be sent.
+ */
+void uart_SendString(unsigned char Str[])
+{
+	unsigned char n = 0;
+	while(Str[n])
+ aa6:	fe 01       	movw	r30, r28
+ aa8:	e1 0f       	add	r30, r17
+ aaa:	f1 1d       	adc	r31, r1
+ aac:	80 81       	ld	r24, Z
+ aae:	88 23       	and	r24, r24
+ ab0:	b9 f7       	brne	.-18     	; 0xaa0 <uart_SendString+0xc>
+		uart_SendByte(Str[n++]);
+}
+ ab2:	df 91       	pop	r29
+ ab4:	cf 91       	pop	r28
+ ab6:	1f 91       	pop	r17
+ ab8:	08 95       	ret
+
+00000aba <uart_SendInt>:
+ *  If TX buffer is full it will hang until space.
+ *
+ *  \param x  Integer to be sent.
+ */
+void uart_SendInt(int x)
+{
+ aba:	af 92       	push	r10
+ abc:	bf 92       	push	r11
+ abe:	df 92       	push	r13
+ ac0:	ef 92       	push	r14
+ ac2:	ff 92       	push	r15
+ ac4:	0f 93       	push	r16
+ ac6:	1f 93       	push	r17
+ ac8:	df 93       	push	r29
+ aca:	cf 93       	push	r28
+ acc:	0f 92       	push	r0
+ ace:	cd b7       	in	r28, 0x3d	; 61
+ ad0:	de b7       	in	r29, 0x3e	; 62
+ ad2:	8c 01       	movw	r16, r24
+	static const char dec[] = "0123456789";
+	unsigned int div_val = 10000;
+
+	if (x < 0){
+ ad4:	97 ff       	sbrs	r25, 7
+ ad6:	06 c0       	rjmp	.+12     	; 0xae4 <uart_SendInt+0x2a>
+		x = - x;
+ ad8:	10 95       	com	r17
+ ada:	01 95       	neg	r16
+ adc:	1f 4f       	sbci	r17, 0xFF	; 255
+		uart_SendByte('-');
+ ade:	8d e2       	ldi	r24, 0x2D	; 45
+ ae0:	0e 94 43 05 	call	0xa86	; 0xa86 <uart_SendByte>
+ *  If TX buffer is full it will hang until space.
+ *
+ *  \param x  Integer to be sent.
+ */
+void uart_SendInt(int x)
+{
+ ae4:	24 e0       	ldi	r18, 0x04	; 4
+ ae6:	30 e0       	ldi	r19, 0x00	; 0
+ ae8:	90 e1       	ldi	r25, 0x10	; 16
+ aea:	a9 2e       	mov	r10, r25
+ aec:	97 e2       	ldi	r25, 0x27	; 39
+ aee:	b9 2e       	mov	r11, r25
+	if (x < 0){
+		x = - x;
+		uart_SendByte('-');
+	}
+	while (div_val > 1 && div_val > x)
+		div_val /= 10;
+ af0:	ea e0       	ldi	r30, 0x0A	; 10
+ af2:	f0 e0       	ldi	r31, 0x00	; 0
+ af4:	08 c0       	rjmp	.+16     	; 0xb06 <uart_SendInt+0x4c>
+ af6:	c5 01       	movw	r24, r10
+ af8:	bf 01       	movw	r22, r30
+ afa:	0e 94 35 06 	call	0xc6a	; 0xc6a <__udivmodhi4>
+ afe:	5b 01       	movw	r10, r22
+ b00:	21 50       	subi	r18, 0x01	; 1
+ b02:	30 40       	sbci	r19, 0x00	; 0
+
+	if (x < 0){
+		x = - x;
+		uart_SendByte('-');
+	}
+	while (div_val > 1 && div_val > x)
+ b04:	19 f0       	breq	.+6      	; 0xb0c <uart_SendInt+0x52>
+ b06:	0a 15       	cp	r16, r10
+ b08:	1b 05       	cpc	r17, r11
+ b0a:	a8 f3       	brcs	.-22     	; 0xaf6 <uart_SendInt+0x3c>
+		div_val /= 10;
+	do{
+		uart_SendByte (dec[x / div_val]);
+		x %= div_val;
+		div_val /= 10;
+ b0c:	8a e0       	ldi	r24, 0x0A	; 10
+ b0e:	e8 2e       	mov	r14, r24
+ b10:	f1 2c       	mov	r15, r1
+		uart_SendByte('-');
+	}
+	while (div_val > 1 && div_val > x)
+		div_val /= 10;
+	do{
+		uart_SendByte (dec[x / div_val]);
+ b12:	c8 01       	movw	r24, r16
+ b14:	b5 01       	movw	r22, r10
+ b16:	0e 94 35 06 	call	0xc6a	; 0xc6a <__udivmodhi4>
+ b1a:	d8 2e       	mov	r13, r24
+ b1c:	68 54       	subi	r22, 0x48	; 72
+ b1e:	7b 4f       	sbci	r23, 0xFB	; 251
+ b20:	fb 01       	movw	r30, r22
+ b22:	80 81       	ld	r24, Z
+ b24:	99 83       	std	Y+1, r25	; 0x01
+ b26:	0e 94 43 05 	call	0xa86	; 0xa86 <uart_SendByte>
+		x %= div_val;
+ b2a:	0d 2d       	mov	r16, r13
+ b2c:	99 81       	ldd	r25, Y+1	; 0x01
+ b2e:	19 2f       	mov	r17, r25
+		div_val /= 10;
+ b30:	c5 01       	movw	r24, r10
+ b32:	b7 01       	movw	r22, r14
+ b34:	0e 94 35 06 	call	0xc6a	; 0xc6a <__udivmodhi4>
+ b38:	5b 01       	movw	r10, r22
+	}while(div_val);
+ b3a:	61 15       	cp	r22, r1
+ b3c:	71 05       	cpc	r23, r1
+ b3e:	49 f7       	brne	.-46     	; 0xb12 <uart_SendInt+0x58>
+}
+ b40:	0f 90       	pop	r0
+ b42:	cf 91       	pop	r28
+ b44:	df 91       	pop	r29
+ b46:	1f 91       	pop	r17
+ b48:	0f 91       	pop	r16
+ b4a:	ff 90       	pop	r15
+ b4c:	ef 90       	pop	r14
+ b4e:	df 90       	pop	r13
+ b50:	bf 90       	pop	r11
+ b52:	af 90       	pop	r10
+ b54:	08 95       	ret
+
+00000b56 <__vector_25>:
+/*! \brief RX interrupt handler.
+ *
+ *  RX interrupt handler.
+ *  RX interrupt always enabled.
+ */
+ISR(USART0_RX_vect){
+ b56:	1f 92       	push	r1
+ b58:	0f 92       	push	r0
+ b5a:	0f b6       	in	r0, 0x3f	; 63
+ b5c:	0f 92       	push	r0
+ b5e:	0b b6       	in	r0, 0x3b	; 59
+ b60:	0f 92       	push	r0
+ b62:	11 24       	eor	r1, r1
+ b64:	1f 93       	push	r17
+ b66:	2f 93       	push	r18
+ b68:	3f 93       	push	r19
+ b6a:	4f 93       	push	r20
+ b6c:	5f 93       	push	r21
+ b6e:	6f 93       	push	r22
+ b70:	7f 93       	push	r23
+ b72:	8f 93       	push	r24
+ b74:	9f 93       	push	r25
+ b76:	af 93       	push	r26
+ b78:	bf 93       	push	r27
+ b7a:	ef 93       	push	r30
+ b7c:	ff 93       	push	r31
+	unsigned char data;
+	// Read the received data.
+	data = UDR0;
+ b7e:	10 91 c6 00 	lds	r17, 0x00C6
+
+	if(status.running == FALSE){
+ b82:	80 91 c8 04 	lds	r24, 0x04C8
+ b86:	80 fd       	sbrc	r24, 0
+ b88:	3a c0       	rjmp	.+116    	; 0xbfe <__vector_25+0xa8>
+ b8a:	80 91 e1 04 	lds	r24, 0x04E1
+		// If backspace.
+		if(data == '\b')
+ b8e:	18 30       	cpi	r17, 0x08	; 8
+ b90:	a9 f4       	brne	.+42     	; 0xbbc <__vector_25+0x66>
+		{
+			if(UART_RxPtr)
+ b92:	88 23       	and	r24, r24
+ b94:	a1 f1       	breq	.+104    	; 0xbfe <__vector_25+0xa8>
+				// Done if not at beginning of buffer.
+			{
+				uart_SendByte('\b');
+ b96:	88 e0       	ldi	r24, 0x08	; 8
+ b98:	0e 94 43 05 	call	0xa86	; 0xa86 <uart_SendByte>
+				uart_SendByte(' ');
+ b9c:	80 e2       	ldi	r24, 0x20	; 32
+ b9e:	0e 94 43 05 	call	0xa86	; 0xa86 <uart_SendByte>
+				uart_SendByte('\b');
+ ba2:	88 e0       	ldi	r24, 0x08	; 8
+ ba4:	0e 94 43 05 	call	0xa86	; 0xa86 <uart_SendByte>
+				UART_RxPtr--;
+ ba8:	e0 91 e1 04 	lds	r30, 0x04E1
+ bac:	e1 50       	subi	r30, 0x01	; 1
+ bae:	e0 93 e1 04 	sts	0x04E1, r30
+				UART_RxBuffer[UART_RxPtr]=0x00;
+ bb2:	f0 e0       	ldi	r31, 0x00	; 0
+ bb4:	ee 51       	subi	r30, 0x1E	; 30
+ bb6:	fb 4f       	sbci	r31, 0xFB	; 251
+ bb8:	10 82       	st	Z, r1
+ bba:	21 c0       	rjmp	.+66     	; 0xbfe <__vector_25+0xa8>
+ bbc:	28 2f       	mov	r18, r24
+ bbe:	30 e0       	ldi	r19, 0x00	; 0
+		else
+		{
+			// Put the data into RxBuf
+			// and place 0x00 after it. If buffer is full,
+			// data is written to UART_RX_BUFFER_SIZE - 1.
+			if(UART_RxPtr < (UART_RX_BUFFER_SIZE - 1)){
+ bc0:	8f 31       	cpi	r24, 0x1F	; 31
+ bc2:	48 f4       	brcc	.+18     	; 0xbd6 <__vector_25+0x80>
+				UART_RxBuffer[UART_RxPtr] = data;
+ bc4:	f9 01       	movw	r30, r18
+ bc6:	ee 51       	subi	r30, 0x1E	; 30
+ bc8:	fb 4f       	sbci	r31, 0xFB	; 251
+ bca:	10 83       	st	Z, r17
+				UART_RxBuffer[UART_RxPtr + 1]=0x00;
+ bcc:	11 82       	std	Z+1, r1	; 0x01
+				UART_RxPtr++;
+ bce:	8f 5f       	subi	r24, 0xFF	; 255
+ bd0:	80 93 e1 04 	sts	0x04E1, r24
+ bd4:	07 c0       	rjmp	.+14     	; 0xbe4 <__vector_25+0x8e>
+			}
+			else
+			{
+				UART_RxBuffer[UART_RxPtr - 1] = data;
+ bd6:	2f 51       	subi	r18, 0x1F	; 31
+ bd8:	3b 4f       	sbci	r19, 0xFB	; 251
+ bda:	f9 01       	movw	r30, r18
+ bdc:	10 83       	st	Z, r17
+				uart_SendByte('\b');
+ bde:	88 e0       	ldi	r24, 0x08	; 8
+ be0:	0e 94 43 05 	call	0xa86	; 0xa86 <uart_SendByte>
+			}
+			// If enter.
+			if(data == 13){
+ be4:	1d 30       	cpi	r17, 0x0D	; 13
+ be6:	41 f4       	brne	.+16     	; 0xbf8 <__vector_25+0xa2>
+				status.cmd = TRUE;
+ be8:	80 91 c8 04 	lds	r24, 0x04C8
+ bec:	82 60       	ori	r24, 0x02	; 2
+ bee:	80 93 c8 04 	sts	0x04C8, r24
+				UART_RxPtr=0;
+ bf2:	10 92 e1 04 	sts	0x04E1, r1
+ bf6:	03 c0       	rjmp	.+6      	; 0xbfe <__vector_25+0xa8>
+			}
+			else
+				uart_SendByte(data);
+ bf8:	81 2f       	mov	r24, r17
+ bfa:	0e 94 43 05 	call	0xa86	; 0xa86 <uart_SendByte>
+		}
+	}
+}
+ bfe:	ff 91       	pop	r31
+ c00:	ef 91       	pop	r30
+ c02:	bf 91       	pop	r27
+ c04:	af 91       	pop	r26
+ c06:	9f 91       	pop	r25
+ c08:	8f 91       	pop	r24
+ c0a:	7f 91       	pop	r23
+ c0c:	6f 91       	pop	r22
+ c0e:	5f 91       	pop	r21
+ c10:	4f 91       	pop	r20
+ c12:	3f 91       	pop	r19
+ c14:	2f 91       	pop	r18
+ c16:	1f 91       	pop	r17
+ c18:	0f 90       	pop	r0
+ c1a:	0b be       	out	0x3b, r0	; 59
+ c1c:	0f 90       	pop	r0
+ c1e:	0f be       	out	0x3f, r0	; 63
+ c20:	0f 90       	pop	r0
+ c22:	1f 90       	pop	r1
+ c24:	18 95       	reti
+
+00000c26 <set_tx>:
+
+void set_tx(unsigned char value){
+	UART_RxPtr=value;
+ c26:	80 93 e1 04 	sts	0x04E1, r24
+};
+ c2a:	08 95       	ret
+
+00000c2c <__mulsi3>:
+ c2c:	62 9f       	mul	r22, r18
+ c2e:	d0 01       	movw	r26, r0
+ c30:	73 9f       	mul	r23, r19
+ c32:	f0 01       	movw	r30, r0
+ c34:	82 9f       	mul	r24, r18
+ c36:	e0 0d       	add	r30, r0
+ c38:	f1 1d       	adc	r31, r1
+ c3a:	64 9f       	mul	r22, r20
+ c3c:	e0 0d       	add	r30, r0
+ c3e:	f1 1d       	adc	r31, r1
+ c40:	92 9f       	mul	r25, r18
+ c42:	f0 0d       	add	r31, r0
+ c44:	83 9f       	mul	r24, r19
+ c46:	f0 0d       	add	r31, r0
+ c48:	74 9f       	mul	r23, r20
+ c4a:	f0 0d       	add	r31, r0
+ c4c:	65 9f       	mul	r22, r21
+ c4e:	f0 0d       	add	r31, r0
+ c50:	99 27       	eor	r25, r25
+ c52:	72 9f       	mul	r23, r18
+ c54:	b0 0d       	add	r27, r0
+ c56:	e1 1d       	adc	r30, r1
+ c58:	f9 1f       	adc	r31, r25
+ c5a:	63 9f       	mul	r22, r19
+ c5c:	b0 0d       	add	r27, r0
+ c5e:	e1 1d       	adc	r30, r1
+ c60:	f9 1f       	adc	r31, r25
+ c62:	bd 01       	movw	r22, r26
+ c64:	cf 01       	movw	r24, r30
+ c66:	11 24       	eor	r1, r1
+ c68:	08 95       	ret
+
+00000c6a <__udivmodhi4>:
+ c6a:	aa 1b       	sub	r26, r26
+ c6c:	bb 1b       	sub	r27, r27
+ c6e:	51 e1       	ldi	r21, 0x11	; 17
+ c70:	07 c0       	rjmp	.+14     	; 0xc80 <__udivmodhi4_ep>
+
+00000c72 <__udivmodhi4_loop>:
+ c72:	aa 1f       	adc	r26, r26
+ c74:	bb 1f       	adc	r27, r27
+ c76:	a6 17       	cp	r26, r22
+ c78:	b7 07       	cpc	r27, r23
+ c7a:	10 f0       	brcs	.+4      	; 0xc80 <__udivmodhi4_ep>
+ c7c:	a6 1b       	sub	r26, r22
+ c7e:	b7 0b       	sbc	r27, r23
+
+00000c80 <__udivmodhi4_ep>:
+ c80:	88 1f       	adc	r24, r24
+ c82:	99 1f       	adc	r25, r25
+ c84:	5a 95       	dec	r21
+ c86:	a9 f7       	brne	.-22     	; 0xc72 <__udivmodhi4_loop>
+ c88:	80 95       	com	r24
+ c8a:	90 95       	com	r25
+ c8c:	bc 01       	movw	r22, r24
+ c8e:	cd 01       	movw	r24, r26
+ c90:	08 95       	ret
+
+00000c92 <__udivmodsi4>:
+ c92:	a1 e2       	ldi	r26, 0x21	; 33
+ c94:	1a 2e       	mov	r1, r26
+ c96:	aa 1b       	sub	r26, r26
+ c98:	bb 1b       	sub	r27, r27
+ c9a:	fd 01       	movw	r30, r26
+ c9c:	0d c0       	rjmp	.+26     	; 0xcb8 <__udivmodsi4_ep>
+
+00000c9e <__udivmodsi4_loop>:
+ c9e:	aa 1f       	adc	r26, r26
+ ca0:	bb 1f       	adc	r27, r27
+ ca2:	ee 1f       	adc	r30, r30
+ ca4:	ff 1f       	adc	r31, r31
+ ca6:	a2 17       	cp	r26, r18
+ ca8:	b3 07       	cpc	r27, r19
+ caa:	e4 07       	cpc	r30, r20
+ cac:	f5 07       	cpc	r31, r21
+ cae:	20 f0       	brcs	.+8      	; 0xcb8 <__udivmodsi4_ep>
+ cb0:	a2 1b       	sub	r26, r18
+ cb2:	b3 0b       	sbc	r27, r19
+ cb4:	e4 0b       	sbc	r30, r20
+ cb6:	f5 0b       	sbc	r31, r21
+
+00000cb8 <__udivmodsi4_ep>:
+ cb8:	66 1f       	adc	r22, r22
+ cba:	77 1f       	adc	r23, r23
+ cbc:	88 1f       	adc	r24, r24
+ cbe:	99 1f       	adc	r25, r25
+ cc0:	1a 94       	dec	r1
+ cc2:	69 f7       	brne	.-38     	; 0xc9e <__udivmodsi4_loop>
+ cc4:	60 95       	com	r22
+ cc6:	70 95       	com	r23
+ cc8:	80 95       	com	r24
+ cca:	90 95       	com	r25
+ ccc:	9b 01       	movw	r18, r22
+ cce:	ac 01       	movw	r20, r24
+ cd0:	bd 01       	movw	r22, r26
+ cd2:	cf 01       	movw	r24, r30
+ cd4:	08 95       	ret
+
+00000cd6 <__divmodsi4>:
+ cd6:	97 fb       	bst	r25, 7
+ cd8:	09 2e       	mov	r0, r25
+ cda:	05 26       	eor	r0, r21
+ cdc:	0e d0       	rcall	.+28     	; 0xcfa <__divmodsi4_neg1>
+ cde:	57 fd       	sbrc	r21, 7
+ ce0:	04 d0       	rcall	.+8      	; 0xcea <__divmodsi4_neg2>
+ ce2:	d7 df       	rcall	.-82     	; 0xc92 <__udivmodsi4>
+ ce4:	0a d0       	rcall	.+20     	; 0xcfa <__divmodsi4_neg1>
+ ce6:	00 1c       	adc	r0, r0
+ ce8:	38 f4       	brcc	.+14     	; 0xcf8 <__divmodsi4_exit>
+
+00000cea <__divmodsi4_neg2>:
+ cea:	50 95       	com	r21
+ cec:	40 95       	com	r20
+ cee:	30 95       	com	r19
+ cf0:	21 95       	neg	r18
+ cf2:	3f 4f       	sbci	r19, 0xFF	; 255
+ cf4:	4f 4f       	sbci	r20, 0xFF	; 255
+ cf6:	5f 4f       	sbci	r21, 0xFF	; 255
+
+00000cf8 <__divmodsi4_exit>:
+ cf8:	08 95       	ret
+
+00000cfa <__divmodsi4_neg1>:
+ cfa:	f6 f7       	brtc	.-4      	; 0xcf8 <__divmodsi4_exit>
+ cfc:	90 95       	com	r25
+ cfe:	80 95       	com	r24
+ d00:	70 95       	com	r23
+ d02:	61 95       	neg	r22
+ d04:	7f 4f       	sbci	r23, 0xFF	; 255
+ d06:	8f 4f       	sbci	r24, 0xFF	; 255
+ d08:	9f 4f       	sbci	r25, 0xFF	; 255
+ d0a:	08 95       	ret
+
+00000d0c <do_random>:
+ d0c:	af 92       	push	r10
+ d0e:	bf 92       	push	r11
+ d10:	cf 92       	push	r12
+ d12:	df 92       	push	r13
+ d14:	ef 92       	push	r14
+ d16:	ff 92       	push	r15
+ d18:	0f 93       	push	r16
+ d1a:	1f 93       	push	r17
+ d1c:	cf 93       	push	r28
+ d1e:	df 93       	push	r29
+ d20:	ec 01       	movw	r28, r24
+ d22:	68 81       	ld	r22, Y
+ d24:	79 81       	ldd	r23, Y+1	; 0x01
+ d26:	8a 81       	ldd	r24, Y+2	; 0x02
+ d28:	9b 81       	ldd	r25, Y+3	; 0x03
+ d2a:	61 15       	cp	r22, r1
+ d2c:	71 05       	cpc	r23, r1
+ d2e:	81 05       	cpc	r24, r1
+ d30:	91 05       	cpc	r25, r1
+ d32:	21 f4       	brne	.+8      	; 0xd3c <do_random+0x30>
+ d34:	64 e2       	ldi	r22, 0x24	; 36
+ d36:	79 ed       	ldi	r23, 0xD9	; 217
+ d38:	8b e5       	ldi	r24, 0x5B	; 91
+ d3a:	97 e0       	ldi	r25, 0x07	; 7
+ d3c:	2d e1       	ldi	r18, 0x1D	; 29
+ d3e:	33 ef       	ldi	r19, 0xF3	; 243
+ d40:	41 e0       	ldi	r20, 0x01	; 1
+ d42:	50 e0       	ldi	r21, 0x00	; 0
+ d44:	0e 94 6b 06 	call	0xcd6	; 0xcd6 <__divmodsi4>
+ d48:	79 01       	movw	r14, r18
+ d4a:	8a 01       	movw	r16, r20
+ d4c:	27 ea       	ldi	r18, 0xA7	; 167
+ d4e:	31 e4       	ldi	r19, 0x41	; 65
+ d50:	40 e0       	ldi	r20, 0x00	; 0
+ d52:	50 e0       	ldi	r21, 0x00	; 0
+ d54:	0e 94 16 06 	call	0xc2c	; 0xc2c <__mulsi3>
+ d58:	5b 01       	movw	r10, r22
+ d5a:	6c 01       	movw	r12, r24
+ d5c:	c8 01       	movw	r24, r16
+ d5e:	b7 01       	movw	r22, r14
+ d60:	2c ee       	ldi	r18, 0xEC	; 236
+ d62:	34 ef       	ldi	r19, 0xF4	; 244
+ d64:	4f ef       	ldi	r20, 0xFF	; 255
+ d66:	5f ef       	ldi	r21, 0xFF	; 255
+ d68:	0e 94 16 06 	call	0xc2c	; 0xc2c <__mulsi3>
+ d6c:	9b 01       	movw	r18, r22
+ d6e:	ac 01       	movw	r20, r24
+ d70:	2a 0d       	add	r18, r10
+ d72:	3b 1d       	adc	r19, r11
+ d74:	4c 1d       	adc	r20, r12
+ d76:	5d 1d       	adc	r21, r13
+ d78:	57 ff       	sbrs	r21, 7
+ d7a:	04 c0       	rjmp	.+8      	; 0xd84 <do_random+0x78>
+ d7c:	21 50       	subi	r18, 0x01	; 1
+ d7e:	30 40       	sbci	r19, 0x00	; 0
+ d80:	40 40       	sbci	r20, 0x00	; 0
+ d82:	50 48       	sbci	r21, 0x80	; 128
+ d84:	28 83       	st	Y, r18
+ d86:	39 83       	std	Y+1, r19	; 0x01
+ d88:	4a 83       	std	Y+2, r20	; 0x02
+ d8a:	5b 83       	std	Y+3, r21	; 0x03
+ d8c:	5f 77       	andi	r21, 0x7F	; 127
+ d8e:	b9 01       	movw	r22, r18
+ d90:	ca 01       	movw	r24, r20
+ d92:	df 91       	pop	r29
+ d94:	cf 91       	pop	r28
+ d96:	1f 91       	pop	r17
+ d98:	0f 91       	pop	r16
+ d9a:	ff 90       	pop	r15
+ d9c:	ef 90       	pop	r14
+ d9e:	df 90       	pop	r13
+ da0:	cf 90       	pop	r12
+ da2:	bf 90       	pop	r11
+ da4:	af 90       	pop	r10
+ da6:	08 95       	ret
+
+00000da8 <random_r>:
+ da8:	0e 94 86 06 	call	0xd0c	; 0xd0c <do_random>
+ dac:	08 95       	ret
+
+00000dae <random>:
+ dae:	83 ec       	ldi	r24, 0xC3	; 195
+ db0:	94 e0       	ldi	r25, 0x04	; 4
+ db2:	0e 94 86 06 	call	0xd0c	; 0xd0c <do_random>
+ db6:	08 95       	ret
+
+00000db8 <srandom>:
+ db8:	60 93 c3 04 	sts	0x04C3, r22
+ dbc:	70 93 c4 04 	sts	0x04C4, r23
+ dc0:	80 93 c5 04 	sts	0x04C5, r24
+ dc4:	90 93 c6 04 	sts	0x04C6, r25
+ dc8:	08 95       	ret
+
+00000dca <_exit>:
+ dca:	f8 94       	cli
+
+00000dcc <__stop_program>:
+ dcc:	ff cf       	rjmp	.-2      	; 0xdcc <__stop_program>

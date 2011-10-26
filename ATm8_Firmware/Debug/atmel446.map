@@ -1,0 +1,485 @@
+Archive member included because of file (symbol)
+
+/usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_mulsi3.o)
+                              ./speed_cntr.o (__mulsi3)
+/usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_udivmodhi4.o)
+                              ./uart.o (__udivmodhi4)
+/usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_udivmodsi4.o)
+                              ./speed_cntr.o (__udivmodsi4)
+/usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_divmodsi4.o)
+                              ./main.o (__divmodsi4)
+/usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_exit.o)
+                              /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o (exit)
+/usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_copy_data.o)
+                              ./main.o (__do_copy_data)
+/usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_clear_bss.o)
+                              ./main.o (__do_clear_bss)
+/usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/libc.a(random.o)
+                              ./main.o (random)
+
+Allocating common symbols
+Common symbol       size              file
+
+UART_RxPtr          0x1               ./uart.o
+UART_RxBuffer       0x20              ./uart.o
+srd                 0xb               ./speed_cntr.o
+running_value       0x2               ./speed_cntr.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x0000000000000000 0x0000000000020000 xr
+data             0x0000000000800100 0x000000000000ff00 rw !x
+eeprom           0x0000000000810000 0x0000000000010000 rw !x
+fuse             0x0000000000820000 0x0000000000000400 rw !x
+lock             0x0000000000830000 0x0000000000000400 rw !x
+signature        0x0000000000840000 0x0000000000000400 rw !x
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+Address of section .data set to 0x800200
+LOAD /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o
+LOAD ./main.o
+LOAD ./sm_driver.o
+LOAD ./speed_cntr.o
+LOAD ./uart.o
+LOAD /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a
+LOAD /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/libc.a
+LOAD /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x0000000000000000      0xdce
+ *(.vectors)
+ .vectors       0x0000000000000000       0xe4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o
+                0x0000000000000000                __vectors
+                0x0000000000000000                __vector_default
+ *(.vectors)
+ *(.progmem.gcc*)
+ *(.progmem*)
+                0x00000000000000e4                . = ALIGN (0x2)
+                0x00000000000000e4                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x00000000000000e4        0x0 linker stubs
+ *(.trampolines*)
+                0x00000000000000e4                __trampolines_end = .
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x00000000000000e4                __ctors_start = .
+ *(.ctors)
+                0x00000000000000e4                __ctors_end = .
+                0x00000000000000e4                __dtors_start = .
+ *(.dtors)
+                0x00000000000000e4                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x00000000000000e4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o
+                0x00000000000000e4                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x00000000000000e4        0xc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x00000000000000f0       0x1a /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_copy_data.o)
+                0x00000000000000f0                __do_copy_data
+ .init4         0x000000000000010a       0x10 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_clear_bss.o)
+                0x000000000000010a                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x000000000000011a        0x8 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o
+ *(.init9)
+ *(.text)
+ .text          0x0000000000000122        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o
+                0x0000000000000122                __vector_38
+                0x0000000000000122                __vector_22
+                0x0000000000000122                __vector_28
+                0x0000000000000122                __vector_1
+                0x0000000000000122                __vector_32
+                0x0000000000000122                __vector_34
+                0x0000000000000122                __vector_24
+                0x0000000000000122                __vector_12
+                0x0000000000000122                __vector_55
+                0x0000000000000122                __vector_46
+                0x0000000000000122                __bad_interrupt
+                0x0000000000000122                __vector_6
+                0x0000000000000122                __vector_31
+                0x0000000000000122                __vector_35
+                0x0000000000000122                __vector_39
+                0x0000000000000122                __vector_3
+                0x0000000000000122                __vector_23
+                0x0000000000000122                __vector_30
+                0x0000000000000122                __vector_45
+                0x0000000000000122                __vector_11
+                0x0000000000000122                __vector_54
+                0x0000000000000122                __vector_13
+                0x0000000000000122                __vector_19
+                0x0000000000000122                __vector_56
+                0x0000000000000122                __vector_7
+                0x0000000000000122                __vector_49
+                0x0000000000000122                __vector_41
+                0x0000000000000122                __vector_43
+                0x0000000000000122                __vector_27
+                0x0000000000000122                __vector_5
+                0x0000000000000122                __vector_33
+                0x0000000000000122                __vector_47
+                0x0000000000000122                __vector_52
+                0x0000000000000122                __vector_37
+                0x0000000000000122                __vector_4
+                0x0000000000000122                __vector_44
+                0x0000000000000122                __vector_51
+                0x0000000000000122                __vector_9
+                0x0000000000000122                __vector_2
+                0x0000000000000122                __vector_21
+                0x0000000000000122                __vector_15
+                0x0000000000000122                __vector_36
+                0x0000000000000122                __vector_29
+                0x0000000000000122                __vector_40
+                0x0000000000000122                __vector_8
+                0x0000000000000122                __vector_26
+                0x0000000000000122                __vector_48
+                0x0000000000000122                __vector_14
+                0x0000000000000122                __vector_53
+                0x0000000000000122                __vector_10
+                0x0000000000000122                __vector_50
+                0x0000000000000122                __vector_16
+                0x0000000000000122                __vector_18
+                0x0000000000000122                __vector_20
+                0x0000000000000122                __vector_42
+ .text          0x0000000000000126      0x258 ./main.o
+                0x0000000000000126                ShowHelp
+                0x0000000000000140                ShowData
+                0x00000000000001c0                led_setup
+                0x00000000000001c4                Init
+                0x00000000000001de                led_on
+                0x00000000000001e2                led_off
+                0x00000000000001e6                main
+ .text          0x000000000000037e       0x8c ./sm_driver.o
+                0x000000000000037e                sm_driver_Init_IO
+                0x0000000000000394                sm_driver_StepOutput
+                0x00000000000003b6                sm_driver_StepCounter
+ .text          0x000000000000040a      0x65a ./speed_cntr.o
+                0x000000000000040a                speed_cntr_Init_Timer1
+                0x0000000000000422                __vector_17
+                0x0000000000000744                sqrt_2
+                0x00000000000007da                speed_cntr_Move
+                0x0000000000000a3c                min
+                0x0000000000000a4c                set_stopper
+                0x0000000000000a5a                get_stopper
+ .text          0x0000000000000a64      0x1c8 ./uart.o
+                0x0000000000000a64                InitUART
+                0x0000000000000a86                uart_SendByte
+                0x0000000000000a94                uart_SendString
+                0x0000000000000aba                uart_SendInt
+                0x0000000000000b56                __vector_25
+                0x0000000000000c26                set_tx
+ .text          0x0000000000000c2c        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_mulsi3.o)
+ .text          0x0000000000000c2c        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_udivmodhi4.o)
+ .text          0x0000000000000c2c        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_udivmodsi4.o)
+ .text          0x0000000000000c2c        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_divmodsi4.o)
+ .text          0x0000000000000c2c        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_exit.o)
+ .text          0x0000000000000c2c        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_copy_data.o)
+ .text          0x0000000000000c2c        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_clear_bss.o)
+ .text          0x0000000000000c2c        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/libc.a(random.o)
+                0x0000000000000c2c                . = ALIGN (0x2)
+ *(.text.*)
+ .text.libgcc   0x0000000000000c2c       0x3e /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_mulsi3.o)
+                0x0000000000000c2c                __mulsi3
+ .text.libgcc   0x0000000000000c6a       0x28 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_udivmodhi4.o)
+                0x0000000000000c6a                __udivmodhi4
+ .text.libgcc   0x0000000000000c92       0x44 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_udivmodsi4.o)
+                0x0000000000000c92                __udivmodsi4
+ .text.libgcc   0x0000000000000cd6       0x36 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_divmodsi4.o)
+                0x0000000000000cd6                __divmodsi4
+ .text.libgcc   0x0000000000000d0c        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_exit.o)
+ .text.libgcc   0x0000000000000d0c        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_copy_data.o)
+ .text.libgcc   0x0000000000000d0c        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_clear_bss.o)
+ .text.avr-libc
+                0x0000000000000d0c       0xbe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/libc.a(random.o)
+                0x0000000000000da8                random_r
+                0x0000000000000dae                random
+                0x0000000000000db8                srandom
+                0x0000000000000dca                . = ALIGN (0x2)
+ *(.fini9)
+ .fini9         0x0000000000000dca        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_exit.o)
+                0x0000000000000dca                exit
+                0x0000000000000dca                _exit
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ .fini0         0x0000000000000dca        0x4 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_exit.o)
+ *(.fini0)
+                0x0000000000000dce                _etext = .
+
+.data           0x0000000000800200      0x2c8 load address 0x0000000000000dce
+                0x0000000000800200                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x0000000000800200        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o
+ .data          0x0000000000800200      0x2b0 ./main.o
+                0x000000000080022c                Help
+ .data          0x00000000008004b0        0x8 ./sm_driver.o
+                0x00000000008004b0                steptab
+ .data          0x00000000008004b8        0x0 ./speed_cntr.o
+ .data          0x00000000008004b8        0xb ./uart.o
+ .data          0x00000000008004c3        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_mulsi3.o)
+ .data          0x00000000008004c3        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_udivmodhi4.o)
+ .data          0x00000000008004c3        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_udivmodsi4.o)
+ .data          0x00000000008004c3        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_divmodsi4.o)
+ .data          0x00000000008004c3        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_exit.o)
+ .data          0x00000000008004c3        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_copy_data.o)
+ .data          0x00000000008004c3        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_clear_bss.o)
+ .data          0x00000000008004c3        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/libc.a(random.o)
+ *(.data*)
+ *(.rodata)
+ *(.rodata*)
+ *(.gnu.linkonce.d*)
+                0x00000000008004c8                . = ALIGN (0x2)
+ *fill*         0x00000000008004c7        0x1 00
+                0x00000000008004c8                _edata = .
+                0x00000000008004c8                PROVIDE (__data_end, .)
+
+.bss            0x00000000008004c8       0x3a
+                0x00000000008004c8                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x00000000008004c8        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o
+ .bss           0x00000000008004c8        0x1 ./main.o
+                0x00000000008004c8                status
+ .bss           0x00000000008004c9        0x3 ./sm_driver.o
+                0x00000000008004c9                stepPosition
+ .bss           0x00000000008004cc        0x6 ./speed_cntr.o
+ .bss           0x00000000008004d2        0x2 ./uart.o
+ .bss           0x00000000008004d4        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_mulsi3.o)
+ .bss           0x00000000008004d4        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_udivmodhi4.o)
+ .bss           0x00000000008004d4        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_udivmodsi4.o)
+ .bss           0x00000000008004d4        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_divmodsi4.o)
+ .bss           0x00000000008004d4        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_exit.o)
+ .bss           0x00000000008004d4        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_copy_data.o)
+ .bss           0x00000000008004d4        0x0 /usr/lib/gcc/avr/4.5.3/avr51/libgcc.a(_clear_bss.o)
+ .bss           0x00000000008004d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/libc.a(random.o)
+ *(.bss*)
+ *(COMMON)
+ COMMON         0x00000000008004d4        0xd ./speed_cntr.o
+                0x00000000008004d4                srd
+                0x00000000008004df                running_value
+ COMMON         0x00000000008004e1       0x21 ./uart.o
+                0x00000000008004e1                UART_RxPtr
+                0x00000000008004e2                UART_RxBuffer
+                0x0000000000800502                PROVIDE (__bss_end, .)
+                0x0000000000000dce                __data_load_start = LOADADDR (.data)
+                0x0000000000001096                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x0000000000800502        0x0
+                0x0000000000800502                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x0000000000800502                PROVIDE (__noinit_end, .)
+                0x0000000000800502                _end = .
+                0x0000000000800502                PROVIDE (__heap_start, .)
+
+.eeprom         0x0000000000810000        0x0
+ *(.eeprom*)
+                0x0000000000810000                __eeprom_end = .
+
+.fuse
+ *(.fuse)
+ *(.lfuse)
+ *(.hfuse)
+ *(.efuse)
+
+.lock
+ *(.lock*)
+
+.signature
+ *(.signature*)
+
+.stab           0x0000000000000000     0x20d0
+ *(.stab)
+ .stab          0x0000000000000000      0x6cc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o
+ .stab          0x00000000000006cc      0x84c ./main.o
+                                        0x858 (size before relaxing)
+ .stab          0x0000000000000f18      0x294 ./sm_driver.o
+                                        0x474 (size before relaxing)
+ .stab          0x00000000000011ac      0x720 ./speed_cntr.o
+                                        0x918 (size before relaxing)
+ .stab          0x00000000000018cc      0x504 ./uart.o
+                                        0x6fc (size before relaxing)
+ .stab          0x0000000000001dd0      0x300 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/libc.a(random.o)
+                                        0x330 (size before relaxing)
+
+.stabstr        0x0000000000000000     0x1167
+ *(.stabstr)
+ .stabstr       0x0000000000000000     0x1167 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr51/crtm1280.o
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(atmel446.elf elf32-avr)
+LOAD linker stubs
