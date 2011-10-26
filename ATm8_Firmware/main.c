@@ -212,7 +212,7 @@ void reset(int spezial_down){
 
 		// 8. eventuell mehr warten, dann aber zurück als input
 		if(spezial_down==1){
-			_delay_ms(1000); // extrazeit im bootloader
+			_delay_ms(100); // extrazeit im bootloader
 			PORTB |= (1); //<< PB0 bt-flash-spezial-pin auf HIGH debug
 			DDRB = 0x00; // b hat nur iscp header und einen enable eingang, b0
 			PORTB = 0x01; // an den bauen wir einen pull up
