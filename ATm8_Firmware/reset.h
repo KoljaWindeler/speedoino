@@ -10,6 +10,7 @@
 
 void reset(int spezial_down);
 void reset_init();
+void config_timer0();
 
 // alle Var als volatile damit wir die im interrupt nutzen können
 volatile int counter_bt;

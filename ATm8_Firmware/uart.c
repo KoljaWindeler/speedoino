@@ -140,12 +140,13 @@ void uart_SendInt(int x)
  *  RX interrupt handler.
  *  RX interrupt always enabled.
  */
-ISR(USART0_RX_vect){
+ISR(USART_RXC_vect){
 	unsigned char data;
 	// Read the received data.
 	data = UDR;
 	// Put the data into RxBuf
-	if(status.cmd == FALSE){
+	//if(status.cmd == FALSE){
+	if(1){
 		// and place 0x00 after it. If buffer is full,
 		// data is written to UART_RX_BUFFER_SIZE - 1.
 		UART_RxBuffer[UART_RxPtr % UART_RX_BUFFER_SIZE] = data;
@@ -154,7 +155,7 @@ ISR(USART0_RX_vect){
 
 		// If '*'  or '$' ... format soll sein $m1231* für move , $y* die WHY abfrage
 		if(data =='*'){
-			status.cmd = TRUE;
+			//status.cmd = TRUE;
 			UART_RxBuffer[0] = data;
 			UART_RxPtr=1;
 		} else if (data =='$'){

@@ -48,8 +48,14 @@ endif
 FLASH_IMAGE += \
 Watchdog.hex \
 
+EEPROM_IMAGE += \
+Watchdog.eep \
+
 SIZEDUMMY += \
 sizedummy \
+
+AVRDUDEDUMMY += \
+avrdudedummy \
 
 
 # All Target
@@ -69,18 +75,30 @@ Watchdog.hex: Watchdog.elf
 	@echo 'Finished building: $@'
 	@echo ' '
 
+Watchdog.eep: Watchdog.elf
+	@echo 'Create eeprom image (ihex format)'
+	-avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex Watchdog.elf  "Watchdog.eep"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 sizedummy: Watchdog.elf
 	@echo 'Invoking: Print Size'
 	-avr-size --format=avr --mcu=atmega8 Watchdog.elf
 	@echo 'Finished building: $@'
 	@echo ' '
 
+avrdudedummy: Watchdog.elf
+	@echo 'Invoking: AVRDude'
+	/usr/bin/avrdude -pm8 -cavrisp2 -Pusb -Uflash:w:Watchdog.hex:a
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C_DEPS)$(ELFS)$(FLASH_IMAGE)$(S_DEPS)$(CXX_DEPS)$(S_UPPER_DEPS)$(C++_DEPS)$(ASM_DEPS)$(CC_DEPS)$(CPP_DEPS)$(C_UPPER_DEPS)$(SIZEDUMMY) Watchdog.elf
+	-$(RM) $(OBJS)$(C_DEPS)$(ELFS)$(FLASH_IMAGE)$(EEPROM_IMAGE)$(S_DEPS)$(CXX_DEPS)$(S_UPPER_DEPS)$(C++_DEPS)$(ASM_DEPS)$(CC_DEPS)$(AVRDUDEDUMMY)$(CPP_DEPS)$(C_UPPER_DEPS)$(SIZEDUMMY) Watchdog.elf
 	-@echo ' '
 
-secondary-outputs: $(FLASH_IMAGE) $(SIZEDUMMY)
+secondary-outputs: $(FLASH_IMAGE) $(EEPROM_IMAGE) $(SIZEDUMMY) $(AVRDUDEDUMMY)
 
 .PHONY: all clean dependents
 .SECONDARY:

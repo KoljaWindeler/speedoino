@@ -61,7 +61,7 @@ void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, un
 	else{
 		srd.dir = CW;
 	}
-	speed_cntr_Move+=step; // globale var anpassen, damit wir wissen wo wir sind
+	soll_pos+=step; // globale var anpassen, damit wir wissen wo wir sind
 
 	// If moving only 1 step.
 	if(step == 1){

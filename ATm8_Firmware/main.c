@@ -1,13 +1,48 @@
 /*
- * Wenn ich das richtig sehe bräuchten wir nur noch die beiden übrigen timer0 und timer2
- * dazu zu nehmen.
- * ISR(PIN_BT/AVR) resetet dann eben den entsprechenden Timer
- * ISR(timer0/2) checkt dann ob resets erlaubt sind und führt ihn gegenbenerweise aus
+ * main.c
+ *
+ *  Created on: 12.06.2011
+ *      Author: kolja
+ *
+ *  Aufgaben des ATMega:
+ *  1. Sobald eine Bluetoothverbindung aufgebaut wird einen Reset auslösen
+ *  2. Wenn der große Prozessor nichts mehr sagt diesen Resetten können ( Watchdog Funktion )
+ *  3. Den Reset global unterdrücken können
+ *  4. Per UART antworten können warum resettet wurde
+ *  5. Im Falle eines BT Reset den Bootloader des großen daran hindern schneller durchzulaufen als Daten gesendet werden können
+ *
+ *  Konzept:
+ *  Wir haben 2 Counter, counter_bt und counter_avr, die werden hochgezählt,
+ *  momentan etwas(!) langsamer als 1kHz ( 1ms warten + if's )
+ *  Wenn einer von beiden den Schwellwert aus CYCLES_FOR_* erreicht dann wird ein RESET
+ *  ausgelöst. Das heisst eine HIGH - LOW - HIGH Kombination am Reset Pin.
+ *  Wenn es ein BT Reset ist dann sollte die ganze geschichte erst dann wieder freigegeben
+ *  werden, wenn eine toggelnde Flanke am Connect Pin gefunden wird.
+ *
+ *  FALLS der AVR überhaupt abschmiert, soll hier ergänzt werden:
+ *  Der AVR sollte in einem Takt ähnlich dem des Bluetooth "togglen",
+ *  sobald er mal nicht togglet läuft sein zähler auch über und resettet wie bei BT
+ *  eigentlicht das gleiche.
+ *
+ *  zusätzlich sollte der avr bestimmen können das die ganze geschichte deaktiviert wird,
+ *  z.B. der Filemanager verweilt sehr lang ohne loop
+ *  Daher ist der pin PinB0 vom AVR auf LOW zu ziehen um den Reset zu deaktivieren,
+ *  wir ziehen den dann unsererseits intern per pullup auf high und somit können wir resetten
+ *  wenn der AVR nix sagt, also z.B. kein Programm hat.
+ *
+ *  Startup: zum testen einmal mit allen augen zwinkern. Alle LED's an, nach 1000ms programmstart
+ *  und damit wieder aus.
+ *
+ *  Wenn wir einen Bluetooth reset haben, schalten wir den PinB0 als Ausgang und ziehen ihn auf Masse
+ *  da der Bootloader des großen einen Input mit Pullup schaltet. In der Zeit die der Pin auf Masse liegt
+ *  wird der Count der des Bootloader deaktiviert.
  */
-
+// includes
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include "global.h"
 #include "uart.h"
@@ -15,62 +50,31 @@
 #include "speed_cntr.h"
 #include "reset.h"
 
-//! Global status flags
+
+/////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
 
-//void ShowHelp(void);
-//void ShowData(int position, int acceleration, int deceleration, int speed, int steps);
-//void led_off();
-//void led_on();
-//void led_setup();
-/*! \brief Init of peripheral devices.
- *
- *  Setup IO, uart, stepper, timer and interrupt.
- */
-void Init(void)
-{
+
+/////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
+
+
+
+int main(){
 	// Init of motor driver IO pins
 	sm_driver_Init_IO();
-	// Init of uart
-	InitUART();
-	// Init Reset,LED Pins
+	// IO konfigurieren
 	reset_init();
-
 
 	// Set stepper motor driver output
 	sm_driver_StepOutput(0);
 
-	// Init of Timer/Counter1
-	speed_cntr_Init_Timer1();
+	InitUART();
 
-	// activate LED
-	//led_setup();
-
-	sei();
-	_delay_us(1000);
 	config_timer0();
-}
-
-/*! \brief Demo of linear speed controller.
- *
- *  Serial interface frontend to test linear speed controller.
- */
-int main(void)
-{
-
-	// Tells if the received string was a valid command.
-	char okCmd = FALSE;
-	soll_pos = 1800;
-	speed_cntr_Move(-1800, 60, 100, 1000);
-
-	Init();
+	sei();
 
 
-	/* wir reduzieren hier die möglichkeiten:
-	 * - entweder wollte der große wissen ob wir noch da sind, das geht über die interrupts
-	 * - oder warum wir neu gestartet sind - uart "$y*"
-	 * - oder er sagt uns eine Position an.. was wohl fast zu 100% der Fall sein wird
-	 */
+	_delay_ms(3000); // verzögerung beim ersten Start
 
 	while(1) {
 		// If a command is received, check the command and act on it.
@@ -80,7 +84,6 @@ int main(void)
 				// ...number of steps given.
 				int steps = 1000*(UART_RxBuffer[2]-'0') + 100*(UART_RxBuffer[3]-'0') + 10*(UART_RxBuffer[4]-'0') + (UART_RxBuffer[5]-'0');
 				speed_cntr_Move(soll_pos-steps, 60, 100, 1000);
-				okCmd = TRUE;
 				uart_SendString("$k*"); // ACK
 			}
 			else if(UART_RxBuffer[1] == 'y'){
