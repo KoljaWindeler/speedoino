@@ -130,7 +130,7 @@ ISR(TIMER0_OVF_vect){
 // reagiert auf jede Flanke
 ISR(INT0_vect){
 	if(bit_is_clear(PIND,2) && last_bt_state){ //wenn der pin low und die var high
-		// hier könnte man die Zeit ausgeben
+		// hier könnte man die Zeit ausgebena
 		PORTD &= ~(1 << BT_LED); // led aus
 		last_bt_state=0;
 		counter_bt=0;
