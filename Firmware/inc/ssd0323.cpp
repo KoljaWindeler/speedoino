@@ -571,7 +571,13 @@ void ssd0323::init(unsigned char phase,unsigned char ref) {
 	delay(1);
 
 	// init sequenze
-
+	/////////////////////////////
+	// XXXXXX | Normale | 180° //
+	// ----------------------- //
+	// Re-Map |  0x41   | 0x52 //
+	// Offset |  0x44   | 0x4C //
+	/////////////////////////////
+	
 	// Column Address
 	send_command(0x15);	send_command(0x00);	send_command(0x3F); 
 	// Row Address
@@ -580,7 +586,7 @@ void ssd0323::init(unsigned char phase,unsigned char ref) {
 	send_command(0x81);	send_command(0x66);
 	// Current Range
 	send_command(0x86);
-	// Re-map
+	// Re-map 
 	send_command(0xA0);	send_command(0x41); 
 	// Display Start Line
 	send_command(0xA1);	send_command(0x00);
