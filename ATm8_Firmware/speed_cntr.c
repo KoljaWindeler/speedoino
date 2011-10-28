@@ -74,7 +74,7 @@ void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, un
 		status.running = TRUE;
 		OCR1A = 10;
 		// Run Timer/Counter 1 with prescaler = 1.
-		TCCR1B |= (0<<CS10);
+		TCCR1B |= (1<<CS10);
 	}
 	// Only move if number of steps to move is not zero.
 	else if(step != 0){
@@ -135,7 +135,7 @@ void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, un
 		status.running = TRUE;
 		OCR1A = 10;
 		// Set Timer/Counter to divide clock by 1
-		TCCR1B |= (0<<CS10);
+		TCCR1B |= (1<<CS10);
 	}
 }
 
@@ -296,5 +296,5 @@ void set_stopper(){
 }
 
 int get_stopper(){
-	return running_value;
+	return srd.run_state;
 }

@@ -56,34 +56,48 @@ struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
 
 
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
-
-
-
-int main(){
+void Init(void)
+{
 	// Init of motor driver IO pins
 	sm_driver_Init_IO();
-	// IO konfigurieren
+	// Init of uart
+	InitUART();
+	// Init Reset,LED Pins
 	reset_init();
+
 
 	// Set stepper motor driver output
 	sm_driver_StepOutput(0);
 
-	InitUART();
+	// Init of Timer/Counter1
+	speed_cntr_Init_Timer1();
 
-	config_timer0();
+
 	sei();
+	_delay_us(1000);
+	config_timer0();
+}
 
 
-	_delay_ms(3000); // verzögerung beim ersten Start
+int main(){
+	Init();
+
+//	while(1){
+//		speed_cntr_Move(1000, 64, 100, 700);
+//		while(get_stopper()!=STOP){};
+//		_delay_ms(1000);
+//	}
+
 
 	while(1) {
+		uart_SendByte('k');
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
 			if(UART_RxBuffer[1] == 'm'){
 				// Move with...
 				// ...number of steps given.
 				int steps = 1000*(UART_RxBuffer[2]-'0') + 100*(UART_RxBuffer[3]-'0') + 10*(UART_RxBuffer[4]-'0') + (UART_RxBuffer[5]-'0');
-				speed_cntr_Move(soll_pos-steps, 60, 100, 1000);
+				speed_cntr_Move(soll_pos-steps, 70, 100, 1000);
 				uart_SendString("$k*"); // ACK
 			}
 			else if(UART_RxBuffer[1] == 'y'){

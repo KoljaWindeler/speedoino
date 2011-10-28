@@ -186,7 +186,7 @@ void reset(int spezial_down){
 		cli();
 
 		// 2. Pin c5 auf Ausgang und auf LOW ziehen
-		DDRC   = 0x00 | (1<<PC5); // alles eingänge bis auf pc5 ( reset )
+		DDRC  |= (1<<PC5); // pin5 auf ausgang schalten
 		PORTC &= ~(1 << RST_PIN); // reset auf low
 
 		// 3. spezialleitung auf masse ziehen
@@ -204,8 +204,8 @@ void reset(int spezial_down){
 		_delay_ms(200);
 
 		// 6.
-		DDRC   = 0x00; // alles eingänge
-		PORTC  = 0xff; // alle auf pullup
+		DDRC  &= ~(1<<PC5); // Reset auf eingang
+		PORTC |= 1<<PC5; // und auf pullup
 
 		// 7. LED aus
 		PORTD &= ~(1 << RST_LED); // led aus
@@ -258,10 +258,10 @@ void uart_puts (char *s)
 int main(){
 	// IO konfigurieren
 	DDRB = 0x00;  // b hat nur iscp header und einen enable eingang, b0
-	PORTB = 0x01; // an den bauen wir einen pull up, und machen den lowactive!
+	PORTB = 0x01	; // an den bauen wir einen pull up, und machen den lowactive!
 
-	DDRC = 0x00; // alles eingänge  ( reset (pc5) schalten wir später )
-	PORTC = 0xff; // alle auf high auch reset
+	DDRC  &= ~(1<<PC5); // reset als eingang schalten  ( reset (pc5) schalten wir später )
+	PORTC |= (1<<PC5); // alle auf high auch reset
 
 	DDRD = 0x00 |(1<<PD5) |(1<<PD6) |(1<<PD7); // 3x led AUSGANG
 	PORTD = 0x0F; // keine LEDs an, alle eingänge auf pullup, 20 - 50 kR => 0.1 - 0.25 mA

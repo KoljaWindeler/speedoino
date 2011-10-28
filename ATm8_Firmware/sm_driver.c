@@ -24,6 +24,7 @@
 #include <avr/io.h>
 #include "global.h"
 #include "sm_driver.h"
+#include "uart.h"
 
 // Bit position for data in step table
 #define BIT_A1 3
@@ -117,31 +118,8 @@ unsigned char sm_driver_StepCounter(signed char inc)
 void sm_driver_StepOutput(unsigned char pos)
 {
   unsigned char temp = steptab[pos];
-
-  /*
-  // Output bit by bit
-  if(temp&(1<<BIT_A1))
-    SM_PORT |= (1<<A1);
-  else
-    SM_PORT &= ~(1<<A1);
-
-  if(temp&(1<<BIT_A2))
-    SM_PORT |= (1<<A2);
-  else
-    SM_PORT &= ~(1<<A2);
-
-  if(temp&(1<<BIT_B1))
-    SM_PORT |= (1<<B1);
-  else
-    SM_PORT &= ~(1<<B1);
-
-  if(temp&(1<<BIT_B2))
-    SM_PORT |= (1<<B2);
-  else
-    SM_PORT &= ~(1<<B2);
-  */
-
   // Output the fast way
-  SM_PORT |= ((temp<<4)&0xF0);
-  SM_PORT &= ((temp<<4)|0x0F);
+  SM_PORT |= ((temp)&0x0F);
+  SM_PORT &= ((temp)|0xF0);
+
 }

@@ -53,11 +53,11 @@ void InitUART(void)
 	// interrupt + UART
 #ifndef F_CPU
 #warning "F_CPU war noch nicht definiert, wird nun nachgeholt mit 16Mhz"
-#define F_CPU 1000000UL // Systemtakt in Hz - Definition als unsigned long beachten
+#define F_CPU 4000000UL // Systemtakt in Hz - Definition als unsigned long beachten
 #endif
 
 	// Berechnungen
-#define BAUD 4800UL // Baudrate
+#define BAUD 19200UL // Baudrate
 #define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1) // clever runden
 #define BAUD_REAL (F_CPU/(16*(UBRR_VAL+1))) // Reale Baudrate
 #define BAUD_ERROR ((BAUD_REAL*1000)/BAUD) // Fehler in Promille, 1000 = kein Fehler.
@@ -144,9 +144,9 @@ ISR(USART_RXC_vect){
 	unsigned char data;
 	// Read the received data.
 	data = UDR;
+	//uart_SendByte(data);
 	// Put the data into RxBuf
-	//if(status.cmd == FALSE){
-	if(1){
+	if(status.cmd == FALSE){
 		// and place 0x00 after it. If buffer is full,
 		// data is written to UART_RX_BUFFER_SIZE - 1.
 		UART_RxBuffer[UART_RxPtr % UART_RX_BUFFER_SIZE] = data;
@@ -155,7 +155,7 @@ ISR(USART_RXC_vect){
 
 		// If '*'  or '$' ... format soll sein $m1231* für move , $y* die WHY abfrage
 		if(data =='*'){
-			//status.cmd = TRUE;
+			status.cmd = TRUE;
 			UART_RxBuffer[0] = data;
 			UART_RxPtr=1;
 		} else if (data =='$'){

@@ -92,7 +92,7 @@
 
 
 /* 20070707: hacked by David A. Mellis - after this many errors give up and launch application */
-#define MAX_ERROR_COUNT 5
+#define MAX_ERROR_COUNT 15
 
 /* set the UART baud rate */
 /* 20060803: hacked by DojoCorp */
@@ -227,9 +227,6 @@ int main(void)
 	putch(0x14); /* here i am*/
 	putch(0x10); /* here i am*/
 	
-putch('J'); /* here i am*/
-putch('K'); /* here i am*/
-putch('W'); /* here i am*/
 
 	/* forever loop */
 	for (;;)

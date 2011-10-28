@@ -54,9 +54,7 @@ void reset(int spezial_down){
 		// 3. spezialleitung auf masse ziehen
 		if(spezial_down==1){
 			DDRB = 0x00 | (1<<PB0); // alles eingänge bis auf pb0
-			PORTB |= (1); //<< PB0 bt-flash-spezial-pin auf HIGH debug
-			_delay_ms(100);
-			PORTB &= ~(1); //<< PB0 bt-flash-spezial-pin auf low
+			PORTB &= ~(1); //<< PB0 bt-flash-spezial-pin auf HIGH debug
 		}
 
 		// 4. LED an
@@ -66,19 +64,18 @@ void reset(int spezial_down){
 		_delay_ms(200);
 
 		// 6.
-		DDRC   = 0x00; // alles eingänge
-		PORTC  = 0xff; // alle auf pullup
+		DDRC   &= ~(1<<PC5) ; // Reset ausgang wieder auf zuhören schalten
+		PORTC  |= 1<<PC5; // und ihm ein pull up geben
 
-		// 7. LED aus
-		PORTD &= ~(1 << RST_LED); // led aus
-
-		// 8. eventuell mehr warten, dann aber zurück als input
+		// 7. eventuell mehr warten, dann aber zurück als input
 		if(spezial_down==1){
-			_delay_ms(1000); // extrazeit im bootloader
-			PORTB |= (1); //<< PB0 bt-flash-spezial-pin auf HIGH debug
+			_delay_ms(10); // extrazeit im bootloader
+			PORTB |= (1); //<< PB0 bt-flash-spezial-pin auf HIGH ( wie pull up auch )
 			DDRB = 0x00; // b hat nur iscp header und einen enable eingang, b0
-			PORTB = 0x01; // an den bauen wir einen pull up
 		}
+
+		// 8. LED aus
+		PORTD &= ~(1 << RST_LED); // led aus
 
 		sei(); // aktiviere interrupts
 	}
@@ -87,27 +84,27 @@ void reset(int spezial_down){
 };
 
 void config_timer0(){
-	// Timer/Counter 0 prescaler 8 => grob 125khz
-	TCCR0 = (1<<CS01);
+	// Timer/Counter 0 prescaler 64 => grob 62,5khz
+	TCCR0 = (1<<CS01) | (1<<CS00);
 	// Timer/Counter 0 Overflog timer0 interrupt
 	TIMSK |= (1<<TOIE0) ;
 }
 
 /* overflow vom timer 0 ..
- * 256*8/1.000.000 = 2,048ms
- * 489 * 2,048 = 1001,472 ms zum auslösen
+ * 256*8/1.000.000 = 4,096ms
+ * 244 * 2,048 = 999,424 ms zum auslösen
 */
 ISR(TIMER0_OVF_vect){
-	if(bit_is_set(PINB,0) && !reset_bt_running && !reset_avr_running){//wenn es high ist soll resetet werden
-		if(counter_bt>=489){ // 1000 * 1/1000khz => 1sec
+	if(bit_is_set(PINB,0)){//wenn es high ist soll resetet werden
+		if(counter_bt>=90 && !reset_bt_running){ // 1000 * 1/1000khz => 1sec
 			reset_bt_running=1;
 			reset(1);
 			last_rst=2;
 		}
 		
-		if(counter_avr>=489){ // 1000 * 1/1000khz => 1sec
+		if(counter_avr>=5000 && !reset_avr_running){ // 1000 * 1/1000khz => 1sec
 			reset_avr_running=1;
-			reset(0); // run reset ohne langen bootloader quatsch
+			reset(1); // run reset ohne langen bootloader quatsch
 			last_rst=1;
 		}
 
@@ -117,9 +114,6 @@ ISR(TIMER0_OVF_vect){
 			counter_avr++;
 		};
 		
-	} else {
-		counter_avr=0;
-		counter_bt=0;
 	};
 };
 	
