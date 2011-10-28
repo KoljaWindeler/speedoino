@@ -28,6 +28,7 @@
 unsigned char UART_RxBuffer[UART_RX_BUFFER_SIZE];
 //! RX buffer pointer.
 unsigned char UART_RxPtr;
+unsigned char UART_state;
 
 // Static Variables.
 //! TX buffer for uart.
@@ -79,6 +80,7 @@ void InitUART(void)
 	UART_RxPtr = 0;
 	UART_TxTail = 0;
 	UART_TxHead = 0;
+	UART_state = 0;
 }
 
 
@@ -131,7 +133,7 @@ void uart_SendInt(int x)
 		uart_SendByte (dec[x / div_val]);
 		x %= div_val;
 		div_val /= 10;
-	}while(div_val);
+	} while(div_val);
 }
 
 
@@ -147,19 +149,20 @@ ISR(USART_RXC_vect){
 	//uart_SendByte(data);
 	// Put the data into RxBuf
 	if(status.cmd == FALSE){
-		// and place 0x00 after it. If buffer is full,
-		// data is written to UART_RX_BUFFER_SIZE - 1.
-		UART_RxBuffer[UART_RxPtr % UART_RX_BUFFER_SIZE] = data;
-		UART_RxBuffer[(UART_RxPtr + 1) % UART_RX_BUFFER_SIZE]=0x00;
-		UART_RxPtr++;
-
-		// If '*'  or '$' ... format soll sein $m1231* für move , $y* die WHY abfrage
-		if(data =='*'){
+		if(UART_state==0){
+			if(data=='$'){
+				UART_state=1;
+				UART_RxPtr=0;
+			};
+		} else if(UART_state==1){
+			if(data=='*'){
 			status.cmd = TRUE;
-			UART_RxBuffer[0] = data;
-			UART_RxPtr=1;
-		} else if (data =='$'){
-			UART_RxPtr=0;
+			UART_state=0;
+			} else {
+			UART_RxBuffer[UART_RxPtr % UART_RX_BUFFER_SIZE] = data;
+			UART_RxBuffer[(UART_RxPtr + 1) % UART_RX_BUFFER_SIZE]=0x00;
+			UART_RxPtr++;
+			};
 		}
 	}
 }

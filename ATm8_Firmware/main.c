@@ -93,14 +93,15 @@ int main(){
 		uart_SendByte('k');
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
-			if(UART_RxBuffer[1] == 'm'){
+			if(UART_RxBuffer[0] == 'm'){
 				// Move with...
 				// ...number of steps given.
-				int steps = 1000*(UART_RxBuffer[2]-'0') + 100*(UART_RxBuffer[3]-'0') + 10*(UART_RxBuffer[4]-'0') + (UART_RxBuffer[5]-'0');
+				int steps = 1000*(UART_RxBuffer[1]-'0') + 100*(UART_RxBuffer[2]-'0') + 10*(UART_RxBuffer[3]-'0') + (UART_RxBuffer[4]-'0');
 				speed_cntr_Move(soll_pos-steps, 70, 100, 1000);
+				while(get_stopper()!=STOP){};
 				uart_SendString("$k*"); // ACK
 			}
-			else if(UART_RxBuffer[1] == 'y'){
+			else if(UART_RxBuffer[0] == 'y'){
 				uart_SendByte('$');
 				uart_SendByte('y');
 				uart_SendByte(last_rst+'0');

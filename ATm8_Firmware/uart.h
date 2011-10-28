@@ -46,6 +46,7 @@ void set_tx(unsigned char value);
 //! Buffer with received string from uart.
 extern unsigned char UART_RxBuffer[UART_RX_BUFFER_SIZE];
 
+
 ISR(USART_RXC_vect);
 ISR(USART_TXC_vect);
 
