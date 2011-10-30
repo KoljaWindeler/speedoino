@@ -154,6 +154,7 @@ int speedo_disp::sd2ssd(char filename[10]){
 	send_command(0x75);
 	send_command(0x00);
 	send_command(0x3F);
+	pSD->power_on();
 
 	SdFile root;
 	SdFile file;
@@ -172,6 +173,7 @@ int speedo_disp::sd2ssd(char filename[10]){
 	file.close();
 	subdir.close();
 	root.close();
+	pSD->power_off();
 	return 0;
 };
 

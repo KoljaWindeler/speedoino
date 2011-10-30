@@ -223,6 +223,7 @@ void speedo_filemanager::get_filename(char* buffer){
 void speedo_filemanager::run(){
 	pDebug->sprintlnp(PSTR("file_manager activated"));
 	pSensors->m_reset->set_deactive(false,false); // deaktiviere reset aber speichere das nicht
+	pSD->power_on();
 	pOLED->animation(3);
 	pOLED->string(STD_SMALL_1X_FONT,"started",5,4,0,DISP_BRIGHTNESS,0);
 	// open the root filesystem
@@ -367,6 +368,7 @@ void speedo_filemanager::run(){
 		}; // if serial_available
 	}; //stop_it
 	pSensors->m_reset->restore();// stelle den status wieder her
+	pSD->power_off();
 	free(buffer);
 }; // filemanager
 ///////////////////////////////////// MAIN /////////////////////

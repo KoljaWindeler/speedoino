@@ -101,6 +101,7 @@ int main(void) {
 	/* main loop, this will be repeated on and on */
 	/////////////////////////////////////////////////////////
 	Serial.println("----------- Los gehts ------------");
+	int runden=0;
 	while(1){
 		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
 		for(int s=100; s<=2000; s+=100){
@@ -119,16 +120,21 @@ int main(void) {
 				Serial.print(a);
 				Serial.print(" s=");
 				Serial.print(s);
-				Serial.println(" | Weiter ? (j/n)");
+				Serial.println(" | Mist ? (j/n)");
 				while(!Serial.available()){
 					if(Serial.read()=='n'){
+						runden++;
+						Serial.print("Cool, dann gehts zu Runde ");
+						Serial.println(runden);
 						if(a!=10){
 							a-=10;
 						} else {
 							a=140;
 							s-=100;
 						}; // if(a)
-					} // if read()
+					} else { // if read()
+						runden=0;
+					};
 				} // while
 			} // for a
 		} // for s

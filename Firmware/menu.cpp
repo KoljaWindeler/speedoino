@@ -244,6 +244,7 @@ void speedo_menu::display(){ // z.B. state = 26
 	}
 	///////////////////// skin menu //////////////////////////
 	else if(floor(state/10)==3){
+		pSD->power_on();
 		// open SD
 		SdFile root;
 		root.openRoot(&pSD->volume);
@@ -313,6 +314,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		// keep loading current skinfile, because without changing
 		sprintf(filename,"SKIN%i.TXT",(pConfig->skin_file+10)%10);
 		pConfig->read(filename);
+		pSD->power_off();
 	}
 	//////////////////////// skin laden ////////////////////////////
 	else if(floor(state/100)==3) { // 0031X
@@ -428,6 +430,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pConfig->storage_outdated=true;
 		pConfig->write("BASE.TXT"); // save config
 		// open SD
+		pSD->power_on();
 		SdFile root;
 		root.openRoot(&pSD->volume);
 		SdFile subdir;
@@ -481,6 +484,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		};
 		subdir.close();
 		root.close();
+		pSD->power_off();
 	}
 	//////////////////////// ausgeben wieviele points geschrieben wurden //////////////
 	else if(floor(state/10)==44){

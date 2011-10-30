@@ -565,6 +565,7 @@ int speedo_gps::get_order(char char_buffer[]){
 
 // die globalen variablen neu befüllen, auf basis des zuvor gesetzten navi_point
 void speedo_gps::generate_new_order(){ // eine neue Order auslesen
+	pSD->power_on();
 	// da diese funktion nur aufgerufen wird wenn vorher der navi_pointer geändert wurde speichern wir hier den pointer um das so selten wie nötig zu machen
 	byte tempByte = (navi_point & 0xFF);
 	EEPROM.write(147,tempByte);
@@ -646,6 +647,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 	free(navi_filename);
 	subdir.close();
 	root.close();
+	pSD->power_off();
 };
 
 /****************************************************************

@@ -41,6 +41,7 @@ configuration::~configuration(){
 int configuration::write(const char *filename){
 	pSensors->m_gps->gps_write_status=4;
 	if(!pSD->sd_failed){
+		pSD->power_on();
 		pSensors->m_gps->gps_write_status=5;
 		if(storage_outdated){ // jede Minute
 			pSensors->m_gps->gps_write_status=6;
@@ -219,6 +220,7 @@ int configuration::write(const char *filename){
 			root.close();
 			return 0;
 		}; // storeage outdated
+		pSD->power_off();
 	}; // sd_failed
 	return -3;
 };
@@ -375,6 +377,7 @@ int configuration::read_skin(){
  * Liest zeichenweise (max 200B) ein und ruft  mit jeder Zeile parse_config auf
  ***************************************************/
 int configuration::read(const char* filename){
+	pSD->power_on();
 	SdFile root;
 	SdFile file;
 	SdFile subdir;
@@ -434,6 +437,7 @@ int configuration::read(const char* filename){
 	file.close();
 	subdir.close();
 	root.close();
+	pSD->power_off();
 	return 0;
 }
 

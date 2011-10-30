@@ -52,6 +52,7 @@ void speedo_sd::init(){
 	sd_failed=false;
 	bool allright=true;
 	int tries=0;
+	power_on();
 	while(tries<3){ //maximal 3 versuche die sd karte zu öffnen
 		if (!card.init(SPI_HALF_SPEED))	{	error("card.init failed"); 		allright=false; };
 		if (!volume.init(&card))		{ 	error("volume.init failed"); 	allright=false; }; // initialize a FAT volume
@@ -67,4 +68,15 @@ void speedo_sd::init(){
 		Serial.println("hier 1");
 	};
 	Serial.println("SD init done");
+	power_off();
+};
+
+void speedo_sd::power_on(){
+	pinMode(SD_ACTIVE,INPUT);	// floating sollte per pullup auf 3.3 ziehen => karte an
+	digitalWrite(SD_ACTIVE,LOW);
+};
+
+void speedo_sd::power_off(){
+	pinMode(SD_ACTIVE,OUTPUT);
+	digitalWrite(SD_ACTIVE,LOW);
 };

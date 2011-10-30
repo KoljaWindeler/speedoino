@@ -82,6 +82,7 @@ void speedo_dz::calc() {
 	};
 	if(DEMO_MODE){ rounded=((millis()/30)%260)*70;   exact=rounded; pSensors->m_gear->calc(); };
 
+	// zum at8 bescheid geben
 	Serial3.print("$m");
 	Serial3.print((long)exact*1200/15000); //etwa 2400 "steps" pro umdrehung .. und eine umdrehung ist ja etwa 15000 U/min
 	Serial3.print("*");
@@ -93,6 +94,7 @@ void speedo_dz::calc() {
 //	if(strncmp(RxBuffer,"$k*",3)){ // TODO
 //
 //	}
+	// at8 fertig
 };
 
 void helper(){
