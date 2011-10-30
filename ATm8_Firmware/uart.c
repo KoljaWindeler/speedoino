@@ -104,11 +104,11 @@ void uart_SendByte(unsigned char data){
  *
  *  \param Str  String to be sent.
  */
-void uart_SendString(unsigned char Str[])
+void uart_SendString(char Str[])
 {
 	unsigned char n = 0;
 	while(Str[n])
-		uart_SendByte(Str[n++]);
+		uart_SendByte((unsigned)Str[n++]);
 }
 
 /*! \brief Sends a integer.
@@ -142,26 +142,24 @@ void uart_SendInt(int x)
  *  RX interrupt handler.
  *  RX interrupt always enabled.
  */
+//SIG_UART_RECV
 ISR(USART_RXC_vect){
 	unsigned char data;
 	// Read the received data.
 	data = UDR;
-	//uart_SendByte(data);
-	// Put the data into RxBuf
-	if(status.cmd == FALSE){
-		if(UART_state==0){
-			if(data=='$'){
-				UART_state=1;
-				UART_RxPtr=0;
-			};
+	if(command_received==0){
+		if(data=='$'){
+			UART_state=1;
+			UART_RxPtr=0;
 		} else if(UART_state==1){
 			if(data=='*'){
-			status.cmd = TRUE;
-			UART_state=0;
+				UART_RxBuffer[UART_RxPtr]='\0';
+				command_received=1;
+				UART_state=0;
+				UART_RxPtr=0;
 			} else {
-			UART_RxBuffer[UART_RxPtr % UART_RX_BUFFER_SIZE] = data;
-			UART_RxBuffer[(UART_RxPtr + 1) % UART_RX_BUFFER_SIZE]=0x00;
-			UART_RxPtr++;
+				UART_RxBuffer[UART_RxPtr] = data;
+				UART_RxPtr=(UART_RxPtr+1)%UART_RX_BUFFER_SIZE;
 			};
 		}
 	}

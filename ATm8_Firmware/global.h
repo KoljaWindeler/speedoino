@@ -35,6 +35,7 @@ struct GLOBAL_FLAGS {
   unsigned char dummy:6;
 };
 
-unsigned long soll_pos;
+long soll_pos;
+volatile int command_received;
 
 #endif

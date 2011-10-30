@@ -95,7 +95,7 @@ prog_char navi_m_1[] PROGMEM = "Set pointer";   // "String 0" etc are strings to
 prog_char navi_m_2[] PROGMEM = "Set file";   // "String 0" etc are strings to store - change to suit.
 prog_char navi_m_3[] PROGMEM = "Check writes"; // hier vielleicht ein: way to ziel: koordinaten aktuell im vergleich zum ziel, aktuellen course
 prog_char navi_m_4[] PROGMEM = "-";
-prog_char navi_m_5[] PROGMEM = "-";
+prog_char navi_m_5[] PROGMEM = "Stepper Setup";
 prog_char navi_m_6[] PROGMEM = "Show Animation";
 prog_char navi_m_7[] PROGMEM = "Test areal";
 prog_char navi_m_8[] PROGMEM = "Watchdog test";
@@ -135,6 +135,11 @@ PROGMEM const char *menu_flasher[3] = 	   // change "string_table" name to suit
 };
 
 /////////////////////////////// Menus PROGMEM ///////////////////////////////
+// zum spielen
+int motor_speed=1000;
+int motor_accel=70;
+int motor_pos=0;
+// zum spielen
 ///// vars ////////////
 bool		button_rechts_valid=true;
 bool       	button_links_valid=true;
@@ -484,6 +489,64 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->clear_screen();
 		pOLED->string(STD_SMALL_1X_FONT,buffer,5,3,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Points written"),3,4,0,DISP_BRIGHTNESS,0);
+	}
+	////////////////////////  stepper setup ///////////////////////
+	else if(floor(state/10)==46 || floor(state/100)==46 || floor(state/1000)==46){
+
+		if(floor(state/1000)==46){
+			Serial3.print("$a");
+			Serial3.print(motor_accel);
+			Serial3.print("*");
+			Serial3.print("$s");
+			Serial3.print(motor_speed);
+			Serial3.print("*");
+			Serial3.print("$m");
+
+			if(motor_pos==0){
+				Serial3.print(600);
+				motor_pos=600;
+			} else {
+				Serial3.print(0);
+				motor_pos=0;
+			};
+			Serial3.print("*");
+
+			int recv_char=0;
+			char rx_buffer[10];
+			unsigned long time=millis();
+			while(recv_char<3 && millis()-time<10000){
+				if(Serial3.available()>0){
+					rx_buffer[recv_char]=Serial3.read();
+					recv_char++;
+				}
+			}
+			// hier könnte man das zumindest noch mal auswerten oder ?
+			state=4611;
+		};
+
+
+
+		if(state%10==9){
+			if(floor(state/10)==46) 		{ motor_accel++; }
+			else if(floor(state/10)==461) 	{ motor_speed+=10; }
+		} else if(state%10==2){
+			if(floor(state/10)==46) 		{ motor_accel--; }
+			else if(floor(state/10)==461) 	{ motor_speed-=10; }
+		};
+
+		int olc=0,orc=0;
+		int ulc=0,urc=0;
+		if(floor(state/10)==46)       { state=461; olc=1; orc=0; ulc=0; urc=0;}
+		else if(floor(state/10)==461) {state=4611; olc=0; orc=1; ulc=0; urc=0;}
+
+		pOLED->clear_screen();
+		pOLED->highlight_bar(0,8*1-1,128,17); // mit hintergrundfarbe nen kasten malen
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Change values"),3,1,15,0,0);
+		sprintf(char_buffer," %02i ",motor_accel);
+		pOLED->string(STD_SMALL_1X_FONT,char_buffer,4,2,abs(olc-1)*15,olc*15,0);
+		pOLED->string(STD_SMALL_1X_FONT," // ",8,2,15,0,0);
+		sprintf(char_buffer," %02i ",motor_speed);
+		pOLED->string(STD_SMALL_1X_FONT,char_buffer,12,2,abs(orc-1)*15,orc*15,0);
 	}
 	//////////////////////// show animation ////////////////////////
 	else if(floor(state/10)==47){

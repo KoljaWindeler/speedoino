@@ -48,6 +48,9 @@ int running_value;
  */
 void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, unsigned int speed)
 {
+	//	uart_SendString("steps:");
+	//	uart_SendInt(step);
+	//	uart_SendString("\n");
 	//! Number of steps before we hit max speed.
 	unsigned int max_s_lim;
 	//! Number of steps before we must start deceleration (if accel does not hit max speed).
@@ -61,7 +64,6 @@ void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, un
 	else{
 		srd.dir = CW;
 	}
-	soll_pos+=step; // globale var anpassen, damit wir wissen wo wir sind
 
 	// If moving only 1 step.
 	if(step == 1){
@@ -152,6 +154,7 @@ void speed_cntr_Init_Timer1(void)
 	TCCR1B = (1<<WGM12);
 	// Timer/Counter 1 Output Compare A Match Interrupt enable.
 	TIMSK |= (1<<OCIE1A);
+	debug=0;
 }
 
 /*! \brief Timer/Counter1 Output Compare A Match Interrupt.

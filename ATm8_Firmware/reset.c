@@ -48,13 +48,13 @@ void reset(int spezial_down){
 		cli();
 
 		// 2. Pin c5 auf Ausgang und auf LOW ziehen
-		DDRC   = 0x00 | (1<<PC5); // alles eingänge bis auf pc5 ( reset )
+		DDRC  |=  (1<<PC5); // alles eingänge bis auf pc5 ( reset )
 		PORTC &= ~(1 << RST_PIN); // reset auf low
 
 		// 3. spezialleitung auf masse ziehen
 		if(spezial_down==1){
-			DDRB = 0x00 | (1<<PB0); // alles eingänge bis auf pb0
-			PORTB &= ~(1); //<< PB0 bt-flash-spezial-pin auf HIGH debug
+			DDRB  |=  (1<<PB0); // alles eingänge bis auf pb0
+			PORTB &= ~(1<<PB0); //<< PB0 bt-flash-spezial-pin auf HIGH debug
 		}
 
 		// 4. LED an
@@ -70,8 +70,9 @@ void reset(int spezial_down){
 		// 7. eventuell mehr warten, dann aber zurück als input
 		if(spezial_down==1){
 			_delay_ms(10); // extrazeit im bootloader
-			PORTB |= (1); //<< PB0 bt-flash-spezial-pin auf HIGH ( wie pull up auch )
-			DDRB = 0x00; // b hat nur iscp header und einen enable eingang, b0
+			DDRB  &= ~(1<<PB0); // b hat nur iscp header und einen enable eingang, b0
+			PORTB |=  (1<<PB0); //<< PB0 bt-flash-spezial-pin auf HIGH ( wie pull up auch )
+
 		}
 
 		// 8. LED aus

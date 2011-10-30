@@ -105,7 +105,7 @@ void speedo_reset::ask_reset(){
 		char recv[5];
 		unsigned int recv_counter=0;
 
-		while(recv_counter<2 && (millis()-time)<1000){ // max 1 sec auf ein zeichen warten
+		while(recv_counter<4 && (millis()-time)<1000){ // max 1 sec auf ein zeichen warten
 			if(Serial3.available()>0){
 				recv[recv_counter]=Serial3.read();
 				recv_counter++;

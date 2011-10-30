@@ -80,17 +80,19 @@ void speedo_dz::calc() {
 		rounded=0;
 		exact=0;
 	};
-	if(DEMO_MODE){ rounded=((millis()/300)%260)*70;   exact=rounded; pSensors->m_gear->calc(); };
+	if(DEMO_MODE){ rounded=((millis()/30)%260)*70;   exact=rounded; pSensors->m_gear->calc(); };
+
+	Serial3.print("$m");
+	Serial3.print((long)exact*1200/15000); //etwa 2400 "steps" pro umdrehung .. und eine umdrehung ist ja etwa 15000 U/min
+	Serial3.print("*");
 	int RxPtr=0;
 	char RxBuffer[10];
 	while(Serial3.available()>0 && RxPtr<8){
 		RxBuffer[RxPtr++]=Serial3.read();
 	}
-	if(strncmp(RxBuffer,"$k*",3)){ // TODO
-		Serial3.print("$m");
-		Serial3.print(exact);
-		Serial3.print("*");
-	}
+//	if(strncmp(RxBuffer,"$k*",3)){ // TODO
+//
+//	}
 };
 
 void helper(){

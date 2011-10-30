@@ -587,11 +587,11 @@ void ssd0323::init(unsigned char phase,unsigned char ref) {
 	// Current Range
 	send_command(0x86);
 	// Re-map 
-	send_command(0xA0);	send_command(0x41); 
+	send_command(0xA0);	send_command(0x52);
 	// Display Start Line
 	send_command(0xA1);	send_command(0x00);
 	// Display Offset
-	send_command(0xA2);	send_command(0x44);
+	send_command(0xA2);	send_command(0x4C);
 	// Display Mode
 	send_command(0xA4);
 	// Multiplex Ratio

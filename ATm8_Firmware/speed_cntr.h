@@ -92,4 +92,6 @@ void set_stopper();
 //! Global status flags
 extern struct GLOBAL_FLAGS status;
 
+int debug;
+
 #endif

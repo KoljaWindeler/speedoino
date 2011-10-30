@@ -81,23 +81,28 @@ void Init(void)
 
 int main(){
 	Init();
-
-//	while(1){
-//		speed_cntr_Move(1000, 64, 100, 700);
-//		while(get_stopper()!=STOP){};
-//		_delay_ms(1000);
-//	}
-
+	command_received=0;
+	soll_pos=0;
+	int accel=70;
+	int speed=5000;
+	speed_cntr_Move(-1800,70,100,1000);
+	while(get_stopper()!=STOP){};
 
 	while(1) {
-		uart_SendByte('k');
 		// If a command is received, check the command and act on it.
-		if(status.cmd == TRUE){
+		if(command_received){
 			if(UART_RxBuffer[0] == 'm'){
 				// Move with...
 				// ...number of steps given.
-				int steps = 1000*(UART_RxBuffer[1]-'0') + 100*(UART_RxBuffer[2]-'0') + 10*(UART_RxBuffer[3]-'0') + (UART_RxBuffer[4]-'0');
-				speed_cntr_Move(soll_pos-steps, 70, 100, 1000);
+				int steps = 0;
+
+				for(int i=1; i<UART_RX_BUFFER_SIZE && UART_RxBuffer[i]!='\0';i++){
+					steps=steps*10+UART_RxBuffer[i]-'0';
+				};
+				steps=steps-soll_pos;
+				soll_pos+=steps;
+
+				speed_cntr_Move(steps, accel, 100, speed);
 				while(get_stopper()!=STOP){};
 				uart_SendString("$k*"); // ACK
 			}
@@ -108,9 +113,23 @@ int main(){
 				uart_SendByte('*');
 				last_rst=0; // setze den status zurück damit wir immer einen frischen abfragen, wenn der große jetzt neustartet aber es steht da power, dann wissen wir, das war nicht der kleine, solange wie nicht wirklich einen powerlost hatten
 			}
+			else if(UART_RxBuffer[0] == 'a'){
+				int accel = 0;
+				for(int i=1; i<UART_RX_BUFFER_SIZE && UART_RxBuffer[i]!='\0';i++){
+					accel=accel*10+UART_RxBuffer[i]-'0';
+				};
+				uart_SendString("$k*"); // ACK
+			}
+			else if(UART_RxBuffer[0] == 's'){
+				int speed = 0;
+				for(int i=1; i<UART_RX_BUFFER_SIZE && UART_RxBuffer[i]!='\0';i++){
+					speed=speed*10+UART_RxBuffer[i]-'0';
+				};
+				uart_SendString("$k*"); // ACK
+			}
 
 			// Clear RXbuffer.
-			status.cmd = FALSE;
+			command_received=0;
 		}//end if(cmd)
 	}//end while(1)
 }
