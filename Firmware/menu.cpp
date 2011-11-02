@@ -94,7 +94,7 @@ prog_char navi_m_0[] PROGMEM = "Navi state";   // "String 0" etc are strings to 
 prog_char navi_m_1[] PROGMEM = "Set pointer";   // "String 0" etc are strings to store - change to suit.
 prog_char navi_m_2[] PROGMEM = "Set file";   // "String 0" etc are strings to store - change to suit.
 prog_char navi_m_3[] PROGMEM = "Check writes"; // hier vielleicht ein: way to ziel: koordinaten aktuell im vergleich zum ziel, aktuellen course
-prog_char navi_m_4[] PROGMEM = "-";
+prog_char navi_m_4[] PROGMEM = "Stepper Test";
 prog_char navi_m_5[] PROGMEM = "Stepper Setup";
 prog_char navi_m_6[] PROGMEM = "Show Animation";
 prog_char navi_m_7[] PROGMEM = "Test areal";
@@ -493,6 +493,78 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->clear_screen();
 		pOLED->string(STD_SMALL_1X_FONT,buffer,5,3,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Points written"),3,4,0,DISP_BRIGHTNESS,0);
+	}
+	///////////////////////// stepper test ////////////////////////////
+	else if(floor(state/10)==45){
+		/////////////////////////////////////////////////////////
+		Serial.println("----------- Los gehts ------------");
+		int RxPtr=0;
+		int runden=0;
+		int position=1;
+		char RxBuffer[10];
+		while(1){
+			pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
+			for(int s=10; s<=1000; s+=10){
+				Serial3.print("$s");
+				Serial3.print(1931);
+				Serial3.print("*");
+
+				while(Serial3.available()>0 && RxPtr<8){
+					Serial.print(Serial3.read(),BYTE);
+					pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
+				}
+
+				for(int a=1; a<=100;){
+					Serial3.print("$a");
+					Serial3.print(a);
+					Serial3.print("*");
+					while(Serial3.available()>0 && RxPtr<8){
+						pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
+						Serial.print(Serial3.read(),BYTE);
+					}
+
+					for(int runde=0;runde<10;runde ++){
+
+
+						Serial3.print("$m");
+						Serial3.print((runde+1)*600);
+						Serial3.print("*");
+
+
+						delay(100);
+						while(Serial3.available()>0 && RxPtr<8){
+							//RxBuffer[RxPtr++]=Serial3.read();
+							Serial.print(Serial3.read(),BYTE);
+							pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
+						}
+						pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
+						delay(500);
+						pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
+						delay(500);
+					}
+					Serial.print("a=");
+					Serial.print(a);
+					Serial.print(" s=");
+					Serial.print(s);
+					Serial.println(" | Mist ? (j/n)");
+					while(Serial.available()==0){
+						pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
+					};
+
+					if(Serial.read()=='n'){
+						runden++;
+						Serial.print("Cool, dann gehts zu Runde ");
+						Serial.println(runden);
+					} else { // if read()
+						runden=1;
+						a+=1;
+					};
+
+				} // for a
+			} // for s
+		} // while(1)
+		Serial.println("----------- Das wars ------------");
+		/////////////////////////////////////////////////////////
 	}
 	////////////////////////  stepper setup ///////////////////////
 	else if(floor(state/10)==46 || floor(state/100)==46 || floor(state/1000)==46){

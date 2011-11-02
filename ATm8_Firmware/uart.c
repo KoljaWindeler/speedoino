@@ -58,7 +58,7 @@ void InitUART(void)
 #endif
 
 	// Berechnungen
-#define BAUD 19200UL // Baudrate
+#define BAUD 4800UL // Baudrate
 #define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1) // clever runden
 #define BAUD_REAL (F_CPU/(16*(UBRR_VAL+1))) // Reale Baudrate
 #define BAUD_ERROR ((BAUD_REAL*1000)/BAUD) // Fehler in Promille, 1000 = kein Fehler.

@@ -85,25 +85,25 @@ void reset(int spezial_down){
 };
 
 void config_timer0(){
-	// Timer/Counter 0 prescaler 64 => grob 62,5khz
+	// Timer/Counter 0 prescaler 64 => grob 125khz
 	TCCR0 = (1<<CS01) | (1<<CS00);
 	// Timer/Counter 0 Overflog timer0 interrupt
 	TIMSK |= (1<<TOIE0) ;
 }
 
 /* overflow vom timer 0 ..
- * 256*8/1.000.000 = 4,096ms
- * 244 * 2,048 = 999,424 ms zum auslösen
+ * 256*1/125.000 = 2,048 ms
+ * 180 * 2,048 = 368,64 ms zum auslösen
 */
 ISR(TIMER0_OVF_vect){
 	if(bit_is_set(PINB,0)){//wenn es high ist soll resetet werden
-		if(counter_bt>=90 && !reset_bt_running){ // 1000 * 1/1000khz => 1sec
+		if(counter_bt>=180 && !reset_bt_running){ // 0,36864s
 			reset_bt_running=1;
 			reset(1);
 			last_rst=2;
 		}
 		
-		if(counter_avr>=5000 && !reset_avr_running){ // 1000 * 1/1000khz => 1sec
+		if(counter_avr>=10000 && !reset_avr_running){ // 20,48s
 			reset_avr_running=1;
 			reset(1); // run reset ohne langen bootloader quatsch
 			last_rst=1;

@@ -99,48 +99,6 @@ int main(void) {
 	 ******************** setup procedure ********************************************/
 	unsigned long   previousMillis = 0;
 	/* main loop, this will be repeated on and on */
-	/////////////////////////////////////////////////////////
-	Serial.println("----------- Los gehts ------------");
-	int runden=0;
-	while(1){
-		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
-		for(int s=100; s<=2000; s+=100){
-			Serial3.print("$s");
-			Serial3.print(s);
-			Serial3.print("*");
-
-			for(int a=10; a<=150; a+=10){
-				Serial3.print("$a");
-				Serial3.print(a);
-				Serial3.print("*");
-
-				delay(100);
-				Serial3.print("$m500*");
-				Serial.print("a=");
-				Serial.print(a);
-				Serial.print(" s=");
-				Serial.print(s);
-				Serial.println(" | Mist ? (j/n)");
-				while(!Serial.available()){
-					if(Serial.read()=='n'){
-						runden++;
-						Serial.print("Cool, dann gehts zu Runde ");
-						Serial.println(runden);
-						if(a!=10){
-							a-=10;
-						} else {
-							a=140;
-							s-=100;
-						}; // if(a)
-					} else { // if read()
-						runden=0;
-					};
-				} // while
-			} // for a
-		} // for s
-	} // while(1)
-	Serial.println("----------- Das wars ------------");
-	/////////////////////////////////////////////////////////
 	for (;;) {
 		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
 		pDebug->speedo_loop(21,1,0," "); 	// intensive debug= EVERY loop access reports the Menustate

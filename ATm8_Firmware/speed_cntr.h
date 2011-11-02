@@ -49,11 +49,11 @@ typedef struct {
  * Modify this according to frequency used. Because of the prescaler setting,
  * the timer1 frequency is the clock frequency divided by 8.
  */
-// Timer/Counter 1 running on 1mhz
-#define T1_FREQ 4000000
+// Timer/Counter 1 running on 8mhz
+#define T1_FREQ 8000000
 
 //! Number of (full)steps per round on stepper motor in use.
-#define FSPR 781
+#define FSPR 781*4
 
 #ifdef HALFSTEPS
   #define SPR (FSPR*2)
@@ -70,11 +70,11 @@ typedef struct {
 #endif
 
 // Maths constants. To simplify maths when calculating in speed_cntr_Move().
-#define ALPHA (2*3.14159/SPR)                    // 2*pi/spr
-#define A_T_x100 ((long)(ALPHA*T1_FREQ*100))     // (ALPHA / T1_FREQ)*100
-#define T1_FREQ_148 ((int)((T1_FREQ*0.676)/100)) // divided by 100 and scaled by 0.676
-#define A_SQ (long)(ALPHA*2*10000000000)         // ALPHA*2*10000000000
-#define A_x20000 (int)(ALPHA*20000)              // ALPHA*20000
+#define ALPHA (2*3.14159/SPR)                    // 2*pi/spr 							-> 0,002011261
+#define A_T_x100 ((long)(ALPHA*T1_FREQ*100))     // (ALPHA / T1_FREQ)*100				-> 1609008
+#define T1_FREQ_148 ((long)((T1_FREQ*0.676)/100)) // divided by 100 and scaled by 0.676 -> 54080
+#define A_SQ (long)(ALPHA*2*10000000000)         // ALPHA*2*10000000000					-> 40225220
+#define A_x20000 (int)(ALPHA*20000)              // ALPHA*20000							-> 40
 
 // Speed ramp states
 #define STOP  0
@@ -87,7 +87,6 @@ void speed_cntr_Init_Timer1(void);
 unsigned long sqrt_2(unsigned long v);
 unsigned int min(unsigned int x, unsigned int y);
 int get_stopper();
-void set_stopper();
 
 //! Global status flags
 extern struct GLOBAL_FLAGS status;

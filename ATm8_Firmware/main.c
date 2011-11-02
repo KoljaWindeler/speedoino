@@ -83,8 +83,8 @@ int main(){
 	Init();
 	command_received=0;
 	soll_pos=0;
-	int accel=70;
-	int speed=5000;
+	int accel=10;
+	int speed=75;
 	speed_cntr_Move(-1800,70,100,1000);
 	while(get_stopper()!=STOP){};
 
@@ -101,8 +101,8 @@ int main(){
 				};
 				steps=steps-soll_pos;
 				soll_pos+=steps;
-
 				speed_cntr_Move(steps, accel, 100, speed);
+				_delay_ms(100);
 				while(get_stopper()!=STOP){};
 				uart_SendString("$k*"); // ACK
 			}
@@ -118,14 +118,14 @@ int main(){
 				for(int i=1; i<UART_RX_BUFFER_SIZE && UART_RxBuffer[i]!='\0';i++){
 					accel=accel*10+UART_RxBuffer[i]-'0';
 				};
-				uart_SendString("$k*"); // ACK
+				uart_SendString("$ak*"); // ACK
 			}
 			else if(UART_RxBuffer[0] == 's'){
 				int speed = 0;
 				for(int i=1; i<UART_RX_BUFFER_SIZE && UART_RxBuffer[i]!='\0';i++){
 					speed=speed*10+UART_RxBuffer[i]-'0';
 				};
-				uart_SendString("$k*"); // ACK
+				uart_SendString("$sk*"); // ACK
 			}
 
 			// Clear RXbuffer.

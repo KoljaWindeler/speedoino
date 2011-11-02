@@ -31,7 +31,6 @@
 //! Cointains data for timer interrupt.
 speedRampData srd;
 
-int running_value;
 
 /*! \brief Move the stepper motor a given number of steps.
  *
@@ -83,9 +82,19 @@ void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, un
 		// Refer to documentation for detailed information about these calculations.
 
 		// Set max speed limit, by calc min_delay to use in timer.
-		// min_delay = (alpha / tt)/ w
-		srd.min_delay = A_T_x100 / speed;
+		// -------------------------------------------------------------------------------------------------------------------------------- //
+		// min_delay = (alpha / tt)/ w  ..  300°/sec => halbschritte => 8 schritte pro grad => 2400 schritte/sec => 1/2400 sec				//
+		// 1/2,4 ms = 416,6 µs ... der Timer läuft mit CPU Speed, 1/4000000 pro zähler, um 416,66µs zu zählen müsste er bis 1666,6 zählen	//
+		// er kann bis 65536 .. passt also locker																							//
+		// A_T_x100=((long)(ALPHA*T1_FREQ*100))																								//
+		// ALPHA (2*3.14159/SPR) = (2*3.14159/781) = 0,008045045																			//
+		// A_T_x100=((long)(0,008045045*4000000*100)) = 3218017																				//
+		// 1666 = 3218017/X => X=3218017/1666 = 1931																						//
+		// -------------------------------------------------------------------------------------------------------------------------------- //
+		// langsamer: 150°/sec => 8 Schritte 1200 Schritte/sec => 1/1200 sec => 832µs, bei ==> 3333  <==> 3333 = 3218017/X .. X= 965		//
+		// -------------------------------------------------------------------------------------------------------------------------------- //
 
+		srd.min_delay = A_T_x100 / speed;
 		// Set accelration by calc the first (c0) step delay .
 		// step_delay = 1/tt * sqrt(2*alpha/accel)
 		// step_delay = ( tfreq*0.676/100 )*100 * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
@@ -192,7 +201,22 @@ ISR(TIMER1_COMPA_vect){
 		sm_driver_StepCounter(srd.dir);
 		step_count++;
 		srd.accel_count++;
-		new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) + rest)/(4 * srd.accel_count + 1));
+
+
+		// versuchen ihn obenrum nur halbso schnell beschleunigen zu lassen
+		// Bremser
+//		if(srd.step_delay<=2*srd.min_delay){
+//			int faktor=(2*srd.min_delay)/srd.step_delay; // erst 1, sobald der delay kleiner wird, wird der faktor größer
+//			new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) + rest)/(4 * faktor * srd.accel_count + 1));
+//		} else {
+		// Bremser
+			new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) + rest)/(4 * srd.accel_count + 1));
+		// Bremser
+		//}
+		// Bremser
+		// versuchen ihn obenrum nur halbso schnell beschleunigen zu lassen
+
+
 		rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_count + 1);
 		// Chech if we should start decelration.
 		if(step_count >= srd.decel_start) {
@@ -229,7 +253,6 @@ ISR(TIMER1_COMPA_vect){
 		rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_count + 1);
 		// Check if we at last step
 		if(srd.accel_count >= 0){
-			running_value=0;
 			srd.run_state = STOP;
 		}
 		break;
@@ -294,9 +317,6 @@ unsigned int min(unsigned int x, unsigned int y)
 	}
 }
 
-void set_stopper(){
-	running_value=1;
-}
 
 int get_stopper(){
 	return srd.run_state;

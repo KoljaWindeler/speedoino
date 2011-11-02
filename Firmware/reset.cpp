@@ -22,7 +22,7 @@ speedo_reset::speedo_reset(){};
 speedo_reset::~speedo_reset(){};
 
 void speedo_reset::init(){
-	Serial3.begin(19200);
+	Serial3.begin(4800);
 	pinMode(reset_enabled_pin,OUTPUT);
 	pinMode(reset_toogle_pin,OUTPUT);
 	if(EEPROM.read(149)==1){ // glatte 1 heisst ist an, alle andere heisst ist aus

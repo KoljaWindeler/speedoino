@@ -119,6 +119,7 @@ void sm_driver_StepOutput(unsigned char pos)
 {
   unsigned char temp = steptab[pos];
   // Output the fast way
+  SM_DRIVE |= ((1<<A1) | (1<<A2) | (1<<B1) | (1<<B2)); // Set output pin direction registers to output
   SM_PORT |= ((temp)&0x0F);
   SM_PORT &= ((temp)|0xF0);
 
