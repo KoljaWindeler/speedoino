@@ -102,7 +102,7 @@ ISR(TIMER0_OVF_vect){
 			last_rst=2;
 		}
 		
-		if(counter_avr>=5000 && !reset_avr_running){ // 1000 * 1/1000khz => 1sec
+		if(counter_avr>=5000 && !reset_avr_running){ // 5000 * 1/1000khz => 5sec
 			reset_avr_running=1;
 			reset(1); // run reset ohne langen bootloader quatsch
 			last_rst=1;

@@ -70,6 +70,16 @@ int main(void) {
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop
 	 ******************** setup procedure ********************************************/
+	Serial.begin(19200);
+	Serial.println("ATL4");
+	Serial.end();
+	Serial.begin(57600);
+	Serial.println("ATN=\"SPEEDMASTER\"");
+	Serial.println("ATP0");
+	Serial.println("ATE0");
+	Serial.println("ATQ1");
+	Serial.end();
+	 
 	Serial.begin(57600); // damit kann ich mit dem bluetooth reden, und das bluetooth kann so mit dem bootloader reden .. sind wir nich kommunikativ
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
 	Wire.begin();				// BEFORE Clock_init(), Clock is in the sensor class and needs I²C
