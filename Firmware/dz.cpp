@@ -104,6 +104,22 @@ void speedo_dz::init() {
 	rounded=0;                 // to show on display, rounded by 50
 	exact=0;                 // real rotation speed
 	peak_count=0;
+
+
+	pinMode(RGB_IN_R,OUTPUT);
+	pinMode(RGB_IN_G,OUTPUT);
+	pinMode(RGB_IN_B,OUTPUT);
+	pinMode(RGB_OUT_R,OUTPUT);
+	pinMode(RGB_OUT_G,OUTPUT);
+	pinMode(RGB_OUT_B,OUTPUT);
+
+	analogWrite(RGB_IN_R,155);
+	analogWrite(RGB_IN_G,155);
+	analogWrite(RGB_IN_B,155);
+	analogWrite(RGB_OUT_R,155);
+	analogWrite(RGB_OUT_G,0);
+	analogWrite(RGB_OUT_B,0);
+
 	Serial.println("DZ init done");
 	blitz_en=false;
 };

@@ -16,12 +16,12 @@
  */
 
 #define SPI_RESET			32		// D/I Bit
-#define SPI_CD				34		// von 34 auf 37 geändert ... 34 für platine, 37 für defektes Board
+#define SPI_CD				30		// von 34 -> 30
 #define SPI_POWER			33		// hmm brauch ich das? 
 #define SPI_GND				31		// nötig!!
-#define SPI_CS				30		// D/I Bit 
-#define SPI_DATA			36		// EN Bit
-#define SPI_CLK				35		// EN Bit
+#define SPI_CS				34		// D/I 30 -> 34
+#define SPI_DATA			35		// EN Bit --> 36 -> 35
+#define SPI_CLK				36		// EN Bit --> 35 -> 36
 
 /*******************************************************/
 /*     end of Arduino configuration                    */

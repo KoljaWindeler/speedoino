@@ -49,6 +49,10 @@ int speedo_sd::writeString(SdFile& f, char *str) {
 }
 
 void speedo_sd::init(){
+	// p kanal runterziehen damit er leitend wird
+	pinMode(SD_EN,OUTPUT);
+	digitalWrite(SD_EN,LOW);
+
 	sd_failed=false;
 	bool allright=true;
 	int tries=0;

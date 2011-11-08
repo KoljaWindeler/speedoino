@@ -38,7 +38,7 @@ void speedo_gps::init(){
 #endif
 
 	// Berechnungen
-#define BAUD 4800UL // Baudrate
+#define BAUD 9600UL // Baudrate
 #define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1) // clever runden
 #define BAUD_REAL (F_CPU/(16*(UBRR_VAL+1))) // Reale Baudrate
 #define BAUD_ERROR ((BAUD_REAL*1000)/BAUD) // Fehler in Promille, 1000 = kein Fehler.
@@ -80,6 +80,9 @@ void speedo_gps::init(){
 	// Debug
 	gps_write_status=0;
 	
+	// hier das gps konfigurieren ..  würg... das muss dann ja auch per UART manuell ... hmm später
+
+
 	pDebug->sprintlnp(PSTR("GPS init done"));
 };
 
@@ -89,6 +92,7 @@ void speedo_gps::init(){
 // wenn ja dann wird get_GPS damit aufgerufen
 void speedo_gps::recv_data(){
 	char byteGPS = UDR1;
+	Serial.print(byteGPS);
 	switch(gps_state){
 	case 0:  // hier sitzen wir und warten auf das startzeichen
 		if(byteGPS=='$'){ gps_state=1;	};

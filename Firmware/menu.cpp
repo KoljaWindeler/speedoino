@@ -140,8 +140,8 @@ bool		button_rechts_valid=true;
 bool       	button_links_valid=true;
 bool       	button_oben_valid=true;
 bool       	button_unten_valid=true;
-#define menu_button_links 24 // 26
-#define menu_button_unten 28 // 22
+#define menu_button_links 28 // 26
+#define menu_button_unten 24 // 22
 #define menu_button_rechts 22 // 28
 #define menu_button_oben 26 // 24
 #define menu_active 0 // low active menues

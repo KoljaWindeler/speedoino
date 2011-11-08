@@ -12,6 +12,8 @@
 #ifndef SH_H_
 #define SH_H_
 
+#define SD_EN 4
+
 #include      <SdFat.h>
 #include      <SdFatUtil.h>
 

@@ -8,6 +8,12 @@
 #ifndef DZ_H_
 #define DZ_H_
 
+#define RGB_OUT_R 7
+#define RGB_OUT_G 8
+#define RGB_OUT_B 9
+#define RGB_IN_R 13
+#define RGB_IN_G 10
+#define RGB_IN_B 11
 /**************** DZ *******************/
 void helper();
 class speedo_dz{
