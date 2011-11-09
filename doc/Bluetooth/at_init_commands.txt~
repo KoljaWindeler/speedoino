@@ -1,0 +1,14 @@
+AT startup
+
+auf 19200
+ATL4
+auf 57600
+Name setzen
+Pin ausschalten
+echo ausschalten
+result ausschalten
+
+ATN=SPEEDMASTER
+ATP0  
+ATE0
+ATQ1
