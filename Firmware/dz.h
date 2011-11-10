@@ -23,8 +23,7 @@ public:
 	void counter();
 	void calc();
 	void init();
-	bool at8_get();
-	void at8_listen();
+	bool at8_goto(int winkel,int overwrite);
 
 	unsigned int rounded;                 // to show on display, rounded by 50
 	unsigned int exact;                 // real rotation speed

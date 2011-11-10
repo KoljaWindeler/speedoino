@@ -78,20 +78,10 @@ void speedo_dz::calc() {
 		pSensors->m_gear->calc();// alle 250 ms, also mit 4Hz den Gang berechnen
 
 		// zeiger
-		if(at8_get()){
-			at8_listen();
-			Serial3.print("$m");
-			Serial3.print(exact);
-			Serial3.print("*");
-
-			Serial.print("$m");
-			Serial.print(exact);
-			Serial.print("*");
-
-			analogWrite(RGB_IN_R,millis()%255);
-			analogWrite(RGB_IN_G,(millis()+70)%255);
-			analogWrite(RGB_IN_B,(millis()+140)%255);
-		}
+		at8_goto(exact/10,0);
+		analogWrite(RGB_IN_R,millis()%255);
+		analogWrite(RGB_IN_G,(millis()+70)%255);
+		analogWrite(RGB_IN_B,(millis()+140)%255);
 		// zeiger
 
 	} else if(now-previous_time>1000){
@@ -105,20 +95,10 @@ void speedo_dz::calc() {
 			exact=rounded;
 			pSensors->m_gear->calc();
 			// zeiger
-			if(at8_get()){
-				at8_listen();
-				Serial3.print("$m");
-				Serial3.print(exact);
-				Serial3.print("*");
-
-				Serial.print("$m");
-				Serial.print(exact);
-				Serial.print("*");
-
-				analogWrite(RGB_IN_R,millis()%255);
-				analogWrite(RGB_IN_G,(millis()+70)%255);
-				analogWrite(RGB_IN_B,(millis()+140)%255);
-			}
+			at8_goto(exact/10,0);
+			analogWrite(RGB_IN_R,millis()%255);
+			analogWrite(RGB_IN_G,(millis()+70)%255);
+			analogWrite(RGB_IN_B,(millis()+140)%255);
 			// zeiger
 		}
 	};
@@ -154,30 +134,31 @@ void speedo_dz::init() {
 
 	Serial.println("DZ init done");
 	blitz_en=false;
-	at8_listen();
-};
-
-void speedo_dz::at8_listen(){
 	Serial3.flush();
 };
 
-bool speedo_dz::at8_get(){
-	if(Serial3.available()>2){ // 3 buchstaben $k*
+
+bool speedo_dz::at8_goto(int winkel,int overwrite){
+	if(Serial3.available()>=3){ // 3 buchstaben $k*
 		char serial_buffer[3];
 		serial_buffer[0]=Serial3.read();
 		serial_buffer[1]=Serial3.read();
 		serial_buffer[2]=Serial3.read();
-		//
-		Serial.print("at8_get");
-		Serial.print(serial_buffer[0],BYTE);
-		Serial.print(serial_buffer[1],BYTE);
-		Serial.print(serial_buffer[2],BYTE);
-		//
+
 		if(serial_buffer[0]=='$' && serial_buffer[1]=='k' && serial_buffer[2]=='*'){
-			Serial.print("japp, motor hat gedreht!");
+			Serial3.flush();
+			Serial3.print("$m");
+			Serial3.print(winkel);
+			Serial3.print("*");
 			return true;
 		};
+
+	} else if(overwrite==1){
 		Serial3.flush();
-	}
+		Serial3.print("$m");
+		Serial3.print(winkel);
+		Serial3.print("*");
+		return true;
+	};
 	return false;
-}
+};

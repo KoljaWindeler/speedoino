@@ -151,7 +151,7 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000000000      0xdb6
+.text           0x0000000000000000      0xdcc
  *(.vectors)
  .vectors       0x0000000000000000       0x26 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr4/crtm8.o
                 0x0000000000000000                __vectors
@@ -221,63 +221,63 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a
                 0x000000000000005c                __vector_10
                 0x000000000000005c                __vector_16
                 0x000000000000005c                __vector_18
- .text          0x000000000000005e      0x13e ./main.o
+ .text          0x000000000000005e      0x15a ./main.o
                 0x000000000000005e                Init
                 0x000000000000008c                main
- .text          0x000000000000019c      0x2dc ./reset.o
-                0x000000000000019c                reset_init
-                0x0000000000000206                reset
-                0x0000000000000260                config_timer0
-                0x000000000000026c                __vector_9
-                0x0000000000000370                __vector_1
-                0x0000000000000404                __vector_2
- .text          0x0000000000000478       0x74 ./sm_driver.o
-                0x0000000000000478                sm_driver_Init_IO
-                0x0000000000000486                sm_driver_StepOutput
-                0x00000000000004a4                sm_driver_StepCounter
- .text          0x00000000000004ec      0x666 ./speed_cntr.o
-                0x00000000000004ec                speed_cntr_Init_Timer1
-                0x0000000000000502                __vector_6
-                0x0000000000000802                sqrt_2
-                0x0000000000000898                speed_cntr_Move
-                0x0000000000000b2a                min
-                0x0000000000000b3a                set_stopper
-                0x0000000000000b48                get_stopper
- .text          0x0000000000000b52      0x15a ./uart.o
-                0x0000000000000b52                InitUART
-                0x0000000000000b70                uart_SendByte
-                0x0000000000000b78                uart_SendString
-                0x0000000000000b9c                uart_SendInt
-                0x0000000000000c2e                __vector_11
- .text          0x0000000000000cac        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_mulsi3.o)
- .text          0x0000000000000cac        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodhi4.o)
- .text          0x0000000000000cac        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodhi4.o)
- .text          0x0000000000000cac        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodsi4.o)
- .text          0x0000000000000cac        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodsi4.o)
- .text          0x0000000000000cac        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
- .text          0x0000000000000cac        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_copy_data.o)
- .text          0x0000000000000cac        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_clear_bss.o)
-                0x0000000000000cac                . = ALIGN (0x2)
+ .text          0x00000000000001b8      0x2dc ./reset.o
+                0x00000000000001b8                reset_init
+                0x0000000000000222                reset
+                0x000000000000027c                config_timer0
+                0x0000000000000288                __vector_9
+                0x000000000000038c                __vector_1
+                0x0000000000000420                __vector_2
+ .text          0x0000000000000494       0x74 ./sm_driver.o
+                0x0000000000000494                sm_driver_Init_IO
+                0x00000000000004a2                sm_driver_StepOutput
+                0x00000000000004c0                sm_driver_StepCounter
+ .text          0x0000000000000508      0x660 ./speed_cntr.o
+                0x0000000000000508                speed_cntr_Init_Timer1
+                0x000000000000051e                __vector_6
+                0x000000000000081e                sqrt_2
+                0x00000000000008b4                speed_cntr_Move
+                0x0000000000000b40                min
+                0x0000000000000b50                set_stopper
+                0x0000000000000b5e                get_stopper
+ .text          0x0000000000000b68      0x15a ./uart.o
+                0x0000000000000b68                InitUART
+                0x0000000000000b86                uart_SendByte
+                0x0000000000000b8e                uart_SendString
+                0x0000000000000bb2                uart_SendInt
+                0x0000000000000c44                __vector_11
+ .text          0x0000000000000cc2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_mulsi3.o)
+ .text          0x0000000000000cc2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodhi4.o)
+ .text          0x0000000000000cc2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodhi4.o)
+ .text          0x0000000000000cc2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodsi4.o)
+ .text          0x0000000000000cc2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodsi4.o)
+ .text          0x0000000000000cc2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
+ .text          0x0000000000000cc2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_copy_data.o)
+ .text          0x0000000000000cc2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_clear_bss.o)
+                0x0000000000000cc2                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x0000000000000cac       0x3e /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_mulsi3.o)
-                0x0000000000000cac                __mulsi3
- .text.libgcc   0x0000000000000cea       0x28 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodhi4.o)
-                0x0000000000000cea                __udivmodhi4
- .text.libgcc   0x0000000000000d12       0x26 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodhi4.o)
-                0x0000000000000d12                __divmodhi4
-                0x0000000000000d12                _div
- .text.libgcc   0x0000000000000d38       0x44 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodsi4.o)
-                0x0000000000000d38                __udivmodsi4
- .text.libgcc   0x0000000000000d7c       0x36 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodsi4.o)
-                0x0000000000000d7c                __divmodsi4
- .text.libgcc   0x0000000000000db2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
- .text.libgcc   0x0000000000000db2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_copy_data.o)
- .text.libgcc   0x0000000000000db2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_clear_bss.o)
-                0x0000000000000db2                . = ALIGN (0x2)
+ .text.libgcc   0x0000000000000cc2       0x3e /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_mulsi3.o)
+                0x0000000000000cc2                __mulsi3
+ .text.libgcc   0x0000000000000d00       0x28 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodhi4.o)
+                0x0000000000000d00                __udivmodhi4
+ .text.libgcc   0x0000000000000d28       0x26 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodhi4.o)
+                0x0000000000000d28                __divmodhi4
+                0x0000000000000d28                _div
+ .text.libgcc   0x0000000000000d4e       0x44 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodsi4.o)
+                0x0000000000000d4e                __udivmodsi4
+ .text.libgcc   0x0000000000000d92       0x36 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodsi4.o)
+                0x0000000000000d92                __divmodsi4
+ .text.libgcc   0x0000000000000dc8        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
+ .text.libgcc   0x0000000000000dc8        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_copy_data.o)
+ .text.libgcc   0x0000000000000dc8        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_clear_bss.o)
+                0x0000000000000dc8                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000000000000db2        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
-                0x0000000000000db2                exit
-                0x0000000000000db2                _exit
+ .fini9         0x0000000000000dc8        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
+                0x0000000000000dc8                exit
+                0x0000000000000dc8                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -296,11 +296,11 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000000000000db2        0x4 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
+ .fini0         0x0000000000000dc8        0x4 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
  *(.fini0)
-                0x0000000000000db6                _etext = .
+                0x0000000000000dcc                _etext = .
 
-.data           0x0000000000800060       0x2a load address 0x0000000000000db6
+.data           0x0000000000800060       0x18 load address 0x0000000000000dcc
                 0x0000000000800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800060        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr4/crtm8.o
@@ -308,74 +308,74 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a
  .data          0x0000000000800064        0x0 ./reset.o
  .data          0x0000000000800064        0x8 ./sm_driver.o
                 0x0000000000800064                steptab
- .data          0x000000000080006c       0x12 ./speed_cntr.o
- .data          0x000000000080007e        0xb ./uart.o
- .data          0x0000000000800089        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_mulsi3.o)
- .data          0x0000000000800089        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodhi4.o)
- .data          0x0000000000800089        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodhi4.o)
- .data          0x0000000000800089        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodsi4.o)
- .data          0x0000000000800089        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodsi4.o)
- .data          0x0000000000800089        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
- .data          0x0000000000800089        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_copy_data.o)
- .data          0x0000000000800089        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_clear_bss.o)
+ .data          0x000000000080006c        0x0 ./speed_cntr.o
+ .data          0x000000000080006c        0xb ./uart.o
+ .data          0x0000000000800077        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_mulsi3.o)
+ .data          0x0000000000800077        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodhi4.o)
+ .data          0x0000000000800077        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodhi4.o)
+ .data          0x0000000000800077        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodsi4.o)
+ .data          0x0000000000800077        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodsi4.o)
+ .data          0x0000000000800077        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
+ .data          0x0000000000800077        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_copy_data.o)
+ .data          0x0000000000800077        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_clear_bss.o)
  *(.data*)
  *(.rodata)
  *(.rodata*)
  *(.gnu.linkonce.d*)
-                0x000000000080008a                . = ALIGN (0x2)
- *fill*         0x0000000000800089        0x1 00
-                0x000000000080008a                _edata = .
-                0x000000000080008a                PROVIDE (__data_end, .)
+                0x0000000000800078                . = ALIGN (0x2)
+ *fill*         0x0000000000800077        0x1 00
+                0x0000000000800078                _edata = .
+                0x0000000000800078                PROVIDE (__data_end, .)
 
-.bss            0x000000000080008a       0x51
-                0x000000000080008a                PROVIDE (__bss_start, .)
+.bss            0x0000000000800078       0x51
+                0x0000000000800078                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x000000000080008a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr4/crtm8.o
- .bss           0x000000000080008a        0x1 ./main.o
-                0x000000000080008a                status
- .bss           0x000000000080008b        0x0 ./reset.o
- .bss           0x000000000080008b        0x3 ./sm_driver.o
-                0x000000000080008b                stepPosition
- .bss           0x000000000080008e        0x6 ./speed_cntr.o
- .bss           0x0000000000800094        0x2 ./uart.o
- .bss           0x0000000000800096        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_mulsi3.o)
- .bss           0x0000000000800096        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodhi4.o)
- .bss           0x0000000000800096        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodhi4.o)
- .bss           0x0000000000800096        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodsi4.o)
- .bss           0x0000000000800096        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodsi4.o)
- .bss           0x0000000000800096        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
- .bss           0x0000000000800096        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_copy_data.o)
- .bss           0x0000000000800096        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_clear_bss.o)
+ .bss           0x0000000000800078        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr4/crtm8.o
+ .bss           0x0000000000800078        0x1 ./main.o
+                0x0000000000800078                status
+ .bss           0x0000000000800079        0x0 ./reset.o
+ .bss           0x0000000000800079        0x3 ./sm_driver.o
+                0x0000000000800079                stepPosition
+ .bss           0x000000000080007c        0x6 ./speed_cntr.o
+ .bss           0x0000000000800082        0x2 ./uart.o
+ .bss           0x0000000000800084        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_mulsi3.o)
+ .bss           0x0000000000800084        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodhi4.o)
+ .bss           0x0000000000800084        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodhi4.o)
+ .bss           0x0000000000800084        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_udivmodsi4.o)
+ .bss           0x0000000000800084        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_divmodsi4.o)
+ .bss           0x0000000000800084        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_exit.o)
+ .bss           0x0000000000800084        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_copy_data.o)
+ .bss           0x0000000000800084        0x0 /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_clear_bss.o)
  *(.bss*)
  *(COMMON)
- COMMON         0x0000000000800096       0x16 ./main.o
-                0x0000000000800096                last_rst
-                0x0000000000800098                reset_avr_running
-                0x000000000080009a                counter_bt
-                0x000000000080009c                counter_avr
-                0x000000000080009e                reset_bt_running
-                0x00000000008000a0                last_bt_state
-                0x00000000008000a2                counter_bt_init
-                0x00000000008000a4                last_avr_state
-                0x00000000008000a6                soll_pos
-                0x00000000008000aa                reset_led
- COMMON         0x00000000008000ac        0xd ./speed_cntr.o
-                0x00000000008000ac                srd
-                0x00000000008000b7                running_value
- COMMON         0x00000000008000b9       0x22 ./uart.o
-                0x00000000008000b9                UART_state
-                0x00000000008000ba                UART_RxPtr
-                0x00000000008000bb                UART_RxBuffer
-                0x00000000008000db                PROVIDE (__bss_end, .)
-                0x0000000000000db6                __data_load_start = LOADADDR (.data)
-                0x0000000000000de0                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x0000000000800084       0x16 ./main.o
+                0x0000000000800084                last_rst
+                0x0000000000800086                reset_avr_running
+                0x0000000000800088                counter_bt
+                0x000000000080008a                counter_avr
+                0x000000000080008c                reset_bt_running
+                0x000000000080008e                last_bt_state
+                0x0000000000800090                counter_bt_init
+                0x0000000000800092                last_avr_state
+                0x0000000000800094                soll_pos
+                0x0000000000800098                reset_led
+ COMMON         0x000000000080009a        0xd ./speed_cntr.o
+                0x000000000080009a                srd
+                0x00000000008000a5                running_value
+ COMMON         0x00000000008000a7       0x22 ./uart.o
+                0x00000000008000a7                UART_state
+                0x00000000008000a8                UART_RxPtr
+                0x00000000008000a9                UART_RxBuffer
+                0x00000000008000c9                PROVIDE (__bss_end, .)
+                0x0000000000000dcc                __data_load_start = LOADADDR (.data)
+                0x0000000000000de4                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00000000008000db        0x0
-                0x00000000008000db                PROVIDE (__noinit_start, .)
+.noinit         0x00000000008000c9        0x0
+                0x00000000008000c9                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00000000008000db                PROVIDE (__noinit_end, .)
-                0x00000000008000db                _end = .
-                0x00000000008000db                PROVIDE (__heap_start, .)
+                0x00000000008000c9                PROVIDE (__noinit_end, .)
+                0x00000000008000c9                _end = .
+                0x00000000008000c9                PROVIDE (__heap_start, .)
 
 .eeprom         0x0000000000810000        0x0
  *(.eeprom*)
@@ -486,7 +486,6 @@ __do_clear_bss                                    /usr/lib/gcc/avr/4.5.3/avr4/li
                                                   ./main.o
 __do_copy_data                                    /usr/lib/gcc/avr/4.5.3/avr4/libgcc.a(_copy_data.o)
                                                   ./uart.o
-                                                  ./speed_cntr.o
                                                   ./sm_driver.o
                                                   ./main.o
 __heap_end                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr4/crtm8.o
@@ -585,5 +584,4 @@ uart_SendByte                                     ./uart.o
                                                   ./main.o
 uart_SendInt                                      ./uart.o
 uart_SendString                                   ./uart.o
-                                                  ./speed_cntr.o
                                                   ./main.o

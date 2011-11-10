@@ -130,8 +130,6 @@ void speed_cntr_Move(signed int step, unsigned int accel, unsigned long decel, u
 			srd.run_state = ACCEL;
 		}
 
-		uart_SendString("starte den timer\n");
-
 		// Reset counter.
 		srd.accel_count = 0;// Set Timer/Counter to divide clock by 1
 		status.running = TRUE;

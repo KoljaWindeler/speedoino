@@ -101,10 +101,19 @@ int main(){
 					steps=steps*10+UART_RxBuffer[i]-'0';
 					i++;
 				}
+				// mindestschritweite 10
 				if(abs(steps-soll_pos)>10){
-					speed_cntr_Move(steps-soll_pos, 120, 120, 400);
+					// wenn die schritweite unter 100 ist -- dann nur 10% der leistung
+					int beschleunigung=120;
+					int geschwindigkeit=400;
+					if(abs(steps-soll_pos)<100){
+						beschleunigung=12;
+						geschwindigkeit=40;
+					}
+					speed_cntr_Move(steps-soll_pos, beschleunigung, beschleunigung, geschwindigkeit);
 					soll_pos=steps;
 				} else {
+					// wenn schritt zu klein ... nur so bescheid geben
 					uart_SendString("$k*"); // ACK
 					status.cmd = FALSE;
 				}
