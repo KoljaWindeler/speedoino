@@ -122,17 +122,17 @@ Disassembly of section .text:
 0000012a <app_start>:
 void 	app_start()
 {
-	//*	May 23,	2010	<MLS> Modified app_start because it was not working on the 2560.
-	//*	Thanks to Peter Knight on the arduino.cc forum for this little trick
-	//*	http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1271415071
-	asm volatile(
+//*	May 23,	2010	<MLS> Modified app_start because it was not working on the 2560.
+//*	Thanks to Peter Knight on the arduino.cc forum for this little trick
+//*	http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1271415071
+asm volatile(
  12a:	ee 27       	eor	r30, r30
  12c:	ff 27       	eor	r31, r31
  12e:	09 94       	ijmp
-			"clr	r30		\n\t"
-			"clr	r31		\n\t"
-			"ijmp	\n\t"
-	);
+		"clr	r30		\n\t"
+		"clr	r31		\n\t"
+		"ijmp	\n\t"
+		);
 }
  130:	08 95       	ret
 
@@ -386,7 +386,7 @@ void byte_response(uint8_t val)
  226:	80 91 4e 02 	lds	r24, 0x024E
  22a:	8f 5f       	subi	r24, 0xFF	; 255
  22c:	80 93 4e 02 	sts	0x024E, r24
- 230:	8f 30       	cpi	r24, 0x0F	; 15
+ 230:	85 30       	cpi	r24, 0x05	; 5
  232:	11 f4       	brne	.+4      	; 0x238 <byte_response+0x32>
 			app_start();
  234:	0e 94 95 00 	call	0x12a	; 0x12a <app_start>
@@ -420,7 +420,7 @@ void nothing_response(void)
  252:	80 91 4e 02 	lds	r24, 0x024E
  256:	8f 5f       	subi	r24, 0xFF	; 255
  258:	80 93 4e 02 	sts	0x024E, r24
- 25c:	8f 30       	cpi	r24, 0x0F	; 15
+ 25c:	85 30       	cpi	r24, 0x05	; 5
  25e:	11 f4       	brne	.+4      	; 0x264 <nothing_response+0x28>
 			app_start();
  260:	0e 94 95 00 	call	0x12a	; 0x12a <app_start>
@@ -988,8 +988,8 @@ int main(void)
 
 00000588 <block_done>:
  588:	11 24       	eor	r1, r1
-							: "=m" (SPMCSR) : "M" (PAGE_SIZE) : "r0","r16","r17","r24","r25","r28","r29","r30","r31"
-					);
+						 : "=m" (SPMCSR) : "M" (PAGE_SIZE) : "r0","r16","r17","r24","r25","r28","r29","r30","r31"
+						 );
 					/* Should really add a wait for RWW section to be enabled, don't actually need it since we never */
 					/* exit the bootloader without a power cycle anyhow */
 				}
@@ -1151,7 +1151,7 @@ int main(void)
  68c:	80 e0       	ldi	r24, 0x00	; 0
  68e:	0e 94 03 01 	call	0x206	; 0x206 <byte_response>
  692:	14 ce       	rjmp	.-984    	; 0x2bc <main+0x56>
-#if defined MONITOR
+	#if defined MONITOR
 
 		/* here come the extended monitor commands by Erik Lins */
 
@@ -1356,15 +1356,15 @@ int main(void)
 		}
 		/* end of monitor */
 #endif
-		else if (++error_count == MAX_ERROR_COUNT)
+	else if (++error_count == MAX_ERROR_COUNT)
  79e:	80 91 4e 02 	lds	r24, 0x024E
  7a2:	8f 5f       	subi	r24, 0xFF	; 255
  7a4:	80 93 4e 02 	sts	0x024E, r24
- 7a8:	8f 30       	cpi	r24, 0x0F	; 15
+ 7a8:	85 30       	cpi	r24, 0x05	; 5
  7aa:	09 f0       	breq	.+2      	; 0x7ae <block_done+0x226>
  7ac:	87 cd       	rjmp	.-1266   	; 0x2bc <main+0x56>
-		{
-			app_start();
+	{
+		app_start();
  7ae:	0e 94 95 00 	call	0x12a	; 0x12a <app_start>
  7b2:	84 cd       	rjmp	.-1272   	; 0x2bc <main+0x56>
 
