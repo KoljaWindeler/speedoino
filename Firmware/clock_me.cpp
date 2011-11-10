@@ -67,12 +67,12 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss,i
 	if(dayOfWeek>-1){ m_dayOfWeek=dayOfWeek; };
 	if(day>-1){ m_day=day+floor((m_hh+m_dayls)/24); }; // eventuell is ja schon morgen
 
-	if(lost_data){ // wenn im i2c mist rausgekommen ist, bat gewechselt, kurzschluss, erster aufbau .. watt weiß ich
+	/*if(lost_data){ // wenn im i2c mist rausgekommen ist, bat gewechselt, kurzschluss, erster aufbau .. watt weiß ich
 		if(day>-1 && year>-1 && mon>-1){ // und wir valide gps daten bekommen
 			store(); // speichern!!
 			lost_data=false;
 		}
-	}
+	}*/
 };
 
 /**
@@ -87,7 +87,7 @@ void speedo_clock::init() {
 	m_mm=0;
 	m_ss=0;
 	m_dayls=0;
-	lost_data=false;
+	/*lost_data=false;
 
 	// modul lesen
 	Wire.beginTransmission(DS1307_I2C_ADDRESS);   // Open I2C line in write mode
@@ -115,13 +115,13 @@ void speedo_clock::init() {
 	Serial.println(m_year);
 	if(m_mon==1 && m_day==1 && m_year==0){
 		lost_data=true;
-	}
+	}*/
 	pDebug->sprintlnp(PSTR("Clock init done"));
 	// hier vom lustigen modul lesen ende
 }
 
 
-void speedo_clock::store(){
+/*void speedo_clock::store(){
 	if(CLOCK_DEBUG){
 		Serial.println("== Writing to Modul ==");
 	};
@@ -177,7 +177,7 @@ void speedo_clock::store(){
 			Serial.println(temp_dayofweek);
 		};
 	};
-};
+};*/
 
 int speedo_clock::getdate(){
 	return m_day+m_mon*100;

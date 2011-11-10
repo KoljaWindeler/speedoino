@@ -34,7 +34,7 @@ struct GLOBAL_FLAGS {
   //! Dummy bits to fill up a byte.
   unsigned char dummy:6;
 };
-
+extern volatile struct GLOBAL_FLAGS status;
 unsigned long soll_pos;
 
 #endif

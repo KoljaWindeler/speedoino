@@ -50,7 +50,7 @@ typedef struct {
  * the timer1 frequency is the clock frequency divided by 8.
  */
 // Timer/Counter 1 running on 1mhz
-#define T1_FREQ 4000000
+#define T1_FREQ F_CPU
 
 //! Number of (full)steps per round on stepper motor in use.
 #define FSPR 781
@@ -89,7 +89,5 @@ unsigned int min(unsigned int x, unsigned int y);
 int get_stopper();
 void set_stopper();
 
-//! Global status flags
-extern struct GLOBAL_FLAGS status;
 
 #endif

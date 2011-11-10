@@ -32,7 +32,7 @@ public:
 	void init();
 	void copy(char* buffer);
 	bool changed(int* storage);
-	void store();
+	//void store();
 	int getdate();
 	unsigned long get_long_date();
 	void set_date_time(int year,int mon,int day,int hh,int mm,int ss,int dayOfWeek,int dayls);

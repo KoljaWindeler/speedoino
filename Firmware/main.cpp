@@ -108,10 +108,15 @@ int main(void) {
 			Serial3.print("$m3000*");
 			test=1;
 		};
-		if(Serial3.available()>0){
-			Serial.print("8er: "); Serial.println(Serial3.read(),BYTE);
-		};
-
+		//while(1){
+//			pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
+			if(Serial3.available()>0){
+				Serial.print("8er: "); Serial.println(Serial3.read(),BYTE);
+			};
+			if(Serial.available()>0){
+				Serial3.print(Serial.read(),BYTE);
+			};
+	//	};
 		/////////// REMOVE ME ///////////////
 
 

@@ -54,7 +54,6 @@ void InitUART(void)
 	// interrupt + UART
 #ifndef F_CPU
 #warning "F_CPU war noch nicht definiert, wird nun nachgeholt mit 16Mhz"
-#define F_CPU 4000000UL // Systemtakt in Hz - Definition als unsigned long beachten
 #endif
 
 	// Berechnungen
@@ -156,12 +155,12 @@ ISR(USART_RXC_vect){
 			};
 		} else if(UART_state==1){
 			if(data=='*'){
-			status.cmd = TRUE;
-			UART_state=0;
+				status.cmd = TRUE;
+				UART_state=0;
 			} else {
-			UART_RxBuffer[UART_RxPtr % UART_RX_BUFFER_SIZE] = data;
-			UART_RxBuffer[(UART_RxPtr + 1) % UART_RX_BUFFER_SIZE]=0x00;
-			UART_RxPtr++;
+				UART_RxBuffer[UART_RxPtr % UART_RX_BUFFER_SIZE] = data;
+				UART_RxBuffer[(UART_RxPtr + 1) % UART_RX_BUFFER_SIZE]=0x00;
+				UART_RxPtr++;
 			};
 		}
 	}

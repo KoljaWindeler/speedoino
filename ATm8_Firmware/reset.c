@@ -84,19 +84,19 @@ void reset(int spezial_down){
 };
 
 void config_timer0(){
-	// Timer/Counter 0 prescaler 64 => grob 62,5khz
+	// Timer/Counter 0 prescaler 64 => 8Mhz 125khz
 	TCCR0 = (1<<CS01) | (1<<CS00);
 	// Timer/Counter 0 Overflog timer0 interrupt
 	TIMSK |= (1<<TOIE0) ;
 }
 
 /* overflow vom timer 0 ..
- * 256*8/1.000.000 = 4,096ms
- * 244 * 2,048 = 999,424 ms zum auslösen
+ * 256*64/8.000.000 = 2,048ms
+ * 244 * 2,048 = 499,424 ms zum auslösen
 */
 ISR(TIMER0_OVF_vect){
 	if(bit_is_set(PINB,0)){//wenn es high ist soll resetet werden
-		if(counter_bt>=90 && !reset_bt_running){ // 1000 * 1/1000khz => 1sec
+		if(counter_bt>=244 && !reset_bt_running){ //
 			reset_bt_running=1;
 			reset(1);
 			last_rst=2;

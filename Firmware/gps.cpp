@@ -81,7 +81,7 @@ void speedo_gps::init(){
 	gps_write_status=0;
 	
 	// hier das gps konfigurieren ..  würg... das muss dann ja auch per UART manuell ... hmm später
-
+	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
 
 	pDebug->sprintlnp(PSTR("GPS init done"));
 };
@@ -92,7 +92,7 @@ void speedo_gps::init(){
 // wenn ja dann wird get_GPS damit aufgerufen
 void speedo_gps::recv_data(){
 	char byteGPS = UDR1;
-	Serial.print(byteGPS);
+	//Serial.print(byteGPS);
 	switch(gps_state){
 	case 0:  // hier sitzen wir und warten auf das startzeichen
 		if(byteGPS=='$'){ gps_state=1;	};
@@ -416,7 +416,7 @@ void speedo_gps::store_to_sd(){
 	};
 	gps_write_status=2;
 	// das kann auch ruhig alle 30 sec gemacht werden
-	pSensors->m_clock->store();
+	//pSensors->m_clock->store();
 	pConfig->storage_outdated=true; // damit geschrieben werden darf
 	gps_write_status=3;
 	pConfig->write(filename); // schreiben
@@ -694,3 +694,21 @@ void speedo_gps::loop(){
  };
  	
  	
+ void speedo_gps::SendByte(unsigned char data){
+ 	while((UCSR1A & (1<< UDRE1)) == 0) {};
+ 	UDR1=data;
+ };
+
+ /*! \brief Sends a string.
+  *
+  *  Loops thru a string and send each byte with uart_SendByte.
+  *  If TX buffer is full it will hang until space.
+  *
+  *  \param Str  String to be sent.
+  */
+ void speedo_gps::SendString(const char Str[])
+ {
+ 	unsigned char n = 0;
+ 	while(Str[n])
+ 		SendByte(Str[n++]);
+ }

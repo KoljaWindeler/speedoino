@@ -1,4 +1,4 @@
-#Tue Nov 08 14:18:09 CET 2011
+#Wed Nov 09 09:47:28 CET 2011
 avrtarget/ClockFrequency=16000000
 avrtarget/ExtRAMSize=0
 avrtarget/ExtendedRAM=false
@@ -15,13 +15,13 @@ avrtarget/avrdude/Fuses/ByteValues=255\:208\:255
 avrtarget/avrdude/Fuses/FileName=
 avrtarget/avrdude/Fuses/MCUid=atmega2560
 avrtarget/avrdude/Fuses/UseFile=false
-avrtarget/avrdude/Fuses/Write=true
+avrtarget/avrdude/Fuses/Write=false
 avrtarget/avrdude/NoChipErase=false
 avrtarget/avrdude/NoSigCheck=false
 avrtarget/avrdude/NoVerify=true
 avrtarget/avrdude/NoWrite=false
 avrtarget/avrdude/OtherOptions=
-avrtarget/avrdude/ProgrammerID=programmerconfig.3
+avrtarget/avrdude/ProgrammerID=programmerconfig.1
 avrtarget/avrdude/UseCounter=false
 avrtarget/avrdude/WriteEEPROM=false
 avrtarget/avrdude/WriteFlash=true

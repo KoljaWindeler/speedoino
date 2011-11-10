@@ -22,6 +22,10 @@ public:
 	long get_info(int select);
 	void loop();
 	void check_flag();
+	void SendByte(unsigned char data);
+	void SendString(const char Str[]);
+
+
 	unsigned long calc_dist(unsigned long longitude,unsigned long latitude);
 	unsigned long mod(unsigned long zahl,unsigned long teiler);
 	int get_order(char char_buffer[]);

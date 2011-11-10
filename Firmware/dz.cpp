@@ -87,9 +87,13 @@ void speedo_dz::calc() {
 		RxBuffer[RxPtr++]=Serial3.read();
 	}
 	if(strncmp(RxBuffer,"$k*",3)){ // TODO
-		Serial3.print("$m");
+		/*Serial3.print("$m");
 		Serial3.print(exact);
-		Serial3.print("*");
+		Serial3.print("*");*/
+
+		/*Serial.print("$m");
+		Serial.print(exact);
+		Serial.print("*");*/
 	}
 };
 
@@ -113,10 +117,10 @@ void speedo_dz::init() {
 	pinMode(RGB_OUT_G,OUTPUT);
 	pinMode(RGB_OUT_B,OUTPUT);
 
-	analogWrite(RGB_IN_R,155);
-	analogWrite(RGB_IN_G,155);
-	analogWrite(RGB_IN_B,155);
-	analogWrite(RGB_OUT_R,155);
+	analogWrite(RGB_IN_R,0);
+	analogWrite(RGB_IN_G,0);
+	analogWrite(RGB_IN_B,0);
+	analogWrite(RGB_OUT_R,0);
 	analogWrite(RGB_OUT_G,0);
 	analogWrite(RGB_OUT_B,0);
 

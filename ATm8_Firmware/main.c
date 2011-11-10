@@ -52,7 +52,7 @@
 
 
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
-struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
+volatile struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
 
 
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
@@ -81,16 +81,7 @@ void Init(void)
 
 int main(){
 	Init();
-
-//	while(1){
-//		speed_cntr_Move(1000, 64, 100, 700);
-//		while(get_stopper()!=STOP){};
-//		_delay_ms(1000);
-//	}
-
-
 	while(1) {
-		uart_SendByte('k');
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
 			if(UART_RxBuffer[0] == 'm'){
