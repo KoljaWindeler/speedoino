@@ -54,9 +54,6 @@ Watchdog.eep \
 SIZEDUMMY += \
 sizedummy \
 
-AVRDUDEDUMMY += \
-avrdudedummy \
-
 
 # All Target
 all: Watchdog.elf secondary-outputs
@@ -87,18 +84,12 @@ sizedummy: Watchdog.elf
 	@echo 'Finished building: $@'
 	@echo ' '
 
-avrdudedummy: Watchdog.elf
-	@echo 'Invoking: AVRDude'
-	/usr/bin/avrdude -pm8 -cavrisp2 -Pusb -V -u -Uflash:w:Watchdog.hex:a -Ulfuse:w:0xe3:m -Uhfuse:w:0xff:m
-	@echo 'Finished building: $@'
-	@echo ' '
-
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C_DEPS)$(ELFS)$(FLASH_IMAGE)$(EEPROM_IMAGE)$(S_DEPS)$(CXX_DEPS)$(S_UPPER_DEPS)$(C++_DEPS)$(ASM_DEPS)$(CC_DEPS)$(AVRDUDEDUMMY)$(CPP_DEPS)$(C_UPPER_DEPS)$(SIZEDUMMY) Watchdog.elf
+	-$(RM) $(OBJS)$(C_DEPS)$(ELFS)$(FLASH_IMAGE)$(EEPROM_IMAGE)$(S_DEPS)$(CXX_DEPS)$(S_UPPER_DEPS)$(C++_DEPS)$(ASM_DEPS)$(CC_DEPS)$(CPP_DEPS)$(C_UPPER_DEPS)$(SIZEDUMMY) Watchdog.elf
 	-@echo ' '
 
-secondary-outputs: $(FLASH_IMAGE) $(EEPROM_IMAGE) $(SIZEDUMMY) $(AVRDUDEDUMMY)
+secondary-outputs: $(FLASH_IMAGE) $(EEPROM_IMAGE) $(SIZEDUMMY)
 
 .PHONY: all clean dependents
 .SECONDARY:

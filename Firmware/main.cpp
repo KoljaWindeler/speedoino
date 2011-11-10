@@ -98,28 +98,21 @@ int main(void) {
 	 * all initialisations must been made before the main loop, before THIS
 	 ******************** setup procedure ********************************************/
 	unsigned long   previousMillis = 0;
+
+	//testing
+	Serial3.print("$m333*");
+	while(1){
+		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
+		if(Serial.available()>0){
+			Serial3.print(Serial.read(),BYTE);
+		}
+		if(Serial3.available()>0){
+			Serial.print(Serial3.read(),BYTE);
+		}
+	}
+	//testing
 	/* main loop, this will be repeated on and on */
-	int test=0;
-
 	for (;;) {
-
-		/////////// REMOVE ME ///////////////
-		if(!test){
-			Serial3.print("$m3000*");
-			test=1;
-		};
-		//while(1){
-//			pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
-			if(Serial3.available()>0){
-				Serial.print("8er: "); Serial.println(Serial3.read(),BYTE);
-			};
-			if(Serial.available()>0){
-				Serial3.print(Serial.read(),BYTE);
-			};
-	//	};
-		/////////// REMOVE ME ///////////////
-
-
 		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
 		pDebug->speedo_loop(21,1,0," "); 	// intensive debug= EVERY loop access reports the Menustate
 		pSensors->m_gps->check_flag();    	// check if a GPS sentence is ready

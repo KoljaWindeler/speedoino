@@ -1,4 +1,4 @@
-#Wed Nov 09 15:18:03 CET 2011
+#Thu Nov 10 18:27:21 CET 2011
 avrtarget/ClockFrequency=4000000
 avrtarget/ExtRAMSize=0
 avrtarget/ExtendedRAM=false
@@ -15,7 +15,7 @@ avrtarget/avrdude/Fuses/ByteValues=227\:255
 avrtarget/avrdude/Fuses/FileName=
 avrtarget/avrdude/Fuses/MCUid=atmega8
 avrtarget/avrdude/Fuses/UseFile=false
-avrtarget/avrdude/Fuses/Write=true
+avrtarget/avrdude/Fuses/Write=false
 avrtarget/avrdude/NoChipErase=false
 avrtarget/avrdude/NoSigCheck=false
 avrtarget/avrdude/NoVerify=true

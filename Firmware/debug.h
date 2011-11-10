@@ -20,7 +20,7 @@ class debugging{
 #define       STORAGE_DEBUG   false   // sehen ob das Datum richtig geladen wird
 #define       BLINKER_DEBUG   false   // sehen wie der Blinkerstate ist
 #define       DZ_DEBUG        false   // die peaks sehen
-#define       TEMP_DEBUG      true   // i2c
+#define       TEMP_DEBUG      false   // i2c
 #define       MENU_DEBUG      false   // sehen in welchem menu state man gerade ist etc
 #define       SD_DEBUG        false   // sehen wann/wohin und wie lange die sd karte schreibt
 #define       GPS_DEBUG       false   // ausgabe wenn sich was ergibt, also vollständige pakete empfangen werden

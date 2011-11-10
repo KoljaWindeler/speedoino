@@ -58,6 +58,7 @@ volatile struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 void Init(void)
 {
+	soll_pos=0;
 	// Init of motor driver IO pins
 	sm_driver_Init_IO();
 	// Init of uart
@@ -83,25 +84,39 @@ int main(){
 	Init();
 	while(1) {
 		// If a command is received, check the command and act on it.
+		if(get_stopper()!=STOP){
+			while(get_stopper()!=STOP){
+				_delay_ms(10);
+				//uart_SendByte('-');
+			};
+			uart_SendString("$k*"); // ACK
+			status.cmd = FALSE;
+		}
+
 		if(status.cmd == TRUE){
 			if(UART_RxBuffer[0] == 'm'){
-				// Move with...
-				// ...number of steps given.
-				int steps = 1000*(UART_RxBuffer[1]-'0') + 100*(UART_RxBuffer[2]-'0') + 10*(UART_RxBuffer[3]-'0') + (UART_RxBuffer[4]-'0');
-				speed_cntr_Move(soll_pos-steps, 70, 100, 1000);
-				while(get_stopper()!=STOP){};
-				uart_SendString("$k*"); // ACK
-			}
-			else if(UART_RxBuffer[0] == 'y'){
+				int steps=UART_RxBuffer[1]-'0';
+				int i=2;
+				while(UART_RxBuffer[i]!=0x00){
+					steps=steps*10+UART_RxBuffer[i]-'0';
+					i++;
+				}
+				if(abs(steps-soll_pos)>10){
+					speed_cntr_Move(steps-soll_pos, 120, 120, 400);
+					soll_pos=steps;
+				} else {
+					uart_SendString("$k*"); // ACK
+					status.cmd = FALSE;
+				}
+				//speed_cntr_Move(steps, 40, 80, 200);
+			} else if(UART_RxBuffer[0] == 'y'){
 				uart_SendByte('$');
 				uart_SendByte('y');
 				uart_SendByte(last_rst+'0');
 				uart_SendByte('*');
 				last_rst=0; // setze den status zurück damit wir immer einen frischen abfragen, wenn der große jetzt neustartet aber es steht da power, dann wissen wir, das war nicht der kleine, solange wie nicht wirklich einen powerlost hatten
+				status.cmd = FALSE;
 			}
-
-			// Clear RXbuffer.
-			status.cmd = FALSE;
-		}//end if(cmd)
+		}
 	}//end while(1)
 }

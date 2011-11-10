@@ -23,6 +23,9 @@ public:
 	void counter();
 	void calc();
 	void init();
+	bool at8_get();
+	void at8_listen();
+
 	unsigned int rounded;                 // to show on display, rounded by 50
 	unsigned int exact;                 // real rotation speed
 	bool blitz_en;

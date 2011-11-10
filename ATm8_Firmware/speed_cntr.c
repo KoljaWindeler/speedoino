@@ -46,7 +46,7 @@ int running_value;
  *  \param decel  Decelration to use, in 0.01*rad/sec^2.
  *  \param speed  Max speed, in 0.01*rad/sec.
  */
-void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, unsigned int speed)
+void speed_cntr_Move(signed int step, unsigned int accel, unsigned long decel, unsigned long speed)
 {
 	//! Number of steps before we hit max speed.
 	unsigned int max_s_lim;
@@ -130,12 +130,16 @@ void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, un
 			srd.run_state = ACCEL;
 		}
 
+		uart_SendString("starte den timer\n");
+
 		// Reset counter.
-		srd.accel_count = 0;
+		srd.accel_count = 0;// Set Timer/Counter to divide clock by 1
 		status.running = TRUE;
 		OCR1A = 10;
 		// Set Timer/Counter to divide clock by 1
 		TCCR1B |= (1<<CS10);
+		// Set Timer/Counter to divide clock by 8
+		//TCCR1B |= (1<<CS11);
 	}
 }
 
@@ -181,10 +185,9 @@ ISR(TIMER1_COMPA_vect){
 		step_count = 0;
 		rest = 0;
 		// Stop Timer/Counter 1.
-		TCCR1B &= ~(1<<CS10);
+		TCCR1B &= ~(1<<CS10 | 1<<CS11);
 		status.running = FALSE;
 		break;
-
 	case ACCEL:
 		sm_driver_StepCounter(srd.dir);
 		step_count++;
@@ -204,7 +207,6 @@ ISR(TIMER1_COMPA_vect){
 			srd.run_state = RUN;
 		}
 		break;
-
 	case RUN:
 		sm_driver_StepCounter(srd.dir);
 		step_count++;
@@ -217,7 +219,6 @@ ISR(TIMER1_COMPA_vect){
 			srd.run_state = DECEL;
 		}
 		break;
-
 	case DECEL:
 		sm_driver_StepCounter(srd.dir);
 		step_count++;

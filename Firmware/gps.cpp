@@ -76,16 +76,15 @@ void speedo_gps::init(){
 	gps_count=-1;
 	gps_count2=-1;
 	// speichern
-	
+
 	// Debug
 	gps_write_status=0;
-	
-	// hier das gps konfigurieren ..  würg... das muss dann ja auch per UART manuell ... hmm später
+
+	// hier das gps konfigurieren ..  yeah yeah yeah
 	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
 
 	pDebug->sprintlnp(PSTR("GPS init done"));
 };
-
 
 // wird als interrupt aufgerufen
 // prüft ob daten da sind, die valid sind
@@ -222,6 +221,31 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 	// modus 1, $gprmc empfangen
 	if(datensatz==1){ // lat,long,fix,time,Course,date
 		status=linea[indices[1]+1];
+
+		// zeit in jedem fall berechnen, auch wenn das sample nicht valid ist, das ist der RTC
+		long temp_gps_time=0;
+		long temp_gps_date=0;
+		for (int j=indices[0]+1;j<(indices[0]+7);j++){ // format 234500 für füddelvorzwölf
+			temp_gps_time=temp_gps_time*10+(linea[j]-48);
+		}
+		for (int j=indices[8]+1;j<(indices[9]);j++){
+			temp_gps_date=temp_gps_date*10+(linea[j]-48);    //181102 für 18.Nov 2002
+		}
+		// in date steht sowas wie  030411 für 3.4.2011
+		// Uhr stellen
+		int temp_mon=int(floor(temp_gps_date/100))%100;
+		int temp_day=floor(temp_gps_date/10000);
+		pSensors->m_clock->set_date_time(
+				int(temp_gps_date-temp_mon*100-temp_day*10000)%100,
+				temp_mon,
+				temp_day,
+				int(floor(temp_gps_time/10000))%24,
+				int(floor(temp_gps_time/100))%100,
+				temp_gps_time%100,
+				-1,
+				-1
+		);
+
 		if(status=='A'){
 			valid=0;
 			gps_count=(gps_count+1)%(sizeof(gps_time)/sizeof(gps_time[0]));
@@ -241,12 +265,9 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 				gps_special[gps_count]=0;
 			};
 
-			for (int j=indices[0]+1;j<(indices[0]+7);j++){ // format 234500 für füddelvorzwölf
-				gps_time[gps_count]=gps_time[gps_count]*10+(linea[j]-48);
-			}
-			for (int j=indices[8]+1;j<(indices[9]);j++){
-				gps_date[gps_count]=gps_date[gps_count]*10+(linea[j]-48);    //181102 für 18.Nov 2002
-			}
+			gps_time[gps_count]=temp_gps_time;
+			gps_date[gps_count]=temp_gps_date;
+
 			for (int j=indices[7]+1;j<(indices[8])-2;j++){ // keine Nachkommastelle mehr
 				if(linea[j]!=46){
 					gps_course[gps_count]=gps_course[gps_count]*10+(linea[j]-48);
@@ -269,23 +290,10 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 					gps_speed_arr[gps_count]=gps_speed_arr[gps_count]*10+(linea[j]-48);
 				};
 			}
-			gps_speed_arr[gps_count]=round((gps_speed_arr[gps_count]*1.852)/100); // auf kmh umbbiegen
+			gps_speed_arr[gps_count]=round(gps_speed_arr[gps_count]/54);//round((gps_speed_arr[gps_count]*1.852)/100); // auf kmh umbbiegen
 			speed=gps_speed_arr[gps_count];
 
-			// in date steht sowas wie  030411 für 3.4.2011
-			// Uhr stellen
-			int temp_mon=int(floor(gps_date[gps_count]/100))%100;
-			int temp_day=floor(gps_date[gps_count]/10000);
-			pSensors->m_clock->set_date_time(
-					int(gps_date[gps_count]-temp_mon*100-temp_day*10000)%100,
-					temp_mon,
-					temp_day,
-					int(floor(gps_time[gps_count]/10000))%24,
-					int(floor(gps_time[gps_count]/100))%100,
-					gps_time[gps_count]%100,
-					-1,
-					-1
-			);
+
 			// debug
 			if(GPS_DEBUG){
 				pDebug->sprintp(PSTR("Time in UTC (HhMmSs): "));
@@ -682,33 +690,33 @@ void speedo_gps::loop(){
  * wir triggern da das write und das wird uns hier aufrufen
  * um die infos zu bekommen
  ****************************************************/
- int speedo_gps::get_logged_points(char* buffer,int a){
- 	gps_write_status=9;
- 	if(a<=gps_count && a<=gps_count2){
- 		sprintf(buffer,"%06lu,%06lu,%09lu,%09lu,%03i,%05u,%05lu,%i,%i,%i\n",gps_time[a],gps_date[a],gps_lati[a],gps_long[a],gps_speed_arr[a],gps_course[a],gps_alt[a],gps_sats[a],gps_fix[a],gps_special[a]);
- 		written_gps_points++;
- 		return 0;
- 	} else {
- 		return -1;
- 	};
- };
- 	
- 	
- void speedo_gps::SendByte(unsigned char data){
- 	while((UCSR1A & (1<< UDRE1)) == 0) {};
- 	UDR1=data;
- };
+int speedo_gps::get_logged_points(char* buffer,int a){
+	gps_write_status=9;
+	if(a<=gps_count && a<=gps_count2){
+		sprintf(buffer,"%06lu,%06lu,%09lu,%09lu,%03i,%05u,%05lu,%i,%i,%i\n",gps_time[a],gps_date[a],gps_lati[a],gps_long[a],gps_speed_arr[a],gps_course[a],gps_alt[a],gps_sats[a],gps_fix[a],gps_special[a]);
+		written_gps_points++;
+		return 0;
+	} else {
+		return -1;
+	};
+};
 
- /*! \brief Sends a string.
-  *
-  *  Loops thru a string and send each byte with uart_SendByte.
-  *  If TX buffer is full it will hang until space.
-  *
-  *  \param Str  String to be sent.
-  */
- void speedo_gps::SendString(const char Str[])
- {
- 	unsigned char n = 0;
- 	while(Str[n])
- 		SendByte(Str[n++]);
- }
+
+void speedo_gps::SendByte(unsigned char data){
+	while((UCSR1A & (1<< UDRE1)) == 0) {};
+	UDR1=data;
+};
+
+/*! \brief Sends a string.
+ *
+ *  Loops thru a string and send each byte with uart_SendByte.
+ *  If TX buffer is full it will hang until space.
+ *
+ *  \param Str  String to be sent.
+ */
+void speedo_gps::SendString(const char Str[])
+{
+	unsigned char n = 0;
+	while(Str[n])
+		SendByte(Str[n++]);
+}

@@ -22,8 +22,8 @@
 #define SM_DRIVER_H
 
 // Direction of stepper motor movement
-#define CW  0
-#define CCW 1
+#define CW  1
+#define CCW 0
 
 /*! \Brief Define stepping mode to use in stepper motor.
  *

@@ -29,6 +29,7 @@ void reset_init(){
 	last_avr_state=0; // 1=letzte flanke war steigend,0=fallend
 	last_bt_state=0;  // 1=letzte flanke war steigend,0=fallend
 	last_rst=0;
+	counter_bt_init=0;
 }
 
 // funktion zum rücksetzen und eventuellen verweilen (spezial_down=1) im bootloader
@@ -48,7 +49,7 @@ void reset(int spezial_down){
 		cli();
 
 		// 2. Pin c5 auf Ausgang und auf LOW ziehen
-		DDRC   = 0x00 | (1<<PC5); // alles eingänge bis auf pc5 ( reset )
+		DDRC  |=  (1<<PC5); // alles eingänge bis auf pc5 ( reset )
 		PORTC &= ~(1 << RST_PIN); // reset auf low
 
 		// 3. spezialleitung auf masse ziehen
@@ -92,11 +93,11 @@ void config_timer0(){
 
 /* overflow vom timer 0 ..
  * 256*64/8.000.000 = 2,048ms
- * 244 * 2,048 = 499,424 ms zum auslösen
+ * 100 * 2,048 = 204,8 ms zum auslösen, weil es aber mehr als 2 Herz sind und wir auf beide flanken triggern, -> >4Hz -> <250ms
 */
 ISR(TIMER0_OVF_vect){
 	if(bit_is_set(PINB,0)){//wenn es high ist soll resetet werden
-		if(counter_bt>=244 && !reset_bt_running){ //
+		if(counter_bt>=100 && !reset_bt_running && counter_bt_init>10){ //
 			reset_bt_running=1;
 			reset(1);
 			last_rst=2;
@@ -123,6 +124,7 @@ ISR(TIMER0_OVF_vect){
 // interrupt handle für pin-pd2, hier hängt der BT empfänger dran
 // reagiert auf jede Flanke
 ISR(INT0_vect){
+	if(counter_bt_init<=10) counter_bt_init++;
 	if(bit_is_clear(PIND,2) && last_bt_state){ //wenn der pin low und die var high
 		// hier könnte man die Zeit ausgebena
 		PORTD &= ~(1 << BT_LED); // led aus

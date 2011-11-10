@@ -49,7 +49,7 @@ typedef struct {
  * Modify this according to frequency used. Because of the prescaler setting,
  * the timer1 frequency is the clock frequency divided by 8.
  */
-// Timer/Counter 1 running on 1mhz
+// Timer/Counter 1 running on 4mhz
 #define T1_FREQ F_CPU
 
 //! Number of (full)steps per round on stepper motor in use.
@@ -82,7 +82,7 @@ typedef struct {
 #define DECEL 2
 #define RUN   3
 
-void speed_cntr_Move(signed int step, unsigned int accel, unsigned int decel, unsigned int speed);
+void speed_cntr_Move(signed int step, unsigned int accel, unsigned long decel, unsigned long speed);
 void speed_cntr_Init_Timer1(void);
 unsigned long sqrt_2(unsigned long v);
 unsigned int min(unsigned int x, unsigned int y);
