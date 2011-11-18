@@ -75,7 +75,7 @@ void Init(void)
 
 
 	sei();
-	_delay_us(1000);
+	//_delay_us(1000);
 	config_timer0();
 }
 
@@ -101,15 +101,26 @@ int main(){
 					steps=steps*10+UART_RxBuffer[i]-'0';
 					i++;
 				}
-				// mindestschritweite 10
-				if(abs(steps-soll_pos)>10){
-					// wenn die schritweite unter 100 ist -- dann nur 10% der leistung
-					int beschleunigung=120;
-					int geschwindigkeit=400;
-					if(abs(steps-soll_pos)<100){
-						beschleunigung=12;
-						geschwindigkeit=40;
-					}
+				if(abs(steps-soll_pos)>0){
+					// speed && accel festlegen
+					int beschleunigung; // 100
+					int geschwindigkeit; //400
+
+//					if(abs(steps-soll_pos)>1000){
+//						beschleunigung=120; // 100
+//						geschwindigkeit=800; //400
+//					} else if(abs(steps-soll_pos)>100){
+//						// wenn die schritweite unter 100 ist -- dann nur 10% der leistung
+//						beschleunigung=100; // 100
+//						geschwindigkeit=400; //400
+//					} else {
+//						beschleunigung=100/abs(steps-soll_pos);
+//						geschwindigkeit=400/abs(steps-soll_pos);
+//					}
+
+					beschleunigung=round(120*(float)(abs(steps-soll_pos)/1000));
+					geschwindigkeit=round(800*(float)(abs(steps-soll_pos)/1000));
+
 					speed_cntr_Move(steps-soll_pos, beschleunigung, beschleunigung, geschwindigkeit);
 					soll_pos=steps;
 				} else {
