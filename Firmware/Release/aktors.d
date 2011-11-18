@@ -1,4 +1,4 @@
-gps.d gps.o: ../gps.cpp ../global.h ../clock_me.h \
+aktors.d aktors.o: ../aktors.cpp ../global.h ../clock_me.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/Wire.h ../dz.h ../gps.h \
  ../blinker.h ../temperature.h ../fuel.h ../gear.h ../speed.h ../reset.h \
  ../oiler.h ../stepper.h ../display.h \

@@ -154,7 +154,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 
 	if(!(addinfo_widget.x==-1 && addinfo_widget.y==-1)){ // only show it if pos != -1/-1
 		// see on top comment, number (2)
-		if(disp_zeile_bak[ADD_INFO]!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)){ // immer wenn sich trip_dist ändert den string ausgeben der direkt drüber steht, auf 0.1 km genau
+		if(unsigned(disp_zeile_bak[ADD_INFO])!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)){ // immer wenn sich trip_dist ändert den string ausgeben der direkt drüber steht, auf 0.1 km genau
 			// trip[8] => gesamt/100 => 100er Meter, 27.342,8 => 28
 			disp_zeile_bak[ADD_INFO]=int(pSensors->m_gps->mod(floor(trip_dist[8]/100),100));
 			if(m_trip_mode==1)

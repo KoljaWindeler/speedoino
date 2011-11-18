@@ -428,12 +428,12 @@ void ssd0323::string_P(short font,const char *p_string,unsigned char spalte, uns
 }
 
 /////////////////////////////// string to display 5x8 ///////////////////////////////
-void ssd0323::string(short font,char str[],unsigned char spalte, unsigned char zeile){
+void ssd0323::string(short font,const char str[],unsigned char spalte, unsigned char zeile){
 	string(font,str,spalte,zeile,0,15,0);
 }
 
 /////////////////////////////// string to display 5x8 ///////////////////////////////
-void ssd0323::string(short font,char str[],unsigned char spalte, unsigned char zeile, unsigned char back, unsigned char color,unsigned char offset){
+void ssd0323::string(short font,const char str[],unsigned char spalte, unsigned char zeile, unsigned char back, unsigned char color,unsigned char offset){
 	switch(font){
 	case SANS_SMALL_4X_FONT:
 		for(unsigned int i=0;i<strlen(str);i++){
@@ -552,13 +552,9 @@ void ssd0323::init(unsigned char phase,unsigned char ref) {
 	pinMode(SPI_DATA, OUTPUT);
 	pinMode(SPI_CLK,OUTPUT);
 	pinMode(SPI_CS,OUTPUT);
-	pinMode(SPI_POWER,OUTPUT);
-	pinMode(SPI_GND,OUTPUT);
 
 	delay(10);
 
-	fastWriteHigh(SPI_POWER);
-	fastWriteLow(SPI_GND);
 	fastWriteHigh(SPI_CS);
 	fastWriteLow(SPI_CD);
 	fastWriteLow(SPI_DATA);

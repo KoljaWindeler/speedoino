@@ -8,12 +8,6 @@
 #ifndef DZ_H_
 #define DZ_H_
 
-#define RGB_OUT_R 7
-#define RGB_OUT_G 8
-#define RGB_OUT_B 9
-#define RGB_IN_R 13
-#define RGB_IN_G 10
-#define RGB_IN_B 11
 /**************** DZ *******************/
 void helper();
 class speedo_dz{
@@ -23,7 +17,6 @@ public:
 	void counter();
 	void calc();
 	void init();
-	bool at8_goto(int winkel,int overwrite);
 
 	unsigned int rounded;                 // to show on display, rounded by 50
 	unsigned int exact;                 // real rotation speed
@@ -34,7 +27,7 @@ private:
 	unsigned int previous_peaks;		// z�hlerstand vom peak
 	unsigned int previous_dz;
 	volatile unsigned int peak_helper;
-
+	bool hme_light_active;
 };
 /**************** DZ *******************/
 

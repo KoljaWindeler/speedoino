@@ -22,7 +22,7 @@ public:
 	bool button_test(bool bt_keys_en);
 	void back();
 	void draw(const char** menu, int entries);
-	void yesno(char first[30],char second[30],char third[30]);
+	void yesno(const char first[30],const char second[30],const char third[30]);
 	void del_conf(char first[20],char second[20]);
 
 	unsigned long state;

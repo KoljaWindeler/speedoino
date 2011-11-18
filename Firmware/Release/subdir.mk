@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../aktors.cpp \
 ../blinker.cpp \
 ../clock_me.cpp \
 ../config.cpp \
@@ -24,10 +25,12 @@ CPP_SRCS += \
 ../speed.cpp \
 ../speedo.cpp \
 ../sprint.cpp \
+../stepper.cpp \
 ../temperature.cpp \
 ../timer.cpp 
 
 OBJS += \
+./aktors.o \
 ./blinker.o \
 ./clock_me.o \
 ./config.o \
@@ -48,10 +51,12 @@ OBJS += \
 ./speed.o \
 ./speedo.o \
 ./sprint.o \
+./stepper.o \
 ./temperature.o \
 ./timer.o 
 
 CPP_DEPS += \
+./aktors.d \
 ./blinker.d \
 ./clock_me.d \
 ./config.d \
@@ -72,6 +77,7 @@ CPP_DEPS += \
 ./speed.d \
 ./speedo.d \
 ./sprint.d \
+./stepper.d \
 ./temperature.d \
 ./timer.d 
 

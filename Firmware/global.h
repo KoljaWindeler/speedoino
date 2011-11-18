@@ -13,7 +13,10 @@
 #include "reset.h"
 #include "oiler.h"
 
-// sensoren
+// aktoren
+#include "stepper.h"
+
+// andere sachen
 #include "display.h"
 #include "sd.h"
 #include "config.h" // vor timer
@@ -21,7 +24,8 @@
 #include "sprint.h"
 #include "speedo.h"
 #include "menu.h"
-#include "sensors.h" // als letztes
+#include "sensors.h" // als vorletztes
+#include "aktors.h" // als letztes
 #include "debug.h"
 #include "file_manager.h"
 

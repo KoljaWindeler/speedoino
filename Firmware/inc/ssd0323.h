@@ -55,9 +55,9 @@ typedef uint8_t byte;
 		void highlight_bar(unsigned char x,unsigned char y,unsigned char width,unsigned char height);
 		void line(unsigned char x,unsigned char y,unsigned char x2,unsigned char y2,unsigned char color);
 		// Font Functions
-		void string(short font,char str[],unsigned char spalte, unsigned char zeile);
+		void string(short font,const char str[],unsigned char spalte, unsigned char zeile);
 		void string_P(short font,const char *p_string,unsigned char spalte, unsigned char zeile);
-		void string(short font,char str[],unsigned char spalte, unsigned char zeile, unsigned char back, unsigned char color,unsigned char offset);
+		void string(short font,const char str[],unsigned char spalte, unsigned char zeile, unsigned char back, unsigned char color,unsigned char offset);
 		void string_P(short font,const char *p_string,unsigned char spalte, unsigned char zeile, unsigned char back, unsigned char color,unsigned char offset);
 
 

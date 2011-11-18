@@ -1,7 +1,7 @@
 config.d config.o: ../config.cpp ../global.h ../clock_me.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/Wire.h ../dz.h ../gps.h \
  ../blinker.h ../temperature.h ../fuel.h ../gear.h ../speed.h ../reset.h \
- ../oiler.h ../display.h \
+ ../oiler.h ../stepper.h ../display.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/ssd0323.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/ssd0323_mega.h ../sd.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/EEPROM.h \
@@ -28,8 +28,8 @@ config.d config.o: ../config.cpp ../global.h ../clock_me.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/ArduinoStream.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/bufstream.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/SdFatUtil.h ../config.h \
- ../timer.h ../sprint.h ../speedo.h ../menu.h ../sensors.h ../debug.h \
- ../file_manager.h
+ ../timer.h ../sprint.h ../speedo.h ../menu.h ../sensors.h ../aktors.h \
+ ../debug.h ../file_manager.h
 
 ../global.h:
 
@@ -54,6 +54,8 @@ config.d config.o: ../config.cpp ../global.h ../clock_me.h \
 ../reset.h:
 
 ../oiler.h:
+
+../stepper.h:
 
 ../display.h:
 
@@ -122,6 +124,8 @@ config.d config.o: ../config.cpp ../global.h ../clock_me.h \
 ../menu.h:
 
 ../sensors.h:
+
+../aktors.h:
 
 ../debug.h:
 

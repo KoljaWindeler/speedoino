@@ -28,7 +28,7 @@ public:
 	void draw_blitzer(unsigned char x,unsigned char y);
 	void draw_arrow(int arrow, int spalte, int zeile);
 	int  sd2ssd(char filename[10]);
-	void show_animation(char command[]);
+	void show_animation(const char command[]);
 	void disp_waiting(int position,unsigned char spalte,unsigned char zeile);
 	void animation(int a);
 	void show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length);

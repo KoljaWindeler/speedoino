@@ -26,6 +26,7 @@ speedo_menu* 		pMenu=new speedo_menu();			// pins aktivieren, sonst nix
 speedo_speedo*		pSpeedo=new speedo_speedo();
 speedo_sprint* 		pSprint=new speedo_sprint();
 Speedo_sensors*		pSensors=new Speedo_sensors();
+Speedo_aktors*		pAktors=new Speedo_aktors();
 speedo_filemanager* pFilemanager=new speedo_filemanager(); // ob das gut geht weiß ich auch nicht ;)
 speedo_timer*   	pTimer=new speedo_timer(); // brauch ich ja nur hier, den braucht sonst keiner
 //** create objects **//
@@ -84,8 +85,16 @@ int main(void) {
 	pConfig->EEPROM_init(); 	// read vars from eeprom, reset Day Based storage etc
 	pConfig->read_skin();		// skinning
 	pConfig->check(); 			// check if Config read successfully
-
 	pOLED->init_speedo(); 		// execute this AFTER Config->init(), init() will load  phase,config,startup. PopUp will be shown if sd access fails
+	pAktors->init();			// ausschlag des zeigers
+
+	// außen blau reindimmen
+	for(int i=1;i<255;i++){
+		pAktors->set_rgb_out(0,0,i);
+		delay(8);
+	};
+	/* motor voll ausschalg */
+
 	pMenu->init(); 				// adds the connection between pins and vars
 	pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
 
@@ -98,21 +107,8 @@ int main(void) {
 	 * all initialisations must been made before the main loop, before THIS
 	 ******************** setup procedure ********************************************/
 	unsigned long   previousMillis = 0;
-
-	/* motor voll ausschalg */
-	pSensors->m_dz->at8_goto(1550,1);
-	bool motor_back=false;
-	/* motor voll ausschalg */
 	/* main loop, this will be repeated on and on */
 	for (;;) {
-		/* motor zu null */
-		if(!motor_back){
-			if(pSensors->m_dz->at8_goto(0,0)){
-				motor_back=true;
-			};
-		};
-		/* motor zu null */
-
 		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
 		pDebug->speedo_loop(21,1,0," "); 	// intensive debug= EVERY loop access reports the Menustate
 		pSensors->m_gps->check_flag();    	// check if a GPS sentence is ready

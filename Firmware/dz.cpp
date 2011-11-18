@@ -77,31 +77,59 @@ void speedo_dz::calc() {
 
 		pSensors->m_gear->calc();// alle 250 ms, also mit 4Hz den Gang berechnen
 
-		// zeiger
-		at8_goto(exact/10,0);
-		analogWrite(RGB_IN_R,millis()%255);
-		analogWrite(RGB_IN_G,(millis()+70)%255);
-		analogWrite(RGB_IN_B,(millis()+140)%255);
-		// zeiger
+		pAktors->m_stepper->go_to(exact/10,0);
 
 	} else if(now-previous_time>1000){
 		rounded=0;
 		exact=0;
+		// zeiger
+		pAktors->m_stepper->go_to(exact/10,0);
 	};
 	if(DEMO_MODE){
 		if(differ>250){
 			previous_time=now;
-			rounded=((millis()/300)%260)*70;
+			rounded=((millis()/300)%210)*70;
 			exact=rounded;
 			pSensors->m_gear->calc();
 			// zeiger
-			at8_goto(exact/10,0);
-			analogWrite(RGB_IN_R,millis()%255);
-			analogWrite(RGB_IN_G,(millis()+70)%255);
-			analogWrite(RGB_IN_B,(millis()+140)%255);
-			// zeiger
+			pAktors->m_stepper->go_to(exact/10,0);
 		}
 	};
+	/*///////////////// DIMMEN ABHÄNGIG VON DER DREHZAHL ////////////////
+	 *  wenn wir über 12k sind und die außen LED noch nicht rot sind ..
+	 *  1) es ist einfach nur blau 0,0,255
+	 *  2) 0!=155 && 0!=255 && dimm_available()  ==> TRUE, Starte Dimm
+	 *  3) 0..155!=155 && 0..255!=255 && dimm_available() => FALSE
+	 *  3.1) 0..255!=255 && dimm_available() => FALSE  allein durch dimm_available()
+	 *  wiederhole das bis dimm_available() wieder true wird
+	 *  4) 155!=255 && 155!=155 && dimm_available()  ==> FALSE
+	 *  5) 155!=255 && dimm_available() ==> TRUE
+	 *  5.1) 155..255!=155 && 155..255!=255 && dimm_available() => FALSE allein durch dimm_available()
+	 *  wiederhole das bis dimm_available() wieder true wird
+	 */
+
+	if(exact>14000 && !hme_light_active){
+		if(pAktors->dimm_available()){
+			if(pAktors->RGB.outer.r.actual==0){
+				// gucken ob der dimm Vorgang noch nicht gestartet wurde
+				pAktors->dimm_rgb_to(5,5,5,15,0); // 25*10ms = 250 ms
+			} else if(pAktors->RGB.outer.r.actual==5){
+				pAktors->dimm_rgb_to(255,0,0,15,0); // 25*10ms = 250 ms
+				hme_light_active=true;
+			};
+		};
+	// wenn wir unter 12k sind und die außen LED noch nicht ganz blau sind
+	} else if(exact<=14000 && hme_light_active) {
+		if(pAktors->dimm_available()){
+			if(pAktors->RGB.outer.r.actual==255){
+				pAktors->dimm_rgb_to(5,5,5,15,0); // 25*10ms = 250 ms
+			} else if(pAktors->RGB.outer.r.actual==5){
+				pAktors->dimm_rgb_to(0,0,255,15,0); // 75*10ms = 750 ms
+				hme_light_active=false;
+			}
+		}
+	};
+	/////////////////// DIMMEN ABHÄNGIG VON DER DREHZAHL /////////////////
 
 };
 
@@ -117,48 +145,8 @@ void speedo_dz::init() {
 	exact=0;                 // real rotation speed
 	peak_count=0;
 
-
-	pinMode(RGB_IN_R,OUTPUT);
-	pinMode(RGB_IN_G,OUTPUT);
-	pinMode(RGB_IN_B,OUTPUT);
-	pinMode(RGB_OUT_R,OUTPUT);
-	pinMode(RGB_OUT_G,OUTPUT);
-	pinMode(RGB_OUT_B,OUTPUT);
-
-	analogWrite(RGB_IN_R,0);
-	analogWrite(RGB_IN_G,0);
-	analogWrite(RGB_IN_B,0);
-	analogWrite(RGB_OUT_R,0);
-	analogWrite(RGB_OUT_G,0);
-	analogWrite(RGB_OUT_B,0);
-
 	Serial.println("DZ init done");
 	blitz_en=false;
+	hme_light_active=false; // nicht das high motor engine light an
 	Serial3.flush();
-};
-
-
-bool speedo_dz::at8_goto(int winkel,int overwrite){
-	if(Serial3.available()>=3){ // 3 buchstaben $k*
-		char serial_buffer[3];
-		serial_buffer[0]=Serial3.read();
-		serial_buffer[1]=Serial3.read();
-		serial_buffer[2]=Serial3.read();
-
-		if(serial_buffer[0]=='$' && serial_buffer[1]=='k' && serial_buffer[2]=='*'){
-			Serial3.flush();
-			Serial3.print("$m");
-			Serial3.print(winkel);
-			Serial3.print("*");
-			return true;
-		};
-
-	} else if(overwrite==1){
-		Serial3.flush();
-		Serial3.print("$m");
-		Serial3.print(winkel);
-		Serial3.print("*");
-		return true;
-	};
-	return false;
 };

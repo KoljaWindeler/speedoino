@@ -275,7 +275,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			file.close();
 
 			char title[15];
-			sprintf(title,"Skinfile Nr: %i/8",(state%10)-1);
+			sprintf(title,"Skinfile Nr: %i/8",int(state%10)-1);
 			if(buffer[0]=='#'){
 				pOLED->show_storry(buffer,byte_read,title,sizeof(title)/sizeof(title[0]));
 			} else {
@@ -297,7 +297,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		else { // if there is no file with that number
 			pOLED->clear_screen();
 			char title[17];
-			sprintf(title,"Skinfile Nr: %i/8",(state%10)-1);
+			sprintf(title,"Skinfile Nr: %i/8",int(state%10)-1);
 			pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
 			pOLED->string(STD_SMALL_1X_FONT,title,2,0,DISP_BRIGHTNESS,0,0);
 			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("File not found"),2,3,0,DISP_BRIGHTNESS,0);
@@ -660,7 +660,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->highlight_bar(0,0,128,8);
 			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Calibrate Gear"),2,0,15,0,0);
 			char temp[2];
-			sprintf(temp,"%i",state%10);
+			sprintf(temp,"%i",int(state%10));
 			pOLED->string(STD_SMALL_1X_FONT,temp,17,0,15,0,0);
 			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Change Gear up/down"),0,3);
 			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("!Keep driving!"),3,4);
@@ -943,7 +943,7 @@ void speedo_menu::back(){
 //// ein rückschritt im menü machen ////////
 
 /// eine rückfrage: soll ich wirklich löschen ////
-void speedo_menu::yesno(char first[30],char second[30],char third[30]){
+void speedo_menu::yesno(const char first[30],const char second[30],const char third[30]){
 	// Menu vorbereiten
 	pOLED->clear_screen();
 	pOLED->string(STD_SMALL_1X_FONT,first,4,1,0,DISP_BRIGHTNESS,0);

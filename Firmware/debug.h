@@ -35,7 +35,7 @@ public:
 	void parse(int state,char buffer[]);
 	void parse_a(int state,char buffer[]);
 	void parse_ul(int state,unsigned long wert);
-	void speedo_loop(int state,int intensive,unsigned long previousMillis,char char_buffer[]);
+	void speedo_loop(int state,int intensive,unsigned long previousMillis,const char char_buffer[]);
 	void loop();
 	void sprintp(const char *data);
 	void sprintlnp(const char *data);

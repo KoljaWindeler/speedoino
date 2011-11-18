@@ -98,7 +98,7 @@ void debugging::parse_ul(int state,unsigned long wert){
 	}
 }
 
-void debugging::speedo_loop(int state,int intensive,unsigned long previousMillis,char char_buffer[]){
+void debugging::speedo_loop(int state,int intensive,unsigned long previousMillis,const char char_buffer[]){
 	if((intensive==0 && TACHO_DEBUG) || (intensive==1 && TACHO_IDEBUG)){
 		int differ_show;
 		if(state==0){

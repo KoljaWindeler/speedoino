@@ -159,7 +159,7 @@ int configuration::write(const char *filename){
 					strcpy_P(buffer, PSTR("startup="));
 					pSD->writeString(file, buffer);
 					pSD->writeString(file, pOLED->startup);
-					pSD->writeString(file, ";\n");
+					pSD->writeString(file, (char *)";\n");
 
 					strcpy_P(buffer, PSTR("blinker="));
 					pSD->writeString(file, buffer);

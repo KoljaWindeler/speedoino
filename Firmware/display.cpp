@@ -246,7 +246,7 @@ void speedo_disp::show_storry(char storry[],unsigned int storry_length,char titl
 }
 
 
-void speedo_disp::show_animation(char command[]){
+void speedo_disp::show_animation(const char command[]){
 	pSensors->m_reset->set_deactive(false,false); // just deaktivate ist by now, dont save it, nowhere. this makes it possible to restore the IO state by var
 	int spacer[4];
 	int pointer_to_spacer=0;
