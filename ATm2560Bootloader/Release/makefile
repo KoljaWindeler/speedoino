@@ -49,7 +49,7 @@ all: ATm2560Bootloader.elf secondary-outputs
 ATm2560Bootloader.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: AVR C Linker'
-	avr-gcc -Wl,-Map,ATm2560Bootloader.map -mmcu=atmega2560 -o"ATm2560Bootloader.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	avr-gcc -Wl,-Map,ATm2560Bootloader.map --section-start=.text=0x3E000 -O2 -mmcu=atmega2560 -o"ATm2560Bootloader.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

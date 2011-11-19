@@ -595,16 +595,27 @@
 <option id="de.innot.avreclipse.assembler.option.debug.level.1927827694" name="Generate Debugging Info" superClass="de.innot.avreclipse.assembler.option.debug.level" value="de.innot.avreclipse.assembler.option.debug.level.none" valueType="enumerated"/>
 <inputType id="de.innot.avreclipse.tool.assembler.input.111014921" superClass="de.innot.avreclipse.tool.assembler.input"/>
 </tool>
-<tool id="de.innot.avreclipse.tool.compiler.winavr.app.release.2077349374" name="AVR Compiler" superClass="de.innot.avreclipse.tool.compiler.winavr.app.release">
+<tool command="avr-gcc" id="de.innot.avreclipse.tool.compiler.winavr.app.release.2077349374" name="AVR Compiler" superClass="de.innot.avreclipse.tool.compiler.winavr.app.release">
 <option id="de.innot.avreclipse.compiler.option.debug.level.1176868503" name="Generate Debugging Info" superClass="de.innot.avreclipse.compiler.option.debug.level" value="de.innot.avreclipse.compiler.option.debug.level.none" valueType="enumerated"/>
-<option id="de.innot.avreclipse.compiler.option.optimize.1129669001" name="Optimization Level" superClass="de.innot.avreclipse.compiler.option.optimize" value="de.innot.avreclipse.compiler.optimize.size" valueType="enumerated"/>
+<option id="de.innot.avreclipse.compiler.option.optimize.1129669001" name="Optimization Level" superClass="de.innot.avreclipse.compiler.option.optimize" value="de.innot.avreclipse.compiler.optimize.two" valueType="enumerated"/>
+<option id="de.innot.avreclipse.compiler.option.std.1887490947" name="Language Standard" superClass="de.innot.avreclipse.compiler.option.std" value="de.innot.avreclipse.compiler.option.std.default" valueType="enumerated"/>
+<option id="de.innot.avreclipse.compiler.option.language.uchar.539908007" name="char is unsigned (-funsigned-char)" superClass="de.innot.avreclipse.compiler.option.language.uchar" value="false" valueType="boolean"/>
+<option id="de.innot.avreclipse.compiler.option.language.ubitfields.1853008855" name="bitfields are unsigned (-funsigned-bitfields)" superClass="de.innot.avreclipse.compiler.option.language.ubitfields" value="false" valueType="boolean"/>
+<option id="de.innot.avreclipse.compiler.option.optimize.packstruct.1313016541" name="Pack structs (-fpack-struct)" superClass="de.innot.avreclipse.compiler.option.optimize.packstruct" value="false" valueType="boolean"/>
+<option id="de.innot.avreclipse.compiler.option.optimize.shortenums.1837772423" name="Short enums (-fshort-enums)" superClass="de.innot.avreclipse.compiler.option.optimize.shortenums" value="false" valueType="boolean"/>
+<option id="de.innot.avreclipse.compiler.option.def.1876148821" name="Define Syms (-D)" superClass="de.innot.avreclipse.compiler.option.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="BAUD_RATE=57600"/>
+</option>
 <inputType id="de.innot.avreclipse.compiler.winavr.input.1735385690" name="C Source Files" superClass="de.innot.avreclipse.compiler.winavr.input"/>
 </tool>
 <tool id="de.innot.avreclipse.tool.cppcompiler.app.release.786882263" name="AVR C++ Compiler" superClass="de.innot.avreclipse.tool.cppcompiler.app.release">
 <option id="de.innot.avreclipse.cppcompiler.option.debug.level.68631074" name="Generate Debugging Info" superClass="de.innot.avreclipse.cppcompiler.option.debug.level" value="de.innot.avreclipse.cppcompiler.option.debug.level.none" valueType="enumerated"/>
 <option id="de.innot.avreclipse.cppcompiler.option.optimize.1513134984" name="Optimization Level" superClass="de.innot.avreclipse.cppcompiler.option.optimize" value="de.innot.avreclipse.cppcompiler.optimize.size" valueType="enumerated"/>
 </tool>
-<tool id="de.innot.avreclipse.tool.linker.winavr.app.release.1913682863" name="AVR C Linker" superClass="de.innot.avreclipse.tool.linker.winavr.app.release"/>
+<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="de.innot.avreclipse.tool.linker.winavr.app.release.1913682863" name="AVR C Linker" superClass="de.innot.avreclipse.tool.linker.winavr.app.release">
+<option id="de.innot.avreclipse.linker.option.nosyms.1198979497" name="Omit Symbols (-s)" superClass="de.innot.avreclipse.linker.option.nosyms" value="false" valueType="boolean"/>
+<option id="de.innot.avreclipse.linker.option.otherlinkargs.1039083843" name="Other Arguments" superClass="de.innot.avreclipse.linker.option.otherlinkargs" value="--section-start=.text=0x3E000 -O2" valueType="string"/>
+</tool>
 <tool id="de.innot.avreclipse.tool.cpplinker.app.release.114286018" name="AVR C++ Linker" superClass="de.innot.avreclipse.tool.cpplinker.app.release"/>
 <tool id="de.innot.avreclipse.tool.archiver.winavr.base.183785888" name="AVR Archiver" superClass="de.innot.avreclipse.tool.archiver.winavr.base"/>
 <tool id="de.innot.avreclipse.tool.objdump.winavr.app.release.1343517049" name="AVR Create Extended Listing" superClass="de.innot.avreclipse.tool.objdump.winavr.app.release"/>

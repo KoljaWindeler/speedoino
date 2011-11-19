@@ -131,7 +131,7 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000000000      0x7e4
+.text           0x0000000000000000      0xa00
  *(.vectors)
  .vectors       0x0000000000000000       0xe4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
                 0x0000000000000000                __vectors
@@ -244,39 +244,39 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
                 0x0000000000000126                __vector_18
                 0x0000000000000126                __vector_20
                 0x0000000000000126                __vector_42
- .text          0x000000000000012a      0x68a ./main.o
+ .text          0x000000000000012a      0x8a6 ./main.o
                 0x000000000000012a                app_start
-                0x0000000000000132                putch
-                0x0000000000000140                puthex
-                0x0000000000000170                getch
-                0x00000000000001ba                gethexnib
-                0x00000000000001da                gethex
-                0x00000000000001f0                getNch
-                0x0000000000000206                byte_response
-                0x000000000000023c                nothing_response
-                0x0000000000000266                main
- .text          0x00000000000007b4        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .text          0x00000000000007b4        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
- .text          0x00000000000007b4        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
- .text          0x00000000000007b4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
- .text          0x00000000000007b4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
-                0x00000000000007b4                . = ALIGN (0x2)
+                0x0000000000000132                puthex
+                0x0000000000000164                putch
+                0x0000000000000172                getch
+                0x00000000000001ae                gethexnib
+                0x00000000000001ce                gethex
+                0x00000000000001e4                getNch
+                0x00000000000001fc                byte_response
+                0x0000000000000250                nothing_response
+                0x000000000000028e                main
+ .text          0x00000000000009d0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .text          0x00000000000009d0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+ .text          0x00000000000009d0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
+ .text          0x00000000000009d0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
+ .text          0x00000000000009d0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
+                0x00000000000009d0                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x00000000000007b4        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .text.libgcc   0x00000000000007b4        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
- .text.libgcc   0x00000000000007b4        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
+ .text.libgcc   0x00000000000009d0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .text.libgcc   0x00000000000009d0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+ .text.libgcc   0x00000000000009d0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
  .text.avr-libc
-                0x00000000000007b4       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
-                0x00000000000007b4                __eerd_byte_m2560
+                0x00000000000009d0       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
+                0x00000000000009d0                __eerd_byte_m2560
  .text.avr-libc
-                0x00000000000007c4       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
-                0x00000000000007c4                __eewr_byte_m2560
-                0x00000000000007c6                __eewr_r18_m2560
-                0x00000000000007e0                . = ALIGN (0x2)
+                0x00000000000009e0       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
+                0x00000000000009e0                __eewr_byte_m2560
+                0x00000000000009e2                __eewr_r18_m2560
+                0x00000000000009fc                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000000000007e0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
-                0x00000000000007e0                exit
-                0x00000000000007e0                _exit
+ .fini9         0x00000000000009fc        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+                0x00000000000009fc                exit
+                0x00000000000009fc                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -295,11 +295,11 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000000000007e0        0x4 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .fini0         0x00000000000009fc        0x4 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
  *(.fini0)
-                0x00000000000007e4                _etext = .
+                0x0000000000000a00                _etext = .
 
-.data           0x0000000000800200       0x4e load address 0x00000000000007e4
+.data           0x0000000000800200       0x4e load address 0x0000000000000a00
                 0x0000000000800200                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800200        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
@@ -341,8 +341,8 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
                 0x0000000000800354                address_high
                 0x0000000000800355                flags
                 0x0000000000800356                PROVIDE (__bss_end, .)
-                0x00000000000007e4                __data_load_start = LOADADDR (.data)
-                0x0000000000000832                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0000000000000a00                __data_load_start = LOADADDR (.data)
+                0x0000000000000a4e                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0000000000800356        0x0
                 0x0000000000800356                PROVIDE (__noinit_start, .)
