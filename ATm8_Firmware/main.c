@@ -106,20 +106,19 @@ int main(){
 					int beschleunigung; // 100
 					int geschwindigkeit; //400
 
-//					if(abs(steps-soll_pos)>1000){
-//						beschleunigung=120; // 100
-//						geschwindigkeit=800; //400
-//					} else if(abs(steps-soll_pos)>100){
-//						// wenn die schritweite unter 100 ist -- dann nur 10% der leistung
-//						beschleunigung=100; // 100
-//						geschwindigkeit=400; //400
-//					} else {
-//						beschleunigung=100/abs(steps-soll_pos);
-//						geschwindigkeit=400/abs(steps-soll_pos);
-//					}
+					if(abs(steps-soll_pos)>1000){
+						beschleunigung=120; // 100
+						geschwindigkeit=800; //400
+					} else if(abs(steps-soll_pos)>100){
+						// wenn die schritweite unter 100 ist -- dann nur 10% der leistung
+						beschleunigung=100; // 100
+						geschwindigkeit=400; //400
+					} else {
+						beschleunigung=100/abs(steps-soll_pos);
+						geschwindigkeit=400/abs(steps-soll_pos);
+					}
 
-					beschleunigung=round(120*(float)(abs(steps-soll_pos)/1000));
-					geschwindigkeit=round(800*(float)(abs(steps-soll_pos)/1000));
+
 
 					speed_cntr_Move(steps-soll_pos, beschleunigung, beschleunigung, geschwindigkeit);
 					soll_pos=steps;
