@@ -92,7 +92,7 @@
 
 
 /* 20070707: hacked by David A. Mellis - after this many errors give up and launch application */
-#define MAX_ERROR_COUNT 15
+#define MAX_ERROR_COUNT 5
 
 /* set the UART baud rate */
 /* 20060803: hacked by DojoCorp */
@@ -110,7 +110,7 @@
 
 /* monitor functions will only be compiled when using ATmega128, due to bootblock size constraints */
 #define MONITOR 1
-
+#define MAX_TIME_COUNT F_CPU >> 5
 
 
 /* define various device id's */
@@ -167,9 +167,9 @@ void 	app_start()
 //*	Thanks to Peter Knight on the arduino.cc forum for this little trick
 //*	http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1271415071
 asm volatile(
-		"clr	r30		\n\t"				
-		"clr	r31		\n\t"				
-		"ijmp	\n\t"				
+		"clr	r30		\n\t"
+		"clr	r31		\n\t"
+		"ijmp	\n\t"
 		);
 }
 
@@ -226,7 +226,8 @@ int main(void)
 
 	putch(0x14); /* here i am*/
 	putch(0x10); /* here i am*/
-	
+
+
 
 	/* forever loop */
 	for (;;)
@@ -237,7 +238,7 @@ int main(void)
 
 		/* A bunch of if...else if... gives smaller code than switch...case ! */
 
-		/* Hello is anyone home ? */ 
+		/* Hello is anyone home ? */
 		if(ch=='0')
 		{
 			nothing_response();
@@ -335,7 +336,7 @@ int main(void)
 				}else if(lower_round==0){
 					lower_round=1;
 				};
-			
+
 			};
 
 			nothing_response();
@@ -356,12 +357,12 @@ int main(void)
 				}
 				else if (ch == 1)
 				{
-					byte_response(SIG2); 
+					byte_response(SIG2);
 				}
 				else
 				{
 					byte_response(SIG3);
-				} 
+				}
 			}
 			else
 			{
@@ -391,15 +392,15 @@ int main(void)
 					{
 						eeprom_write_byte((void *)address.word,buff[w]);
 						address.word++;
-					}			
+					}
 				}
 				else
 				{					        //Write to FLASH one page at a time
 					if (address.byte[1]>127 && lower_round!=1) 	address_high	=	0x01;	//Only possible with m128, m256 will need 3rd address byte. FIXME
-					else if(address.byte[1]<=127 && lower_round==1) address_high	=	0x02;					
+					else if(address.byte[1]<=127 && lower_round==1) address_high	=	0x02;
 					else if(address.byte[1]>127 && lower_round==1) 	address_high	=	0x03;
 					else 						address_high	=	0x00;
-			
+
 					RAMPZ	=	address_high;
 					address.word	=	address.word << 1;	        //address * 2 -> byte location
 					if ((length.byte[0] & 0x01)) length.word++;	//Even up an odd number of bytes
@@ -413,9 +414,9 @@ int main(void)
 						 "ldi	r29,hi8(buff)	\n\t"
 						 "lds	r24,length	\n\t"			//Length of data to be written (in bytes)
 						 "lds	r25,length+1	\n\t"
-				"length_loop:		\n\t"					//Main loop, repeat for number of words in block							 							 
+				"length_loop:		\n\t"					//Main loop, repeat for number of words in block
 						 "cpi	r17,0x00	\n\t"			//If page_word_count=0 then erase page
-						 "brne	no_page_erase	\n\t"						 
+						 "brne	no_page_erase	\n\t"
 				"wait_spm1:		\n\t"
 						 "lds	r16,%0		\n\t"			//Wait for previous spm to complete
 						 "andi	r16,1           \n\t"
@@ -423,20 +424,20 @@ int main(void)
 						 "breq	wait_spm1       \n\t"
 						 "ldi	r16,0x03	\n\t"			//Erase page pointed to by Z
 						 "sts	%0,r16		\n\t"
-						 "spm			\n\t"							 
+						 "spm			\n\t"
 				"wait_spm2:		\n\t"
 						 "lds	r16,%0		\n\t"			//Wait for previous spm to complete
 						 "andi	r16,1           \n\t"
 						 "cpi	r16,1           \n\t"
-						 "breq	wait_spm2       \n\t"									 
+						 "breq	wait_spm2       \n\t"
 
 						 "ldi	r16,0x11	\n\t"			//Re-enable RWW section
-						 "sts	%0,r16		\n\t"						 			 
+						 "sts	%0,r16		\n\t"
 						 "spm			\n\t"
-				"no_page_erase:		\n\t"							 
+				"no_page_erase:		\n\t"
 						 "ld	r0,Y+		\n\t"			//Write 2 bytes into page buffer
-						 "ld	r1,Y+		\n\t"							 
-									 
+						 "ld	r1,Y+		\n\t"
+
 				"wait_spm3:		\n\t"
 						 "lds	r16,%0		\n\t"			//Wait for previous spm to complete
 						 "andi	r16,1       \n\t"
@@ -445,7 +446,7 @@ int main(void)
 						 "ldi	r16,0x01	\n\t"			//Load r0,r1 into FLASH page buffer
 						 "sts	%0,r16		\n\t"
 						 "spm				\n\t"
-									 
+
 						 "inc	r17			\n\t"			//page_word_count++
 						 "cpi r17,%1	    \n\t"
 						 "brlo	same_page	\n\t"			//Still same page in FLASH
@@ -463,11 +464,11 @@ int main(void)
 						 "lds	r16,%0		\n\t"			//Wait for previous spm to complete
 						 "andi	r16,1           \n\t"
 						 "cpi	r16,1           \n\t"
-						 "breq	wait_spm5       \n\t"									 
+						 "breq	wait_spm5       \n\t"
 						 "ldi	r16,0x11	\n\t"			//Re-enable RWW section
-						 "sts	%0,r16		\n\t"						 			 
-						 "spm			\n\t"					 		 
-				"same_page:		\n\t"							 
+						 "sts	%0,r16		\n\t"
+						 "spm			\n\t"
+				"same_page:		\n\t"
 						 "adiw	r30,2		\n\t"			//Next word in FLASH
 						 "sbiw	r24,2		\n\t"			//length-2
 						 "breq	final_write	\n\t"			//Finished
@@ -491,7 +492,7 @@ int main(void)
 			{
 				if (++error_count == MAX_ERROR_COUNT)
 					app_start();
-			}		
+			}
 		}
 
 
@@ -555,7 +556,7 @@ int main(void)
 		}
 
 
-	#if defined MONITOR 
+	#if defined MONITOR
 
 		/* here come the extended monitor commands by Erik Lins */
 
@@ -566,7 +567,7 @@ int main(void)
 			if(ch=='!')
 			{
 				ch	=	getch();
-				if(ch=='!') 
+				if(ch=='!')
 				{
 					PGM_P welcome	=	"";
 					uint16_t extaddr;
@@ -703,7 +704,7 @@ void puthex(char ch)
 	{
 		ah += '0';
 	}
-	
+
 	ch &= 0x0f;
 	if(ch >= 0x0a)
 	{
@@ -713,7 +714,7 @@ void puthex(char ch)
 	{
 		ch += '0';
 	}
-	
+
 	putch(ah);
 	putch(ch);
 }
@@ -733,7 +734,7 @@ char getch(void)
 	uint32_t count = 0;
 	while (!(UCSR0A & _BV(RXC0)))
 	{
-		/* 20060803 DojoCorp:: Addon coming from the previous Bootloader*/               
+		/* 20060803 DojoCorp:: Addon coming from the previous Bootloader*/
 		/* HACKME:: here is a good place to count times*/
 		/* HACKME:: here is also a good play to listen on the "is it a bluetooth reset"-PIN and stop counting*/
 		//if(PINA & (0x02)){ // nur hochzählen wenn pin a1 auf high, der hat nen pull up
