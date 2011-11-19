@@ -27,7 +27,8 @@ CPP_SRCS += \
 ../sprint.cpp \
 ../stepper.cpp \
 ../temperature.cpp \
-../timer.cpp 
+../timer.cpp \
+../voltage.cpp 
 
 OBJS += \
 ./aktors.o \
@@ -53,7 +54,8 @@ OBJS += \
 ./sprint.o \
 ./stepper.o \
 ./temperature.o \
-./timer.o 
+./timer.o \
+./voltage.o 
 
 CPP_DEPS += \
 ./aktors.d \
@@ -79,7 +81,8 @@ CPP_DEPS += \
 ./sprint.d \
 ./stepper.d \
 ./temperature.d \
-./timer.d 
+./timer.d \
+./voltage.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

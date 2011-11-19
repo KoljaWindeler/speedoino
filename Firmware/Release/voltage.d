@@ -1,4 +1,4 @@
-main.d main.o: ../main.cpp ../global.h ../clock_me.h \
+voltage.d voltage.o: ../voltage.cpp ../global.h ../clock_me.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/Wire.h ../dz.h ../gps.h \
  ../blinker.h ../temperature.h ../fuel.h ../gear.h ../speed.h ../reset.h \
  ../oiler.h ../voltage.h ../stepper.h ../display.h \

@@ -29,6 +29,7 @@ Speedo_sensors::Speedo_sensors(){
 	m_reset=new speedo_reset();
 	m_gear=new speedo_gear();
 	m_oiler=new speedo_oiler();
+	m_voltage=new speedo_voltage();
 };
 
 Speedo_sensors::~Speedo_sensors(){
@@ -45,6 +46,7 @@ void Speedo_sensors::init(){
 	m_reset->init();
 	m_gear->init();
 	m_oiler->init();
+	m_voltage->init();
 	pDebug->sprintlnp(PSTR("Sensors init done"));
 }
 

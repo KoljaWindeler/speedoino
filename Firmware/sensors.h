@@ -25,6 +25,7 @@ public:
 	speedo_reset* m_reset;
 	speedo_gear* m_gear;
 	speedo_oiler* m_oiler;
+	speedo_voltage* m_voltage;
 
 };
 extern Speedo_sensors* pSensors;

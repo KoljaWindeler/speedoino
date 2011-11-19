@@ -26,6 +26,7 @@ speedo_timer::speedo_timer(){
 	every_qsecond_timer=millis();   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
 	every_custom_timer=millis();   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
 	blitzer_warning_visible=false;
+	pinMode(3,INPUT);
 }
 
 speedo_timer::~speedo_timer(){
@@ -33,11 +34,11 @@ speedo_timer::~speedo_timer(){
 }
 
 void ram_info() {
-  int size = 8192; // Use 2048 with ATmega328
-  byte *buf;
-  while ((buf = (byte *) malloc(--size)) == NULL);
-  free(buf);
-  Serial.println(size);
+	int size = 8192; // Use 2048 with ATmega328
+	byte *buf;
+	while ((buf = (byte *) malloc(--size)) == NULL);
+	free(buf);
+	Serial.println(size);
 }
 
 void speedo_timer::every_sec(configuration* pConfig) {
@@ -49,6 +50,7 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		pSensors->m_temperature->read_air_temp();  // temperaturen aktualisieren
 		pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
 		pSensors->m_oiler->check_value(); // gucken ob wir ölen müssten
+		pSensors->m_voltage->calc(); // spannungscheck
 		pConfig->km_save();    // avg,max,trips hochzählen, immer wenn ss==59 ist store to sd card
 	}
 };

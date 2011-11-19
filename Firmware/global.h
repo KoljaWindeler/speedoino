@@ -12,6 +12,7 @@
 #include "speed.h"
 #include "reset.h"
 #include "oiler.h"
+#include "voltage.h"
 
 // aktoren
 #include "stepper.h"

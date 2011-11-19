@@ -1,7 +1,7 @@
 aktors.d aktors.o: ../aktors.cpp ../global.h ../clock_me.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/Wire.h ../dz.h ../gps.h \
  ../blinker.h ../temperature.h ../fuel.h ../gear.h ../speed.h ../reset.h \
- ../oiler.h ../stepper.h ../display.h \
+ ../oiler.h ../voltage.h ../stepper.h ../display.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/ssd0323.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/ssd0323_mega.h ../sd.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/EEPROM.h \
@@ -54,6 +54,8 @@ aktors.d aktors.o: ../aktors.cpp ../global.h ../clock_me.h \
 ../reset.h:
 
 ../oiler.h:
+
+../voltage.h:
 
 ../stepper.h:
 
