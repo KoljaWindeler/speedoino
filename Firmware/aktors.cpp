@@ -8,7 +8,6 @@ Speedo_aktors::~Speedo_aktors(){
 };
 
 void Speedo_aktors::init(){
-	m_stepper->init();
 	pinMode(RGB_IN_R,OUTPUT);
 	pinMode(RGB_IN_G,OUTPUT);
 	pinMode(RGB_IN_B,OUTPUT);

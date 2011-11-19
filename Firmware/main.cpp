@@ -71,7 +71,8 @@ int main(void) {
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop
 	 ******************** setup procedure ********************************************/
-	Serial.begin(57600); // damit kann ich mit dem bluetooth reden, und das bluetooth kann so mit dem bootloader reden .. sind wir nich kommunikativ
+	Serial.begin(57600); 		// damit kann ich mit dem bluetooth reden, und das bluetooth kann so mit dem bootloader reden .. sind wir nich kommunikativ
+	pAktors->init();			// ausschlag des zeigers
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
 	Wire.begin();				// BEFORE Clock_init(), Clock is in the sensor class and needs I²C
 	pSensors->init(); 			// start every init sequence of each sensor
@@ -86,12 +87,12 @@ int main(void) {
 	pConfig->read_skin();		// skinning
 	pConfig->check(); 			// check if Config read successfully
 	pOLED->init_speedo(); 		// execute this AFTER Config->init(), init() will load  phase,config,startup. PopUp will be shown if sd access fails
-	pAktors->init();			// ausschlag des zeigers
+	pAktors->m_stepper->init(); // Motorausschlag
 
 	// außen blau reindimmen
 	for(int i=1;i<255;i++){
 		pAktors->set_rgb_out(0,0,i);
-		delay(8);
+		delay(4);
 	};
 	/* motor voll ausschalg */
 
