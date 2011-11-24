@@ -929,8 +929,9 @@ void speedo_menu::yesno(const char first[30],const char second[30],const char th
 	pOLED->string(STD_SMALL_1X_FONT,zeiger,0,7);
 	button_links_valid=true;
 	button_oben_valid=false;
-	button_unten_valid=false;
 	button_rechts_valid=true;
+	button_unten_valid=false;
+
 };
 /// eine rückfrage: soll ich wirklich löschen ////
 
