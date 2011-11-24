@@ -84,6 +84,7 @@ void speedo_dz::calc() {
 		exact=0;
 		// zeiger
 		pAktors->m_stepper->go_to(exact/10,0);
+		previous_time=now;
 	};
 	if(DEMO_MODE){
 		if(differ>250){
@@ -108,7 +109,7 @@ void speedo_dz::calc() {
 	 *  wiederhole das bis dimm_available() wieder true wird
 	 */
 
-	if(exact>14000 && !hme_light_active){
+	if(exact>14000 && !hme_light_active && blitz_en){
 		if(pAktors->dimm_available()){
 			if(pAktors->RGB.outer.r.actual==0){
 				// gucken ob der dimm Vorgang noch nicht gestartet wurde
@@ -119,7 +120,7 @@ void speedo_dz::calc() {
 			};
 		};
 	// wenn wir unter 12k sind und die außen LED noch nicht ganz blau sind
-	} else if(exact<=14000 && hme_light_active) {
+	} else if(exact<=14000 && hme_light_active && blitz_en) {
 		if(pAktors->dimm_available()){
 			if(pAktors->RGB.outer.r.actual==255){
 				pAktors->dimm_rgb_to(5,5,5,15,0); // 25*10ms = 250 ms

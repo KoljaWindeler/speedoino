@@ -113,6 +113,7 @@ int main(void) {
 		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
 		pDebug->speedo_loop(21,1,0," "); 	// intensive debug= EVERY loop access reports the Menustate
 		pSensors->m_gps->check_flag();    	// check if a GPS sentence is ready
+		pSensors->m_dz->calc(); 			// immer alle 250ms berechnen, damit egal in welchem menü
 
 		/************************* timer *********************/
 		pTimer->every_sec(pConfig);		// 1000 ms
@@ -128,27 +129,27 @@ int main(void) {
 		/************************ every deamon activity is clear, now draw speedo ********************
 		 * we are round about 0000[1]1 - 0000[1]9
 		 ************************ every deamon activity is clear, now draw speedo ********************/
-		if((pMenu->state/10)==1 || pMenu->state==8511111)  {
+		if((pMenu->state/10)==1 || pMenu->state==7311111)  {
 			pSpeedo->loop(previousMillis);
 		}
 		//////////////////// Sprint Speedo ///////////////////
 		else if( pMenu->state==21 ) {
-			pSprint->loop(previousMillis);
+			pSprint->loop();
 		}
-		//////////////////// race mode ///////////////////
-		else if(pMenu->state==311){
-
+		//////////////////// voltage mode ///////////////////
+		else if(pMenu->state==531){
+			pSensors->m_voltage->loop();
 		}
 		//////////////////// gps scan ///////////////////
-		else if(pMenu->state==51){
+		else if(pMenu->state==511){
 			pSensors->m_gps->loop();
 		}
 		//////////////////// outline scan ///////////////////
-		else if(pMenu->state==841){
+		else if(pMenu->state==721){
 			pSensors->m_speed->check_umfang();
 		}
 		////////////////// gear scan ///////////////
-		else if(floor(pMenu->state/100)==82){
+		else if(floor(pMenu->state/100)==71){
 			pSensors->m_gear->calibrate();
 		}
 	} // end for

@@ -122,7 +122,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * |||||||||||||||||||   <-- the highlighted "info" field, this could be anything like (flasher/navigation/engine cold) (3)
 	 ***********************************************************************/
 	// see comment on top, number (1)
-	pSensors->m_dz->calc();
+	//pSensors->m_dz->calc(); // calc in main loop to run the stepper in every menu
 	if(!(dz_widget.x==-1 && dz_widget.y==-1)){ // only show it if pos != -1/-1
 		int sats=pSensors->m_gps->get_info(6);
 		if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->m_dz->rounded+1+sats)){

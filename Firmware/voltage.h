@@ -9,13 +9,14 @@
 #define VOLTAGE_H_
 
 class speedo_voltage{
-#define VOLTAGE_PIN 3
+#define VOLTAGE_PIN 2
 public:
 	speedo_voltage();
 	~speedo_voltage();
 	void init();
 	int get();
 	void calc();
+	void loop();
 private:
 	int value;
 	short int value_counter;

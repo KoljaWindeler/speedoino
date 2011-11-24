@@ -27,11 +27,11 @@ void moped_blinker::check(){
   short int blinker_state=digitalRead(BLINKER_PIN);
   bool blinker_on;
 
-  if(blinker_state==0){ // quasi low active
+  if(blinker_state==1){ // quasi high active
     guard_start=millis(); // hier nichts ändern
     blinker_on=true;
     if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist wirklich an")); };
-  } else if (blinker_state==1 && guard_start+1000>millis()){
+  } else if (blinker_state==0 && guard_start+1000>millis()){
     blinker_on=true; // wenn innerhalb der letzten sec der blinker an war
     if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist aus aber guard intervall")); };
   } else {
@@ -64,7 +64,6 @@ bool moped_blinker::warn(unsigned long dist){
 
 void moped_blinker::init(){
   pinMode(BLINKER_PIN, INPUT);
-  digitalWrite(BLINKER_PIN,HIGH);
   pDebug->sprintlnp(PSTR("Blinker init done"));
   guard_start=0;
   high_speed_add=0;

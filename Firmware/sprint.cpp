@@ -28,9 +28,10 @@ void speedo_sprint::init(){
 	done=false;                              // der sprint ist noch nicht fertig
 	lock=false;                              // ist der sprint am laufen
 	blink_show=false;                        // anzeigen oder nicht
+	previousMillis=millis();
 }
 
-void speedo_sprint::loop(unsigned long previousMillis){
+void speedo_sprint::loop(){
 	int speed=pSensors->m_speed->get_mag_speed();
 	if(!lock){ // ich bin der Meinung das es noch gar nicht losging
 		start=millis();
@@ -113,7 +114,8 @@ void speedo_sprint::loop(unsigned long previousMillis){
 			};
 		};
 		// sichere zeitstempel
-		previousMillis = millis();
+
 		free(char_buffer);
+		previousMillis=millis();
 	};
 };

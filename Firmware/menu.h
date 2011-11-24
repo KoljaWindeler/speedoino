@@ -14,6 +14,7 @@ class speedo_menu {
 #define     menu_button_fast_delay		menu_button_timeout*4   // wartezeit bis schneller
 #define     menu_button_fast_timeout	100                   // wartezeit zwischen 2 steps -> schnell
 
+
 public:
 	speedo_menu(void);
 	~speedo_menu();
@@ -24,6 +25,7 @@ public:
 	void draw(const char** menu, int entries);
 	void yesno(const char first[30],const char second[30],const char third[30]);
 	void del_conf(char first[20],char second[20]);
+	int  center_me(char* input,int legth);
 
 	unsigned long state;
 	bool button_rechts_valid;
@@ -34,6 +36,7 @@ public:
 private:
 	unsigned long button_time;                      // Zeitpunkt des letzen Button kontakt
 	unsigned long button_first_push;                // für "halten". Zeitpunkt des ersten Kontakt
+	void set_buttons(bool left,bool up,bool down,bool right);
 
 };
 extern speedo_menu* pMenu;

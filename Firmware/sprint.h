@@ -16,13 +16,14 @@ public:
 	speedo_sprint(void);
 	~speedo_sprint();
 	void init();
-	void loop(unsigned long previousMillis);
+	void loop();
 	bool    done;                              // der sprint ist noch nicht fertig
 	bool    lock;                              // ist der sprint am laufen
 private:
 	bool	blink_show;                        // anzeigen oder nicht
 	unsigned long start;                                   // start des sprints
 	unsigned long end;                                     // ende des sprints
+	unsigned long previousMillis;
 };
 extern speedo_sprint* pSprint;
 ///////////// sprint ///////////////////////////////////
