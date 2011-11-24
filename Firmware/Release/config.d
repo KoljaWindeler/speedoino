@@ -29,7 +29,7 @@ config.d config.o: ../config.cpp ../global.h ../clock_me.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/bufstream.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/SdFatUtil.h ../config.h \
  ../timer.h ../sprint.h ../speedo.h ../menu.h ../sensors.h ../aktors.h \
- ../debug.h ../file_manager.h
+ ../debug.h ../file_manager.h ../version.h
 
 ../global.h:
 
@@ -132,3 +132,5 @@ config.d config.o: ../config.cpp ../global.h ../clock_me.h \
 ../debug.h:
 
 ../file_manager.h:
+
+../version.h:

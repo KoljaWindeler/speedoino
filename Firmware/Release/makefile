@@ -59,7 +59,10 @@ sizedummy \
 
 
 # All Target
-all: Speedoino.elf secondary-outputs
+all: pre-build main-build
+
+# Main-build Target
+main-build: Speedoino.elf secondary-outputs
 
 # Tool invocations
 Speedoino.elf: $(OBJS) $(USER_OBJS)
@@ -98,9 +101,14 @@ clean:
 	-$(RM) $(OBJS)$(C_DEPS)$(EEPROM_IMAGE)$(ELFS)$(FLASH_IMAGE)$(LSS)$(S_DEPS)$(CXX_DEPS)$(S_UPPER_DEPS)$(C++_DEPS)$(ASM_DEPS)$(CC_DEPS)$(CPP_DEPS)$(C_UPPER_DEPS)$(SIZEDUMMY) Speedoino.elf
 	-@echo ' '
 
+pre-build:
+	-@echo 'Adding Version to version.h'
+	-/home/jkw/links/Speedmaster/Firmware/version.sh /home/jkw/links/Speedmaster/Firmware/
+	-@echo ' '
+
 secondary-outputs: $(LSS) $(FLASH_IMAGE) $(EEPROM_IMAGE) $(SIZEDUMMY)
 
 .PHONY: all clean dependents
-.SECONDARY:
+.SECONDARY: main-build pre-build
 
 -include ../makefile.targets

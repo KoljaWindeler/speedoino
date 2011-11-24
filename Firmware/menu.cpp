@@ -382,8 +382,10 @@ void speedo_menu::display(){ // z.B. state = 26
 		pSpeedo->reset_bak();
 		pOLED->clear_screen();
 		pOLED->highlight_bar(0,0,128,8);
-		pOLED->string(VISITOR_SMALL_1X_FONT,"Additional info",2,0,15,0,0);
+		pOLED->string_P(VISITOR_SMALL_1X_FONT,PSTR("Additional info"),2,0,15,0,0);
 		pSensors->m_voltage->loop();
+		pOLED->string_P(VISITOR_SMALL_1X_FONT,PSTR("SW Version"),1,6);
+		pOLED->string_P(VISITOR_SMALL_1X_FONT,PSTR(GIT_REV),0,7);
 	}
 
 	// Menüpunkt 6 -> Customize //

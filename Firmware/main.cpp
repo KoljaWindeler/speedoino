@@ -74,6 +74,7 @@ int main(void) {
 	Serial.begin(57600); 		// damit kann ich mit dem bluetooth reden, und das bluetooth kann so mit dem bootloader reden .. sind wir nich kommunikativ
 	pAktors->init();			// ausschlag des zeigers
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
+	pDebug->sprintlnp(PSTR(GIT_REV));
 	Wire.begin();				// BEFORE Clock_init(), Clock is in the sensor class and needs I²C
 	pSensors->init(); 			// start every init sequence of each sensor
 	pSD->init(); 				// try open SD Card

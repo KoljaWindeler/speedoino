@@ -36,7 +36,7 @@ void speedo_voltage::init(){
 
 void speedo_voltage::loop(){
 	if(pSpeedo->disp_zeile_bak[0]!=1){
-		pOLED->string(0,"Voltage ",1,2);
+		pOLED->string_P(0,PSTR("Voltage "),1,2);
 		pSpeedo->disp_zeile_bak[0]=1;
 	}
 	int voltage=pSensors->m_voltage->get();
