@@ -8,17 +8,43 @@ Speedo_aktors::~Speedo_aktors(){
 };
 
 void Speedo_aktors::init(){
+	/* vier werte paare:
+	* 1. Außen -> ändert sich öfters mal, wird mit std werten geladen
+	* 2. Innen -> ändert sich eigentlich nie
+	* 3. Flasher -> Farbe zu der übergeblendet wird wenn die schaltdrehzahl erreicht wird
+	* 4. out_base -> Farbkopie von Außen
+	*/
+	int r,g,b;
+	// innen
+	r=EEPROM.read(6);
+	g=EEPROM.read(7);
+	b=EEPROM.read(8);
 	pinMode(RGB_IN_R,OUTPUT);
 	pinMode(RGB_IN_G,OUTPUT);
 	pinMode(RGB_IN_B,OUTPUT);
+	set_rgb_in(r,g,b);
+	// außen
+	r=EEPROM.read(9);
+	g=EEPROM.read(10);
+	b=EEPROM.read(11);
 	pinMode(RGB_OUT_R,OUTPUT);
 	pinMode(RGB_OUT_G,OUTPUT);
 	pinMode(RGB_OUT_B,OUTPUT);
-	set_rgb_in(255,255,255);
-	set_rgb_out(0,0,0);
+	// doof aber sichere hier mal zusätzlich die "basis farben" für den flasher
+	out_base_color.r.actual=r;
+	out_base_color.g.actual=g;
+	out_base_color.b.actual=b;
+	// dz flasher
+	dz_flasher.r.actual=EEPROM.read(12);
+	dz_flasher.g.actual=EEPROM.read(13);
+	dz_flasher.b.actual=EEPROM.read(14);
+	//set_rgb_out(r,g,b);
+
 	dimm_step=0;
 	dimm_steps=0;
-	//dimm_rgb_to(0,0,255,256,0); // äußeren auf 0,0,255 dimmen in 256*10ms
+
+	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
+	dimm_rgb_to(r,g,b,256,0);
 };
 
 
@@ -37,6 +63,10 @@ void Speedo_aktors::set_rgb_in(int r,int g,int b){
 };
 
 void Speedo_aktors::set_rgb_out(int r,int g,int b){
+	set_rgb_out(r,g,b,1);
+}
+
+void Speedo_aktors::set_rgb_out(int r,int g,int b,int save){
 	if(r>255) r=255; else if(r<0) r=0;
 	if(g>255) g=255; else if(g<0) g=0;
 	if(b>255) b=255; else if(b<0) b=0;
@@ -45,9 +75,11 @@ void Speedo_aktors::set_rgb_out(int r,int g,int b){
 	analogWrite(RGB_OUT_G,g);
 	analogWrite(RGB_OUT_B,b);
 
-	RGB.outer.r.actual=r;
-	RGB.outer.g.actual=g;
-	RGB.outer.b.actual=b;
+	if(save){
+		RGB.outer.r.actual=r;
+		RGB.outer.g.actual=g;
+		RGB.outer.b.actual=b;
+	};
 };
 /* 10ms pro schritt -> 0 to 256 = 2,56 sec */
 void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps, int set_in_out){

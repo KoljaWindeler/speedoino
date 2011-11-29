@@ -20,6 +20,7 @@ public:
 
 	unsigned int rounded;                 // to show on display, rounded by 50
 	unsigned int exact;                 // real rotation speed
+	int blitz_dz;
 	bool blitz_en;
 private:
 	volatile unsigned int peak_count; // max 64k => bei 15krpm sind das 256 sek ... sollte reichen

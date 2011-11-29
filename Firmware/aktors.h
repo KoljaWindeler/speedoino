@@ -40,11 +40,13 @@ public:
 	void init();
 	void set_rgb_in(int r,int g,int b);
 	void set_rgb_out(int r,int g,int b);
+	void set_rgb_out(int r,int g,int b,int save);
 	void dimm_rgb_to(int r,int g,int b,int max_dimm_steps, int set_in_out);
 	void timer_overflow();
 	bool dimm_available();
 	speedo_stepper* m_stepper;
 	led_area RGB;
+	led dz_flasher,out_base_color; // doof aber nötig
 
 private:
 	int dimm_steps,dimm_step,in_out;

@@ -88,14 +88,7 @@ int main(void) {
 	pConfig->read_skin();		// skinning
 	pConfig->check(); 			// check if Config read successfully
 	pOLED->init_speedo(); 		// execute this AFTER Config->init(), init() will load  phase,config,startup. PopUp will be shown if sd access fails
-	pAktors->m_stepper->init(); // Motorausschlag
-
-	// außen blau reindimmen
-	for(int i=1;i<255;i++){
-		pAktors->set_rgb_out(0,0,i);
-		delay(4);
-	};
-	/* motor voll ausschalg */
+	pAktors->m_stepper->init(); // Motorausschlag und block bis motor voll ausgeschlagen, solange das letzte intro bild halten
 
 	pMenu->init(); 				// adds the connection between pins and vars
 	pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
@@ -105,6 +98,7 @@ int main(void) {
 	pConfig->ram_info();
 	pDebug->sprintlnp(PSTR("=== Setup finished ==="));
 	Serial.flush(); // jaja, hallo liebes bluetooth modul, will keiner wissen das du alles echos solange wir nicht mit dem pc verbunden sind ...
+
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop, before THIS
 	 ******************** setup procedure ********************************************/

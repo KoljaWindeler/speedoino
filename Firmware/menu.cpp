@@ -58,9 +58,9 @@ PROGMEM const char *menu_setup[9] = { setup_m_0,setup_m_1,setup_m_2,setup_m_3,se
 prog_char custom_m_0[] PROGMEM = "1. Load Skin";
 prog_char custom_m_1[] PROGMEM = "2. Shown trip";
 prog_char custom_m_2[] PROGMEM = "3. DZ Flasher";
-prog_char custom_m_3[] PROGMEM = "4. -";
-prog_char custom_m_4[] PROGMEM = "5. -";
-prog_char custom_m_5[] PROGMEM = "6. -";
+prog_char custom_m_3[] PROGMEM = "4. Center RGB";
+prog_char custom_m_4[] PROGMEM = "5. Outer RGB";
+prog_char custom_m_5[] PROGMEM = "6. Flasher RGB";
 prog_char custom_m_6[] PROGMEM = "7. -";
 prog_char custom_m_7[] PROGMEM = "8. Show Animation";
 prog_char custom_m_8[] PROGMEM = "9. Filemanager";
@@ -128,14 +128,14 @@ bool       	button_unten_valid=true;
 #define menu_button_oben 26 // 24
 #define menu_active 0 // low active menues
 #define menu_lines 7 // wieviele lines können wir darstellen 64 / 8 = 8 | 8-1(für die Headline)=7
-int           menu_max=8;   // 9 eintrräge aber da das array bei 0 anfängt isses 9-1=8
-int           menu_marker=0;
-int           menu_start=0;
-int           menu_ende=menu_lines-1;
+int			menu_max=8;   // 9 eintrräge aber da das array bei 0 anfängt isses 9-1=8
+int			menu_marker=0;
+int			menu_start=0;
+int			menu_ende=menu_lines-1;
 
 #define menu_second_wait 100  // spike länge
-int           fuel_added=90; // predefined value "added fuel"
-bool       menu_preload;
+int			fuel_added=90; // predefined value "added fuel"
+bool		menu_preload;
 ///// vars ////////////
 
 ////// bei veränderung des state => einmaliges zeichen des menüs ///////
@@ -145,45 +145,36 @@ void speedo_menu::display(){ // z.B. state = 26
 		Serial.print("state: ");
 		Serial.println(state);
 	};
-	// ??? for(unsigned int i=0;i<sizeof(pSpeedo->disp_zeile_bak)/sizeof(pSpeedo->disp_zeile_bak[0]);i++){
-	// [5][4][3][2][1][0]
-	// 000001 => im hauptmenü, tacho standart ausgewählt
-	// 000002 => im hautpmenü, sprint ausgewählt
-	// 000031 => im tank reset menü,erste position
-	// 000032 => im tank reset menü,zweite postion
-	// 000041 => display setup position 1
-	// 000011 => standart anzeige
-	// 000340 => im Tacho reset, Trip4, [menu_button_rechts] -> also aktion nötig
 
-	// init buttons
+	// init hardware buttons
 	bool button_state=true;
 	if(BUTTONS_OFF){ button_state=false;}  // gundsätzlich sind alle an
 	set_buttons(button_state,button_state,button_state,button_state); // activate all
 
+	// init storage
 	char *char_buffer;
 	char_buffer = (char*) malloc (22);
 	if (char_buffer==NULL) Serial.println("Malloc failed");
 	else memset(char_buffer,'\0',22);
-	///////////////////// im hauptmenü nach links => tacho //////////
+	////////////////////////////////////////// im hauptmenü nach links => tacho //////////////////////////////////////////
 	if(state==0){
 		if(MENU_DEBUG){Serial.println("Menustate war 0, daher biege ich ihn auf SPEEDOINO um");};
 		state=11;
 		display();
 	}
-	///////////////////// im hauptmenü nach links => tacho //////////
-	///////////////////// Hauptmenu //////////////////////////
+	////////////////////////////////////////////////////// Hauptmenu ////////////////////////////////////////////////////////
 	else if(state<10) {
 		if(MENU_DEBUG){Serial.println("Menustate war kleiner als 10, Hauptmenue");};
 		// Menu vorbereiten
 		draw(&menu_main[0],sizeof(menu_main)/sizeof(menu_main[0]));
 	}
-	//////////////////////// hier eine gps markierungs motivieren /////////////////////////7
+	////////////////////////////////////////// hier eine gps markierungs motivieren //////////////////////////////////////////
 	else if(state==111) {
 		if(MENU_DEBUG){Serial.println("Menustate war 111, daher biege ich ihn auf 11 um");};
 		pSensors->m_gps->note_this_place=SIMPLE_MARK;
 		state=11;
 	}
-	//////////////////////// Einmaliges Setup des Standart Tacho ////////////////////////////
+	////////////////////////////////////////// Einmaliges Setup des Standart Tacho //////////////////////////////////////////
 	else if(floor(state/10)==1 || state==7311111){
 		pOLED->clear_screen();
 		if(MENU_DEBUG){Serial.println("Menustate 00001X, Bin jetzt im Tacho menu, zeichne icons");};
@@ -203,12 +194,12 @@ void speedo_menu::display(){ // z.B. state = 26
 		if(!pSensors->m_gps->navi_active){
 			set_buttons(button_state,!button_state,!button_state,button_state); // msg only
 		};
-		// disp preview
+		// preview of display settings, phase and Vref
 		if(state==7311111){
 			set_buttons(button_state,!button_state,!button_state,!button_state);
 		};
 	}
-	//////////////////////// Einmaliges Setup des Sprint Tacho ////////////////////////////
+	/////////////////////////////////////////////// Einmaliges Setup des Sprint Tacho ///////////////////////////////////////////
 	else if(floor(state/10)==2){
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 		if(MENU_DEBUG){Serial.println("Menustate=000002X, Bin jetzt im Sprint Tacho menu");};
@@ -217,23 +208,23 @@ void speedo_menu::display(){ // z.B. state = 26
 		pSprint->lock=false;
 		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
-	//////////////////////// Menü für die Navigation ////////////////////////////
+	//////////////////////////////////////////////////// Menü für die Navigation ////////////////////////////////////////////////////
 	else if(floor(state/10)==3){ // 31/10 = 3
 		// Menu vorbereiten
 		draw(&menu_navi[0],sizeof(menu_navi)/sizeof(menu_navi[0]));
 	}
-	//////////////////////// Navigation an/aus schalten ////////////////////////////
+	/////////////////////////////////////////////////// Navigation an/aus schalten //////////////////////////////////////////////////
 	else if(floor(state/10)==31){ // 311
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		if((state%10)==9){
 			pSensors->m_gps->navi_active=true;
 			pSensors->m_gps->generate_new_order();
 			byte tempByte = (1 & 0xFF);
-			EEPROM.write(146,tempByte);
+			EEPROM.write(146,tempByte); // store navistate to eeprom
 		} else if((state%10)==2){
 			pSensors->m_gps->navi_active=false;
 			byte tempByte = (0 & 0xFF);
-			EEPROM.write(146,tempByte);
+			EEPROM.write(146,tempByte); // store navistate to eeprom
 		};
 		state=311;
 		pOLED->clear_screen();
@@ -247,10 +238,8 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Navigation"),4,3,15,0,0);
 		pOLED->string(STD_SMALL_1X_FONT,char_buffer,5,4,15,0,0);
 		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
-
-		button_rechts_valid=false; // nach rechts gehen geht nicht
 	}
-	//////////////////////// Pointer für die Navigation ////////////////////////////
+	/////////////////////////////////////////////////// Pointer für die Navigation ///////////////////////////////////////////////////
 	else if(floor(state/10)==32){ // 32[X]
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		if((state%10)==2){ // runter gedrückt
@@ -267,13 +256,13 @@ void speedo_menu::display(){ // z.B. state = 26
 		pSensors->m_gps->generate_new_order(); // vor ausgabe von pSensors->m_gps->navi_point, wenn pSensors->m_gps->navi_point nach dem knopfdruck zu hoch war wirds in dieser fkt zurück gesetzt
 		sprintf(char_buffer,"#%3i:",pSensors->m_gps->navi_point);
 		pOLED->string(STD_SMALL_1X_FONT,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
-		pOLED->string(STD_SMALL_1X_FONT,pSensors->m_gps->navi_ziel_name,7,2,0,DISP_BRIGHTNESS,0);        // hier vielleicht die jeweilige straße einblenden
+		pOLED->string(STD_SMALL_1X_FONT,pSensors->m_gps->navi_ziel_name,7,2,0,DISP_BRIGHTNESS,0); // straße
 		sprintf(char_buffer,"Long: %05i%04i",int(floor(pSensors->m_gps->navi_ziel_long/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_lati,10000)));
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,2,6,0,DISP_BRIGHTNESS,0);        // hier vielleicht die jeweilige straße einblenden
+		pOLED->string(STD_SMALL_1X_FONT,char_buffer,2,6,0,DISP_BRIGHTNESS,0);
 		sprintf(char_buffer,"Lati: %05i%04i",int(floor(pSensors->m_gps->navi_ziel_lati/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_lati,10000))); // typisch 052033224 => 5203,3224 => kann pro feld bis zu 32767 => 3.276.732.767 => 3.276° was quasi 8 mal um die welt geht
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,2,7,0,DISP_BRIGHTNESS,0);        // hier vielleicht die jeweilige straße einblenden
+		pOLED->string(STD_SMALL_1X_FONT,char_buffer,2,7,0,DISP_BRIGHTNESS,0);
 	}
-	////////////////////////// Dateien listen und highlighten... irgendwie //////////////
+	/////////////////////////////////////////////////// Dateien listen und highlighten... irgendwie ///////////////////////////////////////////////////
 	else if(floor(state/10)==33){ // 33[X]
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		// Umschalten
@@ -305,7 +294,6 @@ void speedo_menu::display(){ // z.B. state = 26
 			int byte_read=0;
 			// reserve buffer space
 			char buffer_big[65];
-			//memset(buffer_big,'\0',65);
 
 			while (n > 0 && byte_read<63) { // n=wieviele byte gelesen wurden
 				char buf[2];
@@ -524,30 +512,377 @@ void speedo_menu::display(){ // z.B. state = 26
 		draw(&menu_trip_setup[0],sizeof(menu_trip_setup)/sizeof(menu_trip_setup[0]));
 		// hier noch 2do
 	}
-	////////// dz flahser ////////////////
-	else if(floor(state/10)==63) {
-		set_buttons(button_state,button_state,button_state,!button_state); // no right
-		if(state%10==9){
-			pSensors->m_dz->blitz_en=true;
-			byte tempByte = (1 & 0xFF);
-			EEPROM.write(146,tempByte);
-		} else if(state%10==2){
-			pSensors->m_dz->blitz_en=false;
-			byte tempByte = (0 & 0xFF);
-			EEPROM.write(146,tempByte);
+	///////////////////////////// dz flasher /////////////////////////////
+	else if(floor(state/10)==63 || floor(state/100)==63) {
+		// AN AUS schaltung
+		if(floor(state/10)==63){
+			// sneaky, wenn wir ins tiefere menü gehen ( 6311 ) und die dz grenze verändern
+			// setzen wir die dz auf +1, wenn wir von dort zurück kommen speichern wir es
+			// damit nur einmal auf die SD geschrieben wird.
+			if(pSensors->m_dz->blitz_dz%10==1){
+				pSensors->m_dz->blitz_dz--;
+				pConfig->storage_outdated=true;
+				pConfig->write("BASE.TXT");
+			};
+
+			if(state%10==9){
+				pSensors->m_dz->blitz_en=true;
+				pConfig->storage_outdated=true;
+				pConfig->write("BASE.TXT");
+			} else if(state%10==2){
+				pSensors->m_dz->blitz_en=false;
+				pConfig->storage_outdated=true;
+				pConfig->write("BASE.TXT");
+			};
+			state=631;
+			// schaltdrehzahl einstellen
+		} else if(floor(state/100)==63){
+			// ganz großer trick! wir speichern hier eine +1 ein als zeichen das wir ein menü tiefer waren
+			if(pSensors->m_dz->blitz_dz%10!=1 && (state%10==9 || state%10==2)){
+				pSensors->m_dz->blitz_dz++;
+			};
+			// Wert anpassen
+			if(state%10==9){
+				pSensors->m_dz->blitz_dz+=100;
+				if(pSensors->m_dz->blitz_dz>20000){
+					pSensors->m_dz->blitz_dz=20000;
+				}
+			} else if(state%10==2){
+				pSensors->m_dz->blitz_dz-=100;
+				if(pSensors->m_dz->blitz_dz<100){
+					pSensors->m_dz->blitz_dz=100;
+				}
+			};
+			state=6311;
+		}
+		if(pSpeedo->disp_zeile_bak[5]!=99){
+			pSpeedo->disp_zeile_bak[5]=99;
+			pOLED->clear_screen();
+
+			pOLED->highlight_bar(0,8*4-1,128,17); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("DZ Flasher"),5,4,15,0,0);
+
+			// bedienelemente anzeigen
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Down = inactive"),4,1,0,DISP_BRIGHTNESS,0);
+			char temp[2];
+			sprintf(temp,"%c",127);
+			pOLED->string(STD_SMALL_1X_FONT,temp,4,7);
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("to adjust"),6,7);
 		};
-		state=631;
-		pOLED->clear_screen();
+
+		// wenn der blitzer an ist dann drehzahl mit anzeigen
 		if(pSensors->m_dz->blitz_en){
-			sprintf(char_buffer," active");
+			if(floor(state/100)==63){
+				set_buttons(button_state,button_state,button_state,!button_state); // alles aktiv
+			};
+
+			sprintf(char_buffer,"%3i00",int(floor(pSensors->m_dz->blitz_dz/100)));// 12500
+			if(floor(state/10)==63){
+				pOLED->string_P(STD_SMALL_1X_FONT,PSTR("active"),2,5,0,15,0); // joa, unschön. Wird flackern, aber naja
+				pOLED->string(STD_SMALL_1X_FONT,char_buffer,11,5,15,0,0);
+			} else {
+				pOLED->string_P(STD_SMALL_1X_FONT,PSTR("active"),2,5,15,0,0);  // joa, unschön. Wird flackern, aber naja
+				pOLED->string(STD_SMALL_1X_FONT,char_buffer,11,5,0,15,0);
+			}
+
+			// wenn inactiv mittig "inactive" anzeigen lassen
 		} else {
-			sprintf(char_buffer,"inactive");
+			set_buttons(button_state,button_state,button_state,!button_state); // no right
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("inactive"),5,5,0,15,0);
+
 		};
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
-		pOLED->highlight_bar(0,8*3-1,128,17); // mit hintergrundfarbe nen kasten malen
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("DZ Flasher"),5,3,15,0,0);
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,5,4,15,0,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
+	}
+	//////////////////////// adjust Center RGB LED ////////////////////////
+	else if(floor(state/10)==64 || floor(state/100)==64 || floor(state/1000)==64){
+		// aktuelle werte
+		int r,g,b;
+		r=pAktors->RGB.inner.r.actual;
+		g=pAktors->RGB.inner.g.actual;
+		b=pAktors->RGB.inner.b.actual;
+		// neue werte
+		if(state%10==2){ // unten
+			state-=1; // zurück
+
+			if(floor(state/10)==64){	r-=1;		if(r<0){r=0;};	};	// rot
+			if(floor(state/100)==64){	g-=1;		if(g<0){g=0;};	};	// grün
+			if(floor(state/1000)==64){	b-=1;		if(b<0){b=0;};	};	// blau
+
+			pAktors->dimm_rgb_to(r,g,b,1,1);
+		} else if(state%10==9){ // oben
+			state-=8; // zurück
+
+			if(floor(state/10)==64){	r+=1;		if(r>255){r=255;};	}; // rot
+			if(floor(state/100)==64){	g+=1;		if(g>255){g=255;};	}; // grün
+			if(floor(state/1000)==64){	b+=1;		if(b>255){b=255;};	};	// blau
+
+			pAktors->dimm_rgb_to(r,g,b,1,1);
+		}
+		if(pSpeedo->disp_zeile_bak[0]!=303){
+			// clear screen
+			pOLED->clear_screen();
+			// anzeige der werte
+			pOLED->highlight_bar(0,0,128,8);
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Center RGB"),2,0,15,0,0);
+
+			// Red   Green   Blue
+			// 255    255    255
+			pOLED->highlight_bar(0,24,128,16);
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Red   Green   Blue"),1,3,15,0,0);
+			pSpeedo->disp_zeile_bak[0]=303;
+
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("  to store values"),0,7);
+			char temp[2];
+			sprintf(temp,"%c",127);
+			pOLED->string(STD_SMALL_1X_FONT,temp,0,7);
+		};
+
+		char temp[4];
+		sprintf(temp,"%3i",int(r%1000));
+		int front,back;
+		if(floor(state/10)==64){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(STD_SMALL_1X_FONT,temp,1,4,back,front,0);
+		sprintf(temp,"%3i",int(g%1000));
+		if(floor(state/100)==64){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(STD_SMALL_1X_FONT,temp,8,4,back,front,0);
+		sprintf(temp,"%3i",int(b%1000));
+		if(floor(state/1000)==64){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(STD_SMALL_1X_FONT,temp,15,4,back,front,0);
+	}
+	//////////////////////// save it ////////////////////////////////7
+	else if(floor(state/10000)==64){
+		// store to eeprom
+		EEPROM.write(6,pAktors->RGB.inner.r.actual&0xff);
+		EEPROM.write(7,pAktors->RGB.inner.g.actual&0xff);
+		EEPROM.write(8,pAktors->RGB.inner.b.actual&0xff);
+		pOLED->clear_screen();
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
+		delay(500);
+		pSpeedo->reset_bak();
+		state=641;
+		display();
+	}
+	//////////////////////// adjust outer RGB LED ////////////////////////
+	else if(floor(state/10)==65 || floor(state/100)==65 || floor(state/1000)==65){
+		// aktuelle werte
+		int r,g,b;
+		r=pAktors->RGB.outer.r.actual;
+		g=pAktors->RGB.outer.g.actual;
+		b=pAktors->RGB.outer.b.actual;
+		// neue werte
+		if(state%10==2){ // unten
+			state-=1; // zurück
+
+			if(floor(state/10)==65){	r-=1;		if(r<0){r=0;};	};	// rot
+			if(floor(state/100)==65){	g-=1;		if(g<0){g=0;};	};	// grün
+			if(floor(state/1000)==65){	b-=1;		if(b<0){b=0;};	};	// blau
+
+			pAktors->dimm_rgb_to(r,g,b,1,0);
+		} else if(state%10==9){ // oben
+			state-=8; // zurück
+
+			if(floor(state/10)==65){	r+=1;		if(r>255){r=255;};	}; // rot
+			if(floor(state/100)==65){	g+=1;		if(g>255){g=255;};	}; // grün
+			if(floor(state/1000)==65){	b+=1;		if(b>255){b=255;};	};	// blau
+			pAktors->dimm_rgb_to(r,g,b,1,0);
+		}
+		if(pSpeedo->disp_zeile_bak[0]!=304){
+			// clear screen
+			pOLED->clear_screen();
+			// anzeige der werte
+			pOLED->highlight_bar(0,0,128,8);
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Outer RGB"),2,0,15,0,0);
+
+			// Red   Green   Blue
+			// 255    255    255
+			pOLED->highlight_bar(0,24,128,16);
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Red   Green   Blue"),1,3,15,0,0);
+			pSpeedo->disp_zeile_bak[0]=304;
+
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("  to store values"),0,7);
+			char temp[2];
+			sprintf(temp,"%c",127);
+			pOLED->string(STD_SMALL_1X_FONT,temp,0,7);
+		};
+
+		char temp[4];
+		sprintf(temp,"%3i",int(r%1000));
+		int front,back;
+		if(floor(state/10)==65){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(STD_SMALL_1X_FONT,temp,1,4,back,front,0);
+		sprintf(temp,"%3i",int(g%1000));
+		if(floor(state/100)==65){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(STD_SMALL_1X_FONT,temp,8,4,back,front,0);
+		sprintf(temp,"%3i",int(b%1000));
+		if(floor(state/1000)==65){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(STD_SMALL_1X_FONT,temp,15,4,back,front,0);
+	}
+	//////////////////////// save it ////////////////////////////////7
+	else if(floor(state/10000)==65){
+		// store to eeprom
+		EEPROM.write(9,pAktors->RGB.outer.r.actual&0xff);
+		EEPROM.write(10,pAktors->RGB.outer.g.actual&0xff);
+		EEPROM.write(11,pAktors->RGB.outer.b.actual&0xff);
+		// speichere auch hier in base, damit wir gleich schon
+		// nach dem umstellen die neuen werte im speicher haben
+		pAktors->out_base_color.r.actual=pAktors->RGB.outer.r.actual;
+		pAktors->out_base_color.g.actual=pAktors->RGB.outer.g.actual;
+		pAktors->out_base_color.b.actual=pAktors->RGB.outer.b.actual;
+
+		pOLED->clear_screen();
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
+		delay(500);
+		state=651;
+		pSpeedo->reset_bak();
+		display();
+	}
+	//////////////////////// adjust dz alert RGB LED ////////////////////////
+	else if(floor(state/10)==66){
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
+
+		// wenn wir außen aktuell die gleiche Farbe haben wie die basisfarbe sein sollte
+		// sind wir wohl gerade dabei vom Hauptmenü in die Einstellungen zu gehen
+		if(pAktors->RGB.outer.r.actual=pAktors->out_base_color.r.actual){
+			pAktors->set_rgb_out(pAktors->dz_flasher.r.actual,pAktors->dz_flasher.g.actual,pAktors->dz_flasher.b.actual,0);
+			state=state*10+1;
+		// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		} else {
+			pAktors->set_rgb_out(pAktors->RGB.outer.r.actual,pAktors->RGB.outer.g.actual,pAktors->RGB.outer.b.actual,0);
+			state=floor(state/10);
+		};
+
+		pSpeedo->disp_zeile_bak[0]=0; // setze auf beiden wegen den speicher zurück
+	}
+	else if(floor(state/100)==66 || floor(state/1000)==66 || floor(state/10000)==66){
+		// aktuelle werte
+		int r,g,b;
+		r=pAktors->dz_flasher.r.actual;
+		g=pAktors->dz_flasher.g.actual;
+		b=pAktors->dz_flasher.b.actual;
+		// neue werte
+		if(state%10==2){ // unten
+			state-=1; // zurück
+
+			if(floor(state/100)==66){	r-=1;		if(r<0){r=0;};	};	// rot
+			if(floor(state/1000)==66){	g-=1;		if(g<0){g=0;};	};	// grün
+			if(floor(state/10000)==66){	b-=1;		if(b<0){b=0;};	};	// blau
+
+			pAktors->dz_flasher.r.actual=r;
+			pAktors->dz_flasher.g.actual=g;
+			pAktors->dz_flasher.b.actual=b;
+
+			pAktors->set_rgb_out(r,g,b,0); // setze die äußeren led's aber speichere es nicht im struct
+		} else if(state%10==9){ // oben
+			state-=8; // zurück
+
+			if(floor(state/100)==66){	r+=1;		if(r>255){r=255;};	}; // rot
+			if(floor(state/1000)==66){	g+=1;		if(g>255){g=255;};	}; // grün
+			if(floor(state/10000)==66){	b+=1;		if(b>255){b=255;};	};	// blau
+
+			pAktors->dz_flasher.r.actual=r;
+			pAktors->dz_flasher.g.actual=g;
+			pAktors->dz_flasher.b.actual=b;
+
+			pAktors->set_rgb_out(r,g,b,0); // setze die äußeren led's aber speichere es nicht im struct
+		}
+
+		if(pSpeedo->disp_zeile_bak[0]!=305){
+			// clear screen
+			pOLED->clear_screen();
+			// anzeige der werte
+			pOLED->highlight_bar(0,0,128,8);
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Alert RGB"),2,0,15,0,0);
+
+			// Red   Green   Blue
+			// 255    255    255
+			pOLED->highlight_bar(0,24,128,16);
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Red   Green   Blue"),1,3,15,0,0);
+			pSpeedo->disp_zeile_bak[0]=305;
+
+			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("  to store values"),0,7);
+			char temp[2];
+			sprintf(temp,"%c",127);
+			pOLED->string(STD_SMALL_1X_FONT,temp,0,7);
+		};
+
+		char temp[4];
+		sprintf(temp,"%3i",int(r%1000));
+		int front,back;
+		if(floor(state/100)==66){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(STD_SMALL_1X_FONT,temp,1,4,back,front,0);
+		sprintf(temp,"%3i",int(g%1000));
+		if(floor(state/1000)==66){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(STD_SMALL_1X_FONT,temp,8,4,back,front,0);
+		sprintf(temp,"%3i",int(b%1000));
+		if(floor(state/10000)==66){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(STD_SMALL_1X_FONT,temp,15,4,back,front,0);
+	}
+	//////////////////////// save it ////////////////////////////////7
+	else if(floor(state/100000)==66){
+		// store to eeprom
+		EEPROM.write(12,pAktors->dz_flasher.r.actual&0xff);
+		EEPROM.write(13,pAktors->dz_flasher.g.actual&0xff);
+		EEPROM.write(14,pAktors->dz_flasher.b.actual&0xff);
+		pOLED->clear_screen();
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
+		delay(500);
+		state=6611;
+		pSpeedo->reset_bak();
+		display();
 	}
 	//////////////////////// show animation ////////////////////////
 	else if(floor(state/10)==68){ //68[x]
@@ -688,8 +1023,15 @@ void speedo_menu::display(){ // z.B. state = 26
 	else if(state==7411) {
 		set_buttons(!button_state,!button_state,!button_state,!button_state); // message only
 		byte tempByte;
-		tempByte = ((int)1 & 0xFF);
-		EEPROM.write(2, tempByte);   // tripmode=1
+
+		EEPROM.write(2, 1& 0xFF);   // tripmode=1
+		EEPROM.write(6, 255& 0xFF); // center r
+		EEPROM.write(7, 255& 0xFF); // center g
+		EEPROM.write(8, 255& 0xFF); // center b
+		EEPROM.write(9, 0& 0xFF); // outer r
+		EEPROM.write(10, 0& 0xFF);// outer g
+		EEPROM.write(11, 255& 0xFF);// outer b
+
 		tempByte = ((int)15 & 0xFF);
 		EEPROM.write(147, tempByte); // Navi_pos=0
 		EEPROM.write(148, tempByte); // Winterzeit=0

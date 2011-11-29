@@ -211,6 +211,22 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",pSensors->m_oiler->grenze%10000); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("dz_flash="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pSensors->m_dz->blitz_dz); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("dz_flash_en="));
+					pSD->writeString(file, buffer);
+					if(pSensors->m_dz->blitz_en){
+						sprintf(buffer,"1\n"); // 12 chars max: max_=1=300\n\0
+					} else {
+						sprintf(buffer,"0\n"); // 12 chars max: max_=1=300\n\0
+					}
+					pSD->writeString(file, buffer);
+
+
+
 					file.close();
 					storage_outdated=false;
 				};
@@ -285,6 +301,8 @@ int configuration::init(){
 	pSensors->m_speed->gps_takeover=120; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
 	pSpeedo->refresh_cycle=-1; // anzahl an ms nachdem der haupttacho gecleared wird
 	pSensors->m_oiler->grenze=4000;
+	pSensors->m_dz->blitz_dz=12500; // hornet mäßig
+	pSensors->m_dz->blitz_en=true; // gehen wir mal von "an" aus
 
 	// gaenge einlesen
 	int temp[7]={160,120,90,73,60,53,45};
@@ -607,6 +625,10 @@ int configuration::parse(char* buffer){
 		parse_bool(buffer,seperator,&pSpeedo->fuel_widget.symbol);
 	} else if(strcmp_P(name,PSTR("fuel_widget.font"))==0){
 		parse_short(buffer,seperator,&pSpeedo->fuel_widget.font);
+	} else if(strcmp_P(name,PSTR("dz_flash"))==0){
+		parse_int(buffer,seperator,&pSensors->m_dz->blitz_dz);
+	} else if(strcmp_P(name,PSTR("dz_flash_en"))==0){
+			parse_bool(buffer,seperator,&pSensors->m_dz->blitz_en);
 	} else {
 		return -2; // ungltiger identifier
 	}
@@ -887,11 +909,6 @@ void configuration::EEPROM_init(){
 
 	// load winterzeit
 	pSensors->m_clock->set_date_time(-1,-1,-1,-1,-1,-1,-1,EEPROM.read(148));
-
-	// load dz_flasher
-	temp=EEPROM.read(146);
-	if(temp==1){ pSensors->m_dz->blitz_en=true; }
-	else { pSensors->m_dz->blitz_en=false; };
 
 	// load naviposition
 	pSensors->m_gps->navi_point=EEPROM.read(147);

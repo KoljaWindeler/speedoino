@@ -58,23 +58,6 @@ void speedo_dz::calc() {
 		rounded=250*round(dz/250); // auf 25er Runden
 		///// DZ BERECHNUNG ////////
 
-		//// schalt"blitz"
-		if(exact>11000 && exact<12000 && blitz_en){ // zwischen 11 und 12 k blinken
-			if(millis()-pOLED->disp_last_invert>100){ // maximal mit 10 hz blinken
-				pOLED->disp_last_invert=millis();
-				if(pOLED->disp_invert){
-					pOLED->send_command(0XA4); // toggle to standart
-					pOLED->disp_invert=false;
-				} else {
-					pOLED->send_command(0xA7); // toggle to inverted
-					pOLED->disp_invert=true;
-				};
-			};
-		} else if(pOLED->disp_invert){ // danach nur checken das es nicht gerade beim invertierten zustand stehen geblieben ist
-			pOLED->send_command(0XA4);
-			pOLED->disp_invert=false;
-		};
-
 		pSensors->m_gear->calc();// alle 250 ms, also mit 4Hz den Gang berechnen
 
 		pAktors->m_stepper->go_to(exact/10,0);
@@ -93,7 +76,8 @@ void speedo_dz::calc() {
 			exact=rounded;
 			pSensors->m_gear->calc();
 			// zeiger
-			pAktors->m_stepper->go_to(exact/10,0);
+			// 2 => 2*880=> 2k stepper
+			pAktors->m_stepper->go_to(exact/11,0);
 		}
 	};
 	/*///////////////// DIMMEN ABHÄNGIG VON DER DREHZAHL ////////////////
@@ -109,23 +93,24 @@ void speedo_dz::calc() {
 	 *  wiederhole das bis dimm_available() wieder true wird
 	 */
 
-	if(exact>14000 && !hme_light_active && blitz_en){
+
+	if(exact>blitz_dz && !hme_light_active && blitz_en){
 		if(pAktors->dimm_available()){
-			if(pAktors->RGB.outer.r.actual==0){
+			if(pAktors->RGB.outer.r.actual==pAktors->out_base_color.r.actual){
 				// gucken ob der dimm Vorgang noch nicht gestartet wurde
 				pAktors->dimm_rgb_to(5,5,5,15,0); // 25*10ms = 250 ms
 			} else if(pAktors->RGB.outer.r.actual==5){
-				pAktors->dimm_rgb_to(255,0,0,15,0); // 25*10ms = 250 ms
+				pAktors->dimm_rgb_to(pAktors->dz_flasher.r.actual,pAktors->dz_flasher.g.actual,pAktors->dz_flasher.b.actual,15,0); // 25*10ms = 250 ms
 				hme_light_active=true;
 			};
 		};
 	// wenn wir unter 12k sind und die außen LED noch nicht ganz blau sind
-	} else if(exact<=14000 && hme_light_active && blitz_en) {
+	} else if(exact<=blitz_dz && hme_light_active && blitz_en) {
 		if(pAktors->dimm_available()){
-			if(pAktors->RGB.outer.r.actual==255){
+			if(pAktors->RGB.outer.r.actual==pAktors->dz_flasher.r.actual){
 				pAktors->dimm_rgb_to(5,5,5,15,0); // 25*10ms = 250 ms
 			} else if(pAktors->RGB.outer.r.actual==5){
-				pAktors->dimm_rgb_to(0,0,255,15,0); // 75*10ms = 750 ms
+				pAktors->dimm_rgb_to(pAktors->out_base_color.r.actual,pAktors->out_base_color.g.actual,pAktors->out_base_color.b.actual,15,0); // 75*10ms = 750 ms
 				hme_light_active=false;
 			}
 		}
