@@ -1,0 +1,3 @@
+make mega2560
+
+avrdude -pm2560 -cavrisp2 -Pusb -V -Uflash:w:stk500boot_v2_mega2560.hex:a -v -Ulfuse:w:0xff:m -Uhfuse:w:0xd8:m -Uefuse:w:0xfd:m
