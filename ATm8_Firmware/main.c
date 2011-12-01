@@ -109,15 +109,11 @@ int main(){
 					if(abs(steps-soll_pos)>1000){
 						beschleunigung=120; // 100
 						geschwindigkeit=800; //400
-					} else if(abs(steps-soll_pos)>100){
+					} else {
 						// wenn die schritweite unter 100 ist -- dann nur 10% der leistung
 						beschleunigung=100; // 100
 						geschwindigkeit=400; //400
-					} else {
-						beschleunigung=100/abs(steps-soll_pos);
-						geschwindigkeit=400/abs(steps-soll_pos);
-					}
-
+					};
 
 
 					speed_cntr_Move(steps-soll_pos, beschleunigung, beschleunigung, geschwindigkeit);

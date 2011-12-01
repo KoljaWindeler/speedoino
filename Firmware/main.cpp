@@ -71,7 +71,19 @@ int main(void) {
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop
 	 ******************** setup procedure ********************************************/
-	Serial.begin(57600); 		// damit kann ich mit dem bluetooth reden, und das bluetooth kann so mit dem bootloader reden .. sind wir nich kommunikativ
+	Serial.begin(115200);
+	/*config
+	Serial.begin(19200); 		// damit kann ich mit dem bluetooth reden, und das bluetooth kann so mit dem bootloader reden .. sind wir nich kommunikativ
+	Serial.print("AT\r\n");
+	Serial.print("AT\r\n");
+	Serial.print("ATL5\r\n");
+	Serial.begin(115200);
+	Serial.print("ATE0\r\n");
+	Serial.print("ATN=SPEEDMASTER\r\n");
+	Serial.print("ATP0\r\n");
+	Serial.print("ATQ1\r\n");
+	*/
+
 	pAktors->init();			// ausschlag des zeigers
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
 	pDebug->sprintlnp(PSTR(GIT_REV));

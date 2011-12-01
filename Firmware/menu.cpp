@@ -144,6 +144,12 @@ void speedo_menu::display(){ // z.B. state = 26
 		Serial.println("menu.display() called;");
 		Serial.print("state: ");
 		Serial.println(state);
+		Serial.print("menu_marker,menu_end,menu_start:");
+		Serial.print(menu_marker);
+		Serial.print(",");
+		Serial.print(menu_ende);
+		Serial.print(",");
+		Serial.println(menu_start);
 	};
 
 	// init hardware buttons
@@ -380,6 +386,8 @@ void speedo_menu::display(){ // z.B. state = 26
 	else if(floor(state/10)==6) { //6[X]
 		// Menu vorbereiten
 		draw(&menu_custom[0],sizeof(menu_custom)/sizeof(menu_custom[0]));
+		menu_preload=true;
+		pSpeedo->reset_bak();
 	}
 	///////////////////////// SKIN LADEN ///////////////////////
 	///////////////////// navi menu //////////////////////////
@@ -775,19 +783,19 @@ void speedo_menu::display(){ // z.B. state = 26
 	//////////////////////// adjust dz alert RGB LED ////////////////////////
 	else if(floor(state/10)==66){
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
-
 		// wenn wir außen aktuell die gleiche Farbe haben wie die basisfarbe sein sollte
 		// sind wir wohl gerade dabei vom Hauptmenü in die Einstellungen zu gehen
-		if(pAktors->RGB.outer.r.actual=pAktors->out_base_color.r.actual){
+		if(	pSpeedo->disp_zeile_bak[2]!=999	){
 			pAktors->set_rgb_out(pAktors->dz_flasher.r.actual,pAktors->dz_flasher.g.actual,pAktors->dz_flasher.b.actual,0);
 			state=state*10+1;
+			pSpeedo->disp_zeile_bak[2]=999; // setze auf beiden wegen den speicher zurück
 		// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
 		} else {
 			pAktors->set_rgb_out(pAktors->RGB.outer.r.actual,pAktors->RGB.outer.g.actual,pAktors->RGB.outer.b.actual,0);
-			state=floor(state/10);
+			back();
+			pSpeedo->reset_bak();
 		};
-
-		pSpeedo->disp_zeile_bak[0]=0; // setze auf beiden wegen den speicher zurück
+		display();
 	}
 	else if(floor(state/100)==66 || floor(state/1000)==66 || floor(state/10000)==66){
 		// aktuelle werte
@@ -1251,7 +1259,7 @@ void speedo_menu::back(){
 		menu_ende=menu_lines-1;
 	};
 	state=return_value;
-	if(floor(state/100)==0 && ((int)floor(state/10))%10 == 0){
+	if(floor(state/100)==0 && ((int)floor(state/10))%10 == 0){ // 00X0
 		button_links_valid=false;
 	};
 };

@@ -1,4 +1,4 @@
-#Tue Nov 15 16:02:25 CET 2011
+#Thu Dec 01 21:35:45 CET 2011
 avrtarget/ClockFrequency=16000000
 avrtarget/ExtRAMSize=0
 avrtarget/ExtendedRAM=false
@@ -11,7 +11,7 @@ avrtarget/avrdude/EEPROMFile=
 avrtarget/avrdude/EEPROMFromConfig=true
 avrtarget/avrdude/FlashFile=
 avrtarget/avrdude/FlashFromConfig=true
-avrtarget/avrdude/Fuses/ByteValues=255\:208\:255
+avrtarget/avrdude/Fuses/ByteValues=255\:208\:253
 avrtarget/avrdude/Fuses/FileName=
 avrtarget/avrdude/Fuses/MCUid=atmega2560
 avrtarget/avrdude/Fuses/UseFile=false

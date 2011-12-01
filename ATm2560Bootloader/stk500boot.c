@@ -305,7 +305,7 @@ int main(void)
 	unsigned char	msgParseState;
 	unsigned int	ii				=	0;
 	unsigned char	checksum		=	0;
-	unsigned char	seqNum			=	0;
+	unsigned char	seqNum			=	1;
 	unsigned int	msgLength		=	0;
 	unsigned char	msgBuffer[285];
 	unsigned char	c, *p;
@@ -315,11 +315,14 @@ int main(void)
 	unsigned long	boot_timer;
 	unsigned int	boot_state;
 
+	/* enabled in pa1 to read if its a bluetooth reset*/
+	DDRA  &= ~(1<<PA1); // one input --> 2.kleinstes bit 0, nicht a0 aber a1
+	PORTA |= 1<<PA1; // with pullup
 
 
 	boot_timer	=	0;
 	boot_state	=	0;
-	boot_timeout	=	3500000; // 7 seconds , approx 2us per step when optimize "s"
+	boot_timeout	=	250000; // 7 seconds , approx 2us per step when optimize "s"
 
 	/*
 	 * Branch to bootloader or application code ?
@@ -337,29 +340,62 @@ int main(void)
 
 	asm volatile ("nop");			// wait until port has changed
 
-#ifdef _DEBUG_SERIAL_
-	//	delay_ms(500);
+	/////////Kolja/////////
+	_delay_ms(2);
+	msgLength		=	11;
+	msgBuffer[1] 	=	STATUS_CMD_OK;
+	msgBuffer[2] 	=	8;
+	msgBuffer[3] 	=	'A';
+	msgBuffer[4] 	=	'V';
+	msgBuffer[5] 	=	'R';
+	msgBuffer[6] 	=	'I';
+	msgBuffer[7] 	=	'S';
+	msgBuffer[8] 	=	'P';
+	msgBuffer[9] 	=	'_';
+	msgBuffer[10]	=	'2';
+	sendchar(MESSAGE_START);
+	checksum	=	MESSAGE_START^0;
 
-	sendchar('s');
-	sendchar('t');
-	sendchar('k');
-	//	sendchar('5');
-	//	sendchar('0');
-	//	sendchar('0');
-	sendchar('v');
-	sendchar('2');
-	sendchar(0x0d);
-	sendchar(0x0a);
+	sendchar(seqNum);
+	checksum	^=	seqNum;
 
-	delay_ms(100);
-#endif
+	c			=	((msgLength>>8)&0xFF);
+	sendchar(c);
+	checksum	^=	c;
+
+	c			=	msgLength&0x00FF;
+	sendchar(c);
+	checksum ^= c;
+
+	sendchar(TOKEN);
+	checksum ^= TOKEN;
+
+	p	=	msgBuffer;
+	while ( msgLength )
+	{
+		c	=	*p++;
+		sendchar(c);
+		checksum ^=c;
+		msgLength--;
+	}
+	sendchar(checksum);
+	seqNum++;
+	/////////Kolja/////////
 
 	while (boot_state==0)
 	{
 		while ((!(Serial_Available())) && (boot_state == 0))		// wait for data
 		{
 			_delay_ms(0.001);
-			boot_timer++;
+			/////////Kolja/////////
+			// nur wenn das bit gesetzt ist
+			if(bit_is_set(PINA,1)){
+			/////////Kolja/////////
+				boot_timer++;
+			/////////Kolja/////////
+			}
+			/////////Kolja/////////
+
 			if (boot_timer > boot_timeout)
 			{
 				boot_state	=	1; // (after ++ -> boot_state=2 bootloader timeout, jump to main 0x00000 )
