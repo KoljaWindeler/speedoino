@@ -82,6 +82,8 @@ void reset(int spezial_down){
 	}
 	counter_avr=0;
 	counter_bt=0;
+	reset_avr_running=0; // macht das hier sinn? bluetooth sollte hier nicht zurück gesetzt werden
+	// bluetooth macht hier den reset und erst wenn es blinkt dann gibt er ihn frei,
 };
 
 void config_timer0(){

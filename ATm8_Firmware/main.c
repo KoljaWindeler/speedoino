@@ -107,8 +107,8 @@ int main(){
 					int geschwindigkeit; //400
 
 					if(abs(steps-soll_pos)>1000){
-						beschleunigung=120; // 100
-						geschwindigkeit=800; //400
+						beschleunigung=240; // 120
+						geschwindigkeit=1100; //800
 					} else {
 						// wenn die schritweite unter 100 ist -- dann nur 10% der leistung
 						beschleunigung=100; // 100
