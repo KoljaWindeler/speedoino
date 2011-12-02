@@ -1119,10 +1119,11 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->clear_screen();
 		pOLED->highlight_bar(0,0,128,8);
 		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Speedoino"),2,0,DISP_BRIGHTNESS,0,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GNU - General"),0,2,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Public License"),0,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GNU - Licensed"),0,1,0,DISP_BRIGHTNESS,0);
 
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR(GIT_REV),0,5,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("started 4.2010"),0,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR(GIT_REV),0,4,0,DISP_BRIGHTNESS,0);
+
 		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("contact me at"),0,6,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("KKoolljjaa@gmail.com"),0,7,0,DISP_BRIGHTNESS,0);
 	}
