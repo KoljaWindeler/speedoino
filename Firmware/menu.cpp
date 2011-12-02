@@ -22,7 +22,7 @@
 speedo_menu::speedo_menu(void){
 }
 
-//prog_char asd_0[30000] PROGMEM ="a";
+prog_char asd_0[6000] PROGMEM ="a";
 //prog_char asd_1[30000] PROGMEM ="a";
 
 
@@ -51,7 +51,7 @@ prog_char setup_m_4[] PROGMEM = "5. Daylight saving";
 prog_char setup_m_5[] PROGMEM = "6. BT Reset state";
 prog_char setup_m_6[] PROGMEM = "7. -";
 prog_char setup_m_7[] PROGMEM = "8. -";
-prog_char setup_m_8[] PROGMEM = "9. -";
+prog_char setup_m_8[] PROGMEM = "9. About";
 PROGMEM const char *menu_setup[9] = { setup_m_0,setup_m_1,setup_m_2,setup_m_3,setup_m_4,setup_m_5,setup_m_6,setup_m_7,setup_m_8 };
 
 ///////////////////// Customize /////////////////////
@@ -586,6 +586,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			};
 
 			sprintf(char_buffer,"%3i00",int(floor(pSensors->m_dz->blitz_dz/100)));// 12500
+			pOLED->highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
 			if(floor(state/10)==63){
 				pOLED->string_P(STD_SMALL_1X_FONT,PSTR("active"),2,5,0,15,0); // joa, unschön. Wird flackern, aber naja
 				pOLED->string(STD_SMALL_1X_FONT,char_buffer,11,5,15,0,0);
@@ -597,6 +598,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			// wenn inactiv mittig "inactive" anzeigen lassen
 		} else {
 			set_buttons(button_state,button_state,button_state,!button_state); // no right
+			pOLED->highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
 			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("inactive"),5,5,0,15,0);
 
 		};
@@ -1110,6 +1112,19 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->string(STD_SMALL_1X_FONT,"bt",13,1,0,DISP_BRIGHTNESS,0);
 		}
 		// show reason why last reset happend
+	}
+	////////////////////////////////// ABOUT //////////////////////////////////
+	else if(floor(state/10)==79) { // 00089X
+		set_buttons(button_state,!button_state,!button_state,!button_state); // msg only
+		pOLED->clear_screen();
+		pOLED->highlight_bar(0,0,128,8);
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Speedoino"),2,0,DISP_BRIGHTNESS,0,0);
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GNU - General"),0,2,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Public License"),0,3,0,DISP_BRIGHTNESS,0);
+
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR(GIT_REV),0,5,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("contact me at"),0,6,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("KKoolljjaa@gmail.com"),0,7,0,DISP_BRIGHTNESS,0);
 	}
 	//////////////////////// fuel added /////////////////////////////
 	else if(state==81){

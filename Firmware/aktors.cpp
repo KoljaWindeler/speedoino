@@ -1,3 +1,19 @@
+/* Speedoino - This file is part of the firmware.
+ * Copyright (C) 2011 Kolja Windeler
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "global.h"
 
 Speedo_aktors::Speedo_aktors(){
@@ -9,11 +25,11 @@ Speedo_aktors::~Speedo_aktors(){
 
 void Speedo_aktors::init(){
 	/* vier werte paare:
-	* 1. Außen -> ändert sich öfters mal, wird mit std werten geladen
-	* 2. Innen -> ändert sich eigentlich nie
-	* 3. Flasher -> Farbe zu der übergeblendet wird wenn die schaltdrehzahl erreicht wird
-	* 4. out_base -> Farbkopie von Außen
-	*/
+	 * 1. Außen -> ändert sich öfters mal, wird mit std werten geladen
+	 * 2. Innen -> ändert sich eigentlich nie
+	 * 3. Flasher -> Farbe zu der übergeblendet wird wenn die schaltdrehzahl erreicht wird
+	 * 4. out_base -> Farbkopie von Außen
+	 */
 	int r,g,b;
 	// innen
 	r=EEPROM.read(6);
@@ -47,8 +63,11 @@ void Speedo_aktors::init(){
 	dimm_rgb_to(r,g,b,256,0);
 };
 
-
 void Speedo_aktors::set_rgb_in(int r,int g,int b){
+	set_rgb_in(r,g,b,1);
+}
+
+void Speedo_aktors::set_rgb_in(int r,int g,int b,int save){
 	if(r>255) r=255; else if(r<0) r=0;
 	if(g>255) g=255; else if(g<0) g=0;
 	if(b>255) b=255; else if(b<0) b=0;
@@ -57,9 +76,11 @@ void Speedo_aktors::set_rgb_in(int r,int g,int b){
 	analogWrite(RGB_IN_G,255-g);
 	analogWrite(RGB_IN_B,255-b);
 
-	RGB.inner.r.actual=r;
-	RGB.inner.g.actual=g;
-	RGB.inner.b.actual=b;
+	if(save){
+		RGB.inner.r.actual=r;
+		RGB.inner.g.actual=g;
+		RGB.inner.b.actual=b;
+	};
 };
 
 void Speedo_aktors::set_rgb_out(int r,int g,int b){
