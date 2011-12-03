@@ -114,9 +114,9 @@ void speedo_disp::draw_blitzer(unsigned char x,unsigned char y){
 }
 
 void speedo_disp::draw_arrow(int arrow, int spalte, int zeile){
-	pOLED->string(STD_SMALL_1X_FONT,"   ",spalte,zeile,0,0,0); // 3x3 Buchstaben, 6x8
-	pOLED->string(STD_SMALL_1X_FONT,"   ",spalte,zeile+1,0,0,0); // 18x24
-	pOLED->string(STD_SMALL_1X_FONT,"   ",spalte,zeile+2,0,0,0);
+	pOLED->string(pSpeedo->default_font,"   ",spalte,zeile,0,0,0); // 3x3 Buchstaben, 6x8
+	pOLED->string(pSpeedo->default_font,"   ",spalte,zeile+1,0,0,0); // 18x24
+	pOLED->string(pSpeedo->default_font,"   ",spalte,zeile+2,0,0,0);
 	if((pSensors->m_speed->getSpeed()>=3) && (arrow>-1)){ // nur den Winkel "goto" einzeichnen wenn die Geschwindigkeit >=3 kmh ist
 		// TODO: hier einen schickeren Winkel zeichnen...
 		// ein Strich im winkel pSensors->m_gps->winkel mit der länge l nach oben und unten
@@ -181,7 +181,7 @@ void speedo_disp::show_storry(char storry[],unsigned int storry_length,char titl
 	// show title
 	pOLED->clear_screen();
 	pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-	pOLED->string(STD_SMALL_1X_FONT,title,2,0,DISP_BRIGHTNESS,0,0);
+	pOLED->string(pSpeedo->default_font,title,2,0,DISP_BRIGHTNESS,0,0);
 
 	// Generate borders
 	unsigned int fill_line=0; // actual line
@@ -237,7 +237,7 @@ void speedo_disp::show_storry(char storry[],unsigned int storry_length,char titl
 				};
 			};
 			buffer2[k]='\0';
-			pOLED->string(STD_SMALL_1X_FONT,buffer2,0,i+2,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font,buffer2,0,i+2,0,DISP_BRIGHTNESS,0);
 
 			//delete buffer
 			free(buffer2);
@@ -322,8 +322,8 @@ void speedo_disp::show_animation(const char command[]){
 				i=ende;
 				killed=true;
 				clear_screen();
-				string(STD_SMALL_1X_FONT,"Open file failed",3,2,0,DISP_BRIGHTNESS,0);
-				string(STD_SMALL_1X_FONT,char_buffer,4,3,0,DISP_BRIGHTNESS,0);
+				string(pSpeedo->default_font,"Open file failed",3,2,0,DISP_BRIGHTNESS,0);
+				string(pSpeedo->default_font,char_buffer,4,3,0,DISP_BRIGHTNESS,0);
 			}
 			delay(warte); // check ob das hier viel aendert
 			if(pMenu->button_test(true))  {  i=ende; killed=true; pMenu->display(); } // muss man dann nicht vorher den state hochsetzen?!
@@ -339,16 +339,16 @@ void speedo_disp::show_animation(const char command[]){
 void speedo_disp::disp_waiting(int position,unsigned char spalte,unsigned char zeile){
 	switch (position%4){
 	case 0:
-		string(STD_SMALL_1X_FONT," |",spalte,zeile,0,15,0);
+		string(pSpeedo->default_font," |",spalte,zeile,0,15,0);
 		break;
 	case 1:
-		string(STD_SMALL_1X_FONT," /",spalte,zeile,0,15,0);
+		string(pSpeedo->default_font," /",spalte,zeile,0,15,0);
 		break;
 	case 2:
-		string(STD_SMALL_1X_FONT," -",spalte,zeile,0,15,0);
+		string(pSpeedo->default_font," -",spalte,zeile,0,15,0);
 		break;
 	case 3:
-		string(STD_SMALL_1X_FONT," \\",spalte,zeile,0,15,0);
+		string(pSpeedo->default_font," \\",spalte,zeile,0,15,0);
 		break;
 	};
 };
@@ -392,11 +392,11 @@ void speedo_disp::init_speedo(){
 	clear_screen();
 	if(pSD->sd_failed){ // ausgabe wenns schief geht die Karte zu laden
 		clear_screen();
-		string_P(STD_SMALL_1X_FONT,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
-		string_P(STD_SMALL_1X_FONT,PSTR("SD access failed."),1,2,0,DISP_BRIGHTNESS,0);
-		string_P(STD_SMALL_1X_FONT,PSTR("running on backup"),0,3,0,DISP_BRIGHTNESS,0);
-		string_P(STD_SMALL_1X_FONT,PSTR("values"),6,4,0,DISP_BRIGHTNESS,0);
-		string_P(STD_SMALL_1X_FONT,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
+		string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
+		string_P(pSpeedo->default_font,PSTR("SD access failed."),1,2,0,DISP_BRIGHTNESS,0);
+		string_P(pSpeedo->default_font,PSTR("running on backup"),0,3,0,DISP_BRIGHTNESS,0);
+		string_P(pSpeedo->default_font,PSTR("values"),6,4,0,DISP_BRIGHTNESS,0);
+		string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
 
 		pDebug->sprintlnp(PSTR("!! WARNING !!"));
 		pDebug->sprintlnp(PSTR("SD access failed"));

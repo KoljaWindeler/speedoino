@@ -678,7 +678,7 @@ void speedo_gps::loop(){
 			case 6: sprintf(buffer,"#%i | %i",int(get_info(i)),int(get_info(8))); break;
 			case 7: sprintf(buffer,"%i",gps_write_status); break; // fix
 			};
-			pOLED->string(STD_SMALL_1X_FONT,buffer,10,i,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font,buffer,10,i,0,DISP_BRIGHTNESS,0);
 			pSpeedo->disp_zeile_bak[i]=int(get_info(i));
 		}
 	};

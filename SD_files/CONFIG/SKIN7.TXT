@@ -1,0 +1,55 @@
+# Koljas default Tacho, nachgebaut als Skin
+# fuel Position x<=14
+fuel_widget.x=14;
+fuel_widget.y=7;
+fuel_widget.symbol=1;
+fuel_widget.font=9;
+
+# Oil Position x<=11
+oil_widget.x=0;
+oil_widget.y=0;
+oil_widget.symbol=1;
+oil_widget.font=9;
+
+# Air Position x<=14
+air_widget.x=14;
+air_widget.y=0;
+air_widget.symbol=1;
+air_widget.font=9;
+
+# Clock Position x<=12
+clock_widget.x=0;
+clock_widget.y=7;
+clock_widget.symbol=1;
+clock_widget.font=9;
+
+# Arrow position x<=18
+arrow_widget.x=0;
+arrow_widget.y=1;
+
+# km/h Position x<=11
+kmh_widget.x=6;
+kmh_widget.y=2;
+kmh_widget.font=2;
+
+# "km/h" Position x<=11
+kmhchar_widget.x=12;
+kmhchar_widget.y=3;
+kmhchar_widget.font=9;
+
+# gang anzeige unten int der Mitte
+gear_widget.x=11;
+gear_widget.y=7;
+gear_widget.font=9;
+
+dz_widget.x=0;
+dz_widget.y=4;
+dz_widget.font=9;
+
+addinfo_widget.x=0;
+addinfo_widget.y=5;
+addinfo_widget.font=9;
+
+addinfo2_widget.x=0;
+addinfo2_widget.y=6;
+addinfo2_widget.font=9;

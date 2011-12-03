@@ -59,7 +59,7 @@ void speedo_gear::calc(){
 
 			//			char a_faktor[5]; // XXXX[\0]
 			//			sprintf(a_faktor,"%04i",faktor_flat%10000);
-			//			pOLED->string(STD_SMALL_1X_FONT,a_faktor,17,1,0,DISP_BRIGHTNESS,0);
+			//			pOLED->string(pSpeedo->default_font,a_faktor,17,1,0,DISP_BRIGHTNESS,0);
 
 			//			if(faktor_flat>=n_gang[6] && faktor_flat<=n_gang[0]){ // faktor 		// 1700 - 0400 //
 			//				if     (faktor_flat<n_gang[0] && faktor_flat>=n_gang[1]){  gang=1; }// 1700 - 1000 // 1350
@@ -89,22 +89,22 @@ void speedo_gear::calibrate(){
 
 		// title bar
 		pOLED->highlight_bar(0,0,128,8);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Gear"),5,0,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Gear"),5,0,15,0,0);
 		char temp[6];
 		sprintf(temp,"%i",int(floor(pMenu->state/10))%10);
-		pOLED->string(STD_SMALL_1X_FONT,temp,10,0,15,0,0);
+		pOLED->string(pSpeedo->default_font,temp,10,0,15,0,0);
 
 		// draw old value
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Old Value:"),0,3);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Old Value:"),0,3);
 		sprintf(temp,"%4i",pSensors->m_gear->n_gang[int(pSensors->m_gps->mod(pMenu->state,100))/10]);
-		pOLED->string(STD_SMALL_1X_FONT,temp,11,3);
+		pOLED->string(pSpeedo->default_font,temp,11,3);
 
 		// some text
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Dont shift!! Drive"),0,5);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("faster and slower"),0,6);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("~ cancel        save"),0,7);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Dont shift!! Drive"),0,5);
+		pOLED->string_P(pSpeedo->default_font,PSTR("faster and slower"),0,6);
+		pOLED->string_P(pSpeedo->default_font,PSTR("~ cancel        save"),0,7);
 		sprintf(temp,"%c",127);
-		pOLED->string(STD_SMALL_1X_FONT,temp,14,7);
+		pOLED->string(pSpeedo->default_font,temp,14,7);
 	}
 
 	_delay_ms(150);
@@ -114,10 +114,10 @@ void speedo_gear::calibrate(){
 		pSpeedo->disp_zeile_bak[1]=faktor_flat;
 
 		// draw it
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Value:"),0,2);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Value:"),0,2);
 		char temp[5];
 		sprintf(temp,"%4i",int(faktor_flat));
-		pOLED->string(STD_SMALL_1X_FONT,temp,11,2);
+		pOLED->string(pSpeedo->default_font,temp,11,2);
 	}
 };
 

@@ -99,12 +99,12 @@ void speedo_speed::check_umfang(){
 	if(pSensors->m_gps->get_info(6)<3 && pSpeedo->disp_zeile_bak[0]!=2){
 		pSpeedo->disp_zeile_bak[0]=2;
 		pOLED->highlight_bar(0,0,128,8);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("No GPS!"),5,0,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("No GPS!"),5,0,15,0,0);
 		flat_counter_calibrate_umfang=0;
 	} else if(gps_speed<round(pSensors->m_speed->gps_takeover/0.6) && pSpeedo->disp_zeile_bak[0]!=1 && pSensors->m_gps->get_info(6)>=2){
 		pSpeedo->disp_zeile_bak[0]=1;
 		pOLED->highlight_bar(0,0,128,8);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Speed up!"),5,0,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Speed up!"),5,0,15,0,0);
 		flat_counter_calibrate_umfang=0;
 	} else if(gps_speed>pSensors->m_speed->gps_takeover && pSpeedo->disp_zeile_bak[0]==1){
 		pOLED->filled_rect(0,0,128,8,0);
@@ -115,14 +115,14 @@ void speedo_speed::check_umfang(){
 		pSpeedo->disp_zeile_bak[1]=gps_speed;
 		char speed_a[13];
 		sprintf(speed_a,"GPS %3i km/h",gps_speed);
-		pOLED->string(STD_SMALL_1X_FONT,speed_a,5,2);
+		pOLED->string(pSpeedo->default_font,speed_a,5,2);
 	}
 
 	if(mag_speed!=pSpeedo->disp_zeile_bak[2]){
 		pSpeedo->disp_zeile_bak[2]=mag_speed;
 		char speed_a[13];
 		sprintf(speed_a,"MAG %3i km/h",mag_speed);
-		pOLED->string(STD_SMALL_1X_FONT,speed_a,5,3);
+		pOLED->string(pSpeedo->default_font,speed_a,5,3);
 	}
 
 	//gps_geschwindigkeit/realer_reifenumfang = mag_speed/aktueller_umfang
@@ -137,13 +137,13 @@ void speedo_speed::check_umfang(){
 		pSpeedo->disp_zeile_bak[2]=flat_value_calibrate_umfang;
 		char speed_a[13];
 		sprintf(speed_a,"outline now %3i cm",int(round(flat_value_calibrate_umfang)));
-		pOLED->string(STD_SMALL_1X_FONT,speed_a,1,6);
+		pOLED->string(pSpeedo->default_font,speed_a,1,6);
 	}
 
 	if(int(pSensors->m_speed->reifen_umfang*100)!=pSpeedo->disp_zeile_bak[4]){
 		pSpeedo->disp_zeile_bak[4]=int(pSensors->m_speed->reifen_umfang*100);
 		char speed_a[13];
 		sprintf(speed_a,"from file   %3i cm",int(pSensors->m_speed->reifen_umfang*100));
-		pOLED->string(STD_SMALL_1X_FONT,speed_a,1,7);
+		pOLED->string(pSpeedo->default_font,speed_a,1,7);
 	}
 }

@@ -306,10 +306,10 @@ int configuration::check(){
 
 	if(nulls == (sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]))-2){
 		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("SD access strange"),1,2,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("all max values==-99"),0,3,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("SD access strange"),1,2,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("all max values==-99"),0,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
 
 		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
 		pDebug->sprintp(PSTR("SD access strange"));
@@ -416,6 +416,7 @@ int configuration::init(){
 	pSpeedo->fuel_widget.font=STD_SMALL_1X_FONT;
 
 	pSpeedo->default_font=STD_SMALL_1X_FONT;
+	pSpeedo->default_font=VISITOR_SMALL_1X_FONT;
 	// skinning
 
 	// beleuchtung

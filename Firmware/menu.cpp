@@ -239,11 +239,11 @@ void speedo_menu::display(){ // z.B. state = 26
 		} else {
 			sprintf(char_buffer,"inactive");
 		};
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
 		pOLED->highlight_bar(0,8*3-1,128,17); // mit hintergrundfarbe nen kasten malen
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Navigation"),4,3,15,0,0);
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,5,4,15,0,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Navigation"),4,3,15,0,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,5,4,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
 	}
 	/////////////////////////////////////////////////// Pointer für die Navigation ///////////////////////////////////////////////////
 	else if(floor(state/10)==32){ // 32[X]
@@ -258,15 +258,15 @@ void speedo_menu::display(){ // z.B. state = 26
 		};
 
 		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Navi Track Pointer"),0,0,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Navi Track Pointer"),0,0,0,DISP_BRIGHTNESS,0);
 		pSensors->m_gps->generate_new_order(); // vor ausgabe von pSensors->m_gps->navi_point, wenn pSensors->m_gps->navi_point nach dem knopfdruck zu hoch war wirds in dieser fkt zurück gesetzt
 		sprintf(char_buffer,"#%3i:",pSensors->m_gps->navi_point);
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
-		pOLED->string(STD_SMALL_1X_FONT,pSensors->m_gps->navi_ziel_name,7,2,0,DISP_BRIGHTNESS,0); // straße
+		pOLED->string(pSpeedo->default_font,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,pSensors->m_gps->navi_ziel_name,7,2,0,DISP_BRIGHTNESS,0); // straße
 		sprintf(char_buffer,"Long: %05i%04i",int(floor(pSensors->m_gps->navi_ziel_long/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_lati,10000)));
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,2,6,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,2,6,0,DISP_BRIGHTNESS,0);
 		sprintf(char_buffer,"Lati: %05i%04i",int(floor(pSensors->m_gps->navi_ziel_lati/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_lati,10000))); // typisch 052033224 => 5203,3224 => kann pro feld bis zu 32767 => 3.276.732.767 => 3.276° was quasi 8 mal um die welt geht
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,2,7,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,2,7,0,DISP_BRIGHTNESS,0);
 	}
 	/////////////////////////////////////////////////// Dateien listen und highlighten... irgendwie ///////////////////////////////////////////////////
 	else if(floor(state/10)==33){ // 33[X]
@@ -323,16 +323,16 @@ void speedo_menu::display(){ // z.B. state = 26
 			} else {
 				pOLED->clear_screen();
 				pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string(STD_SMALL_1X_FONT,title,2,0,DISP_BRIGHTNESS,0,0);
-				pOLED->string_P(STD_SMALL_1X_FONT,PSTR("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
+				pOLED->string(pSpeedo->default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+				pOLED->string_P(pSpeedo->default_font,PSTR("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
 			}
 		} else { // if there is no file with that number
 			pOLED->clear_screen();
 			char title[17];
 			sprintf(title,"Navifile Nr: %i/8",pSensors->m_gps->active_file);
 			pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-			pOLED->string(STD_SMALL_1X_FONT,title,2,0,DISP_BRIGHTNESS,0,0);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("File not found"),2,3,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("File not found"),2,3,0,DISP_BRIGHTNESS,0);
 		};
 		subdir.close();
 		root.close();
@@ -343,8 +343,8 @@ void speedo_menu::display(){ // z.B. state = 26
 		char buffer[10];
 		sprintf(buffer,"%i",pSensors->m_gps->written_gps_points);
 		pOLED->clear_screen();
-		pOLED->string(STD_SMALL_1X_FONT,buffer,5,3,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Points written"),3,4,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,buffer,5,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Points written"),3,4,0,DISP_BRIGHTNESS,0);
 	}
 
 	////////// Menüpunkt 4 ist erstmal noch komplett leer // 4[XXXX]
@@ -358,14 +358,14 @@ void speedo_menu::display(){ // z.B. state = 26
 	else if(floor(state/10)==51) { // 51[X]
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GPS_time"),0,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GPS_date"),0,1);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GPS_long"),0,2);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GPS_lati"),0,3);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GPS_alti"),0,4);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GPS_speed"),0,5);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GPS_sats"),0,6);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Counter"),0,7);
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS_time"),0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS_date"),0,1);
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS_long"),0,2);
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS_lati"),0,3);
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS_alti"),0,4);
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS_speed"),0,5);
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS_sats"),0,6);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Counter"),0,7);
 
 		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
@@ -376,10 +376,8 @@ void speedo_menu::display(){ // z.B. state = 26
 		pSpeedo->reset_bak();
 		pOLED->clear_screen();
 		pOLED->highlight_bar(0,0,128,8);
-		pOLED->string_P(VISITOR_SMALL_1X_FONT,PSTR("Additional info"),2,0,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Additional info"),2,0,15,0,0);
 		pSensors->m_voltage->loop();
-		pOLED->string_P(VISITOR_SMALL_1X_FONT,PSTR("SW Version"),1,6);
-		pOLED->string_P(VISITOR_SMALL_1X_FONT,PSTR(GIT_REV),0,7);
 	}
 
 	// Menüpunkt 6 -> Customize //
@@ -434,15 +432,15 @@ void speedo_menu::display(){ // z.B. state = 26
 			} else {
 				pOLED->clear_screen();
 				pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string(STD_SMALL_1X_FONT,title,2,0,DISP_BRIGHTNESS,0,0);
-				pOLED->string_P(STD_SMALL_1X_FONT,PSTR("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
+				pOLED->string(pSpeedo->default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+				pOLED->string_P(pSpeedo->default_font,PSTR("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
 			}
 			// noch mal kurz den buffer missbrauchen
 			sprintf(buffer,"  Preview -    Save");
 			buffer[0]=127;
 			buffer[12]=127;
 			buffer[13]=127;
-			pOLED->string(STD_SMALL_1X_FONT,buffer,0,7,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font,buffer,0,7,0,DISP_BRIGHTNESS,0);
 			// free buffer
 			free(buffer);
 			// end of draw to display
@@ -451,8 +449,8 @@ void speedo_menu::display(){ // z.B. state = 26
 			char title[17];
 			sprintf(title,"Skinfile Nr: %i/8",int(state%10)-1);
 			pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-			pOLED->string(STD_SMALL_1X_FONT,title,2,0,DISP_BRIGHTNESS,0,0);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("File not found"),2,3,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("File not found"),2,3,0,DISP_BRIGHTNESS,0);
 		};
 		subdir.close();
 		root.close();
@@ -468,7 +466,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		sprintf(filename,"SKIN%i.TXT",(int(floor(state/10))%10)-1);
 		pConfig->read(filename);
 		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Preview"),6,3);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Preview"),6,3);
 		delay(300);
 
 		// set buttons
@@ -489,7 +487,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pConfig->storage_outdated=true;
 		pConfig->write("BASE.TXT"); // save config
 
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,3);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
 		delay(300);
 		pOLED->clear_screen();
 
@@ -568,15 +566,15 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->clear_screen();
 
 			pOLED->highlight_bar(0,8*4-1,128,17); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("DZ Flasher"),5,4,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("DZ Flasher"),5,4,15,0,0);
 
 			// bedienelemente anzeigen
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Down = inactive"),4,1,0,DISP_BRIGHTNESS,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Down = inactive"),4,1,0,DISP_BRIGHTNESS,0);
 			char temp[2];
 			sprintf(temp,"%c",127);
-			pOLED->string(STD_SMALL_1X_FONT,temp,4,7);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("to adjust"),6,7);
+			pOLED->string(pSpeedo->default_font,temp,4,7);
+			pOLED->string_P(pSpeedo->default_font,PSTR("to adjust"),6,7);
 		};
 
 		// wenn der blitzer an ist dann drehzahl mit anzeigen
@@ -588,18 +586,18 @@ void speedo_menu::display(){ // z.B. state = 26
 			sprintf(char_buffer,"%3i00",int(floor(pSensors->m_dz->blitz_dz/100)));// 12500
 			pOLED->highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
 			if(floor(state/10)==63){
-				pOLED->string_P(STD_SMALL_1X_FONT,PSTR("active"),2,5,0,15,0); // joa, unschön. Wird flackern, aber naja
-				pOLED->string(STD_SMALL_1X_FONT,char_buffer,11,5,15,0,0);
+				pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,5,0,15,0); // joa, unschön. Wird flackern, aber naja
+				pOLED->string(pSpeedo->default_font,char_buffer,11,5,15,0,0);
 			} else {
-				pOLED->string_P(STD_SMALL_1X_FONT,PSTR("active"),2,5,15,0,0);  // joa, unschön. Wird flackern, aber naja
-				pOLED->string(STD_SMALL_1X_FONT,char_buffer,11,5,0,15,0);
+				pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,5,15,0,0);  // joa, unschön. Wird flackern, aber naja
+				pOLED->string(pSpeedo->default_font,char_buffer,11,5,0,15,0);
 			}
 
 			// wenn inactiv mittig "inactive" anzeigen lassen
 		} else {
 			set_buttons(button_state,button_state,button_state,!button_state); // no right
 			pOLED->highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("inactive"),5,5,0,15,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("inactive"),5,5,0,15,0);
 
 		};
 	}
@@ -615,10 +613,10 @@ void speedo_menu::display(){ // z.B. state = 26
 			if(pConfig->storage_outdated){
 				pOLED->clear_screen();
 				if(pConfig->write("BASE.TXT")==0){
-					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
+					pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
 					delay(500);
 				} else {
-					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("!SD ERROR!"),5,4);
+					pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
 					delay(5000);
 				}
 			};
@@ -656,12 +654,12 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->clear_screen();
 			// anzeige der werte
 			pOLED->highlight_bar(0,0,128,8);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Center RGB"),2,0,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Center RGB"),2,0,15,0,0);
 
 			// Red   Green   Blue
 			// 255    255    255
 			pOLED->highlight_bar(0,24,128,16);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Red   Green   Blue"),1,3,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Red   Green   Blue"),1,3,15,0,0);
 			pSpeedo->disp_zeile_bak[0]=303;
 		};
 
@@ -675,7 +673,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			back = 15;
 			front = 0;
 		}
-		pOLED->string(STD_SMALL_1X_FONT,temp,1,4,back,front,0);
+		pOLED->string(pSpeedo->default_font,temp,1,4,back,front,0);
 		sprintf(temp,"%3i",int(g%1000));
 		if(floor(state/1000)==64){
 			back = 0;
@@ -684,7 +682,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			back = 15;
 			front = 0;
 		}
-		pOLED->string(STD_SMALL_1X_FONT,temp,8,4,back,front,0);
+		pOLED->string(pSpeedo->default_font,temp,8,4,back,front,0);
 		sprintf(temp,"%3i",int(b%1000));
 		if(floor(state/10000)==64){
 			back = 0;
@@ -693,7 +691,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			back = 15;
 			front = 0;
 		}
-		pOLED->string(STD_SMALL_1X_FONT,temp,15,4,back,front,0);
+		pOLED->string(pSpeedo->default_font,temp,15,4,back,front,0);
 	}
 	//////////////////////// adjust outer RGB LED ////////////////////////
 	else if(floor(state/10)==65){
@@ -707,10 +705,10 @@ void speedo_menu::display(){ // z.B. state = 26
 			if(pConfig->storage_outdated){
 				pOLED->clear_screen();
 				if(pConfig->write("BASE.TXT")==0){
-					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
+					pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
 					delay(500);
 				} else {
-					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("!SD ERROR!"),5,4);
+					pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
 					delay(5000);
 				}
 			};
@@ -747,12 +745,12 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->clear_screen();
 			// anzeige der werte
 			pOLED->highlight_bar(0,0,128,8);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Outer RGB"),2,0,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Outer RGB"),2,0,15,0,0);
 
 			// Red   Green   Blue
 			// 255    255    255
 			pOLED->highlight_bar(0,24,128,16);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Red   Green   Blue"),1,3,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Red   Green   Blue"),1,3,15,0,0);
 			pSpeedo->disp_zeile_bak[0]=304;
 		};
 
@@ -766,7 +764,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			back = 15;
 			front = 0;
 		}
-		pOLED->string(STD_SMALL_1X_FONT,temp,1,4,back,front,0);
+		pOLED->string(pSpeedo->default_font,temp,1,4,back,front,0);
 		sprintf(temp,"%3i",int(g%1000));
 		if(floor(state/1000)==65){
 			back = 0;
@@ -775,7 +773,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			back = 15;
 			front = 0;
 		}
-		pOLED->string(STD_SMALL_1X_FONT,temp,8,4,back,front,0);
+		pOLED->string(pSpeedo->default_font,temp,8,4,back,front,0);
 		sprintf(temp,"%3i",int(b%1000));
 		if(floor(state/10000)==65){
 			back = 0;
@@ -784,7 +782,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			back = 15;
 			front = 0;
 		}
-		pOLED->string(STD_SMALL_1X_FONT,temp,15,4,back,front,0);
+		pOLED->string(pSpeedo->default_font,temp,15,4,back,front,0);
 	}
 	//////////////////////// adjust dz alert RGB LED ////////////////////////
 	else if(floor(state/10)==66){
@@ -801,10 +799,10 @@ void speedo_menu::display(){ // z.B. state = 26
 			if(pConfig->storage_outdated){
 				pOLED->clear_screen();
 				if(pConfig->write("BASE.TXT")==0){
-					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
+					pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
 					delay(500);
 				} else {
-					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("!SD ERROR!"),5,4);
+					pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
 					delay(5000);
 				}
 			};
@@ -851,12 +849,12 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->clear_screen();
 			// anzeige der werte
 			pOLED->highlight_bar(0,0,128,8);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Alert RGB"),2,0,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Alert RGB"),2,0,15,0,0);
 
 			// Red   Green   Blue
 			// 255    255    255
 			pOLED->highlight_bar(0,24,128,16);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Red   Green   Blue"),1,3,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Red   Green   Blue"),1,3,15,0,0);
 			pSpeedo->disp_zeile_bak[0]=305;
 		};
 
@@ -870,7 +868,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			back = 15;
 			front = 0;
 		}
-		pOLED->string(STD_SMALL_1X_FONT,temp,1,4,back,front,0);
+		pOLED->string(pSpeedo->default_font,temp,1,4,back,front,0);
 		sprintf(temp,"%3i",int(g%1000));
 		if(floor(state/1000)==66){
 			back = 0;
@@ -879,7 +877,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			back = 15;
 			front = 0;
 		}
-		pOLED->string(STD_SMALL_1X_FONT,temp,8,4,back,front,0);
+		pOLED->string(pSpeedo->default_font,temp,8,4,back,front,0);
 		sprintf(temp,"%3i",int(b%1000));
 		if(floor(state/10000)==66){
 			back = 0;
@@ -888,7 +886,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			back = 15;
 			front = 0;
 		}
-		pOLED->string(STD_SMALL_1X_FONT,temp,15,4,back,front,0);
+		pOLED->string(pSpeedo->default_font,temp,15,4,back,front,0);
 	}
 	//////////////////////// show animation ////////////////////////
 	else if(floor(state/10)==68){ //68[x]
@@ -897,7 +895,7 @@ void speedo_menu::display(){ // z.B. state = 26
 	///////////////////////// FILE MANAGER ////////////////////
 	else if(floor(state/10)==69){ // 69[X]
 		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Filemanager"),4,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Filemanager"),4,3,0,DISP_BRIGHTNESS,0);
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 
 		pFilemanager->run();
@@ -920,15 +918,15 @@ void speedo_menu::display(){ // z.B. state = 26
 		} else {		// erstmal ne message
 			pOLED->clear_screen();
 			pOLED->highlight_bar(0,0,128,8);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Calibrate Gear"),2,0,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Calibrate Gear"),2,0,15,0,0);
 			char temp[2];
 			sprintf(temp,"%i",int(state%10));
-			pOLED->string(STD_SMALL_1X_FONT,temp,17,0,15,0,0);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Change Gear up/down"),0,3);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("!Keep driving!"),3,4);
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("  continue"),0,7);
+			pOLED->string(pSpeedo->default_font,temp,17,0,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Change Gear up/down"),0,3);
+			pOLED->string_P(pSpeedo->default_font,PSTR("!Keep driving!"),3,4);
+			pOLED->string_P(pSpeedo->default_font,PSTR("  continue"),0,7);
 			sprintf(temp,"%c",127);
-			pOLED->string(STD_SMALL_1X_FONT,temp,0,7);
+			pOLED->string(pSpeedo->default_font,temp,0,7);
 			pSensors->m_gear->faktor_counter=0;
 		};
 	}
@@ -947,7 +945,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pConfig->write("GANG.TXT");
 
 		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,3);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
 		delay(300);
 		state=711;
 		display();
@@ -964,7 +962,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pSensors->m_speed->reifen_umfang=pSensors->m_speed->flat_value_calibrate_umfang/100;
 		pConfig->storage_outdated=true;
 		pConfig->write("BASE.TXT");
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("saved"),6,3);
+		pOLED->string_P(pSpeedo->default_font,PSTR("saved"),6,3);
 		delay(300);
 		state=721;
 		display();
@@ -1005,20 +1003,20 @@ void speedo_menu::display(){ // z.B. state = 26
 
 		pOLED->clear_screen();
 		pOLED->highlight_bar(0,8*1-1,128,17); // mit hintergrundfarbe nen kasten malen
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Choose phase"),4,1,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Choose phase"),4,1,15,0,0);
 		sprintf(char_buffer," %02i ",int(floor(int(pOLED->phase)/16)));
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,4,2,abs(olc-1)*15,olc*15,0);
-		pOLED->string(STD_SMALL_1X_FONT," // ",8,2,15,0,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,4,2,abs(olc-1)*15,olc*15,0);
+		pOLED->string(pSpeedo->default_font," // ",8,2,15,0,0);
 		sprintf(char_buffer," %02i ",int(int(pOLED->phase)%16));
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,12,2,abs(orc-1)*15,orc*15,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,12,2,abs(orc-1)*15,orc*15,0);
 
 		pOLED->highlight_bar(0,8*5-1,128,17); // mit hintergrundfarbe nen kasten malen
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Choose ref V"),4,5,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Choose ref V"),4,5,15,0,0);
 		sprintf(char_buffer," %02i ",int(floor(int(pOLED->ref)/16)));
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,4,6,abs(ulc-1)*15,ulc*15,0);
-		pOLED->string(STD_SMALL_1X_FONT," // ",8,6,15,0,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,4,6,abs(ulc-1)*15,ulc*15,0);
+		pOLED->string(pSpeedo->default_font," // ",8,6,15,0,0);
 		sprintf(char_buffer," %02i ",int(int(pOLED->ref)%16));
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,12,6,abs(urc-1)*15,urc*15,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,12,6,abs(urc-1)*15,urc*15,0);
 
 	}
 	///////////////////// reset setup //////////////////////////
@@ -1065,11 +1063,11 @@ void speedo_menu::display(){ // z.B. state = 26
 		} else {
 			sprintf(char_buffer,"error");
 		};
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
 		pOLED->highlight_bar(0,8*3-1,128,17); // mit hintergrundfarbe nen kasten malen
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Daylight saving"),3,3,15,0,0);
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,5,4,15,0,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Daylight saving"),3,3,15,0,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,5,4,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
 	}
 	/////////// bt reset state  //////////
 	else if(floor(state/10)==76) { // 00089X
@@ -1086,20 +1084,20 @@ void speedo_menu::display(){ // z.B. state = 26
 		} else {
 			sprintf(char_buffer,"inactive");
 		};
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
 		pOLED->highlight_bar(0,8*3-1,128,17); // mit hintergrundfarbe nen kasten malen
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("BT-Reset"),5,3,15,0,0);
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,5,4,15,0,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("BT-Reset"),5,3,15,0,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,5,4,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
 
 		// show reason why last reset happend
-		pOLED->string(STD_SMALL_1X_FONT,"Last was ",4,1,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,"Last was ",4,1,0,DISP_BRIGHTNESS,0);
 		if(pSensors->m_reset->last_reset==0 || pSensors->m_reset->last_reset==-1){
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("power"),13,1,0,DISP_BRIGHTNESS,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("power"),13,1,0,DISP_BRIGHTNESS,0);
 		} else if(pSensors->m_reset->last_reset==1){
-			pOLED->string(STD_SMALL_1X_FONT,"avr",13,1,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font,"avr",13,1,0,DISP_BRIGHTNESS,0);
 		} else if(pSensors->m_reset->last_reset==2){
-			pOLED->string(STD_SMALL_1X_FONT,"bt",13,1,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font,"bt",13,1,0,DISP_BRIGHTNESS,0);
 		}
 		// show reason why last reset happend
 	}
@@ -1108,21 +1106,21 @@ void speedo_menu::display(){ // z.B. state = 26
 		set_buttons(button_state,!button_state,!button_state,!button_state); // msg only
 		pOLED->clear_screen();
 		pOLED->highlight_bar(0,0,128,8);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Speedoino"),2,0,DISP_BRIGHTNESS,0,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("GNU - Licensed"),0,1,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Speedoino"),2,0,DISP_BRIGHTNESS,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("GNU - Licensed"),0,1,0,DISP_BRIGHTNESS,0);
 
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("started 4.2010"),0,3,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR(GIT_REV),0,4,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("started 4.2010"),0,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR(GIT_REV),0,4,0,DISP_BRIGHTNESS,0);
 
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("contact me at"),0,6,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("KKoolljjaa@gmail.com"),0,7,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("contact me at"),0,6,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("KKoolljjaa@gmail.com"),0,7,0,DISP_BRIGHTNESS,0);
 	}
 	//////////////////////// fuel added /////////////////////////////
 	else if(state==81){
 		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Added fuel amount:"),1,3,0,DISP_BRIGHTNESS,4);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Added fuel amount:"),1,3,0,DISP_BRIGHTNESS,4);
 		sprintf(char_buffer,"%2i,%0i l",(int)floor(fuel_added/10),(int)fuel_added%10);
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,7,5,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,7,5,0,DISP_BRIGHTNESS,0);
 	}
 	// hoch runter schalten
 	else if(state==82 || state==89){ // 8[2/9]
@@ -1140,18 +1138,18 @@ void speedo_menu::display(){ // z.B. state = 26
 
 		sprintf(char_buffer,"%2i,%0i l",(int)floor(fuel_added/10),(int)fuel_added%10);
 		pOLED->filled_rect(30,40,60,10,0);
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,7,5,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,7,5,0,DISP_BRIGHTNESS,0);
 		state=81;
 	}
 	///////////// Anzeigen wieviel verbraucht wurde ////////////////
 	else if(floor(state/100)==8){  // 8[XX]
 		set_buttons(button_state,!button_state,!button_state,button_state); // msg only
 		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Average need: "),4,2,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Average need: "),4,2,0,DISP_BRIGHTNESS,0);
 		sprintf(char_buffer,"%2i,%0i l/100km",(int)floor(fuel_added*10/(pSpeedo->trip_dist[3]/1000)),(int)(fuel_added*100/(pSpeedo->trip_dist[3]/1000))%10);
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,6,3,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("All Fuel"),7,6,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("storeages reseted"),3,7,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,6,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("All Fuel"),7,6,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("storeages reseted"),3,7,0,DISP_BRIGHTNESS,0);
 		pSpeedo->trip_dist[5]=0;
 		pSpeedo->avg_timebase[5]=0;
 		pSpeedo->max_speed[5]=0;
@@ -1170,19 +1168,20 @@ void speedo_menu::display(){ // z.B. state = 26
 
 		int speicher=(int(floor(state/10))%10)-1;
 		strcpy_P(char_buffer, (char*)pgm_read_word(&(menu_trip_setup[(int(floor(state/10))%10)-1])));
+		center_me(char_buffer,13);
 		pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,5,0,DISP_BRIGHTNESS,0,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,4,0,DISP_BRIGHTNESS,0,0);
 		sprintf(char_buffer,"Avg:      %3i km/h",(int)round(pSpeedo->trip_dist[speicher]*3.6/pSpeedo->avg_timebase[speicher]));
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
 
 		sprintf(char_buffer,"Time:    %02i:%02i:%02i",(int)round(pSpeedo->avg_timebase[speicher]/3600),(int)round((pSpeedo->avg_timebase[speicher]%3600)/60),(int)round(pSpeedo->avg_timebase[speicher]%60));
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,0,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,0,3,0,DISP_BRIGHTNESS,0);
 
 		sprintf(char_buffer,"Trip: %5lu,%02i km",(unsigned long)floor(pSpeedo->trip_dist[speicher]/1000),int(floor((pSpeedo->trip_dist[speicher]%1000)/10)));
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,0,4,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,0,4,0,DISP_BRIGHTNESS,0);
 
 		sprintf(char_buffer,"Max:       %3i km/h",(int)pSpeedo->max_speed[speicher]);
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,0,5,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,0,5,0,DISP_BRIGHTNESS,0);
 	}
 	//////////////// quick jump //////////////
 	else if(floor(state/100)==9 && state%10==2){ // 9[X]2
@@ -1215,10 +1214,10 @@ void speedo_menu::display(){ // z.B. state = 26
 	else if(state==99111 || state==91111){
 		pOLED->clear_screen();
 		pOLED->highlight_bar(0,0,128,8);
-		pOLED->string(STD_SMALL_1X_FONT,"Restriction",2,0,15,0,0);
-		pOLED->string(STD_SMALL_1X_FONT,"Delete storages",2,2);
-		pOLED->string(STD_SMALL_1X_FONT,"\"Total\" & \"Board\"",2,3);
-		pOLED->string(STD_SMALL_1X_FONT,"forbidden",2,4);
+		pOLED->string(pSpeedo->default_font,"Restriction",2,0,15,0,0);
+		pOLED->string(pSpeedo->default_font,"Delete storages",2,2);
+		pOLED->string(pSpeedo->default_font,"\"Total\" & \"Board\"",2,3);
+		pOLED->string(pSpeedo->default_font,"forbidden",2,4);
 		set_buttons(button_state,!button_state,!button_state,!button_state);
 	}
 	////////////////// Tachostand leeren ////////////////////
@@ -1236,8 +1235,8 @@ void speedo_menu::display(){ // z.B. state = 26
 		char temp[30];
 		strcpy_P(temp, (char*)pgm_read_word(&(menu_trip_setup[(int(floor(state/1000))%10)-1])));
 		sprintf(char_buffer,"%s.",temp); // hier noch die bezeichnung
-		pOLED->string(STD_SMALL_1X_FONT,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
-		pOLED->string(STD_SMALL_1X_FONT,"cleared",2,4);
+		pOLED->string(pSpeedo->default_font,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string(pSpeedo->default_font,"cleared",2,4);
 		delay(800);
 		state=floor(state/100);
 		display();
@@ -1275,16 +1274,16 @@ void speedo_menu::back(){
 void speedo_menu::yesno(const char first[30],const char second[30],const char third[30]){
 	// Menu vorbereiten
 	pOLED->clear_screen();
-	pOLED->string(STD_SMALL_1X_FONT,first,4,1,0,DISP_BRIGHTNESS,0);
-	pOLED->string(STD_SMALL_1X_FONT,second,0,2,0,DISP_BRIGHTNESS,0);
-	pOLED->string(STD_SMALL_1X_FONT,third,0,3,0,DISP_BRIGHTNESS,0);
-	pOLED->string_P(STD_SMALL_1X_FONT,PSTR("X no            yes X"),0,7,0,DISP_BRIGHTNESS,0);
+	pOLED->string(pSpeedo->default_font,first,4,1,0,DISP_BRIGHTNESS,0);
+	pOLED->string(pSpeedo->default_font,second,0,2,0,DISP_BRIGHTNESS,0);
+	pOLED->string(pSpeedo->default_font,third,0,3,0,DISP_BRIGHTNESS,0);
+	pOLED->string_P(pSpeedo->default_font,PSTR("X no            yes X"),0,7,0,DISP_BRIGHTNESS,0);
 	char zeiger[2];
 	zeiger[1]=0x00;
 	zeiger[0]=127; // pfeil rechts
-	pOLED->string(STD_SMALL_1X_FONT,zeiger,20,7);
+	pOLED->string(pSpeedo->default_font,zeiger,20,7);
 	zeiger[0]=126; // pfeil links
-	pOLED->string(STD_SMALL_1X_FONT,zeiger,0,7);
+	pOLED->string(pSpeedo->default_font,zeiger,0,7);
 	button_links_valid=true;
 	button_oben_valid=false;
 	button_rechts_valid=true;
@@ -1296,8 +1295,8 @@ void speedo_menu::yesno(const char first[30],const char second[30],const char th
 /// bestätigen eines löschens ///
 void speedo_menu::del_conf(char first[20],char second[20]){
 	pOLED->clear_screen();
-	pOLED->string(STD_SMALL_1X_FONT,first,6,2,0,DISP_BRIGHTNESS,0);
-	pOLED->string(STD_SMALL_1X_FONT,second,2,4,0,DISP_BRIGHTNESS,0);
+	pOLED->string(pSpeedo->default_font,first,6,2,0,DISP_BRIGHTNESS,0);
+	pOLED->string(pSpeedo->default_font,second,2,4,0,DISP_BRIGHTNESS,0);
 
 	delay(1200);
 	back();
@@ -1325,10 +1324,10 @@ void speedo_menu::draw(const char** menu, int entries){
 	char char_buffer[22];
 
 	strcpy_P(char_buffer, (char*)pgm_read_word(&(menu_titel[level_1])));
-	pOLED->string(STD_SMALL_1X_FONT,char_buffer,0,0,0,DISP_BRIGHTNESS,0);
+	pOLED->string(pSpeedo->default_font,char_buffer,0,0,0,DISP_BRIGHTNESS,0);
 
 	sprintf(char_buffer,"%04lu",state);
-	pOLED->string(STD_SMALL_1X_FONT,char_buffer,16,0,0,DISP_BRIGHTNESS,0);
+	pOLED->string(pSpeedo->default_font,char_buffer,16,0,0,DISP_BRIGHTNESS,0);
 	////////// Menu Caption /////////////
 
 	///////// Menu ausgeben ////////////
@@ -1357,7 +1356,7 @@ void speedo_menu::draw(const char** menu, int entries){
 		};
 		// copy string vom flash
 		strcpy_P(buffer, (char*)pgm_read_word(&(menu[k])));
-		pOLED->string(STD_SMALL_1X_FONT,buffer,2,y,hg,fg,0);
+		pOLED->string(pSpeedo->default_font,buffer,2,y,hg,fg,0);
 		// copy string vom flash
 		y++; // abstand festlegen
 	};

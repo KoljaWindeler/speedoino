@@ -77,7 +77,7 @@ bool speedo_filemanager::recv_file(char filename[13]){
 			//Serial.print("Habe gelesen: "); Serial.println(buf,BYTE);
 			if(num_byte%100==0) { // wenns 10 sind dann
 				sprintf(char_buffer,"%04lu byte received",num_byte); // ch_buffer[23]-20-1 // max 999.999 Byte
-				pOLED->string(STD_SMALL_1X_FONT,char_buffer,0,0,0,DISP_BRIGHTNESS,0);
+				pOLED->string(pSpeedo->default_font,char_buffer,0,0,0,DISP_BRIGHTNESS,0);
 				Serial.print("ACK"); // sende ACK
 			};
 
@@ -224,7 +224,7 @@ void speedo_filemanager::run(){
 	pDebug->sprintlnp(PSTR("file_manager activated"));
 	pSensors->m_reset->set_deactive(false,false); // deaktiviere reset aber speichere das nicht
 	pOLED->animation(3);
-	pOLED->string(STD_SMALL_1X_FONT,"started",5,4,0,DISP_BRIGHTNESS,0);
+	pOLED->string(pSpeedo->default_font,"started",5,4,0,DISP_BRIGHTNESS,0);
 	// open the root filesystem
 	// var //
 	int tries;

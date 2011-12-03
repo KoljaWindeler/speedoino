@@ -46,7 +46,7 @@ void speedo_voltage::init(){
 
 void speedo_voltage::loop(){
 	if(pSpeedo->disp_zeile_bak[0]!=1){
-		pOLED->string_P(0,PSTR("Voltage "),1,2);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Voltage "),1,2);
 		pSpeedo->disp_zeile_bak[0]=1;
 	}
 	int voltage=pSensors->m_voltage->get();
@@ -54,6 +54,6 @@ void speedo_voltage::loop(){
 		pSpeedo->disp_zeile_bak[1]=voltage;
 		char temp[6];
 		sprintf(temp,"%2i,%iV",int(floor(voltage/10)),int(voltage%10));
-		pOLED->string(0,temp,9,2);
+		pOLED->string(pSpeedo->default_font,temp,9,2);
 	};
 }
