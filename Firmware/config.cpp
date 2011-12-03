@@ -21,13 +21,13 @@ configuration::configuration(){
 };
 
 void configuration::ram_info() {
-  int size = 8192; // Use 2048 with ATmega328
-  byte *buf;
-  while ((buf = (byte *) malloc(--size)) == NULL);
-  free(buf);
-  Serial.print(size);
+	int size = 8192; // Use 2048 with ATmega328
+	byte *buf;
+	while ((buf = (byte *) malloc(--size)) == NULL);
+	free(buf);
+	Serial.print(size);
 
-  pDebug->sprintlnp(PSTR(" Byte heap free"));
+	pDebug->sprintlnp(PSTR(" Byte heap free"));
 }
 
 configuration::~configuration(){
@@ -80,9 +80,9 @@ int configuration::write(const char *filename){
 					file.close();
 					storage_outdated=false;
 				}
-			/*************** GANG.TXT **************************
-			 * as soon as the user has calibrated at least one gear
-			 ****************************************************/
+				/*************** GANG.TXT **************************
+				 * as soon as the user has calibrated at least one gear
+				 ****************************************************/
 			} else if(strncmp("GANG.TXT",filename,8)==0){
 				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
@@ -108,13 +108,16 @@ int configuration::write(const char *filename){
 					file.close();
 					storage_outdated=false;
 				}
-			/*************** 311211.GPS **************************
-			 * this function is triggered by the m_gps Sensor, every 30 sec
-			 * we will the other way round ask the m_gps for information
-			 * about the logged points as long as they aren't empty
-			 ****************************************************/
+				/*************** 311211.GPS **************************
+				 * this function is triggered by the m_gps Sensor, every 30 sec
+				 * we will the other way round ask the m_gps for information
+				 * about the logged points as long as they aren't empty
+				 ****************************************************/
 			} else if(filename[6]=='.' && filename[7]=='G' && filename[8]=='P' && filename[9]=='S'){
-				if(!subdir.open(&root, "GPS", O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
+				if(!subdir.open(&root, "GPS", O_READ)) {
+					pDebug->sprintlnp(PSTR("open subdir /config failed"));
+					return -1;
+				};
 				if (!file.open(&subdir, filename, O_CREAT |  O_APPEND | O_WRITE)){
 					Serial.print("platzhalter");
 					pSensors->m_gps->gps_write_status=-2;
@@ -124,24 +127,27 @@ int configuration::write(const char *filename){
 					// get some buffer
 					char buffer[60];
 					memset(buffer,'\0',60);
-					
+
 					// get the info from the gps class
 					int i=0;
 					while(i<100 && pSensors->m_gps->get_logged_points(buffer,i)>=0){
 						pSD->writeString(file, buffer);
 						i++;
 					}
-					
+
 					// free buffer and close file
 					file.close();
 					storage_outdated=false;
 				}	
-			/*************** BASE.TXT **************************
-			 * save the basic stuff like tire outline aka meters
-			 * per tick, flasher warning distance and so on
-			 ****************************************************/
+				/*************** BASE.TXT **************************
+				 * save the basic stuff like tire outline aka meters
+				 * per tick, flasher warning distance and so on
+				 ****************************************************/
 			} else if(strncmp("BASE.TXT",filename,8)==0){
-				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
+				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {
+					pDebug->sprintlnp(PSTR("open subdir /config failed"));
+					return -1;
+				};
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
 					Serial.print("platzhalter");
 					return -2;
@@ -225,8 +231,52 @@ int configuration::write(const char *filename){
 					}
 					pSD->writeString(file, buffer);
 
+					// RGB LEDs
+					strcpy_P(buffer, PSTR("rgb_in_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->RGB.inner.r.actual)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("rgb_in_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->RGB.inner.g.actual)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("rgb_in_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->RGB.inner.b.actual)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->RGB.outer.r.actual)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->RGB.outer.g.actual)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->RGB.outer.b.actual)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_flash_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->dz_flasher.r.actual)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_flash_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->dz_flasher.g.actual)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_flash_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->dz_flasher.b.actual)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+					// RGB LEDs
 					file.close();
 					storage_outdated=false;
 				};
@@ -364,7 +414,21 @@ int configuration::init(){
 	pSpeedo->fuel_widget.y=7;
 	pSpeedo->fuel_widget.symbol=true;
 	pSpeedo->fuel_widget.font=STD_SMALL_1X_FONT;
+
+	pSpeedo->default_font=STD_SMALL_1X_FONT;
 	// skinning
+
+	// beleuchtung
+	pAktors->set_rgb_in(255,255,255,0);
+
+	pAktors->out_base_color.r.actual=0;
+	pAktors->out_base_color.g.actual=0;
+	pAktors->out_base_color.b.actual=255;
+
+	pAktors->dz_flasher.r.actual=255;
+	pAktors->dz_flasher.g.actual=0;
+	pAktors->dz_flasher.b.actual=0;
+	// beleuchtung
 
 	last_speed_value=0;
 	storage_outdated=false;
@@ -481,6 +545,8 @@ int configuration::parse(char* buffer){
 		Serial.print(name);
 		Serial.print("=");
 	};
+
+	int temp=0;
 
 	// hier wissen wir wie der name ist
 	if(strcmp_P(name,PSTR("startup"))==0){
@@ -625,10 +691,44 @@ int configuration::parse(char* buffer){
 		parse_bool(buffer,seperator,&pSpeedo->fuel_widget.symbol);
 	} else if(strcmp_P(name,PSTR("fuel_widget.font"))==0){
 		parse_short(buffer,seperator,&pSpeedo->fuel_widget.font);
+	} else if(strcmp_P(name,PSTR("default_font"))==0){
+		parse_short(buffer,seperator,&pSpeedo->default_font);
 	} else if(strcmp_P(name,PSTR("dz_flash"))==0){
 		parse_int(buffer,seperator,&pSensors->m_dz->blitz_dz);
 	} else if(strcmp_P(name,PSTR("dz_flash_en"))==0){
-			parse_bool(buffer,seperator,&pSensors->m_dz->blitz_en);
+		parse_bool(buffer,seperator,&pSensors->m_dz->blitz_en);
+		/////// RGB LEDs /////////
+	} else if(strcmp_P(name,PSTR("rgb_flash_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->dz_flasher.r.actual=temp;
+	} else if(strcmp_P(name,PSTR("rgb_flash_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->dz_flasher.g.actual=temp;
+	} else if(strcmp_P(name,PSTR("rgb_flash_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->dz_flasher.b.actual=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->out_base_color.r.actual=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->out_base_color.g.actual=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->out_base_color.b.actual=temp;
+	} else if(strcmp_P(name,PSTR("rgb_in_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->RGB.inner.r.actual=temp;
+		pAktors->set_rgb_in(pAktors->RGB.inner.r.actual,pAktors->RGB.inner.g.actual,pAktors->RGB.inner.b.actual,1);
+	} else if(strcmp_P(name,PSTR("rgb_in_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->RGB.inner.g.actual=temp;
+		pAktors->set_rgb_in(pAktors->RGB.inner.r.actual,pAktors->RGB.inner.g.actual,pAktors->RGB.inner.b.actual,1);
+	} else if(strcmp_P(name,PSTR("rgb_in_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->RGB.inner.b.actual=temp;
+		pAktors->set_rgb_in(pAktors->RGB.inner.r.actual,pAktors->RGB.inner.g.actual,pAktors->RGB.inner.b.actual,1);
+		/////// RGB LEDs /////////
 	} else {
 		return -2; // ungltiger identifier
 	}
@@ -733,7 +833,7 @@ int configuration::parse_bool(char* buffer,int i,bool* wert){
 int configuration::parse_int(char* buffer,int i,int* wert){
 	float temp;
 	int return_value=parse_float(buffer,i,&temp);
-//	Serial.println(temp);
+	//	Serial.println(temp);
 	*wert=int(temp);
 
 	pDebug->parse_int();
@@ -749,7 +849,7 @@ int configuration::parse_int(char* buffer,int i,int* wert){
 short configuration::parse_short(char* buffer,int i,short* wert){
 	float temp;
 	int return_value=parse_float(buffer,i,&temp);
-//	Serial.println(temp);
+	//	Serial.println(temp);
 	*wert=short(temp);
 
 	//pDebug->parse_short();

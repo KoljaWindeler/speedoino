@@ -27,7 +27,7 @@ public:
 	void del_conf(char first[20],char second[20]);
 	int  center_me(char* input,int legth);
 
-	unsigned long state;
+	unsigned long state,old_state;
 	bool button_rechts_valid;
 	bool button_links_valid;
 	bool button_oben_valid;

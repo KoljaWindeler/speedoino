@@ -51,6 +51,7 @@ public:
 
 	widget		kmhchar_widget,oil_widget,air_widget,arrow_widget,kmh_widget,dz_widget;
 	widget		fuel_widget,gear_widget,addinfo_widget,addinfo2_widget,clock_widget;
+	short default_font;
 
 
 };

@@ -604,7 +604,28 @@ void speedo_menu::display(){ // z.B. state = 26
 		};
 	}
 	//////////////////////// adjust Center RGB LED ////////////////////////
-	else if(floor(state/10)==64 || floor(state/100)==64 || floor(state/1000)==64){
+	else if(floor(state/10)==64){
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
+		if(	old_state==64 ){
+			state=state*10+1;
+			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		} else {
+			back();
+			// store to SD
+			if(pConfig->storage_outdated){
+				pOLED->clear_screen();
+				if(pConfig->write("BASE.TXT")==0){
+					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
+					delay(500);
+				} else {
+					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("!SD ERROR!"),5,4);
+					delay(5000);
+				}
+			};
+		};
+		display();
+	}
+	else if(floor(state/100)==64 || floor(state/1000)==64 || floor(state/10000)==64){
 		// aktuelle werte
 		int r,g,b;
 		r=pAktors->RGB.inner.r.actual;
@@ -612,19 +633,21 @@ void speedo_menu::display(){ // z.B. state = 26
 		b=pAktors->RGB.inner.b.actual;
 		// neue werte
 		if(state%10==2){ // unten
+			pConfig->storage_outdated=true;
 			state-=1; // zurück
 
-			if(floor(state/10)==64){	r-=1;		if(r<0){r=0;};	};	// rot
-			if(floor(state/100)==64){	g-=1;		if(g<0){g=0;};	};	// grün
-			if(floor(state/1000)==64){	b-=1;		if(b<0){b=0;};	};	// blau
+			if(floor(state/100)==64){	r-=1;		if(r<0){r=0;};	};	// rot
+			if(floor(state/1000)==64){	g-=1;		if(g<0){g=0;};	};	// grün
+			if(floor(state/10000)==64){	b-=1;		if(b<0){b=0;};	};	// blau
 
 			pAktors->dimm_rgb_to(r,g,b,1,1);
 		} else if(state%10==9){ // oben
+			pConfig->storage_outdated=true;
 			state-=8; // zurück
 
-			if(floor(state/10)==64){	r+=1;		if(r>255){r=255;};	}; // rot
-			if(floor(state/100)==64){	g+=1;		if(g>255){g=255;};	}; // grün
-			if(floor(state/1000)==64){	b+=1;		if(b>255){b=255;};	};	// blau
+			if(floor(state/100)==64){	r+=1;		if(r>255){r=255;};	}; // rot
+			if(floor(state/1000)==64){	g+=1;		if(g>255){g=255;};	}; // grün
+			if(floor(state/10000)==64){	b+=1;		if(b>255){b=255;};	};	// blau
 
 			pAktors->dimm_rgb_to(r,g,b,1,1);
 		}
@@ -640,17 +663,12 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->highlight_bar(0,24,128,16);
 			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Red   Green   Blue"),1,3,15,0,0);
 			pSpeedo->disp_zeile_bak[0]=303;
-
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("  to store values"),0,7);
-			char temp[2];
-			sprintf(temp,"%c",127);
-			pOLED->string(STD_SMALL_1X_FONT,temp,0,7);
 		};
 
 		char temp[4];
 		sprintf(temp,"%3i",int(r%1000));
 		int front,back;
-		if(floor(state/10)==64){
+		if(floor(state/100)==64){
 			back = 0;
 			front = 15;
 		} else {
@@ -659,7 +677,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		}
 		pOLED->string(STD_SMALL_1X_FONT,temp,1,4,back,front,0);
 		sprintf(temp,"%3i",int(g%1000));
-		if(floor(state/100)==64){
+		if(floor(state/1000)==64){
 			back = 0;
 			front = 15;
 		} else {
@@ -668,7 +686,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		}
 		pOLED->string(STD_SMALL_1X_FONT,temp,8,4,back,front,0);
 		sprintf(temp,"%3i",int(b%1000));
-		if(floor(state/1000)==64){
+		if(floor(state/10000)==64){
 			back = 0;
 			front = 15;
 		} else {
@@ -677,21 +695,29 @@ void speedo_menu::display(){ // z.B. state = 26
 		}
 		pOLED->string(STD_SMALL_1X_FONT,temp,15,4,back,front,0);
 	}
-	//////////////////////// save it ////////////////////////////////7
-	else if(floor(state/10000)==64){
-		// store to eeprom
-		EEPROM.write(6,pAktors->RGB.inner.r.actual&0xff);
-		EEPROM.write(7,pAktors->RGB.inner.g.actual&0xff);
-		EEPROM.write(8,pAktors->RGB.inner.b.actual&0xff);
-		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
-		delay(500);
-		pSpeedo->reset_bak();
-		state=641;
+	//////////////////////// adjust outer RGB LED ////////////////////////
+	else if(floor(state/10)==65){
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
+		if(	old_state==65 ){
+			state=state*10+1;
+			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		} else {
+			back();
+			// store to SD
+			if(pConfig->storage_outdated){
+				pOLED->clear_screen();
+				if(pConfig->write("BASE.TXT")==0){
+					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
+					delay(500);
+				} else {
+					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("!SD ERROR!"),5,4);
+					delay(5000);
+				}
+			};
+		};
 		display();
 	}
-	//////////////////////// adjust outer RGB LED ////////////////////////
-	else if(floor(state/10)==65 || floor(state/100)==65 || floor(state/1000)==65){
+	else if(floor(state/100)==65 || floor(state/1000)==65 || floor(state/10000)==65){
 		// aktuelle werte
 		int r,g,b;
 		r=pAktors->RGB.outer.r.actual;
@@ -699,19 +725,21 @@ void speedo_menu::display(){ // z.B. state = 26
 		b=pAktors->RGB.outer.b.actual;
 		// neue werte
 		if(state%10==2){ // unten
+			pConfig->storage_outdated=true;
 			state-=1; // zurück
 
-			if(floor(state/10)==65){	r-=1;		if(r<0){r=0;};	};	// rot
-			if(floor(state/100)==65){	g-=1;		if(g<0){g=0;};	};	// grün
-			if(floor(state/1000)==65){	b-=1;		if(b<0){b=0;};	};	// blau
+			if(floor(state/100)==65){	r-=1;		if(r<0){r=0;};	};	// rot
+			if(floor(state/1000)==65){	g-=1;		if(g<0){g=0;};	};	// grün
+			if(floor(state/10000)==65){	b-=1;		if(b<0){b=0;};	};	// blau
 
 			pAktors->dimm_rgb_to(r,g,b,1,0);
 		} else if(state%10==9){ // oben
+			pConfig->storage_outdated=true;
 			state-=8; // zurück
 
-			if(floor(state/10)==65){	r+=1;		if(r>255){r=255;};	}; // rot
-			if(floor(state/100)==65){	g+=1;		if(g>255){g=255;};	}; // grün
-			if(floor(state/1000)==65){	b+=1;		if(b>255){b=255;};	};	// blau
+			if(floor(state/100)==65){	r+=1;		if(r>255){r=255;};	}; // rot
+			if(floor(state/1000)==65){	g+=1;		if(g>255){g=255;};	}; // grün
+			if(floor(state/10000)==65){	b+=1;		if(b>255){b=255;};	};	// blau
 			pAktors->dimm_rgb_to(r,g,b,1,0);
 		}
 		if(pSpeedo->disp_zeile_bak[0]!=304){
@@ -726,17 +754,12 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->highlight_bar(0,24,128,16);
 			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Red   Green   Blue"),1,3,15,0,0);
 			pSpeedo->disp_zeile_bak[0]=304;
-
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("  to store values"),0,7);
-			char temp[2];
-			sprintf(temp,"%c",127);
-			pOLED->string(STD_SMALL_1X_FONT,temp,0,7);
 		};
 
 		char temp[4];
 		sprintf(temp,"%3i",int(r%1000));
 		int front,back;
-		if(floor(state/10)==65){
+		if(floor(state/100)==65){
 			back = 0;
 			front = 15;
 		} else {
@@ -745,7 +768,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		}
 		pOLED->string(STD_SMALL_1X_FONT,temp,1,4,back,front,0);
 		sprintf(temp,"%3i",int(g%1000));
-		if(floor(state/100)==65){
+		if(floor(state/1000)==65){
 			back = 0;
 			front = 15;
 		} else {
@@ -754,7 +777,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		}
 		pOLED->string(STD_SMALL_1X_FONT,temp,8,4,back,front,0);
 		sprintf(temp,"%3i",int(b%1000));
-		if(floor(state/1000)==65){
+		if(floor(state/10000)==65){
 			back = 0;
 			front = 15;
 		} else {
@@ -763,39 +786,28 @@ void speedo_menu::display(){ // z.B. state = 26
 		}
 		pOLED->string(STD_SMALL_1X_FONT,temp,15,4,back,front,0);
 	}
-	//////////////////////// save it ////////////////////////////////7
-	else if(floor(state/10000)==65){
-		// store to eeprom
-		EEPROM.write(9,pAktors->RGB.outer.r.actual&0xff);
-		EEPROM.write(10,pAktors->RGB.outer.g.actual&0xff);
-		EEPROM.write(11,pAktors->RGB.outer.b.actual&0xff);
-		// speichere auch hier in base, damit wir gleich schon
-		// nach dem umstellen die neuen werte im speicher haben
-		pAktors->out_base_color.r.actual=pAktors->RGB.outer.r.actual;
-		pAktors->out_base_color.g.actual=pAktors->RGB.outer.g.actual;
-		pAktors->out_base_color.b.actual=pAktors->RGB.outer.b.actual;
-
-		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
-		delay(500);
-		state=651;
-		pSpeedo->reset_bak();
-		display();
-	}
 	//////////////////////// adjust dz alert RGB LED ////////////////////////
 	else if(floor(state/10)==66){
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
-		// wenn wir außen aktuell die gleiche Farbe haben wie die basisfarbe sein sollte
-		// sind wir wohl gerade dabei vom Hauptmenü in die Einstellungen zu gehen
-		if(	pSpeedo->disp_zeile_bak[2]!=999	){
+		if(	old_state==66 ){
 			pAktors->set_rgb_out(pAktors->dz_flasher.r.actual,pAktors->dz_flasher.g.actual,pAktors->dz_flasher.b.actual,0);
 			state=state*10+1;
 			pSpeedo->disp_zeile_bak[2]=999; // setze auf beiden wegen den speicher zurück
-		// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
 		} else {
 			pAktors->set_rgb_out(pAktors->RGB.outer.r.actual,pAktors->RGB.outer.g.actual,pAktors->RGB.outer.b.actual,0);
 			back();
-			pSpeedo->reset_bak();
+			// store to SD
+			if(pConfig->storage_outdated){
+				pOLED->clear_screen();
+				if(pConfig->write("BASE.TXT")==0){
+					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
+					delay(500);
+				} else {
+					pOLED->string_P(STD_SMALL_1X_FONT,PSTR("!SD ERROR!"),5,4);
+					delay(5000);
+				}
+			};
 		};
 		display();
 	}
@@ -807,6 +819,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		b=pAktors->dz_flasher.b.actual;
 		// neue werte
 		if(state%10==2){ // unten
+			pConfig->storage_outdated=true;
 			state-=1; // zurück
 
 			if(floor(state/100)==66){	r-=1;		if(r<0){r=0;};	};	// rot
@@ -819,6 +832,7 @@ void speedo_menu::display(){ // z.B. state = 26
 
 			pAktors->set_rgb_out(r,g,b,0); // setze die äußeren led's aber speichere es nicht im struct
 		} else if(state%10==9){ // oben
+			pConfig->storage_outdated=true;
 			state-=8; // zurück
 
 			if(floor(state/100)==66){	r+=1;		if(r>255){r=255;};	}; // rot
@@ -844,11 +858,6 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->highlight_bar(0,24,128,16);
 			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Red   Green   Blue"),1,3,15,0,0);
 			pSpeedo->disp_zeile_bak[0]=305;
-
-			pOLED->string_P(STD_SMALL_1X_FONT,PSTR("  to store values"),0,7);
-			char temp[2];
-			sprintf(temp,"%c",127);
-			pOLED->string(STD_SMALL_1X_FONT,temp,0,7);
 		};
 
 		char temp[4];
@@ -880,19 +889,6 @@ void speedo_menu::display(){ // z.B. state = 26
 			front = 0;
 		}
 		pOLED->string(STD_SMALL_1X_FONT,temp,15,4,back,front,0);
-	}
-	//////////////////////// save it ////////////////////////////////7
-	else if(floor(state/100000)==66){
-		// store to eeprom
-		EEPROM.write(12,pAktors->dz_flasher.r.actual&0xff);
-		EEPROM.write(13,pAktors->dz_flasher.g.actual&0xff);
-		EEPROM.write(14,pAktors->dz_flasher.b.actual&0xff);
-		pOLED->clear_screen();
-		pOLED->string_P(STD_SMALL_1X_FONT,PSTR("Saved"),7,4);
-		delay(500);
-		state=6611;
-		pSpeedo->reset_bak();
-		display();
 	}
 	//////////////////////// show animation ////////////////////////
 	else if(floor(state/10)==68){ //68[x]
@@ -1035,12 +1031,6 @@ void speedo_menu::display(){ // z.B. state = 26
 		byte tempByte;
 
 		EEPROM.write(2, 1& 0xFF);   // tripmode=1
-		EEPROM.write(6, 255& 0xFF); // center r
-		EEPROM.write(7, 255& 0xFF); // center g
-		EEPROM.write(8, 255& 0xFF); // center b
-		EEPROM.write(9, 0& 0xFF); // outer r
-		EEPROM.write(10, 0& 0xFF);// outer g
-		EEPROM.write(11, 255& 0xFF);// outer b
 
 		tempByte = ((int)15 & 0xFF);
 		EEPROM.write(147, tempByte); // Navi_pos=0
@@ -1444,6 +1434,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 				menu_start=0; // rechts -> leeres menu
 				menu_ende=menu_lines-1;
 				menu_marker=0;
+				old_state=state;
 				state=(state*10)+1;
 				button_time=millis();
 				return true;
@@ -1461,6 +1452,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 			delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 			// erst wenn nach dem delay noch der pegel anliegt
 			if((digitalRead(menu_button_links)==menu_active || input==68 || char(input)=='a')){ // wenn nach der Wartezeit der button immernoch gedrückt ist
+				old_state=state;
 				state=floor(state/10);
 				if((state%10)>menu_lines){ // bei 8,9
 					menu_marker=menu_lines-1;// ganz unten
@@ -1504,6 +1496,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 
 				//recalc level
 				// z.b. 00061 -> 00060 => 60%10=0 -> soll 69
+				old_state=state;
 				state--;
 				if(state%10==0){
 					state+=menu_max+1; // macht aus 0 dann 9 => 8+1
@@ -1538,6 +1531,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 				};
 
 				//recalc level
+				old_state=state;
 				state++;
 				// wenn wir bei xxx9 sind und ++ machen landen wir bei xx10
 				// xx10%10 == 0, -> xx01
@@ -1575,6 +1569,7 @@ void speedo_menu::init(){
 	digitalWrite(menu_button_unten,HIGH);
 
 	state=11;
+	old_state=state;
 	button_time=millis();
 	button_first_push=millis();
 

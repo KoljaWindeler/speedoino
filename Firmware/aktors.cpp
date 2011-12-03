@@ -30,37 +30,21 @@ void Speedo_aktors::init(){
 	 * 3. Flasher -> Farbe zu der übergeblendet wird wenn die schaltdrehzahl erreicht wird
 	 * 4. out_base -> Farbkopie von Außen
 	 */
-	int r,g,b;
 	// innen
-	r=EEPROM.read(6);
-	g=EEPROM.read(7);
-	b=EEPROM.read(8);
 	pinMode(RGB_IN_R,OUTPUT);
 	pinMode(RGB_IN_G,OUTPUT);
 	pinMode(RGB_IN_B,OUTPUT);
-	set_rgb_in(r,g,b);
 	// außen
-	r=EEPROM.read(9);
-	g=EEPROM.read(10);
-	b=EEPROM.read(11);
 	pinMode(RGB_OUT_R,OUTPUT);
 	pinMode(RGB_OUT_G,OUTPUT);
 	pinMode(RGB_OUT_B,OUTPUT);
-	// doof aber sichere hier mal zusätzlich die "basis farben" für den flasher
-	out_base_color.r.actual=r;
-	out_base_color.g.actual=g;
-	out_base_color.b.actual=b;
-	// dz flasher
-	dz_flasher.r.actual=EEPROM.read(12);
-	dz_flasher.g.actual=EEPROM.read(13);
-	dz_flasher.b.actual=EEPROM.read(14);
-	//set_rgb_out(r,g,b);
+
 
 	dimm_step=0;
 	dimm_steps=0;
 
 	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
-	dimm_rgb_to(r,g,b,256,0);
+	dimm_rgb_to(out_base_color.r.actual,out_base_color.g.actual,out_base_color.b.actual,256,0);
 };
 
 void Speedo_aktors::set_rgb_in(int r,int g,int b){
