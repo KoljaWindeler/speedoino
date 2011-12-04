@@ -27,6 +27,7 @@ CPP_SRCS += \
 ../sprint.cpp \
 ../stepper.cpp \
 ../temperature.cpp \
+../tetris.cpp \
 ../timer.cpp \
 ../voltage.cpp 
 
@@ -54,6 +55,7 @@ OBJS += \
 ./sprint.o \
 ./stepper.o \
 ./temperature.o \
+./tetris.o \
 ./timer.o \
 ./voltage.o 
 
@@ -81,6 +83,7 @@ CPP_DEPS += \
 ./sprint.d \
 ./stepper.d \
 ./temperature.d \
+./tetris.d \
 ./timer.d \
 ./voltage.d 
 

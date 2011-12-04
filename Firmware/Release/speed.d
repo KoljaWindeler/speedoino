@@ -29,7 +29,7 @@ speed.d speed.o: ../speed.cpp ../global.h ../clock_me.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/bufstream.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/SdFatUtil.h ../config.h \
  ../timer.h ../sprint.h ../speedo.h ../menu.h ../sensors.h ../aktors.h \
- ../debug.h ../file_manager.h ../version.h
+ ../debug.h ../file_manager.h ../version.h ../tetris.h
 
 ../global.h:
 
@@ -134,3 +134,5 @@ speed.d speed.o: ../speed.cpp ../global.h ../clock_me.h \
 ../file_manager.h:
 
 ../version.h:
+
+../tetris.h:

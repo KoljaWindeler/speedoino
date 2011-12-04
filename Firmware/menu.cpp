@@ -75,7 +75,7 @@ prog_char einfo_m_4[] PROGMEM = "5. -";
 prog_char einfo_m_5[] PROGMEM = "6. -";
 prog_char einfo_m_6[] PROGMEM = "7. -";
 prog_char einfo_m_7[] PROGMEM = "8. -";
-prog_char einfo_m_8[] PROGMEM = "9. -";
+prog_char einfo_m_8[] PROGMEM = "9. Tetris";
 PROGMEM const char *menu_einfo[9] = { einfo_m_0,einfo_m_1,einfo_m_2,einfo_m_3,einfo_m_4,einfo_m_5,einfo_m_6,einfo_m_7,einfo_m_8 };
 
 ///////////////////// Navigation /////////////////////
@@ -122,10 +122,7 @@ bool		button_rechts_valid=true;
 bool       	button_links_valid=true;
 bool       	button_oben_valid=true;
 bool       	button_unten_valid=true;
-#define menu_button_links 28 // 26
-#define menu_button_unten 24 // 22
-#define menu_button_rechts 22 // 28
-#define menu_button_oben 26 // 24
+
 #define menu_active 0 // low active menues
 #define menu_lines 7 // wieviele lines können wir darstellen 64 / 8 = 8 | 8-1(für die Headline)=7
 int			menu_max=8;   // 9 eintrräge aber da das array bei 0 anfängt isses 9-1=8
@@ -379,7 +376,27 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->string_P(pSpeedo->default_font,PSTR("Additional info"),2,0,15,0,0);
 		pSensors->m_voltage->loop();
 	}
-
+	/////////////////// TETRIS //////////////////77
+	else if(state==591) {
+		pOLED->clear_screen();
+		pOLED->highlight_bar(0,8,128,8);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Tetris"),6,1,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("in tribut to"),2,3,0,15,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Alexej Padschitnow"),2,4,0,15,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("L Quit"),2,5,0,15,0);
+		char temp[2];
+		sprintf(temp,"%c",126);
+		pOLED->string(pSpeedo->default_font,temp,2,5,0,15,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("R go for it"),2,6,0,15,0);
+		sprintf(temp,"%c",127);
+		pOLED->string(pSpeedo->default_font,temp,2,6,0,15,0);
+	} else if(state==5911){
+		tetris* m_tetris=new tetris;
+		m_tetris->run();
+		delete m_tetris;
+		back();
+		display();
+	}
 	// Menüpunkt 6 -> Customize //
 	else if(floor(state/10)==6) { //6[X]
 		// Menu vorbereiten
@@ -624,6 +641,9 @@ void speedo_menu::display(){ // z.B. state = 26
 		display();
 	}
 	else if(floor(state/100)==64 || floor(state/1000)==64 || floor(state/10000)==64){
+		if(floor(state/10000)==64){
+			set_buttons(button_state,button_state,button_state,!button_state); // no right
+		}
 		// aktuelle werte
 		int r,g,b;
 		r=pAktors->RGB.inner.r.actual;
@@ -716,6 +736,9 @@ void speedo_menu::display(){ // z.B. state = 26
 		display();
 	}
 	else if(floor(state/100)==65 || floor(state/1000)==65 || floor(state/10000)==65){
+		if(floor(state/10000)==65){
+			set_buttons(button_state,button_state,button_state,!button_state); // no right
+		}
 		// aktuelle werte
 		int r,g,b;
 		r=pAktors->RGB.outer.r.actual;
@@ -810,6 +833,9 @@ void speedo_menu::display(){ // z.B. state = 26
 		display();
 	}
 	else if(floor(state/100)==66 || floor(state/1000)==66 || floor(state/10000)==66){
+		if(floor(state/10000)==66){
+			set_buttons(button_state,button_state,button_state,!button_state); // no right
+		}
 		// aktuelle werte
 		int r,g,b;
 		r=pAktors->dz_flasher.r.actual;

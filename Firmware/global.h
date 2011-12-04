@@ -30,6 +30,7 @@
 #include "debug.h"
 #include "file_manager.h"
 #include "version.h"
+#include "tetris.h"
 /**********************************  working settings ********************************/
 // development settings //
 #define       GPS_SPEED_ONLY  false   // to ignore the magnetic value  -> hmm das ist doof, aber muss erstmal alleine arbeiten, mal sehen ob der gang angezeigt wird -> wenn ja => mag rennt
