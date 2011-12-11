@@ -5,9 +5,11 @@
  *      Author: jkw
  */
 #include "global.h"
+#define MIN_SIDE_PUSH_TIME 160
+#define MIN_TURN_PUSH_TIME 250
+#define MIN_DOWN_PUSH_TIME 60
 
 tetris::tetris(){	};
-
 tetris::~tetris(){	};
 
 // init routine to reset variables
@@ -28,6 +30,7 @@ void tetris::init(){
 	pSpeedo->reset_bak();
 };
 
+// this function creats the stones
 void tetris::copy_element_to_buffer(int this_element){
 	switch(this_element){
 	case 0:
@@ -55,7 +58,7 @@ void tetris::copy_element_to_buffer(int this_element){
 	case 2:
 		active_element[0][0]=true;  // xx
 		active_element[0][1]=true;  // xx
-		active_element[0][2]=false;
+		active_element[0][2]=false; //
 		active_element[1][0]=true;
 		active_element[1][1]=true;
 		active_element[1][2]=false;
@@ -75,9 +78,9 @@ void tetris::copy_element_to_buffer(int this_element){
 		active_element[2][2]=false;
 		break;
 	case 4:
-		active_element[0][0]=true;   // xx
-		active_element[0][1]=true;   // x
-		active_element[0][2]=false;  // x
+		active_element[0][0]=true;   //  x
+		active_element[0][1]=true;   //  x
+		active_element[0][2]=false;  // xx
 		active_element[1][0]=true;
 		active_element[1][1]=false;
 		active_element[1][2]=false;
@@ -123,13 +126,13 @@ void tetris::new_element(){
 	// copy to display
 	copy_element_to_buffer(next_element);
 
-	pOLED->filled_rect(100,30,12,12,0);
+	pOLED->filled_rect(100,31,12,12,0);
 	for(int x=0;x<3;x++){
 		for(int y=0;y<3;y++){
 			if(active_element[x][y]){
-				pOLED->filled_rect(x*4+100,y*4+30,4,4,0x0f);
+				pOLED->filled_rect(x*4+100,y*4+31,4,4,0x0f);
 			} else {
-				pOLED->filled_rect(x*4+100,y*4+30,4,4,0x00);
+				pOLED->filled_rect(x*4+100,y*4+31,4,4,0x00);
 			}
 		}
 	}
@@ -148,8 +151,29 @@ bool tetris::loop(){
 
 	// check if you are stil in the race
 	if(you_loose){
+		// Nope, you loose show the box once
 		if(pSpeedo->disp_zeile_bak[0]!=123){
+			// show a animation depending on line count
+			int ani=1; // simpsons
+			if(lines>50){
+				ani=4; // JTM
+			} else if(lines>30){
+				ani=5;
+			}
+			// 1sec geben damit der user realisiert
+			// dann sicher sein das er keine taste
+			// mehr drückt
+			delay(1000);
+			while(Serial.available()>0 || !digitalRead(menu_button_links) || !digitalRead(menu_button_rechts) || !digitalRead(menu_button_oben) || !digitalRead(menu_button_unten)){
+				Serial.flush();
+				delay(50);
+			}
+			pOLED->animation(ani);
+			initDrawField(); // draw the field again, to show the line and level counter
+
+			// make sure to draw this box only once
 			pSpeedo->disp_zeile_bak[0]=123;
+			// draw box
 			pOLED->highlight_bar(8,8,104,48);
 			pOLED->string_P(pSpeedo->default_font,PSTR("You loose"),5,2,15,0,0);
 			pOLED->string_P(pSpeedo->default_font,PSTR("L Quit"),5,4,15,0,0);
@@ -159,20 +183,44 @@ bool tetris::loop(){
 			pOLED->string_P(pSpeedo->default_font,PSTR("R Retry"),5,5,15,0,0);
 			sprintf(temp,"%c",127);
 			pOLED->string(pSpeedo->default_font,temp,5,5,15,0,0);
+			// way at least one second to prevent unnoticed button push
+			delay(1000);
+		// if you loose and the box has been drawn, way on key down
 		} else {
-			if(c=='a'|| c==68){
+			if(c=='a'|| c==68 || !digitalRead(menu_button_links)){
+				delay(MIN_SIDE_PUSH_TIME);
 				return false;
-			} else if (c=='d' || c==67){
+			} else if (c=='d' || c==67 || !digitalRead(menu_button_rechts)){
+				delay(MIN_SIDE_PUSH_TIME);
 				pOLED->clear_screen();
+				// ja das ist ungeschickt, init leert uns die line variable, drawfield malt das hin, das problem ist nur
+				// das wir mit drawfield die in init gezeichneten "next" übermalen .. also einfach 2x init .. is ja wurst
+				init();
 				initDrawField();
 				init();
 				updateField();
 			};
 		}
+	// nope you haven't lost by now .. go on
 	} else {
+		////////////////// if there is a button pushed, //////////////////
+		if(!digitalRead(menu_button_links)){
+			c='a';
+			delay(MIN_SIDE_PUSH_TIME);
+		} else if(!digitalRead(menu_button_oben)){
+			c='w';
+			delay(MIN_TURN_PUSH_TIME);
+		} else if(!digitalRead(menu_button_unten)){
+			c='s';
+			delay(MIN_DOWN_PUSH_TIME);
+		} else if(!digitalRead(menu_button_rechts)){
+			c='d';
+			delay(MIN_SIDE_PUSH_TIME);
+		}
 
-		if(digitalRead(menu_button_oben)==LOW || c=='w' || c==65){
-			orientation_up=!orientation_up;
+		// now lets see if any action is required
+		////////////////// rotate element //////////////////
+		if(c=='w' || c==65){
 			// element drehen
 			bool copy[3][3];
 			copy[0][0]=active_element[0][2];	//	00	10	20  		02	01	00
@@ -185,23 +233,46 @@ bool tetris::loop(){
 			copy[1][2]=active_element[2][1];
 			copy[2][2]=active_element[2][0];
 
-			for(int x=0;x<3;x++){
-				for(int y=0;y<3;y++){
-					active_element[x][y]=copy[x][y];
-				}
+			// check if a rotation would result in a collision
+			bool rotate_possible=true;
+			bool check_running=true;
+
+			for(int y=0;y<3 && check_running;y++){
+				for(int x=0;x<3 && check_running;x++){
+					// check if in the rotated figure the px is in use
+					if(copy[x][y]){
+						// if so, check if it is already in use by the area
+						if(area[active_y+y] & 1<<(COLS-active_x-x)){
+							// if so, rotation is impossible
+							rotate_possible=false;
+							check_running=false;
+						};
+					};
+				};
 			};
-			// element drehen
-			updateField();
-			//}else if(digitalRead(menu_button_unten)==HIGH || c=='s'){
-		} else if(digitalRead(menu_button_unten)==LOW || c=='s' || c==66){
-				if(pSpeedo->disp_zeile_bak[1]!=111){
-					active_y++;
+
+			// if rotation is possible, move the content from copy -> active_element
+			if(rotate_possible){
+				for(int x=0;x<3;x++){
+					for(int y=0;y<3;y++){
+						active_element[x][y]=copy[x][y];
+					}
+				};
+				// element drehen
+				updateField();
+			}
+
+		////////////////// move element down //////////////////
+		} else if(c=='s' || c==66){
+			if(pSpeedo->disp_zeile_bak[1]!=111){
+				active_y++;
 			};
 			updateField();
 			check_stack();
 			last_update=millis();
-			//}else if(digitalRead(menu_button_links)==HIGH || c=='a'){
-		} else if(digitalRead(menu_button_links)==LOW || c=='a' || c==68){
+
+		////////////////// move element left //////////////////
+		} else if(c=='a' || c==68){
 			// find out the leftmost positions
 			short most_left[3];
 			for(int y=0;y<3;y++){
@@ -239,10 +310,10 @@ bool tetris::loop(){
 					active_element[2][2]=false;
 				}
 			};
-
 			updateField();
-			//}else if(digitalRead(menu_button_rechts)==HIGH || c=='d'){
-		} else if(digitalRead(menu_button_rechts)==LOW || c=='d' || c==67){
+
+		////////////////// move element right //////////////////
+		} else if(c=='d' || c==67){
 			// find out the leftmost positions
 			short most_right[3];
 			for(int y=0;y<3;y++){
@@ -258,8 +329,8 @@ bool tetris::loop(){
 
 			// check collisions
 			if(!((most_right[0]!=-1 && (area[active_y+0] & (1<<(COLS-active_x-1-most_right[0])))) ||
-				 (most_right[1]!=-1 && (area[active_y+1] & (1<<(COLS-active_x-1-most_right[1])))) ||
-				 (most_right[2]!=-1 && (area[active_y+2] & (1<<(COLS-active_x-1-most_right[2])))))){
+					(most_right[1]!=-1 && (area[active_y+1] & (1<<(COLS-active_x-1-most_right[1])))) ||
+					(most_right[2]!=-1 && (area[active_y+2] & (1<<(COLS-active_x-1-most_right[2])))))){
 				active_x++;
 			};
 
@@ -285,15 +356,16 @@ bool tetris::loop(){
 
 			updateField();
 		}
+
+		////////////////// auto move down //////////////////
 		// einen tiefer setzen nach ablauf von zeit
 		if(last_update+time_between_steps<millis()){
+			check_stack(); // erst checken, dann verschieben
 			active_y++;
 			updateField();
 			last_update=millis();
-		// 100ms nach dem automatisch runtersetzen checken obs kollisionen gibt
-		} else if(last_update+100<millis()){
-			check_stack();
-		}
+			// 100ms nach dem automatisch runtersetzen checken obs kollisionen gibt
+		};
 	};
 
 	return true;
@@ -311,17 +383,55 @@ void tetris::run(){
 
 void tetris::initDrawField(){
 	pOLED->clear_screen();
-	// Feld ist (14*3)x(21*3) == 42x63 liegt zwischen 20..62 | 0..62
+	// Feld ist (12*4)x(16*4) == 48x64 liegt zwischen 12..54 | 60..64
+	// .. 0
+	// .x 1
+	// xx 2
+	// x. 3
+	// .. 4
+	// xx 5
+	// .x 6
+	// .x 7
+	// .. 8
+	// x. 9
+	// xx 10
+	// x. 11
+	// .. 12
+	// xx 13
+	// x. 14
+	// x. 15
+	pOLED->filled_rect(0,4,8,64,0x06);
+	pOLED->filled_rect(0,1*4,4,4,0x00);
+	pOLED->filled_rect(0,4*4,4,4,0x00);
+	pOLED->filled_rect(0,6*4,4,12,0x00);
+	pOLED->filled_rect(0,12*4,4,4,0x00);
 
-	pOLED->filled_rect(8,0,4,64,15); // links
-	pOLED->filled_rect(60,0,4,64,15); // rechts
+	pOLED->filled_rect(4,3*4,4,8,0x00);
+	pOLED->filled_rect(4,8*4,4,8,0x00);
+	pOLED->filled_rect(4,11*4,4,8,0x00);
+	pOLED->filled_rect(4,14*4,4,8,0x00);
 
-	pOLED->string_P(pSpeedo->default_font,PSTR("Speedoino"),12,0,0,15,0);
-	pOLED->string_P(pSpeedo->default_font,PSTR("goes "),12,1,0,15,0);
+
+
+
+	for(int y=0;y<64;y++){
+		pOLED->set2pixels(8,y,0x00,0x0f);
+		pOLED->set2pixels(10,y,0x00,0x0f);
+
+		pOLED->set2pixels(60,y,0x0f,0x00);
+		pOLED->set2pixels(62,y,0x0f,0x00);
+	}
+
+
+	pOLED->string_P(pSpeedo->default_font,PSTR("Speedoino"),11,0,0,15,0);
+	pOLED->string_P(pSpeedo->default_font,PSTR("goes "),13,1,0,15,0);
 	pOLED->string_P(pSpeedo->default_font,PSTR("Tetris"),12,2,0,15,0);
-	pOLED->string_P(pSpeedo->default_font,PSTR("Next"),12,4,0,15,0);
-	pOLED->string_P(pSpeedo->default_font,PSTR("Lines: 0"),12,7,0,15,0);
+	pOLED->string_P(pSpeedo->default_font,PSTR("Next"),11,4,0,15,0);
+	pOLED->string_P(pSpeedo->default_font,PSTR("Level: "),11,6,0,15,0);
+	pOLED->string_P(pSpeedo->default_font,PSTR("Lines: "),11,7,0,15,0);
 	char temp[3];
+	sprintf(temp,"%2i",int(floor(lines/10)));
+	pOLED->string(pSpeedo->default_font,temp,19,6,0,15,0);
 	sprintf(temp,"%2i",lines);
 	pOLED->string(pSpeedo->default_font,temp,19,7,0,15,0);
 }
@@ -335,7 +445,7 @@ void tetris::updateField(){
 			int internal_y=y+active_y-1;
 			if(internal_x>=0 && internal_y>=0 && internal_x<12){
 				if(area[internal_y] & (1<<(COLS-internal_x))){
-					color=0x09;
+					color=0x06;
 				}
 				pOLED->filled_rect(4*(internal_x)+12,4*(internal_y),4,4,color);
 			};
@@ -396,23 +506,39 @@ void tetris::check_stack(){
 							// alle linien drüber neu zeichnen
 							for(int copy_x=0;copy_x<COLS;copy_x++){
 								unsigned char color=0x00;
-								if(area[upper_line] & (1<<COLS-copy_x)){
-									color=0x09;
+								if(area[upper_line] & (1<<(COLS-copy_x))){
+									color=0x06;
 								}
 								pOLED->filled_rect(12+copy_x*4,upper_line*4,4,4,color);
 							}
 						}
 						// letzte feld löschen
 						area[0]=0b0000000000000000;
-						pOLED->filled_rect(20,0,48,4,0);
+						pOLED->filled_rect(12,0,48,4,0);
 
 						// lines hochzählen
 						lines++;
 						// level schwerer machen :D
 						if(lines%10==0){
-							time_between_steps=2*time_between_steps/3;
+							time_between_steps=4*time_between_steps/5;
+							// 1000
+							// 800
+							// 640
+							// 512
+							// 409
+							// 327
+							// 261
+							// 208
+							// 166
+							// 132
+							// 105
+							// 084
+							// 067
+							// 053
 						}
 						char temp[3];
+						sprintf(temp,"%2i",int(floor(lines/10)));
+						pOLED->string(pSpeedo->default_font,temp,19,6,0,15,0);
 						sprintf(temp,"%2i",lines);
 						pOLED->string(pSpeedo->default_font,temp,19,7,0,15,0);
 					}

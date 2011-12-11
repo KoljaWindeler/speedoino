@@ -22,9 +22,6 @@
 speedo_menu::speedo_menu(void){
 }
 
-prog_char asd_0[6000] PROGMEM ="a";
-//prog_char asd_1[30000] PROGMEM ="a";
-
 
 speedo_menu::~speedo_menu(){
 };

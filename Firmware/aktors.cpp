@@ -45,6 +45,8 @@ void Speedo_aktors::init(){
 
 	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
 	dimm_rgb_to(out_base_color.r.actual,out_base_color.g.actual,out_base_color.b.actual,256,0);
+	// stepper drehen
+	m_stepper->init();
 };
 
 void Speedo_aktors::set_rgb_in(int r,int g,int b){

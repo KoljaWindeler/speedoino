@@ -1,0 +1,26 @@
+2x PWM => DZ, geschwindigkeit
+2x Taster, gang hoch, gang runter ... at macht daraus die geschwindigkeit und ein puls für die kupplung 
+
+
+
+ausgänge:
+12V - Transistor
+- DZ - ok
+
+
+12V direkt
+- Blinker L umschalter - ok
+- Blinker R umschalter - ok
+- Öldruck umschalter - ok
+- Highbeam umschalter - ok 
+- Leerlaufanzeige umschalter - ok
+
+
+5V - bzw Schluss gegen Masse:
+- Reed schluss gegen masse - ok
+- Kupplung - ok
+
+
+Poti - direkt gegen masse
+- 1k Öl Temperatur
+

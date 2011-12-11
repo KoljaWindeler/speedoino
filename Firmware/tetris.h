@@ -31,7 +31,6 @@ private:
 	bool active_element[3][3];
 	signed int active_x,active_y;// obere linke ecke des aktiven 4x4 elements
 	unsigned long last_update;
-	bool orientation_up;
 	short next_element,this_element;
 	bool you_loose;
 	int lines;
