@@ -49,7 +49,7 @@ void speedo_temperature::read_oil_temp() {
 	unsigned int oil_value=analogRead(OIL_TEMP_PIN);
 	// kann bis zu 225.060 werden bei 40°C etwa 470 ohm: 470+220=690 Ohm, U/R=I => 5/690=0,007246377A, R*I=U, 1,594202899V, Wert=326
 	int temp=(1024-oil_value)/10; // max 102
-	if(temp>0){
+	if(temp>0 && temp<102){
 		int r_temp=round((oil_value*22)/temp); // 22*1024 < 32000
 		//Serial.print("Oel Wert eingelesen: "); Serial.print(oil_value); Serial.print(" zwischenschritt "); Serial.println(r_temp);
 		// LUT  wert ist z.B. 94°C somit 102 ohm => dann wird hier in der for schleife bei i=13 ausgelößt, also guck ich mir den her + den davor an
@@ -74,7 +74,11 @@ void speedo_temperature::read_oil_temp() {
 				break; // break the for loop
 			};
 		};
-	};
+	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
+		oil_temp_value=8888;
+	} else { // Kurzschluss nach masse: 102=(1024-x)/10  	x<=4
+		oil_temp_value=9999;
+	}
 };
 
 void speedo_temperature::read_water_temp() {
@@ -85,7 +89,7 @@ void speedo_temperature::read_water_temp() {
 	unsigned int water_value=analogRead(WATER_TEMP_PIN);
 	// kann bis zu 225.060 werden bei 40°C etwa 470 ohm: 470+220=690 Ohm, U/R=I => 5/690=0,007246377A, R*I=U, 1,594202899V, Wert=326
 	int temp=(1024-water_value)/10; // max 102
-	if(temp>0){
+	if(temp>0 && temp<102){
 		int r_temp=round((water_value*22)/temp); // 22*1024 < 32000
 		//Serial.print("Oel Wert eingelesen: "); Serial.print(oil_value); Serial.print(" zwischenschritt "); Serial.println(r_temp);
 		// LUT  wert ist z.B. 94°C somit 102 ohm => dann wird hier in der for schleife bei i=13 ausgelößt, also guck ich mir den her + den davor an
@@ -110,7 +114,11 @@ void speedo_temperature::read_water_temp() {
 				break; // break the for loop
 			};
 		};
-	};
+	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
+		water_temp_value=8888;
+	} else { // Kurzschluss nach masse: 102=(1024-x)/10  	x<=4
+		water_temp_value=9999;
+	}
 };
 
 void speedo_temperature::read_air_temp() {

@@ -1,4 +1,4 @@
-# temperatur werte
+# temperatur werte öl
 oil_temp_r_0=1000
 oil_temp_t_0=27
 oil_temp_r_1=800
@@ -37,6 +37,7 @@ oil_temp_r_17=15
 oil_temp_t_17=120
 oil_temp_r_18=10
 oil_temp_t_18=125
+# temperatur werte wasser
 water_temp_r_0=1000
 water_temp_t_0=27
 water_temp_r_1=800

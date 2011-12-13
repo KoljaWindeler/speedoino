@@ -22,10 +22,12 @@ public:
 	void read_water_temp();
 	void read_air_temp();
 	void init();
-	int oil_r_werte[19];
-	int oil_t_werte[19];
-	int water_r_werte[19];
-	int water_t_werte[19];
+	short oil_r_werte[19];
+	short oil_t_werte[19];
+	short water_r_werte[19];
+	short water_t_werte[19];
+	int	oil_warning_temp;
+	int water_warning_temp;
 
 private:
 

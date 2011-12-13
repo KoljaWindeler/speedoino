@@ -277,6 +277,18 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",int(pAktors->dz_flasher.b.actual)); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 					// RGB LEDs
+
+					strcpy_P(buffer, PSTR("water_warning="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pSensors->m_temperature->water_warning_temp)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("oil_warning="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pSensors->m_temperature->oil_warning_temp)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+
 					file.close();
 					storage_outdated=false;
 				};
@@ -353,6 +365,8 @@ int configuration::init(){
 	pSensors->m_oiler->grenze=4000;
 	pSensors->m_dz->blitz_dz=12500; // hornet mäßig
 	pSensors->m_dz->blitz_en=true; // gehen wir mal von "an" aus
+	pSensors->m_temperature->water_warning_temp=950; // 95°C
+	pSensors->m_temperature->oil_warning_temp=1200; // 120°C
 
 	// gaenge einlesen
 	int temp[7]={160,120,90,73,60,53,45};
@@ -368,10 +382,10 @@ int configuration::init(){
 	};
 
 	// skinning
-	pSpeedo->oil_widget.x=-1;
-	pSpeedo->oil_widget.y=-1;
-	pSpeedo->oil_widget.symbol=true;
-	pSpeedo->oil_widget.font=STD_SMALL_1X_FONT;
+	pSpeedo->water_widget.x=-1;
+	pSpeedo->water_widget.y=-1;
+	pSpeedo->water_widget.symbol=true;
+	pSpeedo->water_widget.font=STD_SMALL_1X_FONT;
 
 	pSpeedo->oil_widget.x=0;
 	pSpeedo->oil_widget.y=0;
@@ -466,6 +480,9 @@ int configuration::read(const char* filename){
 	SdFile root;
 	SdFile file;
 	SdFile subdir;
+	pDebug->sprintp(PSTR("Reading: "));
+	Serial.print(filename);
+	pDebug->sprintp(PSTR(" ... "));
 
 	root.openRoot(&pSD->volume);
 	if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
@@ -508,7 +525,7 @@ int configuration::read(const char* filename){
 				// copy it to buffer
 				buf[i]=(char) buffer[0];
 				i++;
-				if(i>=200) i=0;
+				if(i>=200){ i=0; };
 			};
 			memset(buffer,'\0',2);
 		};
@@ -522,6 +539,7 @@ int configuration::read(const char* filename){
 	file.close();
 	subdir.close();
 	root.close();
+	pDebug->sprintlnp(PSTR("Done"));
 	return 0;
 }
 
@@ -544,7 +562,7 @@ int configuration::parse(char* buffer){
 			break;
 		};
 		seperator++;
-		if(seperator>49){ return -1; }; // programmabbruch
+		if(seperator>49){ free(name); return -1; }; // programmabbruch
 	};
 	pDebug->parse(0,name);
 	if(PARSE_SHORT){
@@ -553,6 +571,7 @@ int configuration::parse(char* buffer){
 	};
 
 	int temp=0;
+	int return_value=0;
 
 	// hier wissen wir wie der name ist
 	if(strcmp_P(name,PSTR("startup"))==0){
@@ -564,35 +583,35 @@ int configuration::parse(char* buffer){
 	} else if(strcmp_P(name,PSTR("oil_dist"))==0){ // distanz in meter nachder geölt wird
 		parse_int(buffer,seperator,&pSensors->m_oiler->grenze);
 	} else if(strncmp("oil_temp_r_",name,7)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
-		char var_name[10];
+		char var_name[14]; // watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
 			sprintf(var_name,"temp_r_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
-				parse_int(buffer,seperator,&pSensors->m_temperature->oil_r_werte[j]);
+				parse_short(buffer,seperator,&pSensors->m_temperature->oil_r_werte[j]);
 			};
 		};
 	} else if(strncmp("oil_temp_t_",name,7)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
-		char var_name[10];
+		char var_name[14];// watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings erzeugen
 			sprintf(var_name,"oil_temp_t_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
-				parse_int(buffer,seperator,&pSensors->m_temperature->oil_t_werte[j]);
+				parse_short(buffer,seperator,&pSensors->m_temperature->oil_t_werte[j]);
 			};
 		};
 	} else if(strncmp("water_temp_r_",name,7)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
-		char var_name[10];
+		char var_name[16];// watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
 			sprintf(var_name,"water_temp_r_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
-				parse_int(buffer,seperator,&pSensors->m_temperature->water_r_werte[j]);
+				parse_short(buffer,seperator,&pSensors->m_temperature->water_r_werte[j]);
 			};
 		};
 	} else if(strncmp("water_temp_t_",name,7)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
-		char var_name[10];
+		char var_name[16];// watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings erzeugen
 			sprintf(var_name,"water_temp_t_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
-				parse_int(buffer,seperator,&pSensors->m_temperature->water_t_werte[j]);
+				parse_short(buffer,seperator,&pSensors->m_temperature->water_t_werte[j]);
 			};
 		};
 	} else if(strncmp("n_gang_",name,7)==0){// ganzen Block auslesen, alle n_gangXXX gehen hier rein
@@ -727,6 +746,10 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&pSensors->m_dz->blitz_dz);
 	} else if(strcmp_P(name,PSTR("dz_flash_en"))==0){
 		parse_bool(buffer,seperator,&pSensors->m_dz->blitz_en);
+	} else if(strcmp_P(name,PSTR("water_warning"))==0){
+		parse_int(buffer,seperator,&pSensors->m_temperature->water_warning_temp);
+	} else if(strcmp_P(name,PSTR("oil_warning"))==0){
+		parse_int(buffer,seperator,&pSensors->m_temperature->oil_warning_temp);
 		/////// RGB LEDs /////////
 	} else if(strcmp_P(name,PSTR("rgb_flash_r"))==0){
 		parse_int(buffer,seperator,&temp);
@@ -760,10 +783,10 @@ int configuration::parse(char* buffer){
 		pAktors->set_rgb_in(pAktors->RGB.inner.r.actual,pAktors->RGB.inner.g.actual,pAktors->RGB.inner.b.actual,1);
 		/////// RGB LEDs /////////
 	} else {
-		return -2; // ungltiger identifier
+		return_value=-2; // ungltiger identifier
 	}
 	free(name);
-	return 0; // alles bestens
+	return return_value; // alles bestens?
 };
 
 
