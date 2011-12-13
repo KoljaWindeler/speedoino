@@ -26,10 +26,16 @@ speedo_temperature::~speedo_temperature(){
 void speedo_temperature::init(){
 	oil_temp_value_counter=0;
 	oil_temp_value=0;
+	water_temp_value_counter=0;
+	water_temp_value=0;
+
 	// values for
-	for(unsigned int j=0; j<sizeof(r_werte)/sizeof(r_werte[0]); j++){
-		r_werte[j]=0;
-		t_werte[j]=0;
+	for(unsigned int j=0; j<sizeof(oil_r_werte)/sizeof(oil_r_werte[0]); j++){
+		oil_r_werte[j]=0;
+		oil_t_werte[j]=0;
+
+		water_r_werte[j]=0;
+		water_t_werte[0]=0;
 	};
 
 	Serial.println("Temp init done.");
@@ -40,7 +46,7 @@ void speedo_temperature::read_oil_temp() {
 	if(false){ Serial.println("\nTemp: Beginne zu lesen"); }
 
 	// werte auslesen
-	unsigned int oil_value=analogRead(oil_temp_pin);
+	unsigned int oil_value=analogRead(OIL_TEMP_PIN);
 	// kann bis zu 225.060 werden bei 40°C etwa 470 ohm: 470+220=690 Ohm, U/R=I => 5/690=0,007246377A, R*I=U, 1,594202899V, Wert=326
 	int temp=(1024-oil_value)/10; // max 102
 	if(temp>0){
@@ -48,12 +54,12 @@ void speedo_temperature::read_oil_temp() {
 		//Serial.print("Oel Wert eingelesen: "); Serial.print(oil_value); Serial.print(" zwischenschritt "); Serial.println(r_temp);
 		// LUT  wert ist z.B. 94°C somit 102 ohm => dann wird hier in der for schleife bei i=13 ausgelößt, also guck ich mir den her + den davor an
 		for(int i=0;i<19;i++){ // 0 .. 18 müssen durchsucht werden das sind die LUT positionen
-			if(r_temp>=r_werte[i]){ // den einen richtigen raussuchen
+			if(r_temp>=oil_r_werte[i]){ // den einen richtigen raussuchen
 				int j=i-1;  if(j<0) j=0; // j=12
-				int offset=r_temp-r_werte[i]; // wieviel höher ist mein messwert als den, den ich nicht wollte => 102R-100R => 2R
-				int differ_r=r_werte[j]-r_werte[i]; // wie weit sind die realen widerstands werte auseinander 10R
-				int differ_t=t_werte[i]-t_werte[j]; // wie weit sind die realen temp werte auseinander 5°C
-				int aktueller_wert=round(10*(t_werte[i]-offset*differ_t/differ_r));
+				int offset=r_temp-oil_r_werte[i]; // wieviel höher ist mein messwert als den, den ich nicht wollte => 102R-100R => 2R
+				int differ_r=oil_r_werte[j]-oil_r_werte[i]; // wie weit sind die realen widerstands werte auseinander 10R
+				int differ_t=oil_t_werte[i]-oil_t_werte[j]; // wie weit sind die realen temp werte auseinander 5°C
+				int aktueller_wert=round(10*(oil_t_werte[i]-offset*differ_t/differ_r));
 				oil_temp_value=pSensors->flatIt(aktueller_wert,&oil_temp_value_counter,20,oil_temp_value);
 
 				if(false){
@@ -63,6 +69,42 @@ void speedo_temperature::read_oil_temp() {
 					Serial.print(aktueller_wert);
 					Serial.print(" und geplaettet: ");
 					Serial.println(int(round(oil_temp_value)));
+				}
+
+				break; // break the for loop
+			};
+		};
+	};
+};
+
+void speedo_temperature::read_water_temp() {
+	// werte in array speichern in °C*10 für Nachkommastelle
+	if(false){ Serial.println("\nTemp: Beginne zu lesen"); }
+
+	// werte auslesen
+	unsigned int water_value=analogRead(WATER_TEMP_PIN);
+	// kann bis zu 225.060 werden bei 40°C etwa 470 ohm: 470+220=690 Ohm, U/R=I => 5/690=0,007246377A, R*I=U, 1,594202899V, Wert=326
+	int temp=(1024-water_value)/10; // max 102
+	if(temp>0){
+		int r_temp=round((water_value*22)/temp); // 22*1024 < 32000
+		//Serial.print("Oel Wert eingelesen: "); Serial.print(oil_value); Serial.print(" zwischenschritt "); Serial.println(r_temp);
+		// LUT  wert ist z.B. 94°C somit 102 ohm => dann wird hier in der for schleife bei i=13 ausgelößt, also guck ich mir den her + den davor an
+		for(int i=0;i<19;i++){ // 0 .. 18 müssen durchsucht werden das sind die LUT positionen
+			if(r_temp>=water_r_werte[i]){ // den einen richtigen raussuchen
+				int j=i-1;  if(j<0) j=0; // j=12
+				int offset=r_temp-water_r_werte[i]; // wieviel höher ist mein messwert als den, den ich nicht wollte => 102R-100R => 2R
+				int differ_r=water_r_werte[j]-water_r_werte[i]; // wie weit sind die realen widerstands werte auseinander 10R
+				int differ_t=water_t_werte[i]-water_t_werte[j]; // wie weit sind die realen temp werte auseinander 5°C
+				int aktueller_wert=round(10*(water_t_werte[i]-offset*differ_t/differ_r));
+				water_temp_value=pSensors->flatIt(aktueller_wert,&water_temp_value_counter,20,water_temp_value);
+
+				if(false){
+					Serial.print("Water Wert eingelesen: ");
+					Serial.print(water_value);
+					Serial.print(" und interpretiert ");
+					Serial.print(aktueller_wert);
+					Serial.print(" und geplaettet: ");
+					Serial.println(int(round(water_temp_value)));
 				}
 
 				break; // break the for loop
@@ -109,6 +151,15 @@ int speedo_temperature::get_oil_temp(){
 		return get_air_temp()-1;
 	else
 		return int(round(oil_temp_value));
+}
+
+int speedo_temperature::get_water_temp(){
+	if(DEMO_MODE)
+		return (102+((millis()/1000)%10))*10+((millis()/1000)%10);
+	else if(pSpeedo->trip_dist[1]==0) // wir sind heute noch exakt gar nicht gefahren
+		return get_air_temp()-1;
+	else
+		return int(round(water_temp_value));
 }
 // alte verfahren
 // air_temp_values[position] = round((10 * air_value * 5  * 100.0)/1024.0); //Luft

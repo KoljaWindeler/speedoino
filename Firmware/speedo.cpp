@@ -56,6 +56,28 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		};
 	};
 	/************************* oil temperature *********************/
+	/************************* water temperature *********************
+	 * water Temperature will be read out in the every_sec routine
+	 * the measured value will be available in the variable
+	 * pSensors->m_temperature->water_temp_out. That value is degree multiplied by 10.
+	 * We prevent the screen from flickering by saving a coresponding
+	 * value in disp_zeile_bak[OIL_TEMP] and check that value before redraw
+	 ************************* oil temperature *********************/
+	if(disp_zeile_bak[WATER_TEMP]!=pSensors->m_temperature->get_water_temp()){
+		if(!(water_widget.x==-1 && water_widget.y==-1)){ // only show it if pos != -1/-1
+			disp_zeile_bak[WATER_TEMP]=int(pSensors->m_temperature->get_water_temp());
+			// below 20 degree the PTC is very antiliear so we won't show it
+			if(pSensors->m_temperature->get_water_temp()>200){
+				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_water_temp()/10))%1000,pSensors->m_temperature->get_oil_temp()%10); // _32.3°C  7 stellen
+			} else {
+				sprintf(char_buffer,"<20{C  "); // below 20°C add a space to have 5 chars
+			};
+			pDebug->speedo_loop(1,0,previousMillis," "); // debug
+			// depend on skinsettings
+			pOLED->string(water_widget.font,char_buffer,water_widget.x+4,water_widget.y,0,DISP_BRIGHTNESS,-4);
+		};
+	};
+	/************************* oil temperature *********************/
 	pDebug->speedo_loop(22,1,0," ");
 	/************************* air temperature *********************
 	 * Air Temperature will be read out in the every_sec routine

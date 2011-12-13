@@ -333,9 +333,9 @@ int configuration::init(){
 	int r_werte[19]={1000,700,550,400,330,250,230,210,195,150,140,135,110,100, 90, 80, 20, 15, 10}; // widerstandswerte
 	int t_werte[19]={  27, 35, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95,100,105,110,115,120,125}; // passender Temperaturwert
 
-	for(unsigned int j=0; j<sizeof(pSensors->m_temperature->r_werte)/sizeof(pSensors->m_temperature->r_werte[0]); j++){
-		pSensors->m_temperature->r_werte[j]=r_werte[j];
-		pSensors->m_temperature->t_werte[j]=t_werte[j];
+	for(unsigned int j=0; j<sizeof(pSensors->m_temperature->oil_r_werte)/sizeof(pSensors->m_temperature->oil_r_werte[0]); j++){
+		pSensors->m_temperature->oil_r_werte[j]=r_werte[j];
+		pSensors->m_temperature->oil_t_werte[j]=t_werte[j];
 	};
 	// Startup sequenz im Tacho
 	memset(pOLED->startup,'\0',200);
@@ -368,6 +368,11 @@ int configuration::init(){
 	};
 
 	// skinning
+	pSpeedo->oil_widget.x=-1;
+	pSpeedo->oil_widget.y=-1;
+	pSpeedo->oil_widget.symbol=true;
+	pSpeedo->oil_widget.font=STD_SMALL_1X_FONT;
+
 	pSpeedo->oil_widget.x=0;
 	pSpeedo->oil_widget.y=0;
 	pSpeedo->oil_widget.symbol=true;
@@ -558,20 +563,36 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&pConfig->skin_file);
 	} else if(strcmp_P(name,PSTR("oil_dist"))==0){ // distanz in meter nachder geölt wird
 		parse_int(buffer,seperator,&pSensors->m_oiler->grenze);
-	} else if(strncmp("temp_r_",name,7)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
+	} else if(strncmp("oil_temp_r_",name,7)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
 		char var_name[10];
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
 			sprintf(var_name,"temp_r_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
-				parse_int(buffer,seperator,&pSensors->m_temperature->r_werte[j]);
+				parse_int(buffer,seperator,&pSensors->m_temperature->oil_r_werte[j]);
 			};
 		};
-	} else if(strncmp("temp_t_",name,7)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
+	} else if(strncmp("oil_temp_t_",name,7)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
 		char var_name[10];
 		for(int j=0;j<19;j++){ // alle mglichen strings erzeugen
-			sprintf(var_name,"temp_t_%i",j);
+			sprintf(var_name,"oil_temp_t_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
-				parse_int(buffer,seperator,&pSensors->m_temperature->t_werte[j]);
+				parse_int(buffer,seperator,&pSensors->m_temperature->oil_t_werte[j]);
+			};
+		};
+	} else if(strncmp("water_temp_r_",name,7)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
+		char var_name[10];
+		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
+			sprintf(var_name,"water_temp_r_%i",j);
+			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
+				parse_int(buffer,seperator,&pSensors->m_temperature->water_r_werte[j]);
+			};
+		};
+	} else if(strncmp("water_temp_t_",name,7)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
+		char var_name[10];
+		for(int j=0;j<19;j++){ // alle mglichen strings erzeugen
+			sprintf(var_name,"water_temp_t_%i",j);
+			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
+				parse_int(buffer,seperator,&pSensors->m_temperature->water_t_werte[j]);
 			};
 		};
 	} else if(strncmp("n_gang_",name,7)==0){// ganzen Block auslesen, alle n_gangXXX gehen hier rein
@@ -628,6 +649,14 @@ int configuration::parse(char* buffer){
 		parse_bool(buffer,seperator,&pSpeedo->oil_widget.symbol);
 	} else if(strcmp_P(name,PSTR("oil_widget.font"))==0){
 		parse_short(buffer,seperator,&pSpeedo->oil_widget.font);
+	} else if(strcmp_P(name,PSTR("water_widget.x"))==0){
+		parse_short(buffer,seperator,&pSpeedo->water_widget.x);
+	} else if(strcmp_P(name,PSTR("water_widget.y"))==0){
+		parse_short(buffer,seperator,&pSpeedo->water_widget.y);
+	} else if(strcmp_P(name,PSTR("water_widget.symbol"))==0){
+		parse_bool(buffer,seperator,&pSpeedo->water_widget.symbol);
+	} else if(strcmp_P(name,PSTR("water_widget.font"))==0){
+		parse_short(buffer,seperator,&pSpeedo->water_widget.font);
 	} else if(strcmp_P(name,PSTR("air_widget.x"))==0){
 		parse_short(buffer,seperator,&pSpeedo->air_widget.x);
 	} else if(strcmp_P(name,PSTR("air_widget.y"))==0){
