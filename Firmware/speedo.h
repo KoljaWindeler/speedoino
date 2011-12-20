@@ -35,12 +35,13 @@ class speedo_speedo{
 #define       GEAR_VALUE 7
 #define       FUEL_VALUE 8
 #define		  ARROW 9
+#define		  WATER_TEMP 10
 
 public:
 	void loop(unsigned long previousMillis);
 	void reset_bak();
 	short int 	  m_trip_mode; // welcher wert angezeigt wird, 1= day 2=bla 3=blabla etc
-	int 		  disp_zeile_bak[10];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
+	int 		  disp_zeile_bak[11];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
 	int           max_speed[9];      // array of the max speed values sollte dem speedo_speedo gehören
 	unsigned long avg_timebase[9];
 	unsigned long trip_dist[9];
@@ -49,7 +50,7 @@ public:
 	int maximum;
 	int minimum;
 
-	widget		kmhchar_widget,oil_widget,air_widget,arrow_widget,kmh_widget,dz_widget;
+	widget		kmhchar_widget,oil_widget,water_widget,air_widget,arrow_widget,kmh_widget,dz_widget;
 	widget		fuel_widget,gear_widget,addinfo_widget,addinfo2_widget,clock_widget;
 	short default_font;
 

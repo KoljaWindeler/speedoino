@@ -46,8 +46,8 @@ prog_char setup_m_2[] PROGMEM = "3. Display setup";
 prog_char setup_m_3[] PROGMEM = "4. Reset memory";
 prog_char setup_m_4[] PROGMEM = "5. Daylight saving";
 prog_char setup_m_5[] PROGMEM = "6. BT Reset state";
-prog_char setup_m_6[] PROGMEM = "7. -";
-prog_char setup_m_7[] PROGMEM = "8. -";
+prog_char setup_m_6[] PROGMEM = "7. Water temp";
+prog_char setup_m_7[] PROGMEM = "8. Oil temp";
 prog_char setup_m_8[] PROGMEM = "9. About";
 PROGMEM const char *menu_setup[9] = { setup_m_0,setup_m_1,setup_m_2,setup_m_3,setup_m_4,setup_m_5,setup_m_6,setup_m_7,setup_m_8 };
 
@@ -181,6 +181,8 @@ void speedo_menu::display(){ // z.B. state = 26
 
 		if(pSpeedo->oil_widget.symbol && !(pSpeedo->oil_widget.x==-1 && pSpeedo->oil_widget.y==-1))
 			pOLED->draw_oil(pSpeedo->oil_widget.x*3,pSpeedo->oil_widget.y*8); //3=6/2 weil doppelpixxel
+		if(pSpeedo->water_widget.symbol && !(pSpeedo->water_widget.x==-1 && pSpeedo->water_widget.y==-1))
+			pOLED->draw_oil(pSpeedo->water_widget.x*3,pSpeedo->water_widget.y*8); // bisher oil icon
 		if(pSpeedo->fuel_widget.symbol && !(pSpeedo->fuel_widget.x==-1 && pSpeedo->fuel_widget.y==-1))
 			pOLED->draw_fuel(pSpeedo->fuel_widget.x*3,pSpeedo->fuel_widget.y*8); // 7 => 56
 		if(pSpeedo->air_widget.symbol && !(pSpeedo->air_widget.x==-1 && pSpeedo->air_widget.y==-1))
@@ -1123,6 +1125,88 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->string(pSpeedo->default_font,"bt",13,1,0,DISP_BRIGHTNESS,0);
 		}
 		// show reason why last reset happend
+	}
+	////////////////////////////////// water temp premenu //////////////////////////////////
+	else if(floor(state/10)==77) {
+		if(old_state==7711){
+			if(pConfig->storage_outdated){
+				pConfig->write("BASE.TXT");
+				pOLED->clear_screen();
+				pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
+				delay(300);
+				pOLED->clear_screen();
+			}
+			back();
+			display();
+		} else {
+			state=7711;
+			pSpeedo->reset_bak(); // reset damit die variablen wieder leer sind
+			display();
+		}
+	////////////////////////////////// water temp setup //////////////////////////////////
+	} else if(floor(state/100)==77) {
+		set_buttons(button_state,button_state,button_state,!button_state); // no right
+		if(state%10==9){
+			pSensors->m_temperature->water_warning_temp+=10;
+			state-=8;
+			pConfig->storage_outdated=true;
+		} else if(state%10==2){
+			pSensors->m_temperature->water_warning_temp-=10;
+			state--;
+			pConfig->storage_outdated=true;
+		}
+		if(pSpeedo->disp_zeile_bak[2]!=88){
+			pSpeedo->disp_zeile_bak[2]=88;
+			pOLED->clear_screen();
+			pOLED->string_P(pSpeedo->default_font,PSTR("Setup water"),5,1);
+			pOLED->string_P(pSpeedo->default_font,PSTR("temperature"),5,2);
+			pOLED->string_P(pSpeedo->default_font,PSTR("warning level"),4,3);
+		}
+
+		sprintf(char_buffer,"%3i,%i{C",int(floor(pSensors->m_temperature->water_warning_temp/10)),int(pSensors->m_temperature->water_warning_temp%10));
+		center_me(char_buffer,21);
+		pOLED->string(pSpeedo->default_font,char_buffer,0,5);
+	}
+	////////////////////////////////// oil temp premenu //////////////////////////////////
+	else if(floor(state/10)==78) {
+		if(old_state==7811){
+			if(pConfig->storage_outdated){
+				pConfig->write("BASE.TXT");
+				pOLED->clear_screen();
+				pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
+				delay(300);
+				pOLED->clear_screen();
+			}
+			back();
+			display();
+		} else {
+			state=7811;
+			pSpeedo->reset_bak(); // reset damit die variablen wieder leer sind
+			display();
+		}
+	////////////////////////////////// oil temp setup //////////////////////////////////
+	} else if(floor(state/100)==78) {
+		set_buttons(button_state,button_state,button_state,!button_state); // no right
+		if(state%10==9){
+			pSensors->m_temperature->oil_warning_temp+=10;
+			state-=8;
+			pConfig->storage_outdated=true;
+		} else if(state%10==2){
+			pSensors->m_temperature->oil_warning_temp-=10;
+			state--;
+			pConfig->storage_outdated=true;
+		}
+		if(pSpeedo->disp_zeile_bak[2]!=87){
+			pSpeedo->disp_zeile_bak[2]=87;
+			pOLED->clear_screen();
+			pOLED->string_P(pSpeedo->default_font,PSTR("Setup oil"),6,1);
+			pOLED->string_P(pSpeedo->default_font,PSTR("temperature"),5,2);
+			pOLED->string_P(pSpeedo->default_font,PSTR("warning level"),4,3);
+		}
+
+		sprintf(char_buffer,"%3i,%i{C",int(floor(pSensors->m_temperature->oil_warning_temp/10)),int(pSensors->m_temperature->oil_warning_temp%10));
+		center_me(char_buffer,21);
+		pOLED->string(pSpeedo->default_font,char_buffer,0,5);
 	}
 	////////////////////////////////// ABOUT //////////////////////////////////
 	else if(floor(state/10)==79) { // 00089X
