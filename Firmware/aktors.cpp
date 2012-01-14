@@ -42,9 +42,19 @@ void Speedo_aktors::init(){
 
 	dimm_step=0;
 	dimm_steps=0;
+	dimm_state=999;
 
 	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
-	dimm_rgb_to(out_base_color.r.actual,out_base_color.g.actual,out_base_color.b.actual,256,0);
+	if(led_mode==0){
+		dimm_rgb_to(static_color.r,static_color.g,static_color.b,256,0);
+	} else if(led_mode==1){
+		dimm_rgb_to(kmh_start_color.r,kmh_start_color.g,kmh_start_color.b,256,0);
+	} else if(led_mode==2){
+		dimm_rgb_to(dz_start_color.r,dz_start_color.g,dz_start_color.b,256,0);
+	} else if(led_mode==3){
+		dimm_rgb_to(oil_start_color.r,oil_start_color.g,oil_start_color.b,256,0);
+	}
+
 	// stepper drehen
 	m_stepper->init();
 };
@@ -90,6 +100,10 @@ void Speedo_aktors::set_rgb_out(int r,int g,int b,int save){
 };
 /* 10ms pro schritt -> 0 to 256 = 2,56 sec */
 void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps, int set_in_out){
+	if(r>255) r=255;
+	if(g>255) g=255;
+	if(b>255) b=255;
+
 	if(set_in_out==1){
 		RGB.inner.r.to=r;
 		RGB.inner.g.to=g;
@@ -178,3 +192,125 @@ bool Speedo_aktors::dimm_available(){
 ISR(TIMER3_OVF_vect){
 	pAktors->timer_overflow();
 }
+
+/* defines:
+ *
+ */
+#define FLASH_COLOR_REACHED 0
+#define DIMM_TO_FLASH_COLOR 1
+#define STATIC_COLOR_REACHED 2
+#define DIMM_TO_STATIC_COLOR 3
+#define DIMM_TO_DARK 4
+#define MIN_REACHED 5
+#define MAX_REACHED 6
+
+
+
+int Speedo_aktors::update_outer_leds(){
+	if(floor(pMenu->state/100)==65 || floor(pMenu->state/1000)==65){
+		return -1;
+	};
+
+	if(floor(pMenu->state/100)==66 || floor(pMenu->state/1000)==66 || floor(pMenu->state/10000)==66){
+		return -2;
+	};
+
+	////////// SHIFT FLASH ////////////////
+	if(pSensors->m_dz->exact>unsigned(pSensors->m_dz->blitz_dz) && pSensors->m_dz->blitz_en){
+		if(dimm_state==FLASH_COLOR_REACHED){
+			return 0;
+		} else if(dimm_state==DIMM_TO_FLASH_COLOR){
+			if(pAktors->dimm_available()){
+				dimm_state=FLASH_COLOR_REACHED;
+			}
+		} else if(dimm_state==DIMM_TO_DARK){
+			if(pAktors->dimm_available()){
+				pAktors->dimm_rgb_to(pAktors->dz_flasher.r,pAktors->dz_flasher.g,pAktors->dz_flasher.b,15,0); // 25*10ms = 250 ms
+				dimm_state=DIMM_TO_FLASH_COLOR;
+			}
+		} else {
+			if(pAktors->dimm_available()){
+				pAktors->dimm_rgb_to(5,5,5,15,0); // 25*10ms = 250 ms
+				dimm_state=DIMM_TO_DARK;
+			}
+		}
+		///////// STATIC ////////////////
+	} else if(led_mode==0){ // simple static color
+		if(dimm_state==STATIC_COLOR_REACHED){
+			return 0;
+		} else if(dimm_state==DIMM_TO_STATIC_COLOR){
+			if(pAktors->dimm_available()){
+				dimm_state=STATIC_COLOR_REACHED;
+			};
+		} else {
+			pAktors->dimm_rgb_to(pAktors->static_color.r,pAktors->static_color.g,pAktors->static_color.b,15,0); // 25*10ms = 250 ms
+			dimm_state=DIMM_TO_STATIC_COLOR;
+		};
+
+		///////// kmh ////////////////
+	} else if(led_mode==1){ //follow kmh
+		if(pSensors->m_speed->getSpeed()>=kmh_max_value){
+			if(dimm_state!=MAX_REACHED){
+				pAktors->set_rgb_out(int(kmh_end_color.r),int(kmh_end_color.g),int(kmh_end_color.b));
+			};
+			dimm_state=MAX_REACHED;
+		} else if(pSensors->m_speed->getSpeed()<=kmh_min_value){
+			if(dimm_state!=MIN_REACHED){
+				pAktors->set_rgb_out(kmh_start_color.r,kmh_start_color.g,kmh_start_color.b);
+			};
+			dimm_state=MIN_REACHED;
+		} else {
+			int temp_r,temp_g,temp_b,kmh_differ;
+			kmh_differ=kmh_max_value-kmh_min_value;
+			temp_r = float(kmh_end_color.r-kmh_start_color.r)/float(kmh_differ)*(pSensors->m_speed->getSpeed()-kmh_min_value)+kmh_start_color.r;
+			temp_g = float(kmh_end_color.g-kmh_start_color.g)/float(kmh_differ)*(pSensors->m_speed->getSpeed()-kmh_min_value)+kmh_start_color.g;
+			temp_b = float(kmh_end_color.b-kmh_start_color.b)/float(kmh_differ)*(pSensors->m_speed->getSpeed()-kmh_min_value)+kmh_start_color.b;
+			pAktors->set_rgb_out(temp_r,temp_g,temp_b);
+		};
+
+		///////// DZ ////////////////
+	} else if(led_mode==2){ //follow dz
+		if(pSensors->m_dz->exact>=unsigned(dz_max_value)){
+			if(dimm_state!=MAX_REACHED){
+				pAktors->set_rgb_out(int(dz_end_color.r),int(dz_end_color.g),int(dz_end_color.b));
+			}
+			dimm_state=MAX_REACHED;
+		} else if(pSensors->m_dz->exact<=unsigned(dz_min_value)){
+			if(dimm_state!=MIN_REACHED){
+				pAktors->set_rgb_out(dz_start_color.r,dz_start_color.g,dz_start_color.b);
+			};
+			dimm_state=MIN_REACHED;
+		} else {
+			int temp_r,temp_g,temp_b,dz_differ;
+			dz_differ=dz_max_value-dz_min_value;
+			temp_r = float(dz_end_color.r-dz_start_color.r)/float(dz_differ)*(pSensors->m_dz->exact-dz_min_value)+dz_start_color.r;
+			temp_g = float(dz_end_color.g-dz_start_color.g)/float(dz_differ)*(pSensors->m_dz->exact-dz_min_value)+dz_start_color.g;
+			temp_b = float(dz_end_color.b-dz_start_color.b)/float(dz_differ)*(pSensors->m_dz->exact-dz_min_value)+dz_start_color.b;
+			pAktors->set_rgb_out(temp_r,temp_g,temp_b);
+		};
+
+	}
+
+	///////// OIL ////////////////
+	else if(led_mode==3){ //follow oil temp // werte sind in out_start_color->from
+		if(pSensors->m_temperature->get_oil_temp()>=oil_max_value){
+			if(dimm_state!=MAX_REACHED){
+				pAktors->set_rgb_out(int(oil_end_color.r),int(oil_end_color.g),int(oil_end_color.b));
+			};
+			dimm_state=MAX_REACHED;
+		} else if(pSensors->m_temperature->get_oil_temp()<=oil_min_value){
+			if(dimm_state!=MIN_REACHED){
+				pAktors->set_rgb_out(oil_start_color.r,oil_start_color.g,oil_start_color.b);
+			};
+			dimm_state=MIN_REACHED;
+		} else {
+			int temp_r,temp_g,temp_b,oil_differ;
+			oil_differ=oil_max_value-oil_min_value;
+			temp_r = float(oil_end_color.r-oil_start_color.r)/float(oil_differ)*(pSensors->m_temperature->get_oil_temp()-oil_min_value)+oil_start_color.r;
+			temp_g = float(oil_end_color.g-oil_start_color.g)/float(oil_differ)*(pSensors->m_temperature->get_oil_temp()-oil_min_value)+oil_start_color.g;
+			temp_b = float(oil_end_color.b-oil_start_color.b)/float(oil_differ)*(pSensors->m_temperature->get_oil_temp()-oil_min_value)+oil_start_color.b;
+			pAktors->set_rgb_out(temp_r,temp_g,temp_b); // from == oil
+		};
+		return 0;
+	}
+};

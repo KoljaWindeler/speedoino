@@ -70,7 +70,7 @@ void speedo_dz::calc() {
 		previous_time=now;
 	};
 	if(DEMO_MODE){
-		if(differ>250){
+		if(differ>50){
 			previous_time=now;
 			rounded=((millis()/300)%210)*70;
 			exact=rounded;
@@ -94,27 +94,6 @@ void speedo_dz::calc() {
 	 */
 
 
-	if(exact>blitz_dz && !hme_light_active && blitz_en){
-		if(pAktors->dimm_available()){
-			if(pAktors->RGB.outer.r.actual==pAktors->out_base_color.r.actual){
-				// gucken ob der dimm Vorgang noch nicht gestartet wurde
-				pAktors->dimm_rgb_to(5,5,5,15,0); // 25*10ms = 250 ms
-			} else if(pAktors->RGB.outer.r.actual==5){
-				pAktors->dimm_rgb_to(pAktors->dz_flasher.r.actual,pAktors->dz_flasher.g.actual,pAktors->dz_flasher.b.actual,15,0); // 25*10ms = 250 ms
-				hme_light_active=true;
-			};
-		};
-	// wenn wir unter 12k sind und die außen LED noch nicht ganz blau sind
-	} else if(exact<=blitz_dz && hme_light_active && blitz_en) {
-		if(pAktors->dimm_available()){
-			if(pAktors->RGB.outer.r.actual==pAktors->dz_flasher.r.actual){
-				pAktors->dimm_rgb_to(5,5,5,15,0); // 25*10ms = 250 ms
-			} else if(pAktors->RGB.outer.r.actual==5){
-				pAktors->dimm_rgb_to(pAktors->out_base_color.r.actual,pAktors->out_base_color.g.actual,pAktors->out_base_color.b.actual,15,0); // 75*10ms = 750 ms
-				hme_light_active=false;
-			}
-		}
-	};
 	/////////////////// DIMMEN ABHÄNGIG VON DER DREHZAHL /////////////////
 
 };
@@ -133,6 +112,5 @@ void speedo_dz::init() {
 
 	Serial.println("DZ init done");
 	blitz_en=false;
-	hme_light_active=false; // nicht das high motor engine light an
 	Serial3.flush();
 };

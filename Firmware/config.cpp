@@ -55,7 +55,7 @@ int configuration::write(const char *filename){
 			if(strncmp("speedo.txt",filename,10)==0 && storage_outdated){
 				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
-					Serial.print("platzhalter");
+					Serial.print("platzhalter1");
 					return -2;
 				} else {
 					// get some buffer
@@ -86,7 +86,7 @@ int configuration::write(const char *filename){
 			} else if(strncmp("GANG.TXT",filename,8)==0){
 				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
-					Serial.print("platzhalter");
+					Serial.print("platzhalter2");
 					return -2;
 				} else {
 					// get some buffer
@@ -114,12 +114,16 @@ int configuration::write(const char *filename){
 				 * about the logged points as long as they aren't empty
 				 ****************************************************/
 			} else if(filename[6]=='.' && filename[7]=='G' && filename[8]=='P' && filename[9]=='S'){
+				pSD->power_down();
+				delay(20);
+				pSD->power_up();
+
 				if(!subdir.open(&root, "GPS", O_READ)) {
 					pDebug->sprintlnp(PSTR("open subdir /config failed"));
 					return -1;
 				};
 				if (!file.open(&subdir, filename, O_CREAT |  O_APPEND | O_WRITE)){
-					Serial.print("platzhalter");
+					Serial.print("platzhalter3");
 					pSensors->m_gps->gps_write_status=-2;
 					return -2;
 				} else {
@@ -149,7 +153,7 @@ int configuration::write(const char *filename){
 					return -1;
 				};
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
-					Serial.print("platzhalter");
+					Serial.print("platzhalter4");
 					return -2;
 				} else {
 					// get some buffer
@@ -231,7 +235,37 @@ int configuration::write(const char *filename){
 					}
 					pSD->writeString(file, buffer);
 
-					// RGB LEDs
+					strcpy_P(buffer, PSTR("dz_min="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pAktors->dz_min_value); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("dz_max="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pAktors->dz_max_value); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("oil_min="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pAktors->oil_min_value); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("oil_max="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pAktors->oil_max_value); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("kmh_min="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pAktors->kmh_min_value); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("kmh_max="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pAktors->kmh_max_value); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					///////////// RGB LEDs ///////////////
 					strcpy_P(buffer, PSTR("rgb_in_r="));
 					pSD->writeString(file, buffer);
 					sprintf(buffer,"%i\n",int(pAktors->RGB.inner.r.actual)); // 12 chars max: max_=1=300\n\0
@@ -247,34 +281,134 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",int(pAktors->RGB.inner.b.actual)); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
-					strcpy_P(buffer, PSTR("rgb_out_r="));
+					////////////// static color /////////////
+					strcpy_P(buffer, PSTR("rgb_out_static_r="));
 					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",int(pAktors->RGB.outer.r.actual)); // 12 chars max: max_=1=300\n\0
-					pSD->writeString(file, buffer);
-
-					strcpy_P(buffer, PSTR("rgb_out_g="));
-					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",int(pAktors->RGB.outer.g.actual)); // 12 chars max: max_=1=300\n\0
+					sprintf(buffer,"%i\n",int(pAktors->static_color.r)); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
-					strcpy_P(buffer, PSTR("rgb_out_b="));
+					strcpy_P(buffer, PSTR("rgb_out_static_g="));
 					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",int(pAktors->RGB.outer.b.actual)); // 12 chars max: max_=1=300\n\0
+					sprintf(buffer,"%i\n",int(pAktors->static_color.g)); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("rgb_out_static_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->static_color.b)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					////////////// dz color /////////////
+					strcpy_P(buffer, PSTR("rgb_out_dz_start_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->dz_start_color.r)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_dz_start_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->dz_start_color.g)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_dz_start_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->dz_start_color.b)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_dz_end_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->dz_end_color.r)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_dz_end_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->dz_end_color.g)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_dz_end_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->dz_end_color.b)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+
+					////////////// kmh color /////////////
+					strcpy_P(buffer, PSTR("rgb_out_kmh_start_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->kmh_start_color.r)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_kmh_start_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->kmh_start_color.g)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_kmh_start_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->kmh_start_color.b)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_kmh_end_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->kmh_end_color.r)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_kmh_end_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->kmh_end_color.g)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_kmh_end_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->kmh_end_color.b)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					////////////// oil color /////////////
+					strcpy_P(buffer, PSTR("rgb_out_oil_start_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->oil_start_color.r)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_oil_start_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->oil_start_color.g)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_oil_start_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->oil_start_color.b)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_oil_end_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->oil_end_color.r)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_oil_end_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->oil_end_color.g)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_oil_end_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->oil_end_color.b)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("led_mode="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->led_mode)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+					//////// flash //////////
 					strcpy_P(buffer, PSTR("rgb_flash_r="));
 					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",int(pAktors->dz_flasher.r.actual)); // 12 chars max: max_=1=300\n\0
+					sprintf(buffer,"%i\n",int(pAktors->dz_flasher.r)); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
 					strcpy_P(buffer, PSTR("rgb_flash_g="));
 					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",int(pAktors->dz_flasher.g.actual)); // 12 chars max: max_=1=300\n\0
+					sprintf(buffer,"%i\n",int(pAktors->dz_flasher.g)); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
 					strcpy_P(buffer, PSTR("rgb_flash_b="));
 					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",int(pAktors->dz_flasher.b.actual)); // 12 chars max: max_=1=300\n\0
+					sprintf(buffer,"%i\n",int(pAktors->dz_flasher.b)); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 					// RGB LEDs
 
@@ -441,13 +575,48 @@ int configuration::init(){
 	// beleuchtung
 	pAktors->set_rgb_in(255,255,255,0);
 
-	pAktors->out_base_color.r.actual=0;
-	pAktors->out_base_color.g.actual=0;
-	pAktors->out_base_color.b.actual=255;
+	pAktors->static_color.r=0;
+	pAktors->static_color.g=0;
+	pAktors->static_color.b=255;
 
-	pAktors->dz_flasher.r.actual=255;
-	pAktors->dz_flasher.g.actual=0;
-	pAktors->dz_flasher.b.actual=0;
+	pAktors->dz_flasher.r=255;
+	pAktors->dz_flasher.g=0;
+	pAktors->dz_flasher.b=0;
+
+	pAktors->kmh_start_color.r=0;
+	pAktors->kmh_start_color.g=0;
+	pAktors->kmh_start_color.b=255;
+
+	pAktors->kmh_end_color.r=255;
+	pAktors->kmh_end_color.g=255;
+	pAktors->kmh_end_color.b=0;
+
+	pAktors->dz_start_color.r=0;
+	pAktors->dz_start_color.g=0;
+	pAktors->dz_start_color.b=255;
+
+	pAktors->dz_end_color.r=255;
+	pAktors->dz_end_color.g=0;
+	pAktors->dz_end_color.b=255;
+
+	pAktors->oil_start_color.r=255;
+	pAktors->oil_start_color.g=255;
+	pAktors->oil_start_color.b=0;
+
+	pAktors->oil_end_color.r=0;
+	pAktors->oil_end_color.g=0;
+	pAktors->oil_end_color.b=255;
+
+	pAktors->kmh_min_value=20;
+	pAktors->kmh_max_value=50;
+
+	pAktors->dz_min_value=7000;
+	pAktors->dz_max_value=14000;
+
+	pAktors->oil_min_value=200;
+	pAktors->oil_max_value=500;
+
+	pAktors->led_mode=1;
 	// beleuchtung
 
 	last_speed_value=0;
@@ -750,25 +919,102 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&pSensors->m_temperature->water_warning_temp);
 	} else if(strcmp_P(name,PSTR("oil_warning"))==0){
 		parse_int(buffer,seperator,&pSensors->m_temperature->oil_warning_temp);
+
+		// die grenzen für die farben
+	} else if(strcmp_P(name,PSTR("dz_min"))==0){
+		parse_int(buffer,seperator,&pAktors->dz_min_value);
+	} else if(strcmp_P(name,PSTR("dz_max"))==0){
+		parse_int(buffer,seperator,&pAktors->dz_max_value);
+	} else if(strcmp_P(name,PSTR("oil_min"))==0){
+		parse_int(buffer,seperator,&pAktors->oil_min_value);
+	} else if(strcmp_P(name,PSTR("oil_max"))==0){
+		parse_int(buffer,seperator,&pAktors->oil_max_value);
+	} else if(strcmp_P(name,PSTR("kmh_min"))==0){
+		parse_int(buffer,seperator,&pAktors->kmh_min_value);
+	} else if(strcmp_P(name,PSTR("kmh_max"))==0){
+		parse_int(buffer,seperator,&pAktors->kmh_max_value);
+
 		/////// RGB LEDs /////////
 	} else if(strcmp_P(name,PSTR("rgb_flash_r"))==0){
 		parse_int(buffer,seperator,&temp);
-		pAktors->dz_flasher.r.actual=temp;
+		pAktors->dz_flasher.r=temp;
 	} else if(strcmp_P(name,PSTR("rgb_flash_g"))==0){
 		parse_int(buffer,seperator,&temp);
-		pAktors->dz_flasher.g.actual=temp;
+		pAktors->dz_flasher.g=temp;
 	} else if(strcmp_P(name,PSTR("rgb_flash_b"))==0){
 		parse_int(buffer,seperator,&temp);
-		pAktors->dz_flasher.b.actual=temp;
-	} else if(strcmp_P(name,PSTR("rgb_out_r"))==0){
+		pAktors->dz_flasher.b=temp;
+
+	} else if(strcmp_P(name,PSTR("rgb_out_static_r"))==0){
 		parse_int(buffer,seperator,&temp);
-		pAktors->out_base_color.r.actual=temp;
-	} else if(strcmp_P(name,PSTR("rgb_out_g"))==0){
+		pAktors->static_color.r=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_static_g"))==0){
 		parse_int(buffer,seperator,&temp);
-		pAktors->out_base_color.g.actual=temp;
-	} else if(strcmp_P(name,PSTR("rgb_out_b"))==0){
+		pAktors->static_color.g=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_static_b"))==0){
 		parse_int(buffer,seperator,&temp);
-		pAktors->out_base_color.b.actual=temp;
+		pAktors->static_color.b=temp;
+
+	} else if(strcmp_P(name,PSTR("rgb_out_oil_start_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->oil_start_color.r=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_oil_start_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->oil_start_color.g=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_oil_start_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->oil_start_color.b=temp;
+
+	} else if(strcmp_P(name,PSTR("rgb_out_oil_end_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->oil_end_color.r=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_oil_end_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->oil_end_color.g=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_oil_end_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->oil_end_color.b=temp;
+
+	} else if(strcmp_P(name,PSTR("rgb_out_kmh_start_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->kmh_start_color.r=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_kmh_start_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->kmh_start_color.g=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_kmh_start_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->kmh_start_color.b=temp;
+
+	} else if(strcmp_P(name,PSTR("rgb_out_kmh_end_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->kmh_end_color.r=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_kmh_end_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->kmh_end_color.g=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_kmh_end_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->kmh_end_color.b=temp;
+
+	} else if(strcmp_P(name,PSTR("rgb_out_dz_start_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->dz_start_color.r=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_dz_start_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->dz_start_color.g=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_dz_start_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->dz_start_color.b=temp;
+
+	} else if(strcmp_P(name,PSTR("rgb_out_dz_end_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->dz_end_color.r=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_dz_end_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->dz_end_color.g=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_dz_end_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->dz_end_color.b=temp;
+
 	} else if(strcmp_P(name,PSTR("rgb_in_r"))==0){
 		parse_int(buffer,seperator,&temp);
 		pAktors->RGB.inner.r.actual=temp;
@@ -781,7 +1027,9 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&temp);
 		pAktors->RGB.inner.b.actual=temp;
 		pAktors->set_rgb_in(pAktors->RGB.inner.r.actual,pAktors->RGB.inner.g.actual,pAktors->RGB.inner.b.actual,1);
-		/////// RGB LEDs /////////
+	} else if(strcmp_P(name,PSTR("led_mode"))==0){
+		parse_short(buffer,seperator,&pAktors->led_mode);
+	/////// RGB LEDs /////////
 	} else {
 		return_value=-2; // ungltiger identifier
 	}

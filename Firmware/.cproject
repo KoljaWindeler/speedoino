@@ -70,6 +70,7 @@
 <option id="de.innot.avreclipse.cpplinker.option.libs.424100153" name="Libraries (-l)" superClass="de.innot.avreclipse.cpplinker.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="ArduinoCore2560"/>
 </option>
+<option id="de.innot.avreclipse.cpplinker.option.otherlinkargs.1992526454" name="Other Arguments" superClass="de.innot.avreclipse.cpplinker.option.otherlinkargs" value="-Wl,--relax" valueType="string"/>
 </tool>
 <tool id="de.innot.avreclipse.tool.archiver.winavr.base.1422615496" name="AVR Archiver" superClass="de.innot.avreclipse.tool.archiver.winavr.base"/>
 <tool id="de.innot.avreclipse.tool.objdump.winavr.app.release.636434397" name="AVR Create Extended Listing" superClass="de.innot.avreclipse.tool.objdump.winavr.app.release"/>
@@ -80,7 +81,7 @@
 </toolChain>
 </folderInfo>
 <sourceEntries>
-<entry excluding="mem-check.c|fuse.cpp|clock.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+<entry excluding="file_manager2.cpp|mem-check.c|fuse.cpp|clock.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 </sourceEntries>
 </configuration>
 </storageModule>

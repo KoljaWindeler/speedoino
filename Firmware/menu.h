@@ -31,6 +31,7 @@ public:
 	int  center_me(char* input,int legth);
 
 	unsigned long state,old_state;
+	short state_helper;
 	bool button_rechts_valid;
 	bool button_links_valid;
 	bool button_oben_valid;

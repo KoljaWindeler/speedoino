@@ -26,6 +26,8 @@ public:
 	void init();
 	void EEPROM_init();
 	int writeString(SdFile& f, char *str);
+	void power_up();
+	void power_down();
 	void error_P(const char* str);
 	void writeCRLF(SdFile& f);
 	bool 		  sd_failed;

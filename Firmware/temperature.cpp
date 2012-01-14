@@ -144,9 +144,7 @@ void speedo_temperature::read_air_temp() {
 
 
 int speedo_temperature::get_air_temp(){
-	if(DEMO_MODE)
-		return (32+((millis()/1000)%10))*10+((millis()/1000)%10);
-	else if(air_temp_value>999) // notfall
+	if(air_temp_value>999) // notfall
 		return 0;
 	else
 		return air_temp_value;
@@ -154,7 +152,7 @@ int speedo_temperature::get_air_temp(){
 
 int speedo_temperature::get_oil_temp(){
 	if(DEMO_MODE)
-		return (102+((millis()/1000)%10))*10+((millis()/1000)%10);
+		return (10+((millis()/1000)%100))*10+((millis()/1000)%10);
 	else if(pSpeedo->trip_dist[1]==0) // wir sind heute noch exakt gar nicht gefahren
 		return get_air_temp()-1;
 	else

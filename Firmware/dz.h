@@ -28,7 +28,6 @@ private:
 	unsigned int previous_peaks;		// z�hlerstand vom peak
 	unsigned int previous_dz;
 	volatile unsigned int peak_helper;
-	bool hme_light_active;
 };
 /**************** DZ *******************/
 

@@ -15,11 +15,18 @@
 #define RGB_IN_G 10
 #define RGB_IN_B 11
 
+
 typedef struct{
 	unsigned char actual;
 	unsigned char from;
 	unsigned char to;
 } led_values;
+
+typedef struct{
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
+} led_simple;
 
 typedef struct{
 	led_values r;
@@ -45,12 +52,16 @@ public:
 	void dimm_rgb_to(int r,int g,int b,int max_dimm_steps, int set_in_out);
 	void timer_overflow();
 	bool dimm_available();
+	int  update_outer_leds();
 	speedo_stepper* m_stepper;
 	led_area RGB;
-	led dz_flasher,out_base_color; // doof aber nötig
+	led_simple dz_flasher,oil_start_color,oil_end_color,kmh_start_color,kmh_end_color,dz_start_color,dz_end_color,static_color;
+	short int led_mode;
+	int oil_max_value,oil_min_value,kmh_max_value,kmh_min_value,dz_max_value,dz_min_value;
 
 private:
 	int dimm_steps,dimm_step,in_out;
+	short int dimm_state;
 
 };
 extern Speedo_aktors* pAktors;

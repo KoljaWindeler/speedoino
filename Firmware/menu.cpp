@@ -63,6 +63,18 @@ prog_char custom_m_7[] PROGMEM = "8. Show Animation";
 prog_char custom_m_8[] PROGMEM = "9. Filemanager";
 PROGMEM const char *menu_custom[9] = { custom_m_0,custom_m_1,custom_m_2,custom_m_3,custom_m_4,custom_m_5,custom_m_6,custom_m_7,custom_m_8 };
 
+///////////////////// Customize /////////////////////
+prog_char fade_m_0[] PROGMEM = "1. Static color";
+prog_char fade_m_1[] PROGMEM = "2. Speed based";
+prog_char fade_m_2[] PROGMEM = "3. RPM based";
+prog_char fade_m_3[] PROGMEM = "4. Oil temp based";
+prog_char fade_m_4[] PROGMEM = "5. -";
+prog_char fade_m_5[] PROGMEM = "6. -";
+prog_char fade_m_6[] PROGMEM = "7. -";
+prog_char fade_m_7[] PROGMEM = "8. -";
+prog_char fade_m_8[] PROGMEM = "9. -";
+PROGMEM const char *menu_fade[9] = { fade_m_0,fade_m_1,fade_m_2,fade_m_3,fade_m_4,fade_m_5,fade_m_6,fade_m_7,fade_m_8 };
+
 ///////////////////// Extend info /////////////////////
 prog_char einfo_m_0[] PROGMEM = "1. GPS infos 1/2";
 prog_char einfo_m_1[] PROGMEM = "2. GPS infos 2/2";
@@ -713,56 +725,91 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->string(pSpeedo->default_font,temp,15,4,back,front,0);
 	}
 	//////////////////////// adjust outer RGB LED ////////////////////////
+	/* In this menu, we give the user the chance to choose his own color
+	 * first of all we start with an selection model
+	 * 1. Static color - just one fix color
+	 * 2. Speed based color fade -> setup the minimum speed and color for the speed below this border
+	 * 								and the max, plus the color above the top speed. between these limits, it will me faded
+	 *
+	 */
 	else if(floor(state/10)==65){
+		// Menu vorbereiten
+		draw(&menu_fade[0],sizeof(menu_fade)/sizeof(menu_fade[0]));
+		menu_preload=true;
+		pSpeedo->reset_bak();
+		////////////////////////// static /////////////////
+	} else if(floor(state/10)==651){
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
-		if(	old_state==65 ){
+		if(	old_state==651 ){
 			state=state*10+1;
+			state_helper=0;
 			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
 		} else {
-			back();
-			// store to SD
-			if(pConfig->storage_outdated){
-				pOLED->clear_screen();
-				if(pConfig->write("BASE.TXT")==0){
-					pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
-					delay(500);
-				} else {
-					pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
-					delay(5000);
-				}
-			};
+			if(state_helper==0){
+				back(); // calc menu_state
+
+				pAktors->led_mode=0;
+				pConfig->storage_outdated=true;
+
+				// store to SD
+				if(pConfig->storage_outdated){
+					pOLED->clear_screen();
+					if(pConfig->write("BASE.TXT")==0){
+						pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
+						delay(500);
+					} else {
+						pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
+						delay(5000);
+					}
+				};
+			} else {
+				state_helper--;
+				state=state*10+1;
+			}
 		};
 		display();
-	}
-	else if(floor(state/100)==65 || floor(state/1000)==65 || floor(state/10000)==65){
-		if(floor(state/10000)==65){
+		/////////////////// COLOR setup ////////////////
+	} else if(floor(state/100)==651){
+		if(state_helper==2){
 			set_buttons(button_state,button_state,button_state,!button_state); // no right
 		}
 		// aktuelle werte
 		int r,g,b;
-		r=pAktors->RGB.outer.r.actual;
-		g=pAktors->RGB.outer.g.actual;
-		b=pAktors->RGB.outer.b.actual;
+		r=pAktors->static_color.r;
+		g=pAktors->static_color.g;
+		b=pAktors->static_color.b;
 		// neue werte
 		if(state%10==2){ // unten
 			pConfig->storage_outdated=true;
 			state-=1; // zurück
 
-			if(floor(state/100)==65){	r-=1;		if(r<0){r=0;};	};	// rot
-			if(floor(state/1000)==65){	g-=1;		if(g<0){g=0;};	};	// grün
-			if(floor(state/10000)==65){	b-=1;		if(b<0){b=0;};	};	// blau
+			if(state_helper==0){	r-=5;		if(r<0){r=0;};	};	// rot
+			if(state_helper==1){	g-=5;		if(g<0){g=0;};	};	// grün
+			if(state_helper==2){	b-=5;		if(b<0){b=0;};	};	// blau
 
-			pAktors->dimm_rgb_to(r,g,b,1,0);
+			pAktors->set_rgb_out(r,g,b);
+
+			// save the new value to var
+			pAktors->static_color.r=r;
+			pAktors->static_color.g=g;
+			pAktors->static_color.b=b;
 		} else if(state%10==9){ // oben
 			pConfig->storage_outdated=true;
 			state-=8; // zurück
 
-			if(floor(state/100)==65){	r+=1;		if(r>255){r=255;};	}; // rot
-			if(floor(state/1000)==65){	g+=1;		if(g>255){g=255;};	}; // grün
-			if(floor(state/10000)==65){	b+=1;		if(b>255){b=255;};	};	// blau
-			pAktors->dimm_rgb_to(r,g,b,1,0);
+			if(state_helper==0){	r+=5;		if(r>255){r=255;};	}; // rot
+			if(state_helper==1){	g+=5;		if(g>255){g=255;};	}; // grün
+			if(state_helper==2){	b+=5;		if(b>255){b=255;};	};	// blau
+			pAktors->set_rgb_out(r,g,b);
+
+			// save the new value to var
+			pAktors->static_color.r=r;
+			pAktors->static_color.g=g;
+			pAktors->static_color.b=b;
 		}
+
 		if(pSpeedo->disp_zeile_bak[0]!=304){
+			pAktors->set_rgb_out(r,g,b);
 			// clear screen
 			pOLED->clear_screen();
 			// anzeige der werte
@@ -779,7 +826,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		char temp[4];
 		sprintf(temp,"%3i",int(r%1000));
 		int front,back;
-		if(floor(state/100)==65){
+		if(state_helper==0){
 			back = 0;
 			front = 15;
 		} else {
@@ -788,7 +835,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		}
 		pOLED->string(pSpeedo->default_font,temp,1,4,back,front,0);
 		sprintf(temp,"%3i",int(g%1000));
-		if(floor(state/1000)==65){
+		if(state_helper==1){
 			back = 0;
 			front = 15;
 		} else {
@@ -797,7 +844,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		}
 		pOLED->string(pSpeedo->default_font,temp,8,4,back,front,0);
 		sprintf(temp,"%3i",int(b%1000));
-		if(floor(state/10000)==65){
+		if(state_helper==2){
 			back = 0;
 			front = 15;
 		} else {
@@ -805,12 +852,616 @@ void speedo_menu::display(){ // z.B. state = 26
 			front = 0;
 		}
 		pOLED->string(pSpeedo->default_font,temp,15,4,back,front,0);
+
+		////////////////// control //////////////////
+	} else if(floor(state/1000)==651){
+		state/=10;
+		state_helper++;
+		display();
+
+		/////////////////////// speed based color fade ///////////////////
+	} else if(floor(state/10)==652){
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
+		if(	old_state==652 ){
+			state=state*10+1;
+			state_helper=0;
+			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		} else {
+			if(state_helper==0){
+				back(); // calc menu_state
+
+				pAktors->led_mode=1;
+				pConfig->storage_outdated=true;
+
+				// store to SD
+				if(pConfig->storage_outdated){
+					pOLED->clear_screen();
+					if(pConfig->write("BASE.TXT")==0){
+						pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
+						delay(500);
+					} else {
+						pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
+						delay(5000);
+					}
+				};
+			} else {
+				state_helper--;
+				state=state*10+1;
+			}
+		};
+		display();
+		/////////////////// COLOR setup ////////////////
+	} else if(floor(state/100)==652){
+		if(state_helper==7){
+			set_buttons(button_state,button_state,button_state,!button_state); // no right
+		}
+		// aktuelle werte
+		int r,g,b;
+		if(state_helper<4){
+			r=pAktors->kmh_start_color.r;
+			g=pAktors->kmh_start_color.g;
+			b=pAktors->kmh_start_color.b;
+		} else {
+			r=pAktors->kmh_end_color.r;
+			g=pAktors->kmh_end_color.g;
+			b=pAktors->kmh_end_color.b;
+		}
+		pAktors->set_rgb_out(r,g,b);
+		// neue werte
+		if(state%10==2){ // unten
+			pConfig->storage_outdated=true;
+			state-=1; // zurück
+
+			if(state_helper==0){			pAktors->kmh_min_value-=5;	if(pAktors->kmh_min_value<0){pAktors->kmh_min_value=0;};
+			} else if(state_helper==1){		r-=5;						if(r<0){r=0;};
+			} else if(state_helper==2){		g-=5;						if(g<0){g=0;};
+			} else if(state_helper==3){		b-=5;						if(b<0){b=0;};
+			} else if(state_helper==4){		pAktors->kmh_max_value-=5;	if(pAktors->kmh_max_value<pAktors->kmh_min_value){pAktors->kmh_max_value=pAktors->kmh_min_value;};
+			} else if(state_helper==5){		r-=5;						if(r<0){r=0;};
+			} else if(state_helper==6){		g-=5;						if(g<0){g=0;};
+			} else if(state_helper==7){		b-=5;						if(b<0){b=0;};
+			}
+
+			// save the new value to var
+			if(state_helper<4){
+				pAktors->kmh_start_color.r=r;
+				pAktors->kmh_start_color.g=g;
+				pAktors->kmh_start_color.b=b;
+			} else {
+				pAktors->kmh_end_color.r=r;
+				pAktors->kmh_end_color.g=g;
+				pAktors->kmh_end_color.b=b;
+			}
+		} else if(state%10==9){ // oben
+			pConfig->storage_outdated=true;
+			state-=8; // zurück
+
+			if(state_helper==0){			pAktors->kmh_min_value+=5;	if(pAktors->kmh_min_value>300){pAktors->kmh_min_value=300;};
+			} else if(state_helper==1){		r+=5;						if(r>255){r=255;};
+			} else if(state_helper==2){		g+=5;						if(g>255){g=255;};
+			} else if(state_helper==3){		b+=5;						if(b>255){b=255;};
+			} else if(state_helper==4){		pAktors->kmh_max_value+=5;	if(pAktors->kmh_max_value>300){pAktors->kmh_max_value=300;};
+			} else if(state_helper==5){		r+=5;						if(r>255){r=255;};
+			} else if(state_helper==6){		g+=5;						if(g>255){g=255;};
+			} else if(state_helper==7){		b+=5;						if(b>255){b=255;};
+			}
+
+			// save the new value to var
+			if(state_helper<4){
+				pAktors->kmh_start_color.r=r;
+				pAktors->kmh_start_color.g=g;
+				pAktors->kmh_start_color.b=b;
+			} else {
+				pAktors->kmh_end_color.r=r;
+				pAktors->kmh_end_color.g=g;
+				pAktors->kmh_end_color.b=b;
+			}
+		}
+
+		if(pSpeedo->disp_zeile_bak[0]!=304){
+			// clear screen
+			pOLED->clear_screen();
+			// anzeige der werte
+			pOLED->highlight_bar(0,0,128,8);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Outer RGB"),2,0,15,0,0);
+
+
+			pOLED->string_P(pSpeedo->default_font,PSTR("Minimal values"),2,2,0,15,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Maximal values"),2,5,0,15,0);
+
+			// Red   Green   Blue
+			// 255    255    255
+			pOLED->highlight_bar(0,24,128,16);
+			pOLED->string_P(pSpeedo->default_font,PSTR("km/h Red Green Blue"),1,3,15,0,0);
+			pOLED->highlight_bar(0,48,128,16);
+			pOLED->string_P(pSpeedo->default_font,PSTR("km/h Red Green Blue"),1,6,15,0,0);
+			pSpeedo->disp_zeile_bak[0]=304;
+		};
+
+		char temp[4];
+		sprintf(temp,"%3i",int(pAktors->kmh_min_value%1000));
+		int front,back;
+		if(state_helper==0){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,1,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->kmh_start_color.r%1000));
+		if(state_helper==1){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,6,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->kmh_start_color.g%1000));
+		if(state_helper==2){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,12,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->kmh_start_color.b%1000));
+		if(state_helper==3){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,17,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->kmh_max_value%1000));
+		if(state_helper==4){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,1,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->kmh_end_color.r%1000));
+		if(state_helper==5){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,6,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->kmh_end_color.g%1000));
+		if(state_helper==6){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,12,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->kmh_end_color.b%1000));
+		if(state_helper==7){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,17,7,back,front,0);
+
+		////////////////// control //////////////////
+	} else if(floor(state/1000)==652){
+		state/=10;
+		state_helper++;
+		display();
+		/////////////////////// rpm based color fade ///////////////////
+	} else if(floor(state/10)==653){
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
+		if(	old_state==653 ){
+			state=state*10+1;
+			state_helper=0;
+			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		} else {
+			if(state_helper==0){
+				back(); // calc menu_state
+
+				pAktors->led_mode=2;
+				pConfig->storage_outdated=true;
+
+				// store to SD
+				if(pConfig->storage_outdated){
+					pOLED->clear_screen();
+					if(pConfig->write("BASE.TXT")==0){
+						pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
+						delay(500);
+					} else {
+						pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
+						delay(5000);
+					}
+				};
+			} else {
+				state_helper--;
+				state=state*10+1;
+			}
+		};
+		display();
+		/////////////////// COLOR setup ////////////////
+	} else if(floor(state/100)==653){
+		if(state_helper==7){
+			set_buttons(button_state,button_state,button_state,!button_state); // no right
+		}
+		// aktuelle werte
+		int r,g,b;
+		if(state_helper<4){
+			r=pAktors->dz_start_color.r;
+			g=pAktors->dz_start_color.g;
+			b=pAktors->dz_start_color.b;
+		} else {
+			r=pAktors->dz_end_color.r;
+			g=pAktors->dz_end_color.g;
+			b=pAktors->dz_end_color.b;
+		}
+		pAktors->set_rgb_out(r,g,b);
+		// neue werte
+		if(state%10==2){ // unten
+			pConfig->storage_outdated=true;
+			state-=1; // zurück
+
+			if(state_helper==0){			pAktors->dz_min_value-=100;	if(pAktors->dz_min_value<0){pAktors->dz_min_value=0;};
+			} else if(state_helper==1){		r-=5;						if(r<0){r=0;};
+			} else if(state_helper==2){		g-=5;						if(g<0){g=0;};
+			} else if(state_helper==3){		b-=5;						if(b<0){b=0;};
+			} else if(state_helper==4){		pAktors->dz_max_value-=100;	if(pAktors->dz_max_value<pAktors->dz_min_value){pAktors->dz_max_value=pAktors->dz_min_value;};
+			} else if(state_helper==5){		r-=5;						if(r<0){r=0;};
+			} else if(state_helper==6){		g-=5;						if(g<0){g=0;};
+			} else if(state_helper==7){		b-=5;						if(b<0){b=0;};
+			}
+
+			// save the new value to var
+			if(state_helper<4){
+				pAktors->dz_start_color.r=r;
+				pAktors->dz_start_color.g=g;
+				pAktors->dz_start_color.b=b;
+			} else {
+				pAktors->dz_end_color.r=r;
+				pAktors->dz_end_color.g=g;
+				pAktors->dz_end_color.b=b;
+			}
+		} else if(state%10==9){ // oben
+			pConfig->storage_outdated=true;
+			state-=8; // zurück
+
+			if(state_helper==0){			pAktors->dz_min_value+=100;	if(pAktors->dz_min_value>15000){pAktors->dz_min_value=300;};
+			} else if(state_helper==1){		r+=5;						if(r>255){r=255;};
+			} else if(state_helper==2){		g+=5;						if(g>255){g=255;};
+			} else if(state_helper==3){		b+=5;						if(b>255){b=255;};
+			} else if(state_helper==4){		pAktors->dz_max_value+=100;	if(pAktors->dz_max_value>15000){pAktors->dz_max_value=300;};
+			} else if(state_helper==5){		r+=5;						if(r>255){r=255;};
+			} else if(state_helper==6){		g+=5;						if(g>255){g=255;};
+			} else if(state_helper==7){		b+=5;						if(b>255){b=255;};
+			}
+
+			// save the new value to var
+			if(state_helper<4){
+				pAktors->dz_start_color.r=r;
+				pAktors->dz_start_color.g=g;
+				pAktors->dz_start_color.b=b;
+			} else {
+				pAktors->dz_end_color.r=r;
+				pAktors->dz_end_color.g=g;
+				pAktors->dz_end_color.b=b;
+			}
+		}
+
+		if(pSpeedo->disp_zeile_bak[0]!=304){
+			// clear screen
+			pOLED->clear_screen();
+			// anzeige der werte
+			pOLED->highlight_bar(0,0,128,8);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Outer RGB"),2,0,15,0,0);
+
+
+			pOLED->string_P(pSpeedo->default_font,PSTR("Minimal values"),2,2,0,15,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Maximal values"),2,5,0,15,0);
+
+			// Red   Green   Blue
+			// 255    255    255
+			pOLED->highlight_bar(0,24,128,16);
+			pOLED->string_P(pSpeedo->default_font,PSTR("rpm  Red Green Blue"),1,3,15,0,0);
+			pOLED->highlight_bar(0,48,128,16);
+			pOLED->string_P(pSpeedo->default_font,PSTR("rpm  Red Green Blue"),1,6,15,0,0);
+			pSpeedo->disp_zeile_bak[0]=304;
+		};
+
+		char temp[4];
+		sprintf(temp,"%5i",int(pAktors->dz_min_value%100000));
+		int front,back;
+		if(state_helper==0){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,1,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->dz_start_color.r%1000));
+		if(state_helper==1){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,7,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->dz_start_color.g%1000));
+		if(state_helper==2){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,12,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->dz_start_color.b%1000));
+		if(state_helper==3){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,17,4,back,front,0);
+		sprintf(temp,"%5i",int(pAktors->dz_max_value%100000));
+		if(state_helper==4){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,1,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->dz_end_color.r%1000));
+		if(state_helper==5){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,7,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->dz_end_color.g%1000));
+		if(state_helper==6){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,12,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->dz_end_color.b%1000));
+		if(state_helper==7){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,17,7,back,front,0);
+
+		////////////////// control //////////////////
+	} else if(floor(state/1000)==653){
+		state/=10;
+		state_helper++;
+		display();
+		/////////////////////// oil based color fade ///////////////////
+	} else if(floor(state/10)==654){
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
+		if(	old_state==654 ){
+			state=state*10+1;
+			state_helper=0;
+			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		} else {
+			if(state_helper==0){
+				back(); // calc menu_state
+
+				pAktors->led_mode=3;
+				pConfig->storage_outdated=true;
+
+				// store to SD
+				if(pConfig->storage_outdated){
+					pOLED->clear_screen();
+					if(pConfig->write("BASE.TXT")==0){
+						pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
+						delay(500);
+					} else {
+						pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
+						delay(5000);
+					}
+				};
+			} else {
+				state_helper--;
+				state=state*10+1;
+			}
+		};
+		display();
+		/////////////////// COLOR setup ////////////////
+	} else if(floor(state/100)==654){
+		if(state_helper==7){
+			set_buttons(button_state,button_state,button_state,!button_state); // no right
+		}
+		// aktuelle werte
+		int r,g,b;
+		if(state_helper<4){
+			r=pAktors->oil_start_color.r;
+			g=pAktors->oil_start_color.g;
+			b=pAktors->oil_start_color.b;
+		} else {
+			r=pAktors->oil_end_color.r;
+			g=pAktors->oil_end_color.g;
+			b=pAktors->oil_end_color.b;
+		}
+		pAktors->set_rgb_out(r,g,b);
+		// neue werte
+		if(state%10==2){ // unten
+			pConfig->storage_outdated=true;
+			state-=1; // zurück
+
+			if(state_helper==0){			pAktors->oil_min_value-=50;	if(pAktors->oil_min_value<0){pAktors->oil_min_value=0;};
+			} else if(state_helper==1){		r-=5;						if(r<0){r=0;};
+			} else if(state_helper==2){		g-=5;						if(g<0){g=0;};
+			} else if(state_helper==3){		b-=5;						if(b<0){b=0;};
+			} else if(state_helper==4){		pAktors->oil_max_value-=50;	if(pAktors->oil_max_value<pAktors->oil_min_value){pAktors->oil_max_value=pAktors->oil_min_value;};
+			} else if(state_helper==5){		r-=5;						if(r<0){r=0;};
+			} else if(state_helper==6){		g-=5;						if(g<0){g=0;};
+			} else if(state_helper==7){		b-=5;						if(b<0){b=0;};
+			}
+
+			// save the new value to var
+			if(state_helper<4){
+				pAktors->oil_start_color.r=r;
+				pAktors->oil_start_color.g=g;
+				pAktors->oil_start_color.b=b;
+			} else {
+				pAktors->oil_end_color.r=r;
+				pAktors->oil_end_color.g=g;
+				pAktors->oil_end_color.b=b;
+			}
+		} else if(state%10==9){ // oben
+			pConfig->storage_outdated=true;
+			state-=8; // zurück
+
+			if(state_helper==0){			pAktors->oil_min_value+=50;	if(pAktors->oil_min_value>1200){pAktors->oil_min_value=1200;};
+			} else if(state_helper==1){		r+=5;						if(r>255){r=255;};
+			} else if(state_helper==2){		g+=5;						if(g>255){g=255;};
+			} else if(state_helper==3){		b+=5;						if(b>255){b=255;};
+			} else if(state_helper==4){		pAktors->oil_max_value+=50;	if(pAktors->oil_max_value>1200){pAktors->oil_max_value=1200;};
+			} else if(state_helper==5){		r+=5;						if(r>255){r=255;};
+			} else if(state_helper==6){		g+=5;						if(g>255){g=255;};
+			} else if(state_helper==7){		b+=5;						if(b>255){b=255;};
+			}
+
+			// save the new value to var
+			if(state_helper<4){
+				pAktors->oil_start_color.r=r;
+				pAktors->oil_start_color.g=g;
+				pAktors->oil_start_color.b=b;
+			} else {
+				pAktors->oil_end_color.r=r;
+				pAktors->oil_end_color.g=g;
+				pAktors->oil_end_color.b=b;
+			}
+		}
+
+		if(pSpeedo->disp_zeile_bak[0]!=304){
+			// clear screen
+			pOLED->clear_screen();
+			// anzeige der werte
+			pOLED->highlight_bar(0,0,128,8);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Outer RGB"),2,0,15,0,0);
+
+
+			pOLED->string_P(pSpeedo->default_font,PSTR("Minimal values"),2,2,0,15,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Maximal values"),2,5,0,15,0);
+
+			// Red   Green   Blue
+			// 255    255    255
+			pOLED->highlight_bar(0,24,128,16);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Oil  Red Green Blue"),1,3,15,0,0);
+			pOLED->highlight_bar(0,48,128,16);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Oil  Red Green Blue"),1,6,15,0,0);
+			pSpeedo->disp_zeile_bak[0]=304;
+		};
+
+		char temp[4];
+		sprintf(temp,"%3i",int((pAktors->oil_min_value/10)%1000));
+		int front,back;
+		if(state_helper==0){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,1,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->oil_start_color.r%1000));
+		if(state_helper==1){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,6,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->oil_start_color.g%1000));
+		if(state_helper==2){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,12,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->oil_start_color.b%1000));
+		if(state_helper==3){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,17,4,back,front,0);
+		sprintf(temp,"%3i",int((pAktors->oil_max_value/10)%1000));
+		if(state_helper==4){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,1,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->oil_end_color.r%1000));
+		if(state_helper==5){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,6,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->oil_end_color.g%1000));
+		if(state_helper==6){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,12,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->oil_end_color.b%1000));
+		if(state_helper==7){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,17,7,back,front,0);
+
+		////////////////// control //////////////////
+	} else if(floor(state/1000)==654){
+		state/=10;
+		state_helper++;
+		display();
 	}
 	//////////////////////// adjust dz alert RGB LED ////////////////////////
 	else if(floor(state/10)==66){
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
 		if(	old_state==66 ){
-			pAktors->set_rgb_out(pAktors->dz_flasher.r.actual,pAktors->dz_flasher.g.actual,pAktors->dz_flasher.b.actual,0);
+			pAktors->set_rgb_out(pAktors->dz_flasher.r,pAktors->dz_flasher.g,pAktors->dz_flasher.b,0);
 			state=state*10+1;
 			pSpeedo->disp_zeile_bak[2]=999; // setze auf beiden wegen den speicher zurück
 			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
@@ -837,9 +1488,9 @@ void speedo_menu::display(){ // z.B. state = 26
 		}
 		// aktuelle werte
 		int r,g,b;
-		r=pAktors->dz_flasher.r.actual;
-		g=pAktors->dz_flasher.g.actual;
-		b=pAktors->dz_flasher.b.actual;
+		r=pAktors->dz_flasher.r;
+		g=pAktors->dz_flasher.g;
+		b=pAktors->dz_flasher.b;
 		// neue werte
 		if(state%10==2){ // unten
 			pConfig->storage_outdated=true;
@@ -849,9 +1500,9 @@ void speedo_menu::display(){ // z.B. state = 26
 			if(floor(state/1000)==66){	g-=1;		if(g<0){g=0;};	};	// grün
 			if(floor(state/10000)==66){	b-=1;		if(b<0){b=0;};	};	// blau
 
-			pAktors->dz_flasher.r.actual=r;
-			pAktors->dz_flasher.g.actual=g;
-			pAktors->dz_flasher.b.actual=b;
+			pAktors->dz_flasher.r=r;
+			pAktors->dz_flasher.g=g;
+			pAktors->dz_flasher.b=b;
 
 			pAktors->set_rgb_out(r,g,b,0); // setze die äußeren led's aber speichere es nicht im struct
 		} else if(state%10==9){ // oben
@@ -862,9 +1513,9 @@ void speedo_menu::display(){ // z.B. state = 26
 			if(floor(state/1000)==66){	g+=1;		if(g>255){g=255;};	}; // grün
 			if(floor(state/10000)==66){	b+=1;		if(b>255){b=255;};	};	// blau
 
-			pAktors->dz_flasher.r.actual=r;
-			pAktors->dz_flasher.g.actual=g;
-			pAktors->dz_flasher.b.actual=b;
+			pAktors->dz_flasher.r=r;
+			pAktors->dz_flasher.g=g;
+			pAktors->dz_flasher.b=b;
 
 			pAktors->set_rgb_out(r,g,b,0); // setze die äußeren led's aber speichere es nicht im struct
 		}
@@ -1058,12 +1709,24 @@ void speedo_menu::display(){ // z.B. state = 26
 		tempByte = ((int)15 & 0xFF);
 		EEPROM.write(147, tempByte); // Navi_pos=0
 		EEPROM.write(148, tempByte); // Winterzeit=0
-		EEPROM.write(149, tempByte); // reset_enable=0
+		EEPROM.write(149, (int)1 & 0xFF); // reset_enable=>1
 		tempByte = ((int)92 & 0xFF);
 		EEPROM.write(150, tempByte); // fuel_max=9.2 l
 		tempByte = ((int)0 & 0xFF);
 		EEPROM.write(151, tempByte); // fuel_step=0
 		EEPROM.write(152, tempByte); // fuel_counter=0
+
+
+		pSD->sd_failed=false;
+		for(unsigned int i=1;i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]);i++){
+			pSpeedo->max_speed[i]=0;
+			pSpeedo->avg_timebase[i]=0;
+			pSpeedo->trip_dist[i]=0;
+		}
+		pConfig->write("SPEEDO.TXT");
+		pConfig->write("BASE.TXT");
+		pConfig->write("GANG.TXT");
+
 
 		del_conf("The memory","has been reset");
 		state=11;
@@ -1143,7 +1806,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			pSpeedo->reset_bak(); // reset damit die variablen wieder leer sind
 			display();
 		}
-	////////////////////////////////// water temp setup //////////////////////////////////
+		////////////////////////////////// water temp setup //////////////////////////////////
 	} else if(floor(state/100)==77) {
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		if(state%10==9){
@@ -1184,7 +1847,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			pSpeedo->reset_bak(); // reset damit die variablen wieder leer sind
 			display();
 		}
-	////////////////////////////////// oil temp setup //////////////////////////////////
+		////////////////////////////////// oil temp setup //////////////////////////////////
 	} else if(floor(state/100)==78) {
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		if(state%10==9){
