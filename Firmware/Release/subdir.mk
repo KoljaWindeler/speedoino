@@ -11,7 +11,7 @@ CPP_SRCS += \
 ../debug.cpp \
 ../display.cpp \
 ../dz.cpp \
-../file_manager.cpp \
+../file_manager_v2.cpp \
 ../fuel.cpp \
 ../gear.cpp \
 ../gps.cpp \
@@ -39,7 +39,7 @@ OBJS += \
 ./debug.o \
 ./display.o \
 ./dz.o \
-./file_manager.o \
+./file_manager_v2.o \
 ./fuel.o \
 ./gear.o \
 ./gps.o \
@@ -67,7 +67,7 @@ CPP_DEPS += \
 ./debug.d \
 ./display.d \
 ./dz.d \
-./file_manager.d \
+./file_manager_v2.d \
 ./fuel.d \
 ./gear.d \
 ./gps.d \

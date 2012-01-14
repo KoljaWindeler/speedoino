@@ -18,17 +18,19 @@
 #include "global.h"
 
 //** create objects **//
-debugging*			pDebug=new debugging();
-speedo_sd*			pSD=new speedo_sd();
-configuration*		pConfig=new configuration();
-speedo_disp* 		pOLED=new speedo_disp();					// vor menu_disp();
-speedo_menu* 		pMenu=new speedo_menu();			// pins aktivieren, sonst nix
-speedo_speedo*		pSpeedo=new speedo_speedo();
-speedo_sprint* 		pSprint=new speedo_sprint();
-Speedo_sensors*		pSensors=new Speedo_sensors();
-Speedo_aktors*		pAktors=new Speedo_aktors();
-speedo_filemanager* pFilemanager=new speedo_filemanager(); // ob das gut geht weiß ich auch nicht ;)
-speedo_timer*   	pTimer=new speedo_timer(); // brauch ich ja nur hier, den braucht sonst keiner
+//speedo_filemanager*		pFilemanager=new speedo_filemanager(); // ob das gut geht weiß ich auch nicht ;)
+
+speedo_filemanager_v2*	pFilemanager_v2=new speedo_filemanager_v2();
+debugging*				pDebug=new debugging();
+speedo_sd*				pSD=new speedo_sd();
+configuration*			pConfig=new configuration();
+speedo_disp* 			pOLED=new speedo_disp();		// vor menu_disp();
+speedo_menu* 			pMenu=new speedo_menu();		// pins aktivieren, sonst nix
+speedo_speedo*			pSpeedo=new speedo_speedo();
+speedo_sprint* 			pSprint=new speedo_sprint();
+Speedo_sensors*			pSensors=new Speedo_sensors();
+Speedo_aktors*			pAktors=new Speedo_aktors();
+speedo_timer*   		pTimer=new speedo_timer(); 		// brauch ich ja nur hier, den braucht sonst keiner
 //** create objects **//
 
 

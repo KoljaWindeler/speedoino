@@ -18,15 +18,12 @@
 #include "global.h"
 
 
-speedo_filemanager::speedo_filemanager(){
-	init();
-};
+speedo_filemanager_v2::speedo_filemanager_v2(){};
 
-speedo_filemanager::~speedo_filemanager(){
+speedo_filemanager_v2::~speedo_filemanager_v2(){};
 
-};
 ////////////////////////////////////// CHANGE DIRECTORY /////////////////////
-bool speedo_filemanager::cd(char dir[20]){
+bool speedo_filemanager_v2::cd(char dir[20]){
 	SdFile sub1;
 	//Serial.print("Soll verzeichniss wechseln:"); Serial.print(dir[0]); Serial.print(dir[1]);  Serial.print("<-");
 	if(char(dir[0])=='.' && char(dir[1])=='.'){
@@ -34,22 +31,25 @@ bool speedo_filemanager::cd(char dir[20]){
 			Serial.println("ERR0");
 			return false;
 		} else {
-			fm_handle=sub1;
+		//	fm_handle=sub1;
 			return true;
 		};
 	} else {
-		if(!sub1.open(&fm_handle, dir, O_READ)) {
+		//if(!sub1.open(&fm_handle, dir, O_READ)) {
+		if(1){
 			Serial.println("ERR1");
 			return false;
 		} else {
-			fm_handle=sub1;
+			//fm_handle=sub1;
 			return true;
 		};
 	};
 };
 ////////////////////////////////////// CHANGE DIRECTORY /////////////////////
+
+
 ///////////////////////////////////// DATIEI EMPFANGEN /////////////////////
-bool speedo_filemanager::recv_file(char filename[13]){
+bool speedo_filemanager_v2::recv_file(char filename[13]){
 	int buf;//serieller empfangs buffer
 	int close_cou=0;
 	char char_buffer[23];
@@ -120,7 +120,7 @@ bool speedo_filemanager::recv_file(char filename[13]){
 };
 ///////////////////////////////////// DATIEI EMPFANGEN /////////////////////
 ///////////////////////////////////// DATIEI SENDEN /////////////////////
-bool speedo_filemanager::send_file(char filename[13]){
+bool speedo_filemanager_v2::send_file(char filename[13]){
 	if(!fm_file.open(&fm_handle, filename, O_READ)) {
 		//Serial.println("open file failed");
 		return false;
@@ -144,13 +144,13 @@ bool speedo_filemanager::send_file(char filename[13]){
 };
 ///////////////////////////////////// DATIEI SENDEN /////////////////////
 ///////////////////////////////////// VERZEICHNISS DURCHSUCHEN /////////////////////
-bool speedo_filemanager::ls(){
+bool speedo_filemanager_v2::ls(){
 	fm_handle.ls(LS_DATE | LS_SIZE);
 	return true;
 };
 ///////////////////////////////////// VERZEICHNISS DURCHSUCHEN /////////////////////
 ///////////////////////////////////// MKDIR /////////////////////
-bool speedo_filemanager::mkdir(char dir[20]){
+bool speedo_filemanager_v2::mkdir(char dir[20]){
 	if (!fm_file.makeDir(&fm_handle, dir)){
 		pSD->error("failed");
 		return false;
@@ -161,7 +161,7 @@ bool speedo_filemanager::mkdir(char dir[20]){
 };
 ///////////////////////////////////// MKDIR /////////////////////
 ///////////////////////////////////// DELETE FILE /////////////////////
-bool speedo_filemanager::rm(char filename[13]){
+bool speedo_filemanager_v2::rm(char filename[13]){
 	if (!fm_file.open(&fm_handle, filename, O_WRITE)) {
 		PgmPrint("Can't open ");
 		Serial.println(filename);
@@ -180,7 +180,7 @@ bool speedo_filemanager::rm(char filename[13]){
 };
 ///////////////////////////////////// DELETE FILE /////////////////////
 ///////////////////////////////////// DELETE DIR /////////////////////
-bool speedo_filemanager::rmdir(){
+bool speedo_filemanager_v2::rmdir(){
 	if (!fm_handle.rmDir()){
 		pSD->error("sub1.rmDir failed");
 		return false;
@@ -191,7 +191,7 @@ bool speedo_filemanager::rmdir(){
 };
 ///////////////////////////////////// DELETE DIR /////////////////////
 ///////////////////////////////////// read filename /////////////////////
-void speedo_filemanager::get_filename(char* buffer){
+void speedo_filemanager_v2::get_filename(char* buffer){
 	int a=0;
 	int fn_input;
 	// setze buffer für dateinamen zurück
@@ -220,7 +220,7 @@ void speedo_filemanager::get_filename(char* buffer){
  * p                                         <- sendet "pilot" zurück
  * atest%i.txt,0,20,80!                      <- Zeige datei test1 bis test19 im abstand von 80 ms
  */
-void speedo_filemanager::run(){
+void speedo_filemanager_v2::run(){
 	pDebug->sprintlnp(PSTR("file_manager activated"));
 	pSensors->m_reset->set_deactive(false,false); // deaktiviere reset aber speichere das nicht
 	pOLED->animation(3);
@@ -370,3 +370,185 @@ void speedo_filemanager::run(){
 	free(buffer);
 }; // filemanager
 ///////////////////////////////////// MAIN /////////////////////
+
+// hier kommt man rein, wenn in der hauptschleife festgestellt wurde
+// das sich im seriellen Puffer daten befinden ... das könnte
+// a) ein Command zum "links" sein
+// b) quatsch
+// nach "links" geht er mit isLeave=1 raus
+
+void speedo_filemanager_v2::parse_command(){
+	unsigned char	msgParseState;
+	unsigned int	ii				=	0;
+	unsigned char	checksum		=	0;
+	unsigned char	seqNum			=	1;
+	unsigned int	msgLength		=	0;
+	unsigned int	msgStartCounter	=	0;
+	unsigned int	timeout			=	0;
+	unsigned char	msgBuffer[285];
+	unsigned char	c, *p;
+	unsigned char   isLeave = 0;
+
+	//*	main loop
+	while (!isLeave){
+		/*
+		 * Collect received bytes to a complete message
+		 */
+		//msgParseState	=	ST_START;
+		msgParseState = ST_GET_SEQ_NUM;
+
+		while ( msgParseState != ST_PROCESS ){
+			// solange keine Daten an der Schnittstelle anliegen
+			// und wir auch noch keine WAIT_MS_FOR_DATA gewartet haben
+			while(Serial.available()==0 && timeout<WAIT_MS_FOR_DATA){
+				timeout++;
+				if(timeout>=WAIT_MS_FOR_DATA){
+					msgBuffer[0]==0;			// prevent running the statemashine
+					msgParseState=ST_PROCESS;	// exit the while loop abouv
+					isLeave=1;					// exit the while loop on top
+					break;						// exit this while loop
+				}
+			};
+
+			c = Serial.read();
+			timeout = 0;
+
+			switch (msgParseState){
+				case ST_START:
+					if ( c == MESSAGE_START ){
+						msgParseState	=	ST_GET_SEQ_NUM;
+						checksum		=	MESSAGE_START^0;
+						msgStartCounter	=	0;
+					} else {
+						msgStartCounter++;
+						// wenn binnen 300 Bytes kein MESSAGE_START kommt Abbruch
+						if(msgStartCounter>300){
+							isLeave=1;
+							break;
+						}
+					}
+				break;
+
+				case ST_GET_SEQ_NUM:
+					if ((c == 1) || (c == seqNum)){
+						seqNum			=	c;
+						msgParseState	=	ST_MSG_SIZE_1;
+						checksum		^=	c;
+					} else {
+						msgParseState	=	ST_START;
+					}
+				break;
+
+				case ST_MSG_SIZE_1:							// das ist aber strange
+					msgLength		=	c<<8;
+					msgParseState	=	ST_MSG_SIZE_2;
+					checksum		^=	c;
+				break;
+
+				case ST_MSG_SIZE_2:
+					msgLength		|=	c;
+					msgParseState	=	ST_GET_TOKEN;
+					checksum		^=	c;
+				break;
+
+				case ST_GET_TOKEN:
+					if ( c == TOKEN )
+					{
+						msgParseState	=	ST_GET_DATA;
+						checksum		^=	c;
+						ii				=	0;
+					}
+					else
+					{
+						msgParseState	=	ST_START;
+					}
+				break;
+
+				case ST_GET_DATA:
+					msgBuffer[ii++]	=	c;
+					checksum		^=	c;
+					if (ii == msgLength )
+					{
+						msgParseState	=	ST_GET_CHECK;
+					}
+				break;
+
+				case ST_GET_CHECK:
+					if ( c == checksum )
+					{
+						msgParseState	=	ST_PROCESS;
+					}
+					else
+					{
+						msgParseState	=	ST_START;
+					}
+				break;
+			}	//	switch
+		}	//	while(msgParseState)
+
+		/*
+		 * Now process the STK500 commands, see Atmel Appnote AVR068
+		 */
+
+		switch (msgBuffer[0]){
+			case CMD_SIGN_ON:
+				msgLength		=	11;
+				msgBuffer[1] 	=	STATUS_CMD_OK;
+				msgBuffer[2] 	=	8;
+				msgBuffer[3] 	=	'A';
+				msgBuffer[4] 	=	'V';
+				msgBuffer[5] 	=	'R';
+				msgBuffer[6] 	=	'I';
+				msgBuffer[7] 	=	'S';
+				msgBuffer[8] 	=	'P';
+				msgBuffer[9] 	=	'_';
+				msgBuffer[10]	=	'2';
+			break;
+
+			case CMD_LEAVE_FM:
+				isLeave	=	1;
+			break;
+
+			case CMD_GO_LEFT:
+				pMenu->go_left();
+				isLeave	=	1;
+			break;
+
+			default:
+				msgLength		=	2;
+				msgBuffer[1]	=	STATUS_CMD_FAILED;
+			break;
+		}
+
+		/*
+		 * Now send answer message back
+		 */
+		Serial.print(MESSAGE_START);
+		checksum	=	MESSAGE_START^0;
+
+		Serial.print(seqNum);
+		checksum	^=	seqNum;
+
+		c			=	((msgLength>>8)&0xFF);
+		Serial.print(c);
+		checksum	^=	c;
+
+		c			=	msgLength&0x00FF;
+		Serial.print(c);
+		checksum ^= c;
+
+		Serial.print(TOKEN);
+		checksum ^= TOKEN;
+
+		p	=	msgBuffer;
+		while(msgLength){
+			c	=	*p++;
+			Serial.print(c);
+			checksum ^=c;
+			msgLength--;
+		}
+		Serial.print(checksum);
+		seqNum++;
+	}
+}
+

@@ -1,4 +1,4 @@
-file_manager.d file_manager.o: ../file_manager.cpp ../global.h \
+file_manager_v2.d file_manager_v2.o: ../file_manager_v2.cpp ../global.h \
  ../clock_me.h /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/Wire.h \
  ../dz.h ../gps.h ../blinker.h ../temperature.h ../fuel.h ../gear.h \
  ../speed.h ../reset.h ../oiler.h ../voltage.h ../stepper.h ../display.h \
@@ -29,7 +29,7 @@ file_manager.d file_manager.o: ../file_manager.cpp ../global.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/bufstream.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/SdFatUtil.h ../config.h \
  ../timer.h ../sprint.h ../speedo.h ../menu.h ../sensors.h ../aktors.h \
- ../debug.h ../file_manager.h ../version.h ../tetris.h
+ ../debug.h ../file_manager_v2.h ../version.h ../tetris.h
 
 ../global.h:
 
@@ -131,7 +131,7 @@ file_manager.d file_manager.o: ../file_manager.cpp ../global.h \
 
 ../debug.h:
 
-../file_manager.h:
+../file_manager_v2.h:
 
 ../version.h:
 

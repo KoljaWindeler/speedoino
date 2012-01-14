@@ -81,7 +81,7 @@
 </toolChain>
 </folderInfo>
 <sourceEntries>
-<entry excluding="file_manager2.cpp|mem-check.c|fuse.cpp|clock.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+<entry excluding="file_manager.h|file_manager.cpp|file_manager2.cpp|mem-check.c|fuse.cpp|clock.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 </sourceEntries>
 </configuration>
 </storageModule>

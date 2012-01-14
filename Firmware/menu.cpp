@@ -1574,7 +1574,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->string_P(pSpeedo->default_font,PSTR("Filemanager"),4,3,0,DISP_BRIGHTNESS,0);
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 
-		pFilemanager->run();
+		//pFilemanager->run();
 	}
 	//////////////////////// TEST des watchdogs durch absitzen ////////////////////////
 	//else if(floor(state/10)==49){
@@ -2140,6 +2140,82 @@ void speedo_menu::draw(const char** menu, int entries){
 	///////// Menu ausgeben ////////////
 };
 ///// ein text menü zeichnen ////////////
+bool speedo_menu::go_left(){
+	old_state=state;
+	state=floor(state/10);
+	if((state%10)>menu_lines){ // bei 8,9
+		menu_marker=menu_lines-1;// ganz unten
+		menu_start=(state%10)-menu_lines; // 8 - 7 => 1 bis 8
+		menu_ende=(state%10)-1;
+	}
+	else {
+		menu_marker=(state%10)-1;
+		menu_start=0;
+		menu_ende=menu_lines-1;
+	};
+	button_time=millis();
+	return true;
+};
+
+bool speedo_menu::go_right(){
+	// menu var umsetzen
+	old_state=state;
+	menu_start=0; // rechts -> leeres menu
+	menu_ende=menu_lines-1;
+	menu_marker=0;
+	state=(state*10)+1;
+	button_time=millis();
+	return true;
+};
+
+bool speedo_menu::go_up(){
+	old_state=state;
+	menu_marker--; // grundsätzlich einfach nur den marker hochschieben
+	if(menu_marker<0){ // wenn der allerdings oben verwinden würde
+		menu_marker++; // dann wieder auf 0 schieben
+		menu_start--; // dafür das menu früher beginnen lassen
+		menu_ende--; // und früher enden lassen
+		if(menu_start<0){ // wenn wir jetzt allerdings nach oben den übertrag haben
+			menu_start=menu_max-(menu_lines-1); // dann ist start ganz unten - wieviele lines wir haben 8-7=1 was menue 2. ist
+			menu_ende=menu_max; // und wir sind ganz unten am ende 8=8
+			menu_marker=menu_lines-1; // und der marker ist ganz unten
+		};
+	};
+
+	//recalc level
+	// z.b. 00061 -> 00060 => 60%10=0 -> soll 69
+	state--;
+	if(state%10==0){
+		state+=menu_max+1; // macht aus 0 dann 9 => 8+1
+	};
+	button_time=millis();
+	return true;
+};
+
+bool speedo_menu::go_down(){
+	old_state=state;
+	menu_marker++; // ganz einfach hochsetzen
+	if(menu_marker>(menu_lines-1)){ // wenn über max sind
+		menu_marker--; // zurück
+		menu_start++; // menu hoch
+		menu_ende++; // setzen
+		if(menu_ende>menu_max){ //umsprung nach oben wenn 9 > 8 dann wären wir mit dem ende auf dem eintrag der 10 heißen würde ..
+			menu_marker=0;
+			menu_start=0;
+			menu_ende=menu_lines-1;
+		};
+	};
+
+	//recalc level
+	state++;
+	// wenn wir bei xxx9 sind und ++ machen landen wir bei xx10
+	// xx10%10 == 0, -> xx01
+	if(state%10==0){
+		state-=9; // macht aus [xx10] => 1
+	};
+	button_time=millis();
+	return true;
+};
 
 ///// zyklisches abfragen der buttons ////////////
 bool speedo_menu::button_test(bool bt_keys_en){
@@ -2151,39 +2227,44 @@ bool speedo_menu::button_test(bool bt_keys_en){
 		if(Serial.available()>10){ // wenns zuviele sind flushen
 			Serial.flush();
 		} else if(Serial.available()>0){ // an sonsten gern
-			input=Serial.read(); // sowohl pfeiltasten wie auch /w/asd zulassen
+			//if(Serial.read()==MESSAGE_START){
+				//pFilemanager->parse_command();
+			//};
 
-			// einen neuen menustate empfangen
-			if(char(input)=='*'){
-				int new_menustate=0;
-
-				char *char_buffer;
-				char_buffer = (char*) malloc (22);
-				if (char_buffer==NULL) Serial.println("Malloc failed");
-
-				pFilemanager->get_filename(&char_buffer[0]); // missbraucht als "get_new_menustate"
-				bool found_end=false; // zum abbrechen der schleife
-				for(int a=0; !found_end && a<8;a++){ // menustates max 8 stellen
-					if(char(char_buffer[a])=='*'){ // enden mit einem weitern stern
-						found_end=true;
-					} else { // ansonsten, wenn es kein end stern ist, aber eine valide zahl dann packs in den menustate
-						if(char_buffer[a]>=48 && char_buffer[a]<=57){
-							new_menustate=new_menustate*10+(char_buffer[a]-48);
-						};
-					};
-				}
-				// wenn es eine eingabe war, dann hau die hier rein
-				if(new_menustate!=0){
-					state=new_menustate;
-					return true;
-				};
-				free(char_buffer);
-			};
-			// ende des empfangs eine neues menustate
-
-			if(input!=65 && input!=66 && input!=67 && input!=68 && char(input)!='a' && char(input)!='w' && char(input)!='d' && char(input)!='s'){
-				input=0;
-			};
+			//
+			//			input=Serial.read(); // sowohl pfeiltasten wie auch /w/asd zulassen
+			//
+			//			// einen neuen menustate empfangen
+			//			if(char(input)=='*'){
+			//				int new_menustate=0;
+			//
+			//				char *char_buffer;
+			//				char_buffer = (char*) malloc (22);
+			//				if (char_buffer==NULL) Serial.println("Malloc failed");
+			//
+			//				//pFilemanager->get_filename(&char_buffer[0]); // missbraucht als "get_new_menustate"
+			//				bool found_end=false; // zum abbrechen der schleife
+			//				for(int a=0; !found_end && a<8;a++){ // menustates max 8 stellen
+			//					if(char(char_buffer[a])=='*'){ // enden mit einem weitern stern
+			//						found_end=true;
+			//					} else { // ansonsten, wenn es kein end stern ist, aber eine valide zahl dann packs in den menustate
+			//						if(char_buffer[a]>=48 && char_buffer[a]<=57){
+			//							new_menustate=new_menustate*10+(char_buffer[a]-48);
+			//						};
+			//					};
+			//				}
+			//				// wenn es eine eingabe war, dann hau die hier rein
+			//				if(new_menustate!=0){
+			//					state=new_menustate;
+			//					return true;
+			//				};
+			//				free(char_buffer);
+			//			};
+			//			// ende des empfangs eine neues menustate
+			//
+			//			if(input!=65 && input!=66 && input!=67 && input!=68 && char(input)!='a' && char(input)!='w' && char(input)!='d' && char(input)!='s'){
+			//				input=0;
+			//			};
 		};
 	};
 
@@ -2199,13 +2280,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 			delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 			// erst wenn nach dem delay noch der pegel anliegt
 			if((digitalRead(menu_button_rechts)==menu_active || input==67 || char(input)=='d')){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-				// menu var umsetzen
-				menu_start=0; // rechts -> leeres menu
-				menu_ende=menu_lines-1;
-				menu_marker=0;
-				old_state=state;
-				state=(state*10)+1;
-				button_time=millis();
+				go_right();
 				return true;
 			} else {
 				return false;
@@ -2221,19 +2296,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 			delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 			// erst wenn nach dem delay noch der pegel anliegt
 			if((digitalRead(menu_button_links)==menu_active || input==68 || char(input)=='a')){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-				old_state=state;
-				state=floor(state/10);
-				if((state%10)>menu_lines){ // bei 8,9
-					menu_marker=menu_lines-1;// ganz unten
-					menu_start=(state%10)-menu_lines; // 8 - 7 => 1 bis 8
-					menu_ende=(state%10)-1;
-				}
-				else {
-					menu_marker=(state%10)-1;
-					menu_start=0;
-					menu_ende=menu_lines-1;
-				};
-				button_time=millis();
+				go_left();
 				return true;
 				// wenn der pegel doch nicht mehr anliegt ( spike )
 			} else {
@@ -2251,26 +2314,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 			delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 			// erst wenn nach dem delay noch der pegel anliegt
 			if((digitalRead(menu_button_oben)==menu_active || input==65 || char(input)=='w')){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-				menu_marker--; // grundsätzlich einfach nur den marker hochschieben
-				if(menu_marker<0){ // wenn der allerdings oben verwinden würde
-					menu_marker++; // dann wieder auf 0 schieben
-					menu_start--; // dafür das menu früher beginnen lassen
-					menu_ende--; // und früher enden lassen
-					if(menu_start<0){ // wenn wir jetzt allerdings nach oben den übertrag haben
-						menu_start=menu_max-(menu_lines-1); // dann ist start ganz unten - wieviele lines wir haben 8-7=1 was menue 2. ist
-						menu_ende=menu_max; // und wir sind ganz unten am ende 8=8
-						menu_marker=menu_lines-1; // und der marker ist ganz unten
-					};
-				};
-
-				//recalc level
-				// z.b. 00061 -> 00060 => 60%10=0 -> soll 69
-				old_state=state;
-				state--;
-				if(state%10==0){
-					state+=menu_max+1; // macht aus 0 dann 9 => 8+1
-				};
-				button_time=millis();
+				go_up();
 				return true;
 			} else {
 				return false;
@@ -2287,27 +2331,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 			delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 			// erst wenn nach dem delay noch der pegel anliegt
 			if((digitalRead(menu_button_unten)==menu_active || input==66 || char(input)=='s')){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-				menu_marker++; // ganz einfach hochsetzen
-				if(menu_marker>(menu_lines-1)){ // wenn über max sind
-					menu_marker--; // zurück
-					menu_start++; // menu hoch
-					menu_ende++; // setzen
-					if(menu_ende>menu_max){ //umsprung nach oben wenn 9 > 8 dann wären wir mit dem ende auf dem eintrag der 10 heißen würde ..
-						menu_marker=0;
-						menu_start=0;
-						menu_ende=menu_lines-1;
-					};
-				};
-
-				//recalc level
-				old_state=state;
-				state++;
-				// wenn wir bei xxx9 sind und ++ machen landen wir bei xx10
-				// xx10%10 == 0, -> xx01
-				if(state%10==0){
-					state-=9; // macht aus [xx10] => 1
-				};
-				button_time=millis();
+				go_down();
 				return true;
 			} else {
 				return false;

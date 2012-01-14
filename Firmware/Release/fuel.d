@@ -29,7 +29,7 @@ fuel.d fuel.o: ../fuel.cpp ../global.h ../clock_me.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/bufstream.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/SdFatUtil.h ../config.h \
  ../timer.h ../sprint.h ../speedo.h ../menu.h ../sensors.h ../aktors.h \
- ../debug.h ../file_manager.h ../version.h ../tetris.h
+ ../debug.h ../file_manager_v2.h ../version.h ../tetris.h
 
 ../global.h:
 
@@ -131,7 +131,7 @@ fuel.d fuel.o: ../fuel.cpp ../global.h ../clock_me.h \
 
 ../debug.h:
 
-../file_manager.h:
+../file_manager_v2.h:
 
 ../version.h:
 
