@@ -380,7 +380,7 @@ void speedo_filemanager_v2::run(){
 void speedo_filemanager_v2::parse_command(){
 	unsigned char	msgParseState;
 	unsigned int	ii				=	0;
-	unsigned char	checksum		=	0;
+	unsigned char	checksum		=	MESSAGE_START;
 	unsigned char	seqNum			=	1;
 	unsigned int	msgLength		=	0;
 	unsigned int	msgStartCounter	=	0;
@@ -394,19 +394,22 @@ void speedo_filemanager_v2::parse_command(){
 		/*
 		 * Collect received bytes to a complete message
 		 */
-		//msgParseState	=	ST_START;
+		// Direct start in, cause start was allready fetched //msgParseState	=	ST_START;
 		msgParseState = ST_GET_SEQ_NUM;
 
 		while ( msgParseState != ST_PROCESS ){
+
 			// solange keine Daten an der Schnittstelle anliegen
 			// und wir auch noch keine WAIT_MS_FOR_DATA gewartet haben
 			while(Serial.available()==0 && timeout<WAIT_MS_FOR_DATA){
 				timeout++;
 				if(timeout>=WAIT_MS_FOR_DATA){
-					msgBuffer[0]==0;			// prevent running the statemashine
+					msgBuffer[0]=0;				// prevent running the statemashine
 					msgParseState=ST_PROCESS;	// exit the while loop abouv
 					isLeave=1;					// exit the while loop on top
 					break;						// exit this while loop
+				} else {
+					delay(1);
 				}
 			};
 
@@ -417,7 +420,7 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_START:
 					if ( c == MESSAGE_START ){
 						msgParseState	=	ST_GET_SEQ_NUM;
-						checksum		=	MESSAGE_START^0;
+						checksum		=	MESSAGE_START;
 						msgStartCounter	=	0;
 					} else {
 						msgStartCounter++;
@@ -452,14 +455,11 @@ void speedo_filemanager_v2::parse_command(){
 				break;
 
 				case ST_GET_TOKEN:
-					if ( c == TOKEN )
-					{
+					if ( c == TOKEN ){
 						msgParseState	=	ST_GET_DATA;
 						checksum		^=	c;
 						ii				=	0;
-					}
-					else
-					{
+					} else {
 						msgParseState	=	ST_START;
 					}
 				break;
@@ -467,24 +467,20 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_GET_DATA:
 					msgBuffer[ii++]	=	c;
 					checksum		^=	c;
-					if (ii == msgLength )
-					{
+					if (ii == msgLength ){
 						msgParseState	=	ST_GET_CHECK;
 					}
 				break;
 
 				case ST_GET_CHECK:
-					if ( c == checksum )
-					{
+					if ( c == checksum){
 						msgParseState	=	ST_PROCESS;
-					}
-					else
-					{
+					} else {
 						msgParseState	=	ST_START;
 					}
 				break;
 			}	//	switch
-		}	//	while(msgParseState)
+		}	//	while(msgParseState!=ST_PROCESS)
 
 		/*
 		 * Now process the STK500 commands, see Atmel Appnote AVR068
@@ -509,11 +505,33 @@ void speedo_filemanager_v2::parse_command(){
 				isLeave	=	1;
 			break;
 
+			///////// UP DOWN LEFT RIGHT ////////
 			case CMD_GO_LEFT:
 				pMenu->go_left();
+				pMenu->display();
 				isLeave	=	1;
 			break;
 
+			case CMD_GO_RIGHT:
+				pMenu->go_right();
+				pMenu->display();
+				isLeave	=	1;
+			break;
+
+			case CMD_GO_UP:
+				pMenu->go_up();
+				pMenu->display();
+				isLeave	=	1;
+			break;
+
+			case CMD_GO_DOWN:
+				pMenu->go_down();
+				pMenu->display();
+				isLeave	=	1;
+			break;
+			///////// UP DOWN LEFT RIGHT ////////
+
+			///////// EMERGENCY ////////
 			default:
 				msgLength		=	2;
 				msgBuffer[1]	=	STATUS_CMD_FAILED;

@@ -2223,48 +2223,13 @@ bool speedo_menu::button_test(bool bt_keys_en){
 	// oder zumindest länger als fast_timeout UND der first push ist ausreichend lang her
 	// oder per serielle konsole
 	int input=0;
-	if(bt_keys_en){ // auf keinen Fall hier lesen, wenn wir gerade im Import sind, sonder haut uns jeder Straßenname mit w||a||s||d raus
+	if(bt_keys_en || true){ // auf keinen Fall hier lesen, wenn wir gerade im Import sind, sonder haut uns jeder Straßenname mit w||a||s||d raus
 		if(Serial.available()>10){ // wenns zuviele sind flushen
 			Serial.flush();
 		} else if(Serial.available()>0){ // an sonsten gern
-			//if(Serial.read()==MESSAGE_START){
-				//pFilemanager->parse_command();
-			//};
-
-			//
-			//			input=Serial.read(); // sowohl pfeiltasten wie auch /w/asd zulassen
-			//
-			//			// einen neuen menustate empfangen
-			//			if(char(input)=='*'){
-			//				int new_menustate=0;
-			//
-			//				char *char_buffer;
-			//				char_buffer = (char*) malloc (22);
-			//				if (char_buffer==NULL) Serial.println("Malloc failed");
-			//
-			//				//pFilemanager->get_filename(&char_buffer[0]); // missbraucht als "get_new_menustate"
-			//				bool found_end=false; // zum abbrechen der schleife
-			//				for(int a=0; !found_end && a<8;a++){ // menustates max 8 stellen
-			//					if(char(char_buffer[a])=='*'){ // enden mit einem weitern stern
-			//						found_end=true;
-			//					} else { // ansonsten, wenn es kein end stern ist, aber eine valide zahl dann packs in den menustate
-			//						if(char_buffer[a]>=48 && char_buffer[a]<=57){
-			//							new_menustate=new_menustate*10+(char_buffer[a]-48);
-			//						};
-			//					};
-			//				}
-			//				// wenn es eine eingabe war, dann hau die hier rein
-			//				if(new_menustate!=0){
-			//					state=new_menustate;
-			//					return true;
-			//				};
-			//				free(char_buffer);
-			//			};
-			//			// ende des empfangs eine neues menustate
-			//
-			//			if(input!=65 && input!=66 && input!=67 && input!=68 && char(input)!='a' && char(input)!='w' && char(input)!='d' && char(input)!='s'){
-			//				input=0;
-			//			};
+			if(Serial.read()==MESSAGE_START){
+				pFilemanager_v2->parse_command();
+			};
 		};
 	};
 

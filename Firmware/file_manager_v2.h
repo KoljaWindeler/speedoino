@@ -19,12 +19,15 @@ class speedo_filemanager_v2{
 	#define ST_GET_CHECK	6
 	#define ST_PROCESS		7
 
-	#define MESSAGE_START			0x1B        //= ESC = 27 decimal
+	#define MESSAGE_START			0x1C        //= ESC = 27 decimal
 	#define TOKEN					0x0E
 
 	#define CMD_SIGN_ON				0x01
 	#define CMD_LEAVE_FM			0x04
 	#define CMD_GO_LEFT				0x05
+	#define CMD_GO_RIGHT			0x06
+	#define CMD_GO_UP				0x07
+	#define CMD_GO_DOWN				0x08
 
 	#define STATUS_CMD_OK           0x00
 	#define STATUS_CMD_FAILED       0xC0

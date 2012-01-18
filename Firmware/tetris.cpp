@@ -144,9 +144,61 @@ void tetris::new_element(){
 
 bool tetris::loop(){
 	char c=0x00;
-	if(Serial.available()>0){
-		c=Serial.read();
-		Serial.flush();
+	int state=0;
+	while(Serial.available()>0){
+		delay(5);
+		if(state==0){
+			//pOLED->string(0,"0",0,0);
+
+			if(Serial.read()==MESSAGE_START){	state=1;	} else {	state=0;	}
+		} else if(state==1){
+			//pOLED->string(0,"1",0,0);
+
+			if(Serial.read()==0x01){	state=2;	} else {	state=0;	}
+		} else if(state==2){
+			//pOLED->string(0,"2",0,0);
+
+			if(Serial.read()==0x00){	state=3;	} else {	state=0;	}
+		} else if(state==3){
+			//pOLED->string(0,"3",0,0);
+
+			if(Serial.read()==0x01){	state=4;	} else {	state=0;	}
+		} else if(state==4){
+			//pOLED->string(0,"4",0,0);
+
+			if(Serial.read()==TOKEN){	state=5;	} else {	state=0;	}
+		} else if(state==5){
+			//pOLED->string(0,"5",0,0);
+			char d=Serial.read();
+
+			if(d==CMD_GO_LEFT){
+				//pOLED->string(0,"6",0,0);
+				c=1;
+				state=6;
+			} else if(d==CMD_GO_RIGHT){
+				//pOLED->string(0,"6",0,0);
+				c=2;
+				state=6;
+			} else if(d==CMD_GO_UP){
+				//pOLED->string(0,"6",0,0);
+				c=3;
+				state=6;
+			} else if(d==CMD_GO_DOWN){
+				//pOLED->string(0,"6",0,0);
+				c=4;
+				state=6;
+			} else {	state=0; c=0;	}
+		} else if(state==6){
+			//pOLED->string(0,"7",0,0);
+
+			state=0;
+			Serial.flush();
+			break;
+		}
+		// left
+		// right
+		// up
+		// down
 	};
 
 	// check if you are stil in the race
@@ -185,12 +237,12 @@ bool tetris::loop(){
 			pOLED->string(pSpeedo->default_font,temp,5,5,15,0,0);
 			// way at least one second to prevent unnoticed button push
 			delay(1000);
-		// if you loose and the box has been drawn, way on key down
+			// if you loose and the box has been drawn, way on key down
 		} else {
-			if(c=='a'|| c==68 || !digitalRead(menu_button_links)){
+			if(c==1 || !digitalRead(menu_button_links)){
 				delay(MIN_SIDE_PUSH_TIME);
 				return false;
-			} else if (c=='d' || c==67 || !digitalRead(menu_button_rechts)){
+			} else if (c==2 || !digitalRead(menu_button_rechts)){
 				delay(MIN_SIDE_PUSH_TIME);
 				pOLED->clear_screen();
 				// ja das ist ungeschickt, init leert uns die line variable, drawfield malt das hin, das problem ist nur
@@ -201,26 +253,26 @@ bool tetris::loop(){
 				updateField();
 			};
 		}
-	// nope you haven't lost by now .. go on
+		// nope you haven't lost by now .. go on
 	} else {
 		////////////////// if there is a button pushed, //////////////////
 		if(!digitalRead(menu_button_links)){
-			c='a';
+			c=1;
 			delay(MIN_SIDE_PUSH_TIME);
 		} else if(!digitalRead(menu_button_oben)){
-			c='w';
+			c=3;
 			delay(MIN_TURN_PUSH_TIME);
 		} else if(!digitalRead(menu_button_unten)){
-			c='s';
+			c=4;
 			delay(MIN_DOWN_PUSH_TIME);
 		} else if(!digitalRead(menu_button_rechts)){
-			c='d';
+			c=2;
 			delay(MIN_SIDE_PUSH_TIME);
 		}
 
 		// now lets see if any action is required
 		////////////////// rotate element //////////////////
-		if(c=='w' || c==65){
+		if(c==3){
 			// element drehen
 			bool copy[3][3];
 			copy[0][0]=active_element[0][2];	//	00	10	20  		02	01	00
@@ -262,8 +314,8 @@ bool tetris::loop(){
 				updateField();
 			}
 
-		////////////////// move element down //////////////////
-		} else if(c=='s' || c==66){
+			////////////////// move element down //////////////////
+		} else if(c==4){
 			if(pSpeedo->disp_zeile_bak[1]!=111){
 				active_y++;
 			};
@@ -271,8 +323,8 @@ bool tetris::loop(){
 			check_stack();
 			last_update=millis();
 
-		////////////////// move element left //////////////////
-		} else if(c=='a' || c==68){
+			////////////////// move element left //////////////////
+		} else if(c==1){
 			// find out the leftmost positions
 			short most_left[3];
 			for(int y=0;y<3;y++){
@@ -312,8 +364,8 @@ bool tetris::loop(){
 			};
 			updateField();
 
-		////////////////// move element right //////////////////
-		} else if(c=='d' || c==67){
+			////////////////// move element right //////////////////
+		} else if(c==2){
 			// find out the leftmost positions
 			short most_right[3];
 			for(int y=0;y<3;y++){
@@ -575,3 +627,5 @@ void tetris::show_grid_on_serial(){
 	Serial.println("\n\n");
 	/////////////// SHOW GRID ///////////////////
 };
+
+
