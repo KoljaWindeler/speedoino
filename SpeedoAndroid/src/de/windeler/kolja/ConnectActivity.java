@@ -24,18 +24,23 @@ public class ConnectActivity extends Activity {
         setContentView(R.layout.connect);
         mStatus = (TextView) findViewById(R.id.status_value);
         mLog = (TextView) findViewById(R.id.status_value);
-        
     }
     
     @Override
 	public synchronized void onResume() {
 		super.onResume();
-		if(SpeedoAndroidActivity.mSerialService.getState()==SpeedoAndroidActivity.mSerialService.STATE_CONNECTING){
+		checkStatus();
+    };
+    
+    public void checkStatus(){
+    	if(SpeedoAndroidActivity.mSerialService.getState()==SpeedoAndroidActivity.mSerialService.STATE_CONNECTING){
         	setStatus("Connecting...");
         } else if(SpeedoAndroidActivity.mSerialService.getState()==SpeedoAndroidActivity.mSerialService.STATE_CONNECTED){
         	setStatus("Connected");
+        } else if(SpeedoAndroidActivity.mSerialService.getState()==SpeedoAndroidActivity.mSerialService.STATE_NONE){
+        	setStatus("Not connected");
         }
-    };
+    }
     
     public void setStatus(CharSequence status){
     	mStatus.setText(status);

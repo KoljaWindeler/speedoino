@@ -271,6 +271,7 @@ public class BluetoothSerialService {
                 mmSocket.connect();
                 Log.i(TAG,"Connect() finished...");
             } catch (IOException e) {
+            	Log.e(TAG, "mConnectThread FAILED");
                 connectionFailed();
                 // Close the socket
                 try {

@@ -20,27 +20,31 @@ public final class R {
         public static final int radialback=0x7f020006;
     }
     public static final class id {
-        public static final int Download_textView=0x7f060010;
-        public static final int Upload_textView=0x7f060011;
-        public static final int button_scan=0x7f06000f;
-        public static final int connect=0x7f060001;
-        public static final int log=0x7f060009;
-        public static final int menu_about=0x7f060014;
-        public static final int menu_connect=0x7f060012;
-        public static final int menu_settings=0x7f060013;
-        public static final int new_devices=0x7f06000e;
-        public static final int paired_devices=0x7f06000c;
-        public static final int status_cap=0x7f060003;
-        public static final int status_value=0x7f060004;
-        public static final int tableRow1=0x7f060005;
-        public static final int tableRow10=0x7f060002;
-        public static final int tableRow2=0x7f060008;
-        public static final int tableRow3=0x7f060000;
-        public static final int textView2=0x7f06000a;
-        public static final int title_new_devices=0x7f06000d;
-        public static final int title_paired_devices=0x7f06000b;
-        public static final int version_cap=0x7f060006;
-        public static final int version_value=0x7f060007;
+        public static final int Download_textView=0x7f060012;
+        public static final int Upload_textView=0x7f060015;
+        public static final int button_scan=0x7f060010;
+        public static final int connect=0x7f060002;
+        public static final int connectLayout=0x7f060000;
+        public static final int downloadLayout=0x7f060011;
+        public static final int log=0x7f06000a;
+        public static final int mainLayout=0x7f060013;
+        public static final int menu_about=0x7f060018;
+        public static final int menu_connect=0x7f060016;
+        public static final int menu_settings=0x7f060017;
+        public static final int new_devices=0x7f06000f;
+        public static final int paired_devices=0x7f06000d;
+        public static final int status_cap=0x7f060004;
+        public static final int status_value=0x7f060005;
+        public static final int tableRow1=0x7f060006;
+        public static final int tableRow10=0x7f060003;
+        public static final int tableRow2=0x7f060009;
+        public static final int tableRow3=0x7f060001;
+        public static final int textView2=0x7f06000b;
+        public static final int title_new_devices=0x7f06000e;
+        public static final int title_paired_devices=0x7f06000c;
+        public static final int uploadLayout=0x7f060014;
+        public static final int version_cap=0x7f060007;
+        public static final int version_value=0x7f060008;
     }
     public static final class layout {
         public static final int connect=0x7f030000;
