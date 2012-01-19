@@ -489,6 +489,7 @@ void speedo_filemanager_v2::parse_command(){
 		switch (msgBuffer[0]){
 			case CMD_SIGN_ON:
 				msgLength		=	11;
+				msgBuffer[0]	= 	CMD_SIGN_ON;
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 				msgBuffer[2] 	=	8;
 				msgBuffer[3] 	=	'A';

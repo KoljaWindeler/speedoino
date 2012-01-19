@@ -189,7 +189,7 @@ public class BluetoothSerialService {
      * @param out The bytes to write
      * @see ConnectedThread#write(byte[])
      */
-    public void write(byte[] out) {
+    public void write(char out) {
         // Create temporary object
         ConnectedThread r;
         // Synchronize a copy of the ConnectedThread
@@ -357,11 +357,15 @@ public class BluetoothSerialService {
 
         /**
          * Write to the connected OutStream.
-         * @param buffer  The bytes to write
+         * @param out  The bytes to write
          */
-        public void write(byte[] buffer) {
+        public void write(char out) {
             try {
-                mmOutStream.write(buffer);
+            	byte b[] = new byte[2];
+            	b[0] = (byte) (out&0xFF00>>8); 
+                b[1] = (byte) (out&0x00FF); 
+                //mmOutStream.write(out);
+                mmOutStream.write(b, 0, 2);
 
                 // Share the sent message back to the UI Activity
                 //mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_WRITE, buffer.length, -1, buffer).sendToTarget();
