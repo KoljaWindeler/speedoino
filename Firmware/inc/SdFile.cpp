@@ -346,15 +346,15 @@ int8_t SdFile::lsPrintNext(Print *pr, uint8_t flags, uint8_t indent) {
   uint8_t w = 0;
 
   while (1) {
-    if (read(&dir, sizeof(dir)) != sizeof(dir)) return 0;
-    if (dir.name[0] == DIR_NAME_FREE) return 0;
+    if (read(&dir, sizeof(dir)) != sizeof(dir)) return 0;	// das hier fuehrt dazu das er 0 returnt wenn ein bei read <> sizeof(dir) meldet ?
+    if (dir.name[0] == DIR_NAME_FREE) return 0;				// wenn das dir mit 0x00 beginnt isses wohl geloescht ??
 
     // skip deleted entry and entries for . and  ..
-    if (dir.name[0] != DIR_NAME_DELETED && dir.name[0] != '.'
+    if (dir.name[0] != DIR_NAME_DELETED && dir.name[0] != '.' // wenn es nicht geloescht ist, nicht '.' ist und wirklich ein file oder folder ist
       && DIR_IS_FILE_OR_SUBDIR(&dir)) break;
   }
-  // indent for dir level
-  for (uint8_t i = 0; i < indent; i++) pr->print(' ');
+  // indent for dir level									// dann kommst du hier her, indet ist erstmal 0
+  for (uint8_t i = 0; i < indent; i++) pr->print(' ');		// sollte man im unterverzeichniss sein symbolisiert das hier den einrueckgrad
 
   // print name
   for (uint8_t i = 0; i < 11; i++) {
