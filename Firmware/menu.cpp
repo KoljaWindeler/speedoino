@@ -2228,6 +2228,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 			Serial.flush();
 		} else if(Serial.available()>0){ // an sonsten gern
 			if(Serial.read()==MESSAGE_START){
+//				pOLED->string(0,"0",0,1);
 				pFilemanager_v2->parse_command();
 			};
 		};

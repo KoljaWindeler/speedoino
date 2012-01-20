@@ -9,34 +9,26 @@
     <uses-sdk android:minSdkVersion="10" />
     <application
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" >
+        android:label="@string/app_name">
         <activity
             android:name=".SpeedoAndroidActivity"
             android:theme="@android:style/Theme.NoTitleBar"
+            android:configChanges = "orientation"
+        	android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ConnectActivity"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
-            android:name=".UploadActivity"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
-            android:name=".DownloadActivity"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:label="@string/app_name" >
-        </activity>
         <activity android:name=".DeviceListActivity"
                   android:label="@string/select_device"
+                  android:theme="@android:style/Theme.Dialog"
+                  android:configChanges="orientation|keyboardHidden" />
+        <activity android:name="TermPreferences"/>
+        
+        <activity android:name=".FileDialog"
+                  android:label="@string/Select_file"
                   android:theme="@android:style/Theme.Dialog"
                   android:configChanges="orientation|keyboardHidden" />
         <activity android:name="TermPreferences"/>

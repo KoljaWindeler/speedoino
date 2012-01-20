@@ -31,7 +31,7 @@ bool speedo_filemanager_v2::cd(char dir[20]){
 			Serial.println("ERR0");
 			return false;
 		} else {
-		//	fm_handle=sub1;
+			//	fm_handle=sub1;
 			return true;
 		};
 	} else {
@@ -412,72 +412,89 @@ void speedo_filemanager_v2::parse_command(){
 					delay(1);
 				}
 			};
-
+			//			pOLED->string(0,"-",0,1);
+			//			delay(500);
 			c = Serial.read();
 			timeout = 0;
 
 			switch (msgParseState){
-				case ST_START:
-					if ( c == MESSAGE_START ){
-						msgParseState	=	ST_GET_SEQ_NUM;
-						checksum		=	MESSAGE_START;
-						msgStartCounter	=	0;
-					} else {
-						msgStartCounter++;
-						// wenn binnen 300 Bytes kein MESSAGE_START kommt Abbruch
-						if(msgStartCounter>300){
-							isLeave=1;
-							break;
-						}
+			case ST_START:
+				if ( c == MESSAGE_START ){
+					//						pOLED->string(0,"1",0,1);
+					//						delay(500);
+					msgParseState	=	ST_GET_SEQ_NUM;
+					checksum		=	MESSAGE_START;
+					msgStartCounter	=	0;
+				} else {
+					msgStartCounter++;
+					// wenn binnen 300 Bytes kein MESSAGE_START kommt Abbruch
+					if(msgStartCounter>300){
+						isLeave=1;
+						break;
 					}
+				}
 				break;
 
-				case ST_GET_SEQ_NUM:
-					if ((c == 1) || (c == seqNum)){
-						seqNum			=	c;
-						msgParseState	=	ST_MSG_SIZE_1;
-						checksum		^=	c;
-					} else {
-						msgParseState	=	ST_START;
-					}
-				break;
-
-				case ST_MSG_SIZE_1:							// das ist aber strange
-					msgLength		=	c<<8;
-					msgParseState	=	ST_MSG_SIZE_2;
+			case ST_GET_SEQ_NUM:
+				if ((c == 1) || (c == seqNum)){
+					//						pOLED->string(0,"2",0,1);
+					//						delay(500);
+					seqNum			=	c;
+					msgParseState	=	ST_MSG_SIZE;
 					checksum		^=	c;
+				} else {
+					//						pOLED->string(0,"8",0,1);
+					//						char buffer[10];
+					//						sprintf(buffer,"%c",c);
+					//						pOLED->string(0,buffer,3,1);
+					//						delay(500);
+					msgParseState	=	ST_START;
+				}
 				break;
 
-				case ST_MSG_SIZE_2:
-					msgLength		|=	c;
-					msgParseState	=	ST_GET_TOKEN;
+			case ST_MSG_SIZE:							// das ist aber strange
+				//					pOLED->string(0,"3",0,1);
+				//					delay(500);
+				msgLength		=	c;
+				msgParseState	=	ST_GET_TOKEN;
+				checksum		^=	c;
+				break;
+
+			case ST_GET_TOKEN:
+				if ( c == TOKEN ){
+					//						pOLED->string(0,"5",0,1);
+					//						delay(500);
+					msgParseState	=	ST_GET_DATA;
 					checksum		^=	c;
+					ii				=	0;
+				} else {
+					msgParseState	=	ST_START;
+				}
 				break;
 
-				case ST_GET_TOKEN:
-					if ( c == TOKEN ){
-						msgParseState	=	ST_GET_DATA;
-						checksum		^=	c;
-						ii				=	0;
-					} else {
-						msgParseState	=	ST_START;
-					}
+			case ST_GET_DATA:
+				//					pOLED->string(0,"6",0,1);
+				//					delay(500);
+				msgBuffer[ii++]	=	c;
+				checksum		^=	c;
+				if (ii == msgLength ){
+					msgParseState	=	ST_GET_CHECK;
+				}
 				break;
 
-				case ST_GET_DATA:
-					msgBuffer[ii++]	=	c;
-					checksum		^=	c;
-					if (ii == msgLength ){
-						msgParseState	=	ST_GET_CHECK;
-					}
-				break;
-
-				case ST_GET_CHECK:
-					if ( c == checksum){
-						msgParseState	=	ST_PROCESS;
-					} else {
-						msgParseState	=	ST_START;
-					}
+			case ST_GET_CHECK:
+				//					char buffer[15];
+				//					sprintf(buffer,"ist %i",c);
+				//					pOLED->string(0,buffer,0,3);
+				//					sprintf(buffer,"soll %i",checksum);
+				//					pOLED->string(0,buffer,0,4);
+				if ( c == checksum){
+					//						pOLED->string(0,"7",0,1);
+					//						delay(500);
+					msgParseState	=	ST_PROCESS;
+				} else {
+					msgParseState	=	ST_START;
+				}
 				break;
 			}	//	switch
 		}	//	while(msgParseState!=ST_PROCESS)
@@ -487,86 +504,94 @@ void speedo_filemanager_v2::parse_command(){
 		 */
 
 		switch (msgBuffer[0]){
-			case CMD_SIGN_ON:
-				msgLength		=	11;
-				msgBuffer[0]	= 	CMD_SIGN_ON;
-				msgBuffer[1] 	=	STATUS_CMD_OK;
-				msgBuffer[2] 	=	8;
-				msgBuffer[3] 	=	'A';
-				msgBuffer[4] 	=	'V';
-				msgBuffer[5] 	=	'R';
-				msgBuffer[6] 	=	'I';
-				msgBuffer[7] 	=	'S';
-				msgBuffer[8] 	=	'P';
-				msgBuffer[9] 	=	'_';
-				msgBuffer[10]	=	'2';
+		case CMD_SIGN_ON:
+			msgLength		=	11;
+			msgBuffer[0]	= 	CMD_SIGN_ON;
+			msgBuffer[1] 	=	STATUS_CMD_OK;
+			msgBuffer[2] 	=	8;
+			msgBuffer[3] 	=	'A';
+			msgBuffer[4] 	=	'V';
+			msgBuffer[5] 	=	'R';
+			msgBuffer[6] 	=	'I';
+			msgBuffer[7] 	=	'S';
+			msgBuffer[8] 	=	'P';
+			msgBuffer[9] 	=	'_';
+			msgBuffer[10]	=	'2';
 			break;
 
-			case CMD_LEAVE_FM:
-				isLeave	=	1;
+		case CMD_LEAVE_FM:
+			isLeave	=	1;
 			break;
 
 			///////// UP DOWN LEFT RIGHT ////////
-			case CMD_GO_LEFT:
-				pMenu->go_left();
-				pMenu->display();
-				isLeave	=	1;
+		case CMD_GO_LEFT:
+			pMenu->go_left();
+			pMenu->display();
+			isLeave	=	1;
+			msgLength		=	2;
+			msgBuffer[0]	= 	CMD_GO_LEFT;
+			msgBuffer[1] 	=	STATUS_CMD_OK;
 			break;
 
-			case CMD_GO_RIGHT:
-				pMenu->go_right();
-				pMenu->display();
-				isLeave	=	1;
+		case CMD_GO_RIGHT:
+			pMenu->go_right();
+			pMenu->display();
+			isLeave	=	1;
+			msgLength		=	2;
+			msgBuffer[0]	= 	CMD_GO_RIGHT;
+			msgBuffer[1] 	=	STATUS_CMD_OK;
 			break;
 
-			case CMD_GO_UP:
-				pMenu->go_up();
-				pMenu->display();
-				isLeave	=	1;
+		case CMD_GO_UP:
+			pMenu->go_up();
+			pMenu->display();
+			isLeave	=	1;
+			msgLength		=	2;
+			msgBuffer[0]	= 	CMD_GO_UP;
+			msgBuffer[1] 	=	STATUS_CMD_OK;
 			break;
 
-			case CMD_GO_DOWN:
-				pMenu->go_down();
-				pMenu->display();
-				isLeave	=	1;
+		case CMD_GO_DOWN:
+			pMenu->go_down();
+			pMenu->display();
+			isLeave	=	1;
+			msgLength		=	2;
+			msgBuffer[0]	= 	CMD_GO_DOWN;
+			msgBuffer[1] 	=	STATUS_CMD_OK;
 			break;
 			///////// UP DOWN LEFT RIGHT ////////
 
 			///////// EMERGENCY ////////
-			default:
-				msgLength		=	2;
-				msgBuffer[1]	=	STATUS_CMD_FAILED;
+		default:
+			msgLength		=	2;
+			msgBuffer[1]	=	STATUS_CMD_FAILED;
 			break;
 		}
 
 		/*
 		 * Now send answer message back
 		 */
-		Serial.print(MESSAGE_START);
+		Serial.print((char)MESSAGE_START);
 		checksum	=	MESSAGE_START^0;
 
-		Serial.print(seqNum);
+		Serial.print((char)seqNum);
 		checksum	^=	seqNum;
 
-		c			=	((msgLength>>8)&0xFF);
-		Serial.print(c);
-		checksum	^=	c;
+		//c			=	msgLength&0x00FF;
+		Serial.print((char)msgLength);
+		checksum ^= msgLength;
 
-		c			=	msgLength&0x00FF;
-		Serial.print(c);
-		checksum ^= c;
-
-		Serial.print(TOKEN);
+		Serial.print((char)TOKEN);
 		checksum ^= TOKEN;
 
 		p	=	msgBuffer;
 		while(msgLength){
 			c	=	*p++;
-			Serial.print(c);
+			Serial.print((char)c);
 			checksum ^=c;
 			msgLength--;
 		}
-		Serial.print(checksum);
+		Serial.print((char)checksum);
 		seqNum++;
 	}
 }

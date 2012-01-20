@@ -3,14 +3,39 @@
     android:id="@+id/uploadLayout" 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/radialback" 
     android:orientation="vertical" >
+    
+    <LinearLayout
+        android:id="@+id/TextLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:orientation="horizontal" />
 
-    <TextView
+    <Button
+        android:id="@+id/browseToUploadMap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/uploadmapfile" />   
+    <Button
+        android:id="@+id/browseToUploadConfig"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/uploadconfigfile" />
+    <Button
+        android:id="@+id/browseToUploadSpeedo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/uploadspeedofile" />
+    <Button
+        android:id="@+id/browseToUploadGfx"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/uploadgfxfile" />
+     <TextView
         android:id="@+id/Upload_textView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="TextView" 
-        android:background="@drawable/radialback" 
-        />
+        android:layout_height="wrap_content"
+        android:text="TextView" />
 
 </LinearLayout>

@@ -37,13 +37,19 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	 * Our main view. Displays the emulated terminal screen.
 	 */
 	private TextView mLog;
+	private TextView mStatus;
 	private TextView mVersion;
 	private TextView mDownload;
+	private TextView mUpload;
 	private Button mCheckVersion;
 	private Button mLeftButton;
 	private Button mRightButton;
 	private Button mUpButton;
 	private Button mDownButton;
+	private Button browseToUploadMap;
+	private Button browseToUploadConfig;
+	private Button browseToUploadSpeedo;
+	private Button browseToUploadGfx;
 	
 
 	// Message types sent from the BluetoothReadService Handler
@@ -52,15 +58,20 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	public static final int MESSAGE_WRITE = 3;
 	public static final int MESSAGE_DEVICE_NAME = 4;
 	public static final int MESSAGE_TOAST = 5;
+	
 	private static final int REQUEST_CONNECT_DEVICE = 1;
-	private static final int REQUEST_ENABLE_BT = 2;
+	private static final int REQUEST_ENABLE_BT 		= 2;
+	private static final int REQUEST_OPEN_MAP		= 3;	// file open dialog
+	private static final int REQUEST_OPEN_CONFIG	= 4;	// file open dialog
+	private static final int REQUEST_OPEN_SPEEDO	= 5;	// file open dialog
+	private static final int REQUEST_OPEN_GFX		= 6;	// file open dialog
 
 	// incoming data statemachine
 	public static final int ST_IDLE			= -1;
 	public static final int ST_START 		= 0;
 	public static final int ST_GET_SEQ_NUM	= 1;
-	public static final int ST_MSG_SIZE_1	= 2;
-	public static final int ST_MSG_SIZE_2	= 3;
+	public static final int ST_MSG_SIZE		= 2;
+	//public static final int ST_MSG_SIZE_2	= 3;
 	public static final int ST_GET_TOKEN	= 4;
 	public static final int ST_GET_DATA		= 5;
 	public static final int ST_GET_CHECK	= 6;
@@ -68,27 +79,32 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 
 	// transfer messages
-	public static final char MESSAGE_START 		= 0x1C;
-	public static final char TOKEN				= 0x0E;
+	public static final byte MESSAGE_START 		=  0x1C;
+	public static final byte TOKEN				=  0x0E;
 
-	public static final char CMD_SIGN_ON		= 0x01;
-	public static final char CMD_LEAVE_FM		= 0x04;
-	public static final char CMD_GO_LEFT		= 0x05;
-	public static final char CMD_GO_RIGHT		= 0x06;
-	public static final char CMD_GO_UP			= 0x07;
-	public static final char CMD_GO_DOWN		= 0x08;
-	public static final char CMD_FILE_RECEIVE	= 0x09;
+	public static final byte CMD_SIGN_ON		=  0x01;
+	public static final byte CMD_LEAVE_FM		=  0x04;
+	public static final byte CMD_GO_LEFT		=  0x05;
+	public static final byte CMD_GO_RIGHT		=  0x06;
+	public static final byte CMD_GO_UP			=  0x07;
+	public static final byte CMD_GO_DOWN		=  0x08;
+	public static final byte CMD_FILE_RECEIVE	=  0x09;
 
-	public static final char STATUS_CMD_OK      = 0x00;
-	public static final char STATUS_CMD_FAILED  = 0xC0;
-	public static final char STATUS_CKSUM_ERROR = 0xC1;
-	public static final char STATUS_CMD_UNKNOWN = 0xC9;
+	public static final char STATUS_CMD_OK      =  0x09;
+	public static final char STATUS_CMD_FAILED  =  0xC0;
+	public static final char STATUS_CKSUM_ERROR =  0xC1;
+	public static final char STATUS_CMD_UNKNOWN =  0xC9;
 
 
 	// rx/tx vars
-	private int seqNum			=	1;
-	private int rx_tx_state		= ST_IDLE;
-
+	private int 	seqNum		=	1;
+	private int 	rx_tx_state	= ST_IDLE;
+	private int		msgLength	= 0;
+	private char	checksum	= 0;
+	private char	msgBuffer[] = new char[300];
+	private int		ii			= 0;
+	
+	
 	// String buffer for outgoing messages
 	private StringBuffer mOutStringBuffer;
 	public TextView mTest;
@@ -126,8 +142,10 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 		// buttons
 		mLog = (TextView) findViewById(R.id.log_value);
+		mStatus = (TextView) findViewById(R.id.status_value);
 		mVersion = (TextView) findViewById(R.id.version_value);
 		mDownload = (TextView) findViewById(R.id.Download_textView);
+		mUpload = (TextView) findViewById(R.id.Upload_textView);
 		mCheckVersion = (Button) findViewById(R.id.button_checkVersion);
 		mCheckVersion.setOnClickListener(this);
 		mLeftButton = (Button) findViewById(R.id.button_left);
@@ -138,6 +156,15 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		mUpButton.setOnClickListener(this);
 		mDownButton = (Button) findViewById(R.id.button_down);
 		mDownButton.setOnClickListener(this);
+		browseToUploadMap = (Button) findViewById(R.id.browseToUploadMap);
+		browseToUploadMap.setOnClickListener(this);
+		browseToUploadGfx = (Button) findViewById(R.id.browseToUploadGfx);
+		browseToUploadGfx.setOnClickListener(this);
+		browseToUploadConfig = (Button) findViewById(R.id.browseToUploadConfig);
+		browseToUploadConfig.setOnClickListener(this);
+		browseToUploadSpeedo = (Button) findViewById(R.id.browseToUploadSpeedo);
+		browseToUploadSpeedo.setOnClickListener(this);
+
 
 
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -157,6 +184,10 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 	public void setLog(CharSequence status){
 		mLog.setText(status);
+	}
+	
+	public void setStatus(CharSequence status){
+		mStatus.setText(status);
 	}
 
 	public void appendLog(CharSequence status){
@@ -214,6 +245,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			Log.e(TAG, "Menu -> connect");
 			if (mSerialService.getState() == BluetoothSerialService.STATE_NONE) {
 				// Launch the DeviceListActivity to see devices and do scan
+				rx_tx_state	= ST_IDLE;
 				Intent serverIntent = new Intent(this, DeviceListActivity.class);
 				startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
 			}
@@ -235,6 +267,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult " + resultCode);
+		String filePath;
 		switch (requestCode) {
 		case REQUEST_CONNECT_DEVICE:
 			// When DeviceListActivity returns with a device to connect
@@ -261,6 +294,37 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
 				finish();
 			}
+			break;
+		case REQUEST_OPEN_MAP:
+			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
+			Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
+			mUpload.setText(filePath);
+			//process_uploadFile(REQUEST_OPEN_MAP,filePath)
+			break;
+		case REQUEST_OPEN_CONFIG:
+			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
+			Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
+			mUpload.setText(filePath);
+			//process_uploadFile(REQUEST_OPEN_CONFIG,filePath)
+			break;
+		case REQUEST_OPEN_GFX:
+			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
+			Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
+			mUpload.setText(filePath);
+			//process_uploadFile(REQUEST_OPEN_GFX,filePath)
+			break;
+		case REQUEST_OPEN_SPEEDO:
+			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
+			Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
+			mUpload.setText(filePath);
+			//process_uploadFile(REQUEST_OPEN_SPEEDO,filePath)
+			break;
+		case RESULT_CANCELED:
+			Log.i(TAG,"File open abgebrochen");
+			break;
+		default:
+			Log.i(TAG,"nicht gut, keine ActivityResultHandle gefunden");
+				
 		}
 	}
 
@@ -283,7 +347,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 						//mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 						mMenuItemConnect.setTitle(R.string.disconnect);
 					}
-					if(mLog!=null){	setLog("Connected");	};
+					if(mStatus!=null){	setStatus("Connected");	};
 					break;
 
 				case BluetoothSerialService.STATE_CONNECTING:
@@ -291,12 +355,16 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 						//mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 						mMenuItemConnect.setTitle(R.string.disconnect);
 					}
-					if(mLog!=null){	setLog("Connected");	};
+					if(mStatus!=null){	setStatus("Connecting...");	};
 					Toast.makeText(getApplicationContext(), "Connecting ...", Toast.LENGTH_SHORT).show();
 					break;
 
 				case BluetoothSerialService.STATE_NONE:
-					if(mLog!=null){	setLog("Connected");	};
+					if(mStatus!=null){	mStatus.setText(R.string.not_connected);	};
+					if (mMenuItemConnect != null) {
+						//mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+						mMenuItemConnect.setTitle(R.string.connect);
+					}
 					break;
 				}
 				break;
@@ -312,37 +380,29 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				// save the connected device's name
 				//mConnectedDeviceName = msg.getData().getString(mConnect.DEVICE_NAME);
 				//Toast.makeText(getApplicationContext(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-				Toast.makeText(getApplicationContext(), "Connected to whatever", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
 				break;
 
 			case MESSAGE_READ:
 				byte[] readBuf = (byte[]) msg.obj;
-				char b=0;
-				for(int i=0; i<msg.arg1-1; i+=2){
-					b=(char) (readBuf[i]<<8+readBuf[i+1]);
-					process_incoming(b);
+				for(int i=0; i<msg.arg1; i++){
+					//Log.d(TAG, "geht das:"+readBuf[i]);
+					process_incoming((char)readBuf[i]);
 				};
 				// construct a string from the valid bytes in the buffer
-				String readMessage = new String(readBuf, 0, msg.arg1);
+				//String readMessage = new String(readBuf, 0, msg.arg1);
+				//Log.i(TAG,readMessage);
 				//Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_SHORT).show();
-				if(mLog!=null){	appendLog(readMessage);	};
+				//if(mDownload!=null){	mDownload.append(readMessage);	};
 				break;
-
-				//	here state machine
-				//			case MESSAGE_WRITE:
-				//                byte[] writeBuf = (byte[]) msg.obj;
-				//                // construct a string from the buffer
-				//                String writeMessage = new String(writeBuf);
-				//                mConversationArrayAdapter.add("Me:  " + writeMessage);
-				//                break;
 			}
 		}
 	};
 
-	private void process_outgoing(char data[],int msgLength){
-		char	checksum		= 0;
-		char 	c				= 0;
-		char 	p				= 0;
+	private void process_outgoing(byte data[],int msgLength){
+		byte	checksum		= 0;
+		byte 	c				= 0;
+		byte 	p				= 0;
 		// nur senden, wenn wir nicht gerade was empfangen
 		if(mSerialService.getState()!=mSerialService.STATE_CONNECTED){
 			Toast.makeText(this, "You are not connected", Toast.LENGTH_SHORT).show();
@@ -351,77 +411,76 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		}
 		if(rx_tx_state==ST_IDLE){
 			if(msgLength<=0) return;
+			Log.i(TAG,"Sende nachricht");
 
-			mSerialService.write(MESSAGE_START);
-			checksum	=	MESSAGE_START;
-			c=(char)seqNum;
-			mSerialService.write(c);
+			c=(byte)MESSAGE_START;
+			mSerialService.write(c);		// Message Start
+			checksum	=	c;
+			c=(byte)seqNum;
+			mSerialService.write(c);		// Seq Nr
 			checksum	^=	c;
-			c=(char) ((msgLength>>8)&0xFF);
-			mSerialService.write(c);
-			checksum	^=	c;
-			c=(char) (msgLength&0x00FF);
-			mSerialService.write(c);
+			c=(byte) (msgLength&0x00FF);
+			mSerialService.write(c);		// length max 255
 			checksum ^= c;
-			mSerialService.write(TOKEN);
+			c=(byte)TOKEN;
+			mSerialService.write(c);		// Token
 			checksum ^= TOKEN;
 
 
 			for(int i=0; i<msgLength; i++){
 				p	=	data[i];
-				mSerialService.write(p);
-				checksum ^= c;
+				mSerialService.write(p);	// send some data
+				checksum ^= p;
 			}
-			mSerialService.write(checksum);
+			mSerialService.write(checksum);	//	CHECKSUM
 			seqNum++;
 			rx_tx_state=ST_START; // start listening
+		} else {
+			Log.i(TAG,"State nicht IDLE");
 		};
 	};
 
 
 	private void process_incoming(char data) {
-
-		char	checksum	= 0;
-		char	msgBuffer[] = new char[300];
-		int		msgLength	= 0;
-		int		ii			= 0;
-
+		Log.i(TAG,"process_incoming gestartet mit:"+String.valueOf((int)data)+" rx_state:"+String.valueOf((int)rx_tx_state));			
 		switch(rx_tx_state){
 		case ST_START:
-			if ( data == MESSAGE_START ){
+			if ( data == MESSAGE_START){
+				Log.i(TAG,"Message start erhalten");
 				rx_tx_state	=	ST_GET_SEQ_NUM;
 				checksum	=	data;
 			}
 			break;
 
-		case MESSAGE_START:
-			if ((data == 1) || (data == seqNum)){
-				seqNum		=	data;
-				rx_tx_state	=	ST_MSG_SIZE_1;
+		case ST_GET_SEQ_NUM:
+			if ( (int)data == 1 || (int)data == seqNum ){
+				Log.i(TAG,"Seq nr erhalten");
+				seqNum		=	data  & 0xff;
+				rx_tx_state	=	ST_MSG_SIZE;
 				checksum	^=	data;
 			} else {
 				rx_tx_state	=	ST_START;
 			}
 			break;
 
-		case ST_MSG_SIZE_1:
-			msgLength		=	data<<8;
-			rx_tx_state		=	ST_MSG_SIZE_2;
+		case ST_MSG_SIZE:
+			Log.i(TAG,"MSG size 1 erhalten");
+			msgLength		=	data;
+			rx_tx_state		=	ST_GET_TOKEN;
 			checksum		^=	data;
-			break;
-
-		case ST_MSG_SIZE_2:
-			msgLength		|=	data;
-			rx_tx_state	=	ST_GET_TOKEN;
-			checksum		^=	data;
+			Log.i(TAG,"msgLength="+String.valueOf((int)msgLength));
 			break;
 
 		case ST_GET_TOKEN:
+			mDownload.setText("Token erhalten? Habe:"+(int)data+" wollte: "+(int)TOKEN);
 			if ( data == TOKEN ){
+				Log.i(TAG,"Token erhalten");
 				rx_tx_state		=	ST_GET_DATA;
 				checksum		^=	data;
 				ii				=	0;
 			} else {
+				mDownload.append("ST_START");
+				Log.e(TAG,"Token NICHT erhalten!");
 				rx_tx_state	=	ST_START;
 			}
 			break;
@@ -429,25 +488,36 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		case ST_GET_DATA:
 			msgBuffer[ii++]	=	data;
 			checksum		^=	data;
+			Log.i(TAG,"Erhalte Daten i="+String.valueOf((int)ii)+" von "+String.valueOf((int)msgLength));
 			if (ii == msgLength ){
 				rx_tx_state	=	ST_GET_CHECK;
 			}
 			break;
 
 		case ST_GET_CHECK:
-			if ( data == checksum){
-				switch(msgBuffer[0]){
+			if ( data == checksum ){
+				Log.i(TAG,"Checksum korrekt");
+				if(msgBuffer[1]==STATUS_CMD_OK){
+					setLog("Command OK");
+				} else if(msgBuffer[1]==STATUS_CMD_FAILED) {
+					setLog("Command failed");
+				} else if(msgBuffer[1]==STATUS_CMD_UNKNOWN) {
+					setLog("Command unknown");
+				}
+					
+				switch((msgBuffer[0])){
 				case CMD_SIGN_ON:
 					// hier jetzt in unsere oberflche die id eintragen
-					if(msgBuffer[1]==STATUS_CMD_OK){
+					if((msgBuffer[1] & 0xff)==STATUS_CMD_OK){
 						// in msgBuuffer[2] steht jetzt nochmal die Laenge, fast schon etwas redundant
 						setVersion(msgBuffer.toString().substring(3, msgLength-1));
-						setLog("Transmission OK");
 					} else {
 						// irgendwie das command nochmal senden
 					}
 					break;
 				case CMD_FILE_RECEIVE:
+					break;
+				case CMD_GO_LEFT:
 					break;
 				default:
 					// irgendwie das commando nochmal senden
@@ -455,9 +525,11 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				}
 
 			} else {
+				Log.i(TAG,"Checksum FALSCH");
+				setLog("Checksum failed");
 				// ankommenden nachricht war nicht korrekt uebertragen
 			}
-			rx_tx_state	=	ST_START;
+			rx_tx_state	=	ST_IDLE;
 			break;
 
 		}			
@@ -465,31 +537,56 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 	@Override
 	public void onClick(View arg0) {
+		Intent intent; // reusable
 		switch (arg0.getId()){
 		case R.id.button_checkVersion:
-			char send[] = new char[1];
+			byte send[] = new byte[1];
 			send[0]=CMD_SIGN_ON;
 			process_outgoing(send,1);
 			break;
 		case R.id.button_left:
-			char send2[] = new char[1];
+			byte send2[] = new byte[1];
 			send2[0]=CMD_GO_LEFT;
 			process_outgoing(send2,1);
 			break;
 		case R.id.button_up:
-			char send3[] = new char[1];
+			byte send3[] = new byte[1];
 			send3[0]=CMD_GO_UP;
 			process_outgoing(send3,1);
 			break;
 		case R.id.button_right:
-			char send4[] = new char[1];
+			byte send4[] = new byte[1];
 			send4[0]=CMD_GO_RIGHT;
 			process_outgoing(send4,1);
 			break;
 		case R.id.button_down:
-			char send5[] = new char[1];
+			byte send5[] = new byte[1];
 			send5[0]=CMD_GO_DOWN;
 			process_outgoing(send5,1);
+			break;
+		case R.id.browseToUploadMap:
+			intent = new Intent(getBaseContext(),FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, "/sdcard");
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_OPEN_MAP);
+			break;
+		case R.id.browseToUploadConfig:
+			intent = new Intent(getBaseContext(),FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, "/sdcard");
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_OPEN_CONFIG);
+			break;
+		case R.id.browseToUploadGfx:
+			intent = new Intent(getBaseContext(),FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, "/sdcard");
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_OPEN_GFX);
+			break;
+		case R.id.browseToUploadSpeedo:
+			intent = new Intent(getBaseContext(),FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, "/sdcard");
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_OPEN_SPEEDO);
 			break;
 		default:
 			break;

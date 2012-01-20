@@ -1,30 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/connectLayout"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/radialback" >
+    android:background="@drawable/radialback"
+    android:orientation="vertical" >
 
-    <TableRow
-        android:id="@+id/tableRow3"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent" >
-
-        <Button
-            android:id="@+id/button_checkVersion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/checkVersion" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow10"
+    <LinearLayout
+        android:id="@+id/TextLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="20dp"
+        android:orientation="horizontal" />
+    
+    <Button
+        android:id="@+id/button_checkVersion"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/checkVersion" />
+   
+    <LinearLayout
+        android:id="@+id/TextLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:orientation="horizontal" />
+
+    <LinearLayout
+        android:id="@+id/TextLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/status_cap"
-            android:layout_width="wrap_content"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:text="@string/status_cap"
             android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -35,16 +43,17 @@
             android:layout_height="wrap_content"
             android:text="@string/status_value"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-    </TableRow>
+    </LinearLayout>
 
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+    <LinearLayout
+        android:id="@+id/TextLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/version_cap"
-            android:layout_width="wrap_content"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:text="@string/version_cap"
             android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -55,16 +64,17 @@
             android:layout_height="wrap_content"
             android:text="@string/version_value"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-    </TableRow>
+    </LinearLayout>
 
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+    <LinearLayout
+        android:id="@+id/TextLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/log_cap"
-            android:layout_width="wrap_content"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:text="@string/log_cap"
             android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -75,62 +85,51 @@
             android:layout_height="wrap_content"
             android:text="@string/log_value"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-    </TableRow>
-    
-    <!-- Spacer -->
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-      <TextView
-            android:id="@+id/log_value2"
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-      </TableRow>
-    <!-- Spacer -->
+    </LinearLayout>
 
-    <TableLayout
-        android:id="@+id/tableLayout1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+    <LinearLayout
+        android:id="@+id/TextLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:orientation="horizontal" />
 
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+    <LinearLayout
+        android:id="@+id/TextLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_left"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:text="@string/left" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
             <Button
-                android:id="@+id/button_left"
-                android:layout_width="80dp"
-                android:layout_height="match_parent"
-                android:text="@string/left" />
-
-            <LinearLayout
-                android:id="@+id/linearLayout1"
-                android:layout_width="fill_parent"
+                android:id="@+id/button_up"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
-
-                <Button
-                    android:id="@+id/button_up"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/up" />
-
-                <Button
-                    android:id="@+id/button_down"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/down" />
-            </LinearLayout>
+                android:text="@string/up" />
 
             <Button
-                android:id="@+id/button_right"
-                android:layout_width="80dp"
-                android:layout_height="match_parent"
-                android:text="@string/right" />
-        </TableRow>
-    </TableLayout>
+                android:id="@+id/button_down"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/down" />
+        </LinearLayout>
 
-</TableLayout>
+        <Button
+            android:id="@+id/button_right"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:text="@string/right" />
+    </LinearLayout>
+
+</LinearLayout>

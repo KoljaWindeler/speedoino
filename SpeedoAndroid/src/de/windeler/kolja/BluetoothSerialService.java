@@ -189,7 +189,7 @@ public class BluetoothSerialService {
      * @param out The bytes to write
      * @see ConnectedThread#write(byte[])
      */
-    public void write(char out) {
+    public void write(byte out) {
         // Create temporary object
         ConnectedThread r;
         // Synchronize a copy of the ConnectedThread
@@ -340,7 +340,6 @@ public class BluetoothSerialService {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
-                    Log.i(TAG,"while schleife inhalt: "+buffer.toString());
 
                     
                     // TODO HIER DANN SCHREIBEN IN DEN THREAD
@@ -359,13 +358,9 @@ public class BluetoothSerialService {
          * Write to the connected OutStream.
          * @param out  The bytes to write
          */
-        public void write(char out) {
+        public void write(byte out) {
             try {
-            	byte b[] = new byte[2];
-            	b[0] = (byte) (out&0xFF00>>8); 
-                b[1] = (byte) (out&0x00FF); 
-                //mmOutStream.write(out);
-                mmOutStream.write(b, 0, 2);
+            	mmOutStream.write(out);
 
                 // Share the sent message back to the UI Activity
                 //mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_WRITE, buffer.length, -1, buffer).sendToTarget();

@@ -12,14 +12,14 @@ class speedo_filemanager_v2{
 
 	#define ST_START		0
 	#define ST_GET_SEQ_NUM	1
-	#define ST_MSG_SIZE_1	2
-	#define ST_MSG_SIZE_2	3
+	#define ST_MSG_SIZE		2
+	//#define ST_MSG_SIZE_2	3
 	#define ST_GET_TOKEN	4
 	#define ST_GET_DATA		5
 	#define ST_GET_CHECK	6
 	#define ST_PROCESS		7
 
-	#define MESSAGE_START			0x1C        //= ESC = 27 decimal
+	#define MESSAGE_START			0x1C        //= ESC = 28 decimal
 	#define TOKEN					0x0E
 
 	#define CMD_SIGN_ON				0x01
@@ -29,7 +29,7 @@ class speedo_filemanager_v2{
 	#define CMD_GO_UP				0x07
 	#define CMD_GO_DOWN				0x08
 
-	#define STATUS_CMD_OK           0x00
+	#define STATUS_CMD_OK           0x09
 	#define STATUS_CMD_FAILED       0xC0
 	#define STATUS_CKSUM_ERROR      0xC1
 	#define STATUS_CMD_UNKNOWN      0xC9
