@@ -30,6 +30,7 @@ class speedo_filemanager_v2{
 	#define CMD_GO_DOWN				0x08
 
 	#define STATUS_CMD_OK           0x09
+	#define	STATUS_EOF				0x10
 	#define STATUS_CMD_FAILED       0xC0
 	#define STATUS_CKSUM_ERROR      0xC1
 	#define STATUS_CMD_UNKNOWN      0xC9

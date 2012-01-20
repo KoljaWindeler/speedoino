@@ -329,15 +329,57 @@ void SdFile::ls(uint8_t flags) {
 void SdFile::ls(Print* pr, uint8_t flags, uint8_t indent) {
   rewind();
   int8_t status;
-  while ((status = lsPrintNext(pr, flags, indent))) {
-    if (status > 1 && (flags & LS_R)) {
-      uint16_t index = curPosition()/32 - 1;
+  while ((status = lsPrintNext(pr, flags, indent))) {		// LS_R=4 		==>> Wenn LS_R NICHT übergeben wurde:
+    if (status > 1 && (flags & LS_R)) {						// status > 1&&(0011 & 0100) ==> status>1&&(0) ==> wenn status(file=1,dir=2)>0
+      uint16_t index = curPosition()/32 - 1;				// Wenn es hingegen übergeben wurde, muss status>1, also bei einem dir mach irgendwas
       SdFile s;
       if (s.open(this, index, O_READ)) s.ls(pr, flags, indent + 2);
       seekSet(32 * (index + 1));
     }
   }
 }
+// -----------------------------------------------------------------------------
+// Koljas LS, frei nach dem Thema: wir wollen ja nur einen Eintrag, davon auch
+// nur den Namen und am return value wollen wir wissen obs geklappt hat und 
+// was es ist
+// als return machen wir ein int8 wie gewohnt:
+// isFile = 1
+// isDir = 2
+// EOF = 0
+// als eingabe haben wir:
+// Den buffer Zeiger wird mit dem ensprechenden Namen gefüllt werden
+
+int8_t SdFile::lsJKWNext(char* buffer){
+	dir_t dir;
+	
+	// woher weiß er eigentlich wo er lesen soll? weil er nen Pointer hat den er lässt ?
+	while (1) { // die while schleife filtert uns alle sachen raus die wir nicht wollen, alle '.',gelöschten, etc
+		if (read(&dir, sizeof(dir)) != sizeof(dir)) return 0;
+		if (dir.name[0] == DIR_NAME_FREE) return 0;
+
+		// skip deleted entry and entries for . and  ..
+		if (dir.name[0] != DIR_NAME_DELETED && dir.name[0] != '.' // wenn es nicht geloescht ist, nicht '.' ist und wirklich ein file oder folder ist
+		  && DIR_IS_FILE_OR_SUBDIR(&dir)) break;
+	};
+	
+	// copy filename to buffer
+	uint_t j=0;
+	for (uint8_t i = 0; i < 11; i++) {						// 11 zeichen schreiben, das ist 8+3 ?
+		if (dir.name[i] != ' '){
+			buffer[j]=dir.name[i];
+			j++;
+		};
+		// hinter der 8ten stelle ein '.' einfügen
+		if(i==8){
+			buffer[j]='.';
+			j++;
+		};
+	};
+	buffer[j]='\0'; // string ende
+	return DIR_IS_FILE(&dir) ? 1 : 2;							// FILE returns 1, DIR returns 2, Ende 0
+};
+
+
 //------------------------------------------------------------------------------
 // saves 32 bytes on stack for ls recursion
 // return 0 - EOF, 1 - normal file, or 2 - directory
@@ -357,36 +399,36 @@ int8_t SdFile::lsPrintNext(Print *pr, uint8_t flags, uint8_t indent) {
   for (uint8_t i = 0; i < indent; i++) pr->print(' ');		// sollte man im unterverzeichniss sein symbolisiert das hier den einrueckgrad
 
   // print name
-  for (uint8_t i = 0; i < 11; i++) {
-    if (dir.name[i] == ' ')continue;
-    if (i == 8) {
+  for (uint8_t i = 0; i < 11; i++) {						// 11 zeichen schreiben, das ist 8+3 ?
+    if (dir.name[i] == ' ')continue;						// freizeichen fallen raus
+    if (i == 8) {											// 8"."3, im Dateinamen ist also KEIN PUNKT
       pr->print('.');
       w++;
     }
     pr->print(dir.name[i]);
     w++;
   }
-  if (DIR_IS_SUBDIR(&dir)) {
+  if (DIR_IS_SUBDIR(&dir)) {								// Verzeichnisse werden mit einem "/" beendet
     pr->print('/');
     w++;
   }
-  if (flags & (LS_DATE | LS_SIZE)) {
+  if (flags & (LS_DATE | LS_SIZE)) {						// w ist also zum durchzählen, wenn das zuklein ist: leerzeichen auffüllen
     while (w++ < 14) pr->print(' ');
   }
   // print modify date/time if requested
-  if (flags & LS_DATE) {
+  if (flags & LS_DATE) {									// felder nachreichen, datum und 
     pr->print(' ');
     printFatDate(pr, dir.lastWriteDate);
     pr->print(' ');
     printFatTime(pr, dir.lastWriteTime);
   }
   // print size if requested
-  if (!DIR_IS_SUBDIR(&dir) && (flags & LS_SIZE)) {
+  if (!DIR_IS_SUBDIR(&dir) && (flags & LS_SIZE)) {			// größe
     pr->print(' ');
     pr->print(dir.fileSize);
   }
   pr->println();
-  return DIR_IS_FILE(&dir) ? 1 : 2;
+  return DIR_IS_FILE(&dir) ? 1 : 2;							// FILE returns 1, DIR returns 2, Ende 0
 }
 //------------------------------------------------------------------------------
 // format directory name field from a 8.3 name string

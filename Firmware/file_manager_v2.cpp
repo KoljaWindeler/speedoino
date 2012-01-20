@@ -508,6 +508,15 @@ void speedo_filemanager_v2::parse_command(){
 			msgLength		=	11;
 			msgBuffer[0]	= 	CMD_SIGN_ON;
 			msgBuffer[1] 	=	STATUS_CMD_OK;
+			// hier irgendwie GIT_REV reinbringen, nur wie ?! darauf kann man nicht mit GIT_REV[0] zugreifen
+			// char buffer[21];
+			// sprintf(buffer,"%s",GIT_REV); ?
+			// int i=0;
+			// while(buffer[i]!='\0'){
+			//	msgBuffer[2+i]=buffer[i];
+			//	i++;
+			// };
+			// msgLength=i+2;
 			msgBuffer[2] 	=	8;
 			msgBuffer[3] 	=	'A';
 			msgBuffer[4] 	=	'V';
@@ -560,11 +569,31 @@ void speedo_filemanager_v2::parse_command(){
 			msgBuffer[1] 	=	STATUS_CMD_OK;
 			break;
 			///////// UP DOWN LEFT RIGHT ////////
-
+			
+		case CMD_DIR:
+			char name[13]; // 8+3+1+1
+			int status = lsJKWNext(name);
+			int i = 0;
+			if(status>0) {
+				msgBuffer[2]=status;
+				while(name[i]!='\0'){
+					msgBuffer[i+3]=name[i];
+					i++;
+				};
+				msgLength		=	i+2+1; // i==anzahl an zeichen für name + 1 für type 1/2 + 2 für cmd/ok
+				msgBuffer[0]	= 	CMD_DIR;
+				msgBuffer[1] 	=	STATUS_CMD_OK;
+			} else {
+				msgLength		= 	2;
+				msgBuffer[0]	=	CMD_DIR;
+				msgBuffer[1]	= 	STATUS_EOF;
+			};
+			break;
+			
 			///////// EMERGENCY ////////
 		default:
 			msgLength		=	2;
-			msgBuffer[1]	=	STATUS_CMD_FAILED;
+			msgBuffer[1]	=	STATUS_CMD_UNKNOWN;
 			break;
 		}
 
