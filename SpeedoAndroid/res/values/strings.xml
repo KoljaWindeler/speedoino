@@ -11,6 +11,7 @@
     <string name="status_value">not connected</string>
     <string name="title_paired_devices">Paired devices</string>
     <string name="button_scan">Scan</string>
+    <string name="bindestrich">-</string>
     <string name="title_other_devices">Other devices</string>
     <string name="none_paired">None paired</string>
     <string name="none_found">None found</string>
@@ -43,7 +44,7 @@
     <string name="uploadspeedofile">Click to select Speedofile</string>
     <string name="uploadgfxfile">Click to select Gfxfile</string>
         
-
+	<string name="noresponse">No response from target</string>
     
 
 </resources>

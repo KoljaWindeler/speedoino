@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import android.app.Activity;
 import android.app.TabActivity;
+import android.app.backup.RestoreObserver;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -40,6 +41,9 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	public static final String TOAST = "toast";
 	public static BluetoothSerialService mSerialService = null;
 	private Toast toast;
+	private Handler mTimerHandle = new Handler();
+	
+
 	/**
 	 * Our main view. Displays the emulated terminal screen.
 	 */
@@ -108,11 +112,12 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	public static final char STATUS_CMD_UNKNOWN =  0xC9;
 	public static final char STATUS_EOF 		=  0x10;
 	
-	private long lastSend = System.currentTimeMillis();  
+	private long lastSend = System.currentTimeMillis();
+	
 
 
 	// rx/tx vars
-	private int 	seqNum		=	1;
+	private int 	seqNum		= 0;
 	private int 	rx_tx_state	= ST_IDLE;
 	private int		msgLength	= 0;
 	private char	checksum	= 0;
@@ -194,7 +199,9 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		mDLListView = (ListView) findViewById(R.id.dlList);
 		
 		
-
+		
+		if(mLog!=null) mLog.setText(R.string.bindestrich);
+		if(mVersion!=null) mVersion.setText(R.string.bindestrich);
 
 
 
@@ -203,7 +210,8 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		// If the adapter is null, then Bluetooth is not supported
 		if (mBluetoothAdapter == null) {
-			Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+			toast = Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG);
+			toast.show();
 			finish();
 			return;
 		}
@@ -230,7 +238,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	@Override
 	public void onStart() {
 		super.onStart();
-		Log.e(TAG, "++ ON START ++");
 
 		// If BT is not on, request that it be enabled.
 		// setupChat() will then be called during onActivityResult
@@ -274,7 +281,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_connect:
-			Log.e(TAG, "Menu -> connect");
 			if (mSerialService.getState() == BluetoothSerialService.STATE_NONE) {
 				// Launch the DeviceListActivity to see devices and do scan
 				rx_tx_state	= ST_IDLE;
@@ -323,7 +329,8 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			} else {
 				// User did not enable Bluetooth or an error occurred
 				Log.d(TAG, "BT not enabled");
-				Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
+				toast = Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT);
+				toast.show();
 				finish();
 			}
 			break;
@@ -368,9 +375,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 			// state switch
 			case MESSAGE_STATE_CHANGE:
-				if(mLog!=null){
-					//						mConnect.checkStatus();
-				};
 				Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
 
 				switch (msg.arg1) {
@@ -379,7 +383,12 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 						//mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 						mMenuItemConnect.setTitle(R.string.disconnect);
 					}
-					if(mStatus!=null){	setStatus("Connected");	};
+					if(mStatus!=null){	setStatus("Connected,Speedoino found");	};
+					
+					toast = Toast.makeText(getApplicationContext(), "Connected, Speedoino found", Toast.LENGTH_SHORT);
+					toast.show();
+					
+					mTimerHandle.postDelayed(mCheckVer, 500);
 					break;
 
 				case BluetoothSerialService.STATE_CONNECTING:
@@ -388,23 +397,34 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 						mMenuItemConnect.setTitle(R.string.disconnect);
 					}
 					if(mStatus!=null){	setStatus("Connecting...");	};
-					Toast.makeText(getApplicationContext(), "Connecting ...", Toast.LENGTH_SHORT).show();
+					toast = Toast.makeText(getApplicationContext(), "Connecting ...", Toast.LENGTH_SHORT);
+					toast.show();
 					break;
 
 				case BluetoothSerialService.STATE_NONE:
-					if(mStatus!=null){	mStatus.setText(R.string.not_connected);	};
+					if(mStatus!=null){	mStatus.setText(R.string.not_connected);};
+					if(mVersion!=null){ mVersion.setText(R.string.bindestrich);	};
+					if(mLog!=null){ 	mLog.setText(R.string.bindestrich);		};
+					
 					if (mMenuItemConnect != null) {
 						//mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 						mMenuItemConnect.setTitle(R.string.connect);
 					}
+					
+					toast = Toast.makeText(getApplicationContext(), "Connection closed...", Toast.LENGTH_SHORT);
+					toast.show();
+					break;
+					
+				case BluetoothSerialService.STATE_CONNECTED_AND_SEARCHING:
+					if(mStatus!=null){	setStatus("Connected, searching...");	};
 					break;
 				}
 				break;
 
 				// display popup
 			case MESSAGE_TOAST: //?
-				Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
-						Toast.LENGTH_SHORT).show();
+				toast = Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),Toast.LENGTH_SHORT);
+				toast.show();
 				break;
 
 				// show device popup
@@ -412,7 +432,8 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				// save the connected device's name
 				//mConnectedDeviceName = msg.getData().getString(mConnect.DEVICE_NAME);
 				//Toast.makeText(getApplicationContext(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-				Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+				toast = Toast.makeText(getApplicationContext(), "Connected, searching Speedoino", Toast.LENGTH_SHORT);
+				toast.show();
 				break;
 
 			case MESSAGE_READ:
@@ -437,19 +458,20 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		byte 	p				= 0;
 		// nur senden, wenn wir nicht gerade was empfangen
 		if(mSerialService.getState()!=mSerialService.STATE_CONNECTED){
-			toast.cancel();
-			toast = Toast.makeText(this, "You are not connected", Toast.LENGTH_SHORT);
+			
+			toast = Toast.makeText(this, "You are not connected to a Speedoino", Toast.LENGTH_SHORT);
 			toast.show();
 			mDownload.setText("test");
 			return;
 		}
-		
-		if(System.currentTimeMillis()-lastSend>1000){ // 5 sec nix gehört
-			rx_tx_state=ST_IDLE;
-			seqNum=1;
-		} else {
-			seqNum++;
+
+		// da der Tacho, nach 2sek den fast response mode verlässt, müssen wir die seq neu zählen
+		if(System.currentTimeMillis()-lastSend>2000){
+			reset_seq();
 		}
+		
+		seqNum++; // wir starten mit 0 und setzten im notfall auch zu 0 zurück, daher immer VOR dem senden inkrementieren
+		
 		
 		if(rx_tx_state==ST_IDLE){
 			if(msgLength<=0) return;
@@ -482,7 +504,11 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			mSerialService.write(checksum);	//	CHECKSUM
 			Log.d(TAG,"BTsend:"+String.valueOf((int)checksum));
 			rx_tx_state=ST_START; // start listening
-			lastSend = System.currentTimeMillis();
+
+			// install guard, 2sec until check of receive
+			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
+            mTimerHandle.postDelayed(mCheckResponseTimeTask, 2000);
+			
 		} else {
 			Log.i(TAG,"State nicht IDLE");
 		};
@@ -490,6 +516,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 
 	private void process_incoming(char data) {
+		
 		Log.i(TAG,"process_incoming gestartet mit:"+String.valueOf((int)(data&0x00ff))+" rx_state:"+String.valueOf((int)rx_tx_state));			
 		switch(rx_tx_state){
 		case ST_START:
@@ -543,8 +570,10 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			break;
 
 		case ST_GET_CHECK:
+			rx_tx_state	=	ST_IDLE;
+			lastSend = System.currentTimeMillis();
+			
 			if ( data == checksum ){
-				rx_tx_state	=	ST_IDLE;
 
 				Log.i(TAG,"Checksum korrekt");
 				if(msgBuffer[1]==STATUS_CMD_OK){
@@ -562,6 +591,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 						String str = new String(msgBuffer);
 						str=str.substring(2,msgLength);
 						setVersion(str);
+						if(mLog!=null) mLog.setText("Version OK");
 					} else {
 						// irgendwie das command nochmal senden
 					}
@@ -570,23 +600,32 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 					break;
 				// da alle richtungen zwar betätigt werden, danach die schleife auf dem AVR aber unterbrochen wird -> seqNr resetten
 				case CMD_GO_LEFT:
+					if(mLog!=null) mLog.setText("go_left OK");
+					reset_seq();
+					break;
 				case CMD_GO_RIGHT:
+					if(mLog!=null) mLog.setText("go_right OK");
+					reset_seq();
+					break;
 				case CMD_GO_UP:
+					if(mLog!=null) mLog.setText("go_up OK");
+					reset_seq();
+					break;
 				case CMD_GO_DOWN:
-					seqNum=1;
+					if(mLog!=null) mLog.setText("go_down OK");
+					reset_seq();
 					break;
 				case CMD_DIR:
 					Log.i(TAG,"CMD Dir erhalten");
+					if(mLog!=null) mLog.setText("dir OK");
 
 					String str = new String(msgBuffer);
-					str=str.substring(3,msgLength);
-					Log.i(TAG,"test="+str);
-
-					receive_dir(str,(int)msgBuffer[2]);
+					receive_dir(str.substring(3,msgLength),(int)msgBuffer[2]);
 
 					break;
 				default:
 					// irgendwie das commando nochmal senden
+					Log.i(TAG,"was los?");
 					break;
 				}
 
@@ -594,21 +633,36 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				Log.i(TAG,"Checksum FALSCH");
 				setLog("Checksum failed");
 				// ankommenden nachricht war nicht korrekt uebertragen
-				rx_tx_state	=	ST_IDLE;
+				
 			}
 			break;
 
 		}			
 	}
 
+//	private void check_preamble(char data) {
+//		String temp= new String("finished");
+//		char finished_str[]= new char[temp.length()+1];
+//		temp.getChars(0, temp.length(), finished_str, 0);
+//
+//		if(finished_str[finished_counter]==data){
+//			finished_counter++;
+//			if(finished_counter==temp.length()){
+//				preamble_passed=true;
+//				mStatus.setText("connected. Speedoino found");
+//				mTimerHandle.postDelayed(mCheckVer, 500);
+//			}
+//		} else {
+//			finished_counter=0;
+//		}
+//	}
+
 	@Override
 	public void onClick(View arg0) {
 		Intent intent; // reusable
 		switch (arg0.getId()){
 		case R.id.button_checkVersion:
-			byte send[] = new byte[1];
-			send[0]=CMD_SIGN_ON;
-			process_outgoing(send,1);
+			mCheckVer.run();
 			break;
 		case R.id.button_left:
 			byte send2[] = new byte[1];
@@ -740,7 +794,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				}
 			}
 			mDLListView.setAdapter(fileList);
-			if(toast!=null){
+			if(toast!=null){ // hilft das überhaupt?
 				toast.cancel();
 			}
 			mDLListView.setOnItemClickListener(new OnItemClickListener()
@@ -761,7 +815,8 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	        				path=path+dir_path+"/";
 	        			path=path+name;
 	        			
-	        			Toast.makeText(getBaseContext(), "You clicked on file "+path, Toast.LENGTH_LONG).show();
+	        			toast = Toast.makeText(getBaseContext(), "You clicked on file "+path, Toast.LENGTH_LONG);
+	        			toast.show();
 	        			DlselButton.setEnabled(true);
 	        		} else if (type==2) {
 	        			toast = Toast.makeText(getBaseContext(), "loading content of folder "+name+".\nPlease wait...", 9999);
@@ -781,4 +836,32 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		mList.add(item);
 	}
 	
+	// das hier führen wir automatisch, 2sec nach dem abfeuern unsers letzten commandos ab.
+	// wenn der status bis dahin noch nicht auf idl zurück gesetzt wurde, dann machen wir das 
+	// und sagen der ui bescheid das es so ist :D 
+	// 2 sec bei 115kbaud = 115*128 Byte /sec = 14kb/sec, max übertragung ist bei mir 255Byte, 18ms
+	private Runnable mCheckResponseTimeTask = new Runnable() {
+		public void run() {
+			if(rx_tx_state!=ST_IDLE){
+				rx_tx_state=ST_IDLE;
+				reset_seq();
+				
+				if(mLog!=null) mLog.setText(R.string.noresponse);
+				toast = Toast.makeText(getApplicationContext(), R.string.noresponse, Toast.LENGTH_SHORT);
+				toast.show();
+			};
+		}
+	}; 
+	
+	private Runnable mCheckVer = new Runnable() {
+		public void run() {
+			byte send[] = new byte[1];
+			send[0]=CMD_SIGN_ON;
+			process_outgoing(send,1);
+		}
+	}; 
+	
+	private void reset_seq() {
+		seqNum=0;
+	}
 }

@@ -641,6 +641,8 @@ void speedo_filemanager_v2::parse_command(){
 				// get filename and type of item
 				char name[13];
 				int status=fm_handle.lsJKWNext(name,item);
+				returner.close();
+				fm_handle.close();
 
 				// write the returner
 				msgBuffer[0]=CMD_DIR;
