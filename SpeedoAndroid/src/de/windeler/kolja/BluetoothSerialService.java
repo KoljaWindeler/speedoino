@@ -29,7 +29,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.TextView;
 
 /**
  * This class does all the work for setting up and managing Bluetooth

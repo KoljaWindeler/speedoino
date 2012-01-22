@@ -329,9 +329,9 @@ void SdFile::ls(uint8_t flags) {
 void SdFile::ls(Print* pr, uint8_t flags, uint8_t indent) {
   rewind();
   int8_t status;
-  while ((status = lsPrintNext(pr, flags, indent))) {		// LS_R=4 		==>> Wenn LS_R NICHT übergeben wurde:
+  while ((status = lsPrintNext(pr, flags, indent))) {		// LS_R=4 		==>> Wenn LS_R NICHT ï¿½bergeben wurde:
     if (status > 1 && (flags & LS_R)) {						// status > 1&&(0011 & 0100) ==> status>1&&(0) ==> wenn status(file=1,dir=2)>0
-      uint16_t index = curPosition()/32 - 1;				// Wenn es hingegen übergeben wurde, muss status>1, also bei einem dir mach irgendwas
+      uint16_t index = curPosition()/32 - 1;				// Wenn es hingegen ï¿½bergeben wurde, muss status>1, also bei einem dir mach irgendwas
       SdFile s;
       if (s.open(this, index, O_READ)) s.ls(pr, flags, indent + 2);
       seekSet(32 * (index + 1));
@@ -347,30 +347,45 @@ void SdFile::ls(Print* pr, uint8_t flags, uint8_t indent) {
 // isDir = 2
 // EOF = 0
 // als eingabe haben wir:
-// Den buffer Zeiger wird mit dem ensprechenden Namen gefüllt werden
+// Den buffer Zeiger wird mit dem ensprechenden Namen gefï¿½llt werden
 
-int8_t SdFile::lsJKWNext(char* buffer){
+int8_t SdFile::lsJKWNext(char* buffer,int item){
 	dir_t dir;
-	
-	// woher weiß er eigentlich wo er lesen soll? weil er nen Pointer hat den er lässt ?
-	while (1) { // die while schleife filtert uns alle sachen raus die wir nicht wollen, alle '.',gelöschten, etc
-		if (read(&dir, sizeof(dir)) != sizeof(dir)) return 0;
-		if (dir.name[0] == DIR_NAME_FREE) return 0;
+	// woher weiÃŸ er eigentlich wo er lesen soll? weil per rewind() der FP auf den Anfang der
+	// FAT gelegt wird ? und er den Pointer da lÃ¤sst ?
+	for(int i=0; i<=item; i++){
+		while (1) { // die while schleife filtert uns alle sachen raus die wir nicht wollen, alle '.',gelï¿½schten, etc
+			//		Serial.print("While Schleife, dir.name=");
+			//		for(int i=0; i<11; i++){
+			//			if(dir.name[i]>='0' && dir.name[i]<='9')
+			//				Serial.print((char)dir.name[i]);
+			//			if(dir.name[i]>='a' && dir.name[i]<='z')
+			//				Serial.print((char)dir.name[i]);
+			//			if(dir.name[i]>='A' && dir.name[i]<='Z')
+			//				Serial.print((char)dir.name[i]);
+			//		}
+			//		Serial.println("");
+			if (read(&dir, sizeof(dir)) != sizeof(dir)){ return 0; }
+			if (dir.name[0] == DIR_NAME_FREE){ return 0; };
 
-		// skip deleted entry and entries for . and  ..
-		if (dir.name[0] != DIR_NAME_DELETED && dir.name[0] != '.' // wenn es nicht geloescht ist, nicht '.' ist und wirklich ein file oder folder ist
-		  && DIR_IS_FILE_OR_SUBDIR(&dir)) break;
+			// skip deleted entry and entries for . and  ..
+			if (dir.name[0] != DIR_NAME_DELETED && dir.name[0] != '.' // wenn es nicht geloescht ist, nicht '.' ist und wirklich ein file oder folder ist
+					&& DIR_IS_FILE_OR_SUBDIR(&dir)){
+				break;
+			}
+		};
 	};
-	
+
+
 	// copy filename to buffer
-	uint_t j=0;
+	int8_t j=0;
 	for (uint8_t i = 0; i < 11; i++) {						// 11 zeichen schreiben, das ist 8+3 ?
 		if (dir.name[i] != ' '){
 			buffer[j]=dir.name[i];
 			j++;
 		};
-		// hinter der 8ten stelle ein '.' einfügen
-		if(i==8){
+		// hinter der 8ten stelle ein '.' einfï¿½gen
+		if(i==7 && DIR_IS_FILE(&dir)){
 			buffer[j]='.';
 			j++;
 		};
@@ -412,7 +427,7 @@ int8_t SdFile::lsPrintNext(Print *pr, uint8_t flags, uint8_t indent) {
     pr->print('/');
     w++;
   }
-  if (flags & (LS_DATE | LS_SIZE)) {						// w ist also zum durchzählen, wenn das zuklein ist: leerzeichen auffüllen
+  if (flags & (LS_DATE | LS_SIZE)) {						// w ist also zum durchzï¿½hlen, wenn das zuklein ist: leerzeichen auffï¿½llen
     while (w++ < 14) pr->print(' ');
   }
   // print modify date/time if requested
@@ -423,7 +438,7 @@ int8_t SdFile::lsPrintNext(Print *pr, uint8_t flags, uint8_t indent) {
     printFatTime(pr, dir.lastWriteTime);
   }
   // print size if requested
-  if (!DIR_IS_SUBDIR(&dir) && (flags & LS_SIZE)) {			// größe
+  if (!DIR_IS_SUBDIR(&dir) && (flags & LS_SIZE)) {			// grï¿½ï¿½e
     pr->print(' ');
     pr->print(dir.fileSize);
   }

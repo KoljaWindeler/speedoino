@@ -676,7 +676,7 @@ int configuration::read(const char* filename){
 				if(i>0){
 					// wir haben mehr als kein zeichen gelesen, und einen Zeilenumbruch gefunden => attake
 					int return_value=parse(&buf[0]);
-					if(return_value<0 ) {
+					if(return_value<0) {
 						Serial.print("parse_config erzeugte Fehlercode ");
 						Serial.print(return_value);
 						Serial.print(". Eingabe war:");

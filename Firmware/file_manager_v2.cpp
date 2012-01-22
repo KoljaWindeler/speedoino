@@ -16,7 +16,7 @@
  */
 
 #include "global.h"
-
+#define	DEBUG_TRANSFER 0
 
 speedo_filemanager_v2::speedo_filemanager_v2(){};
 
@@ -378,7 +378,8 @@ void speedo_filemanager_v2::run(){
 // nach "links" geht er mit isLeave=1 raus
 
 void speedo_filemanager_v2::parse_command(){
-	unsigned char	msgParseState;
+	// Direct start in, cause start was already fetched //msgParseState	=	ST_START;
+	unsigned char	msgParseState	=	ST_GET_SEQ_NUM;
 	unsigned int	ii				=	0;
 	unsigned char	checksum		=	MESSAGE_START;
 	unsigned char	seqNum			=	1;
@@ -394,234 +395,307 @@ void speedo_filemanager_v2::parse_command(){
 		/*
 		 * Collect received bytes to a complete message
 		 */
-		// Direct start in, cause start was allready fetched //msgParseState	=	ST_START;
-		msgParseState = ST_GET_SEQ_NUM;
 
-		while ( msgParseState != ST_PROCESS ){
+
+		while ( (msgParseState != ST_PROCESS)  && (isLeave!=1) ){
 
 			// solange keine Daten an der Schnittstelle anliegen
 			// und wir auch noch keine WAIT_MS_FOR_DATA gewartet haben
 			while(Serial.available()==0 && timeout<WAIT_MS_FOR_DATA){
 				timeout++;
 				if(timeout>=WAIT_MS_FOR_DATA){
-					msgBuffer[0]=0;				// prevent running the statemashine
-					msgParseState=ST_PROCESS;	// exit the while loop abouv
-					isLeave=1;					// exit the while loop on top
+					isLeave=1;					// exit the while loop on tops
 					break;						// exit this while loop
 				} else {
 					delay(1);
 				}
 			};
-			//			pOLED->string(0,"-",0,1);
-			//			delay(500);
-			c = Serial.read();
-			timeout = 0;
 
-			switch (msgParseState){
-			case ST_START:
-				if ( c == MESSAGE_START ){
-					//						pOLED->string(0,"1",0,1);
-					//						delay(500);
-					msgParseState	=	ST_GET_SEQ_NUM;
-					checksum		=	MESSAGE_START;
-					msgStartCounter	=	0;
-				} else {
-					msgStartCounter++;
-					// wenn binnen 300 Bytes kein MESSAGE_START kommt Abbruch
-					if(msgStartCounter>300){
-						isLeave=1;
-						break;
+			if(isLeave!=1){
+				//////////////////
+				if(DEBUG_TRANSFER){
+					pOLED->string(0,"-",0,1);
+					delay(500);
+				}
+				//////////////////
+				c = Serial.read();
+				timeout = 0;
+
+				switch (msgParseState){
+				case ST_START:
+//					pOLED->animation(3);
+//					pOLED->string(VISITOR_SMALL_1X_FONT,"LOADING...",5,0);
+
+					if ( c == MESSAGE_START ){
+						//////////////////
+						if(DEBUG_TRANSFER){
+							pOLED->string(0,"1",0,1);
+							delay(500);
+						}
+						//////////////////
+						msgParseState	=	ST_GET_SEQ_NUM;
+						checksum		=	MESSAGE_START;
+						msgStartCounter	=	0;
+					} else {
+						msgStartCounter++;
+						// wenn binnen 300 Bytes kein MESSAGE_START kommt Abbruch
+						if(msgStartCounter>300){
+							isLeave=1;
+							break;
+						}
 					}
-				}
-				break;
+					break;
 
-			case ST_GET_SEQ_NUM:
-				if ((c == 1) || (c == seqNum)){
-					//						pOLED->string(0,"2",0,1);
-					//						delay(500);
-					seqNum			=	c;
-					msgParseState	=	ST_MSG_SIZE;
+				case ST_GET_SEQ_NUM:
+					if ((c == 1) || (c == seqNum)){
+						//////////////////
+						if(DEBUG_TRANSFER){
+							pOLED->string(0,"2",0,1);
+							delay(500);
+						}
+						//////////////////
+						seqNum			=	c;
+						msgParseState	=	ST_MSG_SIZE;
+						checksum		^=	c;
+					} else {
+						//												pOLED->string(0,"8",0,1);
+						//												char buffer[10];
+						//												sprintf(buffer,"%c",c);
+						//												pOLED->string(0,buffer,3,1);
+						//												delay(500);
+						msgParseState	=	ST_START;
+					}
+					break;
+
+				case ST_MSG_SIZE:							// das ist aber strange
+					//////////////////
+					if(DEBUG_TRANSFER){
+						pOLED->string(0,"3",0,1);
+						delay(500);
+					}
+					//////////////////
+					msgLength		=	c;
+					msgParseState	=	ST_GET_TOKEN;
 					checksum		^=	c;
-				} else {
-					//						pOLED->string(0,"8",0,1);
-					//						char buffer[10];
-					//						sprintf(buffer,"%c",c);
-					//						pOLED->string(0,buffer,3,1);
-					//						delay(500);
-					msgParseState	=	ST_START;
-				}
-				break;
+					break;
 
-			case ST_MSG_SIZE:							// das ist aber strange
-				//					pOLED->string(0,"3",0,1);
-				//					delay(500);
-				msgLength		=	c;
-				msgParseState	=	ST_GET_TOKEN;
-				checksum		^=	c;
-				break;
+				case ST_GET_TOKEN:
+					if ( c == TOKEN ){
+						//////////////////
+						if(DEBUG_TRANSFER){
+							pOLED->string(0,"4",0,1);
+							delay(500);
+						}
+						//////////////////
+						msgParseState	=	ST_GET_DATA;
+						checksum		^=	c;
+						ii				=	0;
+					} else {
+						msgParseState	=	ST_START;
+					}
+					break;
 
-			case ST_GET_TOKEN:
-				if ( c == TOKEN ){
-					//						pOLED->string(0,"5",0,1);
-					//						delay(500);
-					msgParseState	=	ST_GET_DATA;
+				case ST_GET_DATA:
+					//////////////////
+					if(DEBUG_TRANSFER){
+						pOLED->string(0,"5",0,1);
+						delay(500);
+					}
+					//////////////////
+					msgBuffer[ii++]	=	c;
 					checksum		^=	c;
-					ii				=	0;
+					if (ii == msgLength ){
+						msgParseState	=	ST_GET_CHECK;
+					}
+					break;
+
+				case ST_GET_CHECK:
+					//					char buffer[15];
+					//					sprintf(buffer,"ist %i",c);
+					//					pOLED->string(0,buffer,0,3);
+					//					sprintf(buffer,"soll %i",checksum);
+					//					pOLED->string(0,buffer,0,4);
+					if ( c == checksum){
+						//////////////////
+						if(DEBUG_TRANSFER){
+							pOLED->string(0,"6",0,1);
+							delay(500);
+						}
+						//////////////////
+						msgParseState	=	ST_PROCESS;
+					} else {
+						msgParseState	=	ST_START;
+					}
+					break;
+				}	//	switch
+			}; // if is leave != 1
+		}	//	while(msgParseState!=ST_PROCESS && (isLeave!=1))
+		// an dieser stelle endet die state machine des empfangens
+		// hier kann sie entweder rauskommen wenn sie
+		// timeout gegangen ist, dann ist ist isLeave=1
+		// oder wenn sie was gültiges empfangen hat, dann ist msgParseState ST_PROCESS
+
+
+		if(isLeave!=1){
+			/*
+			 * Now process the STK500 commands, see Atmel Appnote AVR068
+			 */
+			if(DEBUG_TRANSFER){
+				char buffer[10];
+				if(floor(msgBuffer[0]/16)>10){
+					buffer[0]='a'+(floor(msgBuffer[0]/16)-10);
 				} else {
-					msgParseState	=	ST_START;
-				}
-				break;
-
-			case ST_GET_DATA:
-				//					pOLED->string(0,"6",0,1);
-				//					delay(500);
-				msgBuffer[ii++]	=	c;
-				checksum		^=	c;
-				if (ii == msgLength ){
-					msgParseState	=	ST_GET_CHECK;
-				}
-				break;
-
-			case ST_GET_CHECK:
-				//					char buffer[15];
-				//					sprintf(buffer,"ist %i",c);
-				//					pOLED->string(0,buffer,0,3);
-				//					sprintf(buffer,"soll %i",checksum);
-				//					pOLED->string(0,buffer,0,4);
-				if ( c == checksum){
-					//						pOLED->string(0,"7",0,1);
-					//						delay(500);
-					msgParseState	=	ST_PROCESS;
-				} else {
-					msgParseState	=	ST_START;
-				}
-				break;
-			}	//	switch
-		}	//	while(msgParseState!=ST_PROCESS)
-
-		/*
-		 * Now process the STK500 commands, see Atmel Appnote AVR068
-		 */
-
-		switch (msgBuffer[0]){
-		case CMD_SIGN_ON:
-			msgLength		=	11;
-			msgBuffer[0]	= 	CMD_SIGN_ON;
-			msgBuffer[1] 	=	STATUS_CMD_OK;
-			// hier irgendwie GIT_REV reinbringen, nur wie ?! darauf kann man nicht mit GIT_REV[0] zugreifen
-			// char buffer[21];
-			// sprintf(buffer,"%s",GIT_REV); ?
-			// int i=0;
-			// while(buffer[i]!='\0'){
-			//	msgBuffer[2+i]=buffer[i];
-			//	i++;
-			// };
-			// msgLength=i+2;
-			msgBuffer[2] 	=	8;
-			msgBuffer[3] 	=	'A';
-			msgBuffer[4] 	=	'V';
-			msgBuffer[5] 	=	'R';
-			msgBuffer[6] 	=	'I';
-			msgBuffer[7] 	=	'S';
-			msgBuffer[8] 	=	'P';
-			msgBuffer[9] 	=	'_';
-			msgBuffer[10]	=	'2';
-			break;
-
-		case CMD_LEAVE_FM:
-			isLeave	=	1;
-			break;
-
-			///////// UP DOWN LEFT RIGHT ////////
-		case CMD_GO_LEFT:
-			pMenu->go_left();
-			pMenu->display();
-			isLeave	=	1;
-			msgLength		=	2;
-			msgBuffer[0]	= 	CMD_GO_LEFT;
-			msgBuffer[1] 	=	STATUS_CMD_OK;
-			break;
-
-		case CMD_GO_RIGHT:
-			pMenu->go_right();
-			pMenu->display();
-			isLeave	=	1;
-			msgLength		=	2;
-			msgBuffer[0]	= 	CMD_GO_RIGHT;
-			msgBuffer[1] 	=	STATUS_CMD_OK;
-			break;
-
-		case CMD_GO_UP:
-			pMenu->go_up();
-			pMenu->display();
-			isLeave	=	1;
-			msgLength		=	2;
-			msgBuffer[0]	= 	CMD_GO_UP;
-			msgBuffer[1] 	=	STATUS_CMD_OK;
-			break;
-
-		case CMD_GO_DOWN:
-			pMenu->go_down();
-			pMenu->display();
-			isLeave	=	1;
-			msgLength		=	2;
-			msgBuffer[0]	= 	CMD_GO_DOWN;
-			msgBuffer[1] 	=	STATUS_CMD_OK;
-			break;
-			///////// UP DOWN LEFT RIGHT ////////
-			
-		case CMD_DIR:
-			char name[13]; // 8+3+1+1
-			int status = lsJKWNext(name);
-			int i = 0;
-			if(status>0) {
-				msgBuffer[2]=status;
-				while(name[i]!='\0'){
-					msgBuffer[i+3]=name[i];
-					i++;
+					buffer[0]='0'+floor(msgBuffer[0]/16);
 				};
-				msgLength		=	i+2+1; // i==anzahl an zeichen für name + 1 für type 1/2 + 2 für cmd/ok
-				msgBuffer[0]	= 	CMD_DIR;
-				msgBuffer[1] 	=	STATUS_CMD_OK;
-			} else {
-				msgLength		= 	2;
-				msgBuffer[0]	=	CMD_DIR;
-				msgBuffer[1]	= 	STATUS_EOF;
+
+				if((msgBuffer[0]%16)>10){
+					buffer[1]='a'+(msgBuffer[0]%16)-10;
+				} else {
+					buffer[1]='0'+(msgBuffer[0]%16);
+				}
+				buffer[2]='\0';
+				pOLED->string(0,buffer,0,1);
 			};
-			break;
-			
-			///////// EMERGENCY ////////
-		default:
-			msgLength		=	2;
-			msgBuffer[1]	=	STATUS_CMD_UNKNOWN;
-			break;
-		}
 
-		/*
-		 * Now send answer message back
-		 */
-		Serial.print((char)MESSAGE_START);
-		checksum	=	MESSAGE_START^0;
 
-		Serial.print((char)seqNum);
-		checksum	^=	seqNum;
+			if(msgBuffer[0]==CMD_SIGN_ON){
+				msgBuffer[0]	= 	CMD_SIGN_ON;
+				msgBuffer[1] 	=	STATUS_CMD_OK;
+				// hier irgendwie GIT_REV reinbringen, nur wie ?! darauf kann man nicht mit GIT_REV[0] zugreifen
+				 char buffer[21];
+				 sprintf(buffer,GIT_REV);
+				 int i=0;
+				 while(buffer[i]!='\0'){
+					msgBuffer[2+i]=buffer[i];
+					i++;
+				 };
+				msgLength=i+2;
 
-		//c			=	msgLength&0x00FF;
-		Serial.print((char)msgLength);
-		checksum ^= msgLength;
+			} else if(msgBuffer[0]==CMD_LEAVE_FM){
+				isLeave	=	1;
 
-		Serial.print((char)TOKEN);
-		checksum ^= TOKEN;
+				///////// UP DOWN LEFT RIGHT ////////
+			} else if(msgBuffer[0]==CMD_GO_LEFT){
+				pMenu->go_left();
+				pMenu->display();
+				isLeave	=	1;
+				msgLength		=	2;
+				msgBuffer[0]	= 	CMD_GO_LEFT;
+				msgBuffer[1] 	=	STATUS_CMD_OK;
 
-		p	=	msgBuffer;
-		while(msgLength){
-			c	=	*p++;
-			Serial.print((char)c);
-			checksum ^=c;
-			msgLength--;
-		}
-		Serial.print((char)checksum);
-		seqNum++;
-	}
-}
+			} else if(msgBuffer[0]==CMD_GO_RIGHT){
+				pMenu->go_right();
+				pMenu->display();
+				isLeave	=	1;
+				msgLength		=	2;
+				msgBuffer[0]	= 	CMD_GO_RIGHT;
+				msgBuffer[1] 	=	STATUS_CMD_OK;
+
+			} else if(msgBuffer[0]==CMD_GO_UP){
+				pMenu->go_up();
+				pMenu->display();
+				isLeave	=	1;
+				msgLength		=	2;
+				msgBuffer[0]	= 	CMD_GO_UP;
+				msgBuffer[1] 	=	STATUS_CMD_OK;
+
+			} else if(msgBuffer[0]==CMD_GO_DOWN){
+				pMenu->go_down();
+				pMenu->display();
+				isLeave	=	1;
+				msgLength		=	2;
+				msgBuffer[0]	= 	CMD_GO_DOWN;
+				msgBuffer[1] 	=	STATUS_CMD_OK;
+
+				///////// UP DOWN LEFT RIGHT ////////
+
+			} else if(msgBuffer[0]==CMD_DIR){
+				/* msgBuffer[0]==CMD_DIR
+				 * msgBuffer[1]==NR_HIGH
+				 * msgBuffer[2]==NR_LOW
+				 * msgBuffer[3]==G
+				 * msgBuffer[4]==P
+				 * msgBuffer[5]==S
+				 *
+				 * messageLength=6
+				 */
+
+				// buffer for dir name
+				char dir[8];
+				// copy reqested dir
+				for(unsigned int i=3;i<msgLength;i++){
+					dir[i-3]=msgBuffer[i];
+				}
+				// add end of string
+				dir[msgLength-3]='\0';
+				// get item id
+				unsigned int item=(msgBuffer[1]<<8)|msgBuffer[2];
+
+				// open root and maybe go on
+				SdFile fm_handle,returner;
+				fm_handle.openRoot(&pSD->volume);
+				if(!(dir[0]=='/')){	// wenn es NICHT ".." ist
+					returner.open(&fm_handle, dir, O_READ);
+					fm_handle=returner;
+				}
+				// get filename and type of item
+				char name[13];
+				int status=fm_handle.lsJKWNext(name,item);
+
+				// write the returner
+				msgBuffer[0]=CMD_DIR;
+				msgBuffer[1]=STATUS_CMD_OK;
+
+				if(status>0) {
+					msgBuffer[2]=status;
+					int i=0;
+					while(name[i]!='\0'){
+						msgBuffer[i+3]=name[i];
+						i++;
+					};
+					msgLength		=	i+2+1; // i==anzahl an zeichen für name + 1 für type {1/2} + 2 für cmd/ok
+				} else {
+					msgLength		= 	3;
+					msgBuffer[2]	= 	STATUS_EOF;
+				};
+
+				///////// EMERGENCY ////////
+			} else {
+				msgLength		=	2;
+				//msgBuffer[0]	=	msgBuffer[0]; // keep old command
+				msgBuffer[1]	=	STATUS_CMD_UNKNOWN;
+			}
+
+			/*
+			 * Now send answer message back
+			 */
+			Serial.print((char)MESSAGE_START);
+			checksum	=	MESSAGE_START^0;
+
+			Serial.print((char)seqNum);
+			checksum	^=	seqNum;
+
+			//c			=	msgLength&0x00FF;
+			Serial.print((char)msgLength);
+			checksum ^= msgLength;
+
+			Serial.print((char)TOKEN);
+			checksum ^= TOKEN;
+
+			p	=	msgBuffer;
+			while(msgLength){
+				c	=	*p++;
+				Serial.print((char)c);
+				checksum ^=c;
+				msgLength--;
+			}
+			Serial.print((char)checksum);
+
+			seqNum++;
+			msgParseState = ST_START;
+
+		}; // if isleave!=1
+	}; // while isLeave!=1
+//	pMenu->display();
+}; // fkt ende
 

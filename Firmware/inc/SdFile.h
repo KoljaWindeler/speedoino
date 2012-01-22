@@ -266,6 +266,7 @@ class SdFile {
   }
   void ls(Print* pr, uint8_t flags = 0, uint8_t indent = 0);
   void ls(uint8_t flags = 0);
+  int8_t lsJKWNext(char* buffer,int item);
   bool mkdir(SdFile* dir, const char* path, bool pFlag = true);
   // alias for backward compactability
   bool makeDir(SdFile* dir, const char* path) {return mkdir(dir, path, false);}
@@ -355,6 +356,7 @@ class SdFile {
   bool addDirCluster();
   dir_t* cacheDirEntry(uint8_t action);
   int8_t lsPrintNext(Print *pr, uint8_t flags, uint8_t indent);
+
   static bool make83Name(const char* str, uint8_t* name, const char** ptr);
   bool mkdir(SdFile* parent, const uint8_t dname[11]);
   bool open(SdFile* dirFile, const uint8_t dname[11], uint8_t oflag);

@@ -2,13 +2,16 @@
 package de.windeler.kolja;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.TreeMap;
+
 import android.app.Activity;
 import android.app.TabActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.CharArrayBuffer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,14 +21,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class SpeedoAndroidActivity extends TabActivity implements OnClickListener {
 	// Name of the connected device
-	private String mConnectedDeviceName = null;
 	private static final String TAG = "JKW";
 
 	private MenuItem mMenuItemConnect;
@@ -33,6 +39,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	public static final String DEVICE_NAME = "device_name";
 	public static final String TOAST = "toast";
 	public static BluetoothSerialService mSerialService = null;
+	private Toast toast;
 	/**
 	 * Our main view. Displays the emulated terminal screen.
 	 */
@@ -50,7 +57,11 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	private Button browseToUploadConfig;
 	private Button browseToUploadSpeedo;
 	private Button browseToUploadGfx;
-	
+	private Button mloadRoot;
+	private Button DlselButton;
+	private ListView mDLListView;
+
+
 
 	// Message types sent from the BluetoothReadService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
@@ -58,7 +69,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	public static final int MESSAGE_WRITE = 3;
 	public static final int MESSAGE_DEVICE_NAME = 4;
 	public static final int MESSAGE_TOAST = 5;
-	
+
 	private static final int REQUEST_CONNECT_DEVICE = 1;
 	private static final int REQUEST_ENABLE_BT 		= 2;
 	private static final int REQUEST_OPEN_MAP		= 3;	// file open dialog
@@ -89,11 +100,15 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	public static final byte CMD_GO_UP			=  0x07;
 	public static final byte CMD_GO_DOWN		=  0x08;
 	public static final byte CMD_FILE_RECEIVE	=  0x09;
+	public static final byte CMD_DIR			=  0x11;
 
 	public static final char STATUS_CMD_OK      =  0x09;
 	public static final char STATUS_CMD_FAILED  =  0xC0;
 	public static final char STATUS_CKSUM_ERROR =  0xC1;
 	public static final char STATUS_CMD_UNKNOWN =  0xC9;
+	public static final char STATUS_EOF 		=  0x10;
+	
+	private long lastSend = System.currentTimeMillis();  
 
 
 	// rx/tx vars
@@ -103,10 +118,17 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	private char	checksum	= 0;
 	private char	msgBuffer[] = new char[300];
 	private int		ii			= 0;
-	
-	
+
+	// dir me
+	private int 	dir_item_nr	= 0;
+	private String 	dir_path = "";
+	private TreeMap<String, String> dirsMap = new TreeMap<String, String>();
+	private TreeMap<String, String> filesMap = new TreeMap<String, String>();
+	private TreeMap<String, Integer> typeMap = new TreeMap<String, Integer>();
+	private ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+	private static final String ITEM_KEY = "key";
+	private static final String ITEM_IMAGE = "image";
 	// String buffer for outgoing messages
-	private StringBuffer mOutStringBuffer;
 	public TextView mTest;
 
 
@@ -164,6 +186,17 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		browseToUploadConfig.setOnClickListener(this);
 		browseToUploadSpeedo = (Button) findViewById(R.id.browseToUploadSpeedo);
 		browseToUploadSpeedo.setOnClickListener(this);
+		mloadRoot = (Button) findViewById(R.id.loadRoot);
+		mloadRoot.setOnClickListener(this);
+		DlselButton = (Button) findViewById(R.id.DownloadButtonSelect);
+		DlselButton.setEnabled(false);
+		DlselButton.setOnClickListener(this);
+		mDLListView = (ListView) findViewById(R.id.dlList);
+		
+		
+
+
+
 
 
 
@@ -177,7 +210,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 	}
 
-	public void setVersion(CharSequence data){
+	public void setVersion(String data){
 		if(mVersion!=null)
 			mVersion.setText(data);
 	}
@@ -185,7 +218,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	public void setLog(CharSequence status){
 		mLog.setText(status);
 	}
-	
+
 	public void setStatus(CharSequence status){
 		mStatus.setText(status);
 	}
@@ -216,7 +249,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		mSerialService = new BluetoothSerialService(this, mHandlerBT);
-		mOutStringBuffer = new StringBuffer("");
 	}
 
 	@Override
@@ -225,8 +257,8 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		// Stop the Bluetooth chat services
 		if (mSerialService != null) mSerialService.stop();
 		Log.e(TAG, "--- ON DESTROY ---");
-	}
 
+	}
 
 
 	@Override
@@ -324,7 +356,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			break;
 		default:
 			Log.i(TAG,"nicht gut, keine ActivityResultHandle gefunden");
-				
+
 		}
 	}
 
@@ -405,25 +437,39 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		byte 	p				= 0;
 		// nur senden, wenn wir nicht gerade was empfangen
 		if(mSerialService.getState()!=mSerialService.STATE_CONNECTED){
-			Toast.makeText(this, "You are not connected", Toast.LENGTH_SHORT).show();
+			toast.cancel();
+			toast = Toast.makeText(this, "You are not connected", Toast.LENGTH_SHORT);
+			toast.show();
 			mDownload.setText("test");
 			return;
 		}
+		
+		if(System.currentTimeMillis()-lastSend>1000){ // 5 sec nix gehört
+			rx_tx_state=ST_IDLE;
+			seqNum=1;
+		} else {
+			seqNum++;
+		}
+		
 		if(rx_tx_state==ST_IDLE){
 			if(msgLength<=0) return;
 			Log.i(TAG,"Sende nachricht");
 
 			c=(byte)MESSAGE_START;
 			mSerialService.write(c);		// Message Start
+			Log.d(TAG,"BTsend:"+String.valueOf((int)c));
 			checksum	=	c;
 			c=(byte)seqNum;
 			mSerialService.write(c);		// Seq Nr
+			Log.d(TAG,"BTsend:"+String.valueOf((int)c));
 			checksum	^=	c;
 			c=(byte) (msgLength&0x00FF);
 			mSerialService.write(c);		// length max 255
+			Log.d(TAG,"BTsend:"+String.valueOf((int)c));
 			checksum ^= c;
 			c=(byte)TOKEN;
 			mSerialService.write(c);		// Token
+			Log.d(TAG,"BTsend:"+String.valueOf((int)c));
 			checksum ^= TOKEN;
 
 
@@ -431,10 +477,12 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				p	=	data[i];
 				mSerialService.write(p);	// send some data
 				checksum ^= p;
+				Log.d(TAG,"BTsend:"+String.valueOf((int)p));
 			}
 			mSerialService.write(checksum);	//	CHECKSUM
-			seqNum++;
+			Log.d(TAG,"BTsend:"+String.valueOf((int)checksum));
 			rx_tx_state=ST_START; // start listening
+			lastSend = System.currentTimeMillis();
 		} else {
 			Log.i(TAG,"State nicht IDLE");
 		};
@@ -442,7 +490,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 
 	private void process_incoming(char data) {
-		Log.i(TAG,"process_incoming gestartet mit:"+String.valueOf((int)data)+" rx_state:"+String.valueOf((int)rx_tx_state));			
+		Log.i(TAG,"process_incoming gestartet mit:"+String.valueOf((int)(data&0x00ff))+" rx_state:"+String.valueOf((int)rx_tx_state));			
 		switch(rx_tx_state){
 		case ST_START:
 			if ( data == MESSAGE_START){
@@ -459,6 +507,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				rx_tx_state	=	ST_MSG_SIZE;
 				checksum	^=	data;
 			} else {
+				Log.i(TAG,"Seq unpassend:"+String.valueOf((int)data)+" erwartet "+String.valueOf((int)seqNum));
 				rx_tx_state	=	ST_START;
 			}
 			break;
@@ -472,7 +521,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			break;
 
 		case ST_GET_TOKEN:
-			mDownload.setText("Token erhalten? Habe:"+(int)data+" wollte: "+(int)TOKEN);
 			if ( data == TOKEN ){
 				Log.i(TAG,"Token erhalten");
 				rx_tx_state		=	ST_GET_DATA;
@@ -496,6 +544,8 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 		case ST_GET_CHECK:
 			if ( data == checksum ){
+				rx_tx_state	=	ST_IDLE;
+
 				Log.i(TAG,"Checksum korrekt");
 				if(msgBuffer[1]==STATUS_CMD_OK){
 					setLog("Command OK");
@@ -504,20 +554,36 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				} else if(msgBuffer[1]==STATUS_CMD_UNKNOWN) {
 					setLog("Command unknown");
 				}
-					
+
 				switch((msgBuffer[0])){
 				case CMD_SIGN_ON:
 					// hier jetzt in unsere oberflche die id eintragen
 					if((msgBuffer[1] & 0xff)==STATUS_CMD_OK){
-						// in msgBuuffer[2] steht jetzt nochmal die Laenge, fast schon etwas redundant
-						setVersion(msgBuffer.toString().substring(3, msgLength-1));
+						String str = new String(msgBuffer);
+						str=str.substring(2,msgLength);
+						setVersion(str);
 					} else {
 						// irgendwie das command nochmal senden
 					}
 					break;
 				case CMD_FILE_RECEIVE:
 					break;
+				// da alle richtungen zwar betätigt werden, danach die schleife auf dem AVR aber unterbrochen wird -> seqNr resetten
 				case CMD_GO_LEFT:
+				case CMD_GO_RIGHT:
+				case CMD_GO_UP:
+				case CMD_GO_DOWN:
+					seqNum=1;
+					break;
+				case CMD_DIR:
+					Log.i(TAG,"CMD Dir erhalten");
+
+					String str = new String(msgBuffer);
+					str=str.substring(3,msgLength);
+					Log.i(TAG,"test="+str);
+
+					receive_dir(str,(int)msgBuffer[2]);
+
 					break;
 				default:
 					// irgendwie das commando nochmal senden
@@ -528,8 +594,8 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				Log.i(TAG,"Checksum FALSCH");
 				setLog("Checksum failed");
 				// ankommenden nachricht war nicht korrekt uebertragen
+				rx_tx_state	=	ST_IDLE;
 			}
-			rx_tx_state	=	ST_IDLE;
 			break;
 
 		}			
@@ -588,9 +654,131 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_SPEEDO);
 			break;
+		case R.id.loadRoot:
+			toast = Toast.makeText(getBaseContext(), "loading content of folder /.\nPlease wait...", 9999);
+			toast.show();
+			send_dir("/",0); // change to "/"
+			break;
+		case R.id.DownloadButtonSelect:
+			//		     if (selectedFile != null) {
+			//                             getIntent().putExtra(RESULT_PATH, selectedFile.getPath());
+			//                             setResult(RESULT_OK, getIntent());
+			//                             finish();
+
+			break;
+
 		default:
+			Log.i(TAG,"Hier wurde was geklickt das ich nicht kenne!!");
 			break;
 		}
 	}
 
+	public void send_dir(String dir,int item){
+		Log.i(TAG,"Betrete send_dir mit:"+dir+" und item="+String.valueOf(item));
+		dir_item_nr=item;
+		dir_path=dir;
+		byte send[] = new byte[dir.length()+2+1]; // 2 für length of item + name + command
+
+		send[0]=CMD_DIR;
+		send[1]=(byte) ((item & 0xff00)>>8); //danger wegen signed ? interessant ab über 127 Files
+		send[2]=(byte) (item & 0x00ff);
+
+		for(int i=0;i<dir.length();i++){
+			send[i+3]=(byte)dir.charAt(i);
+		}
+
+		process_outgoing(send, send.length);
+	};
+
+	public void receive_dir(String name, int type){
+		Log.i(TAG,"receive_dir gestartet mit:"+name);
+		if(dir_item_nr==0){
+			mDownload.setText("");
+			filesMap.clear();
+			typeMap.clear();
+			dirsMap.clear();
+			mList.clear();
+		};
+		if(type==1){ // file
+			mDownload.append("File: "+name+"\n");
+			filesMap.put(name,name);
+			typeMap.put(name,1);
+		} else if(type==2){ // dir
+			mDownload.append("Folder: "+name+"\n");
+			dirsMap.put(name, name);
+			typeMap.put(name,2);
+		};
+		if(type!=STATUS_EOF){
+			dir_item_nr++;
+			send_dir(dir_path,dir_item_nr);
+		} else {
+			Log.d(TAG,"beginne liste aufzubauen");
+			
+
+			// send to display
+			SimpleAdapter fileList = new SimpleAdapter(this, mList, R.layout.file_dialog_row,
+					new String[] { ITEM_KEY, ITEM_IMAGE }, new int[] { R.id.fdrowtext, R.id.fdrowimage });
+			
+			if(dir_path!="/"){
+				addItem("/", R.drawable.folder);
+				typeMap.put("/", 2);
+			};
+			
+			for (String dir : dirsMap.tailMap("").values()) {
+				if(dir.toString().length()>23){
+					addItem(dir.toString().substring(0, 20)+"...", R.drawable.folder);
+				} else {
+					addItem(dir, R.drawable.folder);
+				}
+			}
+
+			for (String file : filesMap.tailMap("").values()) {
+				if(file.toString().length()>23){
+					addItem(file.toString().substring(0, 20)+"...", R.drawable.file);
+				} else {
+					addItem(file, R.drawable.file);
+				}
+			}
+			mDLListView.setAdapter(fileList);
+			if(toast!=null){
+				toast.cancel();
+			}
+			mDLListView.setOnItemClickListener(new OnItemClickListener()
+	        {
+	        	public void onItemClick(AdapterView<?> arg0, View arg1,int arg2, long arg3)
+	        	{
+	        		String name=null;
+	        		Integer type=0;
+	        		HashMap<String, Object> item = new HashMap<String, Object>();
+	        			        		
+	        		item = mList.get(arg2);
+	        		name=(String) item.get(ITEM_KEY);
+	        		type=typeMap.get(name);
+	        		
+	        		if(type==1){
+	        			String path="/";
+	        			if(dir_path!="/")
+	        				path=path+dir_path+"/";
+	        			path=path+name;
+	        			
+	        			Toast.makeText(getBaseContext(), "You clicked on file "+path, Toast.LENGTH_LONG).show();
+	        			DlselButton.setEnabled(true);
+	        		} else if (type==2) {
+	        			toast = Toast.makeText(getBaseContext(), "loading content of folder "+name+".\nPlease wait...", 9999);
+	        			toast.show();
+	        			send_dir(name,0); 
+	        		}
+	    		}
+	    	});
+		}
+	}
+
+
+	private void addItem(String fileName, int imageId) {
+		HashMap<String, Object> item = new HashMap<String, Object>();
+		item.put(ITEM_KEY, fileName);
+		item.put(ITEM_IMAGE, imageId);
+		mList.add(item);
+	}
+	
 }

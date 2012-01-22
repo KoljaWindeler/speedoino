@@ -51,17 +51,19 @@ int speedo_sd::writeString(SdFile& f, char *str) {
 void speedo_sd::init(){
 	// p kanal runterziehen damit er leitend wird
 	power_up();
+	pinMode(SD_EN,OUTPUT);
+	digitalWrite(SD_EN,LOW);
 	Serial.println("SD init done");
 };
 
 void speedo_sd::power_down(){
-	pinMode(SD_EN,INPUT);
-	digitalWrite(SD_EN,LOW);
+	//	pinMode(SD_EN,INPUT);
+	//	digitalWrite(SD_EN,LOW);
 }
 
 void speedo_sd::power_up(){
-	pinMode(SD_EN,OUTPUT);
-	digitalWrite(SD_EN,LOW);
+	//	pinMode(SD_EN,OUTPUT);
+	//	digitalWrite(SD_EN,LOW);
 	sd_failed=false;
 	bool allright=true;
 	int tries=0;
@@ -82,3 +84,4 @@ void speedo_sd::power_up(){
 	};
 
 };
+

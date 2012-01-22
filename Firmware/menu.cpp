@@ -2224,7 +2224,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 	// oder per serielle konsole
 	int input=0;
 	if(bt_keys_en || true){ // auf keinen Fall hier lesen, wenn wir gerade im Import sind, sonder haut uns jeder Straßenname mit w||a||s||d raus
-		if(Serial.available()>10){ // wenns zuviele sind flushen
+		if(Serial.available()>100){ // wenns zuviele sind flushen
 			Serial.flush();
 		} else if(Serial.available()>0){ // an sonsten gern
 			if(Serial.read()==MESSAGE_START){
