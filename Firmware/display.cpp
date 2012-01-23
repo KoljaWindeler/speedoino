@@ -147,7 +147,7 @@ void speedo_disp::draw_arrow(int arrow, int spalte, int zeile){
 }
 
 // grafix has to be stored at /gfx/
-int speedo_disp::sd2ssd(char filename[10]){
+int speedo_disp::sd2ssd(char filename[10],int frame){
 	send_command(0x15);
 	send_command(0x00);
 	send_command(0x7F);
@@ -162,9 +162,12 @@ int speedo_disp::sd2ssd(char filename[10]){
 
 	if(!subdir.open(&root, "gfx", O_READ))    {  return 1; };
 	if(!file.open(&subdir, filename, O_READ)) {  return 2; };
+	file.seekSet(frame*64*sizeof(byte)*64); // ein bild ist 64*64 Byte groß, da wir 64 lines zu je 64*2*4 Bit Breite haben
+
 	uint8_t buf[65];
-	int n;
-	while ((n = file.read(buf, sizeof(byte)*64)) > 0) {
+	//int n;
+	//while ((n = file.read(buf, sizeof(byte)*64)) > 0) {
+	for (int zeile=0;	(file.read(buf, sizeof(byte)*64)>0)	&& zeile<64;	zeile++ ) {
 		for(int j=0;j<64;j++){
 			send_char(buf[j]);
 		};
@@ -317,8 +320,7 @@ void speedo_disp::show_animation(const char command[]){
 		else memset(char_buffer,'\0',22);
 
 		for(int i=start; i<=ende; i++){
-			sprintf(char_buffer,filename,i);
-			if(sd2ssd(char_buffer)>0){
+			if(sd2ssd(filename,i)>0){
 				i=ende;
 				killed=true;
 				clear_screen();

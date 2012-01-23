@@ -27,7 +27,7 @@ public:
 	void draw_clock(unsigned char x,unsigned char y);
 	void draw_blitzer(unsigned char x,unsigned char y);
 	void draw_arrow(int arrow, int spalte, int zeile);
-	int  sd2ssd(char filename[10]);
+	int  sd2ssd(char filename[10],int frame);
 	void show_animation(const char command[]);
 	void disp_waiting(int position,unsigned char spalte,unsigned char zeile);
 	void animation(int a);

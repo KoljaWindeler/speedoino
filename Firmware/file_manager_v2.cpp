@@ -280,18 +280,18 @@ void speedo_filemanager_v2::run(){
 				if(tries==100){  pDebug->sprintlnp(PSTR("Done"));  }
 				else {        pDebug->sprintlnp(PSTR("Failed"));  };
 				///////////////// Ausführung /////////////////
-			} else if(char(input)=='s'){   // || Eingabe: "s"     || Ausgabe: Bild auf schirm
-				// Dateinamen einlesen
-				get_filename(&buffer[0]);
-				///////////////// Ausführung ////////////////a
-				pOLED->sd2ssd(buffer);
-				///////////////// Ausführung /////////////////
-			} else if(char(input)=='a'){   // Eingabe: "asimp%i.txt,0,20,80!" für zeige datei simp1 bis simp19 im abstand von 80 ms"     || Ausgabe: Bild auf schirm
-				// Dateinamen einlesen
-				get_filename(&buffer[0]); // missbraucht zum einlesen des ganzen commandos
-				///////////////// Ausführung /////////////////
-				pOLED->show_animation(buffer);
-				///////////////// Ausführung /////////////////
+//			} else if(char(input)=='s'){   // || Eingabe: "s"     || Ausgabe: Bild auf schirm
+//				// Dateinamen einlesen
+//				get_filename(&buffer[0]);
+//				///////////////// Ausführung ////////////////a
+//				pOLED->sd2ssd(buffer);
+//				///////////////// Ausführung /////////////////
+//			} else if(char(input)=='a'){   // Eingabe: "asimp%i.txt,0,20,80!" für zeige datei simp1 bis simp19 im abstand von 80 ms"     || Ausgabe: Bild auf schirm
+//				// Dateinamen einlesen
+//				get_filename(&buffer[0]); // missbraucht zum einlesen des ganzen commandos
+//				///////////////// Ausführung /////////////////
+//				pOLED->show_animation(buffer);
+//				///////////////// Ausführung /////////////////
 			} else if(char(input)=='p'){   // || Eingabe: "p"     || Ausgabe: pilot
 				Serial.print("pilot");
 			} else if(char(input)=='c'){   // || Eingabe: "cDIR"     || Ausgabe: ""
@@ -389,6 +389,7 @@ void speedo_filemanager_v2::parse_command(){
 	unsigned char	msgBuffer[285];
 	unsigned char	c, *p;
 	unsigned char   isLeave = 0;
+	pSensors->m_reset->set_deactive(false,true);
 
 	//*	main loop
 	while (!isLeave){
@@ -699,5 +700,6 @@ void speedo_filemanager_v2::parse_command(){
 		}; // if isleave!=1
 	}; // while isLeave!=1
 //	pMenu->display();
+	pSensors->m_reset->set_active(false,true);
 }; // fkt ende
 

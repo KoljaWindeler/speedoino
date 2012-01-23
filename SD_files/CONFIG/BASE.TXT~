@@ -1,5 +1,5 @@
 #This is an auto-generated file from (MonDay) 1203
-startup=LG2.TXT,1,2,400;
+startup=LG2_%i.TXT,1,2,400;
 blinker=200
 blinker_high=200
 fuel_blink_start=140

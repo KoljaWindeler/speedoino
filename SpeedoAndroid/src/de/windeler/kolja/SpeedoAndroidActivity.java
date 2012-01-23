@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.app.backup.RestoreObserver;
 import android.bluetooth.BluetoothAdapter;
@@ -42,6 +43,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	public static BluetoothSerialService mSerialService = null;
 	private Toast toast;
 	private Handler mTimerHandle = new Handler();
+	private ProgressDialog _progressDialog;
 	
 
 	/**
@@ -439,14 +441,8 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			case MESSAGE_READ:
 				byte[] readBuf = (byte[]) msg.obj;
 				for(int i=0; i<msg.arg1; i++){
-					//Log.d(TAG, "geht das:"+readBuf[i]);
 					process_incoming((char)readBuf[i]);
 				};
-				// construct a string from the valid bytes in the buffer
-				//String readMessage = new String(readBuf, 0, msg.arg1);
-				//Log.i(TAG,readMessage);
-				//Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_SHORT).show();
-				//if(mDownload!=null){	mDownload.append(readMessage);	};
 				break;
 			}
 		}
@@ -640,23 +636,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		}			
 	}
 
-//	private void check_preamble(char data) {
-//		String temp= new String("finished");
-//		char finished_str[]= new char[temp.length()+1];
-//		temp.getChars(0, temp.length(), finished_str, 0);
-//
-//		if(finished_str[finished_counter]==data){
-//			finished_counter++;
-//			if(finished_counter==temp.length()){
-//				preamble_passed=true;
-//				mStatus.setText("connected. Speedoino found");
-//				mTimerHandle.postDelayed(mCheckVer, 500);
-//			}
-//		} else {
-//			finished_counter=0;
-//		}
-//	}
-
 	@Override
 	public void onClick(View arg0) {
 		Intent intent; // reusable
@@ -709,8 +688,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			startActivityForResult(intent, REQUEST_OPEN_SPEEDO);
 			break;
 		case R.id.loadRoot:
-			toast = Toast.makeText(getBaseContext(), "loading content of folder /.\nPlease wait...", 9999);
-			toast.show();
+			 _progressDialog = ProgressDialog.show(getApplicationContext(), "", "Loading directory...", true);
 			send_dir("/",0); // change to "/"
 			break;
 		case R.id.DownloadButtonSelect:
@@ -767,7 +745,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			send_dir(dir_path,dir_item_nr);
 		} else {
 			Log.d(TAG,"beginne liste aufzubauen");
-			
 
 			// send to display
 			SimpleAdapter fileList = new SimpleAdapter(this, mList, R.layout.file_dialog_row,
@@ -794,9 +771,11 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				}
 			}
 			mDLListView.setAdapter(fileList);
-			if(toast!=null){ // hilft das überhaupt?
-				toast.cancel();
-			}
+			
+			if (_progressDialog != null){
+                _progressDialog.dismiss();
+			};
+			
 			mDLListView.setOnItemClickListener(new OnItemClickListener()
 	        {
 	        	public void onItemClick(AdapterView<?> arg0, View arg1,int arg2, long arg3)
@@ -845,6 +824,9 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			if(rx_tx_state!=ST_IDLE){
 				rx_tx_state=ST_IDLE;
 				reset_seq();
+				
+				if (_progressDialog != null)
+                    _progressDialog.dismiss();
 				
 				if(mLog!=null) mLog.setText(R.string.noresponse);
 				toast = Toast.makeText(getApplicationContext(), R.string.noresponse, Toast.LENGTH_SHORT);
