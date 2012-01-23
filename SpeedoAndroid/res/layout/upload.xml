@@ -32,6 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/uploadgfxfile" />
+   
      <TextView
         android:id="@+id/Upload_textView"
         android:layout_width="match_parent"
