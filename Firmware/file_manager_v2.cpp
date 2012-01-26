@@ -825,6 +825,7 @@ void speedo_filemanager_v2::parse_command(){
 				////////////////////////////// GET FILE /////////////////////////////////
 				////////////////////////////// PUT FILE /////////////////////////////////
 
+				// TRANSFER VOM HANDY ZUM TACHO
 				/* hinweg:
 				 * msgBuffer[0]=CMD_PUT_FILE
 				 * msgBuffer[1]=high_nibble of cluster nr
@@ -837,10 +838,11 @@ void speedo_filemanager_v2::parse_command(){
 				 * msgBuffer[0]=CMD_PUT_FILE
 				 * msgBuffer[1]=COMMAND_OK
 				 */
-			} else if(msgBuffer[0]==CMD_PUT_FILE){
+			} else if(msgBuffer[0]==CMD_PUT_FILE && !((msgLength==2) && (msgBuffer[1]==STATUS_EOF))){
 				bool file_already_open=true;
 				bool file_open_failed=false;
 				bool file_seek_failed=false;
+
 
 				if(fm_file.isFile()){
 					for(unsigned int i=0;i<msgLength-2;i++){
@@ -851,6 +853,7 @@ void speedo_filemanager_v2::parse_command(){
 				} else {
 					file_already_open=false;
 				};
+
 
 				// wenn die datei noch nicht geöffnet ist,
 				// müssen wir
@@ -905,10 +908,12 @@ void speedo_filemanager_v2::parse_command(){
 					};
 
 					// datei öffnen
-					if (!fm_file.open(&fm_handle, filename, O_CREAT| O_WRITE)){
+					if (!fm_file.open(&fm_handle, filename, O_CREAT| O_WRITE | O_SYNC | O_APPEND)){
 						file_open_failed=true;
 					};
 				} // filealready open
+
+				unsigned int offset=(int)msgBuffer[3]+4;  // z.B. 20 // 4 command byte - Dateinamenlänge
 
 				// setze pointer
 				if(!file_open_failed){
@@ -916,42 +921,56 @@ void speedo_filemanager_v2::parse_command(){
 					pos=msgBuffer[1]<<8;
 					pos|=msgBuffer[2];
 
-					if(!fm_file.seekSet(pos*250)){
-						file_seek_failed=true;
-					}
+
+
+//					if(!fm_file.seekSet(pos*(msgLength-offset))){ // das ist noch totaler mist, das hier kein Seeken möglich ist
+//						file_seek_failed=true;
+//					} else {
+//						//////////
+//						sprintf(buf,"fs:%i,pos:%i ",(int)fm_file.fileSize(),pos*(msgLength-offset));
+//						pOLED->string(0,buf,0,6);
+//						delay(1000);
+//					}
+					//////////
 				};
 
 				// wenn immer noch alles gut, dann konnten wir die Datei öffnen und auch den Filepointer dahin setzten wo er hin soll
 				if(!file_open_failed && !file_seek_failed){
 					//Serial.println("file_seek OK");
-					unsigned int offset=(int)msgBuffer[3]+4;  // z.B. 20 // 4 command byte - Dateinamenlänge
 					for(unsigned int i=0;i<msgLength-offset;i++){ // 254-20=234
 						msgBuffer[i]=msgBuffer[i+offset]; // msgBuffer[233]=msgBuffer[253]
 					}
-					int n=fm_file.write(msgBuffer, sizeof(byte)*(msgLength-offset)); // 254 - 20
+
+					int n=fm_file.write(msgBuffer, msgLength-offset); // 254 - 20
 
 					if(n > 0) { // 250 Byte happen
 						msgLength=2; // cmd + status ok
-						msgBuffer[0]=CMD_GET_FILE;
+						msgBuffer[0]=CMD_PUT_FILE;
 						msgBuffer[1]=STATUS_CMD_OK;
 					} else {
 						msgLength=2; // n buchstaben + cmd + status eof
-						msgBuffer[0]=CMD_GET_FILE;
+						msgBuffer[0]=CMD_PUT_FILE;
 						msgBuffer[1]=STATUS_EOF;
 						last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
 					}
 				} else if(file_seek_failed){
-					msgLength=2; // n buchstaben + cmd + status failed
-					msgBuffer[0]=CMD_GET_FILE;
+					msgLength=3; // n buchstaben + cmd + status failed
+					msgBuffer[0]=CMD_PUT_FILE;
 					msgBuffer[1]=STATUS_CMD_FAILED;
+					msgBuffer[2]='1';
 					last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
 				} else {
-					msgLength=2; // n buchstaben + cmd + status failed
-					msgBuffer[0]=CMD_GET_FILE;
+					msgLength=3; // n buchstaben + cmd + status failed
+					msgBuffer[0]=CMD_PUT_FILE;
 					msgBuffer[1]=STATUS_CMD_FAILED;
+					msgBuffer[2]='2';
 					last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
 				}
-
+			} else if(msgBuffer[0]==CMD_PUT_FILE && ((msgLength==2) && (msgBuffer[1]==STATUS_EOF))){
+				fm_file.sync();
+				fm_file.close();
+				fm_handle.sync();
+				fm_handle.close();
 				////////////////////////////// PUT FILE /////////////////////////////////
 				///////////////////////////// EMERGENCY /////////////////////////////////
 

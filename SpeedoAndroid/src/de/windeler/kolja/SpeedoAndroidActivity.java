@@ -560,24 +560,28 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			intent.putExtra(FileDialog.START_PATH, "/sdcard");
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_MAP);
+			a2t_dest="NAVI";
 			break;
 		case R.id.browseToUploadConfig:
 			intent = new Intent(getBaseContext(),FileDialog.class);
 			intent.putExtra(FileDialog.START_PATH, "/sdcard");
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_CONFIG);
+			a2t_dest="CONFIG";
 			break;
 		case R.id.browseToUploadGfx:
 			intent = new Intent(getBaseContext(),FileDialog.class);
 			intent.putExtra(FileDialog.START_PATH, "/sdcard");
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_GFX);
+			a2t_dest="GFX";
 			break;
 		case R.id.browseToUploadSpeedo:
 			intent = new Intent(getBaseContext(),FileDialog.class);
 			intent.putExtra(FileDialog.START_PATH, "/sdcard");
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_SPEEDO);
+			a2t_dest="CONFIG";
 			break;
 		case R.id.loadRoot:
 			_getDirDialog = new getDirDialog();
@@ -589,6 +593,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			break;			
 		case R.id.tester:
 			_putFileDialog = new putFileDialog();
+			a2t_dest=a2t_dest+a2t_source.substring(a2t_source.lastIndexOf('/'));
 			_putFileDialog.execute(a2t_source,a2t_dest);
 
 		default:

@@ -475,19 +475,19 @@ public class BluetoothSerialService {
 
 			c=(byte)MESSAGE_START;
 			write(c);		// Message Start
-			Log.d(TAG,"BTsend:"+String.valueOf((int)c));
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+"/MSG_START");
 			checksum	=	c;
 			c=(byte)seqNum;
 			write(c);		// Seq Nr
-			Log.d(TAG,"BTsend:"+String.valueOf((int)c));
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c));
 			checksum	^=	c;
 			c=(byte) (msgLength&0x00FF);
 			write(c);		// length max 255
-			Log.d(TAG,"BTsend:"+String.valueOf((int)c));
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c));
 			checksum ^= c;
 			c=(byte)TOKEN;
 			write(c);		// Token
-			Log.d(TAG,"BTsend:"+String.valueOf((int)c));
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+"/TOKEN");
 			checksum ^= TOKEN;
 
 
@@ -495,10 +495,10 @@ public class BluetoothSerialService {
 				p	=	data[i];
 				write(p);	// send some data
 				checksum ^= p;
-				Log.d(TAG,"BTsend:"+String.valueOf((int)p));
+				Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)p)+"/"+String.valueOf((char)p));
 			}
 			write(checksum);	//	CHECKSUM
-			Log.d(TAG,"BTsend:"+String.valueOf((int)checksum));
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)checksum));
 			rx_tx_state=ST_START; // start listening
 
 			// install guard, 2sec until check of receive
@@ -521,6 +521,7 @@ public class BluetoothSerialService {
 				rx_tx_state=ST_IDLE;
 				reset_seq();
 				Log.i(TAG,"timer notfall, gebe semaphore zurück");
+				Log.i(TAG_RECV,"timer notfall, gebe semaphore zurück");
 				semaphore.release();
 				status=ST_EMERGENCY_RELEASE;
 
@@ -783,7 +784,7 @@ public class BluetoothSerialService {
 			item++;
 			// send setzt jetzt den semaphore und erst 
 			// receive gibt ihn wieder her
-			Log.e(TAG_BT,"Vor dem Send "+String.valueOf(item));
+			Log.e(TAG_RECV,"Vor dem Send item"+String.valueOf(item));
 			int send_value=send(send, send.length);
 			Log.e(TAG_BT,"Hinter dem Send");
 
@@ -796,7 +797,7 @@ public class BluetoothSerialService {
 			// im schlimmsten fall hier ein while auf ne globale variable
 			semaphore.acquire();
 			// hier können wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
-			if(status!=ST_EMERGENCY_RELEASE){
+			if(status==ST_EMERGENCY_RELEASE){
 				// hier sowas wie: 
 				item--; 
 				failCounter++;
@@ -853,7 +854,7 @@ public class BluetoothSerialService {
 		int failCounter=0;
 		int startOfPayload=0;
 		int payloadLength=250;
-		int bytesToSend=0;
+		int bytesToSend=999;
 		item = 0; // cluster nr
 		byte send[] = new byte[250]; // 250 auf Vorbehalt, da die tatsächliche länge auch davon abhöngt wieviel noch da ist in der Datei
 		// prepare static part
@@ -864,7 +865,6 @@ public class BluetoothSerialService {
 		};
 		startOfPayload=dest.length()+4;
 		payloadLength=250-startOfPayload;
-		byte buffer[] = new byte[payloadLength];
 		
 		// open File
 		File file = new File(source);
@@ -873,11 +873,19 @@ public class BluetoothSerialService {
 		try { 								in = new FileInputStream(file);		} 
 		catch (FileNotFoundException e) { 	e.printStackTrace();				}
 		
-		status=1;
-		while(status!=STATUS_EOF){
+		int upload_status=1;
+		
+		while(upload_status!=STATUS_EOF){
+			Log.e(TAG_RECV,"Vor dem Send item"+String.valueOf(item));
 			// datei auslesen und in puffer packen
-			bytesToSend=startOfPayload; // 
-			bytesToSend+=in.read(buffer, item*payloadLength, payloadLength);
+
+			bytesToSend=startOfPayload; // 										17
+			//in.reset(); // rewind file
+			//in.skip(item*payloadLength); // seek to pos
+			bytesToSend+=in.read(send, startOfPayload, payloadLength); // +84
+
+			
+			Log.e(TAG_RECV,"Bytes to send: "+String.valueOf(bytesToSend));
 			
 			// prepare dynamic part
 			send[1]=(byte) ((item & 0xff00)>>8); //danger wegen signed ? interessant ab über 127 Files
@@ -887,12 +895,13 @@ public class BluetoothSerialService {
 			if(bytesToSend<=startOfPayload){ // fehler von in.read() oder 0 byte mehr zu lesen
 				bytesToSend=2; 	// der tacho muss auf beides achten, einfach nur checken was in byte[1] steht reicht nicht !!
 				send[1]=STATUS_EOF;
-			}
+				upload_status=STATUS_EOF;
+			};
+			
 			// send setzt jetzt den semaphore und erst 
 			// receive gibt ihn wieder her
-		Log.e(TAG_BT,"Vor dem Send "+String.valueOf(item));
+		
 			int send_value=send(send, bytesToSend);
-		Log.e(TAG_BT,"Hinter dem Send");
 
 			if(send_value>0){
 				semaphore.release();
@@ -903,9 +912,11 @@ public class BluetoothSerialService {
 			// im schlimmsten fall hier ein while auf ne globale variable
 			semaphore.acquire();
 			// hier können wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
-			if(status!=ST_EMERGENCY_RELEASE){
+			if(status==ST_EMERGENCY_RELEASE){
+				Log.i(TAG_RECV,"EMERGENCY TOKEN RETURN");
 				// hier sowas wie: 
 				item--; 
+				// hier müssten wir das file mal zurückspulen .. oh oh
 				failCounter++;
 				if(failCounter>3){
 					status=STATUS_EOF;
@@ -925,7 +936,14 @@ public class BluetoothSerialService {
 			// runde, wieder einen semphore ohne einschränkung bekommen
 			semaphore.release();
 			if(msgBuffer[1]==STATUS_EOF || msgBuffer[1]==STATUS_CMD_FAILED){
-				status=STATUS_EOF;
+				upload_status=STATUS_EOF;
+				if(msgBuffer[1]==STATUS_CMD_FAILED){
+					Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
+					Bundle bundle = new Bundle();
+					bundle.putString(SpeedoAndroidActivity.TOAST, "Transmission error");
+					msg.setData(bundle);
+					mHandler.sendMessage(msg);
+				}
 				break;
 			}
 
