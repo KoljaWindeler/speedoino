@@ -313,4 +313,5 @@ int Speedo_aktors::update_outer_leds(){
 		};
 		return 0;
 	}
+	return 1;
 };
