@@ -924,7 +924,7 @@ public class BluetoothSerialService {
 			// löse desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der nächsten 
 			// runde, wieder einen semphore ohne einschränkung bekommen
 			semaphore.release();
-			if(msgBuffer[1]==STATUS_EOF){
+			if(msgBuffer[1]==STATUS_EOF || msgBuffer[1]==STATUS_CMD_FAILED){
 				status=STATUS_EOF;
 				break;
 			}

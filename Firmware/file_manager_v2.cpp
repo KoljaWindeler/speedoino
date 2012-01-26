@@ -576,7 +576,7 @@ void speedo_filemanager_v2::parse_command(){
 				pOLED->string(0,buffer,0,1);
 			};
 
-		/////////////////////////// SIGN ON ///////////////////////////////////////
+			/////////////////////////// SIGN ON ///////////////////////////////////////
 
 			if(msgBuffer[0]==CMD_SIGN_ON){
 				msgBuffer[0]	= 	CMD_SIGN_ON;
@@ -594,8 +594,8 @@ void speedo_filemanager_v2::parse_command(){
 			} else if(msgBuffer[0]==CMD_LEAVE_FM){
 				isLeave	=	1;
 
-		/////////////////////////// SIGN ON ///////////////////////////////////////
-		////////////////////////// UP DOWN LEFT RIGHT /////////////////////////////
+				/////////////////////////// SIGN ON ///////////////////////////////////////
+				////////////////////////// UP DOWN LEFT RIGHT /////////////////////////////
 
 			} else if(msgBuffer[0]==CMD_GO_LEFT){
 				pMenu->go_left();
@@ -629,8 +629,8 @@ void speedo_filemanager_v2::parse_command(){
 				msgBuffer[0]	= 	CMD_GO_DOWN;
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
-		////////////////////////// UP DOWN LEFT RIGHT /////////////////////////////
-		///////////////////////////// COMMAND DIR ////////////////////////////////
+				////////////////////////// UP DOWN LEFT RIGHT /////////////////////////////
+				///////////////////////////// COMMAND DIR ////////////////////////////////
 
 			} else if(msgBuffer[0]==CMD_DIR) {
 				/* msgBuffer[0]==CMD_DIR
@@ -683,8 +683,8 @@ void speedo_filemanager_v2::parse_command(){
 					msgLength		= 	3;
 					msgBuffer[2]	= 	STATUS_EOF;
 				};
-		///////////////////////////// COMMAND DIR ////////////////////////////////
-		////////////////////////////// GET FILE /////////////////////////////////
+				///////////////////////////// COMMAND DIR ////////////////////////////////
+				////////////////////////////// GET FILE /////////////////////////////////
 
 				/* hinweg:
 				 * msgBuffer[0]=CMD_GET_FILE
@@ -822,18 +822,148 @@ void speedo_filemanager_v2::parse_command(){
 					last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
 				}
 
-		////////////////////////////// GET FILE /////////////////////////////////
-		///////////////////////////// EMERGENCY /////////////////////////////////
+				////////////////////////////// GET FILE /////////////////////////////////
+				////////////////////////////// PUT FILE /////////////////////////////////
+
+				/* hinweg:
+				 * msgBuffer[0]=CMD_PUT_FILE
+				 * msgBuffer[1]=high_nibble of cluster nr
+				 * msgBuffer[2]=low_nibble of cluster nr
+				 * msgBuffer[3]=length of filename
+				 * msgBuffer[4..X]=filename  ... datei.txt oder folder/datei.txt
+				 * msgBuffer[X..250]=Content
+				 *
+				 * rückweg:
+				 * msgBuffer[0]=CMD_PUT_FILE
+				 * msgBuffer[1]=COMMAND_OK
+				 */
+			} else if(msgBuffer[0]==CMD_PUT_FILE){
+				bool file_already_open=true;
+				bool file_open_failed=false;
+				bool file_seek_failed=false;
+
+				if(fm_file.isFile()){
+					for(unsigned int i=0;i<msgLength-2;i++){
+						if(last_file[i]!=msgBuffer[i+3]){
+							file_already_open=false;
+						}
+					}
+				} else {
+					file_already_open=false;
+				};
+
+				// wenn die datei noch nicht geöffnet ist,
+				// müssen wir
+				// 1. checken ob sie in einem unterverzeichniss liegt
+				// 1.1. wenn ja verzeichniss namen auslesen
+				// 1.2. subverzeichniss öffnen
+				// 2. Dateiname auslesen
+				// 3. Dateihandle öffnen
+
+				if(!file_already_open){
+					int start_of_filename=0;
+					char filename[13];
+					char subdir[13];
+					fm_handle.close();
+					fm_file.close();
+					fm_handle.openRoot(&pSD->volume);
+
+					// checken ob ein "/" drin ist, und die datei somit in einem verzeichniss liegt
+					bool is_subdir_file=false;
+					for(unsigned int i=4;i<4+(unsigned int)msgBuffer[3];i++){
+						if(msgBuffer[i]=='/'){
+							is_subdir_file=true;
+						};
+					};
+
+
+					// verzeichnissnamen auslesen und öffnen
+					if(is_subdir_file){
+						for(unsigned int i=0;i<11;i++){
+							if(msgBuffer[4+i]=='/'){
+								subdir[i]='\0';
+								start_of_filename=i+1+4;
+								break;
+							} else {
+								subdir[i]=msgBuffer[4+i];
+							};
+						};
+						SdFile temp;
+						if(!temp.open(&fm_handle, subdir, O_READ)){
+						}
+						fm_handle=temp;
+					};
+
+					// dateinamen auslesen
+					for(unsigned int i=start_of_filename;i<(unsigned int)msgBuffer[3]+4;i++){
+						filename[i-start_of_filename]=msgBuffer[i];
+						last_file[i-start_of_filename]=msgBuffer[i];
+						if(i==(unsigned int)msgBuffer[3]+4-1){ // filename length + 4 (commands)
+							filename[i-start_of_filename+1]='\0';
+							last_file[i-start_of_filename+1]='\0';
+						};
+					};
+
+					// datei öffnen
+					if (!fm_file.open(&fm_handle, filename, O_CREAT| O_WRITE)){
+						file_open_failed=true;
+					};
+				} // filealready open
+
+				// setze pointer
+				if(!file_open_failed){
+					int pos;
+					pos=msgBuffer[1]<<8;
+					pos|=msgBuffer[2];
+
+					if(!fm_file.seekSet(pos*250)){
+						file_seek_failed=true;
+					}
+				};
+
+				// wenn immer noch alles gut, dann konnten wir die Datei öffnen und auch den Filepointer dahin setzten wo er hin soll
+				if(!file_open_failed && !file_seek_failed){
+					//Serial.println("file_seek OK");
+					unsigned int offset=(int)msgBuffer[3]+4;  // z.B. 20 // 4 command byte - Dateinamenlänge
+					for(unsigned int i=0;i<msgLength-offset;i++){ // 254-20=234
+						msgBuffer[i]=msgBuffer[i+offset]; // msgBuffer[233]=msgBuffer[253]
+					}
+					int n=fm_file.write(msgBuffer, sizeof(byte)*(msgLength-offset)); // 254 - 20
+
+					if(n > 0) { // 250 Byte happen
+						msgLength=2; // cmd + status ok
+						msgBuffer[0]=CMD_GET_FILE;
+						msgBuffer[1]=STATUS_CMD_OK;
+					} else {
+						msgLength=2; // n buchstaben + cmd + status eof
+						msgBuffer[0]=CMD_GET_FILE;
+						msgBuffer[1]=STATUS_EOF;
+						last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
+					}
+				} else if(file_seek_failed){
+					msgLength=2; // n buchstaben + cmd + status failed
+					msgBuffer[0]=CMD_GET_FILE;
+					msgBuffer[1]=STATUS_CMD_FAILED;
+					last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
+				} else {
+					msgLength=2; // n buchstaben + cmd + status failed
+					msgBuffer[0]=CMD_GET_FILE;
+					msgBuffer[1]=STATUS_CMD_FAILED;
+					last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
+				}
+
+				////////////////////////////// PUT FILE /////////////////////////////////
+				///////////////////////////// EMERGENCY /////////////////////////////////
 
 			} else {
 				msgLength		=	2;
 				//msgBuffer[0]	=	msgBuffer[0]; // keep old command
 				msgBuffer[1]	=	STATUS_CMD_UNKNOWN;
 			}
-		///////////////////////////// EMERGENCY /////////////////////////////////
+			///////////////////////////// EMERGENCY /////////////////////////////////
 
 
-		//////////////////////////// SEND BACK //////////////////////////////////
+			//////////////////////////// SEND BACK //////////////////////////////////
 			Serial.print((char)MESSAGE_START);
 			checksum	=	MESSAGE_START^0;
 
@@ -858,7 +988,7 @@ void speedo_filemanager_v2::parse_command(){
 
 			seqNum++;
 			msgParseState = ST_START;
-		//////////////////////////// SEND BACK //////////////////////////////////
+			//////////////////////////// SEND BACK //////////////////////////////////
 
 		}; // if isleave!=1
 	}; // while isLeave!=1
