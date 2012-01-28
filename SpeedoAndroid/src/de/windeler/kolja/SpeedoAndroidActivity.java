@@ -72,6 +72,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	private Button browseToUploadGfx;
 	private Button mloadRoot;
 	private Button DlselButton;
+	private Button DlDelButton;
 	private ListView mDLListView;
 
 	private Button testButton;
@@ -181,6 +182,9 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		mloadRoot.setOnClickListener(this);
 		DlselButton = (Button) findViewById(R.id.DownloadButtonSelect);
 		DlselButton.setEnabled(false);
+		DlselButton.setOnClickListener(this);
+		DlDelButton = (Button) findViewById(R.id.DownloadButtonDelete);
+		DlDelButton.setEnabled(false);
 		DlselButton.setOnClickListener(this);
 		mDLListView = (ListView) findViewById(R.id.dlList);
 
@@ -313,18 +317,21 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		case REQUEST_OPEN_CONFIG:
 			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
 			Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
+			a2t_source=filePath;
 			mUpload.setText(filePath);
 			//process_uploadFile(REQUEST_OPEN_CONFIG,filePath)
 			break;
 		case REQUEST_OPEN_GFX:
 			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
 			Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
+			a2t_source=filePath;
 			mUpload.setText(filePath);
 			//process_uploadFile(REQUEST_OPEN_GFX,filePath)
 			break;
 		case REQUEST_OPEN_SPEEDO:
 			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
 			Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
+			a2t_source=filePath;
 			mUpload.setText(filePath);
 			//process_uploadFile(REQUEST_OPEN_SPEEDO,filePath)
 			break;
@@ -477,6 +484,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 								toast.show();
 
 								DlselButton.setEnabled(true);
+								DlDelButton.setEnabled(true);
 							} else if (type==2) {
 								//toast = Toast.makeText(getBaseContext(), "loading content of folder "+name+".\nPlease wait...", 9999);
 								//toast.show();
@@ -590,7 +598,11 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		case R.id.DownloadButtonSelect:
 			_getFileDialog = new getFileDialog();
 			_getFileDialog.execute(t2a_dest,dl_basedir);
-			break;			
+			break;		
+		case R.id.DownloadButtonDelete:
+//			_deleteFileDialog = new deleteFileDialog();
+//			_deleteFileDialog.execute(t2a_dest);
+			
 		case R.id.tester:
 			_putFileDialog = new putFileDialog();
 			a2t_dest=a2t_dest+a2t_source.substring(a2t_source.lastIndexOf('/'));

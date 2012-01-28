@@ -908,7 +908,7 @@ void speedo_filemanager_v2::parse_command(){
 					};
 
 					// datei öffnen
-					if (!fm_file.open(&fm_handle, filename, O_CREAT| O_WRITE | O_SYNC | O_APPEND)){
+					if (!fm_file.open(&fm_handle, filename, O_CREAT| O_RDWR | O_SYNC | O_APPEND)){
 						file_open_failed=true;
 					};
 				} // filealready open
@@ -920,9 +920,6 @@ void speedo_filemanager_v2::parse_command(){
 					int pos;
 					pos=msgBuffer[1]<<8;
 					pos|=msgBuffer[2];
-
-
-
 //					if(!fm_file.seekSet(pos*(msgLength-offset))){ // das ist noch totaler mist, das hier kein Seeken möglich ist
 //						file_seek_failed=true;
 //					} else {
@@ -931,7 +928,7 @@ void speedo_filemanager_v2::parse_command(){
 //						pOLED->string(0,buf,0,6);
 //						delay(1000);
 //					}
-					//////////
+//					////////
 				};
 
 				// wenn immer noch alles gut, dann konnten wir die Datei öffnen und auch den Filepointer dahin setzten wo er hin soll

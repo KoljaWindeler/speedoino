@@ -840,8 +840,8 @@ Disassembly of section .text:
      d5c:	65 64 20 3d 3d 3d 00                                ed ===.
 
 00000d63 <_ZZ4mainE3__c_0>:
-     d63:	76 30 2e 33 2e 36 2d 33 33 2d 67 36 31 33 37 63     v0.3.6-33-g6137c
-     d73:	34 66 00                                            4f.
+     d63:	76 30 2e 33 2e 36 2d 33 34 2d 67 66 34 65 36 36     v0.3.6-34-gf4e66
+     d73:	65 37 00                                            e7.
 
 00000d76 <_ZZ4mainE3__c>:
      d76:	3d 3d 3d 20 53 70 65 65 64 6f 69 6e 6f 20 3d 3d     === Speedoino ==
@@ -1132,8 +1132,8 @@ Disassembly of section .text:
     1181:	63 6f 6e 74 61 63 74 20 6d 65 20 61 74 00           contact me at.
 
 0000118f <_ZZN11speedo_menu7displayEvE3__c_92>:
-    118f:	76 30 2e 33 2e 36 2d 33 33 2d 67 36 31 33 37 63     v0.3.6-33-g6137c
-    119f:	34 66 00                                            4f.
+    118f:	76 30 2e 33 2e 36 2d 33 34 2d 67 66 34 65 36 36     v0.3.6-34-gf4e66
+    119f:	65 37 00                                            e7.
 
 000011a2 <_ZZN11speedo_menu7displayEvE3__c_91>:
     11a2:	73 74 61 72 74 65 64 20 34 2e 32 30 31 30 00        started 4.2010.
@@ -15968,7 +15968,7 @@ Disassembly of section .text:
     a2da:	ae 01       	movw	r20, r28
     a2dc:	4f 5f       	subi	r20, 0xFF	; 255
     a2de:	5f 4f       	sbci	r21, 0xFF	; 255
-    a2e0:	2e e4       	ldi	r18, 0x4E	; 78
+    a2e0:	2f e4       	ldi	r18, 0x4F	; 79
     a2e2:	0e 94 3d e5 	call	0x1ca7a	; 0x1ca7a <_ZN6SdFile4openEPS_PKch>
     a2e6:	88 23       	and	r24, r24
     a2e8:	11 f0       	breq	.+4      	; 0xa2ee <_ZN21speedo_filemanager_v213parse_commandEv+0xa04>

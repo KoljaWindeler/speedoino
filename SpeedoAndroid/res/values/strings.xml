@@ -28,6 +28,7 @@
     <string name="up">up</string>
     <string name="down">down</string>
     <string name="Download">Download</string>
+    <string name="Delete">Delete</string>
     
     <string name="Select_file">Select file</string>
     <string name="location">Location</string>

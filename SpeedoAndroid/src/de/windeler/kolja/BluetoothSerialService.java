@@ -528,7 +528,7 @@ public class BluetoothSerialService {
 
 				Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_TOAST);
 				Bundle bundle = new Bundle();
-				bundle.putString(SpeedoAndroidActivity.TOAST, "@string/R.string.noresponse");
+				bundle.putString(SpeedoAndroidActivity.TOAST, "@string/noresponse");
 				msg.setData(bundle);
 				mHandler.sendMessage(msg);
 			};
@@ -815,10 +815,15 @@ public class BluetoothSerialService {
 			}
 			
 			// versuche den inhalt des Buffers in die Datei zu schreiben
-			String Buffer = new String(msgBuffer);
+			// inhalt casten
+			byte tempBuffer[] = new byte[300];
+			for(int i=0;i<msgLength-2;i++){
+				tempBuffer[i]=(byte)(msgBuffer[i+2] & 0x00FF);
+			}
+			
 			if(msgLength>2){
-				try {						out.write(Buffer.substring(2,msgLength).getBytes());	} 
-				catch (IOException e) {		e.printStackTrace();						}
+				try {						out.write(tempBuffer,0,msgLength-2);	} 
+				catch (IOException e) {		e.printStackTrace();			}
 			}
 			
 			// löse desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der nächsten 
@@ -915,20 +920,15 @@ public class BluetoothSerialService {
 			if(status==ST_EMERGENCY_RELEASE){
 				Log.i(TAG_RECV,"EMERGENCY TOKEN RETURN");
 				// hier sowas wie: 
-				item--; 
-				// hier müssten wir das file mal zurückspulen .. oh oh
-				failCounter++;
-				if(failCounter>3){
-					status=STATUS_EOF;
-					msgLength=0;
-					Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
-					Bundle bundle = new Bundle();
-					bundle.putString(SpeedoAndroidActivity.TOAST, "Transmission failed");
-					msg.setData(bundle);
-					mHandler.sendMessage(msg);
-				}
-			} else { 
-				failCounter=0;
+				
+				status=STATUS_EOF;
+				msgLength=0;
+				Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
+				Bundle bundle = new Bundle();
+				bundle.putString(SpeedoAndroidActivity.TOAST, "Transmission failed");
+				msg.setData(bundle);
+				mHandler.sendMessage(msg);
+
 			}
 			
 			
