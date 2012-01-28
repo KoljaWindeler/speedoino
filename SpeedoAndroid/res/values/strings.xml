@@ -8,7 +8,7 @@
     <string name="connect">connect</string>
     <string name="version_value">X</string>
     <string name="status_cap">Status:</string>
-    <string name="status_value">not connected</string>
+    <string name="status_value">use menu to connect</string>
     <string name="title_paired_devices">Paired devices</string>
     <string name="button_scan">Scan</string>
     <string name="bindestrich">-</string>
@@ -18,6 +18,8 @@
     <string name="scanning">scanning...</string>
     <string name="unknown">unknown command</string>
     <string name="select_device">Select device</string>
+    <string name="no_selected_file">No file selected</string>
+    
     <string name="disconnect">disconnect</string>
     <string name="not_connected">not connected</string>
     <string name="bt_not_enabled_leaving">Bluetooth not enabled</string>

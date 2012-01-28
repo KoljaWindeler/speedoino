@@ -48,6 +48,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	private getDirDialog _getDirDialog;
 	private getFileDialog _getFileDialog;
 	private putFileDialog _putFileDialog;
+	private delFileDialog _delFileDialog;
 	private String dl_basedir = "/";
 	private String t2a_dest ="";
 	private String a2t_source = "";
@@ -72,10 +73,10 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	private Button browseToUploadGfx;
 	private Button mloadRoot;
 	private Button DlselButton;
-	private Button DlDelButton;
+	private Button DeleteButton;
 	private ListView mDLListView;
 
-	private Button testButton;
+	private Button mUploadButton;
 
 	// Message types sent from the BluetoothReadService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
@@ -180,16 +181,21 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		browseToUploadSpeedo.setOnClickListener(this);
 		mloadRoot = (Button) findViewById(R.id.loadRoot);
 		mloadRoot.setOnClickListener(this);
+		mloadRoot.setEnabled(false);
 		DlselButton = (Button) findViewById(R.id.DownloadButtonSelect);
 		DlselButton.setEnabled(false);
 		DlselButton.setOnClickListener(this);
-		DlDelButton = (Button) findViewById(R.id.DownloadButtonDelete);
-		DlDelButton.setEnabled(false);
-		DlselButton.setOnClickListener(this);
+		DeleteButton = (Button) findViewById(R.id.DeleteButton);
+		DeleteButton.setEnabled(false);
+		DeleteButton.setOnClickListener(this);
 		mDLListView = (ListView) findViewById(R.id.dlList);
-
-		testButton = (Button) findViewById(R.id.tester);
-		testButton.setOnClickListener(this);
+		mUpButton.setEnabled(false);
+		mDownButton.setEnabled(false);
+		mLeftButton.setEnabled(false);
+		mRightButton.setEnabled(false);
+		mUploadButton = (Button) findViewById(R.id.uploadFile);
+		mUploadButton.setOnClickListener(this);
+		mUploadButton.setEnabled(false);
 
 		if(mLog!=null) mLog.setText(R.string.bindestrich);
 		if(mVersion!=null) mVersion.setText(R.string.bindestrich);
@@ -361,6 +367,13 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 						mMenuItemConnect.setTitle(R.string.disconnect);
 					}
 					if(mStatus!=null){	mStatus.setText("Connected,Speedoino found");	};
+					
+					mloadRoot.setEnabled(true);
+					mUpButton.setEnabled(true);
+					mDownButton.setEnabled(true);
+					mLeftButton.setEnabled(true);
+					mRightButton.setEnabled(true);
+					mUploadButton.setEnabled(true);
 
 					toast = Toast.makeText(getApplicationContext(), "Connected, Speedoino found", Toast.LENGTH_SHORT);
 					toast.show();
@@ -388,6 +401,20 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 						mMenuItemConnect.setTitle(R.string.connect);
 					}
 
+					mloadRoot.setEnabled(false);
+					DeleteButton.setEnabled(false);
+					DlselButton.setEnabled(false);
+					mUpButton.setEnabled(false);
+					mDownButton.setEnabled(false);
+					mLeftButton.setEnabled(false);
+					mRightButton.setEnabled(false);
+					mUploadButton.setEnabled(false);
+					
+					TextView mselfile =(TextView) findViewById(R.id.dl_selected_file);
+					mselfile.setText(R.string.no_selected_file);
+					
+					
+					
 					toast = Toast.makeText(getApplicationContext(), "Connection closed...", Toast.LENGTH_SHORT);
 					toast.show();
 					break;
@@ -439,7 +466,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 					Log.d(TAG,"beginne liste aufzubauen");
 
 					// send to display
-					SimpleAdapter fileList = new SimpleAdapter(getApplicationContext(), mList, R.layout.file_dialog_row,
+					SimpleAdapter fileList = new SimpleAdapter(getApplicationContext(), mList, R.layout.file_dialog_dl_row,
 							new String[] { ITEM_KEY, ITEM_IMAGE }, new int[] { R.id.fdrowtext, R.id.fdrowimage });
 
 					if(dir_path!="/"){
@@ -480,11 +507,12 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 									t2a_dest=dir_path+"/"; // CONFIG/
 								t2a_dest=t2a_dest+name; // CONFIG/BASE.TXT
 
-								toast = Toast.makeText(getBaseContext(), "Clicked download to load "+t2a_dest, Toast.LENGTH_LONG);
-								toast.show();
+								
+								TextView mselfile =(TextView) findViewById(R.id.dl_selected_file);
+								mselfile.setText("Selected file: "+t2a_dest);
 
 								DlselButton.setEnabled(true);
-								DlDelButton.setEnabled(true);
+								DeleteButton.setEnabled(true);
 							} else if (type==2) {
 								//toast = Toast.makeText(getBaseContext(), "loading content of folder "+name+".\nPlease wait...", 9999);
 								//toast.show();
@@ -596,17 +624,21 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			_getDirDialog.execute("/");
 			break;
 		case R.id.DownloadButtonSelect:
+			Log.i(TAG,"download gedrückt");
 			_getFileDialog = new getFileDialog();
 			_getFileDialog.execute(t2a_dest,dl_basedir);
 			break;		
-		case R.id.DownloadButtonDelete:
-//			_deleteFileDialog = new deleteFileDialog();
-//			_deleteFileDialog.execute(t2a_dest);
-			
-		case R.id.tester:
+		case R.id.DeleteButton:
+			Log.i(TAG," delete gedrückt!");
+			_delFileDialog = new delFileDialog();
+			_delFileDialog.execute(t2a_dest);
+			break;
+
+		case R.id.uploadFile:
 			_putFileDialog = new putFileDialog();
-			a2t_dest=a2t_dest+a2t_source.substring(a2t_source.lastIndexOf('/'));
-			_putFileDialog.execute(a2t_source,a2t_dest);
+			// zuerst datei löschen!
+			_putFileDialog.execute(a2t_source,a2t_dest+a2t_source.substring(a2t_source.lastIndexOf('/')));
+			break;
 
 		default:
 			Log.i(TAG,"Hier wurde was geklickt das ich nicht kenne!!");
@@ -686,6 +718,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		@Override
 		protected String doInBackground( String... params ){ 
 			try {
+				mSerialService.delFile(params[1]);
 				mSerialService.putFile(params[0],params[1]);
 			} catch (InterruptedException e) {	
 				e.printStackTrace();	
@@ -697,6 +730,26 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 		@Override
 		protected void onPreExecute() {   				show_dialog("Uploading file...");  };
+		@Override
+		protected void onPostExecute( String result ){ 	hide_dialog();	}; 
+	}
+
+	// klasse die das loading fenster startet und im hintergrund "download" ausführt
+	protected class delFileDialog extends AsyncTask<String, Integer, String>{
+		@Override
+		protected String doInBackground( String... params ){ 
+			try {
+				mSerialService.delFile(params[0]);
+				mSerialService.reset_seq();
+				mSerialService.getDir(params[0].substring(0, params[0].lastIndexOf('/')));
+			} catch (InterruptedException e) {	
+				e.printStackTrace();	
+			};
+			return "japp";
+		}
+
+		@Override
+		protected void onPreExecute() {   				show_dialog("Deleting file...");  };
 		@Override
 		protected void onPostExecute( String result ){ 	hide_dialog();	}; 
 	}

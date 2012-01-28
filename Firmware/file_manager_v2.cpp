@@ -688,9 +688,11 @@ void speedo_filemanager_v2::parse_command(){
 
 				/* hinweg:
 				 * msgBuffer[0]=CMD_GET_FILE
-				 * msgBuffer[1]=high_nibble of cluster nr
-				 * msgBuffer[2]=low_nibble of cluster nr
-				 * msgBuffer[3..]=filename  ... datei.txt oder folder/datei.txt
+				 * msgBuffer[1]=length of filename
+				 * msgBuffer[2..]=filename  ... datei.txt oder folder/datei.txt
+				 * msgBuffer[x]=high_nibble of cluster nr
+				 * msgBuffer[x+1]=low_nibble of cluster nr
+
 				 *
 				 * rückweg:
 				 * msgBuffer[0]=CMD_GET_FILE
@@ -709,6 +711,7 @@ void speedo_filemanager_v2::parse_command(){
 				bool file_already_open=true;
 				bool file_open_failed=false;
 				bool file_seek_failed=false;
+				int payload_start=0;
 
 				if(fm_file.isFile()){
 					for(unsigned int i=0;i<msgLength-2;i++){
@@ -729,60 +732,16 @@ void speedo_filemanager_v2::parse_command(){
 				// 3. Dateihandle öffnen
 
 				if(!file_already_open){
-					int start_of_filename=0;
-					char filename[13];
-					char subdir[13];
-					fm_handle.close();
-					fm_file.close();
-					fm_handle.openRoot(&pSD->volume);
-
-					// checken ob ein "/" drin ist, und die datei somit in einem verzeichniss liegt
-					bool is_subdir_file=false;
-					for(unsigned int i=3;i<msgLength-2;i++){
-						if(msgBuffer[i]=='/'){
-							is_subdir_file=true;
-						};
-					};
-
-
-					// verzeichnissnamen auslesen und öffnen
-					if(is_subdir_file){
-						for(unsigned int i=0;i<11;i++){
-							if(msgBuffer[3+i]=='/'){
-								subdir[i]='\0';
-								start_of_filename=i+1+3;
-								break;
-							} else {
-								subdir[i]=msgBuffer[3+i];
-							};
-						};
-						SdFile temp;
-						if(!temp.open(&fm_handle, subdir, O_READ)){
-						}
-						fm_handle=temp;
-					};
-
-					// dateinamen auslesen
-					for(unsigned int i=start_of_filename;i<msgLength;i++){
-						filename[i-start_of_filename]=msgBuffer[i];
-						last_file[i-start_of_filename]=msgBuffer[i];
-						if(i==msgLength-1){
-							filename[i-start_of_filename+1]='\0';
-							last_file[i-start_of_filename+1]='\0';
-						};
-					};
-
-					// datei öffnen
-					if (!fm_file.open(&fm_handle, filename, O_CREAT| O_READ)){
+					payload_start=get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle,O_CREAT| O_READ);
+					if(payload_start<0)
 						file_open_failed=true;
-					};
 				} // filealready open
 
 				// setze pointer
 				if(!file_open_failed){
 					int pos;
-					pos=msgBuffer[1]<<8;
-					pos|=msgBuffer[2];
+					pos=msgBuffer[payload_start]<<8;
+					pos|=msgBuffer[payload_start+1];
 
 					if(!fm_file.seekSet(pos*250)){
 						file_seek_failed=true;
@@ -828,11 +787,11 @@ void speedo_filemanager_v2::parse_command(){
 				// TRANSFER VOM HANDY ZUM TACHO
 				/* hinweg:
 				 * msgBuffer[0]=CMD_PUT_FILE
-				 * msgBuffer[1]=high_nibble of cluster nr
-				 * msgBuffer[2]=low_nibble of cluster nr
-				 * msgBuffer[3]=length of filename
-				 * msgBuffer[4..X]=filename  ... datei.txt oder folder/datei.txt
-				 * msgBuffer[X..250]=Content
+				 * msgBuffer[1]=length of filename
+				 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
+				 * msgBuffer[x+1]=high_nibble of cluster nr
+				 * msgBuffer[x+2]=low_nibble of cluster nr
+				 * msgBuffer[X+3..250]=Content
 				 *
 				 * rückweg:
 				 * msgBuffer[0]=CMD_PUT_FILE
@@ -842,6 +801,7 @@ void speedo_filemanager_v2::parse_command(){
 				bool file_already_open=true;
 				bool file_open_failed=false;
 				bool file_seek_failed=false;
+				int start_of_payload=0;
 
 
 				if(fm_file.isFile()){
@@ -864,81 +824,35 @@ void speedo_filemanager_v2::parse_command(){
 				// 3. Dateihandle öffnen
 
 				if(!file_already_open){
-					int start_of_filename=0;
-					char filename[13];
-					char subdir[13];
-					fm_handle.close();
-					fm_file.close();
-					fm_handle.openRoot(&pSD->volume);
-
-					// checken ob ein "/" drin ist, und die datei somit in einem verzeichniss liegt
-					bool is_subdir_file=false;
-					for(unsigned int i=4;i<4+(unsigned int)msgBuffer[3];i++){
-						if(msgBuffer[i]=='/'){
-							is_subdir_file=true;
-						};
-					};
-
-
-					// verzeichnissnamen auslesen und öffnen
-					if(is_subdir_file){
-						for(unsigned int i=0;i<11;i++){
-							if(msgBuffer[4+i]=='/'){
-								subdir[i]='\0';
-								start_of_filename=i+1+4;
-								break;
-							} else {
-								subdir[i]=msgBuffer[4+i];
-							};
-						};
-						SdFile temp;
-						if(!temp.open(&fm_handle, subdir, O_READ)){
-						}
-						fm_handle=temp;
-					};
-
-					// dateinamen auslesen
-					for(unsigned int i=start_of_filename;i<(unsigned int)msgBuffer[3]+4;i++){
-						filename[i-start_of_filename]=msgBuffer[i];
-						last_file[i-start_of_filename]=msgBuffer[i];
-						if(i==(unsigned int)msgBuffer[3]+4-1){ // filename length + 4 (commands)
-							filename[i-start_of_filename+1]='\0';
-							last_file[i-start_of_filename+1]='\0';
-						};
-					};
-
-					// datei öffnen
-					if (!fm_file.open(&fm_handle, filename, O_CREAT| O_RDWR | O_SYNC | O_APPEND)){
+					start_of_payload=get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle, O_CREAT| O_RDWR | O_SYNC | O_APPEND);
+					if(start_of_payload<0)
 						file_open_failed=true;
-					};
-				} // filealready open
-
-				unsigned int offset=(int)msgBuffer[3]+4;  // z.B. 20 // 4 command byte - Dateinamenlänge
+				}
 
 				// setze pointer
 				if(!file_open_failed){
 					int pos;
-					pos=msgBuffer[1]<<8;
-					pos|=msgBuffer[2];
-//					if(!fm_file.seekSet(pos*(msgLength-offset))){ // das ist noch totaler mist, das hier kein Seeken möglich ist
-//						file_seek_failed=true;
-//					} else {
-//						//////////
-//						sprintf(buf,"fs:%i,pos:%i ",(int)fm_file.fileSize(),pos*(msgLength-offset));
-//						pOLED->string(0,buf,0,6);
-//						delay(1000);
-//					}
-//					////////
+					pos=msgBuffer[start_of_payload]<<8;
+					pos|=msgBuffer[start_of_payload+1];
+					//					if(!fm_file.seekSet(pos*(msgLength-offset))){ // das ist noch totaler mist, das hier kein Seeken möglich ist
+					//						file_seek_failed=true;
+					//					} else {
+					//						//////////
+					//						sprintf(buf,"fs:%i,pos:%i ",(int)fm_file.fileSize(),pos*(msgLength-offset));
+					//						pOLED->string(0,buf,0,6);
+					//						delay(1000);
+					//					}
+					//					////////
 				};
 
 				// wenn immer noch alles gut, dann konnten wir die Datei öffnen und auch den Filepointer dahin setzten wo er hin soll
 				if(!file_open_failed && !file_seek_failed){
 					//Serial.println("file_seek OK");
-					for(unsigned int i=0;i<msgLength-offset;i++){ // 254-20=234
-						msgBuffer[i]=msgBuffer[i+offset]; // msgBuffer[233]=msgBuffer[253]
+					for(unsigned int i=0;i<msgLength-start_of_payload-2;i++){ // start_of_payload wird -2 weil noch 2 byte seek info
+						msgBuffer[i]=msgBuffer[i+start_of_payload+2]; // msgBuffer[233]=msgBuffer[253]
 					}
 
-					int n=fm_file.write(msgBuffer, msgLength-offset); // 254 - 20
+					int n=fm_file.write(msgBuffer, msgLength-start_of_payload-2); // 254 - 20
 
 					if(n > 0) { // 250 Byte happen
 						msgLength=2; // cmd + status ok
@@ -969,6 +883,21 @@ void speedo_filemanager_v2::parse_command(){
 				fm_handle.sync();
 				fm_handle.close();
 				////////////////////////////// PUT FILE /////////////////////////////////
+				////////////////////////////// DEL FILE /////////////////////////////////
+			} else if(msgBuffer[0]==CMD_DEL_FILE){
+				get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle, O_CREAT| O_WRITE);
+				if(fm_file.remove()){
+					fm_file.close();
+					fm_handle.close();
+					msgLength=2; // cmd + status ok
+					msgBuffer[0]=CMD_DEL_FILE;
+					msgBuffer[1]=STATUS_CMD_OK;
+				} else {
+					msgLength=2; // cmd + status ok
+					msgBuffer[0]=CMD_DEL_FILE;
+					msgBuffer[1]=STATUS_CMD_FAILED;
+				}
+				////////////////////////////// DEL FILE /////////////////////////////////
 				///////////////////////////// EMERGENCY /////////////////////////////////
 
 			} else {
@@ -1015,3 +944,64 @@ void speedo_filemanager_v2::parse_command(){
 	pSensors->m_reset->set_active(false,true);
 }; // fkt ende
 
+
+
+int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,SdFile *fm_file,SdFile *fm_handle,uint8_t flags){
+	/* msgBuffer[0] =CMD
+	 * msgBuffer[1] =FN_length
+	 * msgBuffer[2..2+FN_length] =Filename
+	 * msgBuffer[3+FN_length..]=Data
+	 */
+
+	unsigned int start_of_filename=2;
+	unsigned int start_of_real_filename=0;
+	unsigned int length_of_filename=(unsigned int)msgBuffer[1];
+	char filename[13];
+	char subdir[13];
+	fm_handle->close();
+	fm_file->close();
+	fm_handle->openRoot(&pSD->volume);
+
+	// checken ob ein "/" drin ist, und die datei somit in einem verzeichniss liegt
+	bool is_subdir_file=false;
+	for(unsigned int i=start_of_filename;i<start_of_filename+length_of_filename;i++){
+		if(msgBuffer[i]=='/'){
+			is_subdir_file=true;
+			subdir[i-start_of_filename]='\0';
+			start_of_real_filename=i+1;
+			break;
+		} else {
+			subdir[i-start_of_filename]=msgBuffer[i];
+		}
+	};
+
+
+	// verzeichnissnamen auslesen und öffnen
+	if(is_subdir_file){
+		SdFile temp;
+		if(!temp.open(fm_handle, subdir, O_READ)){
+			return -2;
+		}
+		*fm_handle=temp; // das hier ist quatsch
+	};
+
+	// dateinamen auslesen
+	for(unsigned int i=start_of_real_filename;i<start_of_filename+length_of_filename;i++){
+		filename[i-start_of_real_filename]=msgBuffer[i];
+		last_file[i-start_of_real_filename]=msgBuffer[i];
+		if(i==(start_of_filename+length_of_filename-1)){
+			filename[i-start_of_real_filename+1]='\0';
+			last_file[i-start_of_real_filename+1]='\0';
+		};
+	};
+
+	SdFile temp_f;
+	// datei öffnen
+	if (!temp_f.open(fm_handle, filename,flags)){
+		return -1;
+	} else {
+		*fm_file=temp_f;
+	}
+
+	return start_of_filename+length_of_filename;
+}
