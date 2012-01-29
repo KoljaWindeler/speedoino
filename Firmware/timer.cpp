@@ -53,32 +53,9 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		pSensors->m_voltage->calc(); // spannungscheck
 		pConfig->km_save();    // avg,max,trips hochzählen, immer wenn ss==59 ist store to sd card
 	}
-//	if(millis()>10000){
-//		char dir[8];
-//		sprintf(dir,"GPS");
-//		int item=0;
-//
-//		SdFile fm_handle,returner;
-//		fm_handle.openRoot(&pSD->volume);
-//
-//		if(!(dir[0]=='.' && dir[1]=='.')){	// wenn es NICHT ".." ist
-//			returner.open(&fm_handle, dir, O_READ);
-//			fm_handle=returner;
-//		} else {
-//			returner=fm_handle; // wenn das root gelistet werden soll, merk dir den handle
-//		};
-//
-//		char name[13];
-//
-//
-//		fm_handle=returner;
-//		int status=fm_handle.lsJKWNext(name,item);
-//		Serial.print("Ergebniss von JKWNext:");
-//		Serial.println(name);
-//		//return status;
-//		delay(5000);
-//	}
 };
+
+
 
 // Muss öfter sein,da die Blink Geschichte sonst nicht klappt
 void speedo_timer::every_qsec() {

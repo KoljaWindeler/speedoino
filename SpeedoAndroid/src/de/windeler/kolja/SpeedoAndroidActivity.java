@@ -12,6 +12,7 @@ import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -625,7 +626,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			break;
 		case R.id.DownloadButtonSelect:
 			Log.i(TAG,"download gedrückt");
-			_getFileDialog = new getFileDialog();
+			_getFileDialog = new getFileDialog(this);
 			_getFileDialog.execute(t2a_dest,dl_basedir);
 			break;		
 		case R.id.DeleteButton:
@@ -697,20 +698,43 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 
 	// klasse die das loading fenster startet und im hintergrund "download" ausführt
 	protected class getFileDialog extends AsyncTask<String, Integer, String>{
+		private Context context;
+	    ProgressDialog dialog;
+
+	    public getFileDialog(Context cxt) {
+	    	context = cxt;
+	    	dialog = new ProgressDialog(context);
+	    }
+	        
+	    protected void onProgressUpdate(String... progress) {
+            dialog.setProgress(Integer.parseInt(progress[0]));
+       }
+
+	    
 		@Override
 		protected String doInBackground( String... params ){ 
 			try {
-				mSerialService.getFile(params[0],params[1]);
+				mSerialService.getFile(params[0],params[1],this); 
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			};
 			return "japp";
 		}
+		
+		protected void onProgressUpdate(Integer... progress) {
+	         dialog.setProgress(8);
+	     }
 
 		@Override
-		protected void onPreExecute() {   				show_dialog("Downloading file...");  };
+		protected void onPreExecute() {   				
+			dialog.setMessage("Downloading file...");
+            dialog.show();  
+		};
+		
 		@Override
-		protected void onPostExecute( String result ){ 	hide_dialog();	}; 
+		protected void onPostExecute( String result ){ 	
+			dialog.dismiss();
+		}
 	}
 
 	// klasse die das loading fenster startet und im hintergrund "download" ausführt

@@ -26,6 +26,8 @@ import java.io.OutputStream;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
+import de.windeler.kolja.SpeedoAndroidActivity.getFileDialog;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -747,20 +749,27 @@ public class BluetoothSerialService {
 		return 0;
 	};
 
-	public int getFile(String filename, String dlBaseDir) throws InterruptedException {
+	public int getFile(String filename, String dlBaseDir,getFileDialog topProcess) throws InterruptedException {
 		Log.i(TAG,"getFile gestartet: filename "+filename+" dlBasedir "+dlBaseDir);
+		
+		
+		//publishProgress("" + (int)((total*100)/lenghtOfFile));
 		/* hinweg:
 		 * msgBuffer[0]=CMD_GET_FILE
 		 * msgBUffer[1]=length of filename
 		 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
 		 * msgBuffer[x+1]=high_nibble of cluster nr
-		 * msgBuffer[x+2]=low_nibble of cluster nr
+		 * msgBuffer[x+2]=low_nibble of cluster nr 
 		 * 
 		 * rückweg:
 		 * msgBuffer[0]=CMD_GET_FILE
 		 * msgBuffer[1]=COMMAND_OK
-		 * msgBuffer[2..]=DATA
+		 * msgBuffer[2..]=DATA 
 		 */
+		
+		//topProcess.publishProgress(3);
+		//topProcess.onProgressUpdate(13); 
+		
 		int failCounter=0;
 		item = 0;
 		byte send[] = new byte[2+filename.length()+2]; // 2 für 250Byte Cluster + n für name + 1 command + 1 filename length
