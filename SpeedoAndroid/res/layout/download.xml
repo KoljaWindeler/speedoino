@@ -1,64 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/downloadLayout"
-	android:orientation="vertical" 
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:background="@drawable/radialback" >
-	
-    <LinearLayout android:orientation="vertical"
-		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent"
-		android:layout_above="@+id/fdLinearLayoutList">
-		<TextView android:id="@+id/path" 
-		    android:layout_width="fill_parent"
-			android:layout_height="wrap_content"/>
-		<ListView android:id="@+id/dlList"
-		    android:layout_width="fill_parent"
-			android:layout_height="fill_parent"/>
-		<TextView android:id="@android:id/empty"
-			android:layout_width="fill_parent" 
-			android:layout_height="fill_parent"
-			android:text="@string/no_data" />
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/road"
+    android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/Download_textView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="TextView" 
-        android:background="@drawable/radialback" 
-        />
-	</LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/fdLinearLayoutList"
+        android:orientation="vertical" >
 
-	<LinearLayout android:id="@+id/fdLinearLayoutList"
-		android:orientation="vertical" 
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		android:layout_alignParentBottom="true">
+        <TextView
+            android:id="@+id/path"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
 
-		<LinearLayout android:id="@+id/fdLinearLayoutSelect"
-			android:orientation="vertical" 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true" 
-			android:paddingLeft="10dp"
-			android:paddingRight="10dp" android:paddingBottom="5dp">
+        <ListView
+            android:id="@+id/dlList"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="#00000000" />
 
-			<LinearLayout android:orientation="horizontal"
-				android:layout_width="fill_parent" 
-				android:layout_height="fill_parent">
-				
-				<Button android:id="@+id/loadRoot" android:layout_height="wrap_content"
-					android:layout_width="0dip" android:layout_weight=".4"
-					android:text="Load root dir"></Button>
-								
-				<Button android:id="@+id/DownloadButtonSelect" android:layout_height="wrap_content"
-					android:layout_width="0dip" android:layout_weight=".7"
-					android:text="@string/Download"></Button>
-				
-			</LinearLayout>
-		</LinearLayout>
-	</LinearLayout>
+        <TextView
+            android:id="@android:id/empty"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="@string/no_data" />
+
+        <TextView
+            android:id="@+id/Download_textView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/radialback"
+            android:text="TextView" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fdLinearLayoutList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/fdLinearLayoutSelect"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" >
+
+            <TextView
+                android:id="@+id/dl_selected_file"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:shadowColor="#555555"
+                android:shadowDx="1.0"
+                android:shadowDy="1.0"
+                android:shadowRadius="3.0"
+                android:text="@string/no_selected_file"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#FFFFFF" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/loadRoot"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".4"
+                    android:text="Load root dir" >
+                </Button>
+
+                <Button
+                    android:id="@+id/DeleteButton"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".3"
+                    android:text="@string/Delete" >
+                </Button>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/DownloadButtonSelect"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Download" >
+            </Button>
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>
-

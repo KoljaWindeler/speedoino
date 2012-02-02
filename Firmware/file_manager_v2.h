@@ -29,6 +29,9 @@ class speedo_filemanager_v2{
 	#define CMD_GO_UP				0x07
 	#define CMD_GO_DOWN				0x08
 	#define CMD_DIR					0x11
+	#define CMD_GET_FILE			0x12
+	#define CMD_PUT_FILE			0x13
+	#define CMD_DEL_FILE			0x14
 
 	#define STATUS_CMD_OK           0x09
 	#define	STATUS_EOF				0x10
@@ -48,10 +51,11 @@ class speedo_filemanager_v2{
 public:
 	speedo_filemanager_v2();
 	~speedo_filemanager_v2();
-	void get_filename(char* buffer);
+	//void get_filename(char* buffer);
 	void run();
 	void parse_command();
 private:
+	int get_file_handle(unsigned char *msgBuffer,unsigned char *last_file, SdFile *fm_file, SdFile *fm_handle,uint8_t flags);
 	bool cd(char dir[20]);
 	bool recv_file(char filename[13]);
 	bool send_file(char filename[13]);

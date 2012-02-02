@@ -422,6 +422,11 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",int(pSensors->m_temperature->oil_warning_temp)); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("bt_pin="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%04i\n",pAktors->bt_pin); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
 
 					file.close();
 					storage_outdated=false;
@@ -501,6 +506,7 @@ int configuration::init(){
 	pSensors->m_dz->blitz_en=true; // gehen wir mal von "an" aus
 	pSensors->m_temperature->water_warning_temp=950; // 95°C
 	pSensors->m_temperature->oil_warning_temp=1200; // 120°C
+	pAktors->bt_pin=1234;
 
 	// gaenge einlesen
 	int temp[7]={160,120,90,73,60,53,45};
@@ -1029,7 +1035,9 @@ int configuration::parse(char* buffer){
 		pAktors->set_rgb_in(pAktors->RGB.inner.r.actual,pAktors->RGB.inner.g.actual,pAktors->RGB.inner.b.actual,1);
 	} else if(strcmp_P(name,PSTR("led_mode"))==0){
 		parse_short(buffer,seperator,&pAktors->led_mode);
-	/////// RGB LEDs /////////
+		/////// RGB LEDs /////////
+	} else if(strcmp_P(name,PSTR("bt_pin"))==0){
+		parse_int(buffer,seperator,&pAktors->bt_pin);
 	} else {
 		return_value=-2; // ungltiger identifier
 	}

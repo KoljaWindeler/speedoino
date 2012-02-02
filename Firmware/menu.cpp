@@ -58,9 +58,9 @@ prog_char custom_m_2[] PROGMEM = "3. DZ Flasher";
 prog_char custom_m_3[] PROGMEM = "4. Center RGB";
 prog_char custom_m_4[] PROGMEM = "5. Outer RGB";
 prog_char custom_m_5[] PROGMEM = "6. Flasher RGB";
-prog_char custom_m_6[] PROGMEM = "7. -";
+prog_char custom_m_6[] PROGMEM = "7. Set BT PIN";
 prog_char custom_m_7[] PROGMEM = "8. Show Animation";
-prog_char custom_m_8[] PROGMEM = "9. Filemanager";
+prog_char custom_m_8[] PROGMEM = "9. -";
 PROGMEM const char *menu_custom[9] = { custom_m_0,custom_m_1,custom_m_2,custom_m_3,custom_m_4,custom_m_5,custom_m_6,custom_m_7,custom_m_8 };
 
 ///////////////////// Customize /////////////////////
@@ -1564,18 +1564,89 @@ void speedo_menu::display(){ // z.B. state = 26
 		}
 		pOLED->string(pSpeedo->default_font,temp,15,4,back,front,0);
 	}
+	///////////////////////// set bt pin ///////////////////////////
+	else if(floor(state/10)==67){
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
+		if(	old_state==67 ){
+			state=state*10+1;
+			pSpeedo->disp_zeile_bak[2]=999; // setze auf beiden wegen den speicher zurück
+			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		} else {
+			back();
+			// store to SD
+			if(pConfig->storage_outdated){
+				if(pAktors->set_bt_pin()==0){
+					if(pConfig->write("BASE.TXT")==0){
+						pOLED->string_P(pSpeedo->default_font,PSTR("Save to SD card"),0,6);
+						pOLED->string_P(pSpeedo->default_font,PSTR("OK"),0,7);
+					};
+				};
+				delay(2000);
+			};
+		};
+		display();
+	}
+	else if((floor(state/100)==67) | (floor(state/1000)==67) | (floor(state/10000)==67) | (floor(state/100000)==67)){ //67[x][x][x][x][1]
+		if(floor(state/100000)==67){
+			set_buttons(button_state,button_state,button_state,!button_state); // no right
+		}
+		// handle up down
+		if(state%10==9){ // oben
+			pConfig->storage_outdated=true;
+			state-=8; // zurück
+			if(floor(state/100)==67 && pAktors->bt_pin>999)						{	pAktors->bt_pin-=1000;	};
+			if(floor(state/1000)==67 && (int(floor(pAktors->bt_pin/100))%10)>0)	{	pAktors->bt_pin-=100;	};
+			if(floor(state/10000)==67 && (int(floor(pAktors->bt_pin/10))%10)>0)	{	pAktors->bt_pin-=10;	};
+			if(floor(state/100000)==67 && (int(floor(pAktors->bt_pin/1))%10)>0)	{	pAktors->bt_pin-=1;		};
+		} else if(state%10==2){ // unten
+			pConfig->storage_outdated=true;
+			state-=1; // zurück
+			if(floor(state/100)==67 && pAktors->bt_pin<9000)					{	pAktors->bt_pin+=1000;	};
+			if(floor(state/1000)==67 && (int(floor(pAktors->bt_pin/100))%10)<9)	{	pAktors->bt_pin+=100;	};
+			if(floor(state/10000)==67 && (int(floor(pAktors->bt_pin/10))%10)<9)	{	pAktors->bt_pin+=10;	};
+			if(floor(state/100000)==67 && (int(floor(pAktors->bt_pin/1))%10)<9)	{	pAktors->bt_pin+=1;		};
+		}
+		if(pSpeedo->disp_zeile_bak[2]==999){
+			pOLED->clear_screen();
+			pOLED->highlight_bar(0,0,128,8);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Change BT PIN"),2,0,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("leave menu to save"),1,7);
+			pSpeedo->disp_zeile_bak[2]=123;
+		};
+
+		sprintf(char_buffer," %01i ",(int)floor(pAktors->bt_pin/1000)%10);
+		if(floor(state/100)==67){
+			pOLED->string(pSpeedo->default_font,char_buffer,2,2,15,0,0);
+		} else {
+			pOLED->string(pSpeedo->default_font,char_buffer,2,2);
+		}
+
+		sprintf(char_buffer," %01i ",(int)floor(pAktors->bt_pin/100)%10);
+		if(floor(state/1000)==67){
+			pOLED->string(pSpeedo->default_font,char_buffer,5,2,15,0,0);
+		} else {
+			pOLED->string(pSpeedo->default_font,char_buffer,5,2);
+		}
+
+		sprintf(char_buffer," %01i ",(int)floor(pAktors->bt_pin/10)%10);
+		if(floor(state/10000)==67){
+			pOLED->string(pSpeedo->default_font,char_buffer,8,2,15,0,0);
+		} else {
+			pOLED->string(pSpeedo->default_font,char_buffer,8,2);
+		}
+
+		sprintf(char_buffer," %01i ",pAktors->bt_pin%10);
+		if(floor(state/100000)==67){
+			pOLED->string(pSpeedo->default_font,char_buffer,11,2,15,0,0);
+		} else {
+			pOLED->string(pSpeedo->default_font,char_buffer,11,2);
+		}
+	}
 	//////////////////////// show animation ////////////////////////
 	else if(floor(state/10)==68){ //68[x]
 		pOLED->animation(state%10);
 	}
-	///////////////////////// FILE MANAGER ////////////////////
-	else if(floor(state/10)==69){ // 69[X]
-		pOLED->clear_screen();
-		pOLED->string_P(pSpeedo->default_font,PSTR("Filemanager"),4,3,0,DISP_BRIGHTNESS,0);
-		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 
-		//pFilemanager->run();
-	}
 	//////////////////////// TEST des watchdogs durch absitzen ////////////////////////
 	//else if(floor(state/10)==49){
 	//	delay(29999); // knapp 30 sec
@@ -2228,7 +2299,7 @@ bool speedo_menu::button_test(bool bt_keys_en){
 			Serial.flush();
 		} else if(Serial.available()>0){ // an sonsten gern
 			if(Serial.read()==MESSAGE_START){
-//				pOLED->string(0,"0",0,1);
+				//				pOLED->string(0,"0",0,1);
 				pFilemanager_v2->parse_command();
 			};
 		};
