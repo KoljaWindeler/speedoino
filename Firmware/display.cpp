@@ -162,7 +162,8 @@ int speedo_disp::sd2ssd(char filename[10],int frame){
 
 	if(!subdir.open(&root, "gfx", O_READ))    {  return 1; };
 	if(!file.open(&subdir, filename, O_READ)) {  return 2; };
-	file.seekSet(frame*64*sizeof(byte)*64); // ein bild ist 64*64 Byte groß, da wir 64 lines zu je 64*2*4 Bit Breite haben
+	unsigned long frame_seeker=(unsigned long)frame*64*64;
+	if(!file.seekSet(frame_seeker))			  {  return 3; }; // ein bild ist 64*64 Byte groß, da wir 64 lines zu je 64*2*4 Bit Breite haben
 
 	uint8_t buf[65];
 	//int n;
@@ -358,28 +359,30 @@ void speedo_disp::disp_waiting(int position,unsigned char spalte,unsigned char z
 void speedo_disp::animation(int a){
 	switch(a){
 	case 1: //////////////////// simpsons ///////////////////
-		show_animation("SIMP%i.TXT,0,19,15");
+		show_animation("SIMP.TXT,0,19,15"); // 200 -> 15
 		break;
 	case 2: //////////////////// girl ///////////////////
-		show_animation("%i.TXT,0,1,600");
+		show_animation("BLO.TXT,0,37,15");
 		break;
 	case 3:
 		show_animation("DJ.TXT,0,0,0");
 		break;
 	case 4:
-		show_animation("JTM%i.TXT,0,37,15");
+		show_animation("JTM.TXT,0,37,15");
 		break;
 	case 5:
-		show_animation("BLO%i.TXT,0,37,15");
+		show_animation("LG2.TXT,0,1,400");
 		break;
 	case 6: //////////////////// nur "honda" "hornet" ///////////////////
-		show_animation("LG2_%i.TXT,1,2,400");
+		show_animation("SIMP.TXT,0,19,15");
 		break;
 	case 7: //////////////////// hornet - biene ///////////////////
-		show_animation("HOR%03i.TXT,85,260,0");
+		show_animation("TM.TXT,0,6,15");
+		show_animation("TM.TXT,0,6,15");
+		show_animation("TM.TXT,0,6,15");
 		break;
 	case 8: //////////////////// Titten-Maus ///////////////////
-		show_animation("TM%01i.TXT,0,6,15");
+		show_animation("SIMP.TXT,0,19,15");
 		break;
 	case 9: //////////////////// hornet-logo ///////////////////
 		//

@@ -19,6 +19,15 @@
     <string name="unknown">unknown command</string>
     <string name="select_device">Select device</string>
     <string name="no_selected_file">No file selected</string>
+    <string name="push_back_twice">Push back again to leave</string>
+    <string name="delete_file">Deleting file...</string>
+    
+    <string name="MapEditor">MapEditor</string>
+    
+    <string name="cancle">Cancel</string>
+    <string name="ImageEditor">ImageConverter</string>
+    <string name="SaveImageConverter">Save</string>
+    <string name="DiscardImageConverter">Discard</string>
     
     <string name="disconnect">disconnect</string>
     <string name="not_connected">not connected</string>
@@ -49,6 +58,10 @@
     <string name="uploadgfxfile">Click to select Gfxfile</string>
         
 	<string name="noresponse">No response from target</string>
+        
+	<string name="straight_on">straight on</string>
+        
+	<string name="interprete_this">help me interprete this</string>
     
 
 </resources>

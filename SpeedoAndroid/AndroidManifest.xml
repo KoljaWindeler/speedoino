@@ -34,5 +34,17 @@
                   android:theme="@android:style/Theme.Dialog"
                   android:configChanges="orientation|keyboardHidden" />
         <activity android:name="TermPreferences"/>
+        
+        <activity android:name=".ImageEditor"
+                  android:label="@string/ImageEditor"
+                  android:theme="@android:style/Theme.Dialog"
+                  android:configChanges="orientation|keyboardHidden" />
+        <activity android:name="TermPreferences"/>
+        
+         <activity android:name=".MapEditor"
+                  android:label="@string/MapEditor"
+                  android:theme="@android:style/Theme.Dialog"
+                  android:configChanges="orientation|keyboardHidden" />
+        <activity android:name="TermPreferences"/>
     </application>
 </manifest>

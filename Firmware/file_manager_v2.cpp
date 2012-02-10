@@ -882,6 +882,10 @@ void speedo_filemanager_v2::parse_command(){
 				fm_file.close();
 				fm_handle.sync();
 				fm_handle.close();
+				msgLength=2; // n buchstaben + cmd + status eof
+				msgBuffer[0]=CMD_PUT_FILE;
+				msgBuffer[1]=STATUS_EOF;
+				last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
 				////////////////////////////// PUT FILE /////////////////////////////////
 				////////////////////////////// DEL FILE /////////////////////////////////
 			} else if(msgBuffer[0]==CMD_DEL_FILE){
@@ -898,6 +902,37 @@ void speedo_filemanager_v2::parse_command(){
 					msgBuffer[1]=STATUS_CMD_FAILED;
 				}
 				////////////////////////////// DEL FILE /////////////////////////////////
+				////////////////////////////// SHOW GFX /////////////////////////////////
+				// TRANSFER VOM HANDY ZUM TACHO
+				/* hinweg:
+				 * msgBuffer[0]=CMD_SHOW_GFX
+				 * msgBuffer[1]=length of filename
+				 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
+				 *
+				 * rückweg:
+				 * msgBuffer[0]=CMD_SHOW_GFX
+				 * msgBuffer[1]=COMMAND_OK
+				 */
+			} else if(msgBuffer[0]==CMD_SHOW_GFX){
+				unsigned int length_of_filename=(unsigned int)msgBuffer[1];
+				char filename[13];
+				for(unsigned int i=0;i<length_of_filename;i++){
+					filename[i]=msgBuffer[i+2];
+				}
+				filename[length_of_filename]='\0';
+				int return_value=pOLED->sd2ssd(filename,0);
+				if(return_value==0){
+					pMenu->state=9999999;
+					msgLength=2; // cmd + status ok
+					msgBuffer[0]=CMD_SHOW_GFX;
+					msgBuffer[1]=STATUS_CMD_OK;
+				} else {
+					msgLength=3; // cmd + status ok
+					msgBuffer[0]=CMD_SHOW_GFX;
+					msgBuffer[1]=STATUS_CMD_FAILED;
+					msgBuffer[2]=return_value & 0xFF;
+				}
+				////////////////////////////// SHOW GFX /////////////////////////////////
 				///////////////////////////// EMERGENCY /////////////////////////////////
 
 			} else {

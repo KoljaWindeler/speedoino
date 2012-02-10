@@ -2082,6 +2082,11 @@ void speedo_menu::display(){ // z.B. state = 26
 		state=floor(state/100);
 		display();
 	}
+	// jump here for filemanager
+	else if(floor(state/10)==999999) {
+		state=11;
+		display();
+	}
 	///////////////////// "notfall" //////////////////////////
 	else {
 		back();

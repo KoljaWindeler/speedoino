@@ -14,9 +14,9 @@ class speedo_menu {
 #define     menu_button_fast_delay		menu_button_timeout*4   // wartezeit bis schneller
 #define     menu_button_fast_timeout	100                   // wartezeit zwischen 2 steps -> schnell
 #define menu_button_links 28 // 26
-#define menu_button_unten 24 // 22
+#define menu_button_unten 26 // 22
 #define menu_button_rechts 22 // 28
-#define menu_button_oben 26 // 24
+#define menu_button_oben 24 // 24
 
 public:
 	speedo_menu(void);

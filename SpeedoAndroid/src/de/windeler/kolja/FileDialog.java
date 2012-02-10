@@ -22,280 +22,231 @@ import android.widget.TextView;
 
 public class FileDialog extends ListActivity {
 
-        private static final String ITEM_KEY = "key";
-        private static final String ITEM_IMAGE = "image";
-        private static final String ROOT = "/";
+	private static final String ITEM_KEY = "key";
+	private static final String ITEM_IMAGE = "image";
+	private static final String ROOT = "/";
 
-        public static final String START_PATH = "START_PATH";
-        public static final String RESULT_PATH = "RESULT_PATH";
-        public static final String SELECTION_MODE = "SELECTION_MODE";
+	public static final String START_PATH = "START_PATH";
+	public static final String RESULT_PATH = "RESULT_PATH";
+	public static final String RESULT = "ASD";
+	public static final String SELECTION_MODE = "SELECTION_MODE";
 
-        private List<String> path = null;
-        private TextView myPath;
-        private EditText mFileName;
-        private ArrayList<HashMap<String, Object>> mList;
+	private List<String> path = null;
+	private TextView myPath;
+	private ArrayList<HashMap<String, Object>> mList;
 
-        private Button selectButton;
+	private Button selectButton;
 
-        private LinearLayout layoutSelect;
-        private LinearLayout layoutCreate;
-        private InputMethodManager inputManager;
-        private String parentPath;
-        private String currentPath = ROOT;
+	private LinearLayout layoutSelect;
+	private LinearLayout layoutCreate;
+	private InputMethodManager inputManager;
+	private String parentPath;
+	private String currentPath = ROOT;
 
-        private int selectionMode = SelectionMode.MODE_CREATE;
+	private File selectedFile;
+	private HashMap<String, Integer> lastPositions = new HashMap<String, Integer>();
 
-        private File selectedFile;
-        private HashMap<String, Integer> lastPositions = new HashMap<String, Integer>();
+	/** Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState) { 
+		super.onCreate(savedInstanceState);
+		setResult(RESULT_CANCELED, getIntent());
 
-        /** Called when the activity is first created. */
-        @Override
-        public void onCreate(Bundle savedInstanceState) { 
-                super.onCreate(savedInstanceState);
-                setResult(RESULT_CANCELED, getIntent());
+		setContentView(R.layout.file_dialog_main);
+		myPath = (TextView) findViewById(R.id.path);
 
-                setContentView(R.layout.file_dialog_main);
-                myPath = (TextView) findViewById(R.id.path);
-                mFileName = (EditText) findViewById(R.id.fdEditTextFile);
+		inputManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
-                inputManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+		selectButton = (Button) findViewById(R.id.fdButtonSelect);
+		selectButton.setEnabled(false);
+		selectButton.setOnClickListener(new OnClickListener() {
 
-                selectButton = (Button) findViewById(R.id.fdButtonSelect);
-                selectButton.setEnabled(false);
-                selectButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (selectedFile != null) {
+					getIntent().putExtra(RESULT_PATH, selectedFile.getPath());
+					setResult(RESULT_OK, getIntent());
+					finish();
+				}
+			}
+		});
 
-                        @Override
-                        public void onClick(View v) {
-                                if (selectedFile != null) {
-                                        getIntent().putExtra(RESULT_PATH, selectedFile.getPath());
-                                        setResult(RESULT_OK, getIntent());
-                                        finish();
-                                }
-                        }
-                });
 
-                final Button newButton = (Button) findViewById(R.id.fdButtonNew);
-                newButton.setOnClickListener(new OnClickListener() {
+		layoutSelect = (LinearLayout) findViewById(R.id.fdLinearLayoutSelect);
 
-                        @Override
-                        public void onClick(View v) {
-                                setCreateVisible(v);
+		final Button cancelButton = (Button) findViewById(R.id.fdButtonCancel);
+		cancelButton.setOnClickListener(new OnClickListener() {
 
-                                mFileName.setText("");
-                                mFileName.requestFocus();
-                        }
-                });
+			@Override
+			public void onClick(View v) {
+				setResult(RESULT_CANCELED, getIntent());
+				finish();
+			}
+		}
+				);
 
-                selectionMode = getIntent().getIntExtra(SELECTION_MODE,
-                                SelectionMode.MODE_CREATE);
-                if (selectionMode == SelectionMode.MODE_OPEN) {
-                        newButton.setEnabled(false);
-                }
+		String startPath = getIntent().getStringExtra(START_PATH);
+		if (startPath != null) {
+			getDir(startPath);
+		} else {
+			getDir(ROOT);
+		}
+	}
 
-                layoutSelect = (LinearLayout) findViewById(R.id.fdLinearLayoutSelect);
-                layoutCreate = (LinearLayout) findViewById(R.id.fdLinearLayoutCreate);
-                layoutCreate.setVisibility(View.GONE);
+	private void getDir(String dirPath) {
 
-                final Button cancelButton = (Button) findViewById(R.id.fdButtonCancel);
-                cancelButton.setOnClickListener(new OnClickListener() {
+		boolean useAutoSelection = dirPath.length() < currentPath.length();
 
-                        @Override
-                        public void onClick(View v) {
-                                setSelectVisible(v);
-                        }
+		Integer position = lastPositions.get(parentPath);
 
-                });
-                final Button createButton = (Button) findViewById(R.id.fdButtonCreate);
-                createButton.setOnClickListener(new OnClickListener() {
+		getDirImpl(dirPath);
 
-                        @Override
-                        public void onClick(View v) {
-                                if (mFileName.getText().length() > 0) {
-                                        getIntent().putExtra(RESULT_PATH,
-                                                        currentPath + "/" + mFileName.getText());
-                                        setResult(RESULT_OK, getIntent());
-                                        finish();
-                                }
-                        }
-                });
+		if (position != null && useAutoSelection) {
+			getListView().setSelection(position);
+		}
 
-                String startPath = getIntent().getStringExtra(START_PATH);
-                if (startPath != null) {
-                        getDir(startPath);
-                } else {
-                        getDir(ROOT);
-                }
-        }
+	}
 
-        private void getDir(String dirPath) {
+	private void getDirImpl(final String dirPath) {
 
-                boolean useAutoSelection = dirPath.length() < currentPath.length();
+		currentPath = dirPath;
 
-                Integer position = lastPositions.get(parentPath);
+		final List<String> item = new ArrayList<String>();
+		path = new ArrayList<String>();
+		mList = new ArrayList<HashMap<String, Object>>();
 
-                getDirImpl(dirPath);
+		File f = new File(currentPath);
+		File[] files = f.listFiles();
+		if (files == null) {
+			currentPath = ROOT;
+			f = new File(currentPath);
+			files = f.listFiles();
+		}
+		myPath.setText(getText(R.string.location) + ": " + currentPath);
 
-                if (position != null && useAutoSelection) {
-                        getListView().setSelection(position);
-                }
+		if (!currentPath.equals(ROOT)) {
 
-        }
+			item.add(ROOT);
+			addItem(ROOT, R.drawable.folder);
+			path.add(ROOT);
 
-        private void getDirImpl(final String dirPath) {
+			item.add("../");
+			addItem("../", R.drawable.folder);
+			path.add(f.getParent());
+			parentPath = f.getParent();
 
-                currentPath = dirPath;
+		}
 
-                final List<String> item = new ArrayList<String>();
-                path = new ArrayList<String>();
-                mList = new ArrayList<HashMap<String, Object>>();
+		TreeMap<String, String> dirsMap = new TreeMap<String, String>();
+		TreeMap<String, String> dirsPathMap = new TreeMap<String, String>();
+		TreeMap<String, String> filesMap = new TreeMap<String, String>();
+		TreeMap<String, String> filesPathMap = new TreeMap<String, String>();
+		for (File file : files) {
+			if(!file.getName().toString().substring(0,1).equals(".")){
+				if (file.isDirectory()) {
+					String dirName = file.getName();
+					dirsMap.put(dirName, dirName);
+					dirsPathMap.put(dirName, file.getPath());
+				} else {
+					filesMap.put(file.getName(), file.getName());
+					filesPathMap.put(file.getName(), file.getPath());
+				}
+			}
+		}
+		item.addAll(dirsMap.tailMap("").values());
+		item.addAll(filesMap.tailMap("").values());
+		path.addAll(dirsPathMap.tailMap("").values());
+		path.addAll(filesPathMap.tailMap("").values());
 
-                File f = new File(currentPath);
-                File[] files = f.listFiles();
-                if (files == null) {
-                        currentPath = ROOT;
-                        f = new File(currentPath);
-                        files = f.listFiles();
-                }
-                myPath.setText(getText(R.string.location) + ": " + currentPath);
+		SimpleAdapter fileList = new SimpleAdapter(this, mList,
+				R.layout.file_dialog_row,
+				new String[] { ITEM_KEY, ITEM_IMAGE }, new int[] {
+				R.id.fdrowtext, R.id.fdrowimage });
 
-                if (!currentPath.equals(ROOT)) {
+		for (String dir : dirsMap.tailMap("").values()) {
+			if(dir.toString().length()>23){
+				addItem(dir.toString().substring(0, 20)+"...", R.drawable.folder);
+			} else {
+				addItem(dir, R.drawable.folder);
+			}
+		}
 
-                        item.add(ROOT);
-                        addItem(ROOT, R.drawable.folder);
-                        path.add(ROOT);
+		for (String file : filesMap.tailMap("").values()) {
+			if(file.toString().length()>23){
+				addItem(file.toString().substring(0, 20)+"...", R.drawable.file);
+			} else {
+				addItem(file, R.drawable.file);
+			}
+		}
 
-                        item.add("../");
-                        addItem("../", R.drawable.folder);
-                        path.add(f.getParent());
-                        parentPath = f.getParent();
+		fileList.notifyDataSetChanged();
 
-                }
+		setListAdapter(fileList);
 
-                TreeMap<String, String> dirsMap = new TreeMap<String, String>();
-                TreeMap<String, String> dirsPathMap = new TreeMap<String, String>();
-                TreeMap<String, String> filesMap = new TreeMap<String, String>();
-                TreeMap<String, String> filesPathMap = new TreeMap<String, String>();
-                for (File file : files) {
-                	if(!file.getName().toString().substring(0,1).equals(".")){
-                		if (file.isDirectory()) {
-                			String dirName = file.getName();
-                			dirsMap.put(dirName, dirName);
-                			dirsPathMap.put(dirName, file.getPath());
-                		} else {
-                			filesMap.put(file.getName(), file.getName());
-                			filesPathMap.put(file.getName(), file.getPath());
-                		}
-                	}
-                }
-                item.addAll(dirsMap.tailMap("").values());
-                item.addAll(filesMap.tailMap("").values());
-                path.addAll(dirsPathMap.tailMap("").values());
-                path.addAll(filesPathMap.tailMap("").values());
+	}
 
-                SimpleAdapter fileList = new SimpleAdapter(this, mList,
-                                R.layout.file_dialog_row,
-                                new String[] { ITEM_KEY, ITEM_IMAGE }, new int[] {
-                                                R.id.fdrowtext, R.id.fdrowimage });
+	private void addItem(String fileName, int imageId) {
+		HashMap<String, Object> item = new HashMap<String, Object>();
+		item.put(ITEM_KEY, fileName);
+		item.put(ITEM_IMAGE, imageId);
+		mList.add(item);
+	}
 
-                for (String dir : dirsMap.tailMap("").values()) {
-                	if(dir.toString().length()>23){
-                		addItem(dir.toString().substring(0, 20)+"...", R.drawable.folder);
-                	} else {
-                		addItem(dir, R.drawable.folder);
-                	}
-                }
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
 
-                for (String file : filesMap.tailMap("").values()) {
-                	if(file.toString().length()>23){
-                		addItem(file.toString().substring(0, 20)+"...", R.drawable.file);
-                	} else {
-                		addItem(file, R.drawable.file);
-                	}
-                }
+		File file = new File(path.get(position));
 
-                fileList.notifyDataSetChanged();
+		setSelectVisible(v);
 
-                setListAdapter(fileList);
+		if (file.isDirectory()) {
+			selectButton.setEnabled(false);
+			if (file.canRead()) {
+				lastPositions.put(currentPath, position);
+				getDir(path.get(position));
+			} else {
+				new AlertDialog.Builder(this)
+				.setIcon(R.drawable.icon)
+				.setTitle(
+						"[" + file.getName() + "] "
+								+ getText(R.string.cant_read_folder))
+								.setPositiveButton("OK",
+										new DialogInterface.OnClickListener() {
 
-        }
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
 
-        private void addItem(String fileName, int imageId) {
-                HashMap<String, Object> item = new HashMap<String, Object>();
-                item.put(ITEM_KEY, fileName);
-                item.put(ITEM_IMAGE, imageId);
-                mList.add(item);
-        }
+									}
+								}).show();
+			}
+		} else {
+			selectedFile = file;
+			v.setSelected(true);
+			selectButton.setEnabled(true);
+		}
+	}
 
-        @Override
-        protected void onListItemClick(ListView l, View v, int position, long id) {
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			selectButton.setEnabled(false);
+			if (!currentPath.equals(ROOT)) {
+				getDir(parentPath);
+			} else {
+				return super.onKeyDown(keyCode, event);
+			}
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+	}
 
-                File file = new File(path.get(position));
 
-                setSelectVisible(v);
+	private void setSelectVisible(View v) {
+		layoutSelect.setVisibility(View.VISIBLE);
 
-                if (file.isDirectory()) {
-                        selectButton.setEnabled(false);
-                        if (file.canRead()) {
-                                lastPositions.put(currentPath, position);
-                                getDir(path.get(position));
-                        } else {
-                                new AlertDialog.Builder(this)
-                                                .setIcon(R.drawable.icon)
-                                                .setTitle(
-                                                                "[" + file.getName() + "] "
-                                                                                + getText(R.string.cant_read_folder))
-                                                .setPositiveButton("OK",
-                                                                new DialogInterface.OnClickListener() {
-
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog,
-                                                                                        int which) {
-
-                                                                        }
-                                                                }).show();
-                        }
-                } else {
-                        selectedFile = file;
-                        v.setSelected(true);
-                        selectButton.setEnabled(true);
-                }
-        }
-
-        @Override
-        public boolean onKeyDown(int keyCode, KeyEvent event) {
-                if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-                        selectButton.setEnabled(false);
-
-                        if (layoutCreate.getVisibility() == View.VISIBLE) {
-                                layoutCreate.setVisibility(View.GONE);
-                                layoutSelect.setVisibility(View.VISIBLE);
-                        } else {
-                                if (!currentPath.equals(ROOT)) {
-                                        getDir(parentPath);
-                                } else {
-                                        return super.onKeyDown(keyCode, event);
-                                }
-                        }
-
-                        return true;
-                } else {
-                        return super.onKeyDown(keyCode, event);
-                }
-        }
-
-        private void setCreateVisible(View v) {
-                layoutCreate.setVisibility(View.VISIBLE);
-                layoutSelect.setVisibility(View.GONE);
-
-                inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                selectButton.setEnabled(false);
-        }
-
-        private void setSelectVisible(View v) {
-                layoutCreate.setVisibility(View.GONE);
-                layoutSelect.setVisibility(View.VISIBLE);
-
-                inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                selectButton.setEnabled(false);
-        }
+		inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+		selectButton.setEnabled(false);
+	}
 }
