@@ -21,12 +21,14 @@
     <string name="no_selected_file">No file selected</string>
     <string name="push_back_twice">Push back again to leave</string>
     <string name="delete_file">Deleting file...</string>
-    
+    <string name="PrevImageConverter">Previous</string>
+    <string name="NextImageConverter">Save/Next</string>
+    <string name="mapEditorCaption">Please set a direction for the missing points</string>
     <string name="MapEditor">MapEditor</string>
     
     <string name="cancle">Cancel</string>
     <string name="ImageEditor">ImageConverter</string>
-    <string name="SaveImageConverter">Save</string>
+    <string name="SaveImageConverter">Upload</string>
     <string name="DiscardImageConverter">Discard</string>
     
     <string name="disconnect">disconnect</string>
@@ -34,10 +36,10 @@
     <string name="bt_not_enabled_leaving">Bluetooth not enabled</string>
     <string name="log_value">please connect</string>
     <string name="log_cap">Last command:</string>
-    <string name="left">left</string>
-    <string name="right">right</string>
-    <string name="up">up</string>
-    <string name="down">down</string>
+    <string name="left">←</string>
+    <string name="right">→</string>
+    <string name="up">↑</string>
+    <string name="down">↓</string>
     <string name="Download">Download</string>
     <string name="Delete">Delete</string>
     
@@ -51,15 +53,14 @@
     <string name="create">Save</string>
     <string name="no_data">No Data</string>
     <color name="gray">#ffff0000</color>
-    
-    <string name="uploadmapfile">Click to select Mapfile</string>
-    <string name="uploadconfigfile">Click to select Configfile</string>
-    <string name="uploadspeedofile">Click to select Speedofile</string>
-    <string name="uploadgfxfile">Click to select Gfxfile</string>
+    <string name="RemoveMapConverter">Remove</string>
+    <string name="uploadmapfile">Click to select Map-File</string>
+    <string name="uploadconfigfile">Click to select Config-File</string>
+    <string name="uploadgfxfile">Click to select GFX-File</string>
         
 	<string name="noresponse">No response from target</string>
         
-	<string name="straight_on">straight on</string>
+	<string name="straight_on">↑</string>
         
 	<string name="interprete_this">help me interprete this</string>
     

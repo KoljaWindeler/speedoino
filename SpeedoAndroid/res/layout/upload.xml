@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/uploadLayout" 
+    android:id="@+id/uploadLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/road" 
+    android:background="@drawable/road"
     android:orientation="vertical" >
-    
+
     <LinearLayout
         android:id="@+id/TextLayout"
         android:layout_width="wrap_content"
@@ -16,33 +16,24 @@
         android:id="@+id/browseToUploadMap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/uploadmapfile" />   
-    <Button
-        android:id="@+id/browseToUploadConfig"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/uploadconfigfile" />
-    <Button
-        android:id="@+id/browseToUploadSpeedo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/uploadspeedofile" />
+        android:text="@string/uploadmapfile" />
+
     <Button
         android:id="@+id/browseToUploadGfx"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/uploadgfxfile" />
-   
-     <TextView
-        android:id="@+id/Upload_textView"
+
+    <LinearLayout
+        android:id="@+id/TextLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        android:orientation="horizontal" />
+
+    <Button
+        android:id="@+id/browseToUploadConfig"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
-     
-     <Button
-        android:id="@+id/uploadFile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Upload file" />
+        android:text="@string/uploadconfigfile" />
 
 </LinearLayout>

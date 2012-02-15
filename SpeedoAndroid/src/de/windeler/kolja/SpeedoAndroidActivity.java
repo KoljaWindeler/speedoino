@@ -55,8 +55,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	private delFileDialog _delFileDialog;
 	private String dl_basedir = "/";
 	private String t2a_dest ="";
-	private String a2t_source = "";
-	private String a2t_dest = "";
 	private int back_pushed = 0;
 
 
@@ -74,14 +72,11 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	private Button mDownButton;
 	private Button browseToUploadMap;
 	private Button browseToUploadConfig;
-	private Button browseToUploadSpeedo;
 	private Button browseToUploadGfx;
 	private Button mloadRoot;
 	private Button DlselButton;
 	private Button DeleteButton;
 	private ListView mDLListView;
-
-	private Button mUploadButton;
 
 	// Message types sent from the BluetoothReadService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
@@ -102,7 +97,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	private static final int REQUEST_ENABLE_BT 		= 2;
 	private static final int REQUEST_OPEN_MAP		= 3;	// file open dialog
 	private static final int REQUEST_OPEN_CONFIG	= 4;	// file open dialog
-	private static final int REQUEST_OPEN_SPEEDO	= 5;	// file open dialog
 	private static final int REQUEST_OPEN_GFX		= 6;	// file open dialog
 	private static final int REQUEST_CONVERT_GFX	= 7;	// convert image
 	private static final int REQUEST_CONVERT_MAP	= 8;	// convert maps
@@ -169,7 +163,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		mStatus = (TextView) findViewById(R.id.status_value);
 		mVersion = (TextView) findViewById(R.id.version_value);
 		mDownload = (TextView) findViewById(R.id.Download_textView);
-		mUpload = (TextView) findViewById(R.id.Upload_textView);
 		mLeftButton = (Button) findViewById(R.id.button_left);
 		mLeftButton.setOnClickListener(this);
 		mRightButton = (Button) findViewById(R.id.button_right);
@@ -184,8 +177,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		browseToUploadGfx.setOnClickListener(this);
 		browseToUploadConfig = (Button) findViewById(R.id.browseToUploadConfig);
 		browseToUploadConfig.setOnClickListener(this);
-		browseToUploadSpeedo = (Button) findViewById(R.id.browseToUploadSpeedo);
-		browseToUploadSpeedo.setOnClickListener(this);
 		mloadRoot = (Button) findViewById(R.id.loadRoot);
 		mloadRoot.setOnClickListener(this);
 		DlselButton = (Button) findViewById(R.id.DownloadButtonSelect);
@@ -193,8 +184,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 		DeleteButton = (Button) findViewById(R.id.DeleteButton);
 		DeleteButton.setOnClickListener(this);
 		mDLListView = (ListView) findViewById(R.id.dlList);
-		mUploadButton = (Button) findViewById(R.id.uploadFile);
-		mUploadButton.setOnClickListener(this);
 		update_visible_elements(false);
 
 
@@ -337,21 +326,36 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				intent.putExtra(MapEditor.INPUT_FILE_NAME, filePath);
 				intent.putExtra(MapEditor.INPUT_DIR_PATH, dl_basedir);
 				startActivityForResult(intent, REQUEST_CONVERT_MAP);
-
-				a2t_source=filePath;
-				mUpload.setText(filePath);
 			};
 			//process_uploadFile(REQUEST_OPEN_MAP,filePath)
 			break;
 		case REQUEST_CONVERT_MAP:
-			Log.i(TAG,"Image converter hat was zurückgegeben ");
+			Log.i(TAG,"Map converter hat was zurückgegeben ");
+			if(resultCode==RESULT_OK){
+				filePath = data.getStringExtra(ImageEditor.OUTPUT_FILE_PATH);
+				Log.i(TAG,"Der Resultcode war OK, der Pfad:"+filePath);
+				_putFileDialog = new putFileDialog(this);
+				_putFileDialog.execute(filePath,"NAVI"+filePath.substring(filePath.lastIndexOf('/')));  //  /mnt/sdcard/Download/bild.sng, GFX/bild.sng
+				Log.i(TAG,"Datei wurde hochgeladen");
+				// delete the file ? vielleicht nur wenns geklappt hat ? TODO
+				File file = new File(filePath);
+		        file.delete();
+
+			} else {
+				toast = Toast.makeText(this, "Dialog cancled", Toast.LENGTH_SHORT);
+				toast.show();
+			}
 			break;
 		case REQUEST_OPEN_CONFIG:
 			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
 			Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
-			a2t_source=filePath;
 			mUpload.setText(filePath);
-			//process_uploadFile(REQUEST_OPEN_CONFIG,filePath)
+			_putFileDialog = new putFileDialog(this);
+			_putFileDialog.execute(filePath,"CONFIG"+filePath.substring(filePath.lastIndexOf('/')));  //  /mnt/sdcard/Download/bild.sng, GFX/bild.sng
+			Log.i(TAG,"Datei wurde hochgeladen");
+			// delete the file
+			File file = new File(filePath);
+	        file.delete();
 			break;
 		case REQUEST_OPEN_GFX:
 			// gfx datei ausgewählt jetzt damit den converter starten
@@ -362,9 +366,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				intent.putExtra(ImageEditor.INPUT_FILE_NAME, filePath);
 				intent.putExtra(ImageEditor.INPUT_DIR_PATH, dl_basedir);
 				startActivityForResult(intent, REQUEST_CONVERT_GFX);
-
-				a2t_source=filePath;
-				mUpload.setText(filePath);
 			};
 			break;
 		case REQUEST_CONVERT_GFX:
@@ -376,23 +377,21 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				_putFileDialog.execute(filePath,"GFX"+filePath.substring(filePath.lastIndexOf('/')));  //  /mnt/sdcard/Download/bild.sng, GFX/bild.sng
 
 				Log.i(TAG,"Datei wurde hochgeladen");
+				// delete the file
+				File file2 = new File(filePath);
+		        file2.delete();
+
 			} else {
 				toast = Toast.makeText(this, "Dialog cancled", Toast.LENGTH_SHORT);
 				toast.show();
 			}
-			break;
-		case REQUEST_OPEN_SPEEDO:
-			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
-			Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
-			a2t_source=filePath;
-			mUpload.setText(filePath);
 			break;
 		case RESULT_CANCELED:
 			Log.i(TAG,"File open abgebrochen");
 			break;
 		default:
 			Log.i(TAG,"nicht gut, keine ActivityResultHandle gefunden");
-
+			break;
 		}
 	}
 
@@ -619,28 +618,18 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			intent.putExtra(FileDialog.START_PATH, dl_basedir);
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_MAP);
-			a2t_dest="NAVI";
 			break;
 		case R.id.browseToUploadConfig:
 			intent = new Intent(getBaseContext(),FileDialog.class);
 			intent.putExtra(FileDialog.START_PATH, dl_basedir);
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_CONFIG);
-			a2t_dest="CONFIG";
 			break;
 		case R.id.browseToUploadGfx:
 			intent = new Intent(getBaseContext(),FileDialog.class);
 			intent.putExtra(FileDialog.START_PATH, dl_basedir);
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_GFX);
-			a2t_dest="GFX";
-			break;
-		case R.id.browseToUploadSpeedo:
-			intent = new Intent(getBaseContext(),FileDialog.class);
-			intent.putExtra(FileDialog.START_PATH, dl_basedir);
-			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
-			startActivityForResult(intent, REQUEST_OPEN_SPEEDO);
-			a2t_dest="CONFIG";
 			break;
 		case R.id.loadRoot:
 			_getDirDialog = new getDirDialog(this);
@@ -656,12 +645,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			_delFileDialog = new delFileDialog(this);
 			_delFileDialog.execute(t2a_dest);
 			break;
-
-		case R.id.uploadFile:
-			_putFileDialog = new putFileDialog(this);
-			_putFileDialog.execute(a2t_source,a2t_dest+a2t_source.substring(a2t_source.lastIndexOf('/')));
-			break;
-
 		default:
 			Log.i(TAG,"Hier wurde was geklickt das ich nicht kenne!!");
 			break;
@@ -885,7 +868,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			mDownButton.setEnabled(false);
 			mLeftButton.setEnabled(false);
 			mRightButton.setEnabled(false);
-			mUploadButton.setEnabled(false);
 		} else {
 			if (mMenuItemConnect != null) {
 				//mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
@@ -896,7 +878,6 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			mDownButton.setEnabled(true);
 			mLeftButton.setEnabled(true);
 			mRightButton.setEnabled(true);
-			mUploadButton.setEnabled(true);
 		}
 	}
 
