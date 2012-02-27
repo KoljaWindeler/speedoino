@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.0">
+<eagle version="6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -4468,39 +4468,85 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 <vertex x="-3.6" y="13"/>
 </polygon>
 </package>
-<package name="NHD_2.7">
-<circle x="-119.4" y="-6.6" radius="1.6031" width="0.127" layer="39"/>
-<circle x="-119.4" y="19.5" radius="1.6124" width="0.127" layer="39"/>
+<package name="NHD_2.7_SOLO">
+<circle x="-124.5" y="-18" radius="1.6031" width="0.127" layer="39"/>
+<circle x="-124.5" y="24.5" radius="1.6124" width="0.127" layer="39"/>
 <circle x="-47.5" y="24.5" radius="1.6031" width="0.127" layer="39"/>
 <circle x="-47.5" y="-18" radius="1.5524" width="0.127" layer="39"/>
-<circle x="-119.4" y="-6.6" radius="2.75" width="0.127" layer="40"/>
-<circle x="-119.4" y="19.5" radius="2.75" width="0.127" layer="40"/>
+<circle x="-124.5" y="-18" radius="2.75" width="0.127" layer="40"/>
+<circle x="-124.5" y="24.5" radius="2.75" width="0.127" layer="40"/>
 <circle x="-47.5" y="24.5" radius="2.75" width="0.127" layer="40"/>
 <circle x="-47.5" y="-18" radius="2.75" width="0.127" layer="40"/>
-<pad name="P$1" x="-110.13" y="24.5" drill="1"/>
-<pad name="P$2" x="-107.59" y="24.5" drill="1"/>
-<pad name="P$3" x="-105.05" y="24.5" drill="1"/>
-<pad name="P$4" x="-102.51" y="24.5" drill="1"/>
-<pad name="P$5" x="-99.97" y="24.5" drill="1"/>
-<pad name="P$6" x="-97.43" y="24.5" drill="1"/>
-<pad name="P$7" x="-94.89" y="24.5" drill="1"/>
-<pad name="P$8" x="-92.35" y="24.5" drill="1"/>
-<pad name="P$9" x="-89.81" y="24.5" drill="1"/>
-<pad name="P$10" x="-87.27" y="24.5" drill="1"/>
-<pad name="P$11" x="-84.73" y="24.5" drill="1"/>
-<pad name="P$12" x="-82.19" y="24.5" drill="1"/>
-<pad name="P$13" x="-79.65" y="24.5" drill="1"/>
-<pad name="P$14" x="-77.11" y="24.5" drill="1"/>
-<pad name="P$15" x="-74.57" y="24.5" drill="1"/>
-<pad name="P$16" x="-72.03" y="24.5" drill="1"/>
-<pad name="P$17" x="-69.49" y="24.5" drill="1"/>
-<pad name="P$18" x="-66.95" y="24.5" drill="1"/>
-<pad name="P$19" x="-64.41" y="24.5" drill="1"/>
-<pad name="P$20" x="-61.87" y="24.5" drill="1"/>
-<hole x="-119.4" y="19.5" drill="2.5"/>
-<hole x="-119.4" y="-6.6" drill="2.5"/>
+<pad name="GND9" x="-110.13" y="24.5" drill="1"/>
+<pad name="GND8" x="-107.59" y="24.5" drill="1"/>
+<pad name="NC3" x="-105.05" y="24.5" drill="1"/>
+<pad name="CS" x="-102.51" y="24.5" drill="1"/>
+<pad name="RES" x="-99.97" y="24.5" drill="1"/>
+<pad name="NC2" x="-97.43" y="24.5" drill="1"/>
+<pad name="GND7" x="-94.89" y="24.5" drill="1"/>
+<pad name="GND6" x="-92.35" y="24.5" drill="1"/>
+<pad name="GND5" x="-89.81" y="24.5" drill="1"/>
+<pad name="GND4" x="-87.27" y="24.5" drill="1"/>
+<pad name="GND3" x="-84.73" y="24.5" drill="1"/>
+<pad name="NC1" x="-82.19" y="24.5" drill="1"/>
+<pad name="SDIN" x="-79.65" y="24.5" drill="1"/>
+<pad name="SCLK" x="-77.11" y="24.5" drill="1"/>
+<pad name="GND2" x="-74.57" y="24.5" drill="1"/>
+<pad name="GND1" x="-72.03" y="24.5" drill="1"/>
+<pad name="DC" x="-69.49" y="24.5" drill="1"/>
+<pad name="NC0" x="-66.95" y="24.5" drill="1"/>
+<pad name="VDD0" x="-64.41" y="24.5" drill="1"/>
+<pad name="GND0" x="-61.87" y="24.5" drill="1"/>
+<hole x="-124.5" y="24.5" drill="2.5"/>
+<hole x="-124.5" y="-18" drill="2.5"/>
 <hole x="-47.5" y="-18" drill="2.5"/>
 <hole x="-47.5" y="24.5" drill="2.5"/>
+<polygon width="0.127" layer="108">
+<vertex x="-127" y="27"/>
+<vertex x="-45" y="27"/>
+<vertex x="-45" y="-20.5"/>
+<vertex x="-127" y="-20.5"/>
+</polygon>
+<text x="-62.23" y="27.94" size="1.27" layer="27" rot="R270">1</text>
+<text x="-64.77" y="27.94" size="1.27" layer="27" rot="R270">2</text>
+<text x="-67.31" y="27.94" size="1.27" layer="27" rot="R270">3</text>
+<text x="-69.85" y="27.94" size="1.27" layer="27" rot="R270">4</text>
+<text x="-72.39" y="27.94" size="1.27" layer="27" rot="R270">5</text>
+<text x="-74.93" y="27.94" size="1.27" layer="27" rot="R270">6</text>
+<text x="-77.47" y="27.94" size="1.27" layer="27" rot="R270">7</text>
+<text x="-80.01" y="27.94" size="1.27" layer="27" rot="R270">8</text>
+<text x="-82.55" y="27.94" size="1.27" layer="27" rot="R270">9</text>
+<text x="-85.09" y="27.94" size="1.27" layer="27" rot="R270">10</text>
+<text x="-87.63" y="27.94" size="1.27" layer="27" rot="R270">11</text>
+<text x="-90.17" y="27.94" size="1.27" layer="27" rot="R270">12</text>
+<text x="-92.71" y="27.94" size="1.27" layer="27" rot="R270">13</text>
+<text x="-95.25" y="27.94" size="1.27" layer="27" rot="R270">14</text>
+<text x="-97.79" y="27.94" size="1.27" layer="27" rot="R270">15</text>
+<text x="-100.33" y="27.94" size="1.27" layer="27" rot="R270">16</text>
+<text x="-102.87" y="27.94" size="1.27" layer="27" rot="R270">17</text>
+<text x="-105.41" y="27.94" size="1.27" layer="27" rot="R270">18</text>
+<text x="-107.95" y="27.94" size="1.27" layer="27" rot="R270">19</text>
+<text x="-110.49" y="27.94" size="1.27" layer="27" rot="R270">20</text>
+<text x="-62.23" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-72.39" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-74.93" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-85.09" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-87.63" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-90.17" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-92.71" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-95.25" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-67.31" y="22.86" size="1.27" layer="27" rot="R270">Not Connected</text>
+<text x="-82.55" y="22.86" size="1.27" layer="27" rot="R270">Not Connected</text>
+<text x="-105.41" y="22.86" size="1.27" layer="27" rot="R270">Not Connected</text>
+<text x="-64.77" y="22.86" size="1.27" layer="27" rot="R270">Supply Voltage</text>
+<text x="-110.49" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-107.95" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-102.87" y="22.86" size="1.27" layer="27" rot="R270">chip select</text>
+<text x="-100.33" y="22.86" size="1.27" layer="27" rot="R270">reset</text>
+<text x="-97.79" y="22.86" size="1.27" layer="27" rot="R270">Not Connected</text>
+<text x="-80.01" y="22.86" size="1.27" layer="27" rot="R270">sdin</text>
+<text x="-77.47" y="22.86" size="1.27" layer="27" rot="R270">sclk</text>
+<text x="-69.85" y="22.86" size="1.27" layer="27" rot="R270">dc</text>
 </package>
 <package name="SD_MICRO">
 <wire x1="4.9" y1="-13.53" x2="4.9" y2="-14.03" width="0.1" layer="21" style="shortdash"/>
@@ -4715,26 +4761,26 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 <text x="0" y="-15.24" size="1.27" layer="94">Act_low</text>
 <text x="0" y="-12.7" size="1.27" layer="94">Act_low</text>
 <text x="-5.08" y="30.48" size="1.27" layer="95">NHD_2.7</text>
-<pin name="P$1" x="-12.7" y="25.4" visible="off" length="middle"/>
-<pin name="P$2" x="-12.7" y="22.86" visible="off" length="middle"/>
-<pin name="P$3" x="-12.7" y="20.32" visible="off" length="middle"/>
-<pin name="P$4" x="-12.7" y="17.78" visible="off" length="middle"/>
-<pin name="P$5" x="-12.7" y="15.24" visible="off" length="middle"/>
-<pin name="P$6" x="-12.7" y="12.7" visible="off" length="middle"/>
-<pin name="P$7" x="-12.7" y="10.16" visible="off" length="middle"/>
-<pin name="P$8" x="-12.7" y="7.62" visible="off" length="middle"/>
-<pin name="P$9" x="-12.7" y="5.08" visible="off" length="middle"/>
-<pin name="P$10" x="-12.7" y="2.54" visible="off" length="middle"/>
-<pin name="P$11" x="-12.7" y="0" visible="off" length="middle"/>
-<pin name="P$12" x="-12.7" y="-2.54" visible="off" length="middle"/>
-<pin name="P$13" x="-12.7" y="-5.08" visible="off" length="middle"/>
-<pin name="P$14" x="-12.7" y="-7.62" visible="off" length="middle"/>
-<pin name="P$15" x="-12.7" y="-10.16" visible="off" length="middle"/>
-<pin name="P$16" x="-12.7" y="-12.7" visible="off" length="middle"/>
-<pin name="P$17" x="-12.7" y="-15.24" visible="off" length="middle"/>
-<pin name="P$18" x="-12.7" y="-17.78" visible="off" length="middle"/>
-<pin name="P$19" x="-12.7" y="-20.32" visible="off" length="middle"/>
-<pin name="P$20" x="-12.7" y="-22.86" visible="off" length="middle"/>
+<pin name="GND" x="-12.7" y="25.4" visible="off" length="middle" direction="pwr"/>
+<pin name="VDD" x="-12.7" y="22.86" visible="off" length="middle" direction="pwr"/>
+<pin name="NC" x="-12.7" y="20.32" visible="off" length="middle"/>
+<pin name="DC" x="-12.7" y="17.78" visible="off" length="middle"/>
+<pin name="GND2" x="-12.7" y="15.24" visible="off" length="middle" direction="pwr"/>
+<pin name="GND3" x="-12.7" y="12.7" visible="off" length="middle" direction="pwr"/>
+<pin name="SCL" x="-12.7" y="10.16" visible="off" length="middle"/>
+<pin name="SDA" x="-12.7" y="7.62" visible="off" length="middle"/>
+<pin name="NC3" x="-12.7" y="5.08" visible="off" length="middle"/>
+<pin name="GND4" x="-12.7" y="2.54" visible="off" length="middle" direction="pwr"/>
+<pin name="GND5" x="-12.7" y="0" visible="off" length="middle" direction="pwr"/>
+<pin name="GND6" x="-12.7" y="-2.54" visible="off" length="middle" direction="pwr"/>
+<pin name="GND7" x="-12.7" y="-5.08" visible="off" length="middle" direction="pwr"/>
+<pin name="GND8" x="-12.7" y="-7.62" visible="off" length="middle" direction="pwr"/>
+<pin name="NC2" x="-12.7" y="-10.16" visible="off" length="middle"/>
+<pin name="RES" x="-12.7" y="-12.7" visible="off" length="middle"/>
+<pin name="CS" x="-12.7" y="-15.24" visible="off" length="middle"/>
+<pin name="NC4" x="-12.7" y="-17.78" visible="off" length="middle"/>
+<pin name="GND9" x="-12.7" y="-20.32" visible="off" length="middle" direction="pwr"/>
+<pin name="GND10" x="-12.7" y="-22.86" visible="off" length="middle" direction="pwr"/>
 </symbol>
 <symbol name="MT3329">
 <rectangle x1="-20.32" y1="-2.54" x2="7.62" y2="20.32" layer="97"/>
@@ -4927,33 +4973,33 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 </device>
 </devices>
 </deviceset>
-<deviceset name="NHD_2.7">
+<deviceset name="NHD_2.7_SOLO">
 <gates>
-<gate name="G$1" symbol="NHD_2.7" x="22.86" y="-5.08"/>
+<gate name="G$1" symbol="NHD_2.7" x="-2.54" y="0"/>
 </gates>
 <devices>
-<device name="" package="NHD_2.7">
+<device name="" package="NHD_2.7_SOLO">
 <connects>
-<connect gate="G$1" pin="P$1" pad="P$20"/>
-<connect gate="G$1" pin="P$10" pad="P$11"/>
-<connect gate="G$1" pin="P$11" pad="P$10"/>
-<connect gate="G$1" pin="P$12" pad="P$9"/>
-<connect gate="G$1" pin="P$13" pad="P$8"/>
-<connect gate="G$1" pin="P$14" pad="P$7"/>
-<connect gate="G$1" pin="P$15" pad="P$6"/>
-<connect gate="G$1" pin="P$16" pad="P$5"/>
-<connect gate="G$1" pin="P$17" pad="P$4"/>
-<connect gate="G$1" pin="P$18" pad="P$3"/>
-<connect gate="G$1" pin="P$19" pad="P$2"/>
-<connect gate="G$1" pin="P$2" pad="P$19"/>
-<connect gate="G$1" pin="P$20" pad="P$1"/>
-<connect gate="G$1" pin="P$3" pad="P$18"/>
-<connect gate="G$1" pin="P$4" pad="P$17"/>
-<connect gate="G$1" pin="P$5" pad="P$16"/>
-<connect gate="G$1" pin="P$6" pad="P$15"/>
-<connect gate="G$1" pin="P$7" pad="P$14"/>
-<connect gate="G$1" pin="P$8" pad="P$13"/>
-<connect gate="G$1" pin="P$9" pad="P$12"/>
+<connect gate="G$1" pin="CS" pad="CS"/>
+<connect gate="G$1" pin="DC" pad="DC"/>
+<connect gate="G$1" pin="GND" pad="GND0"/>
+<connect gate="G$1" pin="GND10" pad="GND9"/>
+<connect gate="G$1" pin="GND2" pad="GND1"/>
+<connect gate="G$1" pin="GND3" pad="GND2"/>
+<connect gate="G$1" pin="GND4" pad="GND3"/>
+<connect gate="G$1" pin="GND5" pad="GND4"/>
+<connect gate="G$1" pin="GND6" pad="GND5"/>
+<connect gate="G$1" pin="GND7" pad="GND6"/>
+<connect gate="G$1" pin="GND8" pad="GND7"/>
+<connect gate="G$1" pin="GND9" pad="GND8"/>
+<connect gate="G$1" pin="NC" pad="NC0"/>
+<connect gate="G$1" pin="NC2" pad="NC1"/>
+<connect gate="G$1" pin="NC3" pad="NC2"/>
+<connect gate="G$1" pin="NC4" pad="NC3"/>
+<connect gate="G$1" pin="RES" pad="RES"/>
+<connect gate="G$1" pin="SCL" pad="SCLK"/>
+<connect gate="G$1" pin="SDA" pad="SDIN"/>
+<connect gate="G$1" pin="VDD" pad="VDD0"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -24053,7 +24099,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <part name="R_SDA_UP" library="RCLDT" deviceset="R" device="0805" value="1K"/>
 <part name="C_QUA_1" library="rcl" deviceset="C-EU" device="C0805" value="22pF"/>
 <part name="C_QUA_2" library="rcl" deviceset="C-EU" device="C0805" value="22pF"/>
-<part name="NHD_2.7" library="Kolja" deviceset="NHD_2.7" device=""/>
+<part name="NHD_2.7" library="Kolja" deviceset="NHD_2.7_SOLO" device=""/>
 <part name="PWR_R78" library="Kolja" deviceset="R-7805-1.0" device=""/>
 <part name="BAT_CLIP1" library="SparkFun" deviceset="BATTERY" device="12MM" value="F_908642"/>
 <part name="C5" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
@@ -25063,16 +25109,16 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <junction x="-266.7" y="45.72"/>
 <junction x="-266.7" y="33.02"/>
 <label x="-279.4" y="45.72" size="1.778" layer="95"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$1"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$5"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$10"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$11"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$12"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$13"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$14"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$19"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$20"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$6"/>
+<pinref part="NHD_2.7" gate="G$1" pin="GND"/>
+<pinref part="NHD_2.7" gate="G$1" pin="GND2"/>
+<pinref part="NHD_2.7" gate="G$1" pin="GND4"/>
+<pinref part="NHD_2.7" gate="G$1" pin="GND5"/>
+<pinref part="NHD_2.7" gate="G$1" pin="GND6"/>
+<pinref part="NHD_2.7" gate="G$1" pin="GND7"/>
+<pinref part="NHD_2.7" gate="G$1" pin="GND8"/>
+<pinref part="NHD_2.7" gate="G$1" pin="GND9"/>
+<pinref part="NHD_2.7" gate="G$1" pin="GND10"/>
+<pinref part="NHD_2.7" gate="G$1" pin="GND3"/>
 </segment>
 <segment>
 <wire x1="-144.78" y1="-20.32" x2="-124.46" y2="-20.32" width="0.1524" layer="91"/>
@@ -25445,7 +25491,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <segment>
 <wire x1="-261.62" y1="43.18" x2="-284.48" y2="43.18" width="0.1524" layer="91"/>
 <label x="-279.4" y="43.18" size="1.778" layer="95"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$2"/>
+<pinref part="NHD_2.7" gate="G$1" pin="VDD"/>
 </segment>
 <segment>
 <wire x1="152.4" y1="266.7" x2="147.32" y2="266.7" width="0.1524" layer="91"/>
@@ -26007,7 +26053,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <segment>
 <wire x1="-261.62" y1="27.94" x2="-284.48" y2="27.94" width="0.1524" layer="91"/>
 <label x="-279.4" y="27.94" size="1.778" layer="95"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$8"/>
+<pinref part="NHD_2.7" gate="G$1" pin="SDA"/>
 </segment>
 </net>
 <net name="D35" class="0">
@@ -26019,7 +26065,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <segment>
 <wire x1="-261.62" y1="30.48" x2="-284.48" y2="30.48" width="0.1524" layer="91"/>
 <label x="-279.4" y="30.48" size="1.778" layer="95"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$7"/>
+<pinref part="NHD_2.7" gate="G$1" pin="SCL"/>
 </segment>
 </net>
 <net name="D34" class="0">
@@ -26031,7 +26077,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <segment>
 <wire x1="-261.62" y1="5.08" x2="-284.48" y2="5.08" width="0.1524" layer="91"/>
 <label x="-279.4" y="5.08" size="1.778" layer="95"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$17"/>
+<pinref part="NHD_2.7" gate="G$1" pin="CS"/>
 </segment>
 </net>
 <net name="D33" class="0">
@@ -26050,7 +26096,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <segment>
 <wire x1="-261.62" y1="7.62" x2="-284.48" y2="7.62" width="0.1524" layer="91"/>
 <label x="-279.4" y="7.62" size="1.778" layer="95"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$16"/>
+<pinref part="NHD_2.7" gate="G$1" pin="RES"/>
 </segment>
 </net>
 <net name="D31" class="0">
@@ -26069,7 +26115,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <segment>
 <wire x1="-261.62" y1="38.1" x2="-284.48" y2="38.1" width="0.1524" layer="91"/>
 <label x="-279.4" y="38.1" size="1.778" layer="95"/>
-<pinref part="NHD_2.7" gate="G$1" pin="P$4"/>
+<pinref part="NHD_2.7" gate="G$1" pin="DC"/>
 </segment>
 </net>
 <net name="D53" class="0">

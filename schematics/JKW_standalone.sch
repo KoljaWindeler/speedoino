@@ -23919,6 +23919,249 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="Stift+Buchsenleisten">
+<description>Stift- und Buchsenleisten</description>
+<packages>
+<package name="BU_1X4">
+<wire x1="-4.58" y1="-1.27" x2="-5.08" y2="-0.77" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-5.08" y1="-0.77" x2="-5.08" y2="0.77" width="0.1524" layer="21"/>
+<wire x1="-5.08" y1="0.77" x2="-4.58" y2="1.27" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-4.58" y1="1.27" x2="4.58" y2="1.27" width="0.1524" layer="21"/>
+<wire x1="4.58" y1="1.27" x2="5.08" y2="0.77" width="0.1524" layer="21" curve="-90"/>
+<wire x1="5.08" y1="0.77" x2="5.08" y2="-0.77" width="0.1524" layer="21"/>
+<wire x1="5.08" y1="-0.77" x2="4.58" y2="-1.27" width="0.1524" layer="21" curve="-90"/>
+<wire x1="4.58" y1="-1.27" x2="-4.58" y2="-1.27" width="0.1524" layer="21"/>
+<circle x="-1.27" y="0" radius="0.127" width="0.4064" layer="27"/>
+<circle x="-3.81" y="0" radius="0.127" width="0.4064" layer="27"/>
+<circle x="-1.27" y="0" radius="0.889" width="0.1" layer="21"/>
+<circle x="-3.81" y="0" radius="0.889" width="0.1" layer="21"/>
+<circle x="1.27" y="0" radius="0.889" width="0.1" layer="21"/>
+<circle x="1.27" y="0" radius="0.127" width="0.4064" layer="27"/>
+<circle x="3.81" y="0" radius="0.889" width="0.1" layer="21"/>
+<circle x="3.81" y="0" radius="0.127" width="0.4064" layer="27"/>
+<pad name="1" x="-3.81" y="0" drill="0.9" diameter="1.57" shape="square" rot="R90"/>
+<pad name="2" x="-1.27" y="0" drill="0.9" diameter="1.57" shape="octagon" rot="R90"/>
+<pad name="3" x="1.27" y="0" drill="0.9" diameter="1.57" shape="octagon" rot="R90"/>
+<pad name="4" x="3.81" y="0" drill="0.9" diameter="1.57" shape="octagon" rot="R90"/>
+<text x="-3.81" y="1.5875" size="0.8128" layer="25" ratio="10">&gt;NAME</text>
+<text x="-0.3176" y="1.5875" size="0.8128" layer="27" ratio="10">&gt;WERT</text>
+<polygon width="0.12" layer="21">
+<vertex x="-4.207" y="1.27"/>
+<vertex x="-5.08" y="0.3969"/>
+<vertex x="-5.08" y="0.7671" curve="-90"/>
+<vertex x="-4.5771" y="1.27"/>
+</polygon>
+</package>
+<package name="BU_1X4_RM2">
+<wire x1="-4.04" y1="-1.04" x2="-4.04" y2="1.04" width="0.12" layer="21"/>
+<wire x1="4.04" y1="1.04" x2="4.04" y2="-1.04" width="0.12" layer="21"/>
+<wire x1="-4.04" y1="1.04" x2="4.04" y2="1.04" width="0.12" layer="21"/>
+<wire x1="4.04" y1="-1.04" x2="-4.04" y2="-1.04" width="0.12" layer="21"/>
+<circle x="-3" y="0" radius="0.7071" width="0.12" layer="21"/>
+<circle x="-1" y="0" radius="0.7071" width="0.12" layer="21"/>
+<circle x="1" y="0" radius="0.7071" width="0.12" layer="21"/>
+<circle x="3" y="0" radius="0.7071" width="0.12" layer="21"/>
+<pad name="1" x="-3" y="0" drill="0.8" diameter="1.4" shape="square"/>
+<pad name="2" x="-1" y="0" drill="0.8" diameter="1.4" shape="octagon"/>
+<pad name="3" x="1" y="0" drill="0.8" diameter="1.4" shape="octagon"/>
+<pad name="4" x="3" y="0" drill="0.8" diameter="1.4" shape="octagon"/>
+<text x="-4" y="1.3" size="0.6096" layer="25">&gt;NAME</text>
+<text x="-1.5" y="1.3" size="0.6096" layer="27">&gt;WERT</text>
+<polygon width="0.12" layer="21">
+<vertex x="-4" y="1"/>
+<vertex x="-3.4" y="1"/>
+<vertex x="-4" y="0.4"/>
+</polygon>
+</package>
+<package name="BU_1X4_RM2_90°">
+<wire x1="-4.04" y1="5.54" x2="4.04" y2="5.54" width="0.12" layer="21"/>
+<wire x1="4.04" y1="5.54" x2="4.04" y2="1.46" width="0.12" layer="21"/>
+<wire x1="4.04" y1="1.46" x2="-4.04" y2="1.46" width="0.12" layer="21"/>
+<wire x1="-4.04" y1="1.46" x2="-4.04" y2="5.54" width="0.12" layer="21"/>
+<pad name="1" x="-3" y="0" drill="0.8" diameter="1.4" shape="square"/>
+<pad name="2" x="-1" y="0" drill="0.8" diameter="1.4" shape="octagon"/>
+<pad name="3" x="1" y="0" drill="0.8" diameter="1.4" shape="octagon"/>
+<pad name="4" x="3" y="0" drill="0.8" diameter="1.4" shape="octagon"/>
+<text x="-1.5" y="3.8" size="0.6096" layer="25">&gt;NAME</text>
+<text x="-1.5" y="2.8" size="0.6096" layer="27">&gt;WERT</text>
+<rectangle x1="-3.25" y1="-0.2" x2="-2.75" y2="1.5" layer="21"/>
+<rectangle x1="-1.25" y1="-0.2" x2="-0.75" y2="1.5" layer="21"/>
+<rectangle x1="0.75" y1="-0.2" x2="1.25" y2="1.5" layer="21"/>
+<rectangle x1="2.75" y1="-0.2" x2="3.25" y2="1.5" layer="21"/>
+<polygon width="0.12" layer="21">
+<vertex x="-4" y="5.5"/>
+<vertex x="-3.2" y="5.5"/>
+<vertex x="-4" y="4.7"/>
+</polygon>
+</package>
+<package name="BL17SMD_1X4">
+<wire x1="3.175" y1="-3.5" x2="4.445" y2="-3.5" width="0.127" layer="21"/>
+<wire x1="0.635" y1="-3.5" x2="1.905" y2="-3.5" width="0.127" layer="21"/>
+<wire x1="-4.445" y1="-3.5" x2="-3.175" y2="-3.5" width="0.127" layer="21"/>
+<wire x1="-1.905" y1="-3.5" x2="-0.635" y2="-3.5" width="0.127" layer="21"/>
+<wire x1="-5.08" y1="-3.5" x2="-5.08" y2="3.485" width="0.127" layer="21"/>
+<wire x1="-5.08" y1="3.485" x2="-2.54" y2="3.485" width="0.127" layer="21"/>
+<wire x1="-2.54" y1="3.485" x2="0" y2="3.485" width="0.127" layer="21"/>
+<wire x1="0" y1="3.485" x2="2.54" y2="3.485" width="0.127" layer="21"/>
+<wire x1="2.54" y1="3.485" x2="5.08" y2="3.485" width="0.127" layer="21"/>
+<wire x1="-5.08" y1="-3.5" x2="-2.54" y2="-3.5" width="0.127" layer="21"/>
+<wire x1="-2.54" y1="-3.5" x2="0" y2="-3.5" width="0.127" layer="21"/>
+<wire x1="0" y1="-3.5" x2="2.54" y2="-3.5" width="0.127" layer="21"/>
+<wire x1="2.54" y1="-3.5" x2="5.08" y2="-3.5" width="0.127" layer="21"/>
+<wire x1="-2.54" y1="-3.5" x2="-2.54" y2="3.485" width="0.127" layer="21"/>
+<wire x1="0" y1="-3.5" x2="0" y2="3.485" width="0.127" layer="21"/>
+<wire x1="2.54" y1="-3.5" x2="2.54" y2="3.485" width="0.127" layer="21"/>
+<wire x1="5.08" y1="-3.5" x2="5.08" y2="3.485" width="0.127" layer="21"/>
+<smd name="1" x="-3.81" y="-7.31" dx="3.5" dy="1" layer="1" rot="R90"/>
+<smd name="2" x="-1.27" y="-7.31" dx="3.5" dy="1" layer="1" rot="R90"/>
+<smd name="3" x="1.27" y="-7.31" dx="3.5" dy="1" layer="1" rot="R90"/>
+<smd name="4" x="3.81" y="-7.31" dx="3.5" dy="1" layer="1" rot="R90"/>
+<text x="1.6637" y="-1.9887" size="0.8128" layer="25" rot="R90">&gt;NAME</text>
+<text x="-4.7625" y="3.8025" size="0.8128" layer="27">&gt;WERT</text>
+<rectangle x1="-4.1275" y1="-8.7" x2="-3.4925" y2="-3.5" layer="21"/>
+<rectangle x1="-1.5875" y1="-8.7" x2="-0.9525" y2="-3.5" layer="21"/>
+<rectangle x1="0.9525" y1="-8.7" x2="1.5875" y2="-3.5" layer="21"/>
+<rectangle x1="3.4925" y1="-8.7" x2="4.1275" y2="-3.5" layer="21"/>
+</package>
+</packages>
+<symbols>
+<symbol name="BU_1X4">
+<wire x1="-1.27" y1="4.445" x2="2.54" y2="4.445" width="0.254" layer="94"/>
+<wire x1="0.635" y1="-0.635" x2="0.635" y2="0.635" width="0.254" layer="94" curve="-180" cap="flat"/>
+<wire x1="0.635" y1="1.905" x2="0.635" y2="3.175" width="0.254" layer="94" curve="-180" cap="flat"/>
+<wire x1="2.54" y1="-6.985" x2="2.54" y2="4.445" width="0.254" layer="94"/>
+<wire x1="-1.27" y1="4.445" x2="-1.27" y2="-6.985" width="0.254" layer="94"/>
+<wire x1="2.54" y1="-6.985" x2="-1.27" y2="-6.985" width="0.254" layer="94"/>
+<wire x1="0.635" y1="-3.175" x2="0.635" y2="-1.905" width="0.254" layer="94" curve="-180" cap="flat"/>
+<wire x1="0.635" y1="-5.715" x2="0.635" y2="-4.445" width="0.254" layer="94" curve="-180" cap="flat"/>
+<text x="-1.27" y="-9.525" size="1.778" layer="96">&gt;WERT</text>
+<text x="-1.27" y="5.207" size="2.032" layer="95">&gt;NAME</text>
+<pin name="1" x="-5.08" y="2.54" visible="pad" length="middle" direction="pas" swaplevel="1"/>
+<pin name="2" x="-5.08" y="0" visible="pad" length="middle" direction="pas" swaplevel="1"/>
+<pin name="3" x="-5.08" y="-2.54" visible="pad" length="middle" direction="pas" swaplevel="1"/>
+<pin name="4" x="-5.08" y="-5.08" visible="pad" length="middle" direction="pas" swaplevel="1"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="BU_1X4" prefix="ST" uservalue="yes">
+<description>Buchsenleiste</description>
+<gates>
+<gate name="G$1" symbol="BU_1X4" x="0" y="0"/>
+</gates>
+<devices>
+<device name="_BL5_H=8" package="BU_1X4">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+<connect gate="G$1" pin="4" pad="4"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="ARTIKELNUMMER" value="151441"/>
+<attribute name="BESONDERHEITEN" value="" constant="no"/>
+<attribute name="HERSTELLER" value="Fischer BL5/16/Z, Garry BL10-16" constant="no"/>
+<attribute name="PACKAGE" value="Buchsenleiste, H=7mm"/>
+<attribute name="RM" value="2,54"/>
+<attribute name="WERT" value="4Pin."/>
+</technology>
+</technologies>
+</device>
+<device name="_MK21_H=3,8" package="BU_1X4">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+<connect gate="G$1" pin="4" pad="4"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="ARTIKELNUMMER" value="151452"/>
+<attribute name="BESONDERHEITEN" value="" constant="no"/>
+<attribute name="HERSTELLER" value="Fischer MK21/50" constant="no"/>
+<attribute name="PACKAGE" value="Buchsenleiste, H=3,8mm"/>
+<attribute name="RM" value="2,54"/>
+<attribute name="WERT" value="4Pin."/>
+</technology>
+</technologies>
+</device>
+<device name="_MK1G_H=4,2_F.RUNDSTIFTE" package="BU_1X4">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+<connect gate="G$1" pin="4" pad="4"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="ARTIKELNUMMER" value="151440"/>
+<attribute name="BESONDERHEITEN" value="IC-Präzisionsfassung für runde Stifte" constant="no"/>
+<attribute name="HERSTELLER" value="Fischer MK1G-32, W+P SPF32" constant="no"/>
+<attribute name="PACKAGE" value="Buchsenleiste, H=4,2mm"/>
+<attribute name="RM" value="2,54"/>
+<attribute name="WERT" value="4Pin."/>
+</technology>
+</technologies>
+</device>
+<device name="_BL12_RM2" package="BU_1X4_RM2">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+<connect gate="G$1" pin="4" pad="4"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="ARTIKELNUMMER" value="151661"/>
+<attribute name="BESONDERHEITEN" value="" constant="no"/>
+<attribute name="HERSTELLER" value="W+P Products 257-020-1-50-10, Garry BL12-20" constant="no"/>
+<attribute name="PACKAGE" value="Buchsenleiste, H=5,5mm"/>
+<attribute name="RM" value="2"/>
+<attribute name="WERT" value="4Pin."/>
+</technology>
+</technologies>
+</device>
+<device name="_BLY3_90°_RM2" package="BU_1X4_RM2_90°">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+<connect gate="G$1" pin="4" pad="4"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="ARTIKELNUMMER" value="151428"/>
+<attribute name="BESONDERHEITEN" value="" constant="no"/>
+<attribute name="HERSTELLER" value="Fischer BLY3/50" constant="no"/>
+<attribute name="PACKAGE" value="Buchsenleiste, L=5,6mm"/>
+<attribute name="RM" value="2"/>
+<attribute name="WERT" value="4Pin."/>
+</technology>
+</technologies>
+</device>
+<device name="_BL17-SMD" package="BL17SMD_1X4">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+<connect gate="G$1" pin="4" pad="4"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="ARTIKELNUMMER" value="151469"/>
+<attribute name="BESONDERHEITEN" value="Teilstück von 10pol. Buchsenleiste" constant="no"/>
+<attribute name="HERSTELLER" value="Fischer BL17/SMD-10/Z (lose), MPE BL SMD 30-010 C/TRU(reel)" constant="no"/>
+<attribute name="PACKAGE" value="SMD liegend L=7mm"/>
+<attribute name="RM" value="2,54"/>
+<attribute name="STROM" value="3A"/>
+<attribute name="WERT" value="4Pin."/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -24117,6 +24360,12 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
 <part name="SUPPLY3" library="supply2" deviceset="VDD" device=""/>
 <part name="SUPPLY9" library="supply2" deviceset="VDD" device=""/>
+<part name="ST3" library="Stift+Buchsenleisten" deviceset="BU_1X4" device="_BL17-SMD"/>
+<part name="ST4" library="Stift+Buchsenleisten" deviceset="BU_1X4" device="_BL17-SMD"/>
+<part name="R_EXT2" library="RCLDT" deviceset="R" device="0805" value="n.b."/>
+<part name="R_EXT5" library="RCLDT" deviceset="R" device="0805" value="n.b."/>
+<part name="SUPPLY10" library="supply2" deviceset="VDD" device=""/>
+<part name="R_EXT6" library="RCLDT" deviceset="R" device="0805" value="n.b."/>
 </parts>
 <sheets>
 <sheet>
@@ -24223,7 +24472,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <text x="-147.32" y="38.1" size="1.778" layer="91">RES_EN</text>
 <text x="10.668" y="170.688" size="1.778" layer="91" rot="R90">ARD_RX</text>
 <text x="-19.812" y="165.608" size="1.778" layer="91">ARD_TX</text>
-<text x="104.14" y="154.94" size="3.81" layer="95">i2c_temp</text>
+<text x="254" y="165.1" size="3.81" layer="95">i2c_temp</text>
 <text x="-223.52" y="63.5" size="5.08" layer="95">ATmega8</text>
 <text x="17.78" y="203.2" size="3.81" layer="95">Lichtlein &amp; Blinker</text>
 <text x="27.94" y="254" size="3.81" layer="95">SpeedSensor</text>
@@ -24289,6 +24538,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <text x="203.2" y="162.56" size="1.778" layer="91">Taster auf INT</text>
 <text x="203.2" y="154.94" size="1.778" layer="91">Taster auf INT</text>
 <text x="203.2" y="144.78" size="1.778" layer="91">Taster auf INT</text>
+<text x="-139.7" y="124.46" size="1.778" layer="91">A_extend</text>
 </plain>
 <instances>
 <instance part="IC1" gate="A" x="142.24" y="185.42" rot="MR180"/>
@@ -24537,7 +24787,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 </instance>
 <instance part="12V_F1" gate="G$1" x="40.64" y="25.4"/>
 <instance part="X2" gate="G$1" x="53.34" y="88.9" rot="MR0"/>
-<instance part="GND2" gate="1" x="35.56" y="109.22" rot="R180"/>
+<instance part="GND2" gate="1" x="35.56" y="111.76" rot="R180"/>
 <instance part="R_EXT3" gate="G$1" x="88.9" y="86.36"/>
 <instance part="R_EXT4" gate="G$1" x="88.9" y="83.82"/>
 <instance part="D18" gate="G$1" x="99.06" y="86.36" rot="R180"/>
@@ -24548,12 +24798,12 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <attribute name="NAME" x="197.485" y="106.68" size="2.032" layer="95" rot="R180"/>
 <attribute name="VALUE" x="197.485" y="109.22" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="TMP102AIDRLT" gate="G$1" x="139.7" y="147.32"/>
-<instance part="R_TEMP_ALERT" gate="G$1" x="157.48" y="144.78" smashed="yes">
-<attribute name="NAME" x="147.32" y="133.985" size="2.032" layer="95"/>
-<attribute name="VALUE" x="154.94" y="146.685" size="1.778" layer="96"/>
+<instance part="TMP102AIDRLT" gate="G$1" x="287.02" y="149.86"/>
+<instance part="R_TEMP_ALERT" gate="G$1" x="304.8" y="147.32" smashed="yes">
+<attribute name="NAME" x="294.64" y="136.525" size="2.032" layer="95"/>
+<attribute name="VALUE" x="302.26" y="149.225" size="1.778" layer="96"/>
 </instance>
-<instance part="C9" gate="C" x="116.84" y="147.32" rot="R270"/>
+<instance part="C9" gate="C" x="264.16" y="149.86" rot="R270"/>
 <instance part="R_V_LOW" gate="G$1" x="144.78" y="170.18"/>
 <instance part="R_V_HIGH" gate="G$1" x="127" y="170.18"/>
 <instance part="GND13" gate="1" x="162.56" y="170.18" rot="R90"/>
@@ -24631,11 +24881,17 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <attribute name="VALUE" x="-53.34" y="117.348" size="1.778" layer="96"/>
 </instance>
 <instance part="T5" gate="G$1" x="114.3" y="254" rot="MR270"/>
-<instance part="R_EXT1" gate="G$1" x="76.2" y="71.12"/>
-<instance part="SUPPLY1" gate="G$1" x="83.82" y="76.2"/>
+<instance part="R_EXT1" gate="G$1" x="66.04" y="71.12" rot="R180"/>
+<instance part="SUPPLY1" gate="G$1" x="60.96" y="76.2"/>
 <instance part="GND10" gate="1" x="187.96" y="182.88"/>
 <instance part="SUPPLY3" gate="G$1" x="187.96" y="195.58"/>
 <instance part="SUPPLY9" gate="G$1" x="165.1" y="205.74"/>
+<instance part="ST3" gate="G$1" x="124.46" y="149.86"/>
+<instance part="ST4" gate="G$1" x="142.24" y="147.32" rot="R180"/>
+<instance part="R_EXT2" gate="G$1" x="78.74" y="111.76" rot="R180"/>
+<instance part="R_EXT5" gate="G$1" x="60.96" y="111.76" rot="R180"/>
+<instance part="SUPPLY10" gate="G$1" x="50.8" y="114.3"/>
+<instance part="R_EXT6" gate="G$1" x="60.96" y="106.68" rot="R180"/>
 </instances>
 <busses>
 </busses>
@@ -25054,6 +25310,10 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <wire x1="35.56" y1="96.52" x2="35.56" y2="106.68" width="0.1524" layer="91"/>
 <pinref part="X2" gate="G$1" pin="1"/>
 <pinref part="GND2" gate="1" pin="GND"/>
+<pinref part="R_EXT6" gate="G$1" pin="2"/>
+<wire x1="35.56" y1="106.68" x2="35.56" y2="109.22" width="0.1524" layer="91"/>
+<wire x1="55.88" y1="106.68" x2="35.56" y2="106.68" width="0.1524" layer="91"/>
+<junction x="35.56" y="106.68"/>
 </segment>
 <segment>
 <wire x1="106.68" y1="86.36" x2="101.6" y2="86.36" width="0.1524" layer="91"/>
@@ -25064,14 +25324,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <wire x1="106.68" y1="83.82" x2="101.6" y2="83.82" width="0.1524" layer="91"/>
 <pinref part="GND15" gate="1" pin="GND"/>
 <pinref part="D19" gate="G$1" pin="A"/>
-</segment>
-<segment>
-<wire x1="127" y1="142.24" x2="116.84" y2="142.24" width="0.1524" layer="91"/>
-<wire x1="116.84" y1="142.24" x2="106.68" y2="142.24" width="0.1524" layer="91"/>
-<junction x="116.84" y="142.24"/>
-<label x="106.68" y="142.24" size="1.778" layer="95"/>
-<pinref part="TMP102AIDRLT" gate="G$1" pin="GND"/>
-<pinref part="C9" gate="C" pin="2"/>
 </segment>
 <segment>
 <wire x1="160.02" y1="170.18" x2="149.86" y2="170.18" width="0.1524" layer="91"/>
@@ -25130,6 +25382,11 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <wire x1="187.96" y1="185.42" x2="187.96" y2="187.96" width="0.1524" layer="91"/>
 <wire x1="187.96" y1="187.96" x2="198.12" y2="187.96" width="0.1524" layer="91"/>
 <pinref part="GND10" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="ST3" gate="G$1" pin="4"/>
+<wire x1="119.38" y1="144.78" x2="104.14" y2="144.78" width="0.1524" layer="91"/>
+<label x="104.14" y="144.78" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="DZ" class="0">
@@ -25410,14 +25667,18 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <pinref part="IC1" gate="P" pin="VDD"/>
 </segment>
 <segment>
-<wire x1="83.82" y1="73.66" x2="83.82" y2="71.12" width="0.1524" layer="91"/>
-<wire x1="83.82" y1="71.12" x2="81.28" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="60.96" y1="73.66" x2="60.96" y2="71.12" width="0.1524" layer="91"/>
 <pinref part="R_EXT1" gate="G$1" pin="2"/>
 <pinref part="SUPPLY1" gate="G$1" pin="VDD"/>
 </segment>
 <segment>
 <wire x1="187.96" y1="193.04" x2="198.12" y2="193.04" width="0.1524" layer="91"/>
 <pinref part="SUPPLY3" gate="G$1" pin="VDD"/>
+</segment>
+<segment>
+<pinref part="SUPPLY10" gate="G$1" pin="VDD"/>
+<pinref part="R_EXT5" gate="G$1" pin="2"/>
+<wire x1="50.8" y1="111.76" x2="55.88" y2="111.76" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="CONNECT" class="0">
@@ -25472,23 +25733,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <pinref part="C_BT" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<wire x1="127" y1="152.4" x2="116.84" y2="152.4" width="0.1524" layer="91"/>
-<wire x1="116.84" y1="152.4" x2="106.68" y2="152.4" width="0.1524" layer="91"/>
-<junction x="116.84" y="152.4"/>
-<label x="106.68" y="149.86" size="1.778" layer="95"/>
-<pinref part="TMP102AIDRLT" gate="G$1" pin="VCC"/>
-<pinref part="C9" gate="C" pin="1"/>
-</segment>
-<segment>
-<wire x1="162.56" y1="144.78" x2="165.1" y2="144.78" width="0.1524" layer="91"/>
-<wire x1="149.86" y1="142.24" x2="162.56" y2="142.24" width="0.1524" layer="91"/>
-<wire x1="162.56" y1="142.24" x2="162.56" y2="144.78" width="0.1524" layer="91"/>
-<junction x="162.56" y="144.78"/>
-<label x="167.64" y="142.24" size="1.778" layer="95" rot="R180"/>
-<pinref part="R_TEMP_ALERT" gate="G$1" pin="2"/>
-<pinref part="TMP102AIDRLT" gate="G$1" pin="ADD0"/>
-</segment>
-<segment>
 <wire x1="-261.62" y1="43.18" x2="-284.48" y2="43.18" width="0.1524" layer="91"/>
 <label x="-279.4" y="43.18" size="1.778" layer="95"/>
 <pinref part="NHD_2.7" gate="G$1" pin="VDD"/>
@@ -25521,6 +25765,11 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="-85.09" y="110.49" size="1.778" layer="95"/>
 <pinref part="T4" gate="G$1" pin="S"/>
 <pinref part="R_SD_PWR_UP" gate="G$1" pin="2"/>
+</segment>
+<segment>
+<pinref part="ST3" gate="G$1" pin="1"/>
+<wire x1="119.38" y1="152.4" x2="104.14" y2="152.4" width="0.1524" layer="91"/>
+<label x="104.14" y="152.4" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="ARD_RES_OUT" class="0">
@@ -25905,6 +26154,19 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="-154.94" y="124.46" size="1.778" layer="95"/>
 <pinref part="IC4" gate="1" pin="(ADC7/TDI)PF7"/>
 </segment>
+<segment>
+<pinref part="R_EXT5" gate="G$1" pin="1"/>
+<pinref part="R_EXT2" gate="G$1" pin="2"/>
+<wire x1="71.12" y1="111.76" x2="73.66" y2="111.76" width="0.1524" layer="91"/>
+<wire x1="66.04" y1="111.76" x2="71.12" y2="111.76" width="0.1524" layer="91"/>
+<wire x1="71.12" y1="111.76" x2="71.12" y2="121.92" width="0.1524" layer="91"/>
+<wire x1="71.12" y1="121.92" x2="167.64" y2="121.92" width="0.1524" layer="91"/>
+<label x="157.48" y="121.92" size="1.778" layer="95"/>
+<junction x="71.12" y="111.76"/>
+<wire x1="71.12" y1="111.76" x2="71.12" y2="106.68" width="0.1524" layer="91"/>
+<pinref part="R_EXT6" gate="G$1" pin="1"/>
+<wire x1="71.12" y1="106.68" x2="66.04" y2="106.68" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="RX0" class="0">
 <segment>
@@ -25985,9 +26247,9 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <pinref part="R_SCL_UP" gate="G$1" pin="2"/>
 </segment>
 <segment>
-<wire x1="149.86" y1="149.86" x2="165.1" y2="149.86" width="0.1524" layer="91"/>
-<label x="160.02" y="149.86" size="1.778" layer="95"/>
-<pinref part="TMP102AIDRLT" gate="G$1" pin="SCL"/>
+<pinref part="ST3" gate="G$1" pin="3"/>
+<wire x1="119.38" y1="147.32" x2="104.14" y2="147.32" width="0.1524" layer="91"/>
+<label x="104.14" y="147.32" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="D20" class="0">
@@ -25999,9 +26261,9 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <pinref part="R_SDA_UP" gate="G$1" pin="2"/>
 </segment>
 <segment>
-<wire x1="165.1" y1="152.4" x2="149.86" y2="152.4" width="0.1524" layer="91"/>
-<label x="160.02" y="152.4" size="1.778" layer="95"/>
-<pinref part="TMP102AIDRLT" gate="G$1" pin="SDA"/>
+<pinref part="ST3" gate="G$1" pin="2"/>
+<wire x1="119.38" y1="149.86" x2="104.14" y2="149.86" width="0.1524" layer="91"/>
+<label x="104.14" y="149.86" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="D38" class="0">
@@ -26915,12 +27177,15 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <net name="N$79" class="0">
 <segment>
 <wire x1="60.96" y1="86.36" x2="83.82" y2="86.36" width="0.1524" layer="91"/>
-<wire x1="83.82" y1="86.36" x2="83.82" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="83.82" y1="86.36" x2="83.82" y2="111.76" width="0.1524" layer="91"/>
+<wire x1="83.82" y1="111.76" x2="83.82" y2="116.84" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="116.84" x2="142.24" y2="116.84" width="0.1524" layer="91"/>
 <junction x="83.82" y="86.36"/>
 <pinref part="X2" gate="G$1" pin="13"/>
 <pinref part="R_EXT3" gate="G$1" pin="1"/>
 <pinref part="R39" gate="G$1" pin="1"/>
+<pinref part="R_EXT2" gate="G$1" pin="1"/>
+<junction x="83.82" y="111.76"/>
 </segment>
 </net>
 <net name="KUPPLUNG_IN" class="0">
@@ -26949,7 +27214,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 </net>
 <net name="N$4" class="0">
 <segment>
-<wire x1="149.86" y1="144.78" x2="152.4" y2="144.78" width="0.1524" layer="91"/>
+<wire x1="297.18" y1="147.32" x2="299.72" y2="147.32" width="0.1524" layer="91"/>
 <pinref part="TMP102AIDRLT" gate="G$1" pin="ALERT"/>
 <pinref part="R_TEMP_ALERT" gate="G$1" pin="1"/>
 </segment>
@@ -27158,6 +27423,76 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="73.66" y="81.28" size="1.778" layer="95"/>
 <pinref part="X2" gate="G$1" pin="15"/>
 <pinref part="R_EXT1" gate="G$1" pin="1"/>
+</segment>
+</net>
+<net name="EXT_3.3V" class="0">
+<segment>
+<pinref part="ST4" gate="G$1" pin="4"/>
+<wire x1="147.32" y1="152.4" x2="160.02" y2="152.4" width="0.1524" layer="91"/>
+<label x="149.86" y="152.4" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="297.18" y1="144.78" x2="309.88" y2="144.78" width="0.1524" layer="91"/>
+<wire x1="309.88" y1="144.78" x2="309.88" y2="147.32" width="0.1524" layer="91"/>
+<label x="167.64" y="142.24" size="1.778" layer="95" rot="R180"/>
+<pinref part="R_TEMP_ALERT" gate="G$1" pin="2"/>
+<pinref part="TMP102AIDRLT" gate="G$1" pin="ADD0"/>
+<wire x1="309.88" y1="144.78" x2="309.88" y2="134.62" width="0.1524" layer="91"/>
+<wire x1="309.88" y1="134.62" x2="251.46" y2="134.62" width="0.1524" layer="91"/>
+<wire x1="251.46" y1="134.62" x2="251.46" y2="154.94" width="0.1524" layer="91"/>
+<wire x1="274.32" y1="154.94" x2="264.16" y2="154.94" width="0.1524" layer="91"/>
+<wire x1="264.16" y1="154.94" x2="251.46" y2="154.94" width="0.1524" layer="91"/>
+<junction x="264.16" y="154.94"/>
+<label x="254" y="152.4" size="1.778" layer="95"/>
+<pinref part="TMP102AIDRLT" gate="G$1" pin="VCC"/>
+<pinref part="C9" gate="C" pin="1"/>
+<junction x="309.88" y="144.78"/>
+<wire x1="309.88" y1="147.32" x2="309.88" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="309.88" y1="149.86" x2="312.42" y2="149.86" width="0.1524" layer="91"/>
+<label x="307.34" y="149.86" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="EXT_SDA" class="0">
+<segment>
+<pinref part="ST4" gate="G$1" pin="3"/>
+<wire x1="147.32" y1="149.86" x2="160.02" y2="149.86" width="0.1524" layer="91"/>
+<label x="149.86" y="149.86" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="312.42" y1="154.94" x2="297.18" y2="154.94" width="0.1524" layer="91"/>
+<label x="307.34" y="154.94" size="1.778" layer="95"/>
+<pinref part="TMP102AIDRLT" gate="G$1" pin="SDA"/>
+</segment>
+</net>
+<net name="EXT_SCL" class="0">
+<segment>
+<pinref part="ST4" gate="G$1" pin="2"/>
+<wire x1="147.32" y1="147.32" x2="160.02" y2="147.32" width="0.1524" layer="91"/>
+<label x="149.86" y="147.32" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="297.18" y1="152.4" x2="312.42" y2="152.4" width="0.1524" layer="91"/>
+<label x="307.34" y="152.4" size="1.778" layer="95"/>
+<pinref part="TMP102AIDRLT" gate="G$1" pin="SCL"/>
+</segment>
+</net>
+<net name="EXT_GND" class="0">
+<segment>
+<pinref part="ST4" gate="G$1" pin="1"/>
+<wire x1="147.32" y1="144.78" x2="160.02" y2="144.78" width="0.1524" layer="91"/>
+<label x="149.86" y="144.78" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="274.32" y1="144.78" x2="269.24" y2="144.78" width="0.1524" layer="91"/>
+<label x="254" y="144.78" size="1.778" layer="95"/>
+<pinref part="TMP102AIDRLT" gate="G$1" pin="GND"/>
+<pinref part="C9" gate="C" pin="2"/>
+<wire x1="269.24" y1="144.78" x2="264.16" y2="144.78" width="0.1524" layer="91"/>
+<wire x1="269.24" y1="144.78" x2="269.24" y2="160.02" width="0.1524" layer="91"/>
+<label x="307.34" y="160.02" size="1.778" layer="95"/>
+<wire x1="269.24" y1="160.02" x2="307.34" y2="160.02" width="0.1524" layer="91"/>
+<wire x1="307.34" y1="160.02" x2="307.34" y2="157.48" width="0.1524" layer="91"/>
+<wire x1="307.34" y1="157.48" x2="312.42" y2="157.48" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

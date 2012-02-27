@@ -24231,6 +24231,18 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <text x="-139.7" y="187.96" size="1.778" layer="91">Disp Reset</text>
 <text x="-261.62" y="134.62" size="1.778" layer="91">Helligkeitssensor</text>
 <text x="175.26" y="203.2" size="3.81" layer="95">Helligkeitssensor</text>
+<text x="-261.62" y="152.4" size="1.778" layer="91">Taster auf INT</text>
+<text x="-261.62" y="149.86" size="1.778" layer="91">Taster auf INT</text>
+<text x="-261.62" y="147.32" size="1.778" layer="91">Taster auf INT</text>
+<text x="-261.62" y="144.78" size="1.778" layer="91">Taster auf INT</text>
+<text x="-132.08" y="236.22" size="1.778" layer="91">Taster auf INT</text>
+<text x="-132.08" y="231.14" size="1.778" layer="91">Taster auf INT</text>
+<text x="-132.08" y="226.06" size="1.778" layer="91">Taster auf INT</text>
+<text x="-132.08" y="220.98" size="1.778" layer="91">Taster auf INT</text>
+<text x="203.2" y="170.18" size="1.778" layer="91">Taster auf INT</text>
+<text x="203.2" y="162.56" size="1.778" layer="91">Taster auf INT</text>
+<text x="203.2" y="154.94" size="1.778" layer="91">Taster auf INT</text>
+<text x="203.2" y="144.78" size="1.778" layer="91">Taster auf INT</text>
 </plain>
 <instances>
 <instance part="IC1" gate="A" x="142.24" y="185.42" rot="MR180"/>
