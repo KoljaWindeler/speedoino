@@ -45,6 +45,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	private BluetoothAdapter mBluetoothAdapter = null;
 	public static final String DEVICE_NAME = "device_name";
 	public static final String TOAST = "toast";
+	public static final String result = "result";
 	public static final String BYTE_TRANSFERED = "byte_trans";
 	public static BluetoothSerialService mSerialService = null;
 	private Toast toast;
@@ -56,6 +57,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 	private String dl_basedir = "/";
 	private String t2a_dest ="";
 	private int back_pushed = 0;
+	private int statusLastCommand=0;
 
 
 	/**
@@ -336,26 +338,23 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				Log.i(TAG,"Der Resultcode war OK, der Pfad:"+filePath);
 				_putFileDialog = new putFileDialog(this);
 				_putFileDialog.execute(filePath,"NAVI"+filePath.substring(filePath.lastIndexOf('/')));  //  /mnt/sdcard/Download/bild.sng, GFX/bild.sng
-				Log.i(TAG,"Datei wurde hochgeladen");
-				// delete the file ? vielleicht nur wenns geklappt hat ? TODO
-				File file = new File(filePath);
-		        file.delete();
-
 			} else {
 				toast = Toast.makeText(this, "Dialog cancled", Toast.LENGTH_SHORT);
 				toast.show();
 			}
 			break;
 		case REQUEST_OPEN_CONFIG:
-			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
-			Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
-			mUpload.setText(filePath);
-			_putFileDialog = new putFileDialog(this);
-			_putFileDialog.execute(filePath,"CONFIG"+filePath.substring(filePath.lastIndexOf('/')));  //  /mnt/sdcard/Download/bild.sng, GFX/bild.sng
-			Log.i(TAG,"Datei wurde hochgeladen");
-			// delete the file
-			File file = new File(filePath);
-	        file.delete();
+			if(resultCode==RESULT_OK){
+				filePath = data.getStringExtra(FileDialog.RESULT_PATH);
+				Log.i(TAG,"File open gab diesen Dateinamen aus:"+filePath);
+				mUpload.setText(filePath);
+				_putFileDialog = new putFileDialog(this);
+				_putFileDialog.execute(filePath,"CONFIG"+filePath.substring(filePath.lastIndexOf('/')));  //  /mnt/sdcard/Download/bild.sng, GFX/bild.sng
+				Log.i(TAG,"Datei wurde hochgeladen");
+				// delete the file
+				File file = new File(filePath);
+				//file.delete();
+			};
 			break;
 		case REQUEST_OPEN_GFX:
 			// gfx datei ausgewählt jetzt damit den converter starten
@@ -379,7 +378,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				Log.i(TAG,"Datei wurde hochgeladen");
 				// delete the file
 				File file2 = new File(filePath);
-		        file2.delete();
+				//file2.delete();
 
 			} else {
 				toast = Toast.makeText(this, "Dialog cancled", Toast.LENGTH_SHORT);
@@ -393,6 +392,14 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 			Log.i(TAG,"nicht gut, keine ActivityResultHandle gefunden");
 			break;
 		}
+	}
+
+	private int getStatusLastCommand() {
+		return statusLastCommand;
+	}
+
+	private void setStatusLastCommand(int status){
+		statusLastCommand=status;
 	}
 
 	// The Handler that gets information back from the BluetoothService
@@ -410,7 +417,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 					if(mStatus!=null){	mStatus.setText("Connected,Speedoino found");	};
 
 					update_visible_elements(true);
-					
+
 					toast = Toast.makeText(getApplicationContext(), "Connected, Speedoino found", Toast.LENGTH_SHORT);
 					toast.show();
 
@@ -452,6 +459,7 @@ public class SpeedoAndroidActivity extends TabActivity implements OnClickListene
 				// display popup
 			case MESSAGE_TOAST: //?
 				toast = Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),Toast.LENGTH_SHORT);
+				setStatusLastCommand(msg.getData().getInt(result));
 				toast.show();
 				break;
 

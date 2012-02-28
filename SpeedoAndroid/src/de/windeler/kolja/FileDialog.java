@@ -23,6 +23,7 @@ import android.widget.TextView;
 public class FileDialog extends ListActivity {
 
 	private static final String ITEM_KEY = "key";
+	private static final String ITEM_KEY_LOW = "key_low";
 	private static final String ITEM_IMAGE = "image";
 	private static final String ROOT = "/";
 
@@ -38,7 +39,6 @@ public class FileDialog extends ListActivity {
 	private Button selectButton;
 
 	private LinearLayout layoutSelect;
-	private LinearLayout layoutCreate;
 	private InputMethodManager inputManager;
 	private String parentPath;
 	private String currentPath = ROOT;
@@ -160,8 +160,8 @@ public class FileDialog extends ListActivity {
 
 		SimpleAdapter fileList = new SimpleAdapter(this, mList,
 				R.layout.file_dialog_row,
-				new String[] { ITEM_KEY, ITEM_IMAGE }, new int[] {
-				R.id.fdrowtext, R.id.fdrowimage });
+				new String[] { ITEM_KEY, ITEM_IMAGE, ITEM_KEY_LOW }, new int[] {
+				R.id.fdrowtext, R.id.fdrowimage, R.id.fdrowtext_lower });
 
 		for (String dir : dirsMap.tailMap("").values()) {
 			if(dir.toString().length()>23){
@@ -189,6 +189,22 @@ public class FileDialog extends ListActivity {
 		HashMap<String, Object> item = new HashMap<String, Object>();
 		item.put(ITEM_KEY, fileName);
 		item.put(ITEM_IMAGE, imageId);
+		String extension = fileName.substring(fileName.lastIndexOf('.')+1).toLowerCase();
+		if(imageId==R.drawable.folder){
+			item.put(ITEM_KEY_LOW,"Folder");
+		} else if(extension.equals("smf")){
+			item.put(ITEM_KEY_LOW,"Speedoino MAP File");
+		} else if(extension.equals("sgf")){
+			item.put(ITEM_KEY_LOW,"Speedoino GFX File");
+		} else if(extension.equals("scf")){
+			item.put(ITEM_KEY_LOW,"Speedoino CONFIG File");
+		} else if(extension.equals("kml")){
+			item.put(ITEM_KEY_LOW,"Google map file");
+		} else if(extension.equals("jpg") || extension.equals("jpeg") || extension.equals("gif") || extension.equals("png") || extension.equals("bmp")){
+			item.put(ITEM_KEY_LOW,"Convertable image file");
+		} else {
+			item.put(ITEM_KEY_LOW,"");
+		}
 		mList.add(item);
 	}
 
@@ -196,7 +212,6 @@ public class FileDialog extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 
 		File file = new File(path.get(position));
-
 		setSelectVisible(v);
 
 		if (file.isDirectory()) {

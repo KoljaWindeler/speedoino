@@ -23,7 +23,7 @@
     <string name="delete_file">Deleting file...</string>
     <string name="PrevImageConverter">Previous</string>
     <string name="NextImageConverter">Save/Next</string>
-    <string name="mapEditorCaption">Please set a direction for the missing points</string>
+    <string name="mapEditorCaption">Please set direction and description</string>
     <string name="MapEditor">MapEditor</string>
     
     <string name="cancle">Cancel</string>

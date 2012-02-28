@@ -1,4 +1,4 @@
 #ifndef VERSION_H_
 #define VERSION_H_
-    #define GIT_REV "v0.3.6-37-gc02bf3b"
+    #define GIT_REV "v0.3.6-45-g28d1296"
 #endif

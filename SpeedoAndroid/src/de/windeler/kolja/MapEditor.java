@@ -36,6 +36,7 @@ public class MapEditor extends Activity implements OnClickListener{
 	private String cleaned_filename;
 	private Toast toaster;
 	private int reject_toaster=1;
+	private int alert_result=0;
 
 	private ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
 	private static final String ITEM_KEY = "key";
@@ -69,12 +70,6 @@ public class MapEditor extends Activity implements OnClickListener{
 		setContentView(R.layout.map_editor_main);		
 		String filename = getIntent().getStringExtra(INPUT_FILE_NAME);
 
-		try {		
-			Log.i("JKW","kolja dein file ist:"+filename);
-			//show_preview(filename);
-		} catch (Exception e) {
-			Log.e("Error reading file", e.toString());
-		}
 
 		mNext = (Button) findViewById(R.id.mapEditor_next);
 		mNext.setOnClickListener(this);
@@ -136,9 +131,7 @@ public class MapEditor extends Activity implements OnClickListener{
 						if(reject_toaster==0){
 							show_toast("Max 10 Chars allowed");
 						};
-						
 					}
-					reject_toaster=0;
 				} // changing text
 			} // on text change
 		}); // add text change listener
@@ -164,7 +157,8 @@ public class MapEditor extends Activity implements OnClickListener{
 
 
 		update_listview();
-		if(interpret_this(0,0)==-3){
+		int status=interpret_this(0,0);
+		if(status==-3){
 			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 			alertDialog.setTitle("Warning");
 			alertDialog.setMessage("Could not open file as map!");
@@ -172,6 +166,9 @@ public class MapEditor extends Activity implements OnClickListener{
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {	setResult(RESULT_CANCELED, getIntent()); finish();	}});
 			alertDialog.show();
+		} else if(status==-2){
+			interpret_this(0,1);
+			show_toast("All points entered, ready to upload");
 		}
 	}
 
@@ -202,6 +199,7 @@ public class MapEditor extends Activity implements OnClickListener{
 			public void onItemClick(AdapterView<?> arg0, View arg1,int arg2, long arg3){
 				reject_toaster=1;
 				interpret_this(arg2,1);
+				reject_toaster=0;
 				arg1.setSelected(true);
 			};
 		});
@@ -419,26 +417,21 @@ public class MapEditor extends Activity implements OnClickListener{
 				turnpoints_modified.set(global_edit_index, commando);
 				turnpoints_isconverted.set(global_edit_index,1);
 				update_listview();
-			} else if(commando_text.getText().length()==0){
-				show_toast("No direction set, modifications discard");
-			}
-			int count_unmodified_points=0;
-			for(int i=0;i<turnpoints_coordinats_modified.size();i++){
-				if(turnpoints_isconverted.get(i)==0)
-					count_unmodified_points++;
-			};
-			if(count_unmodified_points==0){
-				Toast mToast = new Toast(this);
-				mToast = Toast.makeText(getApplicationContext(), "All points entered, ready to upload", Toast.LENGTH_LONG);
-				mToast.show();
+				edit_next_point();
 			} else {
-				reject_toaster=1;
-				direction_text.setText("");
-				interpret_this(global_edit_index+1,0);
-				mMapListView.smoothScrollToPosition(global_edit_index);
+				AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+				alertDialog.setTitle("Hmm?");
+				alertDialog.setMessage("You haven't set a direction or the title is empty, loose changes and go to next point?");
+				alertDialog.setButton("OK", new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {	edit_next_point();	}});
+				alertDialog.setButton2("Cancle",new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) { }});
+				alertDialog.show();
 			}
 			break;
-			
+
 		case R.id.mapEditor_remove:
 			turnpoints_coordinats_modified.remove(global_edit_index);
 			turnpoints_coordinats_unmodified.remove(global_edit_index);
@@ -446,19 +439,18 @@ public class MapEditor extends Activity implements OnClickListener{
 			turnpoints_modified.remove(global_edit_index);
 			turnpoints_unmodified.remove(global_edit_index);
 			update_listview();
-			count_unmodified_points=0;
+			int count_unmodified_points=0;
 			for(int i=0;i<turnpoints_coordinats_modified.size();i++){
 				if(turnpoints_isconverted.get(i)==0)
 					count_unmodified_points++;
 			};
 			if(count_unmodified_points==0){
-				Toast mToast = new Toast(this);
-				mToast = Toast.makeText(getApplicationContext(), "All points entered, ready to upload", Toast.LENGTH_LONG);
-				mToast.show();
+				show_toast("All points entered, ready to upload");
 			} else {
 				direction_text.setText("");
 				reject_toaster=1;
 				interpret_this(global_edit_index+1,0);
+				reject_toaster=0;
 				mMapListView.smoothScrollToPosition(global_edit_index);
 			}
 			break;
@@ -494,6 +486,24 @@ public class MapEditor extends Activity implements OnClickListener{
 		}
 
 	}
+
+	private void edit_next_point(){
+		int count_unmodified_points=0;
+		for(int i=0;i<turnpoints_coordinats_modified.size();i++){
+			if(turnpoints_isconverted.get(i)==0)
+				count_unmodified_points++;
+		};
+		if(count_unmodified_points==0){
+			show_toast("All points entered, ready to upload");
+		} else {
+			direction_text.setText("");
+			reject_toaster=1;
+			interpret_this(global_edit_index+1,0);
+			reject_toaster=0;
+			mMapListView.smoothScrollToPosition(global_edit_index);
+		}	
+	}
+
 
 	private String save_to_file() throws IOException {
 		// --------- ask for description ----------------//
@@ -554,8 +564,8 @@ public class MapEditor extends Activity implements OnClickListener{
 			}
 		}
 
-		
-		
+
+
 		if(edit_this>=turnpoints_isconverted.size()){	edit_this=0;	};
 		if(edit_this>=turnpoints_isconverted.size()){	return -3;		};
 
@@ -594,7 +604,7 @@ public class MapEditor extends Activity implements OnClickListener{
 			best_guess.setText(turnpoints_modified.get(edit_this));
 			direction.setText(turnpoints_modified.get(edit_this).subSequence(0, 1));
 		}
-		question.setText(turnpoints_unmodified.get(edit_this));
+		//question.setText(turnpoints_unmodified.get(edit_this));
 
 		global_edit_index=edit_this;
 		return 0;

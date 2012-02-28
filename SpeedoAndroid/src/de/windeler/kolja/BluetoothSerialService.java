@@ -33,6 +33,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.graphics.LightingColorFilter;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -48,6 +49,7 @@ import android.util.Log;
 public class BluetoothSerialService {
 	// Debugging
 	private static final String TAG = "JKW";
+	private static final String TAG_SEM = "JKW_SEM";
 	private static final String TAG_RECV = "JKW_RECV";
 	private static final String TAG_BT = "BT";
 	private static final boolean D = true;
@@ -461,15 +463,17 @@ public class BluetoothSerialService {
 			Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_TOAST);
 			Bundle bundle = new Bundle();
 			bundle.putString(SpeedoAndroidActivity.TOAST, "You are not connected to a Speedoino");
+			bundle.putInt(SpeedoAndroidActivity.result, -1);
 			msg.setData(bundle);
 			mHandler.sendMessage(msg);
 
 			return 1;
 		}
 		
-		Log.i(TAG,"BT Telegramm will starten, warte auf den semaphore");
+		Log.i(TAG_SEM,"BT Telegramm will starten, warte auf den semaphore");
+		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 		semaphore.acquire();
-		Log.i(TAG,"hab den semaphore");
+		Log.i(TAG_SEM,"send hat den semaphore");
 
 		// da der Tacho, nach 2sek den fast response mode verlässt, müssen wir die seq neu zählen
 		if(System.currentTimeMillis()-lastSend>2000){
@@ -529,6 +533,8 @@ public class BluetoothSerialService {
 				Log.i(TAG,"timer notfall, gebe semaphore zurück");
 				Log.i(TAG_RECV,"timer notfall, gebe semaphore zurück");
 				semaphore.release();
+				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+				Log.i(TAG_SEM,"Notfall timer hat den semaphore zurück gegeben");
 				status=ST_EMERGENCY_RELEASE;
 
 
@@ -698,6 +704,8 @@ public class BluetoothSerialService {
 					break;
 				}
 				semaphore.release();
+				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+				Log.i(TAG_SEM,"Receive hat den semaphore zurück gegeben");
 				Log.i(TAG,"semaphore zurück gegeben");
 				status=msgBuffer[2];
 
@@ -741,15 +749,22 @@ public class BluetoothSerialService {
 			Log.e(TAG_BT,"Hinter dem Send");
 
 			if(send_value>0){
+				mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 				semaphore.release();
+				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+				Log.i(TAG_SEM,"Send failed hat den semaphore zurück gegeben");
 				return send_value;
 			}
 
 			// wait here until we can get the semaphore
 			// im schlimmsten fall hier ein while auf ne globale variable
+			Log.i(TAG_SEM,"get dir wartet");
+			Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 			semaphore.acquire();
-			Log.i(TAG,"get dir hat den semaphore von receive zurück bekommen und geht in die nächste runde");
+			Log.i(TAG_SEM,"get dir hat den semaphore von bekommen und geht in die nächste runde");
 			semaphore.release();
+			Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+			Log.i(TAG_SEM,"get dir hat den semaphore zurück gegeben");
 			
 			// fortschritt schreiben
 			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -820,14 +835,18 @@ public class BluetoothSerialService {
 			Log.e(TAG_BT,"Hinter dem Send");
 
 			if(send_value>0){
+				mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 				semaphore.release();
+				Log.i(TAG_SEM,"get_file, send failed hat den semaphore zurück gegeben");
 				return send_value;
 			}
 
 			// wait here until we can get the semaphore
 			// im schlimmsten fall hier ein while auf ne globale variable
+			Log.i(TAG_SEM,"get file wartet");
+			Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 			semaphore.acquire();
-			Log.i(TAG,"getFile hat sich einen semaphore gekrallt");
+			Log.i(TAG_SEM,"getFile hat sich einen semaphore gekrallt");
 			// hier können wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
 			if(status==ST_EMERGENCY_RELEASE){
 				// hier sowas wie: 
@@ -861,6 +880,7 @@ public class BluetoothSerialService {
 			// löse desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der nächsten 
 			// runde, wieder einen semphore ohne einschränkung bekommen
 			semaphore.release();
+			Log.i(TAG_SEM,"getFile hat den semaphore zurück gegeben");
 			if(msgBuffer[1]==STATUS_CMD_FAILED || msgBuffer[1]==STATUS_EOF){
 				status=STATUS_EOF;
 				break;
@@ -888,6 +908,7 @@ public class BluetoothSerialService {
 		 * msgBuffer[0]=CMD_PUT_FILE
 		 * msgBuffer[1]=COMMAND_OK
 		 */
+		int return_value=0;
 		Log.i(TAG_RECV,"Put file startet: "+source+" to "+dest);
 		int startOfPayload=0;
 		int payloadLength=250;
@@ -960,15 +981,19 @@ public class BluetoothSerialService {
 			int send_value=send(send, bytesToSend);
 
 			if(send_value>0){
+				mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 				semaphore.release();
+				Log.i(TAG_SEM,"Put File, send failed hat den semaphore zurück gegeben");
 				return send_value;
 			}
 
 			// wait here until we can get the semaphore
 			// im schlimmsten fall hier ein while auf ne globale variable
+			Log.i(TAG_SEM,"puf file wartet");
+			Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 			semaphore.acquire();
+			Log.i(TAG_SEM,"put file hat semaphore erhalten");
 			transfered_bytes+=payloadLength;
-			Log.i(TAG,"putfile hat sich einen semaphore gekrallt");
 			// hier können wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
 			if(status==ST_EMERGENCY_RELEASE){
 				Log.i(TAG_RECV,"EMERGENCY TOKEN RETURN");
@@ -981,13 +1006,14 @@ public class BluetoothSerialService {
 				bundle.putString(SpeedoAndroidActivity.TOAST, "Transmission failed");
 				msg.setData(bundle);
 				mHandler.sendMessage(msg);
-
+				return_value=-2;
 			}
 
 
 			// löse desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der nächsten 
 			// runde, wieder einen semphore ohne einschränkung bekommen
 			semaphore.release();
+			Log.i(TAG_SEM,"Put file hat den semaphore zurück gegeben");
 			Log.i(TAG,"und auch wieder gehen lassen");
 			if(msgBuffer[1]==STATUS_EOF || msgBuffer[1]==STATUS_CMD_FAILED){
 				upload_status=STATUS_EOF;
@@ -997,6 +1023,7 @@ public class BluetoothSerialService {
 					bundle.putString(SpeedoAndroidActivity.TOAST, "Transmission error");
 					msg.setData(bundle);
 					mHandler.sendMessage(msg);
+					return_value=-1;
 				}
 				break;
 			}
@@ -1006,8 +1033,13 @@ public class BluetoothSerialService {
 		// status EOF erreich, datei schließen und meldung zurück geben
 		// file.close();
 		try {						in.close();			} 
-		catch (IOException e) {		e.printStackTrace();	}
-		return 0;
+		catch (IOException e) {		e.printStackTrace(); return_value=-3;	}
+		if(return_value==0){
+			if(!file.delete()){
+				return_value=-4;
+			}
+		}
+		return return_value;
 	}
 
 	public int delFile(String filename) throws InterruptedException {
@@ -1032,17 +1064,21 @@ public class BluetoothSerialService {
 		int send_value=send(send, 2+filename.length());
 
 		if(send_value>0){
+			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 			semaphore.release();
+			Log.i(TAG_SEM,"delefe file, send failed hat den semaphore zurück gegeben");
 			return send_value;
 		}
 
 		// wait here until we can get the semaphore
 		// im schlimmsten fall hier ein while auf ne globale variable
-		Log.i(TAG, "wartet");
+		Log.i(TAG_SEM, "delete file wartet");
+		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 		semaphore.acquire();
-		Log.i(TAG,"delfile hat sich einen semaphore gekrallt");
+		Log.i(TAG_SEM,"delfile hat sich einen semaphore gekrallt");
 		semaphore.release();
-		Log.i(TAG, "del file ist fertig");
+		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+		Log.i(TAG_SEM,"delete file hat den semaphore zurück gegeben");
 		// hier können wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
 		if(status==ST_EMERGENCY_RELEASE){
 			Log.i(TAG_RECV,"EMERGENCY TOKEN RETURN");
@@ -1088,17 +1124,21 @@ public class BluetoothSerialService {
 		int send_value=send(send, 2+filename.length());
 
 		if(send_value>0){
+			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 			semaphore.release();
+			Log.i(TAG_SEM,"show gfx send failed hat den semaphore zurück gegeben");
 			return send_value;
 		}
 
 		// wait here until we can get the semaphore
 		// im schlimmsten fall hier ein while auf ne globale variable
-		Log.i(TAG, "wartet");
+		Log.i(TAG_SEM, "show gfx wartet");
+		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 		semaphore.acquire();
-		Log.i(TAG,"showgfx hat sich einen semaphore gekrallt");
+		Log.i(TAG_SEM,"showgfx hat sich einen semaphore gekrallt");
 		semaphore.release();
-		Log.i(TAG, "fertig");
+		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+		Log.i(TAG_SEM,"show gfx hat den semaphore zurück gegeben");
 		// hier können wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
 		if(status==ST_EMERGENCY_RELEASE){
 			Log.i(TAG_RECV,"EMERGENCY TOKEN RETURN");
