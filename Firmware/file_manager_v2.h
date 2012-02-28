@@ -32,6 +32,7 @@ class speedo_filemanager_v2{
 	#define CMD_GET_FILE			0x12
 	#define CMD_PUT_FILE			0x13
 	#define CMD_DEL_FILE			0x14
+	#define CMD_SHOW_GFX			0x15
 
 	#define STATUS_CMD_OK           0x09
 	#define	STATUS_EOF				0x10

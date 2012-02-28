@@ -655,7 +655,14 @@
 <vertex x="135.9472" y="8.0944"/>
 <vertex x="137.9792" y="5.656"/>
 </polygon>
+<<<<<<< HEAD
 <circle x="15" y="-8.8" radius="9" width="0.3048" layer="16"/>
+=======
+<circle x="13.5" y="6.7" radius="9" width="0.3048" layer="16"/>
+<circle x="32.7" y="6.2" radius="9" width="0.3048" layer="16"/>
+<circle x="51.9" y="5.3" radius="9" width="0.3048" layer="16"/>
+<circle x="71.2" y="4.5" radius="9" width="0.3048" layer="16"/>
+>>>>>>> 28d12966e96d221d7928e0a3b1dbda27ad312f19
 </plain>
 <libraries>
 <library name="40xx">

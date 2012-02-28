@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/mapEditor_question"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/mapEditorCaption"
+        android:textSize="16dp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/mapEditor_direction"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text=""
+            android:textSize="16dp" />
+
+        <EditText
+            android:id="@+id/mapEditor_text"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:text="M"
+            android:textSize="16dp" >
+
+            <requestFocus />
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/mapEditor_left"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="0.2"
+            android:text="@string/left" />
+
+        <Button
+            android:id="@+id/mapEditor_straight"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="0.2"
+            android:text="@string/straight_on" />
+
+        <Button
+            android:id="@+id/mapEditor_right"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="0.2"
+            android:text="@string/right" />
+
+        <Button
+            android:id="@+id/mapEditor_next"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="0.2"
+            android:text="@string/NextImageConverter" />
+
+        <Button
+            android:id="@+id/mapEditor_remove"
+            android:layout_width="65dp"
+            android:layout_height="35dp"
+            android:layout_weight="0.2"
+            android:text="@string/RemoveMapConverter" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/mapEditor_list"
+        android:layout_width="match_parent"
+        android:clickable="true"
+        android:listSelector="@layout/selector"
+        android:layout_height="280dp" >
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/mapEditor_save"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="0.25"
+            android:text="@string/SaveImageConverter" />
+
+        <Button
+            android:id="@+id/mapEditor_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="0.25"
+            android:text="@string/cancel" />
+    </LinearLayout>
+
+</LinearLayout>
