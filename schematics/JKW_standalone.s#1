@@ -4508,13 +4508,9 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 <vertex x="-3.6" y="13"/>
 </polygon>
 </package>
-<package name="NHD_2.7_SOLO">
-<circle x="-124.5" y="-18" radius="1.6031" width="0.127" layer="39"/>
-<circle x="-124.5" y="24.5" radius="1.6124" width="0.127" layer="39"/>
+<package name="NHD_2.7_SOLO_RO">
 <circle x="-47.5" y="24.5" radius="1.6031" width="0.127" layer="39"/>
 <circle x="-47.5" y="-18" radius="1.5524" width="0.127" layer="39"/>
-<circle x="-124.5" y="-18" radius="2.75" width="0.127" layer="40"/>
-<circle x="-124.5" y="24.5" radius="2.75" width="0.127" layer="40"/>
 <circle x="-47.5" y="24.5" radius="2.75" width="0.127" layer="40"/>
 <circle x="-47.5" y="-18" radius="2.75" width="0.127" layer="40"/>
 <pad name="GND9" x="-110.13" y="24.5" drill="1"/>
@@ -4537,8 +4533,6 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 <pad name="NC0" x="-66.95" y="24.5" drill="1"/>
 <pad name="VDD0" x="-64.41" y="24.5" drill="1"/>
 <pad name="GND0" x="-61.87" y="24.5" drill="1"/>
-<hole x="-124.5" y="24.5" drill="2.5"/>
-<hole x="-124.5" y="-18" drill="2.5"/>
 <hole x="-47.5" y="-18" drill="2.5"/>
 <hole x="-47.5" y="24.5" drill="2.5"/>
 <polygon width="0.127" layer="108">
@@ -5013,12 +5007,12 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 </device>
 </devices>
 </deviceset>
-<deviceset name="NHD_2.7_SOLO">
+<deviceset name="NHD_2.7_SOLO_RO">
 <gates>
 <gate name="G$1" symbol="NHD_2.7" x="-2.54" y="0"/>
 </gates>
 <devices>
-<device name="" package="NHD_2.7_SOLO">
+<device name="" package="NHD_2.7_SOLO_RO">
 <connects>
 <connect gate="G$1" pin="CS" pad="CS"/>
 <connect gate="G$1" pin="DC" pad="DC"/>
@@ -24382,7 +24376,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <part name="R_SDA_UP" library="RCLDT" deviceset="R" device="0805" value="1K"/>
 <part name="C_QUA_1" library="rcl" deviceset="C-EU" device="C0805" value="22pF"/>
 <part name="C_QUA_2" library="rcl" deviceset="C-EU" device="C0805" value="22pF"/>
-<part name="NHD_2.7" library="Kolja" deviceset="NHD_2.7_SOLO" device=""/>
+<part name="NHD_2.7" library="Kolja" deviceset="NHD_2.7_SOLO_RO" device=""/>
 <part name="PWR_R78" library="Kolja" deviceset="R-7805-1.0" device=""/>
 <part name="BAT_CLIP1" library="SparkFun" deviceset="BATTERY" device="12MM" value="F_908642"/>
 <part name="C5" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
