@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
@@ -580,6 +580,86 @@
 <rectangle x1="3" y1="-9.9" x2="3.4" y2="-8.6" layer="21"/>
 </package>
 <package name="NHD_2.7_SOLO">
+<circle x="-124.5" y="-18" radius="1.6031" width="0.127" layer="39"/>
+<circle x="-124.5" y="24.5" radius="1.6124" width="0.127" layer="39"/>
+<circle x="-47.5" y="24.5" radius="1.6031" width="0.127" layer="39"/>
+<circle x="-47.5" y="-18" radius="1.5524" width="0.127" layer="39"/>
+<circle x="-124.5" y="-18" radius="2.75" width="0.127" layer="40"/>
+<circle x="-124.5" y="24.5" radius="2.75" width="0.127" layer="40"/>
+<circle x="-47.5" y="24.5" radius="2.75" width="0.127" layer="40"/>
+<circle x="-47.5" y="-18" radius="2.75" width="0.127" layer="40"/>
+<pad name="GND9" x="-110.13" y="24.5" drill="1"/>
+<pad name="GND8" x="-107.59" y="24.5" drill="1"/>
+<pad name="NC3" x="-105.05" y="24.5" drill="1"/>
+<pad name="CS" x="-102.51" y="24.5" drill="1"/>
+<pad name="RES" x="-99.97" y="24.5" drill="1"/>
+<pad name="NC2" x="-97.43" y="24.5" drill="1"/>
+<pad name="GND7" x="-94.89" y="24.5" drill="1"/>
+<pad name="GND6" x="-92.35" y="24.5" drill="1"/>
+<pad name="GND5" x="-89.81" y="24.5" drill="1"/>
+<pad name="GND4" x="-87.27" y="24.5" drill="1"/>
+<pad name="GND3" x="-84.73" y="24.5" drill="1"/>
+<pad name="NC1" x="-82.19" y="24.5" drill="1"/>
+<pad name="SDIN" x="-79.65" y="24.5" drill="1"/>
+<pad name="SCLK" x="-77.11" y="24.5" drill="1"/>
+<pad name="GND2" x="-74.57" y="24.5" drill="1"/>
+<pad name="GND1" x="-72.03" y="24.5" drill="1"/>
+<pad name="DC" x="-69.49" y="24.5" drill="1"/>
+<pad name="NC0" x="-66.95" y="24.5" drill="1"/>
+<pad name="VDD0" x="-64.41" y="24.5" drill="1"/>
+<pad name="GND0" x="-61.87" y="24.5" drill="1"/>
+<hole x="-124.5" y="24.5" drill="2.5"/>
+<hole x="-124.5" y="-18" drill="2.5"/>
+<hole x="-47.5" y="-18" drill="2.5"/>
+<hole x="-47.5" y="24.5" drill="2.5"/>
+<polygon width="0.127" layer="108">
+<vertex x="-127" y="27"/>
+<vertex x="-45" y="27"/>
+<vertex x="-45" y="-20.5"/>
+<vertex x="-127" y="-20.5"/>
+</polygon>
+<text x="-62.23" y="27.94" size="1.27" layer="27" rot="R270">1</text>
+<text x="-64.77" y="27.94" size="1.27" layer="27" rot="R270">2</text>
+<text x="-67.31" y="27.94" size="1.27" layer="27" rot="R270">3</text>
+<text x="-69.85" y="27.94" size="1.27" layer="27" rot="R270">4</text>
+<text x="-72.39" y="27.94" size="1.27" layer="27" rot="R270">5</text>
+<text x="-74.93" y="27.94" size="1.27" layer="27" rot="R270">6</text>
+<text x="-77.47" y="27.94" size="1.27" layer="27" rot="R270">7</text>
+<text x="-80.01" y="27.94" size="1.27" layer="27" rot="R270">8</text>
+<text x="-82.55" y="27.94" size="1.27" layer="27" rot="R270">9</text>
+<text x="-85.09" y="27.94" size="1.27" layer="27" rot="R270">10</text>
+<text x="-87.63" y="27.94" size="1.27" layer="27" rot="R270">11</text>
+<text x="-90.17" y="27.94" size="1.27" layer="27" rot="R270">12</text>
+<text x="-92.71" y="27.94" size="1.27" layer="27" rot="R270">13</text>
+<text x="-95.25" y="27.94" size="1.27" layer="27" rot="R270">14</text>
+<text x="-97.79" y="27.94" size="1.27" layer="27" rot="R270">15</text>
+<text x="-100.33" y="27.94" size="1.27" layer="27" rot="R270">16</text>
+<text x="-102.87" y="27.94" size="1.27" layer="27" rot="R270">17</text>
+<text x="-105.41" y="27.94" size="1.27" layer="27" rot="R270">18</text>
+<text x="-107.95" y="27.94" size="1.27" layer="27" rot="R270">19</text>
+<text x="-110.49" y="27.94" size="1.27" layer="27" rot="R270">20</text>
+<text x="-62.23" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-72.39" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-74.93" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-85.09" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-87.63" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-90.17" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-92.71" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-95.25" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-67.31" y="22.86" size="1.27" layer="27" rot="R270">Not Connected</text>
+<text x="-82.55" y="22.86" size="1.27" layer="27" rot="R270">Not Connected</text>
+<text x="-105.41" y="22.86" size="1.27" layer="27" rot="R270">Not Connected</text>
+<text x="-64.77" y="22.86" size="1.27" layer="27" rot="R270">Supply Voltage</text>
+<text x="-110.49" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-107.95" y="22.86" size="1.27" layer="27" rot="R270">gnd</text>
+<text x="-102.87" y="22.86" size="1.27" layer="27" rot="R270">chip select</text>
+<text x="-100.33" y="22.86" size="1.27" layer="27" rot="R270">reset</text>
+<text x="-97.79" y="22.86" size="1.27" layer="27" rot="R270">Not Connected</text>
+<text x="-80.01" y="22.86" size="1.27" layer="27" rot="R270">sdin</text>
+<text x="-77.47" y="22.86" size="1.27" layer="27" rot="R270">sclk</text>
+<text x="-69.85" y="22.86" size="1.27" layer="27" rot="R270">dc</text>
+</package>
+<package name="NHD_2.7_SOLO_RO">
 <circle x="-124.5" y="-18" radius="1.6031" width="0.127" layer="39"/>
 <circle x="-124.5" y="24.5" radius="1.6124" width="0.127" layer="39"/>
 <circle x="-47.5" y="24.5" radius="1.6031" width="0.127" layer="39"/>
@@ -1238,7 +1318,58 @@ Herst.Bez.:
 <connects>
 <connect gate="G$1" pin="CS" pad="CS"/>
 <connect gate="G$1" pin="DC" pad="DC"/>
-<connect gate="G$1" pin="VDD" pad="GND0"/>
+<connect gate="G$1" pin="GND" pad="GND0"/>
+<connect gate="G$1" pin="GND10" pad="GND9"/>
+<connect gate="G$1" pin="GND2" pad="GND1"/>
+<connect gate="G$1" pin="GND3" pad="GND2"/>
+<connect gate="G$1" pin="GND4" pad="GND3"/>
+<connect gate="G$1" pin="GND5" pad="GND4"/>
+<connect gate="G$1" pin="GND6" pad="GND5"/>
+<connect gate="G$1" pin="GND7" pad="GND6"/>
+<connect gate="G$1" pin="GND8" pad="GND7"/>
+<connect gate="G$1" pin="GND9" pad="GND8"/>
+<connect gate="G$1" pin="NC" pad="NC0"/>
+<connect gate="G$1" pin="NC2" pad="NC1"/>
+<connect gate="G$1" pin="NC3" pad="NC2"/>
+<connect gate="G$1" pin="NC4" pad="NC3"/>
+<connect gate="G$1" pin="RES" pad="RES"/>
+<connect gate="G$1" pin="SCL" pad="SCLK"/>
+<connect gate="G$1" pin="SDA" pad="SDIN"/>
+<connect gate="G$1" pin="VDD" pad="VDD0"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="NHD_2.7_SOLO_RO">
+<gates>
+<gate name="G$1" symbol="NHD_2.7" x="-2.54" y="0"/>
+</gates>
+<devices>
+<device name="" package="NHD_2.7_SOLO_RO">
+<connects>
+<connect gate="G$1" pin="CS" pad="CS"/>
+<connect gate="G$1" pin="DC" pad="DC"/>
+<connect gate="G$1" pin="GND" pad="GND0"/>
+<connect gate="G$1" pin="GND10" pad="GND9"/>
+<connect gate="G$1" pin="GND2" pad="GND1"/>
+<connect gate="G$1" pin="GND3" pad="GND2"/>
+<connect gate="G$1" pin="GND4" pad="GND3"/>
+<connect gate="G$1" pin="GND5" pad="GND4"/>
+<connect gate="G$1" pin="GND6" pad="GND5"/>
+<connect gate="G$1" pin="GND7" pad="GND6"/>
+<connect gate="G$1" pin="GND8" pad="GND7"/>
+<connect gate="G$1" pin="GND9" pad="GND8"/>
+<connect gate="G$1" pin="NC" pad="NC0"/>
+<connect gate="G$1" pin="NC2" pad="NC1"/>
+<connect gate="G$1" pin="NC3" pad="NC2"/>
+<connect gate="G$1" pin="NC4" pad="NC3"/>
+<connect gate="G$1" pin="RES" pad="RES"/>
+<connect gate="G$1" pin="SCL" pad="SCLK"/>
+<connect gate="G$1" pin="SDA" pad="SDIN"/>
+<connect gate="G$1" pin="VDD" pad="VDD0"/>
 </connects>
 <technologies>
 <technology name=""/>
