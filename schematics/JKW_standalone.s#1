@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -24540,10 +24540,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <text x="-236.728" y="101.092" size="1.6764" layer="91" rot="R180">RGB_INST</text>
 <text x="-236.728" y="103.378" size="1.6764" layer="91" rot="R180">RGB_INST</text>
 <text x="-236.728" y="105.918" size="1.6764" layer="91" rot="R180">RGB_INST</text>
-<text x="-141.224" y="221.234" size="1.6764" layer="91">left</text>
-<text x="-141.224" y="226.568" size="1.6764" layer="91">down</text>
-<text x="-140.97" y="231.902" size="1.6764" layer="91">right</text>
-<text x="-140.97" y="237.236" size="1.6764" layer="91">up</text>
 <text x="-139.7" y="142.24" size="1.6764" layer="91">Reed Schmitt</text>
 <text x="-139.7" y="139.7" size="1.6764" layer="91">DZ Schmitt</text>
 <text x="91.44" y="271.78" size="3.81" layer="95" rot="R90">GPS</text>
@@ -24590,10 +24586,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <text x="-238.76" y="124.46" size="1.778" layer="91" rot="R180">Taster auf INT</text>
 <text x="-238.76" y="127" size="1.778" layer="91" rot="R180">Taster auf INT</text>
 <text x="-238.76" y="129.54" size="1.778" layer="91" rot="R180">Taster auf INT</text>
-<text x="-132.08" y="236.22" size="1.778" layer="91">Taster auf INT</text>
-<text x="-132.08" y="231.14" size="1.778" layer="91">Taster auf INT</text>
-<text x="-132.08" y="226.06" size="1.778" layer="91">Taster auf INT</text>
-<text x="-132.08" y="220.98" size="1.778" layer="91">Taster auf INT</text>
 <text x="203.2" y="170.18" size="1.778" layer="91">Taster auf INT</text>
 <text x="203.2" y="162.56" size="1.778" layer="91">Taster auf INT</text>
 <text x="203.2" y="154.94" size="1.778" layer="91">Taster auf INT</text>

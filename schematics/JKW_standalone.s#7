@@ -27540,9 +27540,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="-236.22" y="127" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="200.58" y1="165.46" x2="198.08" y2="165" width="0.1" layer="91"/>
 <wire x1="198.08" y1="165" x2="222.46" y2="165" width="0.1" layer="91"/>
-<junction x="198.08" y="165"/>
 <label x="202.58" y="166.46" size="1.9304" layer="95"/>
 <pinref part="S9" gate="G$1" pin="2"/>
 <pinref part="JP6" gate="G$1" pin="1"/>
@@ -27557,9 +27555,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="-236.22" y="124.46" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="199.58" y1="149.46" x2="199.08" y2="149" width="0.1" layer="91"/>
 <wire x1="199.08" y1="149" x2="211" y2="149" width="0.1" layer="91"/>
-<junction x="199.08" y="149"/>
 <label x="202.58" y="150.46" size="1.9304" layer="95"/>
 <pinref part="S7" gate="G$1" pin="2"/>
 <wire x1="211" y1="149" x2="222.46" y2="149" width="0.1524" layer="91"/>
@@ -27575,9 +27571,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="-236.22" y="121.92" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="199.58" y1="141.46" x2="199.08" y2="141" width="0.1" layer="91"/>
 <wire x1="199.08" y1="141" x2="211" y2="141" width="0.1" layer="91"/>
-<junction x="199.08" y="141"/>
 <label x="202.58" y="142.46" size="1.9304" layer="95"/>
 <pinref part="S6" gate="G$1" pin="2"/>
 <wire x1="211" y1="141" x2="222.46" y2="141" width="0.1524" layer="91"/>
@@ -27593,9 +27587,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="-236.22" y="119.38" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="199.58" y1="157.46" x2="198.08" y2="157" width="0.1" layer="91"/>
 <wire x1="198.08" y1="157" x2="211" y2="157" width="0.1" layer="91"/>
-<junction x="198.08" y="157"/>
 <label x="202.58" y="158.46" size="1.9304" layer="95"/>
 <pinref part="S8" gate="G$1" pin="2"/>
 <wire x1="211" y1="157" x2="222.46" y2="157" width="0.1524" layer="91"/>

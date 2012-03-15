@@ -24417,6 +24417,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <part name="JP10" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="JP11" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="JP12" library="pinhead" deviceset="PINHD-1X1" device=""/>
+<part name="U$1" library="SUPPLY" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -24722,10 +24723,10 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <attribute name="NAME" x="147.32" y="-5.08" size="2.032" layer="95" rot="R180"/>
 <attribute name="VALUE" x="147.32" y="-2.54" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="S6" gate="G$1" x="194.58" y="141.46"/>
-<instance part="S7" gate="G$1" x="194.58" y="149.46"/>
-<instance part="S8" gate="G$1" x="193.58" y="157.46"/>
-<instance part="S9" gate="G$1" x="193.58" y="165.46"/>
+<instance part="S6" gate="G$1" x="194" y="141"/>
+<instance part="S7" gate="G$1" x="194" y="149"/>
+<instance part="S8" gate="G$1" x="193" y="157"/>
+<instance part="S9" gate="G$1" x="193" y="165"/>
 <instance part="U$4" gate="G$1" x="178.58" y="135"/>
 <instance part="GPS" gate="G$1" x="157.48" y="248.92" rot="R270"/>
 <instance part="R_GR_BL_L" gate="G$1" x="43.18" y="187.96" smashed="yes" rot="R180">
@@ -24954,6 +24955,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <instance part="JP10" gate="G$1" x="240" y="141"/>
 <instance part="JP11" gate="G$1" x="250" y="141"/>
 <instance part="JP12" gate="G$1" x="250" y="149"/>
+<instance part="U$1" gate="G$1" x="230" y="135"/>
 </instances>
 <busses>
 </busses>
@@ -25259,18 +25261,18 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <wire x1="178.58" y1="141.46" x2="178.58" y2="149.46" width="0.1" layer="91"/>
 <wire x1="178.58" y1="149.46" x2="178.58" y2="157.46" width="0.1" layer="91"/>
 <wire x1="178.58" y1="157.46" x2="178.58" y2="165.46" width="0.1" layer="91"/>
-<wire x1="178.58" y1="165.46" x2="185.96" y2="165.46" width="0.1" layer="91"/>
-<wire x1="185.96" y1="165.46" x2="186.58" y2="165.46" width="0.1" layer="91"/>
-<wire x1="178.58" y1="157.46" x2="185.96" y2="157.46" width="0.1" layer="91"/>
-<wire x1="185.96" y1="157.46" x2="186.58" y2="157.46" width="0.1" layer="91"/>
-<wire x1="178.58" y1="149.46" x2="186.96" y2="149.46" width="0.1" layer="91"/>
-<wire x1="186.96" y1="149.46" x2="186.58" y2="149.46" width="0.1" layer="91"/>
-<wire x1="178.58" y1="141.46" x2="186.96" y2="141.46" width="0.1" layer="91"/>
-<wire x1="186.96" y1="141.46" x2="186.58" y2="141.46" width="0.1" layer="91"/>
-<junction x="186.96" y="141.46"/>
-<junction x="186.96" y="149.46"/>
-<junction x="185.96" y="157.46"/>
-<junction x="185.96" y="165.46"/>
+<wire x1="178.58" y1="165.46" x2="185.38" y2="165" width="0.1" layer="91"/>
+<wire x1="185.38" y1="165" x2="186.58" y2="165.46" width="0.1" layer="91"/>
+<wire x1="178.58" y1="157.46" x2="185.38" y2="157" width="0.1" layer="91"/>
+<wire x1="185.38" y1="157" x2="186.58" y2="157.46" width="0.1" layer="91"/>
+<wire x1="178.58" y1="149.46" x2="186.38" y2="149" width="0.1" layer="91"/>
+<wire x1="186.38" y1="149" x2="186.58" y2="149.46" width="0.1" layer="91"/>
+<wire x1="178.58" y1="141.46" x2="186.38" y2="141" width="0.1" layer="91"/>
+<wire x1="186.38" y1="141" x2="186.58" y2="141.46" width="0.1" layer="91"/>
+<junction x="186.38" y="141"/>
+<junction x="186.38" y="149"/>
+<junction x="185.38" y="157"/>
+<junction x="185.38" y="165"/>
 <junction x="178.58" y="137.54"/>
 <junction x="178.58" y="141.46"/>
 <junction x="178.58" y="149.46"/>
@@ -27538,9 +27540,9 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="-236.22" y="127" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="200.58" y1="165.46" x2="198.66" y2="165.46" width="0.1" layer="91"/>
-<wire x1="198.66" y1="165.46" x2="211.58" y2="165.46" width="0.1" layer="91"/>
-<junction x="198.66" y="165.46"/>
+<wire x1="200.58" y1="165.46" x2="198.08" y2="165" width="0.1" layer="91"/>
+<wire x1="198.08" y1="165" x2="211.58" y2="165.46" width="0.1" layer="91"/>
+<junction x="198.08" y="165"/>
 <label x="202.58" y="166.46" size="1.9304" layer="95"/>
 <pinref part="S9" gate="G$1" pin="2"/>
 </segment>
@@ -27552,9 +27554,9 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="-236.22" y="124.46" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="199.58" y1="149.46" x2="199.66" y2="149.46" width="0.1" layer="91"/>
-<wire x1="199.66" y1="149.46" x2="211.58" y2="149.46" width="0.1" layer="91"/>
-<junction x="199.66" y="149.46"/>
+<wire x1="199.58" y1="149.46" x2="199.08" y2="149" width="0.1" layer="91"/>
+<wire x1="199.08" y1="149" x2="211.58" y2="149.46" width="0.1" layer="91"/>
+<junction x="199.08" y="149"/>
 <label x="202.58" y="150.46" size="1.9304" layer="95"/>
 <pinref part="S7" gate="G$1" pin="2"/>
 </segment>
@@ -27566,9 +27568,9 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="-236.22" y="121.92" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="199.58" y1="141.46" x2="199.66" y2="141.46" width="0.1" layer="91"/>
-<wire x1="199.66" y1="141.46" x2="211.58" y2="141.46" width="0.1" layer="91"/>
-<junction x="199.66" y="141.46"/>
+<wire x1="199.58" y1="141.46" x2="199.08" y2="141" width="0.1" layer="91"/>
+<wire x1="199.08" y1="141" x2="211.58" y2="141.46" width="0.1" layer="91"/>
+<junction x="199.08" y="141"/>
 <label x="202.58" y="142.46" size="1.9304" layer="95"/>
 <pinref part="S6" gate="G$1" pin="2"/>
 </segment>
@@ -27580,9 +27582,9 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <label x="-236.22" y="119.38" size="1.778" layer="95"/>
 </segment>
 <segment>
-<wire x1="199.58" y1="157.46" x2="198.66" y2="157.46" width="0.1" layer="91"/>
-<wire x1="198.66" y1="157.46" x2="211.58" y2="157.46" width="0.1" layer="91"/>
-<junction x="198.66" y="157.46"/>
+<wire x1="199.58" y1="157.46" x2="198.08" y2="157" width="0.1" layer="91"/>
+<wire x1="198.08" y1="157" x2="211.58" y2="157.46" width="0.1" layer="91"/>
+<junction x="198.08" y="157"/>
 <label x="202.58" y="158.46" size="1.9304" layer="95"/>
 <pinref part="S8" gate="G$1" pin="2"/>
 </segment>

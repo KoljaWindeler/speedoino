@@ -24431,7 +24431,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <part name="JP18" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="JP19" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="JP20" library="pinhead" deviceset="PINHD-1X1" device=""/>
-<part name="U$10" library="SUPPLY" deviceset="GND" device=""/>
+<part name="E_GND" library="SUPPLY" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -24996,7 +24996,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <instance part="JP18" gate="G$1" x="295" y="103"/>
 <instance part="JP19" gate="G$1" x="295" y="95"/>
 <instance part="JP20" gate="G$1" x="303" y="95"/>
-<instance part="U$10" gate="G$1" x="284" y="89"/>
+<instance part="E_GND" gate="G$1" x="284" y="89"/>
 </instances>
 <busses>
 </busses>
@@ -25521,63 +25521,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <junction x="246.46" y="141"/>
 <pinref part="U$1" gate="G$1" pin="GND"/>
 <junction x="230" y="137.54"/>
-</segment>
-<segment>
-<wire x1="232" y1="89" x2="232" y2="91.54" width="0.1" layer="91"/>
-<wire x1="232" y1="91.54" x2="232" y2="95" width="0.1" layer="91"/>
-<wire x1="232" y1="95" x2="232" y2="103" width="0.1" layer="91"/>
-<wire x1="232" y1="103" x2="232" y2="111" width="0.1" layer="91"/>
-<wire x1="232" y1="111" x2="232" y2="119" width="0.1" layer="91"/>
-<wire x1="232" y1="119" x2="239.38" y2="119" width="0.1" layer="91"/>
-<wire x1="239.38" y1="119" x2="240.58" y2="119.46" width="0.1" layer="91"/>
-<wire x1="232" y1="111" x2="239.38" y2="111" width="0.1" layer="91"/>
-<wire x1="239.38" y1="111" x2="240.58" y2="111.46" width="0.1" layer="91"/>
-<wire x1="232" y1="103" x2="240.38" y2="103" width="0.1" layer="91"/>
-<wire x1="240.38" y1="103" x2="240.58" y2="103.46" width="0.1" layer="91"/>
-<wire x1="232" y1="95" x2="240.38" y2="95" width="0.1" layer="91"/>
-<wire x1="240.38" y1="95" x2="240.58" y2="95.46" width="0.1" layer="91"/>
-<junction x="240.38" y="95"/>
-<junction x="240.38" y="103"/>
-<junction x="239.38" y="111"/>
-<junction x="239.38" y="119"/>
-<junction x="232" y="91.54"/>
-<junction x="232" y="95"/>
-<junction x="232" y="103"/>
-<junction x="232" y="111"/>
-<pinref part="S2" gate="G$1" pin="1"/>
-<pinref part="S3" gate="G$1" pin="1"/>
-<pinref part="S4" gate="G$1" pin="1"/>
-<pinref part="S5" gate="G$1" pin="1"/>
-<pinref part="U$2" gate="G$1" pin="GND"/>
-</segment>
-<segment>
-<wire x1="301" y1="95" x2="300.46" y2="95" width="0.1524" layer="91"/>
-<wire x1="300.46" y1="95" x2="292.46" y2="95" width="0.1524" layer="91"/>
-<wire x1="292.46" y1="95" x2="284" y2="95" width="0.1524" layer="91"/>
-<wire x1="284" y1="95" x2="284" y2="91.54" width="0.1524" layer="91"/>
-<wire x1="284" y1="91.54" x2="284" y2="91" width="0.1524" layer="91"/>
-<wire x1="292.46" y1="103" x2="284" y2="103" width="0.1524" layer="91"/>
-<wire x1="284" y1="103" x2="284" y2="95" width="0.1524" layer="91"/>
-<wire x1="292" y1="112" x2="292.46" y2="112" width="0.1524" layer="91"/>
-<wire x1="292.46" y1="112" x2="284" y2="112" width="0.1524" layer="91"/>
-<wire x1="284" y1="112" x2="284" y2="103" width="0.1524" layer="91"/>
-<wire x1="292" y1="120" x2="292.46" y2="120" width="0.1524" layer="91"/>
-<wire x1="292.46" y1="120" x2="284" y2="120" width="0.1524" layer="91"/>
-<wire x1="284" y1="120" x2="284" y2="112" width="0.1524" layer="91"/>
-<junction x="284" y="95"/>
-<junction x="284" y="103"/>
-<junction x="284" y="112"/>
-<pinref part="JP16" gate="G$1" pin="1"/>
-<junction x="292.46" y="120"/>
-<pinref part="JP17" gate="G$1" pin="1"/>
-<junction x="292.46" y="112"/>
-<pinref part="JP18" gate="G$1" pin="1"/>
-<pinref part="JP19" gate="G$1" pin="1"/>
-<junction x="292.46" y="95"/>
-<pinref part="JP20" gate="G$1" pin="1"/>
-<junction x="300.46" y="95"/>
-<pinref part="U$10" gate="G$1" pin="GND"/>
-<junction x="284" y="91.54"/>
 </segment>
 </net>
 <net name="DZ" class="0">
@@ -27674,14 +27617,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <wire x1="222.46" y1="165" x2="211" y2="165" width="0.1" layer="91"/>
 <junction x="222.46" y="165"/>
 </segment>
-<segment>
-<wire x1="252.08" y1="119" x2="276.46" y2="119" width="0.1" layer="91"/>
-<label x="256.58" y="120.46" size="1.9304" layer="95"/>
-<pinref part="S5" gate="G$1" pin="2"/>
-<pinref part="JP15" gate="G$1" pin="1"/>
-<wire x1="276.46" y1="119" x2="265" y2="119" width="0.1" layer="91"/>
-<junction x="276.46" y="119"/>
-</segment>
 </net>
 <net name="B_R" class="0">
 <segment>
@@ -27697,15 +27632,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <pinref part="JP4" gate="G$1" pin="1"/>
 <wire x1="222.46" y1="149" x2="222" y2="149" width="0.1524" layer="91"/>
 <junction x="222.46" y="149"/>
-</segment>
-<segment>
-<wire x1="253.08" y1="103" x2="265" y2="103" width="0.1" layer="91"/>
-<label x="256.58" y="104.46" size="1.9304" layer="95"/>
-<pinref part="S3" gate="G$1" pin="2"/>
-<wire x1="265" y1="103" x2="276.46" y2="103" width="0.1524" layer="91"/>
-<pinref part="JP13" gate="G$1" pin="1"/>
-<wire x1="276.46" y1="103" x2="276" y2="103" width="0.1524" layer="91"/>
-<junction x="276.46" y="103"/>
 </segment>
 </net>
 <net name="B_U" class="0">
@@ -27723,15 +27649,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <wire x1="222.46" y1="141" x2="222" y2="141" width="0.1524" layer="91"/>
 <junction x="222.46" y="141"/>
 </segment>
-<segment>
-<wire x1="253.08" y1="95" x2="265" y2="95" width="0.1" layer="91"/>
-<label x="256.58" y="96.46" size="1.9304" layer="95"/>
-<pinref part="S2" gate="G$1" pin="2"/>
-<wire x1="265" y1="95" x2="276.46" y2="95" width="0.1524" layer="91"/>
-<pinref part="JP12" gate="G$1" pin="1"/>
-<wire x1="276.46" y1="95" x2="276" y2="95" width="0.1524" layer="91"/>
-<junction x="276.46" y="95"/>
-</segment>
 </net>
 <net name="B_D" class="0">
 <segment>
@@ -27748,6 +27665,30 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <wire x1="222.46" y1="157" x2="223" y2="157" width="0.1524" layer="91"/>
 <junction x="222.46" y="157"/>
 </segment>
+</net>
+<net name="E_B_U" class="0">
+<segment>
+<wire x1="253.08" y1="95" x2="265" y2="95" width="0.1" layer="91"/>
+<label x="256.58" y="96.46" size="1.9304" layer="95"/>
+<pinref part="S2" gate="G$1" pin="2"/>
+<wire x1="265" y1="95" x2="276.46" y2="95" width="0.1524" layer="91"/>
+<pinref part="JP12" gate="G$1" pin="1"/>
+<wire x1="276.46" y1="95" x2="276" y2="95" width="0.1524" layer="91"/>
+<junction x="276.46" y="95"/>
+</segment>
+</net>
+<net name="E_B_R" class="0">
+<segment>
+<wire x1="253.08" y1="103" x2="265" y2="103" width="0.1" layer="91"/>
+<label x="256.58" y="104.46" size="1.9304" layer="95"/>
+<pinref part="S3" gate="G$1" pin="2"/>
+<wire x1="265" y1="103" x2="276.46" y2="103" width="0.1524" layer="91"/>
+<pinref part="JP13" gate="G$1" pin="1"/>
+<wire x1="276.46" y1="103" x2="276" y2="103" width="0.1524" layer="91"/>
+<junction x="276.46" y="103"/>
+</segment>
+</net>
+<net name="E_B_D" class="0">
 <segment>
 <wire x1="252.08" y1="111" x2="265" y2="111" width="0.1" layer="91"/>
 <label x="256.58" y="112.46" size="1.9304" layer="95"/>
@@ -27756,6 +27697,75 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <pinref part="JP14" gate="G$1" pin="1"/>
 <wire x1="276.46" y1="111" x2="277" y2="111" width="0.1524" layer="91"/>
 <junction x="276.46" y="111"/>
+</segment>
+</net>
+<net name="E_B_L" class="0">
+<segment>
+<wire x1="252.08" y1="119" x2="276.46" y2="119" width="0.1" layer="91"/>
+<label x="256.58" y="120.46" size="1.9304" layer="95"/>
+<pinref part="S5" gate="G$1" pin="2"/>
+<pinref part="JP15" gate="G$1" pin="1"/>
+<wire x1="276.46" y1="119" x2="265" y2="119" width="0.1" layer="91"/>
+<junction x="276.46" y="119"/>
+</segment>
+</net>
+<net name="E_GND" class="0">
+<segment>
+<wire x1="232" y1="89" x2="232" y2="91.54" width="0.1" layer="91"/>
+<wire x1="232" y1="91.54" x2="232" y2="95" width="0.1" layer="91"/>
+<wire x1="232" y1="95" x2="232" y2="103" width="0.1" layer="91"/>
+<wire x1="232" y1="103" x2="232" y2="111" width="0.1" layer="91"/>
+<wire x1="232" y1="111" x2="232" y2="119" width="0.1" layer="91"/>
+<wire x1="232" y1="119" x2="239.38" y2="119" width="0.1" layer="91"/>
+<wire x1="239.38" y1="119" x2="240.58" y2="119.46" width="0.1" layer="91"/>
+<wire x1="232" y1="111" x2="239.38" y2="111" width="0.1" layer="91"/>
+<wire x1="239.38" y1="111" x2="240.58" y2="111.46" width="0.1" layer="91"/>
+<wire x1="232" y1="103" x2="240.38" y2="103" width="0.1" layer="91"/>
+<wire x1="240.38" y1="103" x2="240.58" y2="103.46" width="0.1" layer="91"/>
+<wire x1="232" y1="95" x2="240.38" y2="95" width="0.1" layer="91"/>
+<wire x1="240.38" y1="95" x2="240.58" y2="95.46" width="0.1" layer="91"/>
+<junction x="240.38" y="95"/>
+<junction x="240.38" y="103"/>
+<junction x="239.38" y="111"/>
+<junction x="239.38" y="119"/>
+<junction x="232" y="91.54"/>
+<junction x="232" y="95"/>
+<junction x="232" y="103"/>
+<junction x="232" y="111"/>
+<pinref part="S2" gate="G$1" pin="1"/>
+<pinref part="S3" gate="G$1" pin="1"/>
+<pinref part="S4" gate="G$1" pin="1"/>
+<pinref part="S5" gate="G$1" pin="1"/>
+<pinref part="U$2" gate="G$1" pin="GND"/>
+</segment>
+<segment>
+<wire x1="301" y1="95" x2="300.46" y2="95" width="0.1524" layer="91"/>
+<wire x1="300.46" y1="95" x2="292.46" y2="95" width="0.1524" layer="91"/>
+<wire x1="292.46" y1="95" x2="284" y2="95" width="0.1524" layer="91"/>
+<wire x1="284" y1="95" x2="284" y2="91.54" width="0.1524" layer="91"/>
+<wire x1="284" y1="91.54" x2="284" y2="91" width="0.1524" layer="91"/>
+<wire x1="292.46" y1="103" x2="284" y2="103" width="0.1524" layer="91"/>
+<wire x1="284" y1="103" x2="284" y2="95" width="0.1524" layer="91"/>
+<wire x1="292" y1="112" x2="292.46" y2="112" width="0.1524" layer="91"/>
+<wire x1="292.46" y1="112" x2="284" y2="112" width="0.1524" layer="91"/>
+<wire x1="284" y1="112" x2="284" y2="103" width="0.1524" layer="91"/>
+<wire x1="292" y1="120" x2="292.46" y2="120" width="0.1524" layer="91"/>
+<wire x1="292.46" y1="120" x2="284" y2="120" width="0.1524" layer="91"/>
+<wire x1="284" y1="120" x2="284" y2="112" width="0.1524" layer="91"/>
+<junction x="284" y="95"/>
+<junction x="284" y="103"/>
+<junction x="284" y="112"/>
+<pinref part="JP16" gate="G$1" pin="1"/>
+<junction x="292.46" y="120"/>
+<pinref part="JP17" gate="G$1" pin="1"/>
+<junction x="292.46" y="112"/>
+<pinref part="JP18" gate="G$1" pin="1"/>
+<pinref part="JP19" gate="G$1" pin="1"/>
+<junction x="292.46" y="95"/>
+<pinref part="JP20" gate="G$1" pin="1"/>
+<junction x="300.46" y="95"/>
+<pinref part="E_GND" gate="G$1" pin="GND"/>
+<junction x="284" y="91.54"/>
 </segment>
 </net>
 </nets>
