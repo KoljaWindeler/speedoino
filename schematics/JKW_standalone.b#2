@@ -2550,6 +2550,7 @@ min. Width 0,18mm</description>
 <element name="JP18" library="pinhead" package="1X01" value="" x="8.7" y="93.8" rot="R180"/>
 <element name="JP19" library="pinhead" package="1X01" value="" x="23.1" y="87.3" rot="R180"/>
 <element name="JP20" library="pinhead" package="1X01" value="" x="44.1" y="86.3" rot="R180"/>
+<element name="TX2" library="pinhead" package="1X02" value="" x="-0.5" y="-5.5"/>
 </elements>
 <signals>
 <signal name="REED">
@@ -3592,9 +3593,13 @@ min. Width 0,18mm</description>
 </signal>
 <signal name="D42">
 <contactref element="IC4" pad="42"/>
+<contactref element="TX2" pad="1"/>
+<wire x1="-1.77" y1="-5.5" x2="50.5" y2="51.66" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="D43">
 <contactref element="IC4" pad="41"/>
+<contactref element="TX2" pad="2"/>
+<wire x1="0.77" y1="-5.5" x2="50" y2="51.66" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="D44">
 <contactref element="IC4" pad="40"/>

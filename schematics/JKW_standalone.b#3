@@ -657,9 +657,9 @@
 </polygon>
 <text x="103.4" y="85.8" size="1.778" layer="1" font="vector" rot="R90">+</text>
 <wire x1="0" y1="0" x2="160" y2="0" width="0.4064" layer="51"/>
-<wire x1="160" y1="0" x2="160" y2="99.9" width="0.4064" layer="51"/>
-<wire x1="160" y1="99.9" x2="0" y2="99.9" width="0.4064" layer="51"/>
-<wire x1="0" y1="99.9" x2="0" y2="0" width="0.4064" layer="51"/>
+<wire x1="160" y1="0" x2="160" y2="100" width="0.4064" layer="51"/>
+<wire x1="160" y1="100" x2="0" y2="100" width="0.4064" layer="51"/>
+<wire x1="0" y1="100" x2="0" y2="0" width="0.4064" layer="51"/>
 <wire x1="6.2" y1="82.4" x2="81.8" y2="81.5" width="0" layer="20"/>
 <wire x1="81.8" y1="81.5" x2="82" y2="93.4" width="0" layer="20"/>
 <wire x1="82" y1="93.4" x2="6.4" y2="96.1" width="0" layer="20"/>

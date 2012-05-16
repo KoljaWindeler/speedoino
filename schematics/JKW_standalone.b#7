@@ -5475,20 +5475,45 @@ min. Width 0,18mm</description>
 <contactref element="JP18" pad="1"/>
 <contactref element="JP19" pad="1"/>
 <contactref element="JP20" pad="1"/>
-<polygon width="0.3048" layer="1" isolate="0.4064">
-<vertex x="0.7" y="83.1"/>
-<vertex x="75.7" y="81.7"/>
-<vertex x="75.7" y="69.8"/>
-<vertex x="0.5" y="73.2"/>
-<vertex x="0.6" y="82.5"/>
+<wire x1="62.6725" y1="77.7725" x2="73.6" y2="71.9" width="0" layer="19" extent="1-1"/>
+<wire x1="59.2" y1="78.4" x2="62.6725" y2="77.7725" width="0" layer="19" extent="1-1"/>
+<wire x1="43.6725" y1="78.2725" x2="59.2" y2="78.4" width="0" layer="19" extent="1-1"/>
+<wire x1="38.2" y1="79.4" x2="43.6725" y2="78.2725" width="0" layer="19" extent="1-1"/>
+<wire x1="24.6725" y1="78.7725" x2="38.2" y2="79.4" width="0" layer="19" extent="1-1"/>
+<wire x1="19.3" y1="81.2" x2="24.6725" y2="78.7725" width="0" layer="19" extent="1-1"/>
+<wire x1="19.3" y1="74.5" x2="19.3" y2="81.2" width="0" layer="19" extent="1-1"/>
+<wire x1="5.6725" y1="79.2725" x2="19.3" y2="81.2" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$25">
+<polygon width="0.3048" layer="1">
+<vertex x="0.5" y="77.5" curve="-90"/>
+<vertex x="4.2" y="82.9"/>
+<vertex x="5.5" y="82.9"/>
+<vertex x="73.5" y="81.7" curve="-90"/>
+<vertex x="75.6" y="79.6"/>
+<vertex x="75.7" y="71.2" curve="-90"/>
+<vertex x="74.3" y="69.8"/>
+<vertex x="3" y="73"/>
+<vertex x="2.1" y="73" curve="-90"/>
+<vertex x="0.5" y="74.6"/>
 </polygon>
-<polygon width="0.3048" layer="16" isolate="0.4064">
-<vertex x="75" y="81.7"/>
-<vertex x="0.6" y="83.1"/>
-<vertex x="0.5" y="73.9"/>
-<vertex x="0.5" y="73.2"/>
-<vertex x="75.7" y="69.8"/>
-<vertex x="75.6" y="81.7"/>
+</signal>
+<signal name="N$28">
+<polygon width="0.3048" layer="16">
+<vertex x="2.7" y="72.9"/>
+<vertex x="1.8" y="72.9" curve="-90"/>
+<vertex x="0.5" y="74.2"/>
+<vertex x="0.5" y="78.9" curve="-90"/>
+<vertex x="0.6" y="79" curve="-90"/>
+<vertex x="4.5" y="82.9"/>
+<vertex x="5.5" y="82.9"/>
+<vertex x="73.6" y="81.7" curve="-90"/>
+<vertex x="75.6" y="79.7"/>
+<vertex x="75.6" y="79.3"/>
+<vertex x="75.6" y="71.5"/>
+<vertex x="75.6" y="71.3" curve="-90"/>
+<vertex x="74.1" y="69.8"/>
+<vertex x="3.3" y="72.9"/>
 </polygon>
 </signal>
 </signals>
