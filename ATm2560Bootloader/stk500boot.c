@@ -587,7 +587,6 @@ int main(void)
 
 			case CMD_LEAVE_PROGMODE_ISP:
 				isLeave	=	1;
-				break;
 				//*	fall thru
 
 			case CMD_SET_PARAMETER: // häh??

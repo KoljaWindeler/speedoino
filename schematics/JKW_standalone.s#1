@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.0">
+<eagle version="6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -24426,6 +24426,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <part name="JP19" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="JP20" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="E_GND" library="SUPPLY" deviceset="GND" device=""/>
+<part name="TX2" library="pinhead" deviceset="PINHD-1X2" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -24557,10 +24558,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <text x="-139.7" y="182.88" size="1.778" layer="91">Disp CD</text>
 <text x="-139.7" y="193.04" size="1.778" layer="91">Disp CS</text>
 <text x="-147.32" y="198.12" size="1.778" layer="91">SD CS</text>
-<text x="-236.22" y="177.8" size="1.778" layer="91" rot="R180">DZM</text>
-<text x="-236.22" y="174.752" size="1.778" layer="91" rot="R180">DZM</text>
-<text x="-236.22" y="172.212" size="1.778" layer="91" rot="R180">DZM</text>
-<text x="-236.22" y="169.418" size="1.778" layer="91" rot="R180">DZM</text>
 <text x="25.4" y="86.36" size="1.778" layer="91">Oil_in</text>
 <text x="175.26" y="121.92" size="3.81" layer="95">Kupplung</text>
 <text x="-139.7" y="106.68" size="1.778" layer="91">Water Temp</text>
@@ -24983,6 +24980,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <instance part="JP19" gate="G$1" x="295" y="95"/>
 <instance part="JP20" gate="G$1" x="303" y="95"/>
 <instance part="E_GND" gate="G$1" x="284" y="89"/>
+<instance part="TX2" gate="G$1" x="-251.46" y="172.72" rot="MR0"/>
 </instances>
 <busses>
 </busses>
@@ -25989,16 +25987,18 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 </net>
 <net name="D42" class="0">
 <segment>
-<wire x1="-228.6" y1="175.26" x2="-236.22" y2="175.26" width="0.1524" layer="91"/>
+<wire x1="-228.6" y1="175.26" x2="-248.92" y2="175.26" width="0.1524" layer="91"/>
 <label x="-233.68" y="175.26" size="1.778" layer="95"/>
 <pinref part="IC4" gate="1" pin="PL7"/>
+<pinref part="TX2" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="D43" class="0">
 <segment>
-<wire x1="-228.6" y1="172.72" x2="-236.22" y2="172.72" width="0.1524" layer="91"/>
+<wire x1="-228.6" y1="172.72" x2="-248.92" y2="172.72" width="0.1524" layer="91"/>
 <label x="-233.68" y="172.72" size="1.778" layer="95"/>
 <pinref part="IC4" gate="1" pin="PL6"/>
+<pinref part="TX2" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="D44" class="0">

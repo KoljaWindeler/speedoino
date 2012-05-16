@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -24426,7 +24426,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <part name="JP19" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="JP20" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="E_GND" library="SUPPLY" deviceset="GND" device=""/>
-<part name="TX2" library="pinhead" deviceset="PINHD-1X2" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -24980,7 +24979,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <instance part="JP19" gate="G$1" x="295" y="95"/>
 <instance part="JP20" gate="G$1" x="303" y="95"/>
 <instance part="E_GND" gate="G$1" x="284" y="89"/>
-<instance part="TX2" gate="G$1" x="-251.46" y="172.72" rot="MR0"/>
 </instances>
 <busses>
 </busses>
@@ -25990,7 +25988,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <wire x1="-228.6" y1="175.26" x2="-248.92" y2="175.26" width="0.1524" layer="91"/>
 <label x="-233.68" y="175.26" size="1.778" layer="95"/>
 <pinref part="IC4" gate="1" pin="PL7"/>
-<pinref part="TX2" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="D43" class="0">
@@ -25998,7 +25995,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <wire x1="-228.6" y1="172.72" x2="-248.92" y2="172.72" width="0.1524" layer="91"/>
 <label x="-233.68" y="172.72" size="1.778" layer="95"/>
 <pinref part="IC4" gate="1" pin="PL6"/>
-<pinref part="TX2" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="D44" class="0">
