@@ -54,6 +54,7 @@ public:
 	bool dimm_available();
 	int  update_outer_leds();
 	int set_bt_pin();
+	int ask_bt(char *command);
 	speedo_stepper* m_stepper;
 	led_area RGB;
 	led_simple dz_flasher,oil_start_color,oil_end_color,kmh_start_color,kmh_end_color,dz_start_color,dz_end_color,static_color;
@@ -63,7 +64,7 @@ public:
 private:
 	int dimm_steps,dimm_step,in_out;
 	short int dimm_state;
-	int ask_bt(char *command);
+
 
 };
 extern Speedo_aktors* pAktors;

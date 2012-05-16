@@ -17,8 +17,8 @@ speedo_stepper::~speedo_stepper(){
 void speedo_stepper::init(){
 	Serial3.begin(19200); // macht eigentlich schon der reset, aber zur sicherheit
 	Serial3.flush();
-
-	while(!go_to(1600,1)){ delay(1); }; // warten bis voll ausgeschlagen
+	unsigned long time=millis();
+	while(!go_to(1600,1)){ delay(1); if((millis()-time)>10000) break; }; // warten bis voll ausgeschlagen
 //	while(!go_to(0,0)){delay(1); };	// motor vollausschlag
 //	while(!go_to(1001,0)){delay(1); };	// motor vollausschlag
 //	go_to(0,0);

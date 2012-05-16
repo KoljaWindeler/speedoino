@@ -73,18 +73,8 @@ int main(void) {
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop
 	 ******************** setup procedure ********************************************/
-	Serial.begin(115200);
-	/*config
-	Serial.begin(19200); 		// damit kann ich mit dem bluetooth reden, und das bluetooth kann so mit dem bootloader reden .. sind wir nich kommunikativ
-	Serial.print("AT\r\n");
-	Serial.print("AT\r\n");
-	Serial.print("ATL5\r\n");
-	Serial.begin(115200);
-	Serial.print("ATE0\r\n");
-	Serial.print("ATN=SPEEDMASTER\r\n");
-	Serial.print("ATP0\r\n");
-	Serial.print("ATQ1\r\n");
-	*/
+	Serial.begin(57600);
+
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
 	pDebug->sprintlnp(PSTR(GIT_REV));
 	Wire.begin();				// BEFORE Clock_init(), Clock is in the sensor class and needs I²C
@@ -111,6 +101,7 @@ int main(void) {
 	pDebug->sprintlnp(PSTR("=== Setup finished ==="));
 	Serial.flush(); // jaja, hallo liebes bluetooth modul, will keiner wissen das du alles echos solange wir nicht mit dem pc verbunden sind ...
 
+
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop, before THIS
 	 ******************** setup procedure ********************************************/
@@ -129,10 +120,7 @@ int main(void) {
 		/************************* push buttons *********************
 		 * using true as argument, this will activate bluetooth input as well
 		 ************************* push buttons*********************/
-		if(pMenu->button_test(true)){     // important!! if we have a pushed button we will draw something, depending on the menustate
-			pDebug->loop();
-			pMenu->display();
-		};
+		pMenu->button_test(true,true);     // important!! if we have a pushed button we will draw something, depending on the menustate
 		/************************ every deamon activity is clear, now draw speedo ********************
 		 * we are round about 0000[1]1 - 0000[1]9
 		 ************************ every deamon activity is clear, now draw speedo ********************/

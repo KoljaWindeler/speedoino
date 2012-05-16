@@ -18,8 +18,8 @@
 #define SPI_RESET			32		// D/I Bit
 #define SPI_CD				30		// von 34 -> 30
 #define SPI_CS				34		// D/I 30 -> 34
-#define SPI_DATA			35		// EN Bit --> 36 -> 35
-#define SPI_CLK				36		// EN Bit --> 35 -> 36
+#define SPI_DATA			36		// EN Bit --> 36 -> 35
+#define SPI_CLK				35		// EN Bit --> 35 -> 36
 
 /*******************************************************/
 /*     end of Arduino configuration                    */

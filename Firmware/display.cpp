@@ -329,7 +329,7 @@ void speedo_disp::show_animation(const char command[]){
 				string(pSpeedo->default_font,char_buffer,4,3,0,DISP_BRIGHTNESS,0);
 			}
 			delay(warte); // check ob das hier viel aendert
-			if(pMenu->button_test(true))  {  i=ende; killed=true; pMenu->display(); } // muss man dann nicht vorher den state hochsetzen?!
+			if(pMenu->button_test(true,true))  {  i=ende; killed=true; pMenu->display(); } // muss man dann nicht vorher den state hochsetzen?!
 		};
 
 		free(char_buffer);

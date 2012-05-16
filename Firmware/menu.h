@@ -13,17 +13,17 @@ class speedo_menu {
 #define		menu_button_timeout			300                        // wartezeit zwischen 2 steps
 #define     menu_button_fast_delay		menu_button_timeout*4   // wartezeit bis schneller
 #define     menu_button_fast_timeout	100                   // wartezeit zwischen 2 steps -> schnell
-#define menu_button_links 28 // 26
-#define menu_button_unten 26 // 22
-#define menu_button_rechts 22 // 28
-#define menu_button_oben 24 // 24
+#define menu_button_links PINJ4 // 26
+#define menu_button_unten PINJ3 // 22
+#define menu_button_rechts PINJ6 // 28
+#define menu_button_oben PINJ5 // 24
 
 public:
 	speedo_menu(void);
 	~speedo_menu();
 	void init();
 	void display();
-	bool button_test(bool bt_keys_en);
+	bool button_test(bool bt_keys_en, bool hw_keys_en);
 	void back();
 	void draw(const char** menu, int entries);
 	void yesno(const char first[30],const char second[30],const char third[30]);

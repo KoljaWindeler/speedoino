@@ -319,51 +319,110 @@ int Speedo_aktors::update_outer_leds(){
 int Speedo_aktors::set_bt_pin(){
 	pOLED->clear_screen();
 	char at_commands[22];
-	sprintf(at_commands,"Activating responses"); // schaltet result codes ein
-	pOLED->string(pSpeedo->default_font,at_commands,0,0);
-	sprintf(at_commands,"ATQ0%c",0x0D); // schaltet result codes ein
+	bool connection_established=true;
 
-	if(ask_bt(&at_commands[0])==0){
-		sprintf(at_commands,"OK"); // schaltet result codes ein
-		pOLED->string(pSpeedo->default_font,at_commands,0,1);
-		sprintf(at_commands,"Setting PIN"); // schaltet result codes ein
-		pOLED->string(pSpeedo->default_font,at_commands,0,2);
-		sprintf(at_commands,"ATP=%04i%c",bt_pin,13); // schaltet result codes ein
 
+	// check connection
+	pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
+
+	sprintf(at_commands,"ATQ0%c",0x0D);
+	if(ask_bt(&at_commands[0])!=0){														// fehler aufgetreten
+		connection_established=false;
+		pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,1);								// hat nicht geklappt
+		Serial.end();																	// setzte neue serielle Geschwindigkeit
+		delay(500);
+		pOLED->string_P(pSpeedo->default_font,PSTR("TRYING 19200 BAUD"),0,2);					// hat nicht geklappt
+		Serial.begin(19200);
 		if(ask_bt(&at_commands[0])==0){
-			sprintf(at_commands,"OK"); // schaltet result codes ein
-			pOLED->string(pSpeedo->default_font,at_commands,0,3);
-			sprintf(at_commands,"Deactivating response"); // schaltet result codes ein
-			pOLED->string(pSpeedo->default_font,at_commands,0,4);
-			sprintf(at_commands,"ATQ0%c",13); // schaltet result codes ein
+			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
+			delay(500);
+			pOLED->string_P(pSpeedo->default_font,PSTR("BASIC SETUP"),0,4);
+			sprintf(at_commands,"ATE0%c",0x0D);
+			if(ask_bt(&at_commands[0])==0){
+				sprintf(at_commands,"ATN=SPEEDOINO%c",0x0D);
+				if(ask_bt(&at_commands[0])==0){
+					sprintf(at_commands,"ATL4%c",0x0D);
+					ask_bt(&at_commands[0]);											// fire && forget
+					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, können wir hier nicht testen
+					Serial.end();														// setzte neue serielle Geschwindigkeit
+					pOLED->string_P(pSpeedo->default_font,PSTR("RETRYING"),0,6);		// hat nicht geklappt
+					Serial.begin(57600);
+					delay(2000);
+					pOLED->clear_screen();
+					pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
+					sprintf(at_commands,"AT%c",0x0D);									// gleich neu testen
+					if(ask_bt(&at_commands[0])==0){
+						connection_established=true;
+						pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,1);
+					};
+				}
+			}
+		} else {
+			pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,1);
+			return -9;
+		}
+	}
+
+	if(connection_established){
+		pOLED->filled_rect(0,8,128,56,0x00); // clear the lower lines
+		pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,1);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Activating responses"),0,2);
+		sprintf(at_commands,"ATQ0%c",0x0D); // schaltet result codes ein				// jetzt richtig
+		if(ask_bt(&at_commands[0])==0){
+			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Setting PIN Code"),0,4);
+			sprintf(at_commands,"ATP=%04i%c",bt_pin,13);
 
 			if(ask_bt(&at_commands[0])==0){
-				sprintf(at_commands,"OK"); // schaltet result codes ein
-				pOLED->string(pSpeedo->default_font,at_commands,0,5);
-				return 0;
+				pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);
+				pOLED->string_P(pSpeedo->default_font,PSTR("Deactivating response"),0,6);
+				sprintf(at_commands,"ATQ0%c",13); // schaltet result codes ein
+
+				if(ask_bt(&at_commands[0])==0){
+					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,7);
+					return 0;
+				}
 			}
 		}
 	} else {
-		sprintf(at_commands,"failed, hmmm"); // schaltet result codes ein
-		pOLED->string(pSpeedo->default_font,at_commands,0,1);
-		return -1;
+		ask_bt(&at_commands[0]);
+		pOLED->string_P(pSpeedo->default_font,PSTR("failed, hmmm"),0,1);
+		delay(5000);
 	}
+
+	return -2;
 }
 
 int Speedo_aktors::ask_bt(char *command){
-	Serial.flush();
-	Serial.print(command);
-	delay(200);
-	int j = Serial.available();
+	for(int looper=0;looper<3;looper++){
+		Serial.flush();
+		Serial.print(command);
 
-	if(j==4){
-		char answere[j];
-		for(int i=0;i<j; i++){
-			answere[i]=Serial.read();
+		// A T \r \n O K \r \n = 8
+
+		//warte bis der Buffer nicht voller wird
+		int j=-99;
+		while(j!=Serial.available()){
+			j=Serial.available();
+			delay(200);
 		};
-		if(answere[0]=='O' && answere[1]=='K'){
-			return 0;
+
+		if(j>=4){								// bei 8 hat man "O" "K" "0x1D" "0x1A"
+			char answere[3]={0,0,0};
+			for(int i=0;i<j; i++){
+				if(i==j-4){						// I=0
+					answere[0]=Serial.read();	// answere[0]=O
+				} else if(i==j-3){				// I=1
+					answere[1]=Serial.read();	// answere[1]=K
+				} else {
+					Serial.read();
+				}
+			};
+
+			if(answere[0]=='O' && answere[1]=='K'){
+				return 0;
+			}
 		}
-	}
-	return 1;
+	};
+	return -1;
 }

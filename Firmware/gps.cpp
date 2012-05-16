@@ -83,6 +83,8 @@ void speedo_gps::init(){
 	// hier das gps konfigurieren ..  yeah yeah yeah
 	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
 
+	speed=0;
+
 	pDebug->sprintlnp(PSTR("GPS init done"));
 };
 

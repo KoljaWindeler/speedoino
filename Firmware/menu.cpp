@@ -2230,6 +2230,8 @@ bool speedo_menu::go_left(){
 		menu_ende=menu_lines-1;
 	};
 	button_time=millis();
+	pDebug->loop();
+	pMenu->display();
 	return true;
 };
 
@@ -2241,6 +2243,8 @@ bool speedo_menu::go_right(){
 	menu_marker=0;
 	state=(state*10)+1;
 	button_time=millis();
+	pDebug->loop();
+	pMenu->display();
 	return true;
 };
 
@@ -2265,6 +2269,8 @@ bool speedo_menu::go_up(){
 		state+=menu_max+1; // macht aus 0 dann 9 => 8+1
 	};
 	button_time=millis();
+	pDebug->loop();
+	pMenu->display();
 	return true;
 };
 
@@ -2290,118 +2296,121 @@ bool speedo_menu::go_down(){
 		state-=9; // macht aus [xx10] => 1
 	};
 	button_time=millis();
+	pDebug->loop();
+	pMenu->display();
 	return true;
 };
 
 ///// zyklisches abfragen der buttons ////////////
-bool speedo_menu::button_test(bool bt_keys_en){
+bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	// also entweder ist der letzte button_down schon länger als der timeout her
 	// oder zumindest länger als fast_timeout UND der first push ist ausreichend lang her
 	// oder per serielle konsole
-	int input=0;
-	if(bt_keys_en || true){ // auf keinen Fall hier lesen, wenn wir gerade im Import sind, sonder haut uns jeder Straßenname mit w||a||s||d raus
+	if(bt_keys_en){ // auf keinen Fall hier lesen, wenn wir gerade im Import sind, sonder haut uns jeder Straßenname mit w||a||s||d raus
 		if(Serial.available()>100){ // wenns zuviele sind flushen
 			Serial.flush();
 		} else if(Serial.available()>0){ // an sonsten gern
 			if(Serial.read()==MESSAGE_START){
-				//				pOLED->string(0,"0",0,1);
 				pFilemanager_v2->parse_command();
 			};
 		};
 	};
 
-	if(millis()>(button_time+menu_button_timeout) ||
-			(button_first_push>0 && millis()>(button_first_push+menu_button_fast_delay)) && millis()>(menu_button_fast_timeout+button_time) ||
-			input>0){ // halbe sek timeout
-		//////////////////////// rechts ist gedrückt ////////////////////////
-		if((digitalRead(menu_button_rechts)==menu_active || input==67 || char(input)=='d') && button_rechts_valid){
-			if(button_first_push==0){
-				button_first_push=millis();
-			};
-			if(MENU_DEBUG){      Serial.println("menu_button_rechts");  };
-			delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
-			// erst wenn nach dem delay noch der pegel anliegt
-			if((digitalRead(menu_button_rechts)==menu_active || input==67 || char(input)=='d')){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-				go_right();
-				return true;
-			} else {
-				return false;
-			};
-		}
+	if(hw_keys_en){
 
-		//////////////////////// links ist gedrückt ////////////////////////
-		else if((digitalRead(menu_button_links)==menu_active || input==68 || char(input)=='a')  && button_links_valid){
-			if(button_first_push==0){
-				button_first_push=millis();
-			};
-			if(MENU_DEBUG){  Serial.println("menu_button_links");  };
-			delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
-			// erst wenn nach dem delay noch der pegel anliegt
-			if((digitalRead(menu_button_links)==menu_active || input==68 || char(input)=='a')){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-				go_left();
-				return true;
-				// wenn der pegel doch nicht mehr anliegt ( spike )
-			} else {
-				return false;
-			};
-		}
+		if((millis()>(button_time+menu_button_timeout)) ||
+				((button_first_push>0 && millis()>(button_first_push+menu_button_fast_delay)) && millis()>(menu_button_fast_timeout+button_time)) ){ // halbe sek timeout
+			//////////////////////// rechts ist gedrückt ////////////////////////
+			if(((PINJ & (1<<menu_button_rechts))==menu_active) && button_rechts_valid){
+				if(button_first_push==0){
+					button_first_push=millis();
+				};
+				if(MENU_DEBUG){      Serial.println("menu_button_rechts");  };
+				delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
+				// erst wenn nach dem delay noch der pegel anliegt
+				if((PINJ & (1<<menu_button_rechts))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
+					go_right();
+					return true;
+				} else {
+					return false;
+				};
+			}
 
-		//////////////////////// oben ist gedrückt ////////////////////////
-		else if((digitalRead(menu_button_oben)==menu_active || input==65 || char(input)=='w') && button_oben_valid){
-			if(button_first_push==0){
-				button_first_push=millis();
-			};
-			if(MENU_DEBUG){  Serial.println("menu_button_oben");  };
-			// move menu
-			delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
-			// erst wenn nach dem delay noch der pegel anliegt
-			if((digitalRead(menu_button_oben)==menu_active || input==65 || char(input)=='w')){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-				go_up();
-				return true;
-			} else {
-				return false;
-			};
-		}
+			//////////////////////// links ist gedrückt ////////////////////////
+			else if(((PINJ & (1<<menu_button_links))==menu_active)  && button_links_valid){
+				if(button_first_push==0){
+					button_first_push=millis();
+				};
+				if(MENU_DEBUG){  Serial.println("menu_button_links");  };
+				delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
+				// erst wenn nach dem delay noch der pegel anliegt
+				if((PINJ & (1<<menu_button_links))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
+					go_left();
+					return true;
+					// wenn der pegel doch nicht mehr anliegt ( spike )
+				} else {
+					return false;
+				};
+			}
 
-		//////////////////////// unten ist gedrückt ////////////////////////
-		else if((digitalRead(menu_button_unten)==menu_active || input==66 || char(input)=='s') && button_unten_valid){
-			if(button_first_push==0){
-				button_first_push=millis();
-			};
-			if(MENU_DEBUG){  Serial.println("menu_button_unten");  };
-			// move menu
-			delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
-			// erst wenn nach dem delay noch der pegel anliegt
-			if((digitalRead(menu_button_unten)==menu_active || input==66 || char(input)=='s')){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-				go_down();
-				return true;
-			} else {
+			//////////////////////// oben ist gedrückt ////////////////////////
+			else if(((PINJ & (1<<menu_button_oben))==menu_active) && button_oben_valid){
+				if(button_first_push==0){
+					button_first_push=millis();
+				};
+				if(MENU_DEBUG){  Serial.println("menu_button_oben");  };
+				// move menu
+				delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
+				// erst wenn nach dem delay noch der pegel anliegt
+				if((PINJ & (1<<menu_button_oben))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
+					go_up();
+					return true;
+				} else {
+					return false;
+				};
+			}
+
+			//////////////////////// unten ist gedrückt ////////////////////////
+			else if(((PINJ & (1<<menu_button_unten))==menu_active) && button_unten_valid){
+				if(button_first_push==0){
+					button_first_push=millis();
+				};
+				if(MENU_DEBUG){  Serial.println("menu_button_unten");  };
+				// move menu
+				delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
+				// erst wenn nach dem delay noch der pegel anliegt
+				if((PINJ & (1<<menu_button_unten))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
+					go_down();
+					return true;
+				} else {
+					return false;
+				};
+			}
+			//////////////////////// nix ist gedrückt ////////////////////////
+			else {
+				button_first_push=0;
 				return false;
 			};
-		}
-		//////////////////////// nix ist gedrückt ////////////////////////
-		else {
-			button_first_push=0;
-			return false;
-		};
+		}; // hardware keys pressed
 		// menu_button_unten zumenu_ende
 	};
 	// return false wenn die zeit nicht um war
 	return false;
 };
+
+// hässlich hier den interrupt eingefügt ..
+ISR(PCINT1_vect ){
+	pMenu->button_test(false,true);
+};
+
+
 ///// zyklisches abfragen der buttons ////////////
 
 void speedo_menu::init(){
-	pinMode(menu_button_rechts, INPUT);
-	pinMode(menu_button_links, INPUT);
-	pinMode(menu_button_oben, INPUT);
-	pinMode(menu_button_unten, INPUT);
-
-	// interne pullups aktivieren
-	digitalWrite(menu_button_rechts,HIGH);
-	digitalWrite(menu_button_links,HIGH);
-	digitalWrite(menu_button_oben,HIGH);
-	digitalWrite(menu_button_unten,HIGH);
+	DDRJ &= ~((1<<menu_button_links)|(1<<menu_button_unten)|(1<<menu_button_rechts)|(1<<menu_button_oben)); //alles eingänge
+	PORTJ |= ((1<<menu_button_links)|(1<<menu_button_unten)|(1<<menu_button_rechts)|(1<<menu_button_oben)); // pullup
+	PCMSK1 |= ((1<<PCINT12)|(1<<PCINT13)|(1<<PCINT14)|(1<<PCINT15));										// PCINT freischalten
+	PCICR |=(1<<PCIE1);																						// PCINT Activieren
 
 	state=11;
 	old_state=state;
