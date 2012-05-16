@@ -24416,7 +24416,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <part name="JP9" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="JP10" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="JP11" library="pinhead" deviceset="PINHD-1X1" device=""/>
-<part name="JP12" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="U$1" library="SUPPLY" deviceset="GND" device=""/>
 </parts>
 <sheets>
@@ -24954,7 +24953,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <instance part="JP9" gate="G$1" x="241" y="149"/>
 <instance part="JP10" gate="G$1" x="241" y="141"/>
 <instance part="JP11" gate="G$1" x="249" y="141"/>
-<instance part="JP12" gate="G$1" x="249" y="149"/>
 <instance part="U$1" gate="G$1" x="230" y="135"/>
 </instances>
 <busses>
@@ -27602,8 +27600,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <wire x1="246.46" y1="141" x2="238.46" y2="141" width="0.1524" layer="91"/>
 <wire x1="238.46" y1="141" x2="230" y2="141" width="0.1524" layer="91"/>
 <wire x1="230" y1="141" x2="230" y2="137" width="0.1524" layer="91"/>
-<wire x1="248" y1="149" x2="246.46" y2="149" width="0.1524" layer="91"/>
-<wire x1="246.46" y1="149" x2="238.46" y2="149" width="0.1524" layer="91"/>
 <wire x1="238.46" y1="149" x2="230" y2="149" width="0.1524" layer="91"/>
 <wire x1="230" y1="149" x2="230" y2="141" width="0.1524" layer="91"/>
 <wire x1="238" y1="158" x2="238.46" y2="158" width="0.1524" layer="91"/>
@@ -27620,13 +27616,10 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <pinref part="JP8" gate="G$1" pin="1"/>
 <junction x="238.46" y="158"/>
 <pinref part="JP9" gate="G$1" pin="1"/>
-<junction x="238.46" y="149"/>
 <pinref part="JP10" gate="G$1" pin="1"/>
 <junction x="238.46" y="141"/>
 <pinref part="JP11" gate="G$1" pin="1"/>
 <junction x="246.46" y="141"/>
-<pinref part="JP12" gate="G$1" pin="1"/>
-<junction x="246.46" y="149"/>
 </segment>
 </net>
 </nets>
