@@ -73,7 +73,8 @@ int main(void) {
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop
 	 ******************** setup procedure ********************************************/
-	Serial.begin(57600);
+	Serial.begin(115200);
+
 
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
 	pDebug->sprintlnp(PSTR(GIT_REV));
@@ -100,7 +101,6 @@ int main(void) {
 	pConfig->ram_info();
 	pDebug->sprintlnp(PSTR("=== Setup finished ==="));
 	Serial.flush(); // jaja, hallo liebes bluetooth modul, will keiner wissen das du alles echos solange wir nicht mit dem pc verbunden sind ...
-
 
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop, before THIS

@@ -321,7 +321,6 @@ int Speedo_aktors::set_bt_pin(){
 	char at_commands[22];
 	bool connection_established=true;
 
-
 	// check connection
 	pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
 
@@ -333,6 +332,7 @@ int Speedo_aktors::set_bt_pin(){
 		delay(500);
 		pOLED->string_P(pSpeedo->default_font,PSTR("TRYING 19200 BAUD"),0,2);					// hat nicht geklappt
 		Serial.begin(19200);
+		delay(2000);
 		if(ask_bt(&at_commands[0])==0){
 			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
 			delay(500);
@@ -341,12 +341,12 @@ int Speedo_aktors::set_bt_pin(){
 			if(ask_bt(&at_commands[0])==0){
 				sprintf(at_commands,"ATN=SPEEDOINO%c",0x0D);
 				if(ask_bt(&at_commands[0])==0){
-					sprintf(at_commands,"ATL4%c",0x0D);
+					sprintf(at_commands,"ATL5%c",0x0D);
 					ask_bt(&at_commands[0]);											// fire && forget
 					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, können wir hier nicht testen
 					Serial.end();														// setzte neue serielle Geschwindigkeit
 					pOLED->string_P(pSpeedo->default_font,PSTR("RETRYING"),0,6);		// hat nicht geklappt
-					Serial.begin(57600);
+					Serial.begin(115200);
 					delay(2000);
 					pOLED->clear_screen();
 					pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
@@ -359,6 +359,7 @@ int Speedo_aktors::set_bt_pin(){
 			}
 		} else {
 			pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,1);
+			delay(10000);
 			return -9;
 		}
 	}
@@ -380,6 +381,7 @@ int Speedo_aktors::set_bt_pin(){
 
 				if(ask_bt(&at_commands[0])==0){
 					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,7);
+					delay(10000);
 					return 0;
 				}
 			}
@@ -389,7 +391,7 @@ int Speedo_aktors::set_bt_pin(){
 		pOLED->string_P(pSpeedo->default_font,PSTR("failed, hmmm"),0,1);
 		delay(5000);
 	}
-
+	delay(10000);
 	return -2;
 }
 
