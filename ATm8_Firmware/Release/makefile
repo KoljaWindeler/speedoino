@@ -8,8 +8,8 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include subdir.mk
 -include Debug/subdir.mk
+-include subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -65,7 +65,7 @@ all: Watchdog.elf secondary-outputs
 Watchdog.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: AVR C++ Linker'
-	avr-g++ -Wl,-Map,Watchdog.map,--cref -mmcu=atmega8 -o"Watchdog.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	avr-g++ -Wl,-Map,Watchdog.map,--cref -mmcu=atmega8 -o "Watchdog.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -89,7 +89,7 @@ sizedummy: Watchdog.elf
 
 avrdudedummy: Watchdog.elf
 	@echo 'Invoking: AVRDude'
-	/usr/bin/avrdude -pm8 -cavrisp2 -Pusb -B1.0 -u -Uflash:w:Watchdog.hex:a -Ulfuse:w:0xe3:m -Uhfuse:w:0xdf:m
+	/usr/bin/avrdude -pm8 -cavrisp2 -Pusb -B1 -VVVVVVVVV -u -Uflash:w:Watchdog.hex:a -Ulfuse:w:0xe3:m -Uhfuse:w:0xdf:m
 	@echo 'Finished building: $@'
 	@echo ' '
 

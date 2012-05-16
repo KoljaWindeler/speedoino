@@ -1497,8 +1497,8 @@ Disassembly of section .text:
     211b:	63 6f 6e 74 61 63 74 20 6d 65 20 61 74 00           contact me at.
 
 00002129 <_ZZN11speedo_menu7displayEvE3__c_95>:
-    2129:	76 30 2e 33 2e 36 2d 35 31 2d 67 66 34 63 31 38     v0.3.6-51-gf4c18
-    2139:	66 63 00                                            fc.
+    2129:	76 30 2e 33 2e 36 2d 35 34 2d 67 38 30 38 61 66     v0.3.6-54-g808af
+    2139:	63 37 00                                            c7.
 
 0000213c <_ZZN11speedo_menu7displayEvE3__c_94>:
     213c:	73 74 61 72 74 65 64 20 34 2e 32 30 31 30 00        started 4.2010.
