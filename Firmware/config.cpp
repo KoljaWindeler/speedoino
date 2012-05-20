@@ -830,7 +830,9 @@ int configuration::parse(char* buffer){
 	} else if(strcmp_P(name,PSTR("fuel_blink_freq"))==0){
 		parse_int(buffer,seperator,&pSensors->m_fuel->blink_freq);
 	} else if(strcmp_P(name,PSTR("reifen_umfang"))==0){
+		float save_me=pSensors->m_speed->reifen_umfang;
 		parse_float(buffer,seperator,&pSensors->m_speed->reifen_umfang);
+		if(pSensors->m_speed->reifen_umfang>4 || pSensors->m_speed->reifen_umfang<0) pSensors->m_speed->reifen_umfang=save_me;
 	} else if(strcmp_P(name,PSTR("gps_takeover"))==0){
 		parse_int(buffer,seperator,&pSensors->m_speed->gps_takeover);
 	} else if(strcmp_P(name,PSTR("refresh_cyle"))==0){

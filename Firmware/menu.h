@@ -10,13 +10,13 @@
 ////////////// menu ///////////////////////
 class speedo_menu {
 
-#define		menu_button_timeout			300                        // wartezeit zwischen 2 steps
-#define     menu_button_fast_delay		menu_button_timeout*4   // wartezeit bis schneller
-#define     menu_button_fast_timeout	100                   // wartezeit zwischen 2 steps -> schnell
+#define	 menu_button_timeout		300                        // wartezeit zwischen 2 steps
+#define menu_button_fast_delay		menu_button_timeout*4   // wartezeit bis schneller
+#define menu_button_fast_timeout	100                   // wartezeit zwischen 2 steps -> schnell
 #define menu_button_links PINJ4 // 26
-#define menu_button_unten PINJ3 // 22
+#define menu_button_unten PINJ5 // 22
 #define menu_button_rechts PINJ6 // 28
-#define menu_button_oben PINJ5 // 24
+#define menu_button_oben PINJ3 // 24
 
 public:
 	speedo_menu(void);

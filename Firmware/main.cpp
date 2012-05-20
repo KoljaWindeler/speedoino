@@ -120,7 +120,7 @@ int main(void) {
 		/************************* push buttons *********************
 		 * using true as argument, this will activate bluetooth input as well
 		 ************************* push buttons*********************/
-		pMenu->button_test(true,true);     // important!! if we have a pushed button we will draw something, depending on the menustate
+		pMenu->button_test(true,false);     // important!! if we have a pushed button we will draw something, depending on the menustate
 		/************************ every deamon activity is clear, now draw speedo ********************
 		 * we are round about 0000[1]1 - 0000[1]9
 		 ************************ every deamon activity is clear, now draw speedo ********************/

@@ -33,7 +33,7 @@
 #include "tetris.h"
 /**********************************  working settings ********************************/
 // development settings //
-#define       GPS_SPEED_ONLY  true   // to ignore the magnetic value  -> hmm das ist doof, aber muss erstmal alleine arbeiten, mal sehen ob der gang angezeigt wird -> wenn ja => mag rennt
+#define       GPS_SPEED_ONLY  false   // to ignore the magnetic value  -> hmm das ist doof, aber muss erstmal alleine arbeiten, mal sehen ob der gang angezeigt wird -> wenn ja => mag rennt
 #define       BUTTONS_OFF     false   // disable all buttons
 #define       DEMO_MODE       false   // shows dummy values
 #define       WELCOME         true    // die frau am start

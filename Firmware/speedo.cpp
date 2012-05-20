@@ -179,6 +179,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		if(unsigned(disp_zeile_bak[ADD_INFO])!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)){ // immer wenn sich trip_dist ändert den string ausgeben der direkt drüber steht, auf 0.1 km genau
 			// trip[8] => gesamt/100 => 100er Meter, 27.342,8 => 28
 			disp_zeile_bak[ADD_INFO]=int(pSensors->m_gps->mod(floor(trip_dist[8]/100),100));
+
 			if(m_trip_mode==1)
 				sprintf(char_buffer,"   Total %5i.%01ikm   ",(int)floor(trip_dist[0]/1000),(int)floor((trip_dist[0]%1000)/100));
 			else if(m_trip_mode==2)
@@ -206,37 +207,41 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		/// warnung wegen zu hoher Drehzahl
 		if(pSensors->m_temperature->get_oil_temp()<600 && pSensors->m_dz->rounded>7000){
 			if(disp_zeile_bak[ADD_INFO2]!=101){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=101;
 				pDebug->speedo_loop(10,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
 				pOLED->string_P(addinfo2_widget.font,PSTR("Motor noch kalt"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 			};
-			disp_zeile_bak[ADD_INFO2]=101;
+
 		}
 		///// Temp to high /////
 		else if(pSensors->m_temperature->get_oil_temp()>=pSensors->m_temperature->oil_warning_temp && pSensors->m_temperature->get_oil_temp()<8888){
 			if(disp_zeile_bak[ADD_INFO2]!=108){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=108;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
 				pOLED->string_P(addinfo2_widget.font,PSTR("oil temp warning"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
 			};
-			disp_zeile_bak[ADD_INFO2]=108;
+
 		}
 		else if(pSensors->m_temperature->get_water_temp()>=pSensors->m_temperature->water_warning_temp && pSensors->m_temperature->get_water_temp()<8888){
 			if(disp_zeile_bak[ADD_INFO2]!=109){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=109;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
 				pOLED->string_P(addinfo2_widget.font,PSTR("water temp warning"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
 			};
-			disp_zeile_bak[ADD_INFO2]=109;
+
 		}
 		///// Blinker ////
 		else if(pSensors->m_blinker->warn(trip_dist[8])){ // mal nachfragen wenn nach 200 metern der Blinker noch an ist
 			if(disp_zeile_bak[ADD_INFO2]!=102){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=102;
 				pDebug->speedo_loop(11,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
 				pOLED->string_P(addinfo2_widget.font,PSTR("Blinker vergessen"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
 			};
-			disp_zeile_bak[ADD_INFO2]=102;
+
 		}
 		///// Navi ////
 		else if(pSensors->m_gps->navi_active){
@@ -257,35 +262,39 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		///// Sensor in use but not found ///
 		else if(oil_widget.x!=-1 && oil_widget.y!=-1 && (pSensors->m_temperature->get_oil_temp()==8888 || pSensors->m_temperature->get_oil_temp()==9999)){
 			if(disp_zeile_bak[ADD_INFO2]!=106){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=106;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
 				pOLED->string_P(addinfo2_widget.font,PSTR("Oil read failed"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
 			};
-			disp_zeile_bak[ADD_INFO2]=106;
+
 		}
 		else if(water_widget.x!=-1 && water_widget.y!=-1 && (pSensors->m_temperature->get_water_temp()==8888 || pSensors->m_temperature->get_water_temp()==9999)){
 			if(disp_zeile_bak[ADD_INFO2]!=107){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=107;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
 				pOLED->string_P(addinfo2_widget.font,PSTR("Water read failed"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
 			};
-			disp_zeile_bak[ADD_INFO2]=107;
+
 		}
 		///// SD card ////
 		else if(pSD->sd_failed){
 			if(disp_zeile_bak[ADD_INFO2]!=104){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=104;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
 				pOLED->string_P(addinfo2_widget.font,PSTR("SD access failed"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
 			};
-			disp_zeile_bak[ADD_INFO2]=104;
+
 		}
 		//// löschen
 		else{
 			if(disp_zeile_bak[ADD_INFO2]!=105){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=105;
 				pDebug->speedo_loop(15,0,previousMillis," ");
 				pOLED->string_P(addinfo2_widget.font,PSTR("                      "),0,addinfo2_widget.y,0,0,1);
-				disp_zeile_bak[ADD_INFO2]=105;
+
 			};
 		};
 	};

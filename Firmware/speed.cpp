@@ -32,6 +32,8 @@ void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==
 			Serial.print(differ);
 			pDebug->sprintp(PSTR(" speed_peaks: "));
 			Serial.print(speed_peaks);
+			pDebug->sprintp(PSTR(" reifen umfang: "));
+			Serial.print(reifen_umfang);
 			pDebug->sprintp(PSTR(" temp_reed_speed: "));
 			Serial.println(temp_reed_speed);
 		}
@@ -77,6 +79,7 @@ int speedo_speed::getSpeed(){
 		reed_speed=0;
 		return 0;
 	};
+	return -1;
 };
 
 int speedo_speed::get_sat_speed(){
