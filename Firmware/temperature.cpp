@@ -123,9 +123,10 @@ void speedo_temperature::read_water_temp() {
 
 void speedo_temperature::read_air_temp() {
 	// get i2c tmp102 //
-	int sensorAddress = 0x91 >> 1;  // From datasheet sensor address is 0x91 shift the address 1 bit right, the Wire library only needs the 7 most significant bits for the address
+	int sensorAddress = 0b01001001;  // From datasheet sensor address is 0x91 shift the address 1 bit right, the Wire library only needs the 7 most significant bits for the address
 	byte msb;
 	byte lsb;
+
 	Wire.requestFrom(sensorAddress,2);
 	if(TEMP_DEBUG){ Serial.println("request abgeschickt"); }
 	if (Wire.available() >= 2)  // if two bytes were received
@@ -153,7 +154,7 @@ int speedo_temperature::get_air_temp(){
 int speedo_temperature::get_oil_temp(){
 	if(DEMO_MODE)
 		return (10+((millis()/1000)%100))*10+((millis()/1000)%10);
-	else if(pSpeedo->trip_dist[1]==0 && get_air_temp()!=999) // wir sind heute noch exakt gar nicht gefahren
+	else if(pSpeedo->trip_dist[1]==0 && get_air_temp()!=999 && oil_temp_value!=8888 && oil_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
 		return get_air_temp()-1;
 	else
 		return int(round(oil_temp_value));
@@ -162,7 +163,7 @@ int speedo_temperature::get_oil_temp(){
 int speedo_temperature::get_water_temp(){
 	if(DEMO_MODE)
 		return (102+((millis()/1000)%10))*10+((millis()/1000)%10);
-	else if(pSpeedo->trip_dist[1]==0) // wir sind heute noch exakt gar nicht gefahren
+	else if(pSpeedo->trip_dist[1]==0  && get_air_temp()!=999 && water_temp_value!=8888 && water_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
 		return get_air_temp()-1;
 	else
 		return int(round(water_temp_value));

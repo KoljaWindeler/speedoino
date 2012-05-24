@@ -22,6 +22,7 @@ public:
 	speedo_disp(void);
 	~speedo_disp();
 	void draw_oil(unsigned char x,unsigned char y);
+	void draw_water(unsigned char x,unsigned char y);
 	void draw_air(unsigned char x,unsigned char y);
 	void draw_fuel(unsigned char x,unsigned char y);
 	void draw_clock(unsigned char x,unsigned char y);

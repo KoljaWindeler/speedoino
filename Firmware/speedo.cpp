@@ -204,7 +204,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	};
 	if(!(addinfo2_widget.x==-1 && addinfo2_widget.y==-1)){ // only show it if pos != -1/-1
 		// now, print variable messages, additional infos, see top comment (3)
-		/// warnung wegen zu hoher Drehzahl
+		/// warnung wegen zu hoher Drehzahl, wenn der sensor nicht angeschlossen ist, dann meldet get_temp_oil() ohnehin seh hohe werte
 		if(pSensors->m_temperature->get_oil_temp()<600 && pSensors->m_dz->rounded>7000){
 			if(disp_zeile_bak[ADD_INFO2]!=101){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=101;

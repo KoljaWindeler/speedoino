@@ -481,6 +481,7 @@ int configuration::check(){
  **************************************************/
 int configuration::init(){
 	// Temperatur und Widerstands LookUp
+	// OIL
 	int r_werte[19]={1000,700,550,400,330,250,230,210,195,150,140,135,110,100, 90, 80, 20, 15, 10}; // widerstandswerte
 	int t_werte[19]={  27, 35, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95,100,105,110,115,120,125}; // passender Temperaturwert
 
@@ -488,6 +489,15 @@ int configuration::init(){
 		pSensors->m_temperature->oil_r_werte[j]=r_werte[j];
 		pSensors->m_temperature->oil_t_werte[j]=t_werte[j];
 	};
+
+	// Water
+	r_werte={1000,700,550,400,330,250,230,210,195,150,140,135,110,100, 90, 80, 20, 15, 10}; // widerstandswerte
+	t_werte={  27, 35, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95,100,105,110,115,120,125}; // passender Temperaturwert
+	for(unsigned int j=0; j<sizeof(pSensors->m_temperature->water_r_werte)/sizeof(pSensors->m_temperature->water_r_werte[0]); j++){
+		pSensors->m_temperature->water_r_werte[j]=r_werte[j];
+		pSensors->m_temperature->water_t_werte[j]=t_werte[j];
+	};
+
 	// Startup sequenz im Tacho
 	memset(pOLED->startup,'\0',200);
 	sprintf(pOLED->startup,"ERROR,0,0,0;");
@@ -760,7 +770,7 @@ int configuration::parse(char* buffer){
 	} else if(strncmp("oil_temp_r_",name,7)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
 		char var_name[14]; // watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
-			sprintf(var_name,"temp_r_%i",j);
+			sprintf(var_name,"oil_temp_r_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
 				parse_short(buffer,seperator,&pSensors->m_temperature->oil_r_werte[j]);
 			};
