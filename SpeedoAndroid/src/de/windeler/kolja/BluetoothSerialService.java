@@ -944,7 +944,7 @@ public class BluetoothSerialService {
 			
 			String shown_message=null;
 			int per_transfered=(int) (transfered_bytes*100/filesize);
-			if(per_transfered<110){
+			if(per_transfered<120){
 				if(per_transfered>100){
 					shown_message="Transfer completed";
 				} else {
@@ -1035,9 +1035,9 @@ public class BluetoothSerialService {
 		try {						in.close();			} 
 		catch (IOException e) {		e.printStackTrace(); return_value=-3;	}
 		if(return_value==0){
-			if(!file.delete()){
-				return_value=-4;
-			}
+//			if(!file.delete()){
+//				return_value=-4;
+//			}
 		}
 		return return_value;
 	}
