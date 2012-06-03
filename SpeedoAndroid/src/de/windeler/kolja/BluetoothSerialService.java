@@ -120,7 +120,7 @@ public class BluetoothSerialService {
 	public static final char STATUS_CMD_FAILED  =  0xC0;
 	public static final char STATUS_CKSUM_ERROR =  0xC1;
 	public static final char STATUS_CMD_UNKNOWN =  0xC9;
-	public static final char STATUS_EOF 		=  0x10;
+	public static final char STATUS_EOF		   =  0x10;
 
 	/**
 	 * Constructor. Prepares a new BluetoothChat session.
@@ -480,27 +480,26 @@ public class BluetoothSerialService {
 			reset_seq();
 		}
 
-		seqNum++; // wir starten mit 0 und setzten im notfall auch zu 0 zurück, daher immer VOR dem senden inkrementieren
-
+		seqNum=(seqNum+1)%256; // wir starten mit 0 und setzten im notfall auch zu 0 zurück, daher immer VOR dem senden inkrementieren
 		
 		
 		if(rx_tx_state==ST_IDLE){
 			if(msgLength<=0) return 2;
 			c=(byte)MESSAGE_START;
 			write(c);		// Message Start
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+"/MSG_START");
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+" /MSG_START");
 			checksum	=	c;
-			c=(byte)seqNum;
+			c=(byte)(seqNum&0x00FF);
 			write(c);		// Seq Nr
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c));
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)c)&0x00ff)+" /Seq Nr");
 			checksum	^=	c;
 			c=(byte) (msgLength&0x00FF);
 			write(c);		// length max 255
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c));
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+" /length of msg");
 			checksum ^= c;
 			c=(byte)TOKEN;
 			write(c);		// Token
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+"/TOKEN");
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+" /TOKEN");
 			checksum ^= TOKEN;
 
 
@@ -508,10 +507,10 @@ public class BluetoothSerialService {
 				p	=	data[i];
 				write(p);	// send some data
 				checksum ^= p;
-				Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)p)+"/"+String.valueOf((char)p));
+				Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)p)&0x00ff)+"/"+String.valueOf((char)p)+"   /DATA "+String.valueOf(i+1)+"/"+String.valueOf(msgLength));
 			}
 			write(checksum);	//	CHECKSUM
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)checksum));
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)checksum)+" /Checksum");
 			rx_tx_state=ST_START; // start listening
 
 			// install guard, 2sec until check of receive
@@ -532,7 +531,7 @@ public class BluetoothSerialService {
 				reset_seq();
 				Log.i(TAG,"timer notfall, gebe semaphore zurück");
 				Log.i(TAG_RECV,"timer notfall, gebe semaphore zurück");
-				semaphore.release();
+				//semaphore.release();
 				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 				Log.i(TAG_SEM,"Notfall timer hat den semaphore zurück gegeben");
 				status=ST_EMERGENCY_RELEASE;
@@ -559,7 +558,7 @@ public class BluetoothSerialService {
 			break;
 
 		case ST_GET_SEQ_NUM:
-			if ( (int)data == 1 || (int)data == seqNum ){
+			if ( (int)data == 1 || (data&0xff) == (seqNum&0xff) ){
 				Log.i(TAG,"Seq nr erhalten");
 				seqNum		=	data  & 0xff;
 				rx_tx_state	=	ST_MSG_SIZE;
@@ -571,7 +570,7 @@ public class BluetoothSerialService {
 			break;
 
 		case ST_MSG_SIZE:
-			Log.i(TAG,"MSG size 1 erhalten");
+			Log.i(TAG,"MSG size erhalten");
 			msgLength		=	data;
 			msgLength		&=	0x000000FF;
 			rx_tx_state		=	ST_GET_TOKEN;
@@ -777,8 +776,8 @@ public class BluetoothSerialService {
 		}
 		return 0;
 	};
-
-	public int getFile(String filename, String dlBaseDir,getFileDialog topProcess) throws InterruptedException {
+	
+	public int getFile(String filename, String dlBaseDir,Handler mHandlerUpdate) throws InterruptedException {
 		Log.i(TAG,"getFile gestartet: filename "+filename+" dlBasedir "+dlBaseDir);
 
 
@@ -824,6 +823,21 @@ public class BluetoothSerialService {
 		status=1;
 		while(status!=STATUS_EOF){
 			Log.i(TAG,"Whileschleifeniteration");
+			
+			// fortschritt schreiben
+			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			Bundle bundle = new Bundle();
+
+			String shown_message=null;
+			if(item<4){
+				shown_message=String.valueOf(item*250)+ " Bytes transfered";
+			} else {
+				shown_message=String.valueOf((int)Math.floor(item/4))+ " KBytes transfered";
+			}
+			bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
+			msg.setData(bundle);
+			mHandlerUpdate.sendMessage(msg); 
+
 			// prepare dynamic part
 			send[2+filename.length()]=(byte) ((item & 0xff00)>>8); //danger wegen signed ? interessant ab über 127 Files
 			send[3+filename.length()]=(byte) (item & 0x00ff);
@@ -855,8 +869,8 @@ public class BluetoothSerialService {
 				if(failCounter>3){
 					status=STATUS_EOF;
 					msgLength=0;
-					Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
-					Bundle bundle = new Bundle();
+					msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
+					bundle = new Bundle();
 					bundle.putString(SpeedoAndroidActivity.TOAST, "Transmission failed");
 					msg.setData(bundle);
 					mHandler.sendMessage(msg);
@@ -879,12 +893,14 @@ public class BluetoothSerialService {
 
 			// löse desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der nächsten 
 			// runde, wieder einen semphore ohne einschränkung bekommen
+			
+			if((msgBuffer[1]&0x00ff)==(STATUS_CMD_FAILED&0x00ff)){
+				status=STATUS_EOF;
+			} else if ((msgBuffer[1]&0x00ff)==(STATUS_EOF&0x00ff)) {
+				status=STATUS_EOF;
+			}
 			semaphore.release();
 			Log.i(TAG_SEM,"getFile hat den semaphore zurück gegeben");
-			if(msgBuffer[1]==STATUS_CMD_FAILED || msgBuffer[1]==STATUS_EOF){
-				status=STATUS_EOF;
-				break;
-			}
 
 		}
 		// status EOF erreich, datei schließen und meldung zurück geben

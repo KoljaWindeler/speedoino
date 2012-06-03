@@ -350,6 +350,10 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 				gps_alt[gps_count]=gps_alt[gps_count]*10+(linea[j]-48);
 			};
 		}
+		if(gps_alt[gps_count]>100000){ // sind wir höher als 10 km?
+			gps_alt[gps_count]=0;
+		}
+
 		//debug
 		if(GPS_DEBUG){
 			pDebug->sprintp(PSTR("alt: "));

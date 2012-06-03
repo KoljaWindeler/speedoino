@@ -111,8 +111,8 @@ int main(){
 						geschwindigkeit=1100; //800
 					} else {
 						// wenn die schritweite unter 100 ist -- dann nur 10% der leistung
-						beschleunigung=100; // 100
-						geschwindigkeit=400; //400
+						beschleunigung=24; // 100
+						geschwindigkeit=110; //400
 					};
 
 

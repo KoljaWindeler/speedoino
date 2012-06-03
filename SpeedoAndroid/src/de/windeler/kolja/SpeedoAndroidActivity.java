@@ -35,7 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class SpeedoAndroidActivity extends TabActivity implements
-		OnClickListener {
+OnClickListener {
 	// Name of the connected device
 	private static final String TAG = "JKW";
 
@@ -137,7 +137,7 @@ public class SpeedoAndroidActivity extends TabActivity implements
 				.newTabSpec("orders")
 				.setIndicator("Connect",
 						res.getDrawable(R.drawable.ic_tab_connect))
-				.setContent(R.id.connectLayout);
+						.setContent(R.id.connectLayout);
 		tabHost.addTab(spec);
 
 		// add positions tab
@@ -145,7 +145,7 @@ public class SpeedoAndroidActivity extends TabActivity implements
 				.newTabSpec("positions")
 				.setIndicator("Upload",
 						res.getDrawable(R.drawable.ic_tab_upload))
-				.setContent(R.id.uploadLayout);
+						.setContent(R.id.uploadLayout);
 		tabHost.addTab(spec);
 
 		// add strategies tab
@@ -153,7 +153,7 @@ public class SpeedoAndroidActivity extends TabActivity implements
 				.newTabSpec("strategies")
 				.setIndicator("Download",
 						res.getDrawable(R.drawable.ic_tab_download))
-				.setContent(R.id.downloadLayout);
+						.setContent(R.id.downloadLayout);
 		tabHost.addTab(spec);
 		// layout ende
 
@@ -340,7 +340,7 @@ public class SpeedoAndroidActivity extends TabActivity implements
 				_putFileDialog = new putFileDialog(this);
 				_putFileDialog.execute(filePath,
 						"NAVI" + filePath.substring(filePath.lastIndexOf('/'))); // /mnt/sdcard/Download/bild.sng,
-																					// GFX/bild.sng
+				// GFX/bild.sng
 			} else {
 				toast = Toast.makeText(this, "Dialog cancled",
 						Toast.LENGTH_SHORT);
@@ -354,7 +354,7 @@ public class SpeedoAndroidActivity extends TabActivity implements
 				_putFileDialog = new putFileDialog(this);
 				_putFileDialog.execute(filePath,
 						"CONFIG" + filePath.substring(filePath.lastIndexOf('/'))); // /mnt/sdcard/Download/bild.sng,
-																					// GFX/bild.sng
+				// GFX/bild.sng
 				Log.i(TAG, "Datei wurde hochgeladen");
 				// delete the file
 				// File file = new File(filePath);
@@ -382,7 +382,7 @@ public class SpeedoAndroidActivity extends TabActivity implements
 				_putFileDialog = new putFileDialog(this);
 				_putFileDialog.execute(filePath,
 						"GFX" + filePath.substring(filePath.lastIndexOf('/'))); // /mnt/sdcard/Download/bild.sng,
-																				// GFX/bild.sng
+				// GFX/bild.sng
 
 				Log.i(TAG, "Datei wurde hochgeladen");
 				// delete the file
@@ -485,7 +485,7 @@ public class SpeedoAndroidActivity extends TabActivity implements
 				}
 				break;
 
-			// display popup
+				// display popup
 			case MESSAGE_TOAST: // ?
 				toast = Toast.makeText(getApplicationContext(), msg.getData()
 						.getString(TOAST), Toast.LENGTH_SHORT);
@@ -535,8 +535,8 @@ public class SpeedoAndroidActivity extends TabActivity implements
 					SimpleAdapter fileList = new SimpleAdapter(
 							getApplicationContext(), mList,
 							R.layout.file_dialog_dl_row, new String[] {
-									ITEM_KEY, ITEM_IMAGE }, new int[] {
-									R.id.fdrowtext, R.id.fdrowimage });
+								ITEM_KEY, ITEM_IMAGE }, new int[] {
+								R.id.fdrowtext, R.id.fdrowimage });
 
 					if (dir_path != "/") {
 						addItem("/", R.drawable.folder);
@@ -564,37 +564,37 @@ public class SpeedoAndroidActivity extends TabActivity implements
 					mDLListView.setAdapter(fileList);
 
 					mDLListView
-							.setOnItemClickListener(new OnItemClickListener() {
-								public void onItemClick(AdapterView<?> arg0,
-										View arg1, int arg2, long arg3) {
-									String name = null;
-									Integer type = 0;
-									HashMap<String, Object> item = new HashMap<String, Object>();
+					.setOnItemClickListener(new OnItemClickListener() {
+						public void onItemClick(AdapterView<?> arg0,
+								View arg1, int arg2, long arg3) {
+							String name = null;
+							Integer type = 0;
+							HashMap<String, Object> item = new HashMap<String, Object>();
 
-									item = mList.get(arg2);
-									name = (String) item.get(ITEM_KEY);
-									type = typeMap.get(name);
+							item = mList.get(arg2);
+							name = (String) item.get(ITEM_KEY);
+							type = typeMap.get(name);
 
-									if (type == 1) {
-										t2a_dest = "";
-										if (dir_path != "/") // z.B. CONFIG
-											t2a_dest = dir_path + "/"; // CONFIG/
-										t2a_dest = t2a_dest + name; // CONFIG/BASE.TXT
+							if (type == 1) {
+								t2a_dest = "";
+								if (dir_path != "/") // z.B. CONFIG
+									t2a_dest = dir_path + "/"; // CONFIG/
+								t2a_dest = t2a_dest + name; // CONFIG/BASE.TXT
 
-										TextView mselfile = (TextView) findViewById(R.id.dl_selected_file);
-										mselfile.setText("Selected file: "
-												+ t2a_dest);
+								TextView mselfile = (TextView) findViewById(R.id.dl_selected_file);
+								mselfile.setText("Selected file: "
+										+ t2a_dest);
 
-										DlselButton.setEnabled(true);
-										DeleteButton.setEnabled(true);
-									} else if (type == 2) {
-										dir_path = name;
-										_getDirDialog = new getDirDialog(arg0
-												.getContext());
-										_getDirDialog.execute(name);
-									}
-								} // public void onItemClick(A
-							}); // setOnItemClickListener(...
+								DlselButton.setEnabled(true);
+								DeleteButton.setEnabled(true);
+							} else if (type == 2) {
+								dir_path = name;
+								_getDirDialog = new getDirDialog(arg0
+										.getContext());
+								_getDirDialog.execute(name);
+							}
+						} // public void onItemClick(A
+					}); // setOnItemClickListener(...
 				} // if(type==STATUS_EOF){
 				break;
 
@@ -612,7 +612,7 @@ public class SpeedoAndroidActivity extends TabActivity implements
 				toast.show();
 				break;
 
-			// show device popup
+				// show device popup
 			case MESSAGE_DEVICE_NAME:
 				// save the connected device's name
 				toast = Toast.makeText(getApplicationContext(),
@@ -779,7 +779,7 @@ public class SpeedoAndroidActivity extends TabActivity implements
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				mSerialService.getFile(params[0], params[1], this);
+				mSerialService.getFile(params[0], params[1], mHandlerUpdate);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -801,6 +801,14 @@ public class SpeedoAndroidActivity extends TabActivity implements
 		protected void onPostExecute(String result) {
 			dialog.dismiss();
 		}
+
+		private final Handler mHandlerUpdate = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				dialog.setMessage(msg.getData().getString(BYTE_TRANSFERED));
+				Log.i(TAG, "update prozenzzahl");
+			};
+		};
 	}
 
 	// klasse die das loading fenster startet und im hintergrund "download"
@@ -918,7 +926,7 @@ public class SpeedoAndroidActivity extends TabActivity implements
 	public void update_visible_elements(boolean visible) {
 		if (mSerialService == null
 				|| BluetoothSerialService.STATE_CONNECTED != mSerialService
-						.getState()) {
+				.getState()) {
 			if (mMenuItemConnect != null) {
 				// mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 				mMenuItemConnect.setTitle(R.string.connect);
