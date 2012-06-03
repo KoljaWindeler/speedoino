@@ -114,9 +114,9 @@ int configuration::write(const char *filename){
 				 * about the logged points as long as they aren't empty
 				 ****************************************************/
 			} else if(filename[6]=='.' && filename[7]=='G' && filename[8]=='P' && filename[9]=='S'){
-				pSD->power_down();
+				/*pSD->power_down();
 				delay(20);
-				pSD->power_up();
+				pSD->power_up();*/
 
 				if(!subdir.open(&root, "GPS", O_READ)) {
 					pDebug->sprintlnp(PSTR("open subdir /config failed"));
@@ -133,12 +133,19 @@ int configuration::write(const char *filename){
 					memset(buffer,'\0',60);
 
 					// get the info from the gps class
+					if(SD_DEBUG){
+						Serial.print("*** vor get_logged_points ist im puffer: ");
+						Serial.println(buffer);
+					}
 					int i=0;
-					while(i<100 && pSensors->m_gps->get_logged_points(buffer,i)>=0){
+					while(i<100 && pSensors->m_gps->get_logged_points(&buffer[0],i)>=0){
+						if(SD_DEBUG){
+							Serial.print("*** get_logged_points liefert: ");
+							Serial.println(buffer);
+						}
 						pSD->writeString(file, buffer);
 						i++;
 					}
-
 					// free buffer and close file
 					file.close();
 					storage_outdated=false;

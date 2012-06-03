@@ -74,7 +74,8 @@ void speedo_gps::init(){
 
 	// speichern
 	gps_count=-1;
-	gps_count2=-1;
+	gps_count_up[0]=false;
+	gps_count_up[1]=false;
 	// speichern
 
 	// Debug
@@ -250,7 +251,14 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 
 		if(status=='A'){
 			valid=0;
-			gps_count=(gps_count+1)%(sizeof(gps_time)/sizeof(gps_time[0]));
+			if(gps_count_up[0] && gps_count_up[1]){
+				if(gps_count<(signed(sizeof(gps_time)/sizeof(gps_time[0])-1))){ // [0] .. [29] = 30 Einträge
+					gps_count++;
+				}
+				gps_count_up[0]=false;
+				gps_count_up[1]=false;
+			}
+			gps_count_up[1]=true;
 			// alle leeren
 			gps_time[gps_count]=0;
 			gps_date[gps_count]=0;
@@ -328,45 +336,58 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		}
 	} // anderer modus, gpgga empfangen
 	else if(datensatz==2){ // altitude, fix ok?,sats,
-		gps_count2=(gps_count2+1)%(sizeof(gps_alt)/sizeof(gps_alt[0])); // %30 => 0..29
-		gps_alt[gps_count2]=0;
-		gps_sats[gps_count2]=0;
+		gps_count_up[0]=true;
+		gps_alt[gps_count]=0;
+		gps_sats[gps_count]=0;
 		for (int j=indices[5]+1;j<(indices[6]);j++){
-			gps_fix[gps_count2]=(linea[j]-48);
+			gps_fix[gps_count]=(linea[j]-48);
 		};
 		for (int j=indices[6]+1;j<(indices[7]);j++){
-			gps_sats[gps_count2]=gps_sats[gps_count2]*10+(linea[j]-48);
+			gps_sats[gps_count]=gps_sats[gps_count]*10+(linea[j]-48);
 		}
 		for (int j=indices[8]+1;j<(indices[9]);j++){
 			if(linea[j]!=46){
-				gps_alt[gps_count2]=gps_alt[gps_count2]*10+(linea[j]-48);
+				gps_alt[gps_count]=gps_alt[gps_count]*10+(linea[j]-48);
 			};
 		}
 		//debug
 		if(GPS_DEBUG){
 			pDebug->sprintp(PSTR("alt: "));
-			Serial.println(gps_alt[gps_count2]);
+			Serial.println(gps_alt[gps_count]);
 			pDebug->sprintp(PSTR("sats: "));
-			Serial.println(gps_sats[gps_count2]);
+			Serial.println(gps_sats[gps_count]);
 			pDebug->sprintp(PSTR("fix? 1==ja: "));
-			Serial.println(gps_fix[gps_count2]);
+			Serial.println(gps_fix[gps_count]);
 		};
 		//debug
 	};
 	// klappt das ? eigentlich schon oder? wir dürfen nur keine Datensatz verpassen oder ?
 
-	if(gps_count>=29 && gps_count2>=29){ // nur jede halbe minute speichern, burstmäßig auf die Karte schreiben
+	if(gps_count>=29 && gps_count_up[0] && gps_count_up[1]){ // nur jede halbe minute speichern, burstmäßig auf die Karte schreiben
 		if(SD_DEBUG){
 			pDebug->sprintlnp(PSTR("Vor store_to_sd()"));
 			Serial.println(millis());
 		};
 		gps_write_status=1;
 		store_to_sd();
+		gps_count=0; // after writing the points to sd => erase them
+		gps_count_up[0]=false;
+		gps_count_up[1]=false;
+
 		if(SD_DEBUG){
 			pDebug->sprintlnp(PSTR("nach store_to_sd()"));
 			Serial.println(millis());
 		};
-	};
+	} else if(SD_DEBUG) {
+		pDebug->sprintp(PSTR("store_to_sd() not enough records "));
+		Serial.print(gps_count);
+		Serial.print(" written ");
+		Serial.print(written_gps_points);
+		Serial.print(" datensatz ");
+		Serial.print(datensatz);
+		Serial.print(" ");
+		Serial.println(millis());
+	}
 };
 
 // return values of the gps_field, convertet as long
@@ -388,18 +409,18 @@ long speedo_gps::get_info(int select){
 		return gps_lati[gps_count];
 		break;
 	case 4:
-		return gps_alt[gps_count2];
+		return gps_alt[gps_count];
 		break;
 	case 5:
 		return long(gps_speed_arr[gps_count]);
 		break;
 	case 6:
-		if(long(gps_sats[gps_count2])>20) { return 20; }; //höhö
-		if(long(gps_sats[gps_count2])<0) { return 0; };
-		return long(gps_sats[gps_count2]);
+		if(long(gps_sats[gps_count])>20) { return 20; }; //höhö
+		if(long(gps_sats[gps_count])<0) { return 0; };
+		return long(gps_sats[gps_count]);
 		break;
 	case 7:
-		return long(gps_fix[gps_count2]);
+		return long(gps_fix[gps_count]);
 		break;
 	case 8:
 		return long(gps_course[gps_count]);
@@ -694,13 +715,15 @@ void speedo_gps::loop(){
  ****************************************************/
 int speedo_gps::get_logged_points(char* buffer,int a){
 	gps_write_status=9;
-	if(a<=gps_count && a<=gps_count2){
+	if(a<=gps_count){
 		sprintf(buffer,"%06lu,%06lu,%09lu,%09lu,%03i,%05u,%05lu,%i,%i,%i\n",gps_time[a],gps_date[a],gps_lati[a],gps_long[a],gps_speed_arr[a],gps_course[a],gps_alt[a],gps_sats[a],gps_fix[a],gps_special[a]);
 		written_gps_points++;
+
 		return 0;
 	} else {
 		return -1;
 	};
+	return -1;
 };
 
 

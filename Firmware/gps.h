@@ -40,7 +40,7 @@ public:
 	int navi_point;
 	int winkel; // 0-359
 	int gps_count; // aktuelle position in der gespeichert wird
-	int gps_count2;
+	bool gps_count_up[2];
 	unsigned int written_gps_points;
 	char navi_ziel_name[14];//= "Helmholtzstr."; //seperate var, muss das länger halten
 	int active_file; //
