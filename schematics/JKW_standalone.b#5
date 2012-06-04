@@ -2442,16 +2442,14 @@ min. Width 0,18mm</description>
 <element name="R_EXT16" library="RCLDT" package="0805" value="n.b." x="-38.8" y="-64.9"/>
 <element name="R8" library="RCLDT" package="0805" value="n.b." x="-38.8" y="-66.7"/>
 <element name="R9" library="RCLDT" package="0805" value="n.b. / 0R" x="-38.8" y="-68.5"/>
-<element name="R42" library="RCLDT" package="0805" value="0R" x="-38.8" y="-70.3"/>
-<element name="R43" library="RCLDT" package="0805" value="0R" x="-38.8" y="-72.1"/>
+<element name="R42" library="RCLDT" package="0805" value="n.b. / 0R" x="-38.8" y="-70.3"/>
+<element name="R43" library="RCLDT" package="0805" value="n.b. / 0R" x="-38.8" y="-72.1"/>
 <element name="R44" library="RCLDT" package="0805" value="n.b. / 0R" x="-38.8" y="-73.9"/>
 <element name="R45" library="RCLDT" package="0805" value="n.b." x="-38.8" y="-75.7"/>
 <element name="R46" library="RCLDT" package="0805" value="n.b. / 0R" x="-38.8" y="-77.5"/>
 <element name="R47" library="RCLDT" package="0805" value="n.b. / 0R" x="-38.8" y="-79.3"/>
 <element name="R48" library="RCLDT" package="0805" value="n.b." x="-38.8" y="-81.1"/>
 <element name="R49" library="RCLDT" package="0805" value="n.b." x="-38.8" y="-82.9"/>
-<element name="R50" library="RCLDT" package="0805" value="n.b." x="-38.8" y="-84.7"/>
-<element name="R51" library="RCLDT" package="0805" value="n.b." x="-38.8" y="-86.5"/>
 </elements>
 <signals>
 <signal name="REED">
@@ -3760,8 +3758,6 @@ min. Width 0,18mm</description>
 <wire x1="55.1688" y1="35.1688" x2="55.1564" y2="35.1812" width="0.3048" layer="16"/>
 <wire x1="55.1564" y1="35.1812" x2="55.1564" y2="42.65" width="0.3048" layer="16"/>
 <via x="54.75" y="34.75" extent="1-16" drill="0.3"/>
-<contactref element="R51" pad="2"/>
-<wire x1="54.5" y1="33.266" x2="-37.784" y2="-86.5" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="D48">
 <contactref element="IC4" pad="36"/>
@@ -3785,8 +3781,6 @@ min. Width 0,18mm</description>
 <via x="46.5" y="42.75" extent="1-16" drill="0.3"/>
 <contactref element="R48" pad="2"/>
 <contactref element="R49" pad="2"/>
-<contactref element="R50" pad="2"/>
-<wire x1="-37.784" y1="-82.9" x2="-37.784" y2="-84.7" width="0" layer="19" extent="1-1"/>
 <wire x1="-37.784" y1="-81.1" x2="-37.784" y2="-82.9" width="0" layer="19" extent="1-1"/>
 <wire x1="47.5" y1="41.048" x2="-37.784" y2="-81.1" width="0" layer="19" extent="1-1"/>
 </signal>
@@ -3966,8 +3960,6 @@ min. Width 0,18mm</description>
 <contactref element="R_EXT14" pad="2"/>
 <contactref element="R_EXT16" pad="1"/>
 <contactref element="R43" pad="2"/>
-<contactref element="R50" pad="1"/>
-<wire x1="-37.784" y1="-72.1" x2="-39.816" y2="-84.7" width="0" layer="19" extent="1-1"/>
 <wire x1="-39.816" y1="-64.9" x2="-37.784" y2="-72.1" width="0" layer="19" extent="1-1"/>
 <wire x1="-37.784" y1="-61.3" x2="-39.816" y2="-64.9" width="0" layer="19" extent="1-1"/>
 <wire x1="47.5" y1="27.2" x2="-37.784" y2="-61.3" width="0" layer="19" extent="1-16"/>
@@ -5026,9 +5018,8 @@ min. Width 0,18mm</description>
 <wire x1="14.9138" y1="16.05" x2="-39.3" y2="-50.7" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="REED_IN">
-<contactref element="R11" pad="1"/>
-<wire x1="16.641" y1="20.25" x2="20.4628" y2="20.25" width="0.3048" layer="1"/>
 <contactref element="U$1" pad="P$9"/>
+<contactref element="R11" pad="1"/>
 <wire x1="16.641" y1="20.25" x2="-39.3" y2="-54.2" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$4">
@@ -5272,8 +5263,6 @@ min. Width 0,18mm</description>
 <contactref element="R_EXT13" pad="2"/>
 <contactref element="R_EXT15" pad="1"/>
 <contactref element="R42" pad="2"/>
-<contactref element="R51" pad="1"/>
-<wire x1="-37.784" y1="-70.3" x2="-39.816" y2="-86.5" width="0" layer="19" extent="1-1"/>
 <wire x1="-39.816" y1="-63.1" x2="-37.784" y2="-70.3" width="0" layer="19" extent="1-1"/>
 <wire x1="-37.784" y1="-59.5" x2="-39.816" y2="-63.1" width="0" layer="19" extent="1-1"/>
 <wire x1="24.6928" y1="33.25" x2="-37.784" y2="-59.5" width="0" layer="19" extent="1-1"/>

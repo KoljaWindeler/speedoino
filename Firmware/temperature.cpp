@@ -43,7 +43,7 @@ void speedo_temperature::init(){
 
 void speedo_temperature::read_oil_temp() {
 	// werte in array speichern in °C*10 für Nachkommastelle
-	if(false){ Serial.println("\nTemp: Beginne zu lesen"); }
+	if(TEMP_DEBUG){ Serial.println("\nTemp: Beginne Öl zu lesen"); }
 
 	// werte auslesen
 	unsigned int oil_value=analogRead(OIL_TEMP_PIN);
@@ -62,7 +62,7 @@ void speedo_temperature::read_oil_temp() {
 				int aktueller_wert=round(10*(oil_t_werte[i]-offset*differ_t/differ_r));
 				oil_temp_value=pSensors->flatIt(aktueller_wert,&oil_temp_value_counter,20,oil_temp_value);
 
-				if(false){
+				if(TEMP_DEBUG){
 					Serial.print("Oel Wert eingelesen: ");
 					Serial.print(oil_value);
 					Serial.print(" und interpretiert ");
@@ -83,7 +83,7 @@ void speedo_temperature::read_oil_temp() {
 
 void speedo_temperature::read_water_temp() {
 	// werte in array speichern in °C*10 für Nachkommastelle
-	if(false){ Serial.println("\nTemp: Beginne zu lesen"); }
+	if(TEMP_DEBUG){ Serial.println("\nTemp: Beginne Water zu lesen"); }
 
 	// werte auslesen
 	unsigned int water_value=analogRead(WATER_TEMP_PIN);
@@ -102,7 +102,7 @@ void speedo_temperature::read_water_temp() {
 				int aktueller_wert=round(10*(water_t_werte[i]-offset*differ_t/differ_r));
 				water_temp_value=pSensors->flatIt(aktueller_wert,&water_temp_value_counter,20,water_temp_value);
 
-				if(false){
+				if(TEMP_DEBUG){
 					Serial.print("Water Wert eingelesen: ");
 					Serial.print(water_value);
 					Serial.print(" und interpretiert ");
@@ -116,8 +116,16 @@ void speedo_temperature::read_water_temp() {
 		};
 	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
 		water_temp_value=8888;
+
+		if(TEMP_DEBUG){
+			Serial.print("Water Wert kein Sensor");
+		}
 	} else { // Kurzschluss nach masse: 102=(1024-x)/10  	x<=4
 		water_temp_value=9999;
+
+		if(TEMP_DEBUG){
+			Serial.print("Water Wert Kurzschluss ggn Masse");
+		}
 	}
 };
 

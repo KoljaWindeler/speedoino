@@ -2505,7 +2505,7 @@ min. Width 0,18mm</description>
 <element name="T4" library="RCLDT" package="SOT-23-6" value="T-IRLMS6702" x="6.55" y="52.675" rot="R90"/>
 <element name="R_SD_PWR_UP" library="resistor" package="M0805" value="10k" x="14.125" y="53.175"/>
 <element name="T5" library="RCLDT" package="SOT-23" value="Farnell: 1299313 " x="99.1" y="41.5" rot="MR270"/>
-<element name="R_EXT1" library="RCLDT" package="0805" value="n.b." x="27.8" y="38.5" rot="R270"/>
+<element name="R_EXT1" library="RCLDT" package="0805" value="390R" x="27.8" y="38.5" rot="R270"/>
 <element name="ST3" library="Stift+Buchsenleisten" package="BL17SMD_1X4" value="" x="67.7" y="43" rot="MR0">
 <attribute name="PACKAGE" value="SMD liegend L=7mm" x="67.7" y="43" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="WERT" value="4Pin." x="67.7" y="43" size="1.778" layer="28" rot="MR0" display="off"/>

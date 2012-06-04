@@ -24389,7 +24389,7 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <part name="T4" library="RCLDT" deviceset="T-IRLMS6702" device=""/>
 <part name="R_SD_PWR_UP" library="resistor" deviceset="R-EU_" device="M0805" value="10k"/>
 <part name="T5" library="RCLDT" deviceset="T-P-FET" device="BSS139" value="Farnell: 1299313 "/>
-<part name="R_EXT1" library="RCLDT" deviceset="R" device="0805" value="n.b."/>
+<part name="R_EXT1" library="RCLDT" deviceset="R" device="0805" value="390R"/>
 <part name="SUPPLY1" library="supply2" deviceset="VDD" device=""/>
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
 <part name="SUPPLY3" library="supply2" deviceset="VDD" device=""/>

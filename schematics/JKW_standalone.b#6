@@ -5022,6 +5022,8 @@ min. Width 0,18mm</description>
 <signal name="KUPPLUNG_IN">
 <contactref element="D7" pad="K"/>
 <wire x1="16.0058" y1="17.142" x2="14.9138" y2="16.05" width="0.3048" layer="16"/>
+<contactref element="U$1" pad="P$8"/>
+<wire x1="14.9138" y1="16.05" x2="-39.3" y2="-50.7" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="REED_IN">
 <contactref element="R11" pad="1"/>

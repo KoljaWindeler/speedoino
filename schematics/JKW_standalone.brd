@@ -2434,7 +2434,7 @@ min. Width 0,18mm</description>
 <element name="D12" library="diode" package="SOD80C" value="20V" x="-37.9" y="-41.4"/>
 <element name="R7" library="RCLDT" package="0805" value="n.b. / 5k (Reed)" x="-38.8" y="-45.1"/>
 <element name="U$1" library="Kolja" package="SPEEDOSTECKER" value="SPEEDOSTECKER" x="-33.8" y="-52.7"/>
-<element name="R_EXT13" library="RCLDT" package="0805" value="?R" x="-38.8" y="-59.5"/>
+<element name="R_EXT13" library="RCLDT" package="0805" value="390R" x="-38.8" y="-59.5"/>
 <element name="R_EXT14" library="RCLDT" package="0805" value="n.b." x="-38.8" y="-61.3"/>
 <element name="R_EXT16" library="RCLDT" package="0805" value="n.b." x="-38.8" y="-64.9"/>
 <element name="R8" library="RCLDT" package="0805" value="n.b." x="-38.8" y="-66.7"/>

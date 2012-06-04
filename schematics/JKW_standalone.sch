@@ -24297,7 +24297,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <part name="GND19" library="supply1" deviceset="GND" device=""/>
 <part name="SUPPLY12" library="supply2" deviceset="VDD" device=""/>
 <part name="SUPPLY16" library="supply2" deviceset="VDD" device=""/>
-<part name="R_EXT13" library="RCLDT" deviceset="R" device="0805" value="?R"/>
+<part name="R_EXT13" library="RCLDT" deviceset="R" device="0805" value="390R"/>
 <part name="R_EXT14" library="RCLDT" deviceset="R" device="0805" value="n.b."/>
 <part name="R_EXT16" library="RCLDT" deviceset="R" device="0805" value="n.b."/>
 <part name="GND20" library="supply1" deviceset="GND" device=""/>
