@@ -68,7 +68,7 @@ prog_char fade_m_0[] PROGMEM = "1. Static color";
 prog_char fade_m_1[] PROGMEM = "2. Speed based";
 prog_char fade_m_2[] PROGMEM = "3. RPM based";
 prog_char fade_m_3[] PROGMEM = "4. Oil temp based";
-prog_char fade_m_4[] PROGMEM = "5. -";
+prog_char fade_m_4[] PROGMEM = "5. Water temp based";
 prog_char fade_m_5[] PROGMEM = "6. -";
 prog_char fade_m_6[] PROGMEM = "7. -";
 prog_char fade_m_7[] PROGMEM = "8. -";
@@ -147,7 +147,8 @@ bool		menu_preload;
 ////// bei veränderung des state => einmaliges zeichen des menüs ///////
 void speedo_menu::display(){ // z.B. state = 26
 	if(MENU_DEBUG){
-		Serial.println("menu.display() called;");
+		Serial.print("menu.display() called; at ");
+		Serial.println(millis());
 		Serial.print("state: ");
 		Serial.println(state);
 		Serial.print("menu_marker,menu_end,menu_start:");
@@ -495,7 +496,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pConfig->read(filename);
 		pOLED->clear_screen();
 		pOLED->string_P(pSpeedo->default_font,PSTR("Preview"),6,3);
-		delay(300);
+		_delay_ms(300);
 
 		// set buttons
 		set_buttons(button_state,!button_state,!button_state,button_state); // lr only
@@ -516,7 +517,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pConfig->write("BASE.TXT"); // save config
 
 		pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
-		delay(300);
+		_delay_ms(300);
 		pOLED->clear_screen();
 
 		state=11;
@@ -642,10 +643,10 @@ void speedo_menu::display(){ // z.B. state = 26
 				pOLED->clear_screen();
 				if(pConfig->write("BASE.TXT")==0){
 					pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
-					delay(500);
+					_delay_ms(500);
 				} else {
 					pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
-					delay(5000);
+					_delay_ms(5000);
 				}
 			};
 		};
@@ -756,10 +757,10 @@ void speedo_menu::display(){ // z.B. state = 26
 					pOLED->clear_screen();
 					if(pConfig->write("BASE.TXT")==0){
 						pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
-						delay(500);
+						_delay_ms(500);
 					} else {
 						pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
-						delay(5000);
+						_delay_ms(5000);
 					}
 				};
 			} else {
@@ -878,10 +879,10 @@ void speedo_menu::display(){ // z.B. state = 26
 					pOLED->clear_screen();
 					if(pConfig->write("BASE.TXT")==0){
 						pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
-						delay(500);
+						_delay_ms(500);
 					} else {
 						pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
-						delay(5000);
+						_delay_ms(5000);
 					}
 				};
 			} else {
@@ -1077,10 +1078,10 @@ void speedo_menu::display(){ // z.B. state = 26
 					pOLED->clear_screen();
 					if(pConfig->write("BASE.TXT")==0){
 						pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
-						delay(500);
+						_delay_ms(500);
 					} else {
 						pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
-						delay(5000);
+						_delay_ms(5000);
 					}
 				};
 			} else {
@@ -1276,10 +1277,10 @@ void speedo_menu::display(){ // z.B. state = 26
 					pOLED->clear_screen();
 					if(pConfig->write("BASE.TXT")==0){
 						pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
-						delay(500);
+						_delay_ms(1000);
 					} else {
 						pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
-						delay(5000);
+						_delay_ms(5000);
 					}
 				};
 			} else {
@@ -1456,6 +1457,205 @@ void speedo_menu::display(){ // z.B. state = 26
 		state/=10;
 		state_helper++;
 		display();
+		/////////////////////// water based color fade ///////////////////
+	} else if(floor(state/10)==655){
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
+		if(	old_state==655 ){
+			state=state*10+1;
+			state_helper=0;
+			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		} else {
+			if(state_helper==0){
+				back(); // calc menu_state
+
+				pAktors->led_mode=4;
+				pConfig->storage_outdated=true;
+
+				// store to SD
+				if(pConfig->storage_outdated){
+					pOLED->clear_screen();
+					if(pConfig->write("BASE.TXT")==0){
+						pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
+						_delay_ms(1000);
+					} else {
+						pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
+						_delay_ms(5000);
+					}
+				};
+			} else {
+				state_helper--;
+				state=state*10+1;
+			}
+		};
+		display();
+		/////////////////// COLOR setup ////////////////
+	} else if(floor(state/100)==655){
+		if(state_helper==7){
+			set_buttons(button_state,button_state,button_state,!button_state); // no right
+		}
+		// aktuelle werte
+		int r,g,b;
+		if(state_helper<4){
+			r=pAktors->water_start_color.r;
+			g=pAktors->water_start_color.g;
+			b=pAktors->water_start_color.b;
+		} else {
+			r=pAktors->water_end_color.r;
+			g=pAktors->water_end_color.g;
+			b=pAktors->water_end_color.b;
+		}
+		pAktors->set_rgb_out(r,g,b);
+		// neue werte
+		if(state%10==2){ // unten
+			pConfig->storage_outdated=true;
+			state-=1; // zurück
+
+			if(state_helper==0){			pAktors->water_min_value-=50;	if(pAktors->water_min_value<0){pAktors->water_min_value=0;};
+			} else if(state_helper==1){		r-=5;						if(r<0){r=0;};
+			} else if(state_helper==2){		g-=5;						if(g<0){g=0;};
+			} else if(state_helper==3){		b-=5;						if(b<0){b=0;};
+			} else if(state_helper==4){		pAktors->water_max_value-=50;	if(pAktors->water_max_value<pAktors->water_min_value){pAktors->water_max_value=pAktors->water_min_value;};
+			} else if(state_helper==5){		r-=5;						if(r<0){r=0;};
+			} else if(state_helper==6){		g-=5;						if(g<0){g=0;};
+			} else if(state_helper==7){		b-=5;						if(b<0){b=0;};
+			}
+
+			// save the new value to var
+			if(state_helper<4){
+				pAktors->water_start_color.r=r;
+				pAktors->water_start_color.g=g;
+				pAktors->water_start_color.b=b;
+			} else {
+				pAktors->water_end_color.r=r;
+				pAktors->water_end_color.g=g;
+				pAktors->water_end_color.b=b;
+			}
+		} else if(state%10==9){ // oben
+			pConfig->storage_outdated=true;
+			state-=8; // zurück
+
+			if(state_helper==0){			pAktors->water_min_value+=50;	if(pAktors->water_min_value>1200){pAktors->water_min_value=1200;};
+			} else if(state_helper==1){		r+=5;						if(r>255){r=255;};
+			} else if(state_helper==2){		g+=5;						if(g>255){g=255;};
+			} else if(state_helper==3){		b+=5;						if(b>255){b=255;};
+			} else if(state_helper==4){		pAktors->water_max_value+=50;	if(pAktors->water_max_value>1200){pAktors->water_max_value=1200;};
+			} else if(state_helper==5){		r+=5;						if(r>255){r=255;};
+			} else if(state_helper==6){		g+=5;						if(g>255){g=255;};
+			} else if(state_helper==7){		b+=5;						if(b>255){b=255;};
+			}
+
+			// save the new value to var
+			if(state_helper<4){
+				pAktors->water_start_color.r=r;
+				pAktors->water_start_color.g=g;
+				pAktors->water_start_color.b=b;
+			} else {
+				pAktors->water_end_color.r=r;
+				pAktors->water_end_color.g=g;
+				pAktors->water_end_color.b=b;
+			}
+		}
+
+		if(pSpeedo->disp_zeile_bak[0]!=304){
+			// clear screen
+			pOLED->clear_screen();
+			// anzeige der werte
+			pOLED->highlight_bar(0,0,128,8);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Outer RGB"),2,0,15,0,0);
+
+
+			pOLED->string_P(pSpeedo->default_font,PSTR("Minimal values"),2,2,0,15,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Maximal values"),2,5,0,15,0);
+
+			// Red   Green   Blue
+			// 255    255    255
+			pOLED->highlight_bar(0,24,128,16);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Water Red Green Blue"),1,3,15,0,0);
+			pOLED->highlight_bar(0,48,128,16);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Water Red Green Blue"),1,6,15,0,0);
+			pSpeedo->disp_zeile_bak[0]=304;
+		};
+
+		char temp[4];
+		sprintf(temp,"%3i",int((pAktors->water_min_value/10)%1000));
+		int front,back;
+		if(state_helper==0){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,1,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->water_start_color.r%1000));
+		if(state_helper==1){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,6,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->water_start_color.g%1000));
+		if(state_helper==2){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,12,4,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->water_start_color.b%1000));
+		if(state_helper==3){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,17,4,back,front,0);
+		sprintf(temp,"%3i",int((pAktors->water_max_value/10)%1000));
+		if(state_helper==4){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,1,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->water_end_color.r%1000));
+		if(state_helper==5){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,6,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->water_end_color.g%1000));
+		if(state_helper==6){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,12,7,back,front,0);
+		sprintf(temp,"%3i",int(pAktors->water_end_color.b%1000));
+		if(state_helper==7){
+			back = 0;
+			front = 15;
+		} else {
+			back = 15;
+			front = 0;
+		}
+		pOLED->string(pSpeedo->default_font,temp,17,7,back,front,0);
+
+		////////////////// control //////////////////
+	} else if(floor(state/1000)==655){
+		state/=10;
+		state_helper++;
+		display();
 	}
 	//////////////////////// adjust dz alert RGB LED ////////////////////////
 	else if(floor(state/10)==66){
@@ -1473,10 +1673,10 @@ void speedo_menu::display(){ // z.B. state = 26
 				pOLED->clear_screen();
 				if(pConfig->write("BASE.TXT")==0){
 					pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,4);
-					delay(500);
+					_delay_ms(500);
 				} else {
 					pOLED->string_P(pSpeedo->default_font,PSTR("!SD ERROR!"),5,4);
-					delay(5000);
+					_delay_ms(5000);
 				}
 			};
 		};
@@ -1581,7 +1781,7 @@ void speedo_menu::display(){ // z.B. state = 26
 						pOLED->string_P(pSpeedo->default_font,PSTR("OK"),0,7);
 					};
 				};
-				delay(2000);
+				_delay_ms(2000);
 			};
 		};
 		display();
@@ -1649,7 +1849,7 @@ void speedo_menu::display(){ // z.B. state = 26
 
 	//////////////////////// TEST des watchdogs durch absitzen ////////////////////////
 	//else if(floor(state/10)==49){
-	//	delay(29999); // knapp 30 sec
+	//	_delay_ms(29999); // knapp 30 sec
 	//}
 	//////////////////////// Setup Menu ////////////////////////////
 	else if(floor(state/10)==7) { //00007[X]
@@ -1693,7 +1893,7 @@ void speedo_menu::display(){ // z.B. state = 26
 
 		pOLED->clear_screen();
 		pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
-		delay(300);
+		_delay_ms(300);
 		state=711;
 		display();
 	}
@@ -1710,7 +1910,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pConfig->storage_outdated=true;
 		pConfig->write("BASE.TXT");
 		pOLED->string_P(pSpeedo->default_font,PSTR("saved"),6,3);
-		delay(300);
+		_delay_ms(300);
 		state=721;
 		display();
 	}
@@ -1867,7 +2067,7 @@ void speedo_menu::display(){ // z.B. state = 26
 				pConfig->write("BASE.TXT");
 				pOLED->clear_screen();
 				pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
-				delay(300);
+				_delay_ms(300);
 				pOLED->clear_screen();
 			}
 			back();
@@ -1901,14 +2101,14 @@ void speedo_menu::display(){ // z.B. state = 26
 		center_me(char_buffer,21);
 		pOLED->string(pSpeedo->default_font,char_buffer,0,5);
 	}
-	////////////////////////////////// oil temp premenu //////////////////////////////////
+	////////////////////////////////// water temp premenu //////////////////////////////////
 	else if(floor(state/10)==78) {
 		if(old_state==7811){
 			if(pConfig->storage_outdated){
 				pConfig->write("BASE.TXT");
 				pOLED->clear_screen();
 				pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
-				delay(300);
+				_delay_ms(300);
 				pOLED->clear_screen();
 			}
 			back();
@@ -2078,7 +2278,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		sprintf(char_buffer,"%s.",temp); // hier noch die bezeichnung
 		pOLED->string(pSpeedo->default_font,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
 		pOLED->string(pSpeedo->default_font,"cleared",2,4);
-		delay(800);
+		_delay_ms(800);
 		state=floor(state/100);
 		display();
 	}
@@ -2144,7 +2344,7 @@ void speedo_menu::del_conf(char first[20],char second[20]){
 	pOLED->string(pSpeedo->default_font,first,6,2,0,DISP_BRIGHTNESS,0);
 	pOLED->string(pSpeedo->default_font,second,2,4,0,DISP_BRIGHTNESS,0);
 
-	delay(1200);
+	_delay_ms(1200);
 	back();
 	display();
 };
@@ -2303,7 +2503,7 @@ bool speedo_menu::go_down(){
 
 ///// zyklisches abfragen der buttons ////////////
 bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
-	// also entweder ist der letzte button_down schon länger als der timeout her
+	// also entweder ist der letzte button_down schon länger als der menu_button_timeout her
 	// oder zumindest länger als fast_timeout UND der first push ist ausreichend lang her
 	// oder per serielle konsole
 	if(bt_keys_en){ // auf keinen Fall hier lesen, wenn wir gerade im Import sind, sonder haut uns jeder Straßenname mit w||a||s||d raus
@@ -2325,8 +2525,8 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 					button_first_push=millis();
 				};
 				if(MENU_DEBUG){      Serial.println("menu_button_rechts");  };
-				delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
-				// erst wenn nach dem delay noch der pegel anliegt
+				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
+				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				if((PINJ & (1<<menu_button_rechts))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
 					go_right();
 					return true;
@@ -2341,8 +2541,8 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 					button_first_push=millis();
 				};
 				if(MENU_DEBUG){  Serial.println("menu_button_links");  };
-				delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
-				// erst wenn nach dem delay noch der pegel anliegt
+				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
+				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				if((PINJ & (1<<menu_button_links))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
 					go_left();
 					return true;
@@ -2359,8 +2559,8 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				};
 				if(MENU_DEBUG){  Serial.println("menu_button_oben");  };
 				// move menu
-				delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
-				// erst wenn nach dem delay noch der pegel anliegt
+				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
+				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				if((PINJ & (1<<menu_button_oben))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
 					go_up();
 					return true;
@@ -2376,8 +2576,8 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				};
 				if(MENU_DEBUG){  Serial.println("menu_button_unten");  };
 				// move menu
-				delay(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
-				// erst wenn nach dem delay noch der pegel anliegt
+				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
+				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				if((PINJ & (1<<menu_button_unten))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
 					go_down();
 					return true;
@@ -2399,6 +2599,8 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 
 // hässlich hier den interrupt eingefügt ..
 ISR(PCINT1_vect ){
+	Serial.print("interrupt @");
+	Serial.println(millis());
 	pMenu->button_test(false,true);
 };
 

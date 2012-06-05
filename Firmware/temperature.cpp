@@ -90,7 +90,7 @@ void speedo_temperature::read_water_temp() {
 	// kann bis zu 225.060 werden bei 40°C etwa 470 ohm: 470+220=690 Ohm, U/R=I => 5/690=0,007246377A, R*I=U, 1,594202899V, Wert=326
 	int temp=(1024-water_value)/10; // max 102
 	if(temp>0 && temp<102){
-		int r_temp=round((water_value*22)/temp); // 22*1024 < 32000
+		int r_temp=round((int)((unsigned long)(water_value*39)/temp)); // 39*1024 > 32000
 		//Serial.print("Oel Wert eingelesen: "); Serial.print(oil_value); Serial.print(" zwischenschritt "); Serial.println(r_temp);
 		// LUT  wert ist z.B. 94°C somit 102 ohm => dann wird hier in der for schleife bei i=13 ausgelößt, also guck ich mir den her + den davor an
 		for(int i=0;i<19;i++){ // 0 .. 18 müssen durchsucht werden das sind die LUT positionen

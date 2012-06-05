@@ -46,9 +46,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			disp_zeile_bak[OIL_TEMP]=int(pSensors->m_temperature->get_oil_temp());
 			// below 20 degree the PTC is very antiliear so we won't show it
 			if(pSensors->m_temperature->get_oil_temp()==8888){
-				sprintf(char_buffer," ---   "); // error occored -> no sensor
+				sprintf(char_buffer," -     "); // error occored -> no sensor
 			} else if(pSensors->m_temperature->get_oil_temp()==9999){
-				sprintf(char_buffer," -.-   "); // error occored -> short to gnd
+				sprintf(char_buffer," --    "); // error occored -> short to gnd
 			} else 	if(pSensors->m_temperature->get_oil_temp()>200){
 				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_oil_temp()/10))%1000,pSensors->m_temperature->get_oil_temp()%10); // _32.3°C  7 stellen
 			} else {
@@ -72,9 +72,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			disp_zeile_bak[WATER_TEMP]=int(pSensors->m_temperature->get_water_temp());
 			// below 20 degree the PTC is very antiliear so we won't show it
 			if(pSensors->m_temperature->get_water_temp()==8888){
-				sprintf(char_buffer," ---   "); // error occored -> no sensor
+				sprintf(char_buffer," -     "); // error occored -> no sensor
 			} else if(pSensors->m_temperature->get_water_temp()==9999){
-				sprintf(char_buffer," -.-   "); // error occored -> short to gnd
+				sprintf(char_buffer," --    "); // error occored -> short to gnd
 			} else 	if(pSensors->m_temperature->get_water_temp()>200){
 				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_water_temp()/10))%1000,pSensors->m_temperature->get_oil_temp()%10); // _32.3°C  7 stellen
 			} else {

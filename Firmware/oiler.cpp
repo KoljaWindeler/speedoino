@@ -32,7 +32,7 @@ void speedo_oiler::init(){
 int speedo_oiler::send_impulse(){
 	if(pSensors->m_speed->getSpeed()>30){ // nur ölen wenn wir über 30 kmh sind
 		digitalWrite(OILER_PIN,HIGH); // 150ms high
-		delay(150);
+		_delay_ms(150);
 		digitalWrite(OILER_PIN,LOW);
 		pConfig->write("speedo.txt"); // store this
 		return 0;

@@ -39,9 +39,9 @@ void ssd0323::senden_spi(unsigned char zeichen)
 		if(zeichen&b)	fastWriteHigh(SPI_DATA);  	/* wenn zeichen&b dann porta bit 0 auf high serial data line */
 		else 		fastWriteLow(SPI_DATA); 		/* PORTA bit 0 auf low zwingen serial data line */
 		fastWriteLow(SPI_CLK); // clock auf high, zu fallender flanke werden daten übernommen
-		//delay(1);	// technisch korrekt: hier wartezeit einfügen
+		//_delay_ms(1);	// technisch korrekt: hier wartezeit einfügen
 		fastWriteHigh(SPI_CLK); // clock auf high, zu fallender flanke werden daten übernommen
-		//delay(1);	// technisch korrekt: hier wartezeit einfügen
+		//_delay_ms(1);	// technisch korrekt: hier wartezeit einfügen
 		b=b>>1;				/* bitmaske einen nach recht schieben => msb first ?! */
 	}
 	fastWriteHigh(SPI_CS); // cs auf high => deaktivieren
@@ -553,7 +553,7 @@ void ssd0323::init(unsigned char phase,unsigned char ref) {
 	pinMode(SPI_CLK,OUTPUT);
 	pinMode(SPI_CS,OUTPUT);
 
-	delay(10);
+	_delay_ms(10);
 
 	fastWriteHigh(SPI_CS);
 	fastWriteLow(SPI_CD);
@@ -562,9 +562,9 @@ void ssd0323::init(unsigned char phase,unsigned char ref) {
 
 	// reset
 	fastWriteLow(SPI_RESET);
-	delay(10);
+	_delay_ms(10);
 	fastWriteHigh(SPI_RESET);
-	delay(1);
+	_delay_ms(1);
 
 	// init sequenze
 	/////////////////////////////

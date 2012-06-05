@@ -423,7 +423,7 @@ void speedo_disp::init_speedo(){
 		pDebug->sprintlnp(PSTR("!! WARNING !!"));
 		pDebug->sprintlnp(PSTR("SD access failed"));
 		pDebug->sprintlnp(PSTR("!! WARNING !!"));
-		delay(3000);
+		_delay_ms(3000);
 		clear_screen();
 	} else if(WELCOME){ // wenn die Karte ok ist können wir startup zeigen, wenn wir wollen
 		show_animation(startup);

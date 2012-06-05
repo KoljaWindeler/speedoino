@@ -146,7 +146,7 @@ bool tetris::loop(){
 	char c=0x00;
 	int state=0;
 	while(Serial.available()>0){
-		delay(5);
+		_delay_ms(5);
 		if(state==0){
 			//pOLED->string(0,"0",0,0);
 
@@ -215,10 +215,10 @@ bool tetris::loop(){
 			// 1sec geben damit der user realisiert
 			// dann sicher sein das er keine taste
 			// mehr drückt
-			delay(1000);
+			_delay_ms(1000);
 			while(Serial.available()>0 || !digitalRead(menu_button_links) || !digitalRead(menu_button_rechts) || !digitalRead(menu_button_oben) || !digitalRead(menu_button_unten)){
 				Serial.flush();
-				delay(50);
+				_delay_ms(50);
 			}
 			pOLED->animation(ani);
 			initDrawField(); // draw the field again, to show the line and level counter
@@ -236,14 +236,14 @@ bool tetris::loop(){
 			sprintf(temp,"%c",127);
 			pOLED->string(pSpeedo->default_font,temp,5,5,15,0,0);
 			// way at least one second to prevent unnoticed button push
-			delay(1000);
+			_delay_ms(1000);
 			// if you loose and the box has been drawn, way on key down
 		} else {
 			if(c==1 || !digitalRead(menu_button_links)){
-				delay(MIN_SIDE_PUSH_TIME);
+				_delay_ms(MIN_SIDE_PUSH_TIME);
 				return false;
 			} else if (c==2 || !digitalRead(menu_button_rechts)){
-				delay(MIN_SIDE_PUSH_TIME);
+				_delay_ms(MIN_SIDE_PUSH_TIME);
 				pOLED->clear_screen();
 				// ja das ist ungeschickt, init leert uns die line variable, drawfield malt das hin, das problem ist nur
 				// das wir mit drawfield die in init gezeichneten "next" übermalen .. also einfach 2x init .. is ja wurst
@@ -258,16 +258,16 @@ bool tetris::loop(){
 		////////////////// if there is a button pushed, //////////////////
 		if(!digitalRead(menu_button_links)){
 			c=1;
-			delay(MIN_SIDE_PUSH_TIME);
+			_delay_ms(MIN_SIDE_PUSH_TIME);
 		} else if(!digitalRead(menu_button_oben)){
 			c=3;
-			delay(MIN_TURN_PUSH_TIME);
+			_delay_ms(MIN_TURN_PUSH_TIME);
 		} else if(!digitalRead(menu_button_unten)){
 			c=4;
-			delay(MIN_DOWN_PUSH_TIME);
+			_delay_ms(MIN_DOWN_PUSH_TIME);
 		} else if(!digitalRead(menu_button_rechts)){
 			c=2;
-			delay(MIN_SIDE_PUSH_TIME);
+			_delay_ms(MIN_SIDE_PUSH_TIME);
 		}
 
 		// now lets see if any action is required
@@ -546,11 +546,11 @@ void tetris::check_stack(){
 					if(area[line]==8190){
 						// blinken lassen
 						pOLED->filled_rect(12,line*4,12*4,4,0);
-						delay(125);
+						_delay_ms(125);
 						pOLED->filled_rect(12,line*4,12*4,4,6);
-						delay(125);
+						_delay_ms(125);
 						pOLED->filled_rect(12,line*4,12*4,4,0);
-						delay(125);
+						_delay_ms(125);
 						pOLED->filled_rect(12,line*4,12*4,4,6);
 						// felder verschieben
 						for(int upper_line=line;upper_line>0;upper_line--){

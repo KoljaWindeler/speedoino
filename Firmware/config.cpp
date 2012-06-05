@@ -402,6 +402,43 @@ int configuration::write(const char *filename){
 					pSD->writeString(file, buffer);
 					sprintf(buffer,"%i\n",int(pAktors->led_mode)); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
+
+					////////////// water color /////////////
+					strcpy_P(buffer, PSTR("rgb_out_water_start_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->water_start_color.r)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_water_start_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->water_start_color.g)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_water_start_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->water_start_color.b)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_water_end_r="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->water_end_color.r)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_water_end_g="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->water_end_color.g)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("rgb_out_water_end_b="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->water_end_color.b)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("led_mode="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pAktors->led_mode)); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
 					//////// flash //////////
 					strcpy_P(buffer, PSTR("rgb_flash_r="));
 					pSD->writeString(file, buffer);
@@ -450,7 +487,7 @@ int configuration::write(const char *filename){
 /********** check values ********************
  * zumindest in den trip, max und avg nachsehen ob werte
  * drinstehen. Falls die sd karte nicht gelesen werden konnte
- * wird das schon gemeldet, aber falls nur die datei für trips
+ * wird das schon gemeldet, aber falls nur die datei fuer trips
  * nicht gelesen werden kann sollte man das hier merken weil
  * alle(!) max value=0 sind wie von der initialisierung
  ********** check values ********************/
@@ -519,10 +556,10 @@ int configuration::init(){
 	pSensors->m_speed->gps_takeover=120; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
 	pSpeedo->refresh_cycle=-1; // anzahl an ms nachdem der haupttacho gecleared wird
 	pSensors->m_oiler->grenze=4000;
-	pSensors->m_dz->blitz_dz=12500; // hornet mäßig
+	pSensors->m_dz->blitz_dz=12500; // hornet maessig
 	pSensors->m_dz->blitz_en=true; // gehen wir mal von "an" aus
-	pSensors->m_temperature->water_warning_temp=950; // 95°C
-	pSensors->m_temperature->oil_warning_temp=1200; // 120°C
+	pSensors->m_temperature->water_warning_temp=950; // 95 C
+	pSensors->m_temperature->oil_warning_temp=1200; // 120 C
 	pAktors->bt_pin=1234;
 
 	// gaenge einlesen
@@ -630,6 +667,14 @@ int configuration::init(){
 	pAktors->oil_end_color.g=0;
 	pAktors->oil_end_color.b=255;
 
+	pAktors->water_start_color.r=255;
+	pAktors->water_start_color.g=255;
+	pAktors->water_start_color.b=0;
+
+	pAktors->water_end_color.r=0;
+	pAktors->water_end_color.g=0;
+	pAktors->water_end_color.b=255;
+
 	pAktors->kmh_min_value=20;
 	pAktors->kmh_max_value=50;
 
@@ -638,6 +683,9 @@ int configuration::init(){
 
 	pAktors->oil_min_value=200;
 	pAktors->oil_max_value=500;
+
+	pAktors->water_min_value=200;
+	pAktors->water_max_value=500;
 
 	pAktors->led_mode=1;
 	// beleuchtung
@@ -695,7 +743,7 @@ int configuration::read(const char* filename){
 
 		while ((n = file.read(buffer, 1)) > 0) { // n=1/0=wieviele byte gelesen wurden
 			if(char(buffer[0])=='\n' || char(buffer[0])=='\r') {  // auswerten
-				buf[i]='\0'; // eigentlich unnötig da das ganze array mit den dinger voll ist .. oder ?
+				buf[i]='\0'; // eigentlich unnoetig da das ganze array mit den dinger voll ist .. oder ?
 				if(i>0){
 					// wir haben mehr als kein zeichen gelesen, und einen Zeilenumbruch gefunden => attake
 					int return_value=parse(&buf[0]);
@@ -772,7 +820,7 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&pSensors->m_gps->active_file);
 	} else if(strcmp_P(name,PSTR("skin_file"))==0){ // welche datei ist der aktive skin
 		parse_int(buffer,seperator,&pConfig->skin_file);
-	} else if(strcmp_P(name,PSTR("oil_dist"))==0){ // distanz in meter nachder geölt wird
+	} else if(strcmp_P(name,PSTR("oil_dist"))==0){ // distanz in meter nachder ge...lt wird
 		parse_int(buffer,seperator,&pSensors->m_oiler->grenze);
 	} else if(strncmp("oil_temp_r_",name,7)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
 		char var_name[14]; // watch me i am IMPORTANT
@@ -945,7 +993,7 @@ int configuration::parse(char* buffer){
 	} else if(strcmp_P(name,PSTR("oil_warning"))==0){
 		parse_int(buffer,seperator,&pSensors->m_temperature->oil_warning_temp);
 
-		// die grenzen für die farben
+		// die grenzen fuer die farben
 	} else if(strcmp_P(name,PSTR("dz_min"))==0){
 		parse_int(buffer,seperator,&pAktors->dz_min_value);
 	} else if(strcmp_P(name,PSTR("dz_max"))==0){
@@ -954,6 +1002,10 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&pAktors->oil_min_value);
 	} else if(strcmp_P(name,PSTR("oil_max"))==0){
 		parse_int(buffer,seperator,&pAktors->oil_max_value);
+	} else if(strcmp_P(name,PSTR("water_min"))==0){
+		parse_int(buffer,seperator,&pAktors->water_min_value);
+	} else if(strcmp_P(name,PSTR("water_max"))==0){
+		parse_int(buffer,seperator,&pAktors->water_max_value);
 	} else if(strcmp_P(name,PSTR("kmh_min"))==0){
 		parse_int(buffer,seperator,&pAktors->kmh_min_value);
 	} else if(strcmp_P(name,PSTR("kmh_max"))==0){
@@ -999,6 +1051,26 @@ int configuration::parse(char* buffer){
 	} else if(strcmp_P(name,PSTR("rgb_out_oil_end_b"))==0){
 		parse_int(buffer,seperator,&temp);
 		pAktors->oil_end_color.b=temp;
+
+	} else if(strcmp_P(name,PSTR("rgb_out_water_start_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->water_start_color.r=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_water_start_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->water_start_color.g=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_water_start_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->water_start_color.b=temp;
+
+	} else if(strcmp_P(name,PSTR("rgb_out_water_end_r"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->water_end_color.r=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_water_end_g"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->water_end_color.g=temp;
+	} else if(strcmp_P(name,PSTR("rgb_out_water_end_b"))==0){
+		parse_int(buffer,seperator,&temp);
+		pAktors->water_end_color.b=temp;
 
 	} else if(strcmp_P(name,PSTR("rgb_out_kmh_start_r"))==0){
 		parse_int(buffer,seperator,&temp);
@@ -1086,7 +1158,7 @@ int configuration::parse_float(char* buffer,int i,float* wert){
 		if(char(buffer[i])=='\0' || char(buffer[i])=='\n' || char(buffer[i])==';'){
 			break;
 		}
-		// unterscheiden zwischen punkten, minus und zahlen und ungültigen
+		// unterscheiden zwischen punkten, minus und zahlen und ungueltigen
 		if(int(buffer[i])==46){
 			decade_active=true;
 		} else if(int(buffer[i])==45){ // "-" TODO: das checken, scheint als obs nicht klappt
@@ -1217,7 +1289,7 @@ int configuration::parse_ul(char* buffer,int i,unsigned long* wert){
 	i++; // das "=" weglesen
 	while(1){
 		if(char(buffer[i])=='\0' || char(buffer[i])=='\n' || char(buffer[i])==';') break;
-		// unterscheiden zwischen punkten, minus und zahlen und ungültigen
+		// unterscheiden zwischen punkten, minus und zahlen und ungueltigen
 		if(  int(buffer[i])>57 || int(buffer[i])<48   ){
 			return -1; // keine zahl
 		} else {
@@ -1238,7 +1310,7 @@ int configuration::parse_ul(char* buffer,int i,unsigned long* wert){
 	return 0;
 };
 
-// in diese routine werden die km hochgezählt und eventuell das auf die karte/eeprom speichern veranlasst
+// in diese routine werden die km hochgezaehlt und eventuell das auf die karte/eeprom speichern veranlasst
 void configuration::km_save(){
 	int speed_value=pSensors->m_speed->getSpeed();
 	// debug
@@ -1259,13 +1331,13 @@ void configuration::km_save(){
 			if(pSpeedo->max_speed[a]>300){
 				pSpeedo->max_speed[a]=speed_value;
 			};
-			// trips hochzählen, die sekunden basis +1 und die avg_speed + den aktuellen speed
+			// trips hochzaehlen, die sekunden basis +1 und die avg_speed + den aktuellen speed
 			pSpeedo->trip_dist[a]+=strecke_m;
 			pSpeedo->avg_timebase[a]++;
 			// falls die geschwindigkeit zwischen 95% und 105% liegt
-			// das dient dazu das ein peak gefiltert wird, wenn man tatsächlich so schnell ist, wird man auch 1 sek lang ähnlich schnell bleiben
+			// das dient dazu das ein peak gefiltert wird, wenn man tatsaechlich so schnell ist, wird man auch 1 sek lang aehnlich schnell bleiben
 			if((last_speed_value*100/speed_value)>=95 && (last_speed_value*100/speed_value)<=105){
-				// nur übernehmen wenn unter 300 aber über der letzten max
+				// nur uebernehmen wenn unter 300 aber ueber der letzten max
 				if(speed_value>pSpeedo->max_speed[a] && speed_value<256){
 					pSpeedo->max_speed[a]=speed_value;
 					// debug
@@ -1307,10 +1379,10 @@ void configuration::EEPROM_init(){
 	int temp2=EEPROM.read(4);
 	int date_of_today=temp+100*temp2;
 	// reset day trip at next day
-	// wenn keine RTC verbunden, dann gibt clock_getdate() 0 zurück.
+	// wenn keine RTC verbunden, dann gibt clock_getdate() 0 zurueck.
 	// wenn nun noch gps verbunden ist, dann wird ein richtiges datum
 	// abgespeichert und das hier bei jedem start durchlaufen.
-	// aber da clock_getdate()==0 ist, wird keine datei gelöscht werden.
+	// aber da clock_getdate()==0 ist, wird keine datei geloescht werden.
 	if(STORAGE_DEBUG){
 		Serial.print("Laut speicher war das Datum zuletzt der ");
 		Serial.print(date_of_today);
@@ -1330,7 +1402,7 @@ void configuration::EEPROM_init(){
 			EEPROM.write(3,tempByte);
 
 			storage_outdated=true; // zum speichern zwingen
-			write("speedo.txt"); // und ab dafür
+			write("speedo.txt"); // und ab dafuer
 		};
 	};
 
@@ -1354,4 +1426,3 @@ void configuration::EEPROM_init(){
 	};
 
 };
-

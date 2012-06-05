@@ -57,9 +57,9 @@ public:
 	int ask_bt(char *command);
 	speedo_stepper* m_stepper;
 	led_area RGB;
-	led_simple dz_flasher,oil_start_color,oil_end_color,kmh_start_color,kmh_end_color,dz_start_color,dz_end_color,static_color;
+	led_simple dz_flasher,oil_start_color,oil_end_color,water_start_color,water_end_color,kmh_start_color,kmh_end_color,dz_start_color,dz_end_color,static_color;
 	short int led_mode;
-	int oil_max_value,oil_min_value,kmh_max_value,kmh_min_value,dz_max_value,dz_min_value,bt_pin;
+	int oil_max_value,oil_min_value,water_max_value,water_min_value,kmh_max_value,kmh_min_value,dz_max_value,dz_min_value,bt_pin;
 
 private:
 	int dimm_steps,dimm_step,in_out;

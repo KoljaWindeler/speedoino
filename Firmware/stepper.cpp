@@ -18,9 +18,9 @@ void speedo_stepper::init(){
 	Serial3.begin(19200); // macht eigentlich schon der reset, aber zur sicherheit
 	Serial3.flush();
 	unsigned long time=millis();
-	while(!go_to(1600,1)){ delay(1); if((millis()-time)>10000) break; }; // warten bis voll ausgeschlagen
-//	while(!go_to(0,0)){delay(1); };	// motor vollausschlag
-//	while(!go_to(1001,0)){delay(1); };	// motor vollausschlag
+	while(!go_to(1600,1)){ _delay_ms(1); if((millis()-time)>10000) break; }; // warten bis voll ausgeschlagen
+//	while(!go_to(0,0)){_delay_ms(1); };	// motor vollausschlag
+//	while(!go_to(1001,0)){_delay_ms(1); };	// motor vollausschlag
 //	go_to(0,0);
 
 };
@@ -32,7 +32,7 @@ bool speedo_stepper::go_to(int winkel,int overwrite){
 		serial_buffer[1]=Serial3.read();
 		serial_buffer[2]=Serial3.read();
 		Serial3.flush();
-		delay(50);
+		_delay_ms(50);
 
 		if(serial_buffer[0]=='$' && serial_buffer[1]=='k' && serial_buffer[2]=='*'){
 			Serial3.print("$m");

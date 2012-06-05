@@ -313,6 +313,29 @@ int Speedo_aktors::update_outer_leds(){
 		};
 		return 0;
 	}
+
+	///////// Water ////////////////
+	else if(led_mode==4){ //follow water temp // werte sind in out_start_color->from
+		if(pSensors->m_temperature->get_water_temp()>=water_max_value){
+			if(dimm_state!=MAX_REACHED){
+				pAktors->set_rgb_out(int(water_end_color.r),int(water_end_color.g),int(water_end_color.b));
+			};
+			dimm_state=MAX_REACHED;
+		} else if(pSensors->m_temperature->get_water_temp()<=water_min_value){
+			if(dimm_state!=MIN_REACHED){
+				pAktors->set_rgb_out(water_start_color.r,water_start_color.g,water_start_color.b);
+			};
+			dimm_state=MIN_REACHED;
+		} else {
+			int temp_r,temp_g,temp_b,water_differ;
+			water_differ=water_max_value-water_min_value;
+			temp_r = float(water_end_color.r-water_start_color.r)/float(water_differ)*(pSensors->m_temperature->get_water_temp()-water_min_value)+water_start_color.r;
+			temp_g = float(water_end_color.g-water_start_color.g)/float(water_differ)*(pSensors->m_temperature->get_water_temp()-water_min_value)+water_start_color.g;
+			temp_b = float(water_end_color.b-water_start_color.b)/float(water_differ)*(pSensors->m_temperature->get_water_temp()-water_min_value)+water_start_color.b;
+			pAktors->set_rgb_out(temp_r,temp_g,temp_b); // from == water
+		};
+		return 0;
+	}
 	return 1;
 };
 
@@ -329,13 +352,13 @@ int Speedo_aktors::set_bt_pin(){
 		connection_established=false;
 		pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,1);								// hat nicht geklappt
 		Serial.end();																	// setzte neue serielle Geschwindigkeit
-		delay(500);
+		_delay_ms(500);
 		pOLED->string_P(pSpeedo->default_font,PSTR("TRYING 19200 BAUD"),0,2);					// hat nicht geklappt
 		Serial.begin(19200);
-		delay(2000);
+		_delay_ms(2000);
 		if(ask_bt(&at_commands[0])==0){
 			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
-			delay(500);
+			_delay_ms(500);
 			pOLED->string_P(pSpeedo->default_font,PSTR("BASIC SETUP"),0,4);
 			sprintf(at_commands,"ATE0%c",0x0D);
 			if(ask_bt(&at_commands[0])==0){
@@ -347,7 +370,7 @@ int Speedo_aktors::set_bt_pin(){
 					Serial.end();														// setzte neue serielle Geschwindigkeit
 					pOLED->string_P(pSpeedo->default_font,PSTR("RETRYING"),0,6);		// hat nicht geklappt
 					Serial.begin(115200);
-					delay(2000);
+					_delay_ms(2000);
 					pOLED->clear_screen();
 					pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
 					sprintf(at_commands,"AT%c",0x0D);									// gleich neu testen
@@ -359,7 +382,7 @@ int Speedo_aktors::set_bt_pin(){
 			}
 		} else {
 			pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,1);
-			delay(10000);
+			_delay_ms(10000);
 			return -9;
 		}
 	}
@@ -381,7 +404,7 @@ int Speedo_aktors::set_bt_pin(){
 
 				if(ask_bt(&at_commands[0])==0){
 					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,7);
-					delay(10000);
+					_delay_ms(10000);
 					return 0;
 				}
 			}
@@ -389,9 +412,9 @@ int Speedo_aktors::set_bt_pin(){
 	} else {
 		ask_bt(&at_commands[0]);
 		pOLED->string_P(pSpeedo->default_font,PSTR("failed, hmmm"),0,1);
-		delay(5000);
+		_delay_ms(5000);
 	}
-	delay(10000);
+	_delay_ms(10000);
 	return -2;
 }
 
@@ -406,7 +429,7 @@ int Speedo_aktors::ask_bt(char *command){
 		int j=-99;
 		while(j!=Serial.available()){
 			j=Serial.available();
-			delay(200);
+			_delay_ms(200);
 		};
 
 		if(j>=4){								// bei 8 hat man "O" "K" "0x1D" "0x1A"

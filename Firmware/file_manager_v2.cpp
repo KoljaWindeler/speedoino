@@ -62,7 +62,7 @@ void speedo_filemanager_v2::parse_command(){
 					isLeave=1;					// exit the while loop on tops
 					break;						// exit this while loop
 				} else {
-					delay(1);
+					_delay_ms(1);
 				}
 			};
 
@@ -70,7 +70,7 @@ void speedo_filemanager_v2::parse_command(){
 				//////////////////
 				if(DEBUG_TRANSFER){
 					pOLED->string(0,"-",0,1);
-					delay(500);
+					_delay_ms(500);
 				}
 				//////////////////
 				c = Serial.read();
@@ -85,7 +85,7 @@ void speedo_filemanager_v2::parse_command(){
 						//////////////////
 						if(DEBUG_TRANSFER){
 							pOLED->string(0,"1",0,1);
-							delay(500);
+							_delay_ms(500);
 						}
 						if(DEBUG_TRANSFER_INTENSIV){
 							Serial.println("MSG gehalten");
@@ -109,7 +109,7 @@ void speedo_filemanager_v2::parse_command(){
 						//////////////////
 						if(DEBUG_TRANSFER){
 							pOLED->string(0,"2",0,1);
-							delay(500);
+							_delay_ms(500);
 						}
 						if(DEBUG_TRANSFER_INTENSIV){
 							Serial.print("seq nr: ");
@@ -129,7 +129,7 @@ void speedo_filemanager_v2::parse_command(){
 					//////////////////
 					if(DEBUG_TRANSFER){
 						pOLED->string(0,"3",0,1);
-						delay(500);
+						_delay_ms(500);
 					}
 					if(DEBUG_TRANSFER_INTENSIV){
 						Serial.print("MSG size:");
@@ -146,7 +146,7 @@ void speedo_filemanager_v2::parse_command(){
 						//////////////////
 						if(DEBUG_TRANSFER){
 							pOLED->string(0,"4",0,1);
-							delay(500);
+							_delay_ms(500);
 						}
 						if(DEBUG_TRANSFER_INTENSIV){
 							Serial.println("Token erhalten");
@@ -164,7 +164,7 @@ void speedo_filemanager_v2::parse_command(){
 					//////////////////
 					if(DEBUG_TRANSFER){
 						pOLED->string(0,"5",0,1);
-						delay(500);
+						_delay_ms(500);
 					}
 					if(DEBUG_TRANSFER_INTENSIV){
 						Serial.println("Daten erhalten");
@@ -187,7 +187,7 @@ void speedo_filemanager_v2::parse_command(){
 						//////////////////
 						if(DEBUG_TRANSFER){
 							pOLED->string(0,"6",0,1);
-							delay(500);
+							_delay_ms(500);
 						}
 						if(DEBUG_TRANSFER_INTENSIV){
 							Serial.println("Checksum correct");
@@ -493,7 +493,7 @@ void speedo_filemanager_v2::parse_command(){
 					//						//////////
 					//						sprintf(buf,"fs:%i,pos:%i ",(int)fm_file.fileSize(),pos*(msgLength-offset));
 					//						pOLED->string(0,buf,0,6);
-					//						delay(1000);
+					//						_delay_ms(1000);
 					//					}
 					//					////////
 				};
