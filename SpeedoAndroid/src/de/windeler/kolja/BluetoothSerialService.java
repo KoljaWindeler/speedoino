@@ -841,11 +841,9 @@ public class BluetoothSerialService {
 			Bundle bundle = new Bundle();
 
 			String shown_message=null;
-			if(item<4){
-				shown_message=String.valueOf(item*250)+ " Bytes transfered";
-			} else {
-				shown_message=String.valueOf((int)Math.floor(item/4)) + "/" + file_size + " KBytes transfered";
-			}
+			int prozent=(int) ((int)(item*250*100)/Long.parseLong(file_size));
+			if(prozent>100 && Long.parseLong(file_size)<250) prozent=100; // wir übertragen 250 Byte auf einmal .. daher
+			shown_message=String.valueOf(prozent)+ "% of "+file_size+" Bytes transfered";
 			bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
 			msg.setData(bundle);
 			mHandlerUpdate.sendMessage(msg); 
