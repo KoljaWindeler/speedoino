@@ -25,7 +25,7 @@ speedo_filemanager_v2::~speedo_filemanager_v2(){};
 
 
 // hier kommt man rein, wenn in der hauptschleife festgestellt wurde
-// das sich im seriellen Puffer daten befinden ... das könnte
+// das sich im seriellen Puffer daten befinden ... das koennte
 // a) ein Command zum "links" sein
 // b) quatsch
 // nach "links" geht er mit isLeave=1 raus
@@ -204,7 +204,7 @@ void speedo_filemanager_v2::parse_command(){
 		// an dieser stelle endet die state machine des empfangens
 		// hier kann sie entweder rauskommen wenn sie
 		// timeout gegangen ist, dann ist ist isLeave=1
-		// oder wenn sie was gültiges empfangen hat, dann ist msgParseState ST_PROCESS
+		// oder wenn sie was gueltiges empfangen hat, dann ist msgParseState ST_PROCESS
 
 
 		if(isLeave!=1){
@@ -293,6 +293,16 @@ void speedo_filemanager_v2::parse_command(){
 				 * msgBuffer[5]==S
 				 *
 				 * messageLength=6
+				 *
+				 * rueckweg:
+				 * msgBuffer[0]=CMD_DIR
+				 * msgBuffer[1]=COMMAND_OK
+				 * msgBuffer[2]=STATUS (File 1, DIR 2, Ende 0)
+				 * msgBuffer[3]=filesize high uint_32
+				 * msgBuffer[4]=filesize 2nd uint_32
+				 * msgBuffer[5]=filesize 3rd uint_32
+				 * msgBuffer[6]=filesize 4th uint_32
+				 * msgBuffer[7..x]=DATA
 				 */
 
 				// buffer for dir name
@@ -315,7 +325,8 @@ void speedo_filemanager_v2::parse_command(){
 				}
 				// get filename and type of item
 				char name[13];
-				int status=fm_handle.lsJKWNext(name,item);
+				unsigned long size=0;
+				int status=fm_handle.lsJKWNext(name,item,&size);
 				returner.close();
 				fm_handle.close();
 
@@ -325,12 +336,16 @@ void speedo_filemanager_v2::parse_command(){
 
 				if(status>0) {
 					msgBuffer[2]=status;
+					msgBuffer[3]=(size&0xFF000000)>>24; // filesize high nibble
+					msgBuffer[4]=(size&0x00FF0000)>>16; // filesize 2nd nibble
+					msgBuffer[5]=(size&0x0000FF00)>>8; // filesize 3rd nibble
+					msgBuffer[6]=(size&0x000000FF); // filesize 4th nibble
 					int i=0;
 					while(name[i]!='\0'){
-						msgBuffer[i+3]=name[i];
+						msgBuffer[i+7]=name[i];
 						i++;
 					};
-					msgLength		=	i+2+1; // i==anzahl an zeichen für name + 1 für type {1/2} + 2 für cmd/ok
+					msgLength		=	i+2+1+4; // i==anzahl an zeichen fuer name + 1 fuer type {1/2} + 2 fuer cmd/ok + 4 fuer filesize
 				} else {
 					msgLength		= 	3;
 					msgBuffer[2]	= 	STATUS_EOF;
@@ -346,7 +361,7 @@ void speedo_filemanager_v2::parse_command(){
 				 * msgBuffer[x+1]=low_nibble of cluster nr
 
 				 *
-				 * rückweg:
+				 * rueckweg:
 				 * msgBuffer[0]=CMD_GET_FILE
 				 * msgBuffer[1]=COMMAND_OK
 				 * msgBuffer[2..]=DATA
@@ -356,7 +371,7 @@ void speedo_filemanager_v2::parse_command(){
 
 				// 1. checken: haben wir im t2a_file noch was offen
 				// 2. checken: ist der dateiname noch der gleiche wie der, den wir bekommen haben?
-				// 3. wenn nicht: t2a_dir soll erst root öffnen und dann eventuell unterverzeichnisse
+				// 3. wenn nicht: t2a_dir soll erst root oeffnen und dann eventuell unterverzeichnisse
 				// 4. dann setseek()
 				// 5. while() bla bla copy inhalt zur msg
 
@@ -375,13 +390,13 @@ void speedo_filemanager_v2::parse_command(){
 					file_already_open=false;
 				};
 
-				// wenn die datei noch nicht geöffnet ist,
-				// müssen wir
+				// wenn die datei noch nicht geoeffnet ist,
+				// muessen wir
 				// 1. checken ob sie in einem unterverzeichniss liegt
 				// 1.1. wenn ja verzeichniss namen auslesen
-				// 1.2. subverzeichniss öffnen
+				// 1.2. subverzeichniss oeffnen
 				// 2. Dateiname auslesen
-				// 3. Dateihandle öffnen
+				// 3. Dateihandle oeffnen
 
 				if(!file_already_open){
 					payload_start=get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle,O_CREAT| O_READ);
@@ -402,7 +417,7 @@ void speedo_filemanager_v2::parse_command(){
 					}
 				};
 
-				// wenn immer noch alles gut, dann konnten wir die Datei öffnen und auch den Filepointer dahin setzten wo er hin soll
+				// wenn immer noch alles gut, dann konnten wir die Datei oeffnen und auch den Filepointer dahin setzten wo er hin soll
 				if(!file_open_failed && !file_seek_failed){
 					//Serial.println("file_seek OK");
 					int n=fm_file.read(msgBuffer, sizeof(byte)*250); // 250
@@ -426,12 +441,12 @@ void speedo_filemanager_v2::parse_command(){
 					msgLength=2; // n buchstaben + cmd + status failed
 					msgBuffer[0]=CMD_GET_FILE;
 					msgBuffer[1]=STATUS_CMD_FAILED;
-					last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
+					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
 				} else {
 					msgLength=2; // n buchstaben + cmd + status failed
 					msgBuffer[0]=CMD_GET_FILE;
 					msgBuffer[1]=STATUS_CMD_FAILED;
-					last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
+					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
 				}
 
 				////////////////////////////// GET FILE /////////////////////////////////
@@ -446,7 +461,7 @@ void speedo_filemanager_v2::parse_command(){
 				 * msgBuffer[x+2]=low_nibble of cluster nr
 				 * msgBuffer[X+3..250]=Content
 				 *
-				 * rückweg:
+				 * rueckweg:
 				 * msgBuffer[0]=CMD_PUT_FILE
 				 * msgBuffer[1]=COMMAND_OK
 				 */
@@ -468,13 +483,13 @@ void speedo_filemanager_v2::parse_command(){
 				};
 
 
-				// wenn die datei noch nicht geöffnet ist,
-				// müssen wir
+				// wenn die datei noch nicht geoeffnet ist,
+				// muessen wir
 				// 1. checken ob sie in einem unterverzeichniss liegt
 				// 1.1. wenn ja verzeichniss namen auslesen
-				// 1.2. subverzeichniss öffnen
+				// 1.2. subverzeichniss oeffnen
 				// 2. Dateiname auslesen
-				// 3. Dateihandle öffnen
+				// 3. Dateihandle oeffnen
 
 				if(!file_already_open){
 					start_of_payload=get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle, O_CREAT| O_RDWR | O_SYNC | O_APPEND);
@@ -487,7 +502,7 @@ void speedo_filemanager_v2::parse_command(){
 					int pos;
 					pos=msgBuffer[start_of_payload]<<8;
 					pos|=msgBuffer[start_of_payload+1];
-					//					if(!fm_file.seekSet(pos*(msgLength-offset))){ // das ist noch totaler mist, das hier kein Seeken möglich ist
+					//					if(!fm_file.seekSet(pos*(msgLength-offset))){ // das ist noch totaler mist, das hier kein Seeken moeglich ist
 					//						file_seek_failed=true;
 					//					} else {
 					//						//////////
@@ -498,7 +513,7 @@ void speedo_filemanager_v2::parse_command(){
 					//					////////
 				};
 
-				// wenn immer noch alles gut, dann konnten wir die Datei öffnen und auch den Filepointer dahin setzten wo er hin soll
+				// wenn immer noch alles gut, dann konnten wir die Datei oeffnen und auch den Filepointer dahin setzten wo er hin soll
 				if(!file_open_failed && !file_seek_failed){
 					//Serial.println("file_seek OK");
 					for(unsigned int i=0;i<msgLength-start_of_payload-2;i++){ // start_of_payload wird -2 weil noch 2 byte seek info
@@ -515,20 +530,20 @@ void speedo_filemanager_v2::parse_command(){
 						msgLength=2; // n buchstaben + cmd + status eof
 						msgBuffer[0]=CMD_PUT_FILE;
 						msgBuffer[1]=STATUS_EOF;
-						last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
+						last_file[0]='\0'; // damit er nicht denkt das haette geklappt
 					}
 				} else if(file_seek_failed){
 					msgLength=3; // n buchstaben + cmd + status failed
 					msgBuffer[0]=CMD_PUT_FILE;
 					msgBuffer[1]=STATUS_CMD_FAILED;
 					msgBuffer[2]='1';
-					last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
+					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
 				} else {
 					msgLength=3; // n buchstaben + cmd + status failed
 					msgBuffer[0]=CMD_PUT_FILE;
 					msgBuffer[1]=STATUS_CMD_FAILED;
 					msgBuffer[2]='2';
-					last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
+					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
 				}
 			} else if(msgBuffer[0]==CMD_PUT_FILE && ((msgLength==2) && (msgBuffer[1]==STATUS_EOF))){
 				fm_file.sync();
@@ -538,7 +553,7 @@ void speedo_filemanager_v2::parse_command(){
 				msgLength=2; // n buchstaben + cmd + status eof
 				msgBuffer[0]=CMD_PUT_FILE;
 				msgBuffer[1]=STATUS_EOF;
-				last_file[0]='\0'; // damit er nicht denkt das hätte geklappt
+				last_file[0]='\0'; // damit er nicht denkt das haette geklappt
 				////////////////////////////// PUT FILE /////////////////////////////////
 				////////////////////////////// DEL FILE /////////////////////////////////
 			} else if(msgBuffer[0]==CMD_DEL_FILE){
@@ -562,7 +577,7 @@ void speedo_filemanager_v2::parse_command(){
 				 * msgBuffer[1]=length of filename
 				 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
 				 *
-				 * rückweg:
+				 * rueckweg:
 				 * msgBuffer[0]=CMD_SHOW_GFX
 				 * msgBuffer[1]=COMMAND_OK
 				 */
@@ -664,7 +679,7 @@ int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned cha
 	};
 
 
-	// verzeichnissnamen auslesen und öffnen
+	// verzeichnissnamen auslesen und oeffnen
 	if(is_subdir_file){
 		SdFile temp;
 		if(!temp.open(fm_handle, subdir, O_READ)){
@@ -684,7 +699,7 @@ int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned cha
 	};
 
 	SdFile temp_f;
-	// datei öffnen
+	// datei oeffnen
 	if (!temp_f.open(fm_handle, filename,flags)){
 		return -1;
 	} else {

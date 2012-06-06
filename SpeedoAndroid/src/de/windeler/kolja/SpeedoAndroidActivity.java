@@ -54,6 +54,7 @@ OnClickListener {
 	private delFileDialog _delFileDialog;
 	private String dl_basedir = "/";
 	private String t2a_dest = "";
+	private long t2a_size = 0;
 	private int back_pushed = 0;
 	private int statusLastCommand = 0;
 
@@ -115,8 +116,10 @@ OnClickListener {
 	private TreeMap<String, String> dirsMap = new TreeMap<String, String>();
 	private TreeMap<String, String> filesMap = new TreeMap<String, String>();
 	private TreeMap<String, Integer> typeMap = new TreeMap<String, Integer>();
+	private TreeMap<String, Long> sizeMap = new TreeMap<String, Long>();
 	private ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
 	private static final String ITEM_KEY = "key";
+	private static final String ITEM_KEY_LOW = "key_low";
 	private static final String ITEM_IMAGE = "image";
 	// String buffer for outgoing messages
 	public TextView mTest;
@@ -333,7 +336,7 @@ OnClickListener {
 			// process_uploadFile(REQUEST_OPEN_MAP,filePath)
 			break;
 		case REQUEST_CONVERT_MAP:
-			Log.i(TAG, "Map converter hat was zurückgegeben ");
+			Log.i(TAG, "Map converter hat was zurueckgegeben ");
 			if (resultCode == RESULT_OK) {
 				filePath = data.getStringExtra(ImageEditor.OUTPUT_FILE_PATH);
 				Log.i(TAG, "Der Resultcode war OK, der Pfad:" + filePath);
@@ -363,7 +366,7 @@ OnClickListener {
 			;
 			break;
 		case REQUEST_OPEN_GFX:
-			// gfx datei ausgewählt jetzt damit den converter starten
+			// gfx datei ausgewaehlt jetzt damit den converter starten
 			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
 			Log.i(TAG, "File open gab diesen GFX Dateinamen aus:" + filePath);
 			if (resultCode == RESULT_OK) {
@@ -375,7 +378,7 @@ OnClickListener {
 			;
 			break;
 		case REQUEST_CONVERT_GFX:
-			Log.i(TAG, "Image converter hat was zurückgegeben ");
+			Log.i(TAG, "Image converter hat was zurueckgegeben ");
 			if (resultCode == RESULT_OK) {
 				filePath = data.getStringExtra(ImageEditor.OUTPUT_FILE_PATH);
 				Log.i(TAG, "Der Resultcode war OK, der Pfad:" + filePath);
@@ -508,57 +511,57 @@ OnClickListener {
 					mDownload.setText("");
 					filesMap.clear();
 					typeMap.clear();
+					sizeMap.clear();
 					dirsMap.clear();
 					mList.clear();
-				}
-				;
+				};
 				String name = msg.getData().getString("name");
 				int type = msg.getData().getInt("type");
+				long size = msg.getData().getLong("size");
 
-				Log.e(TAG,
+				Log.i(TAG,
 						"CMD:" + name + " item nr:"
 								+ String.valueOf(mSerialService.item));
 
 				if (type == 1) { // file
 					filesMap.put(name, name);
 					typeMap.put(name, 1);
+					sizeMap.put(name, size);
 				} else if (type == 2) { // dir
 					dirsMap.put(name, name);
 					typeMap.put(name, 2);
-				}
-				;
+					sizeMap.put(name, size);
+				};
 				if (type == STATUS_EOF) {
 					dir_completed = true;
 					Log.d(TAG, "beginne liste aufzubauen");
-
-					// send to display
-					SimpleAdapter fileList = new SimpleAdapter(
-							getApplicationContext(), mList,
-							R.layout.file_dialog_dl_row, new String[] {
-								ITEM_KEY, ITEM_IMAGE }, new int[] {
-								R.id.fdrowtext, R.id.fdrowimage });
+					
+					// send to display												
+					SimpleAdapter fileList = new SimpleAdapter(getApplicationContext(), mList,
+							R.layout.file_dialog_row,
+							new String[] { ITEM_KEY, ITEM_IMAGE, ITEM_KEY_LOW }, new int[] {
+							R.id.fdrowtext, R.id.fdrowimage, R.id.fdrowtext_lower });
 
 					if (dir_path != "/") {
-						addItem("/", R.drawable.folder);
+						addItem("/", R.drawable.folder,-1);
 						typeMap.put("/", 2);
-					}
-					;
+					};
 
 					for (String dir : dirsMap.tailMap("").values()) {
 						if (dir.toString().length() > 23) {
-							addItem(dir.toString().substring(0, 20) + "...",
-									R.drawable.folder);
+							addItem(dir.toString().substring(0, 20) + "...",R.drawable.folder,-1);
 						} else {
-							addItem(dir, R.drawable.folder);
+							addItem(dir, R.drawable.folder,-1);
 						}
 					}
 
 					for (String file : filesMap.tailMap("").values()) {
+						long file_size=0;
+						file_size = sizeMap.get(file);
 						if (file.toString().length() > 23) {
-							addItem(file.toString().substring(0, 20) + "...",
-									R.drawable.file);
+							addItem(file.toString().substring(0, 20) + "...",R.drawable.file,file_size);
 						} else {
-							addItem(file, R.drawable.file);
+							addItem(file, R.drawable.file,file_size);
 						}
 					}
 					mDLListView.setAdapter(fileList);
@@ -569,17 +572,20 @@ OnClickListener {
 								View arg1, int arg2, long arg3) {
 							String name = null;
 							Integer type = 0;
+							Long size = (long) 0;
 							HashMap<String, Object> item = new HashMap<String, Object>();
 
 							item = mList.get(arg2);
 							name = (String) item.get(ITEM_KEY);
 							type = typeMap.get(name);
+							size = sizeMap.get(name);
 
 							if (type == 1) {
 								t2a_dest = "";
 								if (dir_path != "/") // z.B. CONFIG
 									t2a_dest = dir_path + "/"; // CONFIG/
 								t2a_dest = t2a_dest + name; // CONFIG/BASE.TXT
+								t2a_size = size;
 
 								TextView mselfile = (TextView) findViewById(R.id.dl_selected_file);
 								mselfile.setText("Selected file: "
@@ -687,12 +693,12 @@ OnClickListener {
 			_getDirDialog.execute("/");
 			break;
 		case R.id.DownloadButtonSelect:
-			Log.i(TAG, "download gedrückt");
+			Log.i(TAG, "download gedrueckt");
 			_getFileDialog = new getFileDialog(this);
-			_getFileDialog.execute(t2a_dest, dl_basedir);
+			_getFileDialog.execute(t2a_dest, dl_basedir, String.valueOf(t2a_size));
 			break;
 		case R.id.DeleteButton:
-			Log.i(TAG, " delete gedrückt!");
+			Log.i(TAG, " delete gedrueckt!");
 			_delFileDialog = new delFileDialog(this);
 			_delFileDialog.execute(t2a_dest);
 			break;
@@ -702,9 +708,26 @@ OnClickListener {
 		}
 	}
 
-	private void addItem(String fileName, int imageId) {
+	private void addItem(String fileName, int imageId, long size) {
 		HashMap<String, Object> item = new HashMap<String, Object>();
 		item.put(ITEM_KEY, fileName);
+		if(size>=100*1024*1024){ // ab 100mb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+" MB");
+		} else if(size>=10*1024*1024){ // ab 10mb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+"."+String.valueOf((size/1024/102)%10)+" MB");
+		} else if(size>=1024*1024){ // ab 1mb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+"."+String.valueOf((size/1024/10)%100)+" MB");
+		} else if(size>=100*1024){ // ab 100kb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+" KB");
+		} else if(size>=10*1024){ // ab 10kb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+"."+String.valueOf((size/102)%10)+" KB");
+		} else if(size>=1024){ // ab 1kb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+"."+String.valueOf((size/10)%100)+" KB");
+		} else if(size>0){	// solange es nicht 0 ist
+			item.put(ITEM_KEY_LOW, String.valueOf(size)+" Byte");
+		} else {
+			item.put(ITEM_KEY_LOW, " ");
+		};
 		item.put(ITEM_IMAGE, imageId);
 		mList.add(item);
 	}
@@ -721,7 +744,7 @@ OnClickListener {
 		}
 	};
 
-	// klasse die das loading fenster startet und im hintergrund "dir" ausführt
+	// klasse die das loading fenster startet und im hintergrund "dir" ausfuehrt
 	protected class getDirDialog extends AsyncTask<String, Integer, String> {
 		private Context context;
 		ProgressDialog dialog;
@@ -755,6 +778,7 @@ OnClickListener {
 		private final Handler mHandlerUpdate = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
+				Log.i(TAG, "handle:" + msg.getData().getString(BYTE_TRANSFERED));
 				dialog.setMessage(msg.getData().getString(BYTE_TRANSFERED));
 				Log.i(TAG, "update prozenzzahl");
 			};
@@ -762,7 +786,7 @@ OnClickListener {
 	}
 
 	// klasse die das loading fenster startet und im hintergrund "download"
-	// ausführt
+	// ausfuehrt
 	protected class getFileDialog extends AsyncTask<String, Integer, String> {
 		private Context context;
 		ProgressDialog dialog;
@@ -779,7 +803,7 @@ OnClickListener {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				mSerialService.getFile(params[0], params[1], mHandlerUpdate);
+				mSerialService.getFile(params[0], params[1], mHandlerUpdate, params[2]);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -812,7 +836,7 @@ OnClickListener {
 	}
 
 	// klasse die das loading fenster startet und im hintergrund "download"
-	// ausführt
+	// ausfuehrt
 	protected class putFileDialog extends AsyncTask<String, Integer, String> {
 		private Context context;
 		ProgressDialog dialog;
@@ -878,7 +902,7 @@ OnClickListener {
 	};
 
 	// klasse die das loading fenster startet und im hintergrund "download"
-	// ausführt
+	// ausfuehrt
 	protected class delFileDialog extends AsyncTask<String, Integer, String> {
 		private Context context;
 		ProgressDialog dialog;

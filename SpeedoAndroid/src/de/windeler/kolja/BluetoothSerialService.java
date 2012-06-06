@@ -475,12 +475,12 @@ public class BluetoothSerialService {
 		semaphore.acquire();
 		Log.i(TAG_SEM,"send hat den semaphore");
 
-		// da der Tacho, nach 2sek den fast response mode verlässt, müssen wir die seq neu zählen
+		// da der Tacho, nach 2sek den fast response mode verlaesst, muessen wir die seq neu zaehlen
 		if(System.currentTimeMillis()-lastSend>2000){
 			reset_seq();
 		}
 
-		seqNum=(seqNum+1)%256; // wir starten mit 0 und setzten im notfall auch zu 0 zurück, daher immer VOR dem senden inkrementieren
+		seqNum=(seqNum+1)%256; // wir starten mit 0 und setzten im notfall auch zu 0 zurueck, daher immer VOR dem senden inkrementieren
 		
 		
 		if(rx_tx_state==ST_IDLE){
@@ -529,11 +529,11 @@ public class BluetoothSerialService {
 			if(rx_tx_state!=ST_IDLE){
 				rx_tx_state=ST_IDLE;
 				reset_seq();
-				Log.i(TAG,"timer notfall, gebe semaphore zurück");
-				Log.i(TAG_RECV,"timer notfall, gebe semaphore zurück");
+				Log.i(TAG,"timer notfall, gebe semaphore zurueck");
+				Log.i(TAG_RECV,"timer notfall, gebe semaphore zurueck");
 				//semaphore.release();
 				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
-				Log.i(TAG_SEM,"Notfall timer hat den semaphore zurück gegeben");
+				Log.i(TAG_SEM,"Notfall timer hat den semaphore zurueck gegeben");
 				status=ST_EMERGENCY_RELEASE;
 
 
@@ -629,13 +629,13 @@ public class BluetoothSerialService {
 						bundle.putString(SpeedoAndroidActivity.TOAST, str.substring(2,msgLength));
 						msg.setData(bundle);
 						mHandler.sendMessage(msg); 
-						Log.i(TAG,"statemachine ok, gebe semaphore zurück");
+						Log.i(TAG,"statemachine ok, gebe semaphore zurueck");
 
 					} else {
 						// irgendwie das command nochmal senden
 					}
 					break;
-					// da alle richtungen zwar betätigt werden, danach die schleife auf dem AVR aber unterbrochen wird -> seqNr resetten
+					// da alle richtungen zwar betaetigt werden, danach die schleife auf dem AVR aber unterbrochen wird -> seqNr resetten
 				case CMD_GO_LEFT:
 					msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
 					bundle = new Bundle();
@@ -679,10 +679,21 @@ public class BluetoothSerialService {
 
 					msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_DIR_APPEND);
 					bundle = new Bundle();
-					bundle.putString("name", str.substring(3,msgLength));
 					bundle.putInt("type", (int)msgBuffer[2]);
+					if(msgLength>5){
+						Log.i(TAG,"size: [3]="+String.valueOf((int)msgBuffer[3]&0xff)+" [4]="+String.valueOf((int)msgBuffer[4]&0xff)+" [5]="+String.valueOf((int)msgBuffer[5]&0xff)+" [6]="+String.valueOf((int)msgBuffer[6]&0xff));
+						//long size=(long)(((int)msgBuffer[3])&0xff<<24 | ((int)msgBuffer[4])&0xff<<16 | ((int)msgBuffer[5])&0xff<<8 | ((int)msgBuffer[6])&0xff);
+						long size=((int)msgBuffer[6]&0xff)+((int)msgBuffer[5]&0xff)*256+((int)msgBuffer[4]&0xff)*65536+((int)msgBuffer[3]&0xff)*16777216;
+						Log.i(TAG,"size="+String.valueOf(size));
+						bundle.putLong("size", size);
+						bundle.putString("name", str.substring(7,msgLength));
+						last_dir_received=str.substring(7,msgLength);
+					} else {
+						bundle.putLong("size", (long)0);
+						bundle.putString("name", "-");
+						last_dir_received="";
+					}
 					msg.setData(bundle);
-					last_dir_received=str.substring(3,msgLength);
 					mHandler.sendMessage(msg);
 
 					break;
@@ -695,7 +706,7 @@ public class BluetoothSerialService {
 				default:
 					Log.i(TAG,"unknown command received");
 					// irgendwie das commando nochmal senden
-					msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_DIR_APPEND);
+					msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_TOAST);
 					bundle = new Bundle();
 					bundle.putString(SpeedoAndroidActivity.TOAST, "unknown command from speedo received");
 					msg.setData(bundle);
@@ -704,8 +715,8 @@ public class BluetoothSerialService {
 				}
 				semaphore.release();
 				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
-				Log.i(TAG_SEM,"Receive hat den semaphore zurück gegeben");
-				Log.i(TAG,"semaphore zurück gegeben");
+				Log.i(TAG_SEM,"Receive hat den semaphore zurueck gegeben");
+				Log.i(TAG,"semaphore zurueck gegeben");
 				status=msgBuffer[2];
 
 			} else {
@@ -726,7 +737,7 @@ public class BluetoothSerialService {
 	public int getDir(String dir, Handler mHandlerUpdate) throws InterruptedException{
 
 		item=0;
-		byte send[] = new byte[dir.length()+2+1]; // 2 für length of item + name + command
+		byte send[] = new byte[dir.length()+2+1]; // 2 fuer length of item + name + command
 		status=1;
 
 		// prepare static part
@@ -737,7 +748,7 @@ public class BluetoothSerialService {
 
 		while(status!=STATUS_EOF){
 			// prepare dynamic part
-			send[1]=(byte) ((item & 0xff00)>>8); //danger wegen signed ? interessant ab über 127 Files
+			send[1]=(byte) ((item & 0xff00)>>8); //danger wegen signed ? interessant ab ueber 127 Files
 			send[2]=(byte) (item & 0x00ff);
 			item++;
 			// send setzt jetzt den semaphore und erst 
@@ -751,7 +762,7 @@ public class BluetoothSerialService {
 				mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 				semaphore.release();
 				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
-				Log.i(TAG_SEM,"Send failed hat den semaphore zurück gegeben");
+				Log.i(TAG_SEM,"Send failed hat den semaphore zurueck gegeben");
 				return send_value;
 			}
 
@@ -760,15 +771,16 @@ public class BluetoothSerialService {
 			Log.i(TAG_SEM,"get dir wartet");
 			Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 			semaphore.acquire();
-			Log.i(TAG_SEM,"get dir hat den semaphore von bekommen und geht in die nächste runde");
+			Log.i(TAG_SEM,"get dir hat den semaphore von bekommen und geht in die naechste runde");
 			semaphore.release();
 			Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
-			Log.i(TAG_SEM,"get dir hat den semaphore zurück gegeben");
+			Log.i(TAG_SEM,"get dir hat den semaphore zurueck gegeben");
 			
 			// fortschritt schreiben
-			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION); // typ egal wir zeigen alles an
 			Bundle bundle = new Bundle();
 			String shown_message="Listing "+ last_dir_received;
+			Log.i(TAG,shown_message);
 			bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
 			msg.setData(bundle);
 			mHandlerUpdate.sendMessage(msg); 
@@ -777,7 +789,7 @@ public class BluetoothSerialService {
 		return 0;
 	};
 	
-	public int getFile(String filename, String dlBaseDir,Handler mHandlerUpdate) throws InterruptedException {
+	public int getFile(String filename, String dlBaseDir,Handler mHandlerUpdate, String file_size) throws InterruptedException {
 		Log.i(TAG,"getFile gestartet: filename "+filename+" dlBasedir "+dlBaseDir);
 
 
@@ -789,7 +801,7 @@ public class BluetoothSerialService {
 		 * msgBuffer[x+1]=high_nibble of cluster nr
 		 * msgBuffer[x+2]=low_nibble of cluster nr 
 		 * 
-		 * rückweg:
+		 * rueckweg:
 		 * msgBuffer[0]=CMD_GET_FILE
 		 * msgBuffer[1]=COMMAND_OK
 		 * msgBuffer[2..]=DATA 
@@ -800,7 +812,7 @@ public class BluetoothSerialService {
 
 		int failCounter=0;
 		item = 0;
-		byte send[] = new byte[2+filename.length()+2]; // 2 für 250Byte Cluster + n für name + 1 command + 1 filename length
+		byte send[] = new byte[2+filename.length()+2]; // 2 fuer 250Byte Cluster + n fuer name + 1 command + 1 filename length
 		// prepare static part
 		send[0]=CMD_GET_FILE;
 		send[1]=(byte) (filename.length() & 0x000000FF);
@@ -832,14 +844,14 @@ public class BluetoothSerialService {
 			if(item<4){
 				shown_message=String.valueOf(item*250)+ " Bytes transfered";
 			} else {
-				shown_message=String.valueOf((int)Math.floor(item/4))+ " KBytes transfered";
+				shown_message=String.valueOf((int)Math.floor(item/4)) + "/" + file_size + " KBytes transfered";
 			}
 			bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
 			msg.setData(bundle);
 			mHandlerUpdate.sendMessage(msg); 
 
 			// prepare dynamic part
-			send[2+filename.length()]=(byte) ((item & 0xff00)>>8); //danger wegen signed ? interessant ab über 127 Files
+			send[2+filename.length()]=(byte) ((item & 0xff00)>>8); //danger wegen signed ? interessant ab ueber 127 Files
 			send[3+filename.length()]=(byte) (item & 0x00ff);
 			item++;
 			// send setzt jetzt den semaphore und erst 
@@ -851,7 +863,7 @@ public class BluetoothSerialService {
 			if(send_value>0){
 				mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 				semaphore.release();
-				Log.i(TAG_SEM,"get_file, send failed hat den semaphore zurück gegeben");
+				Log.i(TAG_SEM,"get_file, send failed hat den semaphore zurueck gegeben");
 				return send_value;
 			}
 
@@ -861,7 +873,7 @@ public class BluetoothSerialService {
 			Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 			semaphore.acquire();
 			Log.i(TAG_SEM,"getFile hat sich einen semaphore gekrallt");
-			// hier können wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
+			// hier koennen wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
 			if(status==ST_EMERGENCY_RELEASE){
 				// hier sowas wie: 
 				item--; 
@@ -891,8 +903,8 @@ public class BluetoothSerialService {
 				catch (IOException e) {		e.printStackTrace();			}
 			}
 
-			// löse desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der nächsten 
-			// runde, wieder einen semphore ohne einschränkung bekommen
+			// loese desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der naechsten 
+			// runde, wieder einen semphore ohne einschraenkung bekommen
 			
 			if((msgBuffer[1]&0x00ff)==(STATUS_CMD_FAILED&0x00ff)){
 				status=STATUS_EOF;
@@ -900,10 +912,10 @@ public class BluetoothSerialService {
 				status=STATUS_EOF;
 			}
 			semaphore.release();
-			Log.i(TAG_SEM,"getFile hat den semaphore zurück gegeben");
+			Log.i(TAG_SEM,"getFile hat den semaphore zurueck gegeben");
 
 		}
-		// status EOF erreich, datei schließen und meldung zurück geben
+		// status EOF erreich, datei schliessen und meldung zurueck geben
 		// file.close();
 		try {						out.close();			} 
 		catch (IOException e) {		e.printStackTrace();	}
@@ -920,7 +932,7 @@ public class BluetoothSerialService {
 		 * msgBuffer[x+2]=low_nibble of cluster nr
 		 * msgBuffer[X+3..250]=Content
 		 *  
-		 * rückweg:
+		 * rueckweg:
 		 * msgBuffer[0]=CMD_PUT_FILE
 		 * msgBuffer[1]=COMMAND_OK
 		 */
@@ -930,7 +942,7 @@ public class BluetoothSerialService {
 		int payloadLength=250;
 		int bytesToSend=999;
 		item = 0; // cluster nr
-		byte send[] = new byte[250]; // 250 auf Vorbehalt, da die tatsächliche länge auch davon abhöngt wieviel noch da ist in der Datei
+		byte send[] = new byte[250]; // 250 auf Vorbehalt, da die tatsaechliche laenge auch davon abhoengt wieviel noch da ist in der Datei
 		// prepare static part
 		send[0]=CMD_PUT_FILE;
 		send[1]=(byte) (dest.length() & 0x000000FF);
@@ -981,7 +993,7 @@ public class BluetoothSerialService {
 			Log.e(TAG_RECV,"Bytes to send: "+String.valueOf(bytesToSend));
 
 			// prepare dynamic part
-			send[startOfPayload-2]=(byte) ((item & 0xff00)>>8); //danger wegen signed ? interessant ab über 127 Files
+			send[startOfPayload-2]=(byte) ((item & 0xff00)>>8); //danger wegen signed ? interessant ab ueber 127 Files
 			send[startOfPayload-1]=(byte) (item & 0x00ff);
 			item++;
 
@@ -999,7 +1011,7 @@ public class BluetoothSerialService {
 			if(send_value>0){
 				mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 				semaphore.release();
-				Log.i(TAG_SEM,"Put File, send failed hat den semaphore zurück gegeben");
+				Log.i(TAG_SEM,"Put File, send failed hat den semaphore zurueck gegeben");
 				return send_value;
 			}
 
@@ -1010,7 +1022,7 @@ public class BluetoothSerialService {
 			semaphore.acquire();
 			Log.i(TAG_SEM,"put file hat semaphore erhalten");
 			transfered_bytes+=payloadLength;
-			// hier können wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
+			// hier koennen wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
 			if(status==ST_EMERGENCY_RELEASE){
 				Log.i(TAG_RECV,"EMERGENCY TOKEN RETURN");
 				// hier sowas wie: 
@@ -1026,10 +1038,10 @@ public class BluetoothSerialService {
 			}
 
 
-			// löse desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der nächsten 
-			// runde, wieder einen semphore ohne einschränkung bekommen
+			// loese desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der naechsten 
+			// runde, wieder einen semphore ohne einschraenkung bekommen
 			semaphore.release();
-			Log.i(TAG_SEM,"Put file hat den semaphore zurück gegeben");
+			Log.i(TAG_SEM,"Put file hat den semaphore zurueck gegeben");
 			Log.i(TAG,"und auch wieder gehen lassen");
 			if(msgBuffer[1]==STATUS_EOF || msgBuffer[1]==STATUS_CMD_FAILED){
 				upload_status=STATUS_EOF;
@@ -1046,7 +1058,7 @@ public class BluetoothSerialService {
 
 		}
 		Log.i(TAG,"while schleife abgeschlossen");
-		// status EOF erreich, datei schließen und meldung zurück geben
+		// status EOF erreich, datei schliessen und meldung zurueck geben
 		// file.close();
 		try {						in.close();			} 
 		catch (IOException e) {		e.printStackTrace(); return_value=-3;	}
@@ -1064,12 +1076,12 @@ public class BluetoothSerialService {
 		 * msgBuffer[1]=length of filename
 		 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
 		 * 
-		 * rückweg:
+		 * rueckweg:
 		 * msgBuffer[0]=CMD_PUT_FILE
 		 * msgBuffer[1]=COMMAND_OK
 		 */
-		Log.i(TAG, "löschen gestartet");
-		byte send[] = new byte[2+filename.length()]; // 250 auf Vorbehalt, da die tatsächliche länge auch davon abhöngt wieviel noch da ist in der Datei
+		Log.i(TAG, "loeschen gestartet");
+		byte send[] = new byte[2+filename.length()]; // 250 auf Vorbehalt, da die tatsaechliche laenge auch davon abhoengt wieviel noch da ist in der Datei
 		// prepare static part
 		send[0]=CMD_DEL_FILE;
 		send[1]=(byte) (filename.length() & 0x000000FF);
@@ -1082,7 +1094,7 @@ public class BluetoothSerialService {
 		if(send_value>0){
 			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 			semaphore.release();
-			Log.i(TAG_SEM,"delefe file, send failed hat den semaphore zurück gegeben");
+			Log.i(TAG_SEM,"delefe file, send failed hat den semaphore zurueck gegeben");
 			return send_value;
 		}
 
@@ -1094,8 +1106,8 @@ public class BluetoothSerialService {
 		Log.i(TAG_SEM,"delfile hat sich einen semaphore gekrallt");
 		semaphore.release();
 		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
-		Log.i(TAG_SEM,"delete file hat den semaphore zurück gegeben");
-		// hier können wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
+		Log.i(TAG_SEM,"delete file hat den semaphore zurueck gegeben");
+		// hier koennen wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
 		if(status==ST_EMERGENCY_RELEASE){
 			Log.i(TAG_RECV,"EMERGENCY TOKEN RETURN");
 			// hier sowas wie: 
@@ -1123,13 +1135,13 @@ public class BluetoothSerialService {
 		 * msgBuffer[1]=length of filename
 		 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
 		 * 
-		 * rückweg:
+		 * rueckweg:
 		 * msgBuffer[0]=CMD_SHOW_GFX
 		 * msgBuffer[1]=COMMAND_OK
 		 */
 		filename=filename.toUpperCase();
 		Log.i(TAG, "Zeige bild");
-		byte send[] = new byte[2+filename.length()]; // 250 auf Vorbehalt, da die tatsächliche länge auch davon abhöngt wieviel noch da ist in der Datei
+		byte send[] = new byte[2+filename.length()]; // 250 auf Vorbehalt, da die tatsaechliche laenge auch davon abhoengt wieviel noch da ist in der Datei
 		// prepare static part
 		send[0]=CMD_SHOW_GFX;
 		send[1]=(byte) (filename.length() & 0x000000FF);
@@ -1142,7 +1154,7 @@ public class BluetoothSerialService {
 		if(send_value>0){
 			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 			semaphore.release();
-			Log.i(TAG_SEM,"show gfx send failed hat den semaphore zurück gegeben");
+			Log.i(TAG_SEM,"show gfx send failed hat den semaphore zurueck gegeben");
 			return send_value;
 		}
 
@@ -1154,8 +1166,8 @@ public class BluetoothSerialService {
 		Log.i(TAG_SEM,"showgfx hat sich einen semaphore gekrallt");
 		semaphore.release();
 		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
-		Log.i(TAG_SEM,"show gfx hat den semaphore zurück gegeben");
-		// hier können wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
+		Log.i(TAG_SEM,"show gfx hat den semaphore zurueck gegeben");
+		// hier koennen wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
 		if(status==ST_EMERGENCY_RELEASE){
 			Log.i(TAG_RECV,"EMERGENCY TOKEN RETURN");
 			// hier sowas wie: 
@@ -1176,4 +1188,3 @@ public class BluetoothSerialService {
 
 	}
 }
-

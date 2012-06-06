@@ -329,9 +329,9 @@ void SdFile::ls(uint8_t flags) {
 void SdFile::ls(Print* pr, uint8_t flags, uint8_t indent) {
   rewind();
   int8_t status;
-  while ((status = lsPrintNext(pr, flags, indent))) {		// LS_R=4 		==>> Wenn LS_R NICHT �bergeben wurde:
+  while ((status = lsPrintNext(pr, flags, indent))) {		// LS_R=4 		==>> Wenn LS_R NICHT ?bergeben wurde:
     if (status > 1 && (flags & LS_R)) {						// status > 1&&(0011 & 0100) ==> status>1&&(0) ==> wenn status(file=1,dir=2)>0
-      uint16_t index = curPosition()/32 - 1;				// Wenn es hingegen �bergeben wurde, muss status>1, also bei einem dir mach irgendwas
+      uint16_t index = curPosition()/32 - 1;				// Wenn es hingegen ?bergeben wurde, muss status>1, also bei einem dir mach irgendwas
       SdFile s;
       if (s.open(this, index, O_READ)) s.ls(pr, flags, indent + 2);
       seekSet(32 * (index + 1));
@@ -347,14 +347,14 @@ void SdFile::ls(Print* pr, uint8_t flags, uint8_t indent) {
 // isDir = 2
 // EOF = 0
 // als eingabe haben wir:
-// Den buffer Zeiger wird mit dem ensprechenden Namen gef�llt werden
+// Den buffer Zeiger wird mit dem ensprechenden Namen gef?llt werden
 
-int8_t SdFile::lsJKWNext(char* buffer,int item){
+int8_t SdFile::lsJKWNext(char* buffer,int item, uint32_t* size){
 	dir_t dir;
-	// woher weiß er eigentlich wo er lesen soll? weil per rewind() der FP auf den Anfang der
-	// FAT gelegt wird ? und er den Pointer da lässt ?
+	// woher weiss er eigentlich wo er lesen soll? weil per rewind() der FP auf den Anfang der
+	// FAT gelegt wird ? und er den Pointer da laesst ?
 	for(int i=0; i<=item; i++){
-		while (1) { // die while schleife filtert uns alle sachen raus die wir nicht wollen, alle '.',gel�schten, etc
+		while (1) { // die while schleife filtert uns alle sachen raus die wir nicht wollen, alle '.',gel?schten, etc
 			//		Serial.print("While Schleife, dir.name=");
 			//		for(int i=0; i<11; i++){
 			//			if(dir.name[i]>='0' && dir.name[i]<='9')
@@ -384,12 +384,19 @@ int8_t SdFile::lsJKWNext(char* buffer,int item){
 			buffer[j]=dir.name[i];
 			j++;
 		};
-		// hinter der 8ten stelle ein '.' einf�gen
+		// hinter der 8ten stelle ein '.' einfuegen
 		if(i==7 && DIR_IS_FILE(&dir)){
 			buffer[j]='.';
 			j++;
 		};
 	};
+
+	if (!DIR_IS_SUBDIR(&dir) || true){ //TODO true kann raus?
+		*size=dir.fileSize;		// calculate filesize in kb
+	} else {
+		*size=0;
+	};
+
 	buffer[j]='\0'; // string ende
 	return DIR_IS_FILE(&dir) ? 1 : 2;							// FILE returns 1, DIR returns 2, Ende 0
 };
@@ -427,7 +434,7 @@ int8_t SdFile::lsPrintNext(Print *pr, uint8_t flags, uint8_t indent) {
     pr->print('/');
     w++;
   }
-  if (flags & (LS_DATE | LS_SIZE)) {						// w ist also zum durchz�hlen, wenn das zuklein ist: leerzeichen auff�llen
+  if (flags & (LS_DATE | LS_SIZE)) {						// w ist also zum durchz?hlen, wenn das zuklein ist: leerzeichen auff?llen
     while (w++ < 14) pr->print(' ');
   }
   // print modify date/time if requested
@@ -438,7 +445,7 @@ int8_t SdFile::lsPrintNext(Print *pr, uint8_t flags, uint8_t indent) {
     printFatTime(pr, dir.lastWriteTime);
   }
   // print size if requested
-  if (!DIR_IS_SUBDIR(&dir) && (flags & LS_SIZE)) {			// gr��e
+  if (!DIR_IS_SUBDIR(&dir) && (flags & LS_SIZE)) {			// gr??e
     pr->print(' ');
     pr->print(dir.fileSize);
   }
