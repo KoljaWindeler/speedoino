@@ -216,8 +216,8 @@ bool tetris::loop(){
 			// dann sicher sein das er keine taste
 			// mehr drückt
 			_delay_ms(1000);
-			while(Serial.available()>0 || !digitalRead(menu_button_links) || !digitalRead(menu_button_rechts) || !digitalRead(menu_button_oben) || !digitalRead(menu_button_unten)){
-				Serial.flush();
+			while(Serial.available()>0 || 	!(PINJ & (1<<menu_button_links)) || !(PINJ & (1<<menu_button_rechts)) || !(PINJ & (1<<menu_button_oben)) ||	!(PINJ & (1<<menu_button_unten)) ){
+					Serial.flush();
 				_delay_ms(50);
 			}
 			pOLED->animation(ani);
@@ -239,10 +239,10 @@ bool tetris::loop(){
 			_delay_ms(1000);
 			// if you loose and the box has been drawn, way on key down
 		} else {
-			if(c==1 || !digitalRead(menu_button_links)){
+			if(c==1 || !(PINJ & (1<<menu_button_links))){
 				_delay_ms(MIN_SIDE_PUSH_TIME);
 				return false;
-			} else if (c==2 || !digitalRead(menu_button_rechts)){
+			} else if (c==2 || !(PINJ & (1<<menu_button_rechts))){
 				_delay_ms(MIN_SIDE_PUSH_TIME);
 				pOLED->clear_screen();
 				// ja das ist ungeschickt, init leert uns die line variable, drawfield malt das hin, das problem ist nur
@@ -256,16 +256,16 @@ bool tetris::loop(){
 		// nope you haven't lost by now .. go on
 	} else {
 		////////////////// if there is a button pushed, //////////////////
-		if(!digitalRead(menu_button_links)){
+		if(!(PINJ & (1<<menu_button_links))){
 			c=1;
 			_delay_ms(MIN_SIDE_PUSH_TIME);
-		} else if(!digitalRead(menu_button_oben)){
+		} else if(!(PINJ & (1<<menu_button_oben))){
 			c=3;
 			_delay_ms(MIN_TURN_PUSH_TIME);
-		} else if(!digitalRead(menu_button_unten)){
+		} else if(!(PINJ & (1<<menu_button_unten))){
 			c=4;
 			_delay_ms(MIN_DOWN_PUSH_TIME);
-		} else if(!digitalRead(menu_button_rechts)){
+		} else if(!(PINJ & (1<<menu_button_rechts))){
 			c=2;
 			_delay_ms(MIN_SIDE_PUSH_TIME);
 		}

@@ -403,9 +403,11 @@ void speedo_menu::display(){ // z.B. state = 26
 		sprintf(temp,"%c",127);
 		pOLED->string(pSpeedo->default_font,temp,2,6,0,15,0);
 	} else if(state==5911){
+		PCICR &=~(1<<PCIE1); // PCINT DEactivieren
 		tetris* m_tetris=new tetris;
 		m_tetris->run();
 		delete m_tetris;
+		PCICR |=(1<<PCIE1); // PCINT Activieren
 		back();
 		display();
 	}

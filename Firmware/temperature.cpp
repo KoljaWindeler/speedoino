@@ -45,9 +45,21 @@ void speedo_temperature::read_oil_temp() {
 	// werte in array speichern in °C*10 für Nachkommastelle
 	if(TEMP_DEBUG){ Serial.println("\nTemp: Beginne Öl zu lesen"); }
 
+	//// Widerstandsberechnung ////
+	/*	Spannungsabgriff zwischen 2 Widerständen, R1 ggn 5V da drunter in Reihe "R".
+	 *  R=U/I, U=R*I, I=U/R
+	 *  Spannung über dem zu messenden Widerstand:  Uabgriff = R*I
+	 *  I=5V/(R+R1)
+	 *  Uabgriff = 5V*analogValue/1024 = R*5V/(R+R1)
+	 *  5*analogValue/1024*R + 5*analogValue/1024*R1 = R*5
+	 *  5*analogValue/1024*R1 = R*(5-5*analogValue/1024)
+	 *  R= (5*analogValue/1024*R1)/(5-5*analogValue/1024) ; "5" Kürzen
+	 *  R= (analogValue/1024*R1)/(1-1*analogValue/1024) ; "1024" nach unten
+	 *  R= (analogValue*R1)/(1024-analogValue) ; "1024" nach unten
+	 *   Widerstandsberechnung *////
+
 	// werte auslesen
 	unsigned int oil_value=analogRead(OIL_TEMP_PIN);
-	// kann bis zu 225.060 werden bei 40°C etwa 470 ohm: 470+220=690 Ohm, U/R=I => 5/690=0,007246377A, R*I=U, 1,594202899V, Wert=326
 	int temp=(1024-oil_value)/10; // max 102
 	if(temp>0 && temp<102){
 		int r_temp=round((oil_value*22)/temp); // 22*1024 < 32000
