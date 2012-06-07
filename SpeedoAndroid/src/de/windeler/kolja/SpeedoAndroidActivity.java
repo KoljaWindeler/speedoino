@@ -73,6 +73,7 @@ OnClickListener {
 	private Button browseToUploadMap;
 	private Button browseToUploadConfig;
 	private Button browseToUploadGfx;
+	private Button browseToRouteMap;
 	private Button mloadRoot;
 	private Button DlselButton;
 	private Button DeleteButton;
@@ -98,6 +99,9 @@ OnClickListener {
 	private static final int REQUEST_OPEN_GFX = 6; // file open dialog
 	private static final int REQUEST_CONVERT_GFX = 7; // convert image
 	private static final int REQUEST_CONVERT_MAP = 8; // convert maps
+	private static final int REQUEST_SHOW_MAP = 9; // open maps
+	private static final int REQUEST_SHOW_MAP_DONE = 10; // open maps
+
 
 	// transfer messages
 	public static final byte CMD_SIGN_ON = 0x01;
@@ -177,6 +181,8 @@ OnClickListener {
 		browseToUploadMap.setOnClickListener(this);
 		browseToUploadGfx = (Button) findViewById(R.id.browseToUploadGfx);
 		browseToUploadGfx.setOnClickListener(this);
+		browseToRouteMap = (Button) findViewById(R.id.browseToRouteMap);
+		browseToRouteMap.setOnClickListener(this);
 		browseToUploadConfig = (Button) findViewById(R.id.browseToUploadConfig);
 		browseToUploadConfig.setOnClickListener(this);
 		mloadRoot = (Button) findViewById(R.id.loadRoot);
@@ -292,6 +298,7 @@ OnClickListener {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult " + resultCode + " " + requestCode);
 		String filePath;
+		Intent intent;
 		switch (requestCode) {
 		case REQUEST_CONNECT_DEVICE:
 			// When DeviceListActivity returns with a device to connect
@@ -327,7 +334,7 @@ OnClickListener {
 			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
 			Log.i(TAG, "File open gab diesen Dateinamen aus:" + filePath);
 			if (resultCode == RESULT_OK) {
-				Intent intent = new Intent(getBaseContext(), MapEditor.class);
+				intent = new Intent(getBaseContext(), MapEditor.class);
 				intent.putExtra(MapEditor.INPUT_FILE_NAME, filePath);
 				intent.putExtra(MapEditor.INPUT_DIR_PATH, dl_basedir);
 				startActivityForResult(intent, REQUEST_CONVERT_MAP);
@@ -370,7 +377,7 @@ OnClickListener {
 			filePath = data.getStringExtra(FileDialog.RESULT_PATH);
 			Log.i(TAG, "File open gab diesen GFX Dateinamen aus:" + filePath);
 			if (resultCode == RESULT_OK) {
-				Intent intent = new Intent(getBaseContext(), ImageEditor.class);
+				intent = new Intent(getBaseContext(), ImageEditor.class);
 				intent.putExtra(ImageEditor.INPUT_FILE_NAME, filePath);
 				intent.putExtra(ImageEditor.INPUT_DIR_PATH, dl_basedir);
 				startActivityForResult(intent, REQUEST_CONVERT_GFX);
@@ -397,6 +404,16 @@ OnClickListener {
 						Toast.LENGTH_SHORT);
 				toast.show();
 			}
+			break;
+		case REQUEST_SHOW_MAP:
+			Log.i(TAG, "Image converter hat was zurueckgegeben ");
+			if (resultCode == RESULT_OK) {
+				filePath = data.getStringExtra(FileDialog.RESULT_PATH);
+				Log.i(TAG, "Der Resultcode war OK, der Pfad:" + filePath);
+				intent = new Intent(getBaseContext(), RouteMap.class);
+				intent.putExtra(RouteMap.INPUT_FILE_NAME, filePath);
+				startActivityForResult(intent, REQUEST_SHOW_MAP_DONE);
+			};
 			break;
 		case RESULT_CANCELED:
 			Log.i(TAG, "File open abgebrochen");
@@ -535,12 +552,12 @@ OnClickListener {
 				if (type == STATUS_EOF) {
 					dir_completed = true;
 					Log.d(TAG, "beginne liste aufzubauen");
-					
+
 					// send to display												
 					SimpleAdapter fileList = new SimpleAdapter(getApplicationContext(), mList,
 							R.layout.file_dialog_row,
 							new String[] { ITEM_KEY, ITEM_IMAGE, ITEM_KEY_LOW }, new int[] {
-							R.id.fdrowtext, R.id.fdrowimage, R.id.fdrowtext_lower });
+						R.id.fdrowtext, R.id.fdrowimage, R.id.fdrowtext_lower });
 
 					if (dir_path != "/") {
 						addItem("/", R.drawable.folder,-1);
@@ -701,6 +718,12 @@ OnClickListener {
 			Log.i(TAG, " delete gedrueckt!");
 			_delFileDialog = new delFileDialog(this);
 			_delFileDialog.execute(t2a_dest);
+			break;
+		case R.id.browseToRouteMap:
+			intent = new Intent(getBaseContext(), FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_SHOW_MAP);
 			break;
 		default:
 			Log.i(TAG, "Hier wurde was geklickt das ich nicht kenne!!");

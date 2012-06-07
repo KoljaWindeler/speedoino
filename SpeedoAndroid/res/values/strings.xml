@@ -24,7 +24,7 @@
     <string name="PrevImageConverter">Previous</string>
     <string name="NextImageConverter">Save/Next</string>
     <string name="mapEditorCaption">Please set direction and description</string>
-    <string name="MapEditor">MapEditor</string>
+    <string name="MapEditor">Recorded GPS Route</string>
     
     <string name="cancle">Cancel</string>
     <string name="ImageEditor">ImageConverter</string>
@@ -63,6 +63,8 @@
 	<string name="straight_on">↑</string>
         
 	<string name="interprete_this">help me interprete this</string>
+	<string name="MapView">MapView</string>
+	<string name="RouteMap">Show Map</string>
     
 
 </resources>

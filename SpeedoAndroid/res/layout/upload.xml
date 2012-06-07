@@ -23,17 +23,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/uploadgfxfile" />
-
-    <LinearLayout
-        android:id="@+id/TextLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="250dp"
-        android:orientation="horizontal" />
-
+    
     <Button
         android:id="@+id/browseToUploadConfig"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/uploadconfigfile" />
+
+    <LinearLayout
+        android:id="@+id/TextLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="210dp"
+        android:orientation="horizontal" />
+
+    <Button
+        android:id="@+id/browseToRouteMap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/RouteMap" />
 
 </LinearLayout>

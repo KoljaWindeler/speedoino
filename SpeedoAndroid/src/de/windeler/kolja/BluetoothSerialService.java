@@ -682,8 +682,10 @@ public class BluetoothSerialService {
 					bundle.putInt("type", (int)msgBuffer[2]);
 					if(msgLength>5){
 						Log.i(TAG,"size: [3]="+String.valueOf((int)msgBuffer[3]&0xff)+" [4]="+String.valueOf((int)msgBuffer[4]&0xff)+" [5]="+String.valueOf((int)msgBuffer[5]&0xff)+" [6]="+String.valueOf((int)msgBuffer[6]&0xff));
-						//long size=(long)(((int)msgBuffer[3])&0xff<<24 | ((int)msgBuffer[4])&0xff<<16 | ((int)msgBuffer[5])&0xff<<8 | ((int)msgBuffer[6])&0xff);
-						long size=((int)msgBuffer[6]&0xff)+((int)msgBuffer[5]&0xff)*256+((int)msgBuffer[4]&0xff)*65536+((int)msgBuffer[3]&0xff)*16777216;
+						long size=0;
+						for (int i = 3; i < 7; i++)	{
+						   size = (size << 8) + (msgBuffer[i] & 0xff);
+						}
 						Log.i(TAG,"size="+String.valueOf(size));
 						bundle.putLong("size", size);
 						bundle.putString("name", str.substring(7,msgLength));
