@@ -2189,7 +2189,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		set_buttons(button_state,!button_state,!button_state,button_state); // msg only
 		pOLED->clear_screen();
 		pOLED->string_P(pSpeedo->default_font,PSTR("Average need: "),4,2,0,DISP_BRIGHTNESS,0);
-		sprintf(char_buffer,"%2i,%0i l/100km",(int)floor(fuel_added*10/(pSpeedo->trip_dist[3]/1000)),(int)(fuel_added*100/(pSpeedo->trip_dist[3]/1000))%10);
+		sprintf(char_buffer,"%2i,%0i l/100km",(int)floor(fuel_added*10/(pSpeedo->trip_dist[5]/1000)),(int)(fuel_added*100/(pSpeedo->trip_dist[5]/1000))%10);
 		pOLED->string(pSpeedo->default_font,char_buffer,6,3,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(pSpeedo->default_font,PSTR("All Fuel"),7,6,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(pSpeedo->default_font,PSTR("storeages reseted"),3,7,0,DISP_BRIGHTNESS,0);

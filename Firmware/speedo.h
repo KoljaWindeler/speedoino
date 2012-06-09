@@ -44,7 +44,7 @@ public:
 	int 		  disp_zeile_bak[11];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
 	int           max_speed[9];      // array of the max speed values sollte dem speedo_speedo gehören
 	unsigned long avg_timebase[9];
-	unsigned long trip_dist[9];
+	unsigned long trip_dist[9]; // 0=Total, 1=Non permanent, 2=Day, 3=Tour, 4=Quick, 5=Fuel, 6=Oiler, 7=Saison, 8=Board
 	int 		  refresh_cycle;
 
 	int maximum;

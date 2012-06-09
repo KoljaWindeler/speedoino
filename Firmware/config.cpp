@@ -1369,10 +1369,10 @@ void configuration::EEPROM_init(){
 	pSpeedo->m_trip_mode=EEPROM.read(2);
 	if(pSpeedo->m_trip_mode>9 || pSpeedo->m_trip_mode<0) {    pSpeedo->m_trip_mode=1;       };
 
-	// immer reseten
-	pSpeedo->trip_dist[0]=0;
-	pSpeedo->max_speed[0]=0;
-	pSpeedo->avg_timebase[0]=0;
+	// immer reseten -> non permanent
+	pSpeedo->trip_dist[1]=0;
+	pSpeedo->max_speed[1]=0;
+	pSpeedo->avg_timebase[1]=0;
 
 	//load date_of_today
 	int temp =EEPROM.read(3);
@@ -1390,9 +1390,9 @@ void configuration::EEPROM_init(){
 		Serial.println(pSensors->m_clock->getdate());
 	};
 	if(pSensors->m_clock->getdate()!=date_of_today){
-		pSpeedo->trip_dist[1]=0;
-		pSpeedo->max_speed[1]=0;
-		pSpeedo->avg_timebase[1]=0;
+		pSpeedo->trip_dist[2]=0;
+		pSpeedo->max_speed[2]=0;
+		pSpeedo->avg_timebase[2]=0;
 
 		if(pSensors->m_clock->getdate()!=0){ // wenn wir heute einen anderen tag haben als im "heute" vom eeprom steht dann schreiben wir das heute in den eeprom
 			// write "today"

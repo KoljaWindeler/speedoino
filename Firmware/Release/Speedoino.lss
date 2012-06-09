@@ -1262,8 +1262,8 @@ Disassembly of section .text:
     1e17:	65 64 20 3d 3d 3d 00                                ed ===.
 
 00001e1e <_ZZ4mainE3__c_0>:
-    1e1e:	76 30 2e 33 2e 36 2d 37 30 2d 67 33 66 37 64 65     v0.3.6-70-g3f7de
-    1e2e:	34 39 00                                            49.
+    1e1e:	76 30 2e 33 2e 36 2d 37 33 2d 67 38 35 63 36 38     v0.3.6-73-g85c68
+    1e2e:	31 32 00                                            12.
 
 00001e31 <_ZZ4mainE3__c>:
     1e31:	3d 3d 3d 20 53 70 65 65 64 6f 69 6e 6f 20 3d 3d     === Speedoino ==
@@ -1555,8 +1555,8 @@ Disassembly of section .text:
     224a:	63 6f 6e 74 61 63 74 20 6d 65 20 61 74 00           contact me at.
 
 00002258 <_ZZN11speedo_menu7displayEvE3__c_102>:
-    2258:	76 30 2e 33 2e 36 2d 37 30 2d 67 33 66 37 64 65     v0.3.6-70-g3f7de
-    2268:	34 39 00                                            49.
+    2258:	76 30 2e 33 2e 36 2d 37 33 2d 67 38 35 63 36 38     v0.3.6-73-g85c68
+    2268:	31 32 00                                            12.
 
 0000226b <_ZZN11speedo_menu7displayEvE3__c_101>:
     226b:	73 74 61 72 74 65 64 20 34 2e 32 30 31 30 00        started 4.2010.
@@ -16507,7 +16507,7 @@ Disassembly of section .text:
     9b18:	61 e8       	ldi	r22, 0x81	; 129
     9b1a:	0e 94 bb 40 	call	0x8176	; 0x8176 <_ZN7ssd032312send_commandEh>
     9b1e:	c7 01       	movw	r24, r14
-    9b20:	66 e6       	ldi	r22, 0x66	; 102
+    9b20:	6f ef       	ldi	r22, 0xFF	; 255
     9b22:	0e 94 bb 40 	call	0x8176	; 0x8176 <_ZN7ssd032312send_commandEh>
     9b26:	c7 01       	movw	r24, r14
     9b28:	66 e8       	ldi	r22, 0x86	; 134
@@ -29053,19 +29053,19 @@ Disassembly of section .text:
    10a14:	91 83       	std	Z+1, r25	; 0x01
    10a16:	80 83       	st	Z, r24
    10a18:	df 01       	movw	r26, r30
-   10a1a:	a2 5b       	subi	r26, 0xB2	; 178
+   10a1a:	ae 5a       	subi	r26, 0xAE	; 174
    10a1c:	bf 4f       	sbci	r27, 0xFF	; 255
    10a1e:	1d 92       	st	X+, r1
    10a20:	1d 92       	st	X+, r1
    10a22:	1d 92       	st	X+, r1
    10a24:	1c 92       	st	X, r1
    10a26:	13 97       	sbiw	r26, 0x03	; 3
-   10a28:	11 8e       	std	Z+25, r1	; 0x19
-   10a2a:	10 8e       	std	Z+24, r1	; 0x18
-   10a2c:	12 a6       	std	Z+42, r1	; 0x2a
-   10a2e:	13 a6       	std	Z+43, r1	; 0x2b
-   10a30:	14 a6       	std	Z+44, r1	; 0x2c
-   10a32:	15 a6       	std	Z+45, r1	; 0x2d
+   10a28:	13 8e       	std	Z+27, r1	; 0x1b
+   10a2a:	12 8e       	std	Z+26, r1	; 0x1a
+   10a2c:	16 a6       	std	Z+46, r1	; 0x2e
+   10a2e:	17 a6       	std	Z+47, r1	; 0x2f
+   10a30:	10 aa       	std	Z+48, r1	; 0x30
+   10a32:	11 aa       	std	Z+49, r1	; 0x31
    10a34:	8c e9       	ldi	r24, 0x9C	; 156
    10a36:	9b e0       	ldi	r25, 0x0B	; 11
    10a38:	63 e0       	ldi	r22, 0x03	; 3
@@ -29096,19 +29096,19 @@ Disassembly of section .text:
    10a74:	e0 91 6d 0e 	lds	r30, 0x0E6D
    10a78:	f0 91 6e 0e 	lds	r31, 0x0E6E
    10a7c:	df 01       	movw	r26, r30
-   10a7e:	ae 5a       	subi	r26, 0xAE	; 174
+   10a7e:	aa 5a       	subi	r26, 0xAA	; 170
    10a80:	bf 4f       	sbci	r27, 0xFF	; 255
    10a82:	1d 92       	st	X+, r1
    10a84:	1d 92       	st	X+, r1
    10a86:	1d 92       	st	X+, r1
    10a88:	1c 92       	st	X, r1
    10a8a:	13 97       	sbiw	r26, 0x03	; 3
-   10a8c:	13 8e       	std	Z+27, r1	; 0x1b
-   10a8e:	12 8e       	std	Z+26, r1	; 0x1a
-   10a90:	16 a6       	std	Z+46, r1	; 0x2e
-   10a92:	17 a6       	std	Z+47, r1	; 0x2f
-   10a94:	10 aa       	std	Z+48, r1	; 0x30
-   10a96:	11 aa       	std	Z+49, r1	; 0x31
+   10a8c:	15 8e       	std	Z+29, r1	; 0x1d
+   10a8e:	14 8e       	std	Z+28, r1	; 0x1c
+   10a90:	12 aa       	std	Z+50, r1	; 0x32
+   10a92:	13 aa       	std	Z+51, r1	; 0x33
+   10a94:	14 aa       	std	Z+52, r1	; 0x34
+   10a96:	15 aa       	std	Z+53, r1	; 0x35
    10a98:	e0 91 71 0e 	lds	r30, 0x0E71
    10a9c:	f0 91 72 0e 	lds	r31, 0x0E72
    10aa0:	80 81       	ld	r24, Z
@@ -53728,7 +53728,7 @@ Disassembly of section .text:
    1e574:	10 91 43 09 	lds	r17, 0x0943
    1e578:	e0 91 6d 0e 	lds	r30, 0x0E6D
    1e57c:	f0 91 6e 0e 	lds	r31, 0x0E6E
-   1e580:	e6 5a       	subi	r30, 0xA6	; 166
+   1e580:	ee 59       	subi	r30, 0x9E	; 158
    1e582:	ff 4f       	sbci	r31, 0xFF	; 255
    1e584:	60 81       	ld	r22, Z
    1e586:	71 81       	ldd	r23, Z+1	; 0x01
@@ -61962,7 +61962,7 @@ Disassembly of section .text:
    22d64:	8c 01       	movw	r16, r24
    22d66:	e0 91 6d 0e 	lds	r30, 0x0E6D
    22d6a:	f0 91 6e 0e 	lds	r31, 0x0E6E
-   22d6e:	ee 5a       	subi	r30, 0xAE	; 174
+   22d6e:	ea 5a       	subi	r30, 0xAA	; 170
    22d70:	ff 4f       	sbci	r31, 0xFF	; 255
    22d72:	80 81       	ld	r24, Z
    22d74:	91 81       	ldd	r25, Z+1	; 0x01
@@ -62076,7 +62076,7 @@ Disassembly of section .text:
    22e54:	8c 01       	movw	r16, r24
    22e56:	e0 91 6d 0e 	lds	r30, 0x0E6D
    22e5a:	f0 91 6e 0e 	lds	r31, 0x0E6E
-   22e5e:	ee 5a       	subi	r30, 0xAE	; 174
+   22e5e:	ea 5a       	subi	r30, 0xAA	; 170
    22e60:	ff 4f       	sbci	r31, 0xFF	; 255
    22e62:	80 81       	ld	r24, Z
    22e64:	91 81       	ldd	r25, Z+1	; 0x01
