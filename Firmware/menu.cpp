@@ -2601,8 +2601,8 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 
 // hässlich hier den interrupt eingefügt ..
 ISR(PCINT1_vect ){
-	Serial.print("interrupt @");
-	Serial.println(millis());
+//	Serial.print("interrupt @");
+//	Serial.println(millis());
 	pMenu->button_test(false,true);
 };
 

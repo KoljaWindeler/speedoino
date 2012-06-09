@@ -28,6 +28,7 @@ public:
 	int compare_substr( char *string1, char *string2, int amount );
 	void km_save();
 	void EEPROM_init();
+	void day_trip_check();
 	void ram_info();
 	bool storage_outdated;
 	int skin_file;

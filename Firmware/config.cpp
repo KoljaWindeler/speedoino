@@ -117,6 +117,7 @@ int configuration::write(const char *filename){
 				/*pSD->power_down();
 				delay(20);
 				pSD->power_up();*/
+				//Serial.println("Save Point start");
 
 				if(!subdir.open(&root, "GPS", O_READ)) {
 					pDebug->sprintlnp(PSTR("open subdir /config failed"));
@@ -148,6 +149,7 @@ int configuration::write(const char *filename){
 					}
 					// free buffer and close file
 					file.close();
+					//Serial.println("Save Point done");
 					storage_outdated=false;
 				}	
 				/*************** BASE.TXT **************************
@@ -1361,19 +1363,7 @@ void configuration::km_save(){
 };
 
 
-
-
-void configuration::EEPROM_init(){
-	pDebug->sprintlnp(PSTR("Lade EEPROM"));
-	//Serial.println("-> Lade KM von SD Karte");
-	pSpeedo->m_trip_mode=EEPROM.read(2);
-	if(pSpeedo->m_trip_mode>9 || pSpeedo->m_trip_mode<0) {    pSpeedo->m_trip_mode=1;       };
-
-	// immer reseten -> non permanent
-	pSpeedo->trip_dist[1]=0;
-	pSpeedo->max_speed[1]=0;
-	pSpeedo->avg_timebase[1]=0;
-
+void configuration::day_trip_check(){
 	//load date_of_today
 	int temp =EEPROM.read(3);
 	int temp2=EEPROM.read(4);
@@ -1405,6 +1395,19 @@ void configuration::EEPROM_init(){
 			write("speedo.txt"); // und ab dafuer
 		};
 	};
+}
+
+
+void configuration::EEPROM_init(){
+	pDebug->sprintlnp(PSTR("Lade EEPROM"));
+	//Serial.println("-> Lade KM von SD Karte");
+	pSpeedo->m_trip_mode=EEPROM.read(2);
+	if(pSpeedo->m_trip_mode>9 || pSpeedo->m_trip_mode<0) {    pSpeedo->m_trip_mode=1;       };
+
+	// immer reseten -> non permanent
+	pSpeedo->trip_dist[1]=0;
+	pSpeedo->max_speed[1]=0;
+	pSpeedo->avg_timebase[1]=0;
 
 
 	// load winterzeit

@@ -87,15 +87,13 @@ int main(void) {
 	pConfig->read("SPEEDO.TXT");// speedovalues, avg,max,time
 	pConfig->read("GANG.TXT");	// gang
 	pConfig->read("TEMPER.TXT");// Temperatur
-	pConfig->EEPROM_init(); 	// read vars from eeprom, reset Day Based storage etc
 	pConfig->read_skin();		// skinning
 	pConfig->check(); 			// check if Config read successfully
+	pConfig->EEPROM_init(); 	// read vars from eeprom, reset Day Based storage etc
 	pOLED->init_speedo(); 		// execute this AFTER Config->init(), init() will load  phase,config,startup. PopUp will be shown if sd access fails
 	pAktors->init();			// ausschlag des zeigers // Motorausschlag und block bis motor voll ausgeschlagen, solange das letzte intro bild halten
-
 	pMenu->init(); 				// adds the connection between pins and vars
 	pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
-
 	pSpeedo->reset_bak(); 		// reset all storages, to force the redraw of the speedo
 
 	pConfig->ram_info();

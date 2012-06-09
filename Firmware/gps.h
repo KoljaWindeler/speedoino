@@ -47,7 +47,7 @@ public:
 	int note_this_place;                          // damit kann man marker auf die strecke setzen
 	int valid;
 	bool navi_active;
-	
+	bool first_valid_gps;
 	int gps_write_status;
 
 private:

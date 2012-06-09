@@ -52,7 +52,7 @@ public:
 	void dimm_rgb_to(int r,int g,int b,int max_dimm_steps, int set_in_out);
 	void timer_overflow();
 	bool dimm_available();
-	int  update_outer_leds();
+	int  update_outer_leds(bool dimm);
 	int set_bt_pin();
 	int ask_bt(char *command);
 	speedo_stepper* m_stepper;

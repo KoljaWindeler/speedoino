@@ -194,6 +194,8 @@ public class FileDialog extends ListActivity {
 			item.put(ITEM_KEY_LOW,"Folder");
 		} else if(extension.equals("smf")){
 			item.put(ITEM_KEY_LOW,"Speedoino MAP File");
+		} else if(extension.equals("GPS")){
+			item.put(ITEM_KEY_LOW,"Downloaded GPS Log");
 		} else if(extension.equals("sgf")){
 			item.put(ITEM_KEY_LOW,"Speedoino GFX File");
 		} else if(extension.equals("scf")){

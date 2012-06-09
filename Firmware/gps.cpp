@@ -57,6 +57,7 @@ void speedo_gps::init(){
 	memset(gps_buffer2,'*',SERIAL_BUFFER_SIZE); // '*' ist endchar fuer gps signale, super "filler"
 
 	ringbuf_counter=0;
+	first_valid_gps=true;
 	gps_ready1=false;
 	gps_ready2=false;
 	gps_state=0;
@@ -179,6 +180,10 @@ void speedo_gps::check_flag(){
 		};
 		// debug
 		parse(gps_buffer1,1);         // Daten übergeben
+		if(first_valid_gps){
+			pConfig->day_trip_check();
+			first_valid_gps=false;
+		};
 		gps_ready1=false;
 	};
 	if(gps_ready2){
