@@ -105,12 +105,26 @@ void helper(){
 
 void speedo_dz::init() {
 	attachInterrupt(0, helper, RISING ); // interrupt handler für signalwechsel 0=DigiPin 2
+	Serial.println("DZ init done");
+	blitz_en=false;
+	Serial3.flush();
+};
+
+void speedo_dz::clear_vars(){
 	previous_time=millis();
 	rounded=0;                 // to show on display, rounded by 50
 	exact=0;                 // real rotation speed
 	peak_count=0;
-
-	Serial.println("DZ init done");
+	blitz_dz=0;
 	blitz_en=false;
-	Serial3.flush();
+}
+
+bool speedo_dz::check_vars(){
+	if(blitz_dz==0){
+		pDebug->sprintp(PSTR("DZ failed"));
+		blitz_dz=12500; // hornet maessig
+		blitz_en=true; // gehen wir mal von "an" aus
+		return true;
+	}
+	return false;
 };

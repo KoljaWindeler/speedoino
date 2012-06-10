@@ -25,9 +25,30 @@ speedo_gear::~speedo_gear(){
 void speedo_gear::init(){
 	pinMode(kupplungs_pin,INPUT);
 	digitalWrite(kupplungs_pin,HIGH); // input mit pull up
+}
+
+bool speedo_gear::check_vars(){
+	if(n_gang[1]+n_gang[2]==0){
+		// gaenge einlesen
+		int temp[7]={160,120,90,73,60,53,45};
+		for(unsigned int j=0;j<sizeof(temp)/sizeof(temp[0]);j++){ // 0..6
+			n_gang[j]=temp[j];
+		};
+		pDebug->sprintp(PSTR("gear failed"));
+		return true;
+	}
+	return false;
+};
+
+void speedo_gear::clear_vars(){
 	faktor_counter=0;
 	gang=-1;
-}
+
+	for(unsigned int j=0;j<sizeof(n_gang)/sizeof(n_gang[0]);j++){ // 0..6
+		n_gang[j]=0;
+	};
+};
+
 
 /* prozedure wird alle 250 ms aufgerufen und ermittelt den gang, packt ihn in ein tiefpass und stellt das ergebniss zur verfügung */
 void speedo_gear::calc(){

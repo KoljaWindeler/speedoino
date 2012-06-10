@@ -54,12 +54,50 @@ void helper_speed(){
 }
 
 void speedo_speed::init (){
-	last_time=millis();
-	reed_speed=0;
-	speed_peaks=1;
 	pinMode(SPEED_PIN, INPUT); // interrupt 1
 	attachInterrupt(1, helper_speed, RISING); // pin 3
 	Serial.println("Speed init done");
+};
+
+void speedo_speed::clear_vars(){
+	last_time=millis();
+	reed_speed=0;
+	speed_peaks=1;
+	reifen_umfang=0; // Reifenumfang in metern
+	gps_takeover=0; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
+
+	// erstmal alle zwischenspeicher loeschen
+	for(unsigned int i=0; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
+		pSpeedo->trip_dist[i]=0;
+		pSpeedo->avg_timebase[i]=0;
+		pSpeedo->max_speed[i]=-99;
+	};
+};
+
+bool speedo_speed::check_vars(){
+	/********** check values ********************
+	 * zumindest in den trip, max und avg nachsehen ob werte
+	 * drinstehen. Falls die sd karte nicht gelesen werden konnte
+	 * wird das schon gemeldet, aber falls nur die datei fuer trips
+	 * nicht gelesen werden kann sollte man das hier merken weil
+	 * alle(!) max value=0 sind wie von der initialisierung
+	 ********** check values ********************/
+
+	int nulls=0;
+	for(unsigned int i=2; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
+		if(pSpeedo->max_speed[i]==-99){
+			nulls++;
+		}
+	};
+
+	if((nulls == (sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]))-2) || reifen_umfang==0){
+		reifen_umfang=1.99; // Reifenumfang in metern
+		gps_takeover=120; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
+		pDebug->sprintp(PSTR("speedo failed"));
+		return true;
+	};
+
+	return false;
 };
 
 int speedo_speed::getSpeed(){

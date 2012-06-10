@@ -408,7 +408,6 @@ bool tetris::loop(){
 
 			updateField();
 		}
-
 		////////////////// auto move down //////////////////
 		// einen tiefer setzen nach ablauf von zeit
 		if(last_update+time_between_steps<millis()){

@@ -17,6 +17,8 @@ public:
 	int get_mag_speed();
 	int getSpeed();
 	void init();
+	void clear_vars();
+	bool check_vars();
 	void check_umfang();
 	int get_sat_speed();
 	int 		  gps_takeover;

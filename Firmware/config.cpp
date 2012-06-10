@@ -264,6 +264,16 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",pAktors->oil_max_value); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("water_min="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pAktors->water_min_value); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("water_max="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pAktors->water_max_value); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
 					strcpy_P(buffer, PSTR("kmh_min="));
 					pSD->writeString(file, buffer);
 					sprintf(buffer,"%i\n",pAktors->kmh_min_value); // 12 chars max: max_=1=300\n\0
@@ -400,11 +410,6 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",int(pAktors->oil_end_color.b)); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
-					strcpy_P(buffer, PSTR("led_mode="));
-					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",int(pAktors->led_mode)); // 12 chars max: max_=1=300\n\0
-					pSD->writeString(file, buffer);
-
 					////////////// water color /////////////
 					strcpy_P(buffer, PSTR("rgb_out_water_start_r="));
 					pSD->writeString(file, buffer);
@@ -486,212 +491,13 @@ int configuration::write(const char *filename){
 	return -3;
 };
 
-/********** check values ********************
- * zumindest in den trip, max und avg nachsehen ob werte
- * drinstehen. Falls die sd karte nicht gelesen werden konnte
- * wird das schon gemeldet, aber falls nur die datei fuer trips
- * nicht gelesen werden kann sollte man das hier merken weil
- * alle(!) max value=0 sind wie von der initialisierung
- ********** check values ********************/
-int configuration::check(){
-	int nulls=0;
-	for(unsigned int i=2; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
-		if(pSpeedo->max_speed[i]==-99){
-			nulls++;
-		}
-	};
-
-	if(nulls == (sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]))-2){
-		pOLED->clear_screen();
-		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("SD access strange"),1,2,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("all max values==-99"),0,3,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
-
-		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
-		pDebug->sprintp(PSTR("SD access strange"));
-		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
-
-		pSD->sd_failed=true;
-		//delay(30000);
-		pOLED->clear_screen();
-	};
-	return 0;
-};
-
 
 /********** load backup values ********************
  * Backup mig schon mal wert hineinschreiben
  * falls die SD Karte nicht geladen werden kann
  * Notberiebsmig
  **************************************************/
-int configuration::init(){
-	// Temperatur und Widerstands LookUp
-	// OIL
-	int r_werte[19]={1000,700,550,400,330,250,230,210,195,150,140,135,110,100, 90, 80, 20, 15, 10}; // widerstandswerte
-	int t_werte[19]={  27, 35, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95,100,105,110,115,120,125}; // passender Temperaturwert
-
-	for(unsigned int j=0; j<sizeof(pSensors->m_temperature->oil_r_werte)/sizeof(pSensors->m_temperature->oil_r_werte[0]); j++){
-		pSensors->m_temperature->oil_r_werte[j]=r_werte[j];
-		pSensors->m_temperature->oil_t_werte[j]=t_werte[j];
-	};
-
-	// Water
-	r_werte={1000,700,550,400,330,250,230,210,195,150,140,135,110,100, 90, 80, 20, 15, 10}; // widerstandswerte
-	t_werte={  27, 35, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95,100,105,110,115,120,125}; // passender Temperaturwert
-	for(unsigned int j=0; j<sizeof(pSensors->m_temperature->water_r_werte)/sizeof(pSensors->m_temperature->water_r_werte[0]); j++){
-		pSensors->m_temperature->water_r_werte[j]=r_werte[j];
-		pSensors->m_temperature->water_t_werte[j]=t_werte[j];
-	};
-
-	// Startup sequenz im Tacho
-	memset(pOLED->startup,'\0',200);
-	sprintf(pOLED->startup,"ERROR,0,0,0;");
-	pSensors->m_gps->active_file=2; //default datei navi0.txt
-
-
-	pSensors->m_blinker->high_speed_add=200;
-	pSensors->m_blinker->dist_to_warn=200;
-	pSensors->m_fuel->blink_freq=500; // blinkt mit 500ms Periodenlaenge
-	pSensors->m_fuel->blink_start=140; // bei mehr als 140 km auf der Tankuhr fngt die an zu blinken
-	pSensors->m_speed->reifen_umfang=1.99; // Reifenumfang in metern
-	pSensors->m_speed->gps_takeover=120; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
-	pSpeedo->refresh_cycle=-1; // anzahl an ms nachdem der haupttacho gecleared wird
-	pSensors->m_oiler->grenze=4000;
-	pSensors->m_dz->blitz_dz=12500; // hornet maessig
-	pSensors->m_dz->blitz_en=true; // gehen wir mal von "an" aus
-	pSensors->m_temperature->water_warning_temp=950; // 95 C
-	pSensors->m_temperature->oil_warning_temp=1200; // 120 C
-	pAktors->bt_pin=1234;
-
-	// gaenge einlesen
-	int temp[7]={160,120,90,73,60,53,45};
-	for(unsigned int j=0;j<sizeof(temp)/sizeof(temp[0]);j++){ // 0..6
-		pSensors->m_gear->n_gang[j]=temp[j];
-	};
-
-	// erstmal alle zwischenspeicher loeschen
-	for(unsigned int i=0; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
-		pSpeedo->trip_dist[i]=0;
-		pSpeedo->avg_timebase[i]=0;
-		pSpeedo->max_speed[i]=-99;
-	};
-
-	// skinning
-	pSpeedo->water_widget.x=-1;
-	pSpeedo->water_widget.y=-1;
-	pSpeedo->water_widget.symbol=true;
-	pSpeedo->water_widget.font=STD_SMALL_1X_FONT;
-
-	pSpeedo->oil_widget.x=0;
-	pSpeedo->oil_widget.y=0;
-	pSpeedo->oil_widget.symbol=true;
-	pSpeedo->oil_widget.font=STD_SMALL_1X_FONT;
-
-	pSpeedo->air_widget.x=15;
-	pSpeedo->air_widget.y=0;
-	pSpeedo->air_widget.symbol=true;
-	pSpeedo->air_widget.font=STD_SMALL_1X_FONT;
-
-	pSpeedo->arrow_widget.x=0;
-	pSpeedo->arrow_widget.y=1;
-
-	pSpeedo->kmh_widget.x=6;
-	pSpeedo->kmh_widget.y=2;
-	pSpeedo->kmh_widget.font=STD_SMALL_2X_FONT;
-
-	pSpeedo->kmhchar_widget.x=12;
-	pSpeedo->kmhchar_widget.y=3;
-	pSpeedo->kmhchar_widget.font=STD_SMALL_1X_FONT;
-
-	pSpeedo->dz_widget.x=0;
-	pSpeedo->dz_widget.y=4;
-	pSpeedo->dz_widget.font=STD_SMALL_1X_FONT;
-
-	pSpeedo->addinfo_widget.x=0;
-	pSpeedo->addinfo_widget.y=5;
-	pSpeedo->addinfo_widget.font=STD_SMALL_1X_FONT;
-
-	pSpeedo->addinfo2_widget.x=0;
-	pSpeedo->addinfo2_widget.y=6;
-	pSpeedo->addinfo2_widget.font=STD_SMALL_1X_FONT;
-
-	pSpeedo->clock_widget.x=1;
-	pSpeedo->clock_widget.y=7;
-	pSpeedo->clock_widget.symbol=true;
-	pSpeedo->clock_widget.font=STD_SMALL_1X_FONT;
-
-	pSpeedo->gear_widget.x=11;
-	pSpeedo->gear_widget.y=7;
-	pSpeedo->gear_widget.font=STD_SMALL_1X_FONT;
-
-	pSpeedo->fuel_widget.x=14;
-	pSpeedo->fuel_widget.y=7;
-	pSpeedo->fuel_widget.symbol=true;
-	pSpeedo->fuel_widget.font=STD_SMALL_1X_FONT;
-
-	pSpeedo->default_font=STD_SMALL_1X_FONT;
-	pSpeedo->default_font=VISITOR_SMALL_1X_FONT;
-	// skinning
-
-	// beleuchtung
-	pAktors->set_rgb_in(255,255,255,0);
-
-	pAktors->static_color.r=0;
-	pAktors->static_color.g=0;
-	pAktors->static_color.b=255;
-
-	pAktors->dz_flasher.r=255;
-	pAktors->dz_flasher.g=0;
-	pAktors->dz_flasher.b=0;
-
-	pAktors->kmh_start_color.r=0;
-	pAktors->kmh_start_color.g=0;
-	pAktors->kmh_start_color.b=255;
-
-	pAktors->kmh_end_color.r=255;
-	pAktors->kmh_end_color.g=255;
-	pAktors->kmh_end_color.b=0;
-
-	pAktors->dz_start_color.r=0;
-	pAktors->dz_start_color.g=0;
-	pAktors->dz_start_color.b=255;
-
-	pAktors->dz_end_color.r=255;
-	pAktors->dz_end_color.g=0;
-	pAktors->dz_end_color.b=255;
-
-	pAktors->oil_start_color.r=255;
-	pAktors->oil_start_color.g=255;
-	pAktors->oil_start_color.b=0;
-
-	pAktors->oil_end_color.r=0;
-	pAktors->oil_end_color.g=0;
-	pAktors->oil_end_color.b=255;
-
-	pAktors->water_start_color.r=255;
-	pAktors->water_start_color.g=255;
-	pAktors->water_start_color.b=0;
-
-	pAktors->water_end_color.r=0;
-	pAktors->water_end_color.g=0;
-	pAktors->water_end_color.b=255;
-
-	pAktors->kmh_min_value=20;
-	pAktors->kmh_max_value=50;
-
-	pAktors->dz_min_value=7000;
-	pAktors->dz_max_value=14000;
-
-	pAktors->oil_min_value=200;
-	pAktors->oil_max_value=500;
-
-	pAktors->water_min_value=200;
-	pAktors->water_max_value=500;
-
-	pAktors->led_mode=1;
-	// beleuchtung
-
+int configuration::clear_vars(){
 	last_speed_value=0;
 	storage_outdated=false;
 	skin_file=0;
@@ -824,7 +630,7 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&pConfig->skin_file);
 	} else if(strcmp_P(name,PSTR("oil_dist"))==0){ // distanz in meter nachder ge...lt wird
 		parse_int(buffer,seperator,&pSensors->m_oiler->grenze);
-	} else if(strncmp("oil_temp_r_",name,7)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
+	} else if(strncmp("oil_temp_r_",name,11)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
 		char var_name[14]; // watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
 			sprintf(var_name,"oil_temp_r_%i",j);
@@ -832,7 +638,7 @@ int configuration::parse(char* buffer){
 				parse_short(buffer,seperator,&pSensors->m_temperature->oil_r_werte[j]);
 			};
 		};
-	} else if(strncmp("oil_temp_t_",name,7)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
+	} else if(strncmp("oil_temp_t_",name,11)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
 		char var_name[14];// watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings erzeugen
 			sprintf(var_name,"oil_temp_t_%i",j);
@@ -840,7 +646,7 @@ int configuration::parse(char* buffer){
 				parse_short(buffer,seperator,&pSensors->m_temperature->oil_t_werte[j]);
 			};
 		};
-	} else if(strncmp("water_temp_r_",name,7)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
+	} else if(strncmp("water_temp_r_",name,13)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
 		char var_name[16];// watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
 			sprintf(var_name,"water_temp_r_%i",j);
@@ -848,7 +654,7 @@ int configuration::parse(char* buffer){
 				parse_short(buffer,seperator,&pSensors->m_temperature->water_r_werte[j]);
 			};
 		};
-	} else if(strncmp("water_temp_t_",name,7)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
+	} else if(strncmp("water_temp_t_",name,13)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
 		char var_name[16];// watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings erzeugen
 			sprintf(var_name,"water_temp_t_%i",j);

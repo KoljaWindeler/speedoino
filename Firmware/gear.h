@@ -16,6 +16,8 @@ public:
 	void init();
 	int get();
 	void calc();
+	void clear_vars();
+	bool check_vars();
 	void calibrate();
 
 	int n_gang[7];

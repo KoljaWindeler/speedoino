@@ -21,6 +21,19 @@ speedo_reset::speedo_reset(){};
 
 speedo_reset::~speedo_reset(){};
 
+bool speedo_reset::check_vars(){
+	return false;
+};
+
+void speedo_reset::clear_vars(){
+	toggle_high=true; // beliebig, einfach mal als startwert
+	last_time=millis();
+
+	// get reset reason
+	last_reset=-1; // denn wenn wir wegen strom neustarten ist der avr noch nicht soweit weil er 3 sek wartet damit wir soweit sind ;)
+	ask_reset();
+};
+
 void speedo_reset::init(){
 	Serial3.begin(19200);
 	pinMode(reset_enabled_pin,OUTPUT);
@@ -30,12 +43,6 @@ void speedo_reset::init(){
 	} else {
 		set_deactive(false,true); // eeprom is set,set var
 	}
-	toggle_high=true; // beliebig, einfach mal als startwert
-	last_time=millis();
-
-	// get reset reason
-	last_reset=-1; // denn wenn wir wegen strom neustarten ist der avr noch nicht soweit weil er 3 sek wartet damit wir soweit sind ;)
-	ask_reset();
 
 	pDebug->sprintp(PSTR("Reset init done. Status "));
 	Serial.println(last_reset);

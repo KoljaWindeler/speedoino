@@ -40,6 +40,8 @@ class speedo_speedo{
 public:
 	void loop(unsigned long previousMillis);
 	void reset_bak();
+	void clear_vars();
+	void check_vars();
 	short int 	  m_trip_mode; // welcher wert angezeigt wird, 1= day 2=bla 3=blabla etc
 	int 		  disp_zeile_bak[11];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
 	int           max_speed[9];      // array of the max speed values sollte dem speedo_speedo gehören

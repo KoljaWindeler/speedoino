@@ -80,6 +80,11 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss,i
  * configure the interrupt behaviour.
  */
 void speedo_clock::init() {
+	pDebug->sprintlnp(PSTR("Clock init done"));
+	// hier vom lustigen modul lesen ende
+}
+
+void speedo_clock::clear_vars(){
 	m_year=0;
 	m_mon=0;
 	m_day=0;
@@ -87,97 +92,12 @@ void speedo_clock::init() {
 	m_mm=0;
 	m_ss=0;
 	m_dayls=0;
-	/*lost_data=false;
-
-	// modul lesen
-	Wire.beginTransmission(DS1307_I2C_ADDRESS);   // Open I2C line in write mode
-	Wire.send(0x00);                              // Set the register pointer to (0x00)
-	Wire.endTransmission();                       // End Write Transmission
-	Wire.requestFrom(DS1307_I2C_ADDRESS, 7);      // Open the I2C line in read mode
-	m_ss         = bcdToDec(Wire.receive() & 0x7f); // Read seven char of data
-	m_mm         = bcdToDec(Wire.receive());
-	m_hh         = bcdToDec(Wire.receive() & 0x3f);
-	m_dayOfWeek  = bcdToDec(Wire.receive());
-	m_day        = bcdToDec(Wire.receive());
-	m_mon        = bcdToDec(Wire.receive());
-	m_year       = bcdToDec(Wire.receive());
-	Serial.print("Die aktuelle Uhrzeit: ");
-	Serial.print(m_hh);
-	Serial.print(":");
-	Serial.print(m_mm);
-	Serial.print(":");
-	Serial.print(m_ss);
-	Serial.print(" ");
-	Serial.print(m_day);
-	Serial.print(".");
-	Serial.print(m_mon);
-	Serial.print(".");
-	Serial.println(m_year);
-	if(m_mon==1 && m_day==1 && m_year==0){
-		lost_data=true;
-	}*/
-	pDebug->sprintlnp(PSTR("Clock init done"));
-	// hier vom lustigen modul lesen ende
 }
 
+bool speedo_clock::check_vars(){
+	return false;
+};
 
-/*void speedo_clock::store(){
-	if(CLOCK_DEBUG){
-		Serial.println("== Writing to Modul ==");
-	};
-	if(m_year>0){ // und wir valide gps daten bekommen, mit 0 initialisieren wir
-		Wire.beginTransmission(DS1307_I2C_ADDRESS);
-		Wire.send(0x00);
-		Wire.send(decToBcd(m_ss));
-		Wire.send(decToBcd(m_mm));
-		Wire.send(decToBcd(m_hh));
-		Wire.send(decToBcd(m_dayOfWeek));
-		Wire.send(decToBcd(m_day));
-		Wire.send(decToBcd(m_mon));
-		Wire.send(decToBcd(m_year));
-		Wire.endTransmission();                    // End write mode
-		if(CLOCK_DEBUG){
-			Serial.print("Es wird gespeichert ");
-			Serial.print(m_day);
-			Serial.print("/");
-			Serial.print(m_mon);
-			Serial.print("/");
-			Serial.print(m_year);
-			Serial.print(" ");
-			Serial.print(m_hh);
-			Serial.print(":");
-			Serial.print(m_mm);
-			Serial.print(":");
-			Serial.println(m_ss);
-			Serial.println("== Reading to verify ==");
-			Wire.beginTransmission(DS1307_I2C_ADDRESS);   // Open I2C line in write mode
-			Wire.send(0x00);                              // Set the register pointer to (0x00)
-			Wire.endTransmission();                       // End Write Transmission
-			Wire.requestFrom(DS1307_I2C_ADDRESS, 7);      // Open the I2C line in read mode
-			volatile unsigned int temp_ss        = bcdToDec(Wire.receive() & 0x7f); // Read seven char of data
-			volatile unsigned int temp_mm        = bcdToDec(Wire.receive());
-			volatile unsigned int temp_hh        = bcdToDec(Wire.receive() & 0x3f);
-			volatile unsigned int temp_dayofweek = bcdToDec(Wire.receive());
-			volatile unsigned int temp_day       = bcdToDec(Wire.receive());
-			volatile unsigned int temp_mon       = bcdToDec(Wire.receive());
-			volatile unsigned int temp_year      = bcdToDec(Wire.receive());
-			Serial.print("aus dem speicher ");
-			Serial.print(temp_day);
-			Serial.print("/");
-			Serial.print(temp_mon);
-			Serial.print("/");
-			Serial.print(temp_year);
-			Serial.print(" ");
-			Serial.print(temp_hh);
-			Serial.print(":");
-			Serial.print(temp_mm);
-			Serial.print(":");
-			Serial.print(temp_ss);
-			Serial.print("->");
-			Serial.println(temp_dayofweek);
-		};
-	};
-};*/
 
 int speedo_clock::getdate(){
 	return m_day+m_mon*100;

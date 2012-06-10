@@ -381,3 +381,70 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	free(char_buffer);
 }
 
+void speedo_speedo::clear_vars(){
+	refresh_cycle=-1; // anzahl an ms nachdem der haupttacho gecleared wird
+	// Startup sequenz im Tacho
+	memset(pOLED->startup,'\0',200);
+	sprintf(pOLED->startup,"ERROR,0,0,0;");
+}
+
+void speedo_speedo::check_vars(){
+	if(pSD->sd_failed==true){
+		// skinning
+		pSpeedo->water_widget.x=-1;
+		pSpeedo->water_widget.y=-1;
+		pSpeedo->water_widget.symbol=true;
+		pSpeedo->water_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->oil_widget.x=0;
+		pSpeedo->oil_widget.y=0;
+		pSpeedo->oil_widget.symbol=true;
+		pSpeedo->oil_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->air_widget.x=15;
+		pSpeedo->air_widget.y=0;
+		pSpeedo->air_widget.symbol=true;
+		pSpeedo->air_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->arrow_widget.x=0;
+		pSpeedo->arrow_widget.y=1;
+
+		pSpeedo->kmh_widget.x=6;
+		pSpeedo->kmh_widget.y=2;
+		pSpeedo->kmh_widget.font=STD_SMALL_2X_FONT;
+
+		pSpeedo->kmhchar_widget.x=12;
+		pSpeedo->kmhchar_widget.y=3;
+		pSpeedo->kmhchar_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->dz_widget.x=0;
+		pSpeedo->dz_widget.y=4;
+		pSpeedo->dz_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->addinfo_widget.x=0;
+		pSpeedo->addinfo_widget.y=5;
+		pSpeedo->addinfo_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->addinfo2_widget.x=0;
+		pSpeedo->addinfo2_widget.y=6;
+		pSpeedo->addinfo2_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->clock_widget.x=1;
+		pSpeedo->clock_widget.y=7;
+		pSpeedo->clock_widget.symbol=true;
+		pSpeedo->clock_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->gear_widget.x=11;
+		pSpeedo->gear_widget.y=7;
+		pSpeedo->gear_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->fuel_widget.x=14;
+		pSpeedo->fuel_widget.y=7;
+		pSpeedo->fuel_widget.symbol=true;
+		pSpeedo->fuel_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->default_font=VISITOR_SMALL_1X_FONT;
+		// skinning
+	}
+
+};

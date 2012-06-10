@@ -45,6 +45,8 @@ public:
 	Speedo_aktors(void);
 	~Speedo_aktors();
 	void init();
+	void clear_vars();
+	bool check_vars();
 	void set_rgb_in(int r,int g,int b);
 	void set_rgb_in(int r,int g,int b,int save);
 	void set_rgb_out(int r,int g,int b);

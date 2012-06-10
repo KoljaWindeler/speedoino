@@ -14,6 +14,8 @@ public:
 	speedo_voltage();
 	~speedo_voltage();
 	void init();
+	void clear_vars();
+	bool check_vars();
 	int get();
 	void calc();
 	void loop();

@@ -17,6 +17,8 @@ public:
 	void counter();
 	void calc();
 	void init();
+	void clear_vars();
+	bool check_vars();
 
 	unsigned int rounded;                 // to show on display, rounded by 50
 	unsigned int exact;                 // real rotation speed

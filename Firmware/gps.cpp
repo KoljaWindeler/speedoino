@@ -52,6 +52,17 @@ void speedo_gps::init(){
 
 	sei(); // global anschalten, falls sie es nicht ohnehin schon sind
 	// interrupt
+
+
+	// hier das gps konfigurieren ..  yeah yeah yeah
+	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
+
+
+
+	pDebug->sprintlnp(PSTR("GPS init done"));
+};
+
+void speedo_gps::clear_vars(){
 	// parsen
 	memset(gps_buffer1,'*',SERIAL_BUFFER_SIZE); // leere internen buffer
 	memset(gps_buffer2,'*',SERIAL_BUFFER_SIZE); // '*' ist endchar fuer gps signale, super "filler"
@@ -81,13 +92,13 @@ void speedo_gps::init(){
 
 	// Debug
 	gps_write_status=0;
-
-	// hier das gps konfigurieren ..  yeah yeah yeah
-	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
-
 	speed=0;
 
-	pDebug->sprintlnp(PSTR("GPS init done"));
+	active_file=0; //default datei navi0.txt
+}
+
+bool speedo_gps::check_vars(){
+	return false;
 };
 
 // wird als interrupt aufgerufen

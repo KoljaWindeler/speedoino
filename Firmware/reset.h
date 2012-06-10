@@ -15,6 +15,8 @@ public:
 	speedo_reset(void);
 	~speedo_reset();
 	void init();
+	void clear_vars();
+	bool check_vars();
 	void set_active(bool save_to_eeprom,bool save_to_var);
 	void set_deactive(bool save_to_eeprom,bool save_to_var);
 	void restore();

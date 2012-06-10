@@ -78,21 +78,32 @@ int main(void) {
 
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
 	pDebug->sprintlnp(PSTR(GIT_REV));
+
 	Wire.begin();				// BEFORE Clock_init(), Clock is in the sensor class and needs I²C
-	pSensors->init(); 			// start every init sequence of each sensor
 	pSD->init(); 				// try open SD Card
 
-	pConfig->init(); 			// first load default value
+	// first, set all variables to a zero value
+	pSensors->init(); 			// start every init sequence of each sensor
+	pSensors->clear_vars();		// clear all sensor values;
+	pAktors->clear_vars();		// clear outer LED
+	pSpeedo->clear_vars();		// refresh cycle
+	pConfig->clear_vars(); 		// clear config based vars
+	// read configuration file from sd card
 	pConfig->read("BASE.TXT"); 	// load base config
 	pConfig->read("SPEEDO.TXT");// speedovalues, avg,max,time
 	pConfig->read("GANG.TXT");	// gang
 	pConfig->read("TEMPER.TXT");// Temperatur
 	pConfig->read_skin();		// skinning
-	pConfig->check(); 			// check if Config read successfully
+	// check if read SD read was okay, if not: load your default backup values
+	pAktors->check_vars();		// check if color of outer LED are OK
+	pSensors->check_vars();		// check if config read was successful
+	pSpeedo->check_vars();		// rettet das Skinning wenn SD_failed von den sensoren auf true gesetzt wird
+	pSensors->single_read();	// read all sensor values once to ensure we are ready to show them
+
 	pConfig->EEPROM_init(); 	// read vars from eeprom, reset Day Based storage etc
-	pOLED->init_speedo(); 		// execute this AFTER Config->init(), init() will load  phase,config,startup. PopUp will be shown if sd access fails
-	pAktors->init();			// ausschlag des zeigers // Motorausschlag und block bis motor voll ausgeschlagen, solange das letzte intro bild halten
-	pMenu->init(); 				// adds the connection between pins and vars
+	pOLED->init_speedo(); 		// Start Screen //execute this AFTER Config->init(), init() will load  phase,config,startup. PopUp will be shown if sd access fails
+	pAktors->init();			// Start outer LEDs // ausschlag des zeigers // Motorausschlag und block bis motor voll ausgeschlagen, solange das letzte intro bild halten
+	pMenu->init(); 				// Start butons // adds the connection between pins and vars
 	pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
 	pSpeedo->reset_bak(); 		// reset all storages, to force the redraw of the speedo
 

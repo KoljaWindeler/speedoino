@@ -412,19 +412,13 @@ void speedo_disp::init_speedo(){
 	pinMode(29,INPUT); // interessiert keine sau, aber da der pin jetzt extern auf masse gezogen wird sollte der hier nicht besser kein Pegel treiben
 	init(phase,ref);
 	clear_screen();
-	if(pSD->sd_failed){ // ausgabe wenns schief geht die Karte zu laden
-		clear_screen();
-		string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
-		string_P(pSpeedo->default_font,PSTR("SD access failed."),1,2,0,DISP_BRIGHTNESS,0);
-		string_P(pSpeedo->default_font,PSTR("running on backup"),0,3,0,DISP_BRIGHTNESS,0);
-		string_P(pSpeedo->default_font,PSTR("values"),6,4,0,DISP_BRIGHTNESS,0);
-		string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
-
-		pDebug->sprintlnp(PSTR("!! WARNING !!"));
-		pDebug->sprintlnp(PSTR("SD access failed"));
-		pDebug->sprintlnp(PSTR("!! WARNING !!"));
-		_delay_ms(3000);
-		clear_screen();
+	if(pSD->sd_failed){
+		pOLED->clear_screen();
+		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("SD access strange"),1,2,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("all max values==-99"),0,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
+		_delay_ms(5000);
 	} else if(WELCOME){ // wenn die Karte ok ist können wir startup zeigen, wenn wir wollen
 		show_animation(startup);
 		Serial.println("welcome done");

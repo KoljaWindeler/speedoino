@@ -40,6 +40,7 @@ public:
 	bool button_links_valid;
 	bool button_oben_valid;
 	bool button_unten_valid;
+	bool update_display;
 
 private:
 	unsigned long button_time;                      // Zeitpunkt des letzen Button kontakt

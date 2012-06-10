@@ -21,8 +21,7 @@ public:
 	configuration(void);
 	~configuration();
 	int write(const char filename[]);
-	int check();
-	int init();
+	int clear_vars();
 	int read(const char filename[]);
 	int read_skin();
 	int compare_substr( char *string1, char *string2, int amount );

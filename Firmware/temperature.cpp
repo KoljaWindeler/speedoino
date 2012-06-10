@@ -23,12 +23,14 @@ speedo_temperature::speedo_temperature(){
 speedo_temperature::~speedo_temperature(){
 };
 
-void speedo_temperature::init(){
+void speedo_temperature::clear_vars(){
 	oil_temp_value_counter=0;
 	oil_temp_value=0;
 	water_temp_value_counter=0;
 	water_temp_value=0;
 
+	water_warning_temp=0; // 95 C
+	oil_warning_temp=0; // 120 C
 	// values for
 	for(unsigned int j=0; j<sizeof(oil_r_werte)/sizeof(oil_r_werte[0]); j++){
 		oil_r_werte[j]=0;
@@ -37,7 +39,38 @@ void speedo_temperature::init(){
 		water_r_werte[j]=0;
 		water_t_werte[0]=0;
 	};
+}
 
+bool speedo_temperature::check_vars(){
+	if(water_r_werte[0]==0 || water_t_werte[0]==0 || oil_t_werte[0]==0 || oil_r_werte[0]==0){
+		// Temperatur und Widerstands LookUp
+		// OIL
+		int r_werte[19]={1000,700,550,400,330,250,230,210,195,150,140,135,110,100, 90, 80, 20, 15, 10}; // widerstandswerte
+		int t_werte[19]={  27, 35, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95,100,105,110,115,120,125}; // passender Temperaturwert
+
+		for(unsigned int j=0; j<sizeof(oil_r_werte)/sizeof(oil_r_werte[0]); j++){
+			oil_r_werte[j]=r_werte[j];
+			oil_t_werte[j]=t_werte[j];
+		};
+
+		// Water
+		r_werte={1000,700,550,400,330,250,230,210,195,150,140,135,110,100, 90, 80, 20, 15, 10}; // widerstandswerte
+		t_werte={  27, 35, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95,100,105,110,115,120,125}; // passender Temperaturwert
+		for(unsigned int j=0; j<sizeof(water_r_werte)/sizeof(water_r_werte[0]); j++){
+			water_r_werte[j]=r_werte[j];
+			water_t_werte[j]=t_werte[j];
+		};
+
+		water_warning_temp=950; // 95 C
+		oil_warning_temp=1200; // 120 C
+		pDebug->sprintp(PSTR("temp failed"));
+		return true;
+	};
+
+	return false;
+}
+
+void speedo_temperature::init(){
 	Serial.println("Temp init done.");
 }
 

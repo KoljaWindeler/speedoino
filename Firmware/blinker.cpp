@@ -65,6 +65,21 @@ bool moped_blinker::warn(unsigned long dist){
 void moped_blinker::init(){
   pinMode(BLINKER_PIN, INPUT);
   pDebug->sprintlnp(PSTR("Blinker init done"));
-  guard_start=0;
-  high_speed_add=0;
 };
+
+void moped_blinker::clear_vars(){
+	guard_start=0;
+	high_speed_add=0;
+	dist_to_warn=0;
+};
+
+bool moped_blinker::check_vars(){
+	if(dist_to_warn==0){
+		pDebug->sprintp(PSTR("Blinker failed"));
+		high_speed_add=200;
+		dist_to_warn=200;
+		return true;
+	}
+	return false;
+};
+

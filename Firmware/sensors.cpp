@@ -35,6 +35,59 @@ Speedo_sensors::Speedo_sensors(){
 Speedo_sensors::~Speedo_sensors(){
 };
 
+void Speedo_sensors::clear_vars(){
+	m_blinker->clear_vars();
+	m_clock->clear_vars();
+	m_dz->clear_vars();
+	m_gps->clear_vars();
+	m_temperature->clear_vars();
+	m_fuel->clear_vars();
+	m_speed->clear_vars();
+	m_reset->clear_vars();
+	m_gear->clear_vars();
+	m_oiler->clear_vars();
+	m_voltage->clear_vars();
+};
+
+void Speedo_sensors::check_vars(){
+	bool any_failed=false;
+	// wenn ein test einen fehler meldet wird der return wert "true"
+
+	any_failed|=m_blinker->check_vars();
+	any_failed|=m_clock->check_vars();
+	any_failed|=m_dz->check_vars();
+	any_failed|=m_gps->check_vars();
+	any_failed|=m_temperature->check_vars();
+	any_failed|=m_fuel->check_vars();
+	any_failed|=m_speed->check_vars();
+	any_failed|=m_reset->check_vars();
+	any_failed|=m_gear->check_vars();
+	any_failed|=m_oiler->check_vars();
+	any_failed|=m_voltage->check_vars();
+
+	if(any_failed){
+
+		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
+		pDebug->sprintp(PSTR("SD access strange"));
+		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
+
+		pSD->sd_failed=true;
+		//_delay_ms(5000);
+		//pOLED->clear_screen();
+	}
+};
+
+void Speedo_sensors::single_read(){
+	pSensors->m_clock->inc();  // sekunden hochzählen
+	pSensors->m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
+	pSensors->m_temperature->read_air_temp();  // temperaturen aktualisieren
+	pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
+	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren
+	pSensors->m_oiler->check_value(); // gucken ob wir ölen müssten
+	pSensors->m_voltage->calc(); // spannungscheck
+};
+
+
 void Speedo_sensors::init(){
 	m_blinker->init();
 	m_clock->init();

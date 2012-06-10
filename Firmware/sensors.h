@@ -13,6 +13,9 @@ public:
 	Speedo_sensors(void);
 	~Speedo_sensors();
 	void init();
+	void clear_vars();
+	void check_vars();
+	void single_read();
 	float flatIt(int actual, short* counter, int max_counter, float old_flat);
 
 	speedo_clock* m_clock;

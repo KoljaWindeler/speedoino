@@ -29,6 +29,19 @@ void speedo_oiler::init(){
 	pDebug->sprintlnp(PSTR("Oiler init done"));
 };
 
+bool speedo_oiler::check_vars(){
+	if(grenze==0){
+		grenze=4000;
+		pDebug->sprintp(PSTR("oiler failed"));
+		return true;
+	}
+	return false;
+};
+
+void speedo_oiler::clear_vars(){
+	grenze=0;
+};
+
 int speedo_oiler::send_impulse(){
 	if(pSensors->m_speed->getSpeed()>30){ // nur ölen wenn wir über 30 kmh sind
 		digitalWrite(OILER_PIN,HIGH); // 150ms high

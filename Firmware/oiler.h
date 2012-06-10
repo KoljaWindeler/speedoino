@@ -14,6 +14,8 @@ public:
 	speedo_oiler();
 	~speedo_oiler();
 	void init();
+	void clear_vars();
+	bool check_vars();
 	int send_impulse();
 	void check_value();
 	int grenze;

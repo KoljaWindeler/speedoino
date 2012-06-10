@@ -403,6 +403,9 @@ void speedo_menu::display(){ // z.B. state = 26
 		sprintf(temp,"%c",127);
 		pOLED->string(pSpeedo->default_font,temp,2,6,0,15,0);
 	} else if(state==5911){
+		update_display=true;
+		state++;
+	} else if(state==5912){
 		PCICR &=~(1<<PCIE1); // PCINT DEactivieren
 		tetris* m_tetris=new tetris;
 		m_tetris->run();
@@ -2433,7 +2436,7 @@ bool speedo_menu::go_left(){
 	};
 	button_time=millis();
 	pDebug->loop();
-	pMenu->display();
+	update_display=true;
 	return true;
 };
 
@@ -2446,7 +2449,7 @@ bool speedo_menu::go_right(){
 	state=(state*10)+1;
 	button_time=millis();
 	pDebug->loop();
-	pMenu->display();
+	update_display=true;
 	return true;
 };
 
@@ -2472,7 +2475,7 @@ bool speedo_menu::go_up(){
 	};
 	button_time=millis();
 	pDebug->loop();
-	pMenu->display();
+	update_display=true;
 	return true;
 };
 
@@ -2499,7 +2502,7 @@ bool speedo_menu::go_down(){
 	};
 	button_time=millis();
 	pDebug->loop();
-	pMenu->display();
+	update_display=true;
 	return true;
 };
 
@@ -2508,6 +2511,12 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	// also entweder ist der letzte button_down schon länger als der menu_button_timeout her
 	// oder zumindest länger als fast_timeout UND der first push ist ausreichend lang her
 	// oder per serielle konsole
+	if(update_display){
+		update_display=false;
+		display();
+	}
+
+
 	if(bt_keys_en){ // auf keinen Fall hier lesen, wenn wir gerade im Import sind, sonder haut uns jeder Straßenname mit w||a||s||d raus
 		if(Serial.available()>100){ // wenns zuviele sind flushen
 			Serial.flush();
@@ -2517,6 +2526,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 			};
 		};
 	};
+
 
 	if(hw_keys_en || button_first_push!=0){		// hier gehen wir nur rein wenn ein interrupt da war oder einer der buttons noch gedrückt ist
 		if((millis()>(button_time+menu_button_timeout)) ||
@@ -2601,8 +2611,8 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 
 // hässlich hier den interrupt eingefügt ..
 ISR(PCINT1_vect ){
-//	Serial.print("interrupt @");
-//	Serial.println(millis());
+	//	Serial.print("interrupt @");
+	//	Serial.println(millis());
 	pMenu->button_test(false,true);
 };
 
@@ -2619,6 +2629,7 @@ void speedo_menu::init(){
 	old_state=state;
 	button_time=millis();
 	button_first_push=millis();
+	update_display=false;
 
 	Serial.println("Menu init done");
 };
