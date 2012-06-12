@@ -191,7 +191,7 @@ void speedo_gps::check_flag(){
 		};
 		// debug
 		parse(gps_buffer1,1);         // Daten übergeben
-		if(first_valid_gps){
+		if(first_valid_gps && pSensors->m_clock->getdate()>=101 && pSensors->m_clock->getdate()<=1231){
 			pConfig->day_trip_check();
 			first_valid_gps=false;
 		};
@@ -736,9 +736,20 @@ void speedo_gps::loop(){
 int speedo_gps::get_logged_points(char* buffer,int a){
 	gps_write_status=9;
 	if(a<=gps_count){
+		if(gps_time[a]>240000) gps_time[a]=000000;
+		if(gps_date[a]>311299) gps_date[a]=311299;
+		if(gps_lati[a]>180000000) gps_lati[a]=0;
+		if(gps_long[a]>180000000) gps_long[a]=0;
+		if(gps_speed_arr[a]>300) gps_speed_arr[a]=300;
+		if(gps_course[a]>3600) gps_course[a]=0;
+		if(gps_alt[a]>50000) gps_alt[a]=50000;
+		if(gps_sats[a]>20) gps_sats[a]=20;
+		if(gps_fix[a]>1) gps_fix[a]=2;
+		if(gps_special[a]>9) gps_special[a]=9;
+
+		//6+1+6+1+9+1+9+1+3+1+5+1+5+1+2+1+1+1+1+\n = 59
 		sprintf(buffer,"%06lu,%06lu,%09lu,%09lu,%03i,%05u,%05lu,%i,%i,%i\n",gps_time[a],gps_date[a],gps_lati[a],gps_long[a],gps_speed_arr[a],gps_course[a],gps_alt[a],gps_sats[a],gps_fix[a],gps_special[a]);
 		written_gps_points++;
-
 		return 0;
 	} else {
 		return -1;

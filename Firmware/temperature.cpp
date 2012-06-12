@@ -155,7 +155,6 @@ void speedo_temperature::read_water_temp() {
 					Serial.print(" und geplaettet: ");
 					Serial.println(int(round(water_temp_value)));
 				}
-
 				break; // break the for loop
 			};
 		};

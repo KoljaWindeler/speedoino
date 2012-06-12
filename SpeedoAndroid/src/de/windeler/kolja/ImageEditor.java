@@ -139,7 +139,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 			Matrix mat = new Matrix();
 			mat.postRotate(90);
 			Bitmap bMapRotate = Bitmap.createBitmap(bMapScaled, 0, 0, bMapScaled.getWidth(), bMapScaled.getHeight(), mat, true);
-			bMapScaled = Bitmap.createScaledBitmap(bMapRotate,(int)(display.getHeight()*0.3), (int) (display.getHeight()*0.6), true);
+			bMapScaled = Bitmap.createScaledBitmap(bMapRotate,(int)(display.getHeight()*0.25), (int) (display.getHeight()*0.5), true);
 
 			image.setImageBitmap(bMapScaled);
 		} else { // image konnte nicht geöffnet werden

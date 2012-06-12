@@ -250,7 +250,7 @@ void speedo_filemanager_v2::parse_command(){
 				////////////////////////// UP DOWN LEFT RIGHT /////////////////////////////
 
 			} else if(msgBuffer[0]==CMD_GO_LEFT){
-				pMenu->go_left();
+				pMenu->go_left(false); // i won't wait on main loop, i update it myself
 				pMenu->display();
 				isLeave	=	1;
 				msgLength		=	2;
@@ -258,7 +258,7 @@ void speedo_filemanager_v2::parse_command(){
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_RIGHT){
-				pMenu->go_right();
+				pMenu->go_right(false); // i won't wait on main loop, i update it myself
 				pMenu->display();
 				isLeave	=	1;
 				msgLength		=	2;
@@ -266,7 +266,7 @@ void speedo_filemanager_v2::parse_command(){
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_UP){
-				pMenu->go_up();
+				pMenu->go_up(false); // i won't wait on main loop, i update it myself
 				pMenu->display();
 				isLeave	=	1;
 				msgLength		=	2;
@@ -274,7 +274,7 @@ void speedo_filemanager_v2::parse_command(){
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_DOWN){
-				pMenu->go_down();
+				pMenu->go_down(false); // i won't wait on main loop, i update it myself
 				pMenu->display();
 				isLeave	=	1;
 				msgLength		=	2;

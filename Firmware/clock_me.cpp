@@ -65,7 +65,7 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss,i
 	if(mm>-1){ m_mm=mm; };
 	if(( (signed(m_ss)-ss)>10 || (signed(m_ss)-ss)<-10) && ss>-1){ m_ss=unsigned(ss); }; // min 10 sec differenz
 	if(dayOfWeek>-1){ m_dayOfWeek=dayOfWeek; };
-	if(day>-1){ m_day=day+floor((m_hh+m_dayls)/24); }; // eventuell is ja schon morgen
+	if(day>-1){ m_day=day+floor(m_hh/24); }; // eventuell is ja schon morgen
 
 	/*if(lost_data){ // wenn im i2c mist rausgekommen ist, bat gewechselt, kurzschluss, erster aufbau .. watt weiß ich
 		if(day>-1 && year>-1 && mon>-1){ // und wir valide gps daten bekommen

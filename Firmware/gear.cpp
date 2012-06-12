@@ -98,6 +98,8 @@ void speedo_gear::calc(){
 }
 
 int speedo_gear::get(){
+	if(DEMO_MODE)
+		return 2;
 	if(gang>=-1 && gang<=6)
 		return gang;
 	else

@@ -485,6 +485,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
 			pOLED->string(pSpeedo->default_font,title,2,0,DISP_BRIGHTNESS,0,0);
 			pOLED->string_P(pSpeedo->default_font,PSTR("File not found"),2,3,0,DISP_BRIGHTNESS,0);
+			set_buttons(button_state,button_state,button_state,!button_state); // no right
 		};
 		subdir.close();
 		root.close();
@@ -2421,7 +2422,11 @@ void speedo_menu::draw(const char** menu, int entries){
 	///////// Menu ausgeben ////////////
 };
 ///// ein text menü zeichnen ////////////
-bool speedo_menu::go_left(){
+// go_left(update_twice)
+// update_twice=true <- false, damit das update_display flag nicht gesetzt wird
+// daher muss die funktion die go_left(false) aufruft, selbst display() aufrufen
+// wenn man es mit go_left(true) aufruft, dann wird display autak ausgeführt
+bool speedo_menu::go_left(bool update_twice){
 	old_state=state;
 	state=floor(state/10);
 	if((state%10)>menu_lines){ // bei 8,9
@@ -2436,11 +2441,11 @@ bool speedo_menu::go_left(){
 	};
 	button_time=millis();
 	pDebug->loop();
-	update_display=true;
+	update_display=update_twice;
 	return true;
 };
 
-bool speedo_menu::go_right(){
+bool speedo_menu::go_right(bool update_twice){
 	// menu var umsetzen
 	old_state=state;
 	menu_start=0; // rechts -> leeres menu
@@ -2449,11 +2454,11 @@ bool speedo_menu::go_right(){
 	state=(state*10)+1;
 	button_time=millis();
 	pDebug->loop();
-	update_display=true;
+	update_display=update_twice;
 	return true;
 };
 
-bool speedo_menu::go_up(){
+bool speedo_menu::go_up(bool update_twice){
 	old_state=state;
 	menu_marker--; // grundsätzlich einfach nur den marker hochschieben
 	if(menu_marker<0){ // wenn der allerdings oben verwinden würde
@@ -2475,11 +2480,11 @@ bool speedo_menu::go_up(){
 	};
 	button_time=millis();
 	pDebug->loop();
-	update_display=true;
+	update_display=update_twice;
 	return true;
 };
 
-bool speedo_menu::go_down(){
+bool speedo_menu::go_down(bool update_twice){
 	old_state=state;
 	menu_marker++; // ganz einfach hochsetzen
 	if(menu_marker>(menu_lines-1)){ // wenn über max sind
@@ -2502,7 +2507,7 @@ bool speedo_menu::go_down(){
 	};
 	button_time=millis();
 	pDebug->loop();
-	update_display=true;
+	update_display=update_twice;
 	return true;
 };
 
@@ -2540,7 +2545,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				if((PINJ & (1<<menu_button_rechts))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-					go_right();
+					go_right(true); // update display() via menu
 					return true;
 				} else {
 					return false;
@@ -2556,7 +2561,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				if((PINJ & (1<<menu_button_links))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-					go_left();
+					go_left(true); // update display() via menu
 					return true;
 					// wenn der pegel doch nicht mehr anliegt ( spike )
 				} else {
@@ -2574,7 +2579,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				if((PINJ & (1<<menu_button_oben))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-					go_up();
+					go_up(true); // update display() via menu
 					return true;
 				} else {
 					return false;
@@ -2591,7 +2596,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				if((PINJ & (1<<menu_button_unten))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
-					go_down();
+					go_down(true); // update display() via menu
 					return true;
 				} else {
 					return false;

@@ -29,10 +29,10 @@ public:
 	void yesno(const char first[30],const char second[30],const char third[30]);
 	void del_conf(char first[20],char second[20]);
 	int  center_me(char* input,int legth);
-	bool go_left();
-	bool go_right();
-	bool go_up();
-	bool go_down();
+	bool go_left(bool update_twice);
+	bool go_right(bool update_twice);
+	bool go_up(bool update_twice);
+	bool go_down(bool update_twice);
 
 	unsigned long state,old_state;
 	short state_helper;
