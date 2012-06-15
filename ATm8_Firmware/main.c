@@ -50,6 +50,7 @@
 #include "speed_cntr.h"
 #include "reset.h"
 
+speedRampData srd;
 
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 volatile struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
@@ -58,7 +59,6 @@ volatile struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 void Init(void)
 {
-	soll_pos=0;
 	// Init of motor driver IO pins
 	sm_driver_Init_IO();
 	// Init of uart
@@ -84,46 +84,24 @@ int main(){
 	Init();
 	while(1) {
 		// If a command is received, check the command and act on it.
-		if(get_stopper()!=STOP){
-			while(get_stopper()!=STOP){
-				_delay_ms(10);
-				//uart_SendByte('-');
-			};
-			uart_SendString("$k*"); // ACK
-			status.cmd = FALSE;
-		}
 
 		if(status.cmd == TRUE){
 			if(UART_RxBuffer[0] == 'm'){
+				status.cmd = FALSE;
 				int steps=UART_RxBuffer[1]-'0';
 				int i=2;
 				while(UART_RxBuffer[i]!=0x00){
 					steps=steps*10+UART_RxBuffer[i]-'0';
 					i++;
 				}
-				if(abs(steps-soll_pos)>0){
-					// speed && accel festlegen
-					int beschleunigung; // 100
-					int geschwindigkeit; //400
 
-					if(abs(steps-soll_pos)>1000){
-						beschleunigung=240; // 120
-						geschwindigkeit=1100; //800
-					} else {
-						// wenn die schritweite unter 100 ist -- dann nur 10% der leistung
-						beschleunigung=24; // 100
-						geschwindigkeit=110; //400
-					};
+				if(steps>2000) steps=2000;
+				if(steps<0) steps=0;
 
 
-					speed_cntr_Move(steps-soll_pos, beschleunigung, beschleunigung, geschwindigkeit);
-					soll_pos=steps;
-				} else {
-					// wenn schritt zu klein ... nur so bescheid geben
-					uart_SendString("$k*"); // ACK
-					status.cmd = FALSE;
-				}
-				//speed_cntr_Move(steps, 40, 80, 200);
+
+				speed_cntr_Move(steps);
+
 			} else if(UART_RxBuffer[0] == 'y'){
 				uart_SendByte('$');
 				uart_SendByte('y');

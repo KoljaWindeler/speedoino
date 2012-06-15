@@ -60,24 +60,34 @@ void speedo_dz::calc() {
 
 		pSensors->m_gear->calc();// alle 250 ms, also mit 4Hz den Gang berechnen
 
-		pAktors->m_stepper->go_to(exact/10,0);
+		pAktors->m_stepper->go_to(exact/11.73,0);
 
 	} else if(now-previous_time>1000){
 		rounded=0;
 		exact=0;
 		// zeiger
-		pAktors->m_stepper->go_to(exact/10,0);
+		pAktors->m_stepper->go_to(0,0);
 		previous_time=now;
 	};
 	if(DEMO_MODE){
 		if(differ>50){
 			previous_time=now;
-			rounded=((millis()/300)%210)*70;
+			int temp=analogRead(OIL_TEMP_PIN)-180;
+			if(temp<0) temp=0;
+			if (temp>600) temp=600;
+			rounded=15000-temp*25;
+
+//			int speed_me_up=50; // gut mit 50
+//			if(((millis()/speed_me_up)%210)<50){
+//				rounded=0;
+//			} else {
+//				rounded=((millis()/speed_me_up)%210)*70;
+//			};
 			exact=rounded;
 			pSensors->m_gear->calc();
 			// zeiger
 			// 2 => 2*880=> 2k stepper
-			pAktors->m_stepper->go_to(exact/11,0);
+			pAktors->m_stepper->go_to(round(exact/11.73),0);
 		}
 	};
 	/*///////////////// DIMMEN ABHÄNGIG VON DER DREHZAHL ////////////////

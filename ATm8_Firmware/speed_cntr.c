@@ -24,14 +24,14 @@
 #include <avr/io.h>
 #include <avr/signal.h>
 #include "global.h"
+#include "math.h"
 #include "sm_driver.h"
 #include "speed_cntr.h"
 #include "uart.h"
 
 //! Cointains data for timer interrupt.
-speedRampData srd;
+extern speedRampData srd;
 
-int running_value;
 
 /*! \brief Move the stepper motor a given number of steps.
  *
@@ -43,113 +43,245 @@ int running_value;
  *
  *  \param step  Number of steps to move (pos - CW, neg - CCW).
  *  \param accel  Accelration to use, in 0.01*rad/sec^2.
- *  \param decel  Decelration to use, in 0.01*rad/sec^2.
  *  \param speed  Max speed, in 0.01*rad/sec.
  */
-void speed_cntr_Move(signed int step, unsigned int accel, unsigned long decel, unsigned long speed)
-{
-	//! Number of steps before we hit max speed.
-	unsigned int max_s_lim;
-	//! Number of steps before we must start deceleration (if accel does not hit max speed).
-	unsigned int accel_lim;
+void speed_cntr_Move(signed int soll_pos){
 
-	// Set direction from sign on step value.
-	if(step < 0){
-		srd.dir = CCW;
-		step = -step;
+
+	//! Number of steps before we hit max speed.
+	unsigned int step_to_max_speed;
+	unsigned int differ_steps;
+	unsigned int accel=240;
+	int speed=0;
+
+	if(soll_pos>MAX_POS) soll_pos=MAX_POS;
+	if(soll_pos<=0) soll_pos=0;
+
+	// Set direction from differ of step value.
+	if(soll_pos < srd.position){
+		srd.dir_next = CCW;
+		differ_steps=srd.position-soll_pos;
+		speed=srd.position-soll_pos; //"8/3"
 	}
 	else{
-		srd.dir = CW;
+		srd.dir_next = CW;
+		differ_steps=soll_pos-srd.position;
+		speed=soll_pos-srd.position; //"8/3"
 	}
-	soll_pos+=step; // globale var anpassen, damit wir wissen wo wir sind
+
+	speed*=8/3;
+	if(speed>800){ // 800
+		speed=800;
+	} else 	if(speed<500){
+		speed=130; //400
+	} else 	if(speed<240){
+		speed=100; //400
+	} else 	if(speed<140){
+		speed=50; //400
+	};
+
+
+	//					if(abs(steps-srd.position)>300){
+	//						beschleunigung=240; // 120
+	//						geschwindigkeit=800; //800
+	//					} else {
+	//						// wenn die schritweite unter 100 ist -- dann nur 10% der leistung
+	//						beschleunigung=24; // 100
+	//						geschwindigkeit=110; //400
+	//					};
+	//					geschwindigkeit=800;
+
+
 
 	// If moving only 1 step.
-	if(step == 1){
+	if(differ_steps == 1){
 		// Move one step...
-		srd.accel_count = -1;
+		srd.accel_steps = -1;
 		// ...in DECEL state.
 		srd.run_state = DECEL;
 		// Just a short delay so main() can act on 'running'.
 		srd.step_delay = 1000;
-		status.running = TRUE;
 		OCR1A = 10;
 		// Run Timer/Counter 1 with prescaler = 1.
 		TCCR1B |= (1<<CS10);
 	}
 	// Only move if number of steps to move is not zero.
-	else if(step != 0){
+	else if(differ_steps >= 2){
+
 		// Refer to documentation for detailed information about these calculations.
+		if(srd.run_state==STOP){
+			char temp[30];
+			sprintf(temp,"%i<-%i\r\n",soll_pos,srd.position);
+			uart_SendString(temp);
+			//uart_SendString("0:");
+			// Set max speed limit, by calc min_delay to use in timer.
+			// min_delay = (alpha / tt)/ w
+			srd.min_delay = A_T_x100 / speed;
+			//sprintf(temp,"%i\r\n",srd.min_delay);
+			//uart_SendString(temp);
 
-		// Set max speed limit, by calc min_delay to use in timer.
-		// min_delay = (alpha / tt)/ w
-		srd.min_delay = A_T_x100 / speed;
+			// Set accelration by calc the first (c0) step delay .
+			// step_delay = 1/tt * sqrt(2*alpha/accel)
+			// step_delay = ( tfreq*0.676/100 )*100 * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
+			srd.step_delay = (T1_FREQ_148 * sqrt_2(A_SQ / accel))/100;
 
-		// Set accelration by calc the first (c0) step delay .
-		// step_delay = 1/tt * sqrt(2*alpha/accel)
-		// step_delay = ( tfreq*0.676/100 )*100 * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-		srd.step_delay = (T1_FREQ_148 * sqrt_2(A_SQ / accel))/100;
+			// Find out after how many steps does the speed hit the max speed limit.
+			// step_to_max_speed = speed^2 / (2*alpha*accel)
+			step_to_max_speed = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
+			// If we hit max speed limit before 0,5 step it will round to 0.
+			// But in practice we need to move atleast 1 step to get any speed at all.
+			if(step_to_max_speed == 0){
+				step_to_max_speed = 1;
+			}
 
-		// Find out after how many steps does the speed hit the max speed limit.
-		// max_s_lim = speed^2 / (2*alpha*accel)
-		max_s_lim = (long)speed*speed/(long)(((long)A_x20000*accel)/100);
-		// If we hit max speed limit before 0,5 step it will round to 0.
-		// But in practice we need to move atleast 1 step to get any speed at all.
-		if(max_s_lim == 0){
-			max_s_lim = 1;
+			// wenn wir für beschleunigung und entschleunigung zusammen MEHR als die gesamt schritte bräuchten
+			if((step_to_max_speed<<1) >= differ_steps){
+				srd.decel_steps_neg = -(differ_steps>>1); // negativ soviel schritte, wie ich positiv zum speedup gebraucht hab
+				if(srd.dir==CCW){
+					srd.decel_start = srd.position - (differ_steps>>1);
+				} else { // der motor dreht hoch, dann ist
+					srd.decel_start = srd.position + (differ_steps>>1);
+				};
+			}
+			else{ // sonst können wir einfach mal annehmen das wir zum entschleunigen genausoviel brauchen wie für beschleunigen
+				srd.decel_steps_neg = -step_to_max_speed;
+			}
+			// We must decelrate at least 1 step to stop.
+			if(srd.decel_steps_neg == 0){
+				srd.decel_steps_neg = -1;
+			}
+
+			// If the maximum speed is so low that we dont need to go via accelration state.
+			if(srd.step_delay <= srd.min_delay){
+				srd.step_delay = srd.min_delay;
+				srd.run_state = RUN;
+			}
+			else{
+				srd.run_state = ACCEL;
+			}
+
+			srd.dir=srd.dir_next; // now set previous saved direction
+
+			OCR1A = 10;
+			// Set Timer/Counter to divide clock by 1
+			TCCR1B |= (1<<CS10);
+
+		} else if(srd.run_state==RUN){
+			//uart_SendString("3\r\n");
+			// is it neccesary to speed up?
+			int min_delay = A_T_x100 / speed;
+			if(abs(min_delay-srd.min_delay)>1000){
+				srd.min_delay = min_delay;
+				srd.run_state = STOP;
+				//uart_SendString("--> GoTo ACCEL\r\n");
+			}
+
+			if(srd.dir==CW){
+				if(srd.position+(-srd.decel_steps_neg)>=soll_pos){	// wenn wir mit der entschleunigungsrampe das gerade noch so, oder schon gar nicht mehr schaffen, dann sofort abbremsen
+					srd.run_state = DECEL;
+					srd.accel_steps = srd.decel_steps_neg;
+					char temp[20];
+					sprintf(temp,"1:%i\r\n",srd.accel_steps);
+					uart_SendString(temp);
+				} else { // wenn wir noch easy Zeit haben zum bremsen
+					srd.decel_start = soll_pos-(-srd.decel_steps_neg);
+				};
+			} else {
+				if(srd.position+srd.decel_steps_neg<=soll_pos){
+					srd.run_state = DECEL;
+					srd.accel_steps = srd.decel_steps_neg;
+					char temp[20];
+					sprintf(temp,"2:%i\r\n",srd.accel_steps);
+					uart_SendString(temp);
+				} else {
+					srd.decel_start = soll_pos+(-srd.decel_steps_neg);
+				};
+			};
 		}
-
-		// Find out after how many steps we must start deceleration.
-		// n1 = (n1+n2)decel / (accel + decel)
-		accel_lim = ((long)step*decel) / (accel+decel);
-		// We must accelrate at least 1 step before we can start deceleration.
-		if(accel_lim == 0){
-			accel_lim = 1;
-		}
-
-		// Use the limit we hit first to calc decel.
-		if(accel_lim <= max_s_lim){
-			srd.decel_val = accel_lim - step;
-		}
-		else{
-			srd.decel_val = -((long)max_s_lim*accel)/decel;
-		}
-		// We must decelrate at least 1 step to stop.
-		if(srd.decel_val == 0){
-			srd.decel_val = -1;
-		}
-
-		// Find step to start decleration.
-		srd.decel_start = step + srd.decel_val;
-
-		// If the maximum speed is so low that we dont need to go via accelration state.
-		if(srd.step_delay <= srd.min_delay){
-			srd.step_delay = srd.min_delay;
-			srd.run_state = RUN;
-		}
-		else{
-			srd.run_state = ACCEL;
-		}
-
-		// Reset counter.
-		srd.accel_count = 0;// Set Timer/Counter to divide clock by 1
-		status.running = TRUE;
-		OCR1A = 10;
-		// Set Timer/Counter to divide clock by 1
-		TCCR1B |= (1<<CS10);
-		// Set Timer/Counter to divide clock by 8
-		//TCCR1B |= (1<<CS11);
 	}
 }
+
+//} else if(srd.run_state==ACCEL){
+//uart_SendString("1\r\n");
+//			if(srd.dir==CW){
+//				if(srd.position+(-srd.decel_steps_neg)<=soll_pos){
+//					// TODO, richtig aufwendig, hier sollten wir alles neu berechnen und bedenken das wir ja schon fahren!!
+//					// wir sind also in dem modus, das wir zwar gerade beschleunigen,
+//				} else { // also ist der neue endpunkt doch weiter weg als wir alle dachten, das ist easy, dann schieben wir einfach den stopper weiter nach hinten
+//					// TODO: wenn wir vorher keine richtige rampge gefahren sind .... wird das hier sehr langsam :D
+//					srd.decel_start = soll_pos+srd.decel_steps_neg;
+//				}
+//			} else {
+//				if(srd.position+srd.decel_steps_neg>=soll_pos){ // unsere soll position liegt noch weiter weg als wir fahren wollten, easy
+//					// TODO: wenn wir vorher keine richtige rampge gefahren sind .... wird das hier sehr langsam :D
+//					srd.decel_start = soll_pos+(-srd.decel_steps_neg);
+//				} else {
+//					// TODO, richtig aufwendig, hier sollten wir alles neu berechnen und bedenken das wir ja schon fahren!!
+//				}
+//			};
+//} else if(srd.run_state==DECEL){
+//uart_SendString("2\r\n");
+//			if(srd.dir==CW){
+//				if(srd.position+(-srd.accel_steps)>=soll_pos){ // position + bremsschritte => zu weit gefahren
+//					srd.run_state=DECEL; // bleib im bremsmodus, indem du bist
+//					// sonst mach nix
+//				} else { // wir müssen noch mal weiter fahren
+//					srd.run_state=ACCEL; // weiterfahren, daher gleich wieder in accel wechseln
+//					srd.accel_steps=-srd.accel_steps; // wieder da weiter machen wo wir gerade waren, durchstarten, liftoff
+//
+//					// wieviele schritte brauchen wir zum anhalten? wann machen wir das ?
+//					srd.decel_steps_neg = -((long)speed*speed/(long)(((long)A_x20000*accel)/100)); // soviele schritte (*-1) brauchen wir zum bremsen
+//					step_to_max_speed = -srd.decel_steps_neg-srd.accel_steps; // wir sind ja schon auf speed daher brauchen wir viel weniger schritte
+//
+//					if(step_to_max_speed+(-srd.decel_steps_neg) >= differ_steps){ // wir schaffen es nicht mehr innerhalb der vorgegebenen Zeit auf FULLspeed + Bremsen
+//						unsigned long fehlende_schritte=((step_to_max_speed+(-srd.decel_steps_neg))-differ_steps)>>1;
+//						srd.decel_steps_neg+=fehlende_schritte; // da decel_steps negativ sind wird das kleiner in dem wir einfach die anzahl an fehlenden schritte draufrechnen
+//						srd.decel_start=srd.position+step_to_max_speed-fehlende_schritte;
+//					}
+//					else{ // wenn wir noch genügend schritte haben um auf vollgas zu kommen machen wir das
+//						// bremsschritte sind vorgegeben
+//						// bremspunkt noch nicht
+//						srd.decel_start=srd.position+differ_steps-(-srd.decel_steps_neg);
+//					}
+//					srd.decel_steps_neg = -step_to_max_speed;
+//				};
+//			} else {
+//				if(srd.position-(-srd.accel_steps)<=soll_pos){ // position + bremsschritte => zu weit gefahren
+//					srd.run_state=DECEL; // bleib im bremsmodus, indem du bist
+//					// sonst mach nix
+//				} else { // wir müssen noch mal weiter fahren
+//					srd.run_state=ACCEL; // weiterfahren, daher gleich wieder in accel wechseln
+//					srd.accel_steps=-srd.accel_steps; // wieder da weiter machen wo wir gerade waren, durchstarten, liftoff
+//
+//					// wieviele schritte brauchen wir zum anhalten? wann machen wir das ?
+//					srd.decel_steps_neg = -((long)speed*speed/(long)(((long)A_x20000*accel)/100)); // soviele schritte (*-1) brauchen wir zum bremsen
+//					step_to_max_speed = -srd.decel_steps_neg-srd.accel_steps; // wir sind ja schon auf speed daher brauchen wir viel weniger schritte
+//
+//					if(step_to_max_speed+(-srd.decel_steps_neg) >= differ_steps){ // wir schaffen es nicht mehr innerhalb der vorgegebenen Zeit auf FULLspeed + Bremsen
+//						unsigned long fehlende_schritte=((step_to_max_speed+(-srd.decel_steps_neg))-differ_steps)>>1;
+//						srd.decel_steps_neg+=fehlende_schritte; // da decel_steps negativ sind wird das kleiner in dem wir einfach die anzahl an fehlenden schritte draufrechnen
+//						srd.decel_start=srd.position-step_to_max_speed+fehlende_schritte;
+//					} else{ // wenn wir noch genügend schritte haben um auf vollgas zu kommen machen wir das
+//						// bremsschritte sind vorgegeben
+//						// bremspunkt noch nicht
+//						srd.decel_start=srd.position-differ_steps+(-srd.decel_steps_neg);
+//					}
+//					srd.decel_steps_neg = -step_to_max_speed;
+//				};
+//			};
 
 /*! \brief Init of Timer/Counter1.
  *
  *  Set up Timer/Counter1 to use mode 1 CTC and
  *  enable Output Compare A Match Interrupt.
  */
-void speed_cntr_Init_Timer1(void)
-{
+void speed_cntr_Init_Timer1(void){
 	// Tells what part of speed ramp we are in.
 	srd.run_state = STOP;
+	srd.position = 0;
+	srd.dir=CW;
+	srd.dir_next=CW;
+	srd.accel_steps = 0;// Set Timer/Counter to divide clock by 1
 	// Timer/Counter 1 in mode 4 CTC (Not running).
 	TCCR1B = (1<<WGM12);
 	// Timer/Counter 1 Output Compare A Match Interrupt enable.
@@ -168,11 +300,9 @@ void speed_cntr_Init_Timer1(void)
  */
 ISR(TIMER1_COMPA_vect){
 	// Holds next delay period.
-	unsigned int new_step_delay;
+	unsigned int new_step_delay = 0;
 	// Remember the last step delay used when accelrating.
 	static int last_accel_delay;
-	// Counting steps when moving.
-	static unsigned int step_count = 0;
 	// Keep track of remainder from new_step-delay calculation to incrase accurancy
 	static unsigned int rest = 0;
 
@@ -180,21 +310,34 @@ ISR(TIMER1_COMPA_vect){
 
 	switch(srd.run_state) {
 	case STOP:
-		step_count = 0;
+
 		rest = 0;
 		// Stop Timer/Counter 1.
 		TCCR1B &= ~(1<<CS10 | 1<<CS11);
-		status.running = FALSE;
+
+		char temp[20];
+		sprintf(temp,"Stop,%i\r\n",srd.position);
+		uart_SendString(temp);
+
+		// Reset counter.
+		srd.accel_steps = 0;// Set Timer/Counter to divide clock by 1
 		break;
 	case ACCEL:
 		sm_driver_StepCounter(srd.dir);
-		step_count++;
-		srd.accel_count++;
-		new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) + rest)/(4 * srd.accel_count + 1));
-		rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_count + 1);
+		srd.accel_steps++;
+		// keep eye on position
+		if(srd.dir==CCW){
+			if(srd.position>0)
+				srd.position--;
+		} else {
+			if(srd.position<MAX_POS)
+				srd.position++;
+		}
+		new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) + rest)/(4 * srd.accel_steps + 1));
+		rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_steps + 1);
 		// Chech if we should start decelration.
-		if(step_count >= srd.decel_start) {
-			srd.accel_count = srd.decel_val;
+		if(srd.position == srd.decel_start) {
+			srd.accel_steps = srd.decel_steps_neg;
 			srd.run_state = DECEL;
 		}
 		// Chech if we hitted max speed.
@@ -207,11 +350,17 @@ ISR(TIMER1_COMPA_vect){
 		break;
 	case RUN:
 		sm_driver_StepCounter(srd.dir);
-		step_count++;
+		if(srd.dir==CCW){
+			if(srd.position>0)
+				srd.position--;
+		} else {
+			if(srd.position<MAX_POS)
+				srd.position++;
+		}
 		new_step_delay = srd.min_delay;
 		// Chech if we should start decelration.
-		if(step_count >= srd.decel_start) {
-			srd.accel_count = srd.decel_val;
+		if(srd.position == srd.decel_start) {
+			srd.accel_steps = srd.decel_steps_neg;
 			// Start decelration with same delay as accel ended with.
 			new_step_delay = last_accel_delay;
 			srd.run_state = DECEL;
@@ -219,13 +368,19 @@ ISR(TIMER1_COMPA_vect){
 		break;
 	case DECEL:
 		sm_driver_StepCounter(srd.dir);
-		step_count++;
-		srd.accel_count++;
-		new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) + rest)/(4 * srd.accel_count + 1));
-		rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_count + 1);
+		// keep eye on position
+		if(srd.dir==CCW){
+			if(srd.position>0)
+				srd.position--;
+		} else {
+			if(srd.position<MAX_POS)
+				srd.position++;
+		}
+		srd.accel_steps++;
+		new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) + rest)/(4 * srd.accel_steps + 1));
+		rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_steps + 1);
 		// Check if we at last step
-		if(srd.accel_count >= 0){
-			running_value=0;
+		if(srd.accel_steps >= 0){
 			srd.run_state = STOP;
 		}
 		break;
@@ -243,8 +398,7 @@ ISR(TIMER1_COMPA_vect){
  *  \param x  Value to find square root of.
  *  \return  Square root of x.
  */
-unsigned long sqrt_2(unsigned long x)
-{
+unsigned long sqrt_2(unsigned long x){
 	register unsigned long xr;  // result register
 	register unsigned long q2;  // scan-bit register
 	register unsigned char f;   // flag (one bit)
@@ -274,26 +428,3 @@ unsigned long sqrt_2(unsigned long x)
 	}
 }
 
-/*! \brief Find minimum value.
- *
- *  Returns the smallest value.
- *
- *  \return  Min(x,y).
- */
-unsigned int min(unsigned int x, unsigned int y)
-{
-	if(x < y){
-		return x;
-	}
-	else{
-		return y;
-	}
-}
-
-void set_stopper(){
-	running_value=1;
-}
-
-int get_stopper(){
-	return srd.run_state;
-}

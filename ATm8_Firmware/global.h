@@ -35,6 +35,5 @@ struct GLOBAL_FLAGS {
   unsigned char dummy:6;
 };
 extern volatile struct GLOBAL_FLAGS status;
-unsigned long soll_pos;
 
 #endif
