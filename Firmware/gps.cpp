@@ -94,7 +94,7 @@ void speedo_gps::clear_vars(){
 	gps_write_status=0;
 	speed=0;
 
-	active_file=0; //default datei navi0.txt
+	active_file=0; //default datei navi0.smf
 }
 
 bool speedo_gps::check_vars(){
@@ -624,7 +624,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 	byte tempByte = (navi_point & 0xFF);
 	EEPROM.write(147,tempByte);
 
-	if(NAVI_DEBUG){ pDebug->sprintlnp(PSTR("Versuche NAVI.TXT zu oeffnen")); };
+	if(NAVI_DEBUG){ pDebug->sprintlnp(PSTR("Versuche NAVI.SMF zu oeffnen")); };
 
 	SdFile root;
 	SdFile file;
@@ -639,7 +639,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 	if (navi_filename==NULL) pDebug->sprintlnp(PSTR("Malloc failed"));
 	else memset(navi_filename,'\0',13);
 
-	sprintf(navi_filename,"NAVI%i.TXT",active_file%100);
+	sprintf(navi_filename,"NAVI%i.SMF",active_file%100);
 
 	if(file.open(&subdir, navi_filename, O_READ)) {
 		int16_t n,i;

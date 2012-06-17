@@ -67,7 +67,7 @@ int configuration::write(const char *filename){
 					pSD->writeString(file, buffer);
 					sprintf(buffer,"%i\n",pSensors->m_clock->getdate());
 					pSD->writeString(file, buffer);
-					for(unsigned int i=1;i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]);i++){
+					for(unsigned int i=0;i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]);i++){
 						if(pSpeedo->max_speed[i]>350) pSpeedo->max_speed[i]=200;
 						sprintf(buffer,"max_%i=%i;\n",i+1,pSpeedo->max_speed[i]%1000); // 12 chars max: max_1=300\n\0
 						pSD->writeString(file, buffer);
@@ -672,7 +672,7 @@ int configuration::parse(char* buffer){
 		};
 	} else if(strncmp("max_",name,4)==0){// ganzen Block auslesen, alle max_XXX gehen hier rein
 		char var_name[6];
-		for(int j=1;j<9;j++){ // alle mglichen strings erzeugen: max_1 ... max_8
+		for(int j=0;j<9;j++){ // alle mglichen strings erzeugen: max_1 ... max_8
 			sprintf(var_name,"max_%i",j+1);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
 				parse_int(buffer,seperator,&pSpeedo->max_speed[j]);
@@ -680,7 +680,7 @@ int configuration::parse(char* buffer){
 		};
 	} else if(strncmp("avg_time_",name,9)==0){// ganzen Block auslesen, alle avg_time_XXX gehen hier rein
 		char var_name[11];
-		for(int i=1;i<9;i++){ // alle mglichen strings erzeugen: avg_time_1 ... avg_time_8
+		for(int i=0;i<9;i++){ // alle mglichen strings erzeugen: avg_time_1 ... avg_time_8
 			sprintf(var_name,"avg_time_%i",i+1);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
 				parse_ul(buffer,seperator,&pSpeedo->avg_timebase[i]);
@@ -688,7 +688,7 @@ int configuration::parse(char* buffer){
 		};
 	} else if(strncmp("trip_",name,5)==0){// ganzen Block auslesen, alle trip_XXX gehen hier rein
 		char var_name[7];
-		for(int i=1;i<9;i++){ // alle mglichen strings erzeugen: trip_1 ... trip_8
+		for(int i=0;i<9;i++){ // alle mglichen strings erzeugen: trip_1 ... trip_8
 			sprintf(var_name,"trip_%i",i+1);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
 				parse_ul(buffer,seperator,&pSpeedo->trip_dist[i]);

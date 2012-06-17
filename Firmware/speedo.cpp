@@ -52,7 +52,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			} else 	if(pSensors->m_temperature->get_oil_temp()>200){
 				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_oil_temp()/10))%1000,pSensors->m_temperature->get_oil_temp()%10); // _32.3°C  7 stellen
 			} else {
-				sprintf(char_buffer,"<20{C  "); // below 20°C add a space to have 5 chars
+				sprintf(char_buffer,"  <20{C"); // below 20°C add a space to have 5 chars
 			};
 			pDebug->speedo_loop(1,0,previousMillis," "); // debug
 			// depend on skinsettings
@@ -75,17 +75,19 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				sprintf(char_buffer," -     "); // error occored -> no sensor
 			} else if(pSensors->m_temperature->get_water_temp()==9999){
 				sprintf(char_buffer," --    "); // error occored -> short to gnd
-			} else 	if(pSensors->m_temperature->get_water_temp()>200){
+			} else 	if(pSensors->m_temperature->get_water_temp()>1100){
+				sprintf(char_buffer,">110{C  "); // more then 110°C add a space to have 5 chars
+			} else 	if(pSensors->m_temperature->get_water_temp()>300){
 				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_water_temp()/10))%1000,pSensors->m_temperature->get_oil_temp()%10); // _32.3°C  7 stellen
 			} else {
-				sprintf(char_buffer,"<20{C  "); // below 20°C add a space to have 5 chars
+				sprintf(char_buffer,"  <30{C"); // below 20°C add a space to have 5 chars
 			};
 			pDebug->speedo_loop(1,0,previousMillis," "); // debug
 			// depend on skinsettings
 			pOLED->string(water_widget.font,char_buffer,water_widget.x+4,water_widget.y,0,DISP_BRIGHTNESS,-4);
 		};
 	};
-	/************************* oil temperature *********************/
+	/************************* water temperature *********************/
 	pDebug->speedo_loop(22,1,0," ");
 	/************************* air temperature *********************
 	 * Air Temperature will be read out in the every_sec routine

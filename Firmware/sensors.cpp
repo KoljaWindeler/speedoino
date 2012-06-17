@@ -117,3 +117,69 @@ float Speedo_sensors::flatIt(int actual, short* counter, int max_counter, float 
 	// bei 20 Werten also nur 3276,8
 }
 
+void Speedo_sensors::loop(){
+	char *char_buffer;
+	char_buffer = (char*) malloc (22);
+	////////////////////// water //////////////
+	if(pSensors->m_temperature->get_water_temp()!=pSpeedo->disp_zeile_bak[2]){
+		pSpeedo->disp_zeile_bak[2]=pSensors->m_temperature->get_water_temp();
+
+		if(pSensors->m_temperature->get_water_temp()==8888){
+			sprintf(char_buffer," -     "); // error occored -> no sensor
+		} else if(pSensors->m_temperature->get_water_temp()==9999){
+			sprintf(char_buffer," --    "); // error occored -> short to gnd
+		} else 	if(pSensors->m_temperature->get_water_temp()>1100){
+			sprintf(char_buffer,">110{C  "); // more then 110°C add a space to have 5 chars
+		} else 	if(pSensors->m_temperature->get_water_temp()>400){
+			sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_water_temp()/10))%1000,pSensors->m_temperature->get_water_temp()%10); // _32.3°C  7 stellen
+		} else {
+			sprintf(char_buffer,"<40{C  "); // below 20°C add a space to have 5 chars
+		};
+		// depend on skinsettings
+		pOLED->string(pSpeedo->default_font,char_buffer,9,2,0,DISP_BRIGHTNESS,-4);
+	};
+
+	////////////////////// air //////////////
+	if(pSensors->m_temperature->get_air_temp()!=pSpeedo->disp_zeile_bak[3]){
+
+		pSpeedo->disp_zeile_bak[3]=pSensors->m_temperature->get_air_temp();
+		sprintf(char_buffer,"%2i.%i{C",int(floor(pSensors->m_temperature->get_air_temp()/10))%100,pSensors->m_temperature->get_air_temp()%10);
+		// depend on skinsettings
+		pOLED->string(pSpeedo->default_font,char_buffer,9,3,0,DISP_BRIGHTNESS,2);
+	};
+
+	////////////////////// oil //////////////
+	if(pSensors->m_temperature->get_oil_temp()!=pSpeedo->disp_zeile_bak[4]){
+
+		pSpeedo->disp_zeile_bak[4]=pSensors->m_temperature->get_oil_temp();
+
+		if(pSensors->m_temperature->get_oil_temp()==8888){
+			sprintf(char_buffer," -     "); // error occored -> no sensor
+		} else if(pSensors->m_temperature->get_oil_temp()==9999){
+			sprintf(char_buffer," --    "); // error occored -> short to gnd
+		} else 	if(pSensors->m_temperature->get_oil_temp()>400){
+			sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_oil_temp()/10))%1000,pSensors->m_temperature->get_oil_temp()%10); // _32.3°C  7 stellen
+		} else {
+			sprintf(char_buffer,"  <40{C"); // below 20°C add a space to have 5 chars
+		};
+		// depend on skinsettings
+		pOLED->string(pSpeedo->default_font,char_buffer,9,4,0,DISP_BRIGHTNESS,-4);
+	};
+
+	////////////////////// voltage //////////////
+	if(pSpeedo->disp_zeile_bak[0]!=1){
+		pOLED->string_P(pSpeedo->default_font,PSTR("Voltage "),1,7);
+		pSpeedo->disp_zeile_bak[0]=1;
+	}
+	int voltage=pSensors->m_voltage->get();
+	if(voltage!=pSpeedo->disp_zeile_bak[1]){
+		pSpeedo->disp_zeile_bak[1]=voltage;
+		char temp[6];
+		sprintf(temp,"%2i,%iV",int(floor(voltage/10)),int(voltage%10));
+		pOLED->string(pSpeedo->default_font,temp,9,7);
+	};
+	free(char_buffer);
+};
+
+
+

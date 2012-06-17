@@ -28,6 +28,7 @@ void speedo_temperature::clear_vars(){
 	oil_temp_value=0;
 	water_temp_value_counter=0;
 	water_temp_value=0;
+	water_temp_read_failed=0;
 
 	water_warning_temp=0; // 95 C
 	oil_warning_temp=0; // 120 C
@@ -145,16 +146,17 @@ void speedo_temperature::read_water_temp() {
 				int differ_r=water_r_werte[j]-water_r_werte[i]; // wie weit sind die realen widerstands werte auseinander 10R
 				int differ_t=water_t_werte[i]-water_t_werte[j]; // wie weit sind die realen temp werte auseinander 5°C
 				int aktueller_wert=round(10*(water_t_werte[i]-offset*differ_t/differ_r));
-				water_temp_value=pSensors->flatIt(aktueller_wert,&water_temp_value_counter,20,water_temp_value);
+				water_temp_value=pSensors->flatIt(aktueller_wert,&water_temp_value_counter,60,water_temp_value);
 
 				if(TEMP_DEBUG){
 					Serial.print("Water Wert eingelesen: ");
 					Serial.print(water_value);
-					Serial.print(" und interpretiert ");
-					Serial.print(aktueller_wert);
+					Serial.print(" und interpretiert als R ");
+					Serial.print(r_temp);
 					Serial.print(" und geplaettet: ");
 					Serial.println(int(round(water_temp_value)));
 				}
+				water_temp_read_failed=0;
 				break; // break the for loop
 			};
 		};
@@ -165,7 +167,11 @@ void speedo_temperature::read_water_temp() {
 			Serial.print("Water Wert kein Sensor");
 		}
 	} else { // Kurzschluss nach masse: 102=(1024-x)/10  	x<=4
-		water_temp_value=9999;
+		if(water_temp_read_failed>5){ // nach sechs maligem fehler => ausgabe!
+			water_temp_value=9999;
+		} else {
+			water_temp_read_failed++;
+		}
 
 		if(TEMP_DEBUG){
 			Serial.print("Water Wert Kurzschluss ggn Masse");

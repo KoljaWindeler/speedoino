@@ -38,6 +38,7 @@ private:
 	short int oil_temp_value_counter;
 	float water_temp_value;
 	short int water_temp_value_counter;
+	short int water_temp_read_failed;
 	int air_temp_value;
 };
 

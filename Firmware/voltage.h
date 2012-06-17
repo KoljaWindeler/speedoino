@@ -18,7 +18,6 @@ public:
 	bool check_vars();
 	int get();
 	void calc();
-	void loop();
 private:
 	int value;
 	short int value_counter;

@@ -91,7 +91,7 @@ void InitUART(void)
  *
  *  \param data  Data to be sent.
  */
-void uart_SendByte(unsigned char data){
+void uart_SendByte(char data){
 	while((UCSRA & (1<< UDRE)) == 0) {};
 	UDR=data;
 };
@@ -103,7 +103,7 @@ void uart_SendByte(unsigned char data){
  *
  *  \param Str  String to be sent.
  */
-void uart_SendString(unsigned char Str[])
+void uart_SendString(char Str[])
 {
 	unsigned char n = 0;
 	while(Str[n])

@@ -78,7 +78,7 @@ PROGMEM const char *menu_fade[9] = { fade_m_0,fade_m_1,fade_m_2,fade_m_3,fade_m_
 ///////////////////// Extend info /////////////////////
 prog_char einfo_m_0[] PROGMEM = "1. GPS infos 1/2";
 prog_char einfo_m_1[] PROGMEM = "2. GPS infos 2/2";
-prog_char einfo_m_2[] PROGMEM = "3. Voltage";
+prog_char einfo_m_2[] PROGMEM = "3. Sensors";
 prog_char einfo_m_3[] PROGMEM = "4. -";
 prog_char einfo_m_4[] PROGMEM = "5. -";
 prog_char einfo_m_5[] PROGMEM = "6. -";
@@ -299,7 +299,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		if(!subdir.open(&root, NAVI_FOLDER, O_READ)) {  Serial.println("open subdir /config failed"); };
 		// generate filename
 		char navi_filename[13];
-		sprintf(navi_filename,"NAVI%i.TXT",pSensors->m_gps->active_file);
+		sprintf(navi_filename,"NAVI%i.SMF",pSensors->m_gps->active_file);
 		char buffer[22]; // 21 zeichen + \0
 		sprintf(buffer,"Navifile Nr: %i",pSensors->m_gps->active_file);
 		// file exists
@@ -386,7 +386,10 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->clear_screen();
 		pOLED->highlight_bar(0,0,128,8);
 		pOLED->string_P(pSpeedo->default_font,PSTR("Additional info"),2,0,15,0,0);
-		pSensors->m_voltage->loop();
+		pOLED->draw_water(10,16);
+		pOLED->draw_air(20,24);
+		pOLED->draw_oil(10,32);
+
 	}
 	/////////////////// TETRIS //////////////////77
 	else if(state==591) {
@@ -1995,7 +1998,7 @@ void speedo_menu::display(){ // z.B. state = 26
 
 
 		pSD->sd_failed=false;
-		for(unsigned int i=1;i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]);i++){
+		for(unsigned int i=0;i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]);i++){
 			pSpeedo->max_speed[i]=0;
 			pSpeedo->avg_timebase[i]=0;
 			pSpeedo->trip_dist[i]=0;

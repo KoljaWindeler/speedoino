@@ -23,6 +23,8 @@
 
 #include <avr/io.h>
 #include <avr/signal.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "global.h"
 #include "math.h"
 #include "sm_driver.h"
@@ -69,16 +71,21 @@ void speed_cntr_Move(signed int soll_pos){
 		speed=soll_pos-srd.position; //"8/3"
 	}
 
+
 	speed*=8/3;
+
 	if(speed>800){ // 800
 		speed=800;
-	} else 	if(speed<500){
-		speed=130; //400
-	} else 	if(speed<240){
+	} else 	if(differ_steps<50){
+		speed=75; //400
+	} else 	if(speed<150){
 		speed=100; //400
-	} else 	if(speed<140){
-		speed=50; //400
+	} else 	if(speed<250){
+		speed=150; //400
 	};
+//	char tempw[20];
+//	sprintf(tempw,"s:%i\r\n",speed);
+//	uart_SendString(tempw);
 
 
 	//					if(abs(steps-srd.position)>300){
@@ -110,13 +117,14 @@ void speed_cntr_Move(signed int soll_pos){
 
 		// Refer to documentation for detailed information about these calculations.
 		if(srd.run_state==STOP){
+			srd.dir=srd.dir_next; // now set previous saved direction
 			char temp[30];
 			sprintf(temp,"%i<-%i\r\n",soll_pos,srd.position);
-			uart_SendString(temp);
+			//uart_SendString(temp);
 			//uart_SendString("0:");
 			// Set max speed limit, by calc min_delay to use in timer.
 			// min_delay = (alpha / tt)/ w
-			srd.min_delay = A_T_x100 / speed;
+			srd.min_delay = A_T_x100 / speed; // 1611216,4 / speed =
 			//sprintf(temp,"%i\r\n",srd.min_delay);
 			//uart_SendString(temp);
 
@@ -134,13 +142,18 @@ void speed_cntr_Move(signed int soll_pos){
 				step_to_max_speed = 1;
 			}
 
+			sprintf(temp,"b)0) %i %i\r\n",step_to_max_speed,differ_steps);
+			//uart_SendString(temp);
+
 			// wenn wir für beschleunigung und entschleunigung zusammen MEHR als die gesamt schritte bräuchten
 			if((step_to_max_speed<<1) >= differ_steps){
 				srd.decel_steps_neg = -(differ_steps>>1); // negativ soviel schritte, wie ich positiv zum speedup gebraucht hab
 				if(srd.dir==CCW){
 					srd.decel_start = srd.position - (differ_steps>>1);
+					//uart_SendString("b)1\r\n");
 				} else { // der motor dreht hoch, dann ist
 					srd.decel_start = srd.position + (differ_steps>>1);
+					//uart_SendString("b)2\r\n");
 				};
 			}
 			else{ // sonst können wir einfach mal annehmen das wir zum entschleunigen genausoviel brauchen wie für beschleunigen
@@ -160,7 +173,7 @@ void speed_cntr_Move(signed int soll_pos){
 				srd.run_state = ACCEL;
 			}
 
-			srd.dir=srd.dir_next; // now set previous saved direction
+
 
 			OCR1A = 10;
 			// Set Timer/Counter to divide clock by 1
@@ -180,9 +193,9 @@ void speed_cntr_Move(signed int soll_pos){
 				if(srd.position+(-srd.decel_steps_neg)>=soll_pos){	// wenn wir mit der entschleunigungsrampe das gerade noch so, oder schon gar nicht mehr schaffen, dann sofort abbremsen
 					srd.run_state = DECEL;
 					srd.accel_steps = srd.decel_steps_neg;
-					char temp[20];
-					sprintf(temp,"1:%i\r\n",srd.accel_steps);
-					uart_SendString(temp);
+					char temp[30];
+					sprintf(temp,"1:%i,%i,%i\r\n",srd.accel_steps,srd.position,soll_pos);
+					//uart_SendString(temp);
 				} else { // wenn wir noch easy Zeit haben zum bremsen
 					srd.decel_start = soll_pos-(-srd.decel_steps_neg);
 				};
@@ -190,15 +203,18 @@ void speed_cntr_Move(signed int soll_pos){
 				if(srd.position+srd.decel_steps_neg<=soll_pos){
 					srd.run_state = DECEL;
 					srd.accel_steps = srd.decel_steps_neg;
-					char temp[20];
-					sprintf(temp,"2:%i\r\n",srd.accel_steps);
-					uart_SendString(temp);
+					char temp[30];
+					sprintf(temp,"2:%i,%i,%i\r\n",srd.accel_steps,srd.position,soll_pos);
+					//uart_SendString(temp);
 				} else {
 					srd.decel_start = soll_pos+(-srd.decel_steps_neg);
 				};
 			};
 		}
 	}
+	char temp[50];
+	sprintf(temp,"A)%i,%i,%i,%i\r\n",soll_pos,srd.decel_start,srd.decel_steps_neg,srd.position);
+	//uart_SendString(temp);
 }
 
 //} else if(srd.run_state==ACCEL){
@@ -317,7 +333,7 @@ ISR(TIMER1_COMPA_vect){
 
 		char temp[20];
 		sprintf(temp,"Stop,%i\r\n",srd.position);
-		uart_SendString(temp);
+		//uart_SendString(temp);
 
 		// Reset counter.
 		srd.accel_steps = 0;// Set Timer/Counter to divide clock by 1
@@ -337,7 +353,7 @@ ISR(TIMER1_COMPA_vect){
 		rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_steps + 1);
 		// Chech if we should start decelration.
 		if(srd.position == srd.decel_start) {
-			srd.accel_steps = srd.decel_steps_neg;
+			srd.accel_steps = -srd.accel_steps;
 			srd.run_state = DECEL;
 		}
 		// Chech if we hitted max speed.
@@ -359,11 +375,12 @@ ISR(TIMER1_COMPA_vect){
 		}
 		new_step_delay = srd.min_delay;
 		// Chech if we should start decelration.
-		if(srd.position == srd.decel_start) {
+		if((srd.dir==CW && srd.position >= srd.decel_start) || ((srd.dir==CCW && srd.position <= srd.decel_start))) {
 			srd.accel_steps = srd.decel_steps_neg;
 			// Start decelration with same delay as accel ended with.
 			new_step_delay = last_accel_delay;
 			srd.run_state = DECEL;
+			//uart_SendString("to_decel\r\n");
 		}
 		break;
 	case DECEL:

@@ -15,6 +15,8 @@ public:
 	~speedo_stepper();
 	void init();
 	bool go_to(int winkel,int overwrite);
+	unsigned long time_go_full;
+	bool init_done;
 
 private:
 

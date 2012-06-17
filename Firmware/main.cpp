@@ -146,7 +146,7 @@ int main(void) {
 		}
 		//////////////////// voltage mode ///////////////////
 		else if(pMenu->state==531){
-			pSensors->m_voltage->loop();
+			pSensors->loop();
 		}
 		//////////////////// gps scan ///////////////////
 		else if(pMenu->state==511){

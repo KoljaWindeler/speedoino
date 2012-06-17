@@ -29,21 +29,21 @@
  */
 typedef struct {
   //! What part of the speed ramp we are in.
-  unsigned char run_state : 3;
+  volatile unsigned char run_state : 3;
   //! Direction stepper motor should move.
-  unsigned char dir : 1;
-  unsigned char dir_next : 1;
+  volatile unsigned char dir : 1;
+  volatile unsigned char dir_next : 1;
   //! Peroid of next timer delay. At start this value set the accelration rate.
-  unsigned int step_delay;
+  volatile unsigned int step_delay;
   //! What step_pos to start decelaration
-  unsigned int decel_start;
+  volatile unsigned int decel_start;
   //! Sets deceleration rate.
-  signed int decel_steps_neg;
+  volatile signed int decel_steps_neg;
   //! Minimum time delay (max speed)
-  signed int min_delay;
+  volatile signed int min_delay;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
-  signed int accel_steps;
-  signed int position;
+  volatile signed int accel_steps;
+  volatile signed int position;
 } speedRampData;
 
 /*! \Brief Frequency of timer1 in [Hz].
@@ -72,8 +72,8 @@ typedef struct {
 #endif
 
 // Maths constants. To simplify maths when calculating in speed_cntr_Move().
-#define ALPHA (2*3.14159/SPR)                    // 2*pi/spr
-#define A_T_x100 ((long)(ALPHA*T1_FREQ*100))     // (ALPHA / T1_FREQ)*100
+#define ALPHA (2*3.14159/SPR)                    // 2*pi/spr || 2*3.1459/(781*2)=0,004028041
+#define A_T_x100 ((long)(ALPHA*T1_FREQ*100))     // (ALPHA / T1_FREQ)*100 || 0,004028041*4000000*100  = 1611216,4
 #define T1_FREQ_148 ((int)((T1_FREQ*0.676)/100)) // divided by 100 and scaled by 0.676
 #define A_SQ (long)(ALPHA*2*10000000000)         // ALPHA*2*10000000000
 #define A_x20000 (int)(ALPHA*20000)              // ALPHA*20000
