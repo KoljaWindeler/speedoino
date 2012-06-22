@@ -54,9 +54,9 @@ void speedo_gear::clear_vars(){
 void speedo_gear::calc(){
 	// faktor berechnen
 	if(pSensors->m_speed->get_mag_speed()>0){ // ich fahre also mit min 4 km/h .. dadurch wird der faktor max 15000/4=3500 .. das mal 16 ist noch im INT bereich
-		if(!digitalRead(kupplungs_pin) && faktor_counter!=0 && false){//Kupplung gezogen, einmalig laut geben was seit dem letzten mal so an min und max und flat ausgekommen ist
+		if(!digitalRead(kupplungs_pin) && faktor_counter!=0){//Kupplung gezogen, einmalig laut geben was seit dem letzten mal so an min und max und flat ausgekommen ist
 			faktor_counter=0; // damit nach dem kuppeln die alten werte verworfen werden
-		} else if(digitalRead(kupplungs_pin) || true) { // Kupplung nicht gezogen, also gang berechnen
+		} else if(digitalRead(kupplungs_pin)) { // Kupplung nicht gezogen, also gang berechnen
 			int faktor=pSensors->m_dz->exact/pSensors->m_speed->get_mag_speed(); // wie ist denn wohl der faktor
 			faktor_flat=pSensors->flatIt(faktor*10,&faktor_counter,8,faktor_flat); // mal sehen ob man so eine art tiefpass faktor sinnvoll nutzen kann
 

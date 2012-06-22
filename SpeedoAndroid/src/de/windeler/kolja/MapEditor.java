@@ -320,9 +320,11 @@ public class MapEditor extends Activity implements OnClickListener{
 				if(commando.toLowerCase().indexOf(search_string)>-1){
 					String commando_clean=commando.substring(commando.toLowerCase().indexOf(search_string)+search_string.length());
 					int max_chars=10;
-					if(commando_clean.length()<10)
+					String add_spaces="              ";
+					if(commando_clean.length()<10){
 						max_chars=commando_clean.length();
-					turnpoint_coordinate_converted=turnpoint_coordinate_converted+"↑,"+commando_clean.substring(0,max_chars);
+					}
+					turnpoint_coordinate_converted=turnpoint_coordinate_converted+"↑,"+commando_clean.substring(0,max_chars)+add_spaces.substring(max_chars,10);
 
 					got_direction=true;
 					break;

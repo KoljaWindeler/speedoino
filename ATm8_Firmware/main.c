@@ -94,11 +94,8 @@ int main(){
 					steps=steps*10+UART_RxBuffer[i]-'0';
 					i++;
 				}
-
 				if(steps>2000) steps=2000;
 				if(steps<0) steps=0;
-
-
 
 				speed_cntr_Move(steps);
 
@@ -108,6 +105,12 @@ int main(){
 				uart_SendByte(last_rst+'0');
 				uart_SendByte('*');
 				last_rst=0; // setze den status zurück damit wir immer einen frischen abfragen, wenn der große jetzt neustartet aber es steht da power, dann wissen wir, das war nicht der kleine, solange wie nicht wirklich einen powerlost hatten
+				status.cmd = FALSE;
+			} else if(UART_RxBuffer[0]=='p'){
+				uart_SendByte('$');
+				uart_SendByte('p');
+				uart_SendInt(srd.position);
+				uart_SendByte('*');
 				status.cmd = FALSE;
 			}
 		}

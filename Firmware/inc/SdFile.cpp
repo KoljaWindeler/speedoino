@@ -349,7 +349,7 @@ void SdFile::ls(Print* pr, uint8_t flags, uint8_t indent) {
 // als eingabe haben wir:
 // Den buffer Zeiger wird mit dem ensprechenden Namen gef?llt werden
 
-int8_t SdFile::lsJKWNext(char* buffer,int item, uint32_t* size){
+int8_t SdFile::lsJKWNext(char* buffer,int item, unsigned long* size){
 	dir_t dir;
 	// woher weiss er eigentlich wo er lesen soll? weil per rewind() der FP auf den Anfang der
 	// FAT gelegt wird ? und er den Pointer da laesst ?

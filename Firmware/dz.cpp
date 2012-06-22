@@ -34,19 +34,25 @@ void speedo_dz::counter(){
 
 void speedo_dz::calc() {
 	///// DZ BERECHNUNG ////////
-	unsigned long now=millis(); 		// aktuelle zeit
-	unsigned long differ=now-previous_time; // zeit seit dem letzte mal abholen der daten
-	unsigned int  now_peaks=peak_count; // aktueller dz zähler stand, separate var damit der peakcount weiter verndert werden koennte
-	if((now<pAktors->m_stepper->time_go_full+800)){
-		if(pAktors->m_stepper->init_done){
-			pAktors->m_stepper->go_to(0,0);
+	unsigned long now=millis(); 											// aktuelle zeit
+	unsigned long differ=now-previous_time; 								// zeit seit dem letzte mal abholen der daten
+	unsigned int  now_peaks=peak_count; 									// aktueller dz zähler stand, separate var damit der peakcount weiter verndert werden koennte
+	if(pAktors->m_stepper->init_steps_to_go!=0){
+		if(pAktors->m_stepper->init_steps_to_go>=2){
+			if(pAktors->m_stepper->get_pos()!=MOTOR_OVERWRITE_END_POS){		// motor noch nicht am ende angekommen
+				pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS,0); 		// weiter dorthin scheuchen
+			} else { 														// motor angekommen
+				pAktors->m_stepper->init_steps_to_go=1; 					// nächsten schritt vorbereiten
+			}
+		} else if(pAktors->m_stepper->init_steps_to_go==1){
+			if(pAktors->m_stepper->get_pos()!=0){   						// motor noch nicht am anfang angekommen
+				pAktors->m_stepper->go_to(0,0); 							// weiter dorthin scheuchen
+			} else { 														// motor angekommen
+				pAktors->m_stepper->init_steps_to_go=0; 					// fertig
+			}
 		}
-	} else if(now>pAktors->m_stepper->time_go_full+800 && !pAktors->m_stepper->init_done){ // zwischen 1 und 2 sec
-		pAktors->m_stepper->go_to(0,0);
-		pAktors->m_stepper->init_done=true;
-		pAktors->m_stepper->time_go_full=millis()-1000;
-	} else 	if(now_peaks>4 && differ>100){ // max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
-		//now_peaks=now_peaks>>anzahl_shift;			// könnte ja sein das man weniger umdrehungen als funken hat, hornet hat 2 Funken je Umdrehun
+	} else 	if(now_peaks>4 && differ>100){ 									// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+		//now_peaks=now_peaks>>anzahl_shift;								// könnte ja sein das man weniger umdrehungen als funken hat, hornet hat 2 Funken je Umdrehun
 		/* bei 15krpm = 25 peaks
 		 * differ => 100 --> 60000/100=600
 		 * 600 * 25 => 15.000
@@ -81,8 +87,7 @@ void speedo_dz::calc() {
 		/*stepper*/
 		pAktors->m_stepper->go_to(exact/11.73,0); // einfach mal probieren, sonst flatit
 		/*stepper*/
-
-	} else if(now-previous_time>1000){
+	} else if(now-previous_time>500){
 		rounded=0;
 		exact=0;
 		// zeiger
@@ -98,12 +103,12 @@ void speedo_dz::calc() {
 			if (temp>600) temp=600;
 			rounded=15000-temp*25;
 
-//			int speed_me_up=50; // gut mit 50
-//			if(((millis()/speed_me_up)%210)<50){
-//				rounded=0;
-//			} else {
-//				rounded=((millis()/speed_me_up)%210)*70;
-//			};
+			//			int speed_me_up=50; // gut mit 50
+			//			if(((millis()/speed_me_up)%210)<50){
+			//				rounded=0;
+			//			} else {
+			//				rounded=((millis()/speed_me_up)%210)*70;
+			//			};
 			exact=rounded;
 			pSensors->m_gear->calc();
 			// zeiger

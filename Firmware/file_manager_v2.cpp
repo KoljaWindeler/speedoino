@@ -43,6 +43,7 @@ void speedo_filemanager_v2::parse_command(){
 	unsigned char	c, *p;
 	unsigned char   isLeave = 0;
 	unsigned char 	last_file[22];
+	unsigned long last_file_seek=-1; // max
 	pSensors->m_reset->set_deactive(false,true);
 
 	//*	main loop
@@ -314,7 +315,7 @@ void speedo_filemanager_v2::parse_command(){
 				// add end of string
 				dir[msgLength-3]='\0';
 				// get item id
-				unsigned int item=(msgBuffer[1]<<8)|msgBuffer[2];
+				int item=(msgBuffer[1]<<8)|msgBuffer[2];
 
 				// open root and maybe go on
 				SdFile fm_handle,returner;
@@ -411,10 +412,12 @@ void speedo_filemanager_v2::parse_command(){
 					pos|=msgBuffer[payload_start+1];
 					pos*=250;
 
-					if(!fm_file.seekSet(pos)){
-						file_seek_failed=true;
-
-					}
+					if(last_file_seek!=pos){
+						if(!fm_file.seekSet(pos)){
+							file_seek_failed=true;
+							last_file_seek=pos;
+						}
+					};
 				};
 
 				// wenn immer noch alles gut, dann konnten wir die Datei oeffnen und auch den Filepointer dahin setzten wo er hin soll

@@ -51,6 +51,7 @@ public class BluetoothSerialService {
 	private static final String TAG = "JKW";
 	private static final String TAG_SEM = "JKW_SEM";
 	private static final String TAG_RECV = "JKW_RECV";
+	private static final String TAG_TIME = "JKW_TIME";
 	private static final String TAG_BT = "BT";
 	private static final boolean D = true;
 
@@ -486,6 +487,7 @@ public class BluetoothSerialService {
 		if(rx_tx_state==ST_IDLE){
 			if(msgLength<=0) return 2;
 			c=(byte)MESSAGE_START;
+			Log.i(TAG_TIME,"MSG_START send");
 			write(c);		// Message Start
 			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+" /MSG_START");
 			checksum	=	c;
@@ -510,6 +512,7 @@ public class BluetoothSerialService {
 				Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)p)&0x00ff)+"/"+String.valueOf((char)p)+"   /DATA "+String.valueOf(i+1)+"/"+String.valueOf(msgLength));
 			}
 			write(checksum);	//	CHECKSUM
+			Log.i(TAG_TIME,"CHECKSUM send "+String.valueOf(msgLength+5));
 			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)checksum)+" /Checksum");
 			rx_tx_state=ST_START; // start listening
 
@@ -552,6 +555,7 @@ public class BluetoothSerialService {
 		case ST_START:
 			if ( data == MESSAGE_START){
 				Log.i(TAG,"Message start erhalten");
+				Log.i(TAG_TIME,"MSG_START recv");
 				rx_tx_state	=	ST_GET_SEQ_NUM;
 				checksum	=	data;
 			}
@@ -607,6 +611,7 @@ public class BluetoothSerialService {
 			if ( data == checksum ){
 
 				Log.i(TAG,"Checksum korrekt");
+				Log.i(TAG_TIME,"CHECKSUM recv "+String.valueOf(msgLength+5));
 				if(msgBuffer[1]==STATUS_CMD_OK){
 					mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_CMD_OK, 0, -1).sendToTarget();
 				} else if(msgBuffer[1]==STATUS_CMD_FAILED) {

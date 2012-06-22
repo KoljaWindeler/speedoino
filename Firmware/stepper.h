@@ -11,12 +11,13 @@
 class speedo_stepper{
 
 public:
+	#define MOTOR_OVERWRITE_END_POS 1800
 	speedo_stepper();
 	~speedo_stepper();
 	void init();
 	bool go_to(int winkel,int overwrite);
-	unsigned long time_go_full;
-	bool init_done;
+	int get_pos();
+	int init_steps_to_go;
 
 private:
 
