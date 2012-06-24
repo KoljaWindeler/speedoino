@@ -24509,6 +24509,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <text x="259.08" y="5.08" size="1.778" layer="91" rot="R90">recalc</text>
 <text x="248.92" y="5.08" size="1.778" layer="91" rot="R90">recalc</text>
 <text x="35.56" y="139.7" size="1.778" layer="91">water_temp</text>
+<text x="-266.7" y="139.7" size="1.778" layer="91">GPS Bat (A10)</text>
 </plain>
 <instances>
 <instance part="IC1" gate="A" x="58.42" y="180.34" rot="R180"/>
@@ -26081,13 +26082,6 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <label x="330.2" y="228.6" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="A10" class="0">
-<segment>
-<wire x1="-228.6" y1="139.7" x2="-236.22" y2="139.7" width="0.1524" layer="91"/>
-<label x="-233.68" y="139.7" size="1.778" layer="95"/>
-<pinref part="IC4" gate="1" pin="PK2(ADC10/PCINT18)"/>
-</segment>
-</net>
 <net name="A9" class="0">
 <segment>
 <wire x1="-228.6" y1="137.16" x2="-236.22" y2="137.16" width="0.1524" layer="91"/>
@@ -27209,6 +27203,11 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pinref part="GPS" gate="G$1" pin="VBACKUP"/>
 <pinref part="BAT_CLIP1" gate="G$1" pin="+"/>
 <pinref part="C7" gate="C" pin="1"/>
+</segment>
+<segment>
+<wire x1="-228.6" y1="139.7" x2="-246.38" y2="139.7" width="0.1524" layer="91"/>
+<label x="-243.84" y="139.7" size="1.778" layer="95"/>
+<pinref part="IC4" gate="1" pin="PK2(ADC10/PCINT18)"/>
 </segment>
 </net>
 <net name="N$15" class="0">

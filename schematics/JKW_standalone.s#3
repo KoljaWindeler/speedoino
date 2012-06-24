@@ -24233,7 +24233,6 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <part name="D19" library="diode" deviceset="ZENER-DIODE" device="SOD80C" value="n.b. / 20V-ZD."/>
 <part name="GND6" library="supply1" deviceset="GND" device=""/>
 <part name="GND15" library="supply1" deviceset="GND" device=""/>
-<part name="D7" library="RCLDT" deviceset="D-S" device="SMB-A+K" value="SS24"/>
 <part name="TMP102AIDRLT" library="SparkFun" deviceset="TMP102" device=""/>
 <part name="R_TEMP_ALERT" library="RCLDT" deviceset="R" device="0805" value="1k"/>
 <part name="C9" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
@@ -24316,6 +24315,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <part name="SUPPLY10" library="supply2" deviceset="VDD" device=""/>
 <part name="SUPPLY8" library="supply2" deviceset="VDD" device=""/>
 <part name="SUPPLY19" library="supply2" deviceset="VDD" device=""/>
+<part name="D7" library="diode" deviceset="ZENER-DIODE" device="SOD80C" value="n.b. / 20V-ZD."/>
 </parts>
 <sheets>
 <sheet>
@@ -24748,10 +24748,6 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 </instance>
 <instance part="GND6" gate="1" x="167.64" y="106.68"/>
 <instance part="GND15" gate="1" x="167.64" y="76.2"/>
-<instance part="D7" gate="G$1" x="149.86" y="172.72" smashed="yes">
-<attribute name="NAME" x="155.575" y="170.18" size="2.032" layer="95"/>
-<attribute name="VALUE" x="147.955" y="175.26" size="1.778" layer="96"/>
-</instance>
 <instance part="TMP102AIDRLT" gate="G$1" x="268.92" y="220.98"/>
 <instance part="R_TEMP_ALERT" gate="G$1" x="286.7" y="218.44" smashed="yes">
 <attribute name="NAME" x="276.54" y="207.645" size="2.032" layer="95"/>
@@ -24904,6 +24900,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <instance part="SUPPLY10" gate="G$1" x="132.08" y="104.14"/>
 <instance part="SUPPLY8" gate="G$1" x="93.98" y="170.18"/>
 <instance part="SUPPLY19" gate="G$1" x="63.5" y="152.4"/>
+<instance part="D7" gate="G$1" x="149.86" y="172.72" smashed="yes">
+<attribute name="NAME" x="148.082" y="174.625" size="1.778" layer="95"/>
+<attribute name="VALUE" x="137.922" y="169.291" size="1.778" layer="96"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -26559,7 +26559,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pinref part="IC4" gate="1" pin="(OC1B/PCINT6)PB6"/>
 </segment>
 <segment>
-<wire x1="144.78" y1="172.72" x2="132.08" y2="172.72" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="172.72" x2="132.08" y2="172.72" width="0.1524" layer="91"/>
 <label x="139.7" y="172.72" size="1.778" layer="95"/>
 <pinref part="D7" gate="G$1" pin="A"/>
 </segment>
@@ -27104,10 +27104,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 </net>
 <net name="KUPPLUNG_IN" class="0">
 <segment>
-<wire x1="154.94" y1="172.72" x2="185.42" y2="172.72" width="0.1524" layer="91"/>
+<wire x1="152.4" y1="172.72" x2="185.42" y2="172.72" width="0.1524" layer="91"/>
 <label x="165.1" y="172.72" size="1.778" layer="95"/>
-<pinref part="D7" gate="G$1" pin="K"/>
 <pinref part="U$1" gate="G$1" pin="KUPPLUNG_IN"/>
+<pinref part="D7" gate="G$1" pin="C"/>
 </segment>
 </net>
 <net name="REED_IN" class="0">

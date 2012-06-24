@@ -4853,7 +4853,7 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 <pin name="REED" x="-7.62" y="-25.4" length="middle" direction="in"/>
 <pin name="FLASH_L" x="-7.62" y="20.32" length="middle" direction="in"/>
 <pin name="GND" x="-7.62" y="25.4" length="middle" direction="pwr"/>
-<pin name="EX_IN_OUT_A1" x="-7.62" y="-30.48" length="middle"/>
+<pin name="WATER_TEMP" x="-7.62" y="-30.48" length="middle" direction="in"/>
 <pin name="EX_IN_OUT_D1" x="-7.62" y="-40.64" length="middle"/>
 <pin name="EX_IN_OUT_D2" x="-7.62" y="-45.72" length="middle"/>
 <pin name="VIN" x="-7.62" y="30.48" length="middle" direction="pwr"/>
@@ -5049,7 +5049,6 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 <device name="" package="SPEEDOSTECKER">
 <connects>
 <connect gate="G$1" pin="DZ" pad="P$6"/>
-<connect gate="G$1" pin="EX_IN_OUT_A1" pad="P$12"/>
 <connect gate="G$1" pin="EX_IN_OUT_A2" pad="P$16"/>
 <connect gate="G$1" pin="EX_IN_OUT_D1" pad="P$13"/>
 <connect gate="G$1" pin="EX_IN_OUT_D2" pad="P$14"/>
@@ -5064,6 +5063,7 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 <connect gate="G$1" pin="OIL_TEMP" pad="P$2"/>
 <connect gate="G$1" pin="REED" pad="P$9"/>
 <connect gate="G$1" pin="VIN" pad="P$15"/>
+<connect gate="G$1" pin="WATER_TEMP" pad="P$12"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -27644,7 +27644,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 </net>
 <net name="N$44" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="EX_IN_OUT_A1"/>
+<pinref part="U$1" gate="G$1" pin="WATER_TEMP"/>
 <wire x1="185.42" y1="162.56" x2="147.32" y2="162.56" width="0.1524" layer="91"/>
 <wire x1="147.32" y1="162.56" x2="147.32" y2="139.7" width="0.1524" layer="91"/>
 <pinref part="R42" gate="G$1" pin="1"/>

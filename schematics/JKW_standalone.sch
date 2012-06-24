@@ -24007,7 +24007,7 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <part name="R37" library="RCLDT" deviceset="R" device="0805" value="90R"/>
 <part name="R38" library="RCLDT" deviceset="R" device="0805" value="n.b."/>
 <part name="R39" library="RCLDT" deviceset="R" device="0805" value="n.b."/>
-<part name="R_LED_5V" library="RCLDT" deviceset="R" device="0805" value="1k"/>
+<part name="R_LED_5V" library="RCLDT" deviceset="R" device="0805" value="2k"/>
 <part name="R_SCL_UP" library="RCLDT" deviceset="R" device="0805" value="1K"/>
 <part name="R_SDA_UP" library="RCLDT" deviceset="R" device="0805" value="1K"/>
 <part name="C_QUA_1" library="rcl" deviceset="C-EU" device="C0805" value="22pF"/>

@@ -24506,6 +24506,11 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <text x="160.02" y="167.64" size="1.778" layer="91">Sw ggn M / Pulse?</text>
 <text x="160.02" y="162.56" size="1.778" layer="91">?</text>
 <text x="160.02" y="157.48" size="1.778" layer="91">?</text>
+<text x="299.72" y="2.54" size="1.778" layer="91" rot="R90">recalc</text>
+<text x="284.48" y="5.08" size="1.778" layer="91" rot="R90">recalc</text>
+<text x="274.32" y="5.08" size="1.778" layer="91" rot="R90">recalc</text>
+<text x="259.08" y="5.08" size="1.778" layer="91" rot="R90">recalc</text>
+<text x="248.92" y="5.08" size="1.778" layer="91" rot="R90">recalc</text>
 </plain>
 <instances>
 <instance part="IC1" gate="A" x="58.42" y="180.34" rot="R180"/>
