@@ -20,7 +20,7 @@ public:
 	void calc();
 private:
 	int value;
-	short int value_counter;
+	unsigned char value_counter;
 };
 
 

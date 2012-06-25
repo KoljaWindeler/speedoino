@@ -30,16 +30,18 @@ public:
 	short water_t_werte[19];
 	int	oil_warning_temp;
 	int water_warning_temp;
+	unsigned char water_temp_fail_status;
+	unsigned char oil_temp_fail_status;
 
 private:
-
-	int max_values;
-	float oil_temp_value;
-	short int oil_temp_value_counter;
-	float water_temp_value;
-	short int water_temp_value_counter;
-	short int water_temp_read_failed;
 	int air_temp_value;
+	int max_values;
+
+	float oil_temp_value;
+	unsigned char oil_temp_value_counter;
+
+	float water_temp_value;
+	unsigned char water_temp_value_counter;
 };
 
 #endif /* TEMPERATURE_H_ */

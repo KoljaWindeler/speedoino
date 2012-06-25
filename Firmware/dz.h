@@ -24,8 +24,8 @@ public:
 	unsigned int exact;                 // real rotation speed
 	unsigned int exact_disp;
 	unsigned int dz_flat;
-	short dz_faktor_counter;
-	short dz_disp_faktor_counter;
+	unsigned char dz_faktor_counter;
+	unsigned char dz_disp_faktor_counter;
 	int blitz_dz;
 	bool blitz_en;
 private:

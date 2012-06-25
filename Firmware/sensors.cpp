@@ -102,8 +102,21 @@ void Speedo_sensors::init(){
 	m_voltage->init();
 	pDebug->sprintlnp(PSTR("Sensors init done"));
 }
-
-float Speedo_sensors::flatIt(int actual, short* counter, int max_counter, float old_flat){
+/************* IIR Tiefpass ***********************
+ * WARNING: max_counter is signed char! max 127
+ * This is used to flat values,
+ * y(0)=(y(1)*min((counter-1),max_counter-1)+x)/min((counter-1),max_counter-1)
+ *
+ * input:
+ * - actual: integer value of the current measurement
+ * - counter: POINTER on char, this value will increase inside
+ * - max_counter: FIX char value
+ * - old_flat: float value of the OLD calculation
+ *
+ * output:
+ * - float value of IIR
+ ************* IIR Tiefpass ***********************/
+float Speedo_sensors::flatIt(int actual, unsigned char *counter, char max_counter, float old_flat){
 	if(*counter<max_counter && *counter>=0){
 		*counter=*counter+1;
 		return (float)((old_flat*(*counter-1)+actual)/(*counter));

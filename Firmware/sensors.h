@@ -17,7 +17,7 @@ public:
 	void check_vars();
 	void single_read();
 	void loop();
-	float flatIt(int actual, short* counter, int max_counter, float old_flat);
+	float flatIt(int actual,unsigned char *counter, char max_counter, float old_flat);
 
 	speedo_clock* m_clock;
 	speedo_dz* m_dz;

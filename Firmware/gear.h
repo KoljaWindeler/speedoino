@@ -24,7 +24,7 @@ public:
 	int gang;
 	// used to calibration mode && to calc to gear in speedo mode
 	float faktor_flat;
-	short faktor_counter;
+	unsigned char faktor_counter;
 };
 
 

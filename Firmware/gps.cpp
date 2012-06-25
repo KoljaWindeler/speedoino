@@ -25,7 +25,7 @@ speedo_gps::~speedo_gps(){
 };
 
 // hässlich hier den interrupt eingefügt .. 
-ISR(USART1_RX_vect ){
+ISR(USART1_RX_vect){
 	pSensors->m_gps->recv_data();
 };
 
@@ -106,7 +106,7 @@ bool speedo_gps::check_vars(){
 // wenn ja dann wird get_GPS damit aufgerufen
 void speedo_gps::recv_data(){
 	char byteGPS = UDR1;
-	//Serial.print(byteGPS);
+
 	switch(gps_state){
 	case 0:  // hier sitzen wir und warten auf das startzeichen
 		if(byteGPS=='$'){ gps_state=1;	};
@@ -183,6 +183,7 @@ void speedo_gps::recv_data(){
  * werden die daten geparst
  */
 void speedo_gps::check_flag(){
+
 	if(gps_ready1){
 		// debug
 		if(IGPS_DEBUG){
@@ -197,6 +198,7 @@ void speedo_gps::check_flag(){
 		};
 		gps_ready1=false;
 	};
+
 	if(gps_ready2){
 		// debug
 		if(IGPS_DEBUG){
@@ -239,6 +241,37 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 	}
 	// modus 1, $gprmc empfangen
 	if(datensatz==1){ // lat,long,fix,time,Course,date
+		/*
+	        $GPRMC,191410,A,4735.5634,N,00739.3538,E,0.0,0.0,181102,0.4,E,A*19
+				   ^      ^ ^           ^            ^   ^   ^      ^     ^
+				   |      | |           |            |   |   |      |     |
+				   |      | |           |            |   |   |      |     Neu in NMEA 2.3:
+				   |      | |           |            |   |   |      |     Art der Bestimmung
+				   |      | |           |            |   |   |      |     A=autonomous (selbst)
+				   |      | |           |            |   |   |      |     D=differential
+				   |      | |           |            |   |   |      |     E=estimated (geschätzt)
+				   |      | |           |            |   |   |      |     N=not valid (ungültig)
+				   |      | |           |            |   |   |      |     S=simulator
+				   |      | |           |            |   |   |      |
+				   |      | |           |            |   |   |      Missweisung (mit Richtung)
+				   |      | |           |            |   |   |
+				   |      | |           |            |   |   Datum: 18.11.2002
+				   |      | |           |            |   |
+				   |      | |           |            |   Bewegungsrichtung in Grad (wahr)
+				   |      | |           |            |
+				   |      | |           |            Geschwindigkeit über Grund (Knoten)
+				   |      | |           |
+				   |      | |           Längengrad mit (Vorzeichen)-Richtung (E=Ost, W=West)
+				   |      | |           007° 39.3538' Ost
+				   |      | |
+				   |      | Breitengrad mit (Vorzeichen)-Richtung (N=Nord, S=Süd)
+				   |      | 46° 35.5634' Nord
+				   |      |
+				   |      Status der Bestimmung: A=Active (gültig); V=void (ungültig)
+				   |
+				   Uhrzeit der Bestimmung: 19:14:10 (UTC-Zeit)
+		 *
+		 */
 		status=linea[indices[1]+1];
 
 		// zeit in jedem fall berechnen, auch wenn das sample nicht valid ist, das ist der RTC
@@ -352,23 +385,57 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		}
 	} // anderer modus, gpgga empfangen
 	else if(datensatz==2){ // altitude, fix ok?,sats,
+		/* GPS Datensatz 2:
+        $GPGGA,191410,4735.5634,N,00739.3538,E,1,04,4.4,351.5,M,48.0,M,,*45
+			   ^      ^           ^            ^ ^  ^   ^       ^
+			   |      |           |            | |  |   |       |
+			   |      |           |            | |  |   |       Höhe Geoid minus
+			   |      |           |            | |  |   |       Höhe Ellipsoid (WGS84)
+			   |      |           |            | |  |   |       in Metern (48.0,M)
+			   |      |           |            | |  |   |
+			   |      |           |            | |  |   Höhe über Meer (über Geoid)
+			   |      |           |            | |  |   in Metern (351.5,M)
+			   |      |           |            | |  |
+			   |      |           |            | |  HDOP (horizontal dilution
+			   |      |           |            | |  of precision) Genauigkeit
+			   |      |           |            | |
+			   |      |           |            | Anzahl der erfassten Satelliten
+			   |      |           |            |
+			   |      |           |            Qualität der Messung
+			   |      |           |            (0 = ungültig)
+			   |      |           |            (1 = GPS)
+			   |      |           |            (2 = DGPS)
+			   |      |           |            (6 = geschätzt nur NMEA-0183 2.3)
+			   |      |           |
+			   |      |           Längengrad
+			   |      |
+			   |      Breitengrad
+			   |
+			   Uhrzeit
+		 *
+		 *	fix=Qualität der Messung (zwischen dem 5. und 6. ",")
+		 *	sats=Anzahl der erfassten Satelliten (zwischen dem 6. und 7. ",")
+		 *
+		 */
 		gps_count_up[0]=true;
 		gps_alt[gps_count]=0;
 		gps_sats[gps_count]=0;
 		for (int j=indices[5]+1;j<(indices[6]);j++){
 			gps_fix[gps_count]=(linea[j]-48);
 		};
-		for (int j=indices[6]+1;j<(indices[7]);j++){
-			gps_sats[gps_count]=gps_sats[gps_count]*10+(linea[j]-48);
-		}
-		for (int j=indices[8]+1;j<(indices[9]);j++){
-			if(linea[j]!=46){
-				gps_alt[gps_count]=gps_alt[gps_count]*10+(linea[j]-48);
-			};
-		}
-		if(gps_alt[gps_count]>100000){ // sind wir höher als 10 km?
-			gps_alt[gps_count]=0;
-		}
+		if(gps_fix[gps_count]>0 && valid<5){ //innerhalb der letzten 5 sec ein valid bekommen && fix>0
+			for (int j=indices[6]+1;j<(indices[7]);j++){
+				gps_sats[gps_count]=gps_sats[gps_count]*10+(linea[j]-48);
+			}
+			for (int j=indices[8]+1;j<(indices[9]);j++){
+				if(linea[j]!=46){
+					gps_alt[gps_count]=gps_alt[gps_count]*10+(linea[j]-48);
+				};
+			}
+			if(gps_alt[gps_count]>100000){ // sind wir höher als 10 km?
+				gps_alt[gps_count]=0;
+			}
+		};
 
 		//debug
 		if(GPS_DEBUG){
@@ -647,60 +714,73 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 		// die ersten bytes sind sowas wie der titel, die können wir zur navigation nicht nutzen, weglesen
 		// suche den ersten zeilen umbruch
 		bool found=false;
-		while(!found){
-			file.read(buf, sizeof(buf[0]));
-			if(buf[0]=='\n') found=true;
-		};
-
-		found=false;
+		bool eof=false;
+		int zeile=0;
 		i=0;
-		while ((n = file.read(buf, sizeof(buf))) > 0) { // n=wieviele byte gelesen wurden
-			if(i==navi_point){// hier haben wir unsere "zeile" gefunden
-				navi_ziel_lati=0;
-				navi_ziel_long=0;
-
-				// lati/long einlesen
-				for(int a=0;a<=8;a++){ // vorwärts
-					//sprintf(serialbuffer,"Ich lese ein: %c und mache daraus %i",buf[a],buf[a]-48);
-					//Serial.println(serialbuffer);
-					navi_ziel_lati=navi_ziel_lati*10+(int(buf[a])-48);
-					navi_ziel_long=navi_ziel_long*10+(int(buf[a+10])-48);
+		unsigned char char_buf[1]={0x00};
+		////////// suche den anfang der richtigen zeile
+		while(!found && !eof){					// solange suchen bis wir entweder den Datensatz oder das ende haben
+			n = file.read(char_buf, 1);			// jeweils nur 1 char lesen
+			if(n==1){							// true, if not end of file
+				if(char_buf[0]=='\n'){			// find end of line
+					if(i<35) buf[i]=0x00;		// if end reach, terminate string
+					i=0;						// reset buf write pointer
+					zeile++;					// increase number of read lines
+					if(zeile==navi_point+2){	// if the NEXT line nr equels nevi_point+1, EDIT +1+1=+2, cause of "skip first line" -> point 0 is found as soon as you find line nr 2!
+						found=true;				// we found the right line
+					};
+				} else {						// its not \n
+					buf[i]=char_buf[0];			// so store it in the buffer
+					if(i<35) i++;				// and increase the pointer until max
 				};
-				// ziel name
-				for(int a=0;a<=9;a++){ // vorwärts  -> 128/6=21  : 2.1km g helmholtzs 11 --> 10 buchstaben
-					navi_ziel_name[a]=buf[a+22];
-				};
-				navi_ziel_name[10]='\0';
-
-				// r oder l oder g
-				navi_ziel_rl=int(buf[20])-48;
-				if(NAVI_DEBUG){
-					pDebug->sprintp(PSTR("Long: ")); Serial.print(navi_ziel_long); pDebug->sprintp(PSTR(" lati: ")); Serial.print(navi_ziel_lati);
-					pDebug->sprintp(PSTR(" name: ")); Serial.print(navi_ziel_name);
-					pDebug->sprintp(PSTR(" rlg: ")); Serial.println(navi_ziel_rl);
-				};
-				found=true;
-				break;
+			} else {							// if we were unable to read one further char
+				eof=true;						// we have reached the eof before reading the target line
 			};
-			i++; // zeilen nummer
 		}
-		if(NAVI_DEBUG){ Serial.print(i); pDebug->sprintlnp(PSTR(" Datensaetze durchsucht.")); };
-		if(!found){
+		file.close();							// close it, cause we could call this as loop
+		free(navi_filename);
+		subdir.close();
+		root.close();
+
+		if(NAVI_DEBUG){ Serial.print(zeile); pDebug->sprintlnp(PSTR(" Datensaetze durchsucht.")); };
+
+		if (found) { 							// is set to true in previous
+			navi_ziel_lati=0;
+			navi_ziel_long=0;
+
+			// lati/long einlesen
+			for(int a=0;a<=8;a++){ // vorwärts
+				//sprintf(serialbuffer,"Ich lese ein: %c und mache daraus %i",buf[a],buf[a]-48);
+				//Serial.println(serialbuffer);
+				navi_ziel_lati=navi_ziel_lati*10+(int(buf[a])-48);
+				navi_ziel_long=navi_ziel_long*10+(int(buf[a+10])-48);
+			};
+			// ziel name
+			for(int a=0;a<=9;a++){ // vorwärts  -> 128/6=21  : 2.1km g helmholtzs 11 --> 10 buchstaben
+				navi_ziel_name[a]=buf[a+22];
+			};
+			navi_ziel_name[10]='\0';
+
+			// r oder l oder g
+			navi_ziel_rl=int(buf[20])-48;
+			if(NAVI_DEBUG){
+				pDebug->sprintp(PSTR("Long: ")); Serial.print(navi_ziel_long); pDebug->sprintp(PSTR(" lati: ")); Serial.print(navi_ziel_lati);
+				pDebug->sprintp(PSTR(" name: ")); Serial.print(navi_ziel_name);
+				pDebug->sprintp(PSTR(" rlg: ")); Serial.println(navi_ziel_rl);
+			};
+		} else {			// cool file handle
 			if(NAVI_DEBUG){ pDebug->sprintlnp(PSTR("soviele punkte gibbet nicht")); };
-			navi_point=i-1;
+			navi_point--;
 			if(navi_point<0) navi_point=0;
 			generate_new_order(); // das hier ist das zurücksetzen, wenn man über den letzten Punkt hinweg klickt
 		};
-		file.close();
+
 	} else { // sd datei nicht gefunden
 		sprintf(navi_ziel_name,"SD failed!");
 		if(SD_DEBUG){
 			pDebug->sprintlnp(PSTR("Konnte Navigations Daten nicht laden"));
 		};
 	};
-	free(navi_filename);
-	subdir.close();
-	root.close();
 };
 
 /****************************************************************

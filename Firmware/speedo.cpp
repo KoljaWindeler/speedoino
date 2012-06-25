@@ -41,18 +41,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * We prevent the screen from flickering by saving a coresponding
 	 * value in disp_zeile_bak[OIL_TEMP] and check that value before redraw
 	 ************************* oil temperature *********************/
-	if(disp_zeile_bak[OIL_TEMP]!=pSensors->m_temperature->get_oil_temp()){
+	if(disp_zeile_bak[OIL_TEMP]!=pSensors->m_temperature->get_oil_temp()+pSensors->m_temperature->oil_temp_fail_status){
 		if(!(oil_widget.x==-1 && oil_widget.y==-1)){ // only show it if pos != -1/-1
-			disp_zeile_bak[OIL_TEMP]=int(pSensors->m_temperature->get_oil_temp());
+			disp_zeile_bak[OIL_TEMP]=int(pSensors->m_temperature->get_oil_temp()+pSensors->m_temperature->oil_temp_fail_status);
 			// below 20 degree the PTC is very antiliear so we won't show it
-			if(pSensors->m_temperature->get_oil_temp()==8888){
+			if(pSensors->m_temperature->oil_temp_fail_status==9){
 				sprintf(char_buffer," -     "); // error occored -> no sensor
-			} else if(pSensors->m_temperature->get_oil_temp()==9999){
+			} else if(pSensors->m_temperature->oil_temp_fail_status==5){
 				sprintf(char_buffer," --    "); // error occored -> short to gnd
 			} else 	if(pSensors->m_temperature->get_oil_temp()>200){
 				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_oil_temp()/10))%1000,pSensors->m_temperature->get_oil_temp()%10); // _32.3°C  7 stellen
 			} else {
-				sprintf(char_buffer,"  <20{C"); // below 20°C add a space to have 5 chars
+				sprintf(char_buffer,"<20{C  "); // below 20°C add a space to have 5 chars
 			};
 			pDebug->speedo_loop(1,0,previousMillis," "); // debug
 			// depend on skinsettings
@@ -66,21 +66,21 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * pSensors->m_temperature->water_temp_out. That value is degree multiplied by 10.
 	 * We prevent the screen from flickering by saving a coresponding
 	 * value in disp_zeile_bak[OIL_TEMP] and check that value before redraw
-	 ************************* oil temperature *********************/
-	if(disp_zeile_bak[WATER_TEMP]!=pSensors->m_temperature->get_water_temp()){
+	 ************************* water temperature *********************/
+	if(disp_zeile_bak[WATER_TEMP]!=pSensors->m_temperature->get_water_temp()+pSensors->m_temperature->water_temp_fail_status){
 		if(!(water_widget.x==-1 && water_widget.y==-1)){ // only show it if pos != -1/-1
-			disp_zeile_bak[WATER_TEMP]=int(pSensors->m_temperature->get_water_temp());
+			disp_zeile_bak[WATER_TEMP]=int(pSensors->m_temperature->get_water_temp()+pSensors->m_temperature->water_temp_fail_status);
 			// below 20 degree the PTC is very antiliear so we won't show it
-			if(pSensors->m_temperature->get_water_temp()==8888){
+			if(pSensors->m_temperature->water_temp_fail_status==9){
 				sprintf(char_buffer," -     "); // error occored -> no sensor
-			} else if(pSensors->m_temperature->get_water_temp()==9999){
+			} else if(pSensors->m_temperature->water_temp_fail_status==5){	// could of fail reads
 				sprintf(char_buffer," --    "); // error occored -> short to gnd
 			} else 	if(pSensors->m_temperature->get_water_temp()>1100){
 				sprintf(char_buffer,">110{C  "); // more then 110°C add a space to have 5 chars
 			} else 	if(pSensors->m_temperature->get_water_temp()>300){
 				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_water_temp()/10))%1000,pSensors->m_temperature->get_oil_temp()%10); // _32.3°C  7 stellen
 			} else {
-				sprintf(char_buffer,"  <30{C"); // below 20°C add a space to have 5 chars
+				sprintf(char_buffer,"<30{C  "); // below 20°C add a space to have 5 chars
 			};
 			pDebug->speedo_loop(1,0,previousMillis," "); // debug
 			// depend on skinsettings

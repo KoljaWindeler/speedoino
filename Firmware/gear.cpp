@@ -132,7 +132,7 @@ void speedo_gear::calibrate(){
 
 	_delay_ms(150);
 	pSensors->m_dz->calc(); // erst berechnen dann damit weiter rechnen
-	faktor_flat=pSensors->flatIt(int((unsigned long)(10*pSensors->m_dz->exact)/pSensors->m_speed->get_mag_speed()),&faktor_counter,128,faktor_flat);
+	faktor_flat=pSensors->flatIt(int((unsigned long)(10*pSensors->m_dz->exact)/pSensors->m_speed->get_mag_speed()),&faktor_counter,127,faktor_flat);
 	if(faktor_flat!=pSpeedo->disp_zeile_bak[1]){
 		pSpeedo->disp_zeile_bak[1]=faktor_flat;
 

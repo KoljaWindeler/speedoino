@@ -31,7 +31,7 @@ private:
 	unsigned long prevent_double_count;
 	volatile unsigned int speed_peaks;
 	// für die kalibrierung
-	short flat_counter_calibrate_umfang;
+	unsigned char flat_counter_calibrate_umfang;
 };
 
 #endif /* SPEED_H_ */

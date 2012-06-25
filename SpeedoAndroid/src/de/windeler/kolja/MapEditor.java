@@ -283,9 +283,10 @@ public class MapEditor extends Activity implements OnClickListener{
 				if(commando.toLowerCase().indexOf(search_string)>-1){
 					String commando_clean=commando.substring(commando.toLowerCase().indexOf(search_string)+search_string.length());
 					int max_chars=10;
+					String spaces=".................";
 					if(commando_clean.length()<10)
 						max_chars=commando_clean.length();
-					turnpoint_coordinate_converted=turnpoint_coordinate_converted+"→,"+commando_clean.substring(0, max_chars);
+					turnpoint_coordinate_converted=turnpoint_coordinate_converted+"→,"+commando_clean.substring(0, max_chars)+spaces.substring(max_chars,12);
 					got_direction=true;
 					break;
 				};
@@ -296,11 +297,13 @@ public class MapEditor extends Activity implements OnClickListener{
 			for(int i=0;i<command_right_left.size();i++){
 				String search_string=command_right_left.get(i).toLowerCase().replace("xxx", "links");
 				if(commando.toLowerCase().indexOf(search_string)>-1){
+
 					String commando_clean=commando.substring(commando.toLowerCase().indexOf(search_string)+search_string.length());
 					int max_chars=10;
+					String spaces=".................";
 					if(commando_clean.length()<10)
 						max_chars=commando_clean.length();
-					turnpoint_coordinate_converted=turnpoint_coordinate_converted+"←,"+commando_clean.substring(0,max_chars);
+					turnpoint_coordinate_converted=turnpoint_coordinate_converted+"←,"+commando_clean.substring(0,max_chars)+spaces.substring(max_chars,12);
 					got_direction=true;
 					break;
 				};
@@ -320,11 +323,11 @@ public class MapEditor extends Activity implements OnClickListener{
 				if(commando.toLowerCase().indexOf(search_string)>-1){
 					String commando_clean=commando.substring(commando.toLowerCase().indexOf(search_string)+search_string.length());
 					int max_chars=10;
-					String add_spaces="              ";
+					String spaces=".................";
 					if(commando_clean.length()<10){
 						max_chars=commando_clean.length();
 					}
-					turnpoint_coordinate_converted=turnpoint_coordinate_converted+"↑,"+commando_clean.substring(0,max_chars)+add_spaces.substring(max_chars,10);
+					turnpoint_coordinate_converted=turnpoint_coordinate_converted+"↑,"+commando_clean.substring(0,max_chars)+spaces.substring(max_chars,12);
 
 					got_direction=true;
 					break;
@@ -521,6 +524,7 @@ public class MapEditor extends Activity implements OnClickListener{
 		// --------- generate filename ----------------//
 		String basedir = getIntent().getStringExtra(INPUT_DIR_PATH);
 		int max_lenght=8;
+		cleaned_filename="navi0.bla";
 		if(cleaned_filename.indexOf(".")<8 && cleaned_filename.indexOf(".")>0)
 			max_lenght=cleaned_filename.indexOf(".");
 		else if(max_lenght>cleaned_filename.length())

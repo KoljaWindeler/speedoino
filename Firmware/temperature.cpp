@@ -26,9 +26,11 @@ speedo_temperature::~speedo_temperature(){
 void speedo_temperature::clear_vars(){
 	oil_temp_value_counter=0;
 	oil_temp_value=0;
+	oil_temp_fail_status=0; // 0 = no failed read, 1-5 = Number of shorts read, 6-9 = Number of open read
+
 	water_temp_value_counter=0;
 	water_temp_value=0;
-	water_temp_read_failed=0;
+	water_temp_fail_status=0; // 0 = no failed read, 1-5 = Number of shorts read, 6-9 = Number of open read
 
 	water_warning_temp=0; // 95 C
 	oil_warning_temp=0; // 120 C
@@ -77,7 +79,7 @@ void speedo_temperature::init(){
 
 void speedo_temperature::read_oil_temp() {
 	// werte in array speichern in °C*10 für Nachkommastelle
-	if(TEMP_DEBUG){ Serial.println("\nTemp: Beginne Öl zu lesen"); }
+	if(TEMP_DEBUG){ Serial.println("\n\rTemp: Beginne Öl zu lesen"); }
 
 	//// Widerstandsberechnung ////
 	/*	Spannungsabgriff zwischen 2 Widerständen, R1 ggn 5V da drunter in Reihe "R".
@@ -116,20 +118,42 @@ void speedo_temperature::read_oil_temp() {
 					Serial.print(" und geplaettet: ");
 					Serial.println(int(round(oil_temp_value)));
 				}
-
+				oil_temp_fail_status=0;
 				break; // break the for loop
 			};
 		};
 	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
-		oil_temp_value=8888;
+		if(TEMP_DEBUG){
+			Serial.print("@");
+			Serial.print(millis());
+			Serial.print(": oil Wert -> OPEN");
+			Serial.print(" | Oil fail status:");
+			Serial.println((int)oil_temp_fail_status);
+		}
+
+		if(oil_temp_fail_status<6){
+			oil_temp_fail_status=6;
+		} else if(oil_temp_fail_status<9){
+			oil_temp_fail_status++;
+		}
 	} else { // Kurzschluss nach masse: 102=(1024-x)/10  	x<=4
-		oil_temp_value=9999;
+		if(oil_temp_fail_status<5){ // nach sechs maligem fehler => ausgabe!
+			oil_temp_fail_status++;
+		};
+
+		if(TEMP_DEBUG){
+			Serial.print("@");
+			Serial.print(millis());
+			Serial.print(": oil Wert -> Short to GND");
+			Serial.print(" | Oil fail status:");
+			Serial.println((int)oil_temp_fail_status);
+		}
 	}
 };
 
 void speedo_temperature::read_water_temp() {
 	// werte in array speichern in °C*10 für Nachkommastelle
-	if(TEMP_DEBUG){ Serial.println("\nTemp: Beginne Water zu lesen"); }
+	if(TEMP_DEBUG){ Serial.println("\n\rTemp: Beginne Water zu lesen"); }
 
 	// werte auslesen
 	unsigned int water_value=analogRead(WATER_TEMP_PIN);
@@ -156,22 +180,20 @@ void speedo_temperature::read_water_temp() {
 					Serial.print(" und geplaettet: ");
 					Serial.println(int(round(water_temp_value)));
 				}
-				water_temp_read_failed=0;
+				water_temp_fail_status=0;
 				break; // break the for loop
 			};
 		};
 	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
-		water_temp_value=8888;
-
-		if(TEMP_DEBUG){
-			Serial.print("Water Wert kein Sensor");
+		if(water_temp_fail_status<6){
+			water_temp_fail_status=6;
+		} else if(water_temp_fail_status<9){
+			water_temp_fail_status++;
 		}
 	} else { // Kurzschluss nach masse: 102=(1024-x)/10  	x<=4
-		if(water_temp_read_failed>5){ // nach sechs maligem fehler => ausgabe!
-			water_temp_value=9999;
-		} else {
-			water_temp_read_failed++;
-		}
+		if(water_temp_fail_status<5){ // nach sechs maligem fehler => ausgabe!
+			water_temp_fail_status++;
+		};
 
 		if(TEMP_DEBUG){
 			Serial.print("Water Wert Kurzschluss ggn Masse");
@@ -226,7 +248,3 @@ int speedo_temperature::get_water_temp(){
 	else
 		return int(round(water_temp_value));
 }
-// alte verfahren
-// air_temp_values[position] = round((10 * air_value * 5  * 100.0)/1024.0); //Luft
-// oil_temp_values[position] = round((oil_value*-0.2+148.94)*10); //kolja öl neu nach Datenblatt mit akzeptierter nicht Linearitä
-// oil_temp_values[position] = round((oil_value*-0.147032+128.25)*10); //kolja öl

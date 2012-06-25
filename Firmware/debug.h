@@ -9,8 +9,8 @@
 #define DEBUG_H_
 
 class debugging{
-#define       PARSE_DEBUG     false	  // ausgaben vom einlesen
-#define       PARSE_SHORT     false	  // ausgaben vom einlesen
+#define       PARSE_DEBUG     false	// ausgaben vom einlesen
+#define       PARSE_SHORT     false	// ausgaben vom einlesen
 #define       TACHO_DEBUG     false   // jeder schreibvorgang wird angezeigt, flackern finden
 #define       TACHO_IDEBUG    false   // menustate hasn't change etc
 #define       RESET_DEBUG     false   // status change ob nun reset enable oder nicht
@@ -26,6 +26,7 @@ class debugging{
 #define       GPS_DEBUG       false   // ausgabe wenn sich was ergibt, also vollständige pakete empfangen werden
 #define       IGPS_DEBUG      false   // alle NMEA zeilen ansehen
 #define       NAVI_DEBUG      false   // berechnung der distanz checken
+
 
 public:
 	debugging(void);

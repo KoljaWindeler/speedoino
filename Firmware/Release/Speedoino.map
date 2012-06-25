@@ -340,7 +340,7 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000000000    0x29158
+.text           0x0000000000000000    0x29178
  *(.vectors)
  .vectors       0x0000000000000000       0xe4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
                 0x0000000000000000                __vectors
@@ -878,904 +878,904 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
                 0x0000000000012158                _ZN11speedo_disp12disp_waitingEihh
                 0x000000000001220c                _ZN11speedo_disp9animationEi
                 0x0000000000012288                _ZN11speedo_disp11init_speedoEv
- .text          0x000000000001239e      0x308 ./dz.o
+ .text          0x000000000001239e      0x300 ./dz.o
                 0x000000000001239e                _Z6helperv
                 0x00000000000123b8                _ZN9speedo_dzC2Ev
                 0x00000000000123b8                _ZN9speedo_dzC1Ev
                 0x00000000000123ba                _ZN9speedo_dz7counterEv
                 0x00000000000123ca                _ZN9speedo_dz4calcEv
-                0x0000000000012610                _ZN9speedo_dz4initEv
-                0x0000000000012640                _ZN9speedo_dz10clear_varsEv
-                0x0000000000012672                _ZN9speedo_dz10check_varsEv
- .text          0x00000000000126a6      0xc96 ./file_manager_v2.o
-                0x00000000000126bc                _ZN21speedo_filemanager_v2C1Ev
-                0x00000000000126bc                _ZN21speedo_filemanager_v2C2Ev
-                0x00000000000126d4                _ZN21speedo_filemanager_v2D1Ev
-                0x00000000000126d4                _ZN21speedo_filemanager_v2D2Ev
-                0x00000000000126ec                _ZN21speedo_filemanager_v215get_file_handleEPhS0_P6SdFileS2_h
-                0x000000000001297c                _ZN21speedo_filemanager_v213parse_commandEv
- .text          0x000000000001333c      0x280 ./fuel.o
-                0x000000000001333c                _ZN11speedo_fuelC1Ev
-                0x000000000001333c                _ZN11speedo_fuelC2Ev
-                0x000000000001333e                _ZN11speedo_fuelD2Ev
-                0x000000000001333e                _ZN11speedo_fuelD1Ev
-                0x0000000000013340                _ZN11speedo_fuel8get_fuelEPc
-                0x000000000001356c                _ZN11speedo_fuel4initEv
-                0x000000000001356e                _ZN11speedo_fuel10clear_varsEv
-                0x0000000000013582                _ZN11speedo_fuel10check_varsEv
- .text          0x00000000000135bc      0x768 ./gear.o
-                0x00000000000135bc                _ZN11speedo_gearC2Ev
-                0x00000000000135bc                _ZN11speedo_gearC1Ev
-                0x00000000000135be                _ZN11speedo_gearD1Ev
-                0x00000000000135be                _ZN11speedo_gearD2Ev
-                0x00000000000135c0                _ZN11speedo_gear4initEv
-                0x00000000000135d0                _ZN11speedo_gear10check_varsEv
-                0x000000000001364e                _ZN11speedo_gear10clear_varsEv
-                0x000000000001367a                _ZN11speedo_gear4calcEv
-                0x00000000000138ba                _ZN11speedo_gear3getEv
-                0x00000000000138d2                _ZN11speedo_gear9calibrateEv
- .text          0x0000000000013d24     0x223e ./gps.o
-                0x0000000000013d3a                _ZN10speedo_gpsC1Ev
-                0x0000000000013d3a                _ZN10speedo_gpsC2Ev
-                0x0000000000013d3c                _ZN10speedo_gpsD1Ev
-                0x0000000000013d3c                _ZN10speedo_gpsD2Ev
-                0x0000000000013d3e                _ZN10speedo_gps10clear_varsEv
-                0x0000000000013e24                _ZN10speedo_gps10check_varsEv
-                0x0000000000013e28                _ZN10speedo_gps9recv_dataEv
-                0x0000000000013f7c                __vector_36
-                0x0000000000013fd6                _ZN10speedo_gps8get_infoEi
-                0x0000000000014102                _ZN10speedo_gps11store_to_sdEv
-                0x00000000000141d0                _ZN10speedo_gps3modEmm
-                0x0000000000014256                _ZN10speedo_gps11nmea_to_decEm
-                0x0000000000014312                _ZN10speedo_gps9calc_distEmm
-                0x000000000001459a                _ZN10speedo_gps9get_orderEPc
-                0x000000000001481a                _ZN10speedo_gps18generate_new_orderEv
-                0x0000000000014bd2                _ZN10speedo_gps9calc_naviEv
-                0x000000000001505a                _ZN10speedo_gps5parseEPci
-                0x0000000000015846                _ZN10speedo_gps10check_flagEv
-                0x00000000000158e8                _ZN10speedo_gps4loopEv
-                0x0000000000015bca                _ZN10speedo_gps17get_logged_pointsEPci
-                0x0000000000015ef8                _ZN10speedo_gps8SendByteEh
-                0x0000000000015f06                _ZN10speedo_gps10SendStringEPKc
-                0x0000000000015f36                _ZN10speedo_gps4initEv
- .text          0x0000000000015f62       0x38 ./helper.o
-                0x0000000000015f62                __cxa_pure_virtual
-                0x0000000000015f66                _Znwj
-                0x0000000000015f6a                _ZdlPv
-                0x0000000000015f6e                _Znaj
-                0x0000000000015f72                _ZdaPv
-                0x0000000000015f7c                _Z19__cxa_guard_acquirePx
-                0x0000000000015f90                _Z19__cxa_guard_releasePx
-                0x0000000000015f98                _Z17__cxa_guard_abortPx
- .text          0x0000000000015f9a      0x416 ./main.o
-                0x0000000000015f9a                main
- .text          0x00000000000163b0     0x9588 ./menu.o
-                0x00000000000163c6                _ZN11speedo_menuC2Ev
-                0x00000000000163c6                _ZN11speedo_menuC1Ev
-                0x00000000000163c8                _ZN11speedo_menuD2Ev
-                0x00000000000163c8                _ZN11speedo_menuD1Ev
-                0x00000000000163ca                _ZN11speedo_menu4backEv
-                0x00000000000164ca                _ZN11speedo_menu5yesnoEPKcS1_S1_
-                0x0000000000016610                _ZN11speedo_menu4drawEPPKci
-                0x00000000000168e8                _ZN11speedo_menu7go_leftEb
-                0x00000000000169b8                _ZN11speedo_menu8go_rightEb
-                0x0000000000016a2e                _ZN11speedo_menu5go_upEb
-                0x0000000000016b40                _ZN11speedo_menu7go_downEb
-                0x0000000000016c3c                _ZN11speedo_menu4initEv
-                0x0000000000016cae                _ZN11speedo_menu11set_buttonsEbbbb
-                0x0000000000016cbe                _ZN11speedo_menu9center_meEPci
-                0x0000000000016e04                _ZN11speedo_menu7displayEv
-                0x000000000001f5a0                _ZN11speedo_menu11button_testEbb
-                0x000000000001f83c                __vector_10
-                0x000000000001f896                _ZN11speedo_menu8del_confEPcS0_
- .text          0x000000000001f938      0x108 ./oiler.o
-                0x000000000001f938                _ZN12speedo_oilerC2Ev
-                0x000000000001f938                _ZN12speedo_oilerC1Ev
-                0x000000000001f93a                _ZN12speedo_oilerD2Ev
-                0x000000000001f93a                _ZN12speedo_oilerD1Ev
-                0x000000000001f93c                _ZN12speedo_oiler4initEv
-                0x000000000001f95c                _ZN12speedo_oiler10check_varsEv
-                0x000000000001f986                _ZN12speedo_oiler10clear_varsEv
-                0x000000000001f98e                _ZN12speedo_oiler12send_impulseEv
-                0x000000000001f9e4                _ZN12speedo_oiler11check_valueEv
- .text          0x000000000001fa40      0x2a8 ./reset.o
-                0x000000000001fa40                _ZN12speedo_resetC1Ev
-                0x000000000001fa40                _ZN12speedo_resetC2Ev
-                0x000000000001fa42                _ZN12speedo_resetD2Ev
-                0x000000000001fa42                _ZN12speedo_resetD1Ev
-                0x000000000001fa44                _ZN12speedo_reset10check_varsEv
-                0x000000000001fa48                _ZN12speedo_reset10set_activeEbb
-                0x000000000001fa92                _ZN12speedo_reset12set_deactiveEbb
-                0x000000000001fada                _ZN12speedo_reset4initEv
-                0x000000000001fb48                _ZN12speedo_reset7restoreEv
-                0x000000000001fb5c                _ZN12speedo_reset6toggleEv
-                0x000000000001fbba                _ZN12speedo_reset9ask_resetEv
-                0x000000000001fcc0                _ZN12speedo_reset10clear_varsEv
- .text          0x000000000001fce8      0x17e ./sd.o
-                0x000000000001fd16                _ZN9speedo_sdC1Ev
-                0x000000000001fd16                _ZN9speedo_sdC2Ev
-                0x000000000001fd32                _ZN9speedo_sdD1Ev
-                0x000000000001fd32                _ZN9speedo_sdD2Ev
-                0x000000000001fd34                _ZN9speedo_sd7error_PEPKc
-                0x000000000001fd8a                _ZN9speedo_sd9writeCRLFER6SdFile
-                0x000000000001fd98                _ZN9speedo_sd11writeStringER6SdFilePc
-                0x000000000001fdb6                _ZN9speedo_sd10power_downEv
-                0x000000000001fdb8                _ZN9speedo_sd8power_upEv
-                0x000000000001fe48                _ZN9speedo_sd4initEv
- .text          0x000000000001fe66      0x978 ./sensors.o
-                0x000000000001fe66                _ZN14Speedo_sensorsC1Ev
-                0x000000000001fe66                _ZN14Speedo_sensorsC2Ev
-                0x000000000001ff3a                _ZN14Speedo_sensorsD2Ev
-                0x000000000001ff3a                _ZN14Speedo_sensorsD1Ev
-                0x000000000001ff3c                _ZN14Speedo_sensors10clear_varsEv
-                0x000000000001ff9a                _ZN14Speedo_sensors10check_varsEv
-                0x00000000000200a6                _ZN14Speedo_sensors11single_readEv
-                0x000000000002011e                _ZN14Speedo_sensors4initEv
-                0x000000000002018c                _ZN14Speedo_sensors6flatItEiPsif
-                0x0000000000020294                _ZN14Speedo_sensors4loopEv
- .text          0x00000000000207de      0x8b4 ./speed.o
-                0x00000000000207de                _ZN12speedo_speedC2Ev
-                0x00000000000207de                _ZN12speedo_speedC1Ev
-                0x00000000000207e0                _ZN12speedo_speedD2Ev
-                0x00000000000207e0                _ZN12speedo_speedD1Ev
-                0x00000000000207e2                _ZN12speedo_speed4calcEv
-                0x0000000000020998                _Z12helper_speedv
-                0x00000000000209a6                _ZN12speedo_speed4initEv
-                0x00000000000209c8                _ZN12speedo_speed10clear_varsEv
-                0x0000000000020a34                _ZN12speedo_speed10check_varsEv
-                0x0000000000020ab0                _ZN12speedo_speed8getSpeedEv
-                0x0000000000020b2a                _ZN12speedo_speed13get_sat_speedEv
-                0x0000000000020b66                _ZN12speedo_speed13get_mag_speedEv
-                0x0000000000020b6e                _ZN12speedo_speed12check_umfangEv
- .text          0x0000000000021092     0x1dd8 ./speedo.o
-                0x0000000000021092                _ZN13speedo_speedo9reset_bakEv
-                0x00000000000210a8                _ZN13speedo_speedo4loopEm
-                0x0000000000022c54                _ZN13speedo_speedo10clear_varsEv
-                0x0000000000022c8a                _ZN13speedo_speedo10check_varsEv
- .text          0x0000000000022e6a      0x4f6 ./sprint.o
-                0x0000000000022e6a                _ZN13speedo_sprintC2Ev
-                0x0000000000022e6a                _ZN13speedo_sprintC1Ev
-                0x0000000000022e88                _ZN13speedo_sprintD2Ev
-                0x0000000000022e88                _ZN13speedo_sprintD1Ev
-                0x0000000000022e8a                _ZN13speedo_sprint4initEv
-                0x0000000000022ea8                _ZN13speedo_sprint4loopEv
- .text          0x0000000000023360      0x14a ./stepper.o
-                0x0000000000023360                _ZN14speedo_stepperC2Ev
-                0x0000000000023360                _ZN14speedo_stepperC1Ev
-                0x0000000000023362                _ZN14speedo_stepperD2Ev
-                0x0000000000023362                _ZN14speedo_stepperD1Ev
-                0x0000000000023364                _ZN14speedo_stepper5go_toEii
-                0x000000000002339e                _ZN14speedo_stepper4initEv
-                0x00000000000233e0                _ZN14speedo_stepper7get_posEv
- .text          0x00000000000234aa      0x88a ./temperature.o
-                0x00000000000234aa                _ZN18speedo_temperatureC1Ev
-                0x00000000000234aa                _ZN18speedo_temperatureC2Ev
-                0x00000000000234ac                _ZN18speedo_temperatureD1Ev
-                0x00000000000234ac                _ZN18speedo_temperatureD2Ev
-                0x00000000000234ae                _ZN18speedo_temperature10clear_varsEv
-                0x0000000000023538                _ZN18speedo_temperature10check_varsEv
-                0x00000000000236c6                _ZN18speedo_temperature4initEv
-                0x00000000000236d2                _ZN18speedo_temperature13read_oil_tempEv
-                0x0000000000023868                _ZN18speedo_temperature15read_water_tempEv
-                0x0000000000023a5c                _ZN18speedo_temperature13read_air_tempEv
-                0x0000000000023b3a                _ZN18speedo_temperature12get_air_tempEv
-                0x0000000000023b54                _ZN18speedo_temperature12get_oil_tempEv
-                0x0000000000023c44                _ZN18speedo_temperature14get_water_tempEv
- .text          0x0000000000023d34     0x1536 ./tetris.o
-                0x0000000000023d34                _ZN6tetrisC1Ev
-                0x0000000000023d34                _ZN6tetrisC2Ev
-                0x0000000000023d36                _ZN6tetrisD2Ev
-                0x0000000000023d36                _ZN6tetrisD1Ev
-                0x0000000000023d38                _ZN6tetris22copy_element_to_bufferEi
-                0x0000000000023de8                _ZN6tetris11new_elementEv
-                0x0000000000023ee0                _ZN6tetris4initEv
-                0x0000000000023f28                _ZN6tetris13initDrawFieldEv
-                0x0000000000024258                _ZN6tetris11updateFieldEv
-                0x000000000002438a                _ZN6tetris11check_stackEv
-                0x00000000000247e8                _ZN6tetris4loopEv
-                0x0000000000025188                _ZN6tetris3runEv
-                0x00000000000251bc                _ZN6tetris19show_grid_on_serialEv
- .text          0x000000000002526a      0x28a ./timer.o
-                0x000000000002526a                _ZN12speedo_timerC2Ev
-                0x000000000002526a                _ZN12speedo_timerC1Ev
-                0x000000000002529c                _ZN12speedo_timerD2Ev
-                0x000000000002529c                _ZN12speedo_timerD1Ev
-                0x000000000002529e                _Z8ram_infov
-                0x00000000000252ca                _ZN12speedo_timer9every_secEP13configuration
-                0x000000000002538c                _ZN12speedo_timer10every_qsecEv
-                0x00000000000253dc                _ZN12speedo_timer12every_customEv
- .text          0x00000000000254f4      0x130 ./voltage.o
-                0x00000000000254f4                _ZN14speedo_voltageC2Ev
-                0x00000000000254f4                _ZN14speedo_voltageC1Ev
-                0x00000000000254f6                _ZN14speedo_voltageD2Ev
-                0x00000000000254f6                _ZN14speedo_voltageD1Ev
-                0x00000000000254f8                _ZN14speedo_voltage4calcEv
-                0x00000000000255fa                _ZN14speedo_voltage3getEv
-                0x000000000002560e                _ZN14speedo_voltage10check_varsEv
-                0x0000000000025612                _ZN14speedo_voltage10clear_varsEv
-                0x000000000002561e                _ZN14speedo_voltage4initEv
- .text          0x0000000000025624        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
- .text          0x0000000000025624        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
- .text          0x0000000000025624        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
- .text          0x0000000000025624        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
- .text          0x0000000000025624        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
- .text          0x0000000000025624        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
- .text          0x0000000000025624        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(malloc.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exit.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isalpha.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isspace.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(tolower.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(toupper.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp_P.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy_P.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strlen_P.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcmp.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcpy.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memset.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcat.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strchr.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncmp.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncpy.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrchr.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strstr.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(itoa.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ltoa.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sprintf.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3x.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(asin.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cmpsf2.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cos.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3x.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixsfsi.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floatsisf.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floor.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_arccos.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_cmp.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_inf.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mintl.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mpack.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_nan.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powser.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscA.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscB.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_round.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_sinus.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_split3.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_trunc.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_zero.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(gesf2.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3x.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(pow.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sin.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sqrt.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen_P.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrev.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fputc.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exp.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_norm2.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(inverse.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ldexp.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(log.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(modf.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodqi4.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodhi4.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodhi4.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodsi4.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_ctors.o)
- .text          0x0000000000025624        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_tablejump_elpm.o)
-                0x0000000000025624                . = ALIGN (0x2)
+                0x000000000001260c                _ZN9speedo_dz4initEv
+                0x000000000001263c                _ZN9speedo_dz10clear_varsEv
+                0x000000000001266a                _ZN9speedo_dz10check_varsEv
+ .text          0x000000000001269e      0xc96 ./file_manager_v2.o
+                0x00000000000126b4                _ZN21speedo_filemanager_v2C1Ev
+                0x00000000000126b4                _ZN21speedo_filemanager_v2C2Ev
+                0x00000000000126cc                _ZN21speedo_filemanager_v2D1Ev
+                0x00000000000126cc                _ZN21speedo_filemanager_v2D2Ev
+                0x00000000000126e4                _ZN21speedo_filemanager_v215get_file_handleEPhS0_P6SdFileS2_h
+                0x0000000000012974                _ZN21speedo_filemanager_v213parse_commandEv
+ .text          0x0000000000013334      0x280 ./fuel.o
+                0x0000000000013334                _ZN11speedo_fuelC1Ev
+                0x0000000000013334                _ZN11speedo_fuelC2Ev
+                0x0000000000013336                _ZN11speedo_fuelD2Ev
+                0x0000000000013336                _ZN11speedo_fuelD1Ev
+                0x0000000000013338                _ZN11speedo_fuel8get_fuelEPc
+                0x0000000000013564                _ZN11speedo_fuel4initEv
+                0x0000000000013566                _ZN11speedo_fuel10clear_varsEv
+                0x000000000001357a                _ZN11speedo_fuel10check_varsEv
+ .text          0x00000000000135b4      0x75e ./gear.o
+                0x00000000000135b4                _ZN11speedo_gearC2Ev
+                0x00000000000135b4                _ZN11speedo_gearC1Ev
+                0x00000000000135b6                _ZN11speedo_gearD1Ev
+                0x00000000000135b6                _ZN11speedo_gearD2Ev
+                0x00000000000135b8                _ZN11speedo_gear4initEv
+                0x00000000000135c8                _ZN11speedo_gear10check_varsEv
+                0x0000000000013646                _ZN11speedo_gear10clear_varsEv
+                0x0000000000013670                _ZN11speedo_gear4calcEv
+                0x00000000000138aa                _ZN11speedo_gear3getEv
+                0x00000000000138c2                _ZN11speedo_gear9calibrateEv
+ .text          0x0000000000013d12     0x22cc ./gps.o
+                0x0000000000013d28                _ZN10speedo_gpsC1Ev
+                0x0000000000013d28                _ZN10speedo_gpsC2Ev
+                0x0000000000013d2a                _ZN10speedo_gpsD1Ev
+                0x0000000000013d2a                _ZN10speedo_gpsD2Ev
+                0x0000000000013d2c                _ZN10speedo_gps10clear_varsEv
+                0x0000000000013e12                _ZN10speedo_gps10check_varsEv
+                0x0000000000013e16                _ZN10speedo_gps9recv_dataEv
+                0x0000000000013f6a                __vector_36
+                0x0000000000013fc4                _ZN10speedo_gps8get_infoEi
+                0x00000000000140f0                _ZN10speedo_gps11store_to_sdEv
+                0x00000000000141be                _ZN10speedo_gps3modEmm
+                0x0000000000014244                _ZN10speedo_gps11nmea_to_decEm
+                0x0000000000014300                _ZN10speedo_gps9calc_distEmm
+                0x0000000000014588                _ZN10speedo_gps9get_orderEPc
+                0x0000000000014808                _ZN10speedo_gps18generate_new_orderEv
+                0x0000000000014c00                _ZN10speedo_gps9calc_naviEv
+                0x0000000000015088                _ZN10speedo_gps5parseEPci
+                0x000000000001589e                _ZN10speedo_gps10check_flagEv
+                0x0000000000015964                _ZN10speedo_gps4loopEv
+                0x0000000000015c46                _ZN10speedo_gps17get_logged_pointsEPci
+                0x0000000000015f74                _ZN10speedo_gps8SendByteEh
+                0x0000000000015f82                _ZN10speedo_gps10SendStringEPKc
+                0x0000000000015fb2                _ZN10speedo_gps4initEv
+ .text          0x0000000000015fde       0x38 ./helper.o
+                0x0000000000015fde                __cxa_pure_virtual
+                0x0000000000015fe2                _Znwj
+                0x0000000000015fe6                _ZdlPv
+                0x0000000000015fea                _Znaj
+                0x0000000000015fee                _ZdaPv
+                0x0000000000015ff8                _Z19__cxa_guard_acquirePx
+                0x000000000001600c                _Z19__cxa_guard_releasePx
+                0x0000000000016014                _Z17__cxa_guard_abortPx
+ .text          0x0000000000016016      0x416 ./main.o
+                0x0000000000016016                main
+ .text          0x000000000001642c     0x9586 ./menu.o
+                0x0000000000016442                _ZN11speedo_menuC2Ev
+                0x0000000000016442                _ZN11speedo_menuC1Ev
+                0x0000000000016444                _ZN11speedo_menuD2Ev
+                0x0000000000016444                _ZN11speedo_menuD1Ev
+                0x0000000000016446                _ZN11speedo_menu4backEv
+                0x0000000000016546                _ZN11speedo_menu5yesnoEPKcS1_S1_
+                0x000000000001668c                _ZN11speedo_menu4drawEPPKci
+                0x0000000000016964                _ZN11speedo_menu7go_leftEb
+                0x0000000000016a34                _ZN11speedo_menu8go_rightEb
+                0x0000000000016aaa                _ZN11speedo_menu5go_upEb
+                0x0000000000016bbc                _ZN11speedo_menu7go_downEb
+                0x0000000000016cb8                _ZN11speedo_menu4initEv
+                0x0000000000016d2a                _ZN11speedo_menu11set_buttonsEbbbb
+                0x0000000000016d3a                _ZN11speedo_menu9center_meEPci
+                0x0000000000016e80                _ZN11speedo_menu7displayEv
+                0x000000000001f61a                _ZN11speedo_menu11button_testEbb
+                0x000000000001f8b6                __vector_10
+                0x000000000001f910                _ZN11speedo_menu8del_confEPcS0_
+ .text          0x000000000001f9b2      0x108 ./oiler.o
+                0x000000000001f9b2                _ZN12speedo_oilerC2Ev
+                0x000000000001f9b2                _ZN12speedo_oilerC1Ev
+                0x000000000001f9b4                _ZN12speedo_oilerD2Ev
+                0x000000000001f9b4                _ZN12speedo_oilerD1Ev
+                0x000000000001f9b6                _ZN12speedo_oiler4initEv
+                0x000000000001f9d6                _ZN12speedo_oiler10check_varsEv
+                0x000000000001fa00                _ZN12speedo_oiler10clear_varsEv
+                0x000000000001fa08                _ZN12speedo_oiler12send_impulseEv
+                0x000000000001fa5e                _ZN12speedo_oiler11check_valueEv
+ .text          0x000000000001faba      0x2a8 ./reset.o
+                0x000000000001faba                _ZN12speedo_resetC1Ev
+                0x000000000001faba                _ZN12speedo_resetC2Ev
+                0x000000000001fabc                _ZN12speedo_resetD2Ev
+                0x000000000001fabc                _ZN12speedo_resetD1Ev
+                0x000000000001fabe                _ZN12speedo_reset10check_varsEv
+                0x000000000001fac2                _ZN12speedo_reset10set_activeEbb
+                0x000000000001fb0c                _ZN12speedo_reset12set_deactiveEbb
+                0x000000000001fb54                _ZN12speedo_reset4initEv
+                0x000000000001fbc2                _ZN12speedo_reset7restoreEv
+                0x000000000001fbd6                _ZN12speedo_reset6toggleEv
+                0x000000000001fc34                _ZN12speedo_reset9ask_resetEv
+                0x000000000001fd3a                _ZN12speedo_reset10clear_varsEv
+ .text          0x000000000001fd62      0x17e ./sd.o
+                0x000000000001fd90                _ZN9speedo_sdC1Ev
+                0x000000000001fd90                _ZN9speedo_sdC2Ev
+                0x000000000001fdac                _ZN9speedo_sdD1Ev
+                0x000000000001fdac                _ZN9speedo_sdD2Ev
+                0x000000000001fdae                _ZN9speedo_sd7error_PEPKc
+                0x000000000001fe04                _ZN9speedo_sd9writeCRLFER6SdFile
+                0x000000000001fe12                _ZN9speedo_sd11writeStringER6SdFilePc
+                0x000000000001fe30                _ZN9speedo_sd10power_downEv
+                0x000000000001fe32                _ZN9speedo_sd8power_upEv
+                0x000000000001fec2                _ZN9speedo_sd4initEv
+ .text          0x000000000001fee0      0x94c ./sensors.o
+                0x000000000001fee0                _ZN14Speedo_sensorsC1Ev
+                0x000000000001fee0                _ZN14Speedo_sensorsC2Ev
+                0x000000000001ffb4                _ZN14Speedo_sensorsD2Ev
+                0x000000000001ffb4                _ZN14Speedo_sensorsD1Ev
+                0x000000000001ffb6                _ZN14Speedo_sensors10clear_varsEv
+                0x0000000000020014                _ZN14Speedo_sensors10check_varsEv
+                0x0000000000020120                _ZN14Speedo_sensors11single_readEv
+                0x0000000000020198                _ZN14Speedo_sensors4initEv
+                0x0000000000020206                _ZN14Speedo_sensors6flatItEiPhcf
+                0x00000000000202e2                _ZN14Speedo_sensors4loopEv
+ .text          0x000000000002082c      0x8b0 ./speed.o
+                0x000000000002082c                _ZN12speedo_speedC2Ev
+                0x000000000002082c                _ZN12speedo_speedC1Ev
+                0x000000000002082e                _ZN12speedo_speedD2Ev
+                0x000000000002082e                _ZN12speedo_speedD1Ev
+                0x0000000000020830                _ZN12speedo_speed4calcEv
+                0x00000000000209e6                _Z12helper_speedv
+                0x00000000000209f4                _ZN12speedo_speed4initEv
+                0x0000000000020a16                _ZN12speedo_speed10clear_varsEv
+                0x0000000000020a82                _ZN12speedo_speed10check_varsEv
+                0x0000000000020afe                _ZN12speedo_speed8getSpeedEv
+                0x0000000000020b78                _ZN12speedo_speed13get_sat_speedEv
+                0x0000000000020bb4                _ZN12speedo_speed13get_mag_speedEv
+                0x0000000000020bbc                _ZN12speedo_speed12check_umfangEv
+ .text          0x00000000000210dc     0x1db8 ./speedo.o
+                0x00000000000210dc                _ZN13speedo_speedo9reset_bakEv
+                0x00000000000210f2                _ZN13speedo_speedo4loopEm
+                0x0000000000022c7e                _ZN13speedo_speedo10clear_varsEv
+                0x0000000000022cb4                _ZN13speedo_speedo10check_varsEv
+ .text          0x0000000000022e94      0x4f6 ./sprint.o
+                0x0000000000022e94                _ZN13speedo_sprintC2Ev
+                0x0000000000022e94                _ZN13speedo_sprintC1Ev
+                0x0000000000022eb2                _ZN13speedo_sprintD2Ev
+                0x0000000000022eb2                _ZN13speedo_sprintD1Ev
+                0x0000000000022eb4                _ZN13speedo_sprint4initEv
+                0x0000000000022ed2                _ZN13speedo_sprint4loopEv
+ .text          0x000000000002338a      0x14a ./stepper.o
+                0x000000000002338a                _ZN14speedo_stepperC2Ev
+                0x000000000002338a                _ZN14speedo_stepperC1Ev
+                0x000000000002338c                _ZN14speedo_stepperD2Ev
+                0x000000000002338c                _ZN14speedo_stepperD1Ev
+                0x000000000002338e                _ZN14speedo_stepper5go_toEii
+                0x00000000000233c8                _ZN14speedo_stepper4initEv
+                0x000000000002340a                _ZN14speedo_stepper7get_posEv
+ .text          0x00000000000234d4      0x884 ./temperature.o
+                0x00000000000234d4                _ZN18speedo_temperatureC1Ev
+                0x00000000000234d4                _ZN18speedo_temperatureC2Ev
+                0x00000000000234d6                _ZN18speedo_temperatureD1Ev
+                0x00000000000234d6                _ZN18speedo_temperatureD2Ev
+                0x00000000000234d8                _ZN18speedo_temperature10clear_varsEv
+                0x0000000000023564                _ZN18speedo_temperature10check_varsEv
+                0x00000000000236f2                _ZN18speedo_temperature4initEv
+                0x00000000000236fe                _ZN18speedo_temperature13read_oil_tempEv
+                0x00000000000238ac                _ZN18speedo_temperature15read_water_tempEv
+                0x0000000000023a80                _ZN18speedo_temperature13read_air_tempEv
+                0x0000000000023b5e                _ZN18speedo_temperature12get_air_tempEv
+                0x0000000000023b78                _ZN18speedo_temperature12get_oil_tempEv
+                0x0000000000023c68                _ZN18speedo_temperature14get_water_tempEv
+ .text          0x0000000000023d58     0x1536 ./tetris.o
+                0x0000000000023d58                _ZN6tetrisC1Ev
+                0x0000000000023d58                _ZN6tetrisC2Ev
+                0x0000000000023d5a                _ZN6tetrisD2Ev
+                0x0000000000023d5a                _ZN6tetrisD1Ev
+                0x0000000000023d5c                _ZN6tetris22copy_element_to_bufferEi
+                0x0000000000023e0c                _ZN6tetris11new_elementEv
+                0x0000000000023f04                _ZN6tetris4initEv
+                0x0000000000023f4c                _ZN6tetris13initDrawFieldEv
+                0x000000000002427c                _ZN6tetris11updateFieldEv
+                0x00000000000243ae                _ZN6tetris11check_stackEv
+                0x000000000002480c                _ZN6tetris4loopEv
+                0x00000000000251ac                _ZN6tetris3runEv
+                0x00000000000251e0                _ZN6tetris19show_grid_on_serialEv
+ .text          0x000000000002528e      0x28a ./timer.o
+                0x000000000002528e                _ZN12speedo_timerC2Ev
+                0x000000000002528e                _ZN12speedo_timerC1Ev
+                0x00000000000252c0                _ZN12speedo_timerD2Ev
+                0x00000000000252c0                _ZN12speedo_timerD1Ev
+                0x00000000000252c2                _Z8ram_infov
+                0x00000000000252ee                _ZN12speedo_timer9every_secEP13configuration
+                0x00000000000253b0                _ZN12speedo_timer10every_qsecEv
+                0x0000000000025400                _ZN12speedo_timer12every_customEv
+ .text          0x0000000000025518      0x12c ./voltage.o
+                0x0000000000025518                _ZN14speedo_voltageC2Ev
+                0x0000000000025518                _ZN14speedo_voltageC1Ev
+                0x000000000002551a                _ZN14speedo_voltageD2Ev
+                0x000000000002551a                _ZN14speedo_voltageD1Ev
+                0x000000000002551c                _ZN14speedo_voltage4calcEv
+                0x000000000002561c                _ZN14speedo_voltage3getEv
+                0x0000000000025630                _ZN14speedo_voltage10check_varsEv
+                0x0000000000025634                _ZN14speedo_voltage10clear_varsEv
+                0x000000000002563e                _ZN14speedo_voltage4initEv
+ .text          0x0000000000025644        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+ .text          0x0000000000025644        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+ .text          0x0000000000025644        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
+ .text          0x0000000000025644        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
+ .text          0x0000000000025644        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+ .text          0x0000000000025644        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+ .text          0x0000000000025644        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(malloc.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exit.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isalpha.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isspace.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(tolower.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(toupper.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp_P.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy_P.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strlen_P.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcmp.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcpy.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memset.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcat.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strchr.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncmp.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncpy.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrchr.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strstr.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(itoa.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ltoa.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sprintf.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3x.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(asin.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cmpsf2.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cos.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3x.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixsfsi.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floatsisf.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floor.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_arccos.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_cmp.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_inf.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mintl.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mpack.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_nan.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powser.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscA.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscB.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_round.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_sinus.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_split3.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_trunc.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_zero.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(gesf2.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3x.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(pow.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sin.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sqrt.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen_P.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrev.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fputc.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exp.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_norm2.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(inverse.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ldexp.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(log.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(modf.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodqi4.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodhi4.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodhi4.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodsi4.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_ctors.o)
+ .text          0x0000000000025644        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_tablejump_elpm.o)
+                0x0000000000025644                . = ALIGN (0x2)
  *(.text.*)
  .text.attachInterrupt
-                0x0000000000025624       0xf8 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
-                0x0000000000025624                attachInterrupt
+                0x0000000000025644       0xf8 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+                0x0000000000025644                attachInterrupt
  .text.detachInterrupt
-                0x000000000002571c       0x58 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
-                0x000000000002571c                detachInterrupt
+                0x000000000002573c       0x58 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+                0x000000000002573c                detachInterrupt
  .text.__vector_1
-                0x0000000000025774       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
-                0x0000000000025774                __vector_1
+                0x0000000000025794       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+                0x0000000000025794                __vector_1
  .text.__vector_2
-                0x00000000000257d6       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
-                0x00000000000257d6                __vector_2
+                0x00000000000257f6       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+                0x00000000000257f6                __vector_2
  .text.__vector_3
-                0x0000000000025838       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
-                0x0000000000025838                __vector_3
+                0x0000000000025858       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+                0x0000000000025858                __vector_3
  .text.__vector_4
-                0x000000000002589a       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
-                0x000000000002589a                __vector_4
+                0x00000000000258ba       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+                0x00000000000258ba                __vector_4
  .text.__vector_5
-                0x00000000000258fc       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
-                0x00000000000258fc                __vector_5
+                0x000000000002591c       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+                0x000000000002591c                __vector_5
  .text.__vector_6
-                0x000000000002595e       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
-                0x000000000002595e                __vector_6
+                0x000000000002597e       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+                0x000000000002597e                __vector_6
  .text.__vector_7
-                0x00000000000259c0       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
-                0x00000000000259c0                __vector_7
+                0x00000000000259e0       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+                0x00000000000259e0                __vector_7
  .text.__vector_8
-                0x0000000000025a22       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
-                0x0000000000025a22                __vector_8
+                0x0000000000025a42       0x62 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+                0x0000000000025a42                __vector_8
  .text.__vector_23
-                0x0000000000025a84       0x90 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
-                0x0000000000025a84                __vector_23
- .text.millis   0x0000000000025b14       0x1c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
-                0x0000000000025b14                millis
- .text.micros   0x0000000000025b30       0x4c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
-                0x0000000000025b30                micros
- .text.delay    0x0000000000025b7c       0x48 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
-                0x0000000000025b7c                delay
+                0x0000000000025aa4       0x90 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+                0x0000000000025aa4                __vector_23
+ .text.millis   0x0000000000025b34       0x1c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+                0x0000000000025b34                millis
+ .text.micros   0x0000000000025b50       0x4c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+                0x0000000000025b50                micros
+ .text.delay    0x0000000000025b9c       0x48 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+                0x0000000000025b9c                delay
  .text.delayMicroseconds
-                0x0000000000025bc4       0x14 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
-                0x0000000000025bc4                delayMicroseconds
- .text.init     0x0000000000025bd8       0xc4 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
-                0x0000000000025bd8                init
+                0x0000000000025be4       0x14 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+                0x0000000000025be4                delayMicroseconds
+ .text.init     0x0000000000025bf8       0xc4 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+                0x0000000000025bf8                init
  .text.analogReference
-                0x0000000000025c9c        0x6 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
-                0x0000000000025c9c                analogReference
+                0x0000000000025cbc        0x6 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
+                0x0000000000025cbc                analogReference
  .text.analogRead
-                0x0000000000025ca2       0x68 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
-                0x0000000000025ca2                analogRead
+                0x0000000000025cc2       0x68 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
+                0x0000000000025cc2                analogRead
  .text.analogWrite
-                0x0000000000025d0a      0x174 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
-                0x0000000000025d0a                analogWrite
- .text.pinMode  0x0000000000025e7e       0x4c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
-                0x0000000000025e7e                pinMode
+                0x0000000000025d2a      0x174 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
+                0x0000000000025d2a                analogWrite
+ .text.pinMode  0x0000000000025e9e       0x4c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
+                0x0000000000025e9e                pinMode
  .text.digitalWrite
-                0x0000000000025eca      0x122 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
-                0x0000000000025eca                digitalWrite
+                0x0000000000025eea      0x122 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
+                0x0000000000025eea                digitalWrite
  .text.digitalRead
-                0x0000000000025fec      0x118 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
-                0x0000000000025fec                digitalRead
+                0x000000000002600c      0x118 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
+                0x000000000002600c                digitalRead
  .text._Z10store_charhP11ring_buffer
-                0x0000000000026104       0x4e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000026104                _Z10store_charhP11ring_buffer
+                0x0000000000026124       0x4e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000026124                _Z10store_charhP11ring_buffer
  .text.__vector_25
-                0x0000000000026152       0x56 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000026152                __vector_25
+                0x0000000000026172       0x56 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000026172                __vector_25
  .text.__vector_51
-                0x00000000000261a8       0x56 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x00000000000261a8                __vector_51
+                0x00000000000261c8       0x56 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x00000000000261c8                __vector_51
  .text.__vector_54
-                0x00000000000261fe       0x56 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x00000000000261fe                __vector_54
+                0x000000000002621e       0x56 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x000000000002621e                __vector_54
  .text._ZN14HardwareSerialC2EP11ring_bufferPVhS3_S3_S3_S3_hhhhh
-                0x0000000000026254       0x60 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000026254                _ZN14HardwareSerialC2EP11ring_bufferPVhS3_S3_S3_S3_hhhhh
+                0x0000000000026274       0x60 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000026274                _ZN14HardwareSerialC2EP11ring_bufferPVhS3_S3_S3_S3_hhhhh
  .text._ZN14HardwareSerialC1EP11ring_bufferPVhS3_S3_S3_S3_hhhhh
-                0x00000000000262b4       0x60 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x00000000000262b4                _ZN14HardwareSerialC1EP11ring_bufferPVhS3_S3_S3_S3_hhhhh
+                0x00000000000262d4       0x60 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x00000000000262d4                _ZN14HardwareSerialC1EP11ring_bufferPVhS3_S3_S3_S3_hhhhh
  .text._ZN14HardwareSerial5beginEl
-                0x0000000000026314      0x1f2 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000026314                _ZN14HardwareSerial5beginEl
+                0x0000000000026334      0x1f2 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000026334                _ZN14HardwareSerial5beginEl
  .text._ZN14HardwareSerial3endEv
-                0x0000000000026506       0x54 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000026506                _ZN14HardwareSerial3endEv
+                0x0000000000026526       0x54 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000026526                _ZN14HardwareSerial3endEv
  .text._ZN14HardwareSerial9availableEv
-                0x000000000002655a       0x26 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x000000000002655a                _ZN14HardwareSerial9availableEv
+                0x000000000002657a       0x26 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x000000000002657a                _ZN14HardwareSerial9availableEv
  .text._ZN14HardwareSerial4peekEv
-                0x0000000000026580       0x34 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000026580                _ZN14HardwareSerial4peekEv
+                0x00000000000265a0       0x34 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x00000000000265a0                _ZN14HardwareSerial4peekEv
  .text._ZN14HardwareSerial4readEv
-                0x00000000000265b4       0x50 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x00000000000265b4                _ZN14HardwareSerial4readEv
+                0x00000000000265d4       0x50 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x00000000000265d4                _ZN14HardwareSerial4readEv
  .text._ZN14HardwareSerial5flushEv
-                0x0000000000026604       0x18 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000026604                _ZN14HardwareSerial5flushEv
+                0x0000000000026624       0x18 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000026624                _ZN14HardwareSerial5flushEv
  .text._ZN14HardwareSerial5writeEh
-                0x000000000002661c       0x26 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x000000000002661c                _ZN14HardwareSerial5writeEh
+                0x000000000002663c       0x26 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x000000000002663c                _ZN14HardwareSerial5writeEh
  .text._GLOBAL__I_rx_buffer
-                0x0000000000026642      0x13c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000026662      0x13c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
  .text._ZN5Print5writeEPKc
-                0x000000000002677e       0x30 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x000000000002677e                _ZN5Print5writeEPKc
+                0x000000000002679e       0x30 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x000000000002679e                _ZN5Print5writeEPKc
  .text._ZN5Print5writeEPKhj
-                0x00000000000267ae       0x3e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x00000000000267ae                _ZN5Print5writeEPKhj
+                0x00000000000267ce       0x3e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x00000000000267ce                _ZN5Print5writeEPKhj
  .text._ZN5Print5printEPKc
-                0x00000000000267ec       0x10 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x00000000000267ec                _ZN5Print5printEPKc
+                0x000000000002680c       0x10 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x000000000002680c                _ZN5Print5printEPKc
  .text._ZN5Print5printERK6String
-                0x00000000000267fc       0x52 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x00000000000267fc                _ZN5Print5printERK6String
+                0x000000000002681c       0x52 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x000000000002681c                _ZN5Print5printERK6String
  .text._ZN5Print11printNumberEmh
-                0x000000000002684e      0x130 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x000000000002684e                _ZN5Print11printNumberEmh
+                0x000000000002686e      0x130 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x000000000002686e                _ZN5Print11printNumberEmh
  .text._ZN5Print5printEmi
-                0x000000000002697e       0x1a /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x000000000002697e                _ZN5Print5printEmi
+                0x000000000002699e       0x1a /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x000000000002699e                _ZN5Print5printEmi
  .text._ZN5Print5printEji
-                0x0000000000026998       0x20 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026998                _ZN5Print5printEji
+                0x00000000000269b8       0x20 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x00000000000269b8                _ZN5Print5printEji
  .text._ZN5Print5printEhi
-                0x00000000000269b8       0x22 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x00000000000269b8                _ZN5Print5printEhi
+                0x00000000000269d8       0x22 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x00000000000269d8                _ZN5Print5printEhi
  .text._ZN5Print5printEli
-                0x00000000000269da       0x68 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x00000000000269da                _ZN5Print5printEli
+                0x00000000000269fa       0x68 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x00000000000269fa                _ZN5Print5printEli
  .text._ZN5Print5printEii
-                0x0000000000026a42       0x24 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026a42                _ZN5Print5printEii
+                0x0000000000026a62       0x24 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026a62                _ZN5Print5printEii
  .text._ZN5Print5printEci
-                0x0000000000026a66       0x26 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026a66                _ZN5Print5printEci
+                0x0000000000026a86       0x26 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026a86                _ZN5Print5printEci
  .text._ZN5Print7printlnEv
-                0x0000000000026a8c       0x2a /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026a8c                _ZN5Print7printlnEv
+                0x0000000000026aac       0x2a /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026aac                _ZN5Print7printlnEv
  .text._ZN5Print7printlnEmi
-                0x0000000000026ab6       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026ab6                _ZN5Print7printlnEmi
+                0x0000000000026ad6       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026ad6                _ZN5Print7printlnEmi
  .text._ZN5Print7printlnEji
-                0x0000000000026ac8       0x2e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026ac8                _ZN5Print7printlnEji
+                0x0000000000026ae8       0x2e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026ae8                _ZN5Print7printlnEji
  .text._ZN5Print7printlnEhi
-                0x0000000000026af6       0x30 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026af6                _ZN5Print7printlnEhi
+                0x0000000000026b16       0x30 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026b16                _ZN5Print7printlnEhi
  .text._ZN5Print7printlnEPKc
-                0x0000000000026b26       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026b26                _ZN5Print7printlnEPKc
+                0x0000000000026b46       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026b46                _ZN5Print7printlnEPKc
  .text._ZN5Print7printlnERK6String
-                0x0000000000026b38       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026b38                _ZN5Print7printlnERK6String
+                0x0000000000026b58       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026b58                _ZN5Print7printlnERK6String
  .text._ZN5Print7printlnEli
-                0x0000000000026b4a       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026b4a                _ZN5Print7printlnEli
+                0x0000000000026b6a       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026b6a                _ZN5Print7printlnEli
  .text._ZN5Print7printlnEii
-                0x0000000000026b5c       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026b5c                _ZN5Print7printlnEii
+                0x0000000000026b7c       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026b7c                _ZN5Print7printlnEii
  .text._ZN5Print7printlnEci
-                0x0000000000026b8e       0x34 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026b8e                _ZN5Print7printlnEci
+                0x0000000000026bae       0x34 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026bae                _ZN5Print7printlnEci
  .text._ZN5Print10printFloatEdh
-                0x0000000000026bc2      0x110 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026bc2                _ZN5Print10printFloatEdh
+                0x0000000000026be2      0x110 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026be2                _ZN5Print10printFloatEdh
  .text._ZN5Print5printEdi
-                0x0000000000026cd2        0x4 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026cd2                _ZN5Print5printEdi
+                0x0000000000026cf2        0x4 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026cf2                _ZN5Print5printEdi
  .text._ZN5Print7printlnEdi
-                0x0000000000026cd6       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000026cd6                _ZN5Print7printlnEdi
+                0x0000000000026cf6       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000026cf6                _ZN5Print7printlnEdi
  .text._ZNK6String6charAtEj
-                0x0000000000026ce8       0x10 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026ce8                _ZNK6String6charAtEj
+                0x0000000000026d08       0x10 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026d08                _ZNK6String6charAtEj
  .text._ZN6String9setCharAtEjc
-                0x0000000000026cf8       0x22 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026cf8                _ZN6String9setCharAtEjc
+                0x0000000000026d18       0x22 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026d18                _ZN6String9setCharAtEjc
  .text._ZN6StringixEj
-                0x0000000000026d1a       0x2a /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026d1a                _ZN6StringixEj
+                0x0000000000026d3a       0x2a /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026d3a                _ZN6StringixEj
  .text._ZNK6StringixEj
-                0x0000000000026d44       0x10 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026d44                _ZNK6StringixEj
+                0x0000000000026d64       0x10 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026d64                _ZNK6StringixEj
  .text._ZN6String11toCharArrayEPcj
-                0x0000000000026d54       0x44 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026d54                _ZN6String11toCharArrayEPcj
+                0x0000000000026d74       0x44 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026d74                _ZN6String11toCharArrayEPcj
  .text._ZN6String8getBytesEPhj
-                0x0000000000026d98       0x44 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026d98                _ZN6String8getBytesEPhj
+                0x0000000000026db8       0x44 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026db8                _ZN6String8getBytesEPhj
  .text._ZN6StringD1Ev
-                0x0000000000026ddc       0x1e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026ddc                _ZN6StringD1Ev
+                0x0000000000026dfc       0x1e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026dfc                _ZN6StringD1Ev
  .text._ZNK6String10startsWithERKS_j
-                0x0000000000026dfa       0x3c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026dfa                _ZNK6String10startsWithERKS_j
+                0x0000000000026e1a       0x3c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026e1a                _ZNK6String10startsWithERKS_j
  .text._ZNK6String10startsWithERKS_
-                0x0000000000026e36       0x22 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026e36                _ZNK6String10startsWithERKS_
+                0x0000000000026e56       0x22 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026e56                _ZNK6String10startsWithERKS_
  .text._ZNK6String11lastIndexOfEcj
-                0x0000000000026e58       0x6e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026e58                _ZNK6String11lastIndexOfEcj
+                0x0000000000026e78       0x6e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026e78                _ZNK6String11lastIndexOfEcj
  .text._ZNK6String11lastIndexOfEc
-                0x0000000000026ec6        0xc /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026ec6                _ZNK6String11lastIndexOfEc
+                0x0000000000026ee6        0xc /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026ee6                _ZNK6String11lastIndexOfEc
  .text._ZNK6String7indexOfERKS_j
-                0x0000000000026ed2       0x3c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026ed2                _ZNK6String7indexOfERKS_j
+                0x0000000000026ef2       0x3c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026ef2                _ZNK6String7indexOfERKS_j
  .text._ZNK6String7indexOfERKS_
-                0x0000000000026f0e        0x6 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026f0e                _ZNK6String7indexOfERKS_
+                0x0000000000026f2e        0x6 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026f2e                _ZNK6String7indexOfERKS_
  .text._ZNK6String7indexOfEcj
-                0x0000000000026f14       0x3c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026f14                _ZNK6String7indexOfEcj
+                0x0000000000026f34       0x3c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026f34                _ZNK6String7indexOfEcj
  .text._ZNK6String7indexOfEc
-                0x0000000000026f50        0x6 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026f50                _ZNK6String7indexOfEc
+                0x0000000000026f70        0x6 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026f70                _ZNK6String7indexOfEc
  .text._ZNK6String6equalsERKS_
-                0x0000000000026f56       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026f56                _ZNK6String6equalsERKS_
+                0x0000000000026f76       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026f76                _ZNK6String6equalsERKS_
  .text._ZNK6String8endsWithERKS_
-                0x0000000000026f88       0x38 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026f88                _ZNK6String8endsWithERKS_
+                0x0000000000026fa8       0x38 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026fa8                _ZNK6String8endsWithERKS_
  .text._ZNK6StringgeERKS_
-                0x0000000000026fc0       0x26 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026fc0                _ZNK6StringgeERKS_
+                0x0000000000026fe0       0x26 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000026fe0                _ZNK6StringgeERKS_
  .text._ZNK6StringleERKS_
-                0x0000000000026fe6       0x20 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000026fe6                _ZNK6StringleERKS_
- .text._ZNK6StringgtERKS_
                 0x0000000000027006       0x20 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027006                _ZNK6StringgtERKS_
+                0x0000000000027006                _ZNK6StringleERKS_
+ .text._ZNK6StringgtERKS_
+                0x0000000000027026       0x20 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027026                _ZNK6StringgtERKS_
  .text._ZNK6StringltERKS_
-                0x0000000000027026       0x22 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027026                _ZNK6StringltERKS_
+                0x0000000000027046       0x22 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027046                _ZNK6StringltERKS_
  .text._ZNK6StringneERKS_
-                0x0000000000027048       0x2e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027048                _ZNK6StringneERKS_
+                0x0000000000027068       0x2e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027068                _ZNK6StringneERKS_
  .text._ZNK6StringeqERKS_
-                0x0000000000027076       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027076                _ZNK6StringeqERKS_
+                0x0000000000027096       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027096                _ZNK6StringeqERKS_
  .text._ZNK6String9compareToERKS_
-                0x00000000000270a8        0xe /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000270a8                _ZNK6String9compareToERKS_
+                0x00000000000270c8        0xe /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000270c8                _ZNK6String9compareToERKS_
  .text._ZN6String9getBufferEj
-                0x00000000000270b6       0x26 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000270b6                _ZN6String9getBufferEj
+                0x00000000000270d6       0x26 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000270d6                _ZN6String9getBufferEj
  .text._ZN6StringpLERKS_
-                0x00000000000270dc       0x64 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000270dc                _ZN6StringpLERKS_
+                0x00000000000270fc       0x64 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000270fc                _ZN6StringpLERKS_
  .text._ZN6String6concatERKS_
-                0x0000000000027140        0x4 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027140                _ZN6String6concatERKS_
+                0x0000000000027160        0x4 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027160                _ZN6String6concatERKS_
  .text._ZN6StringaSERKS_
-                0x0000000000027144       0x5a /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027144                _ZN6StringaSERKS_
+                0x0000000000027164       0x5a /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027164                _ZN6StringaSERKS_
  .text._ZN6StringC1Eh
-                0x000000000002719e       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x000000000002719e                _ZN6StringC1Eh
+                0x00000000000271be       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000271be                _ZN6StringC1Eh
  .text._ZN6StringC2Eh
-                0x00000000000271d0       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000271d0                _ZN6StringC2Eh
+                0x00000000000271f0       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000271f0                _ZN6StringC2Eh
  .text._ZN6StringC1Ec
-                0x0000000000027202       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027202                _ZN6StringC1Ec
+                0x0000000000027222       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027222                _ZN6StringC1Ec
  .text._ZN6StringC2Ec
-                0x0000000000027234       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027234                _ZN6StringC2Ec
+                0x0000000000027254       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027254                _ZN6StringC2Ec
  .text._ZN6StringC1ERKS_
-                0x0000000000027266       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027266                _ZN6StringC1ERKS_
+                0x0000000000027286       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027286                _ZN6StringC1ERKS_
  .text._ZN6StringC2ERKS_
-                0x0000000000027298       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027298                _ZN6StringC2ERKS_
+                0x00000000000272b8       0x32 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000272b8                _ZN6StringC2ERKS_
  .text._ZN6StringC1Emi
-                0x00000000000272ca       0x78 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000272ca                _ZN6StringC1Emi
+                0x00000000000272ea       0x78 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000272ea                _ZN6StringC1Emi
  .text._ZN6StringC2Emi
-                0x0000000000027342       0x78 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027342                _ZN6StringC2Emi
+                0x0000000000027362       0x78 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027362                _ZN6StringC2Emi
  .text._ZN6StringC1Eji
-                0x00000000000273ba       0x76 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000273ba                _ZN6StringC1Eji
+                0x00000000000273da       0x76 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000273da                _ZN6StringC1Eji
  .text._ZN6StringC2Eji
-                0x0000000000027430       0x76 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027430                _ZN6StringC2Eji
+                0x0000000000027450       0x76 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027450                _ZN6StringC2Eji
  .text._ZN6StringC1EPKc
-                0x00000000000274a6       0x4c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000274a6                _ZN6StringC1EPKc
+                0x00000000000274c6       0x4c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000274c6                _ZN6StringC1EPKc
  .text._ZNK6String11toUpperCaseEv
-                0x00000000000274f2       0x72 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000274f2                _ZNK6String11toUpperCaseEv
+                0x0000000000027512       0x72 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027512                _ZNK6String11toUpperCaseEv
  .text._ZNK6String11toLowerCaseEv
-                0x0000000000027564       0x72 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027564                _ZNK6String11toLowerCaseEv
+                0x0000000000027584       0x72 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027584                _ZNK6String11toLowerCaseEv
  .text._ZNK6String16equalsIgnoreCaseERKS_
-                0x00000000000275d6       0x8e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000275d6                _ZNK6String16equalsIgnoreCaseERKS_
+                0x00000000000275f6       0x8e /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000275f6                _ZNK6String16equalsIgnoreCaseERKS_
  .text._ZNK6String9substringEjj
-                0x0000000000027664       0x6c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027664                _ZNK6String9substringEjj
+                0x0000000000027684       0x6c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027684                _ZNK6String9substringEjj
  .text._ZNK6String9substringEj
-                0x00000000000276d0       0x16 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000276d0                _ZNK6String9substringEj
+                0x00000000000276f0       0x16 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000276f0                _ZNK6String9substringEj
  .text._ZNK6String11lastIndexOfERKS_j
-                0x00000000000276e6       0xc2 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000276e6                _ZNK6String11lastIndexOfERKS_j
+                0x0000000000027706       0xc2 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027706                _ZNK6String11lastIndexOfERKS_j
  .text._ZNK6String11lastIndexOfERKS_
-                0x00000000000277a8       0x18 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000277a8                _ZNK6String11lastIndexOfERKS_
+                0x00000000000277c8       0x18 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000277c8                _ZNK6String11lastIndexOfERKS_
  .text._ZNK6String4trimEv
-                0x00000000000277c0       0xd0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000277c0                _ZNK6String4trimEv
+                0x00000000000277e0       0xd0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000277e0                _ZNK6String4trimEv
  .text._ZN6String7replaceERKS_S1_
-                0x0000000000027890      0x118 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027890                _ZN6String7replaceERKS_S1_
+                0x00000000000278b0      0x118 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000278b0                _ZN6String7replaceERKS_S1_
  .text._ZN6String7replaceEcc
-                0x00000000000279a8       0x7c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x00000000000279a8                _ZN6String7replaceEcc
+                0x00000000000279c8       0x7c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000000279c8                _ZN6String7replaceEcc
  .text._ZN6StringC2EPKc
-                0x0000000000027a24       0x4c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027a24                _ZN6StringC2EPKc
+                0x0000000000027a44       0x4c /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027a44                _ZN6StringC2EPKc
  .text._ZN6StringC1Eli
-                0x0000000000027a70       0x74 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027a70                _ZN6StringC1Eli
+                0x0000000000027a90       0x74 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027a90                _ZN6StringC1Eli
  .text._ZN6StringC2Eli
-                0x0000000000027ae4       0x74 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027ae4                _ZN6StringC2Eli
+                0x0000000000027b04       0x74 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027b04                _ZN6StringC2Eli
  .text._ZN6StringC1Eii
-                0x0000000000027b58       0x72 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027b58                _ZN6StringC1Eii
+                0x0000000000027b78       0x72 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027b78                _ZN6StringC1Eii
  .text._ZN6StringC2Eii
-                0x0000000000027bca       0x72 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
-                0x0000000000027bca                _ZN6StringC2Eii
+                0x0000000000027bea       0x72 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x0000000000027bea                _ZN6StringC2Eii
  .text.avr-libc
-                0x0000000000027c3c      0x266 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(malloc.o)
-                0x0000000000027c3c                malloc
-                0x0000000000027d70                free
+                0x0000000000027c5c      0x266 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(malloc.o)
+                0x0000000000027c5c                malloc
+                0x0000000000027d90                free
  .text.avr-libc
-                0x0000000000027ea2        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exit.o)
-                0x0000000000027ea2                exit
+                0x0000000000027ec2        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exit.o)
+                0x0000000000027ec2                exit
  .text.avr-libc
-                0x0000000000027ea8       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isalpha.o)
-                0x0000000000027ea8                isupper
-                0x0000000000027eac                isalpha
-                0x0000000000027eae                islower
+                0x0000000000027ec8       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isalpha.o)
+                0x0000000000027ec8                isupper
+                0x0000000000027ecc                isalpha
+                0x0000000000027ece                islower
  .text.avr-libc
-                0x0000000000027eba       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isspace.o)
-                0x0000000000027eba                isspace
+                0x0000000000027eda       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isspace.o)
+                0x0000000000027eda                isspace
  .text.avr-libc
-                0x0000000000027eca       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(tolower.o)
-                0x0000000000027eca                tolower
+                0x0000000000027eea       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(tolower.o)
+                0x0000000000027eea                tolower
  .text.avr-libc
-                0x0000000000027eda       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(toupper.o)
-                0x0000000000027eda                toupper
+                0x0000000000027efa       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(toupper.o)
+                0x0000000000027efa                toupper
  .text.avr-libc
-                0x0000000000027eea       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp_P.o)
-                0x0000000000027eea                strcmp_P
+                0x0000000000027f0a       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp_P.o)
+                0x0000000000027f0a                strcmp_P
  .text.avr-libc
-                0x0000000000027efc        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy_P.o)
-                0x0000000000027efc                strcpy_P
+                0x0000000000027f1c        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy_P.o)
+                0x0000000000027f1c                strcpy_P
  .text.avr-libc
-                0x0000000000027f0a       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strlen_P.o)
-                0x0000000000027f0a                strlen_P
+                0x0000000000027f2a       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strlen_P.o)
+                0x0000000000027f2a                strlen_P
  .text.avr-libc
-                0x0000000000027f1c       0x1a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcmp.o)
-                0x0000000000027f1c                memcmp
+                0x0000000000027f3c       0x1a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcmp.o)
+                0x0000000000027f3c                memcmp
  .text.avr-libc
-                0x0000000000027f36       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcpy.o)
-                0x0000000000027f36                memcpy
+                0x0000000000027f56       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcpy.o)
+                0x0000000000027f56                memcpy
  .text.avr-libc
-                0x0000000000027f48        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memset.o)
-                0x0000000000027f48                memset
+                0x0000000000027f68        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memset.o)
+                0x0000000000027f68                memset
  .text.avr-libc
-                0x0000000000027f56       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcat.o)
-                0x0000000000027f56                strcat
+                0x0000000000027f76       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcat.o)
+                0x0000000000027f76                strcat
  .text.avr-libc
-                0x0000000000027f6c       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strchr.o)
-                0x0000000000027f6c                strchr
+                0x0000000000027f8c       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strchr.o)
+                0x0000000000027f8c                strchr
  .text.avr-libc
-                0x0000000000027f82       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp.o)
-                0x0000000000027f82                strcmp
+                0x0000000000027fa2       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp.o)
+                0x0000000000027fa2                strcmp
  .text.avr-libc
-                0x0000000000027f94        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy.o)
-                0x0000000000027f94                strcpy
+                0x0000000000027fb4        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy.o)
+                0x0000000000027fb4                strcpy
  .text.avr-libc
-                0x0000000000027fa2       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncmp.o)
-                0x0000000000027fa2                strncmp
+                0x0000000000027fc2       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncmp.o)
+                0x0000000000027fc2                strncmp
  .text.avr-libc
-                0x0000000000027fbe       0x1e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncpy.o)
-                0x0000000000027fbe                strncpy
+                0x0000000000027fde       0x1e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncpy.o)
+                0x0000000000027fde                strncpy
  .text.avr-libc
-                0x0000000000027fdc       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrchr.o)
-                0x0000000000027fdc                strrchr
+                0x0000000000027ffc       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrchr.o)
+                0x0000000000027ffc                strrchr
  .text.avr-libc
-                0x0000000000027ff2       0x34 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strstr.o)
-                0x0000000000027ff2                strstr
+                0x0000000000028012       0x34 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strstr.o)
+                0x0000000000028012                strstr
  .text.avr-libc
-                0x0000000000028026       0x40 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(itoa.o)
-                0x0000000000028026                itoa
+                0x0000000000028046       0x40 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(itoa.o)
+                0x0000000000028046                itoa
  .text.avr-libc
-                0x0000000000028066       0x66 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ltoa.o)
-                0x0000000000028066                ltoa
+                0x0000000000028086       0x66 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ltoa.o)
+                0x0000000000028086                ltoa
  .text.avr-libc
-                0x00000000000280cc       0x46 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa.o)
-                0x00000000000280cc                ultoa
+                0x00000000000280ec       0x46 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa.o)
+                0x00000000000280ec                ultoa
  .text.avr-libc
-                0x0000000000028112       0x5e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sprintf.o)
-                0x0000000000028112                sprintf
+                0x0000000000028132       0x5e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sprintf.o)
+                0x0000000000028132                sprintf
  .text.avr-libc.fplib
-                0x0000000000028170        0xa /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3.o)
-                0x0000000000028170                __subsf3
-                0x0000000000028172                __addsf3
+                0x0000000000028190        0xa /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3.o)
+                0x0000000000028190                __subsf3
+                0x0000000000028192                __addsf3
  .text.avr-libc.fplib
-                0x000000000002817a       0xc0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3x.o)
-                0x0000000000028194                __addsf3x
+                0x000000000002819a       0xc0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3x.o)
+                0x00000000000281b4                __addsf3x
  .text.avr-libc.fplib
-                0x000000000002823a       0x2e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(asin.o)
-                0x000000000002823a                asin
+                0x000000000002825a       0x2e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(asin.o)
+                0x000000000002825a                asin
  .text.avr-libc.fplib
-                0x0000000000028268        0x8 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cmpsf2.o)
-                0x0000000000028268                __lesf2
-                0x0000000000028268                __nesf2
-                0x0000000000028268                __eqsf2
-                0x0000000000028268                __cmpsf2
-                0x0000000000028268                __ltsf2
+                0x0000000000028288        0x8 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cmpsf2.o)
+                0x0000000000028288                __lesf2
+                0x0000000000028288                __nesf2
+                0x0000000000028288                __eqsf2
+                0x0000000000028288                __cmpsf2
+                0x0000000000028288                __ltsf2
  .text.avr-libc.fplib
-                0x0000000000028270        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cos.o)
-                0x0000000000028270                cos
+                0x0000000000028290        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cos.o)
+                0x0000000000028290                cos
  .text.avr-libc.fplib
-                0x0000000000028276        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3.o)
-                0x0000000000028276                __divsf3
+                0x0000000000028296        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3.o)
+                0x0000000000028296                __divsf3
  .text.avr-libc.fplib
-                0x000000000002827a       0xcc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3x.o)
-                0x0000000000028290                __divsf3x
-                0x0000000000028294                __divsf3_pse
+                0x000000000002829a       0xcc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3x.o)
+                0x00000000000282b0                __divsf3x
+                0x00000000000282b4                __divsf3_pse
  .text.avr-libc.fplib
-                0x0000000000028346        0xa /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixsfsi.o)
-                0x0000000000028346                __fixsfsi
+                0x0000000000028366        0xa /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixsfsi.o)
+                0x0000000000028366                __fixsfsi
  .text.avr-libc.fplib
-                0x0000000000028350       0x58 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
-                0x0000000000028350                __fixunssfsi
+                0x0000000000028370       0x58 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
+                0x0000000000028370                __fixunssfsi
  .text.avr-libc.fplib
-                0x00000000000283a8       0x7a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floatsisf.o)
-                0x00000000000283a8                __floatunsisf
-                0x00000000000283ac                __floatsisf
+                0x00000000000283c8       0x7a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floatsisf.o)
+                0x00000000000283c8                __floatunsisf
+                0x00000000000283cc                __floatsisf
  .text.avr-libc.fplib
-                0x0000000000028422       0x26 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floor.o)
-                0x0000000000028422                floor
+                0x0000000000028442       0x26 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floor.o)
+                0x0000000000028442                floor
  .text.avr-libc.fplib
-                0x0000000000028448       0x36 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_arccos.o)
-                0x0000000000028448                __fp_arccos
+                0x0000000000028468       0x36 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_arccos.o)
+                0x0000000000028468                __fp_arccos
  .text.avr-libc.fplib
-                0x000000000002847e       0x48 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_cmp.o)
-                0x000000000002847e                __fp_cmp
+                0x000000000002849e       0x48 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_cmp.o)
+                0x000000000002849e                __fp_cmp
  .text.avr-libc.fplib
-                0x00000000000284c6        0xc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_inf.o)
-                0x00000000000284c6                __fp_inf
+                0x00000000000284e6        0xc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_inf.o)
+                0x00000000000284e6                __fp_inf
  .text.avr-libc.fplib
-                0x00000000000284d2       0x36 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mintl.o)
-                0x00000000000284d2                __fp_mintl
+                0x00000000000284f2       0x36 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mintl.o)
+                0x00000000000284f2                __fp_mintl
  .text.avr-libc.fplib
-                0x0000000000028508       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mpack.o)
-                0x0000000000028508                __fp_mpack
-                0x000000000002850c                __fp_mpack_finite
+                0x0000000000028528       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mpack.o)
+                0x0000000000028528                __fp_mpack
+                0x000000000002852c                __fp_mpack_finite
  .text.avr-libc.fplib
-                0x0000000000028524        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_nan.o)
-                0x0000000000028524                __fp_nan
+                0x0000000000028544        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_nan.o)
+                0x0000000000028544                __fp_nan
  .text.avr-libc.fplib
-                0x000000000002852a       0x4a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powser.o)
-                0x000000000002852a                __fp_powser
+                0x000000000002854a       0x4a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powser.o)
+                0x000000000002854a                __fp_powser
  .text.avr-libc.fplib
-                0x0000000000028574       0x22 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
-                0x0000000000028574                __fp_powsodd
+                0x0000000000028594       0x22 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
+                0x0000000000028594                __fp_powsodd
  .text.avr-libc.fplib
-                0x0000000000028596        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscA.o)
-                0x0000000000028596                __fp_pscA
+                0x00000000000285b6        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscA.o)
+                0x00000000000285b6                __fp_pscA
  .text.avr-libc.fplib
-                0x00000000000285a4        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscB.o)
-                0x00000000000285a4                __fp_pscB
+                0x00000000000285c4        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscB.o)
+                0x00000000000285c4                __fp_pscB
  .text.avr-libc.fplib
-                0x00000000000285b2       0x50 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
-                0x00000000000285b4                __fp_rempio2
+                0x00000000000285d2       0x50 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
+                0x00000000000285d4                __fp_rempio2
  .text.avr-libc.fplib
-                0x0000000000028602       0x22 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_round.o)
-                0x0000000000028602                __fp_round
+                0x0000000000028622       0x22 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_round.o)
+                0x0000000000028622                __fp_round
  .text.avr-libc.fplib
-                0x0000000000028624       0x22 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_sinus.o)
-                0x0000000000028624                __fp_sinus
+                0x0000000000028644       0x22 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_sinus.o)
+                0x0000000000028644                __fp_sinus
  .text.avr-libc.fplib
-                0x0000000000028646       0x44 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_split3.o)
-                0x0000000000028646                __fp_split3
-                0x0000000000028656                __fp_splitA
+                0x0000000000028666       0x44 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_split3.o)
+                0x0000000000028666                __fp_split3
+                0x0000000000028676                __fp_splitA
  .text.avr-libc.fplib
-                0x000000000002868a       0x2e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_trunc.o)
-                0x000000000002868a                __fp_trunc
+                0x00000000000286aa       0x2e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_trunc.o)
+                0x00000000000286aa                __fp_trunc
  .text.avr-libc.fplib
-                0x00000000000286b8        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_zero.o)
-                0x00000000000286b8                __fp_zero
-                0x00000000000286ba                __fp_szero
+                0x00000000000286d8        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_zero.o)
+                0x00000000000286d8                __fp_zero
+                0x00000000000286da                __fp_szero
  .text.avr-libc.fplib
-                0x00000000000286c6        0x8 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(gesf2.o)
-                0x00000000000286c6                __gtsf2
-                0x00000000000286c6                __gesf2
+                0x00000000000286e6        0x8 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(gesf2.o)
+                0x00000000000286e6                __gtsf2
+                0x00000000000286e6                __gesf2
  .text.avr-libc.fplib
-                0x00000000000286ce        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3.o)
-                0x00000000000286ce                __mulsf3
+                0x00000000000286ee        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3.o)
+                0x00000000000286ee                __mulsf3
  .text.avr-libc.fplib
-                0x00000000000286d2       0xc2 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3x.o)
-                0x00000000000286e6                __mulsf3x
-                0x00000000000286ea                __mulsf3_pse
+                0x00000000000286f2       0xc2 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3x.o)
+                0x0000000000028706                __mulsf3x
+                0x000000000002870a                __mulsf3_pse
  .text.avr-libc.fplib
-                0x0000000000028794       0x98 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(pow.o)
-                0x0000000000028794                pow
+                0x00000000000287b4       0x98 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(pow.o)
+                0x00000000000287b4                pow
  .text.avr-libc.fplib
-                0x000000000002882c        0xc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sin.o)
-                0x000000000002882c                sin
+                0x000000000002884c        0xc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sin.o)
+                0x000000000002884c                sin
  .text.avr-libc.fplib
-                0x0000000000028838       0x84 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sqrt.o)
-                0x0000000000028840                sqrt
+                0x0000000000028858       0x84 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sqrt.o)
+                0x0000000000028860                sqrt
  .text.avr-libc
-                0x00000000000288bc      0x406 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
-                0x00000000000288bc                vfprintf
+                0x00000000000288dc      0x406 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
+                0x00000000000288dc                vfprintf
  .text.avr-libc
-                0x0000000000028cc2       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
-                0x0000000000028cc2                __eerd_byte_m2560
+                0x0000000000028ce2       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
+                0x0000000000028ce2                __eerd_byte_m2560
  .text.avr-libc
-                0x0000000000028cd2       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
-                0x0000000000028cd2                __eewr_byte_m2560
-                0x0000000000028cd4                __eewr_r18_m2560
+                0x0000000000028cf2       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
+                0x0000000000028cf2                __eewr_byte_m2560
+                0x0000000000028cf4                __eewr_r18_m2560
  .text.avr-libc
-                0x0000000000028cee        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
-                0x0000000000028cee                __ctype_isfalse
-                0x0000000000028cf2                __ctype_istrue
+                0x0000000000028d0e        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
+                0x0000000000028d0e                __ctype_isfalse
+                0x0000000000028d12                __ctype_istrue
  .text.avr-libc
-                0x0000000000028cf4       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen_P.o)
-                0x0000000000028cf4                strnlen_P
+                0x0000000000028d14       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen_P.o)
+                0x0000000000028d14                strnlen_P
  .text.avr-libc
-                0x0000000000028d0a       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen.o)
-                0x0000000000028d0a                strnlen
+                0x0000000000028d2a       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen.o)
+                0x0000000000028d2a                strnlen
  .text.avr-libc
-                0x0000000000028d20       0x20 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrev.o)
-                0x0000000000028d20                strrev
+                0x0000000000028d40       0x20 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrev.o)
+                0x0000000000028d40                strrev
  .text.avr-libc
-                0x0000000000028d40       0x58 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fputc.o)
-                0x0000000000028d40                fputc
+                0x0000000000028d60       0x58 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fputc.o)
+                0x0000000000028d60                fputc
  .text.avr-libc
-                0x0000000000028d98       0xbc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
-                0x0000000000028d98                __ultoa_invert
+                0x0000000000028db8       0xbc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
+                0x0000000000028db8                __ultoa_invert
  .text.avr-libc.fplib
-                0x0000000000028e54       0x62 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exp.o)
-                0x0000000000028e5e                exp
+                0x0000000000028e74       0x62 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exp.o)
+                0x0000000000028e7e                exp
  .text.avr-libc.fplib
-                0x0000000000028eb6        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_norm2.o)
-                0x0000000000028eb6                __fp_norm2
+                0x0000000000028ed6        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_norm2.o)
+                0x0000000000028ed6                __fp_norm2
  .text.avr-libc.fplib
-                0x0000000000028ec4        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(inverse.o)
-                0x0000000000028ec4                inverse
+                0x0000000000028ee4        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(inverse.o)
+                0x0000000000028ee4                inverse
  .text.avr-libc.fplib
-                0x0000000000028ed2       0x6c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ldexp.o)
-                0x0000000000028ed6                ldexp
+                0x0000000000028ef2       0x6c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ldexp.o)
+                0x0000000000028ef6                ldexp
  .text.avr-libc.fplib
-                0x0000000000028f3e       0x8a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(log.o)
-                0x0000000000028f48                log
+                0x0000000000028f5e       0x8a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(log.o)
+                0x0000000000028f68                log
  .text.avr-libc.fplib
-                0x0000000000028fc8       0x66 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(modf.o)
-                0x0000000000028fc8                modff
-                0x0000000000028fc8                modf
- .text.libgcc   0x000000000002902e       0x3e /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
-                0x000000000002902e                __mulsi3
- .text.libgcc   0x000000000002906c       0x18 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodqi4.o)
-                0x000000000002906c                __udivmodqi4
- .text.libgcc   0x0000000000029084       0x28 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodhi4.o)
-                0x0000000000029084                __udivmodhi4
- .text.libgcc   0x00000000000290ac       0x26 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodhi4.o)
-                0x00000000000290ac                __divmodhi4
-                0x00000000000290ac                _div
- .text.libgcc   0x00000000000290d2       0x44 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
-                0x00000000000290d2                __udivmodsi4
- .text.libgcc   0x0000000000029116       0x36 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodsi4.o)
-                0x0000000000029116                __divmodsi4
- .text.libgcc   0x000000000002914c        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .text.libgcc   0x000000000002914c        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
- .text.libgcc   0x000000000002914c        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
- .text.libgcc   0x000000000002914c        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_ctors.o)
- .text.libgcc   0x000000000002914c        0x8 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_tablejump_elpm.o)
-                0x000000000002914c                __tablejump_elpm__
-                0x0000000000029154                . = ALIGN (0x2)
+                0x0000000000028fe8       0x66 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(modf.o)
+                0x0000000000028fe8                modff
+                0x0000000000028fe8                modf
+ .text.libgcc   0x000000000002904e       0x3e /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
+                0x000000000002904e                __mulsi3
+ .text.libgcc   0x000000000002908c       0x18 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodqi4.o)
+                0x000000000002908c                __udivmodqi4
+ .text.libgcc   0x00000000000290a4       0x28 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodhi4.o)
+                0x00000000000290a4                __udivmodhi4
+ .text.libgcc   0x00000000000290cc       0x26 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodhi4.o)
+                0x00000000000290cc                __divmodhi4
+                0x00000000000290cc                _div
+ .text.libgcc   0x00000000000290f2       0x44 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
+                0x00000000000290f2                __udivmodsi4
+ .text.libgcc   0x0000000000029136       0x36 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodsi4.o)
+                0x0000000000029136                __divmodsi4
+ .text.libgcc   0x000000000002916c        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .text.libgcc   0x000000000002916c        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+ .text.libgcc   0x000000000002916c        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
+ .text.libgcc   0x000000000002916c        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_ctors.o)
+ .text.libgcc   0x000000000002916c        0x8 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_tablejump_elpm.o)
+                0x000000000002916c                __tablejump_elpm__
+                0x0000000000029174                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000000000029154        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
-                0x0000000000029154                _exit
+ .fini9         0x0000000000029174        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+                0x0000000000029174                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -1794,11 +1794,11 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000000000029154        0x4 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .fini0         0x0000000000029174        0x4 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
  *(.fini0)
-                0x0000000000029158                _etext = .
+                0x0000000000029178                _etext = .
 
-.data           0x0000000000800200      0x9d0 load address 0x0000000000029158
+.data           0x0000000000800200      0x9e2 load address 0x0000000000029178
                 0x0000000000800200                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800200        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
@@ -1827,349 +1827,349 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
  .data          0x00000000008004b8       0x13 ./file_manager_v2.o
  .data          0x00000000008004cb        0xc ./fuel.o
  .data          0x00000000008004d7       0x18 ./gear.o
- .data          0x00000000008004ef      0x110 ./gps.o
- .data          0x00000000008005ff        0x0 ./helper.o
- .data          0x00000000008005ff       0x2a ./main.o
- .data          0x0000000000800629      0x26a ./menu.o
-                0x0000000000800889                button_rechts_valid
-                0x000000000080088a                button_links_valid
-                0x000000000080088b                button_oben_valid
-                0x000000000080088c                button_unten_valid
-                0x000000000080088d                menu_max
-                0x000000000080088f                menu_ende
-                0x0000000000800891                fuel_added
- .data          0x0000000000800893        0xb ./oiler.o
- .data          0x000000000080089e        0x4 ./reset.o
- .data          0x00000000008008a2       0x10 ./sd.o
- .data          0x00000000008008b2       0x33 ./sensors.o
- .data          0x00000000008008e5       0x50 ./speed.o
- .data          0x0000000000800935      0x154 ./speedo.o
- .data          0x0000000000800a89       0x40 ./sprint.o
- .data          0x0000000000800ac9        0x9 ./stepper.o
- .data          0x0000000000800ad2       0xa8 ./temperature.o
- .data          0x0000000000800b7a       0x20 ./tetris.o
- .data          0x0000000000800b9a        0x0 ./timer.o
- .data          0x0000000000800b9a        0x0 ./voltage.o
- .data          0x0000000000800b9a        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
- .data          0x0000000000800b9a        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
- .data          0x0000000000800b9a        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
- .data          0x0000000000800b9a        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
- .data          0x0000000000800b9a        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
- .data          0x0000000000800b9a        0x2 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
- .data          0x0000000000800b9c        0x1 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
- .data          0x0000000000800b9d        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(malloc.o)
-                0x0000000000800b9d                __malloc_margin
-                0x0000000000800b9f                __malloc_heap_start
-                0x0000000000800ba1                __malloc_heap_end
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exit.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isalpha.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isspace.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(tolower.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(toupper.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp_P.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy_P.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strlen_P.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcmp.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcpy.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memset.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcat.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strchr.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncmp.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncpy.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrchr.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strstr.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(itoa.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ltoa.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sprintf.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3x.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(asin.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cmpsf2.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cos.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3x.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixsfsi.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floatsisf.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floor.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_arccos.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_cmp.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_inf.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mintl.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mpack.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_nan.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powser.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscA.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscB.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_round.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_sinus.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_split3.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_trunc.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_zero.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(gesf2.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3x.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(pow.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sin.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sqrt.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen_P.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrev.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fputc.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exp.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_norm2.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(inverse.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ldexp.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(log.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(modf.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodqi4.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodhi4.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodhi4.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodsi4.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_ctors.o)
- .data          0x0000000000800ba3        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_tablejump_elpm.o)
+ .data          0x00000000008004ef      0x122 ./gps.o
+ .data          0x0000000000800611        0x0 ./helper.o
+ .data          0x0000000000800611       0x2a ./main.o
+ .data          0x000000000080063b      0x26a ./menu.o
+                0x000000000080089b                button_rechts_valid
+                0x000000000080089c                button_links_valid
+                0x000000000080089d                button_oben_valid
+                0x000000000080089e                button_unten_valid
+                0x000000000080089f                menu_max
+                0x00000000008008a1                menu_ende
+                0x00000000008008a3                fuel_added
+ .data          0x00000000008008a5        0xb ./oiler.o
+ .data          0x00000000008008b0        0x4 ./reset.o
+ .data          0x00000000008008b4       0x10 ./sd.o
+ .data          0x00000000008008c4       0x33 ./sensors.o
+ .data          0x00000000008008f7       0x50 ./speed.o
+ .data          0x0000000000800947      0x154 ./speedo.o
+ .data          0x0000000000800a9b       0x40 ./sprint.o
+ .data          0x0000000000800adb        0x9 ./stepper.o
+ .data          0x0000000000800ae4       0xa8 ./temperature.o
+ .data          0x0000000000800b8c       0x20 ./tetris.o
+ .data          0x0000000000800bac        0x0 ./timer.o
+ .data          0x0000000000800bac        0x0 ./voltage.o
+ .data          0x0000000000800bac        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+ .data          0x0000000000800bac        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+ .data          0x0000000000800bac        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
+ .data          0x0000000000800bac        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
+ .data          0x0000000000800bac        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+ .data          0x0000000000800bac        0x2 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+ .data          0x0000000000800bae        0x1 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+ .data          0x0000000000800baf        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(malloc.o)
+                0x0000000000800baf                __malloc_margin
+                0x0000000000800bb1                __malloc_heap_start
+                0x0000000000800bb3                __malloc_heap_end
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exit.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isalpha.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isspace.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(tolower.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(toupper.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp_P.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy_P.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strlen_P.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcmp.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcpy.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memset.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcat.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strchr.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncmp.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncpy.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrchr.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strstr.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(itoa.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ltoa.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sprintf.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3x.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(asin.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cmpsf2.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cos.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3x.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixsfsi.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floatsisf.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floor.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_arccos.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_cmp.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_inf.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mintl.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mpack.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_nan.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powser.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscA.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscB.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_round.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_sinus.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_split3.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_trunc.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_zero.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(gesf2.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3x.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(pow.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sin.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sqrt.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen_P.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrev.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fputc.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exp.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_norm2.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(inverse.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ldexp.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(log.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(modf.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodqi4.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodhi4.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodhi4.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodsi4.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_ctors.o)
+ .data          0x0000000000800bb5        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_tablejump_elpm.o)
  *(.data*)
  .data.analog_reference
-                0x0000000000800ba3        0x1 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
-                0x0000000000800ba3                analog_reference
+                0x0000000000800bb5        0x1 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
+                0x0000000000800bb5                analog_reference
  *(.rodata)
  *(.rodata*)
  .rodata._ZTV14HardwareSerial
-                0x0000000000800ba4       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000800ba4                _ZTV14HardwareSerial
+                0x0000000000800bb6       0x12 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000800bb6                _ZTV14HardwareSerial
  .rodata._ZTV6Stream
-                0x0000000000800bb6       0x10 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000800bb6                _ZTV6Stream
+                0x0000000000800bc8       0x10 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000800bc8                _ZTV6Stream
  .rodata._ZTV5Print
-                0x0000000000800bc6        0xa /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
-                0x0000000000800bc6                _ZTV5Print
+                0x0000000000800bd8        0xa /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+                0x0000000000800bd8                _ZTV5Print
  *(.gnu.linkonce.d*)
-                0x0000000000800bd0                . = ALIGN (0x2)
-                0x0000000000800bd0                _edata = .
-                0x0000000000800bd0                PROVIDE (__data_end, .)
+                0x0000000000800be2                . = ALIGN (0x2)
+                0x0000000000800be2                _edata = .
+                0x0000000000800be2                PROVIDE (__data_end, .)
 
-.bss            0x0000000000800bd0      0x4c3
-                0x0000000000800bd0                PROVIDE (__bss_start, .)
+.bss            0x0000000000800be2      0x4c3
+                0x0000000000800be2                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x0000000000800bd0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
- .bss           0x0000000000800bd0        0x1 ./inc/EEPROM.o
-                0x0000000000800bd0                EEPROM
- .bss           0x0000000000800bd1        0x0 ./inc/Sd2Card.o
- .bss           0x0000000000800bd1        0x0 ./inc/SdFat.o
- .bss           0x0000000000800bd1        0x0 ./inc/SdFatUtil.o
- .bss           0x0000000000800bd1        0x6 ./inc/SdFile.o
-                0x0000000000800bd1                _ZN6SdFile4cwd_E
-                0x0000000000800bd3                _ZN6SdFile9dateTime_E
-                0x0000000000800bd5                _ZN6SdFile12oldDateTime_E
- .bss           0x0000000000800bd7        0x0 ./inc/SdStream.o
- .bss           0x0000000000800bd7      0x207 ./inc/SdVolume.o
-                0x0000000000800bd7                _ZN8SdVolume12cacheBuffer_E
-                0x0000000000800dd7                _ZN8SdVolume7sdCard_E
-                0x0000000000800dd9                _ZN8SdVolume11cacheDirty_E
-                0x0000000000800dda                _ZN8SdVolume17cacheMirrorBlock_E
- .bss           0x0000000000800dde       0x4b ./inc/Wire.o
-                0x0000000000800dde                _ZN7TwoWire8rxBufferE
-                0x0000000000800dfe                _ZN7TwoWire13rxBufferIndexE
-                0x0000000000800dff                _ZN7TwoWire14rxBufferLengthE
-                0x0000000000800e00                _ZN7TwoWire9txAddressE
-                0x0000000000800e01                _ZN7TwoWire8txBufferE
-                0x0000000000800e21                _ZN7TwoWire13txBufferIndexE
-                0x0000000000800e22                _ZN7TwoWire14txBufferLengthE
-                0x0000000000800e23                _ZN7TwoWire12transmittingE
-                0x0000000000800e24                _ZN7TwoWire14user_onRequestE
-                0x0000000000800e26                _ZN7TwoWire14user_onReceiveE
-                0x0000000000800e28                Wire
- .bss           0x0000000000800e29        0x0 ./inc/istream.o
- .bss           0x0000000000800e29        0x0 ./inc/ostream.o
- .bss           0x0000000000800e29        0x0 ./inc/pins_arduino.o
- .bss           0x0000000000800e29        0x0 ./inc/ssd0323.o
- .bss           0x0000000000800e29       0x6c ./inc/twi.o
- .bss           0x0000000000800e95        0x0 ./aktors.o
- .bss           0x0000000000800e95        0x0 ./blinker.o
- .bss           0x0000000000800e95        0x0 ./clock_me.o
- .bss           0x0000000000800e95        0x0 ./config.o
- .bss           0x0000000000800e95        0x0 ./debug.o
- .bss           0x0000000000800e95        0x0 ./display.o
- .bss           0x0000000000800e95        0x0 ./dz.o
- .bss           0x0000000000800e95        0x0 ./file_manager_v2.o
- .bss           0x0000000000800e95        0x0 ./fuel.o
- .bss           0x0000000000800e95        0x0 ./gear.o
- .bss           0x0000000000800e95        0x0 ./gps.o
- .bss           0x0000000000800e95        0x0 ./helper.o
- .bss           0x0000000000800e95       0x16 ./main.o
-                0x0000000000800e95                pFilemanager_v2
-                0x0000000000800e97                pDebug
-                0x0000000000800e99                pSD
-                0x0000000000800e9b                pConfig
-                0x0000000000800e9d                pOLED
-                0x0000000000800e9f                pMenu
-                0x0000000000800ea1                pSpeedo
-                0x0000000000800ea3                pSprint
-                0x0000000000800ea5                pSensors
-                0x0000000000800ea7                pAktors
-                0x0000000000800ea9                pTimer
- .bss           0x0000000000800eab        0x5 ./menu.o
-                0x0000000000800eab                menu_marker
-                0x0000000000800ead                menu_start
-                0x0000000000800eaf                menu_preload
- .bss           0x0000000000800eb0        0x0 ./oiler.o
- .bss           0x0000000000800eb0        0x0 ./reset.o
- .bss           0x0000000000800eb0        0x0 ./sd.o
- .bss           0x0000000000800eb0        0x0 ./sensors.o
- .bss           0x0000000000800eb0        0x0 ./speed.o
- .bss           0x0000000000800eb0        0x0 ./speedo.o
- .bss           0x0000000000800eb0        0x0 ./sprint.o
- .bss           0x0000000000800eb0        0x0 ./stepper.o
- .bss           0x0000000000800eb0        0x0 ./temperature.o
- .bss           0x0000000000800eb0        0x0 ./tetris.o
- .bss           0x0000000000800eb0        0x0 ./timer.o
- .bss           0x0000000000800eb0        0x0 ./voltage.o
- .bss           0x0000000000800eb0        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
- .bss           0x0000000000800eb0        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
- .bss           0x0000000000800eb0        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
- .bss           0x0000000000800eb0        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
- .bss           0x0000000000800eb0        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
- .bss           0x0000000000800eb0        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
- .bss           0x0000000000800eb0        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(malloc.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exit.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isalpha.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isspace.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(tolower.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(toupper.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp_P.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy_P.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strlen_P.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcmp.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcpy.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memset.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcat.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strchr.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncmp.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncpy.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrchr.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strstr.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(itoa.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ltoa.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sprintf.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3x.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(asin.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cmpsf2.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cos.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3x.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixsfsi.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floatsisf.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floor.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_arccos.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_cmp.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_inf.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mintl.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mpack.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_nan.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powser.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscA.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscB.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_round.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_sinus.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_split3.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_trunc.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_zero.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(gesf2.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3x.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(pow.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sin.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sqrt.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen_P.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrev.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fputc.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exp.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_norm2.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(inverse.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ldexp.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(log.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(modf.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodqi4.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodhi4.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodhi4.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodsi4.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_ctors.o)
- .bss           0x0000000000800eb0        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_tablejump_elpm.o)
+ .bss           0x0000000000800be2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
+ .bss           0x0000000000800be2        0x1 ./inc/EEPROM.o
+                0x0000000000800be2                EEPROM
+ .bss           0x0000000000800be3        0x0 ./inc/Sd2Card.o
+ .bss           0x0000000000800be3        0x0 ./inc/SdFat.o
+ .bss           0x0000000000800be3        0x0 ./inc/SdFatUtil.o
+ .bss           0x0000000000800be3        0x6 ./inc/SdFile.o
+                0x0000000000800be3                _ZN6SdFile4cwd_E
+                0x0000000000800be5                _ZN6SdFile9dateTime_E
+                0x0000000000800be7                _ZN6SdFile12oldDateTime_E
+ .bss           0x0000000000800be9        0x0 ./inc/SdStream.o
+ .bss           0x0000000000800be9      0x207 ./inc/SdVolume.o
+                0x0000000000800be9                _ZN8SdVolume12cacheBuffer_E
+                0x0000000000800de9                _ZN8SdVolume7sdCard_E
+                0x0000000000800deb                _ZN8SdVolume11cacheDirty_E
+                0x0000000000800dec                _ZN8SdVolume17cacheMirrorBlock_E
+ .bss           0x0000000000800df0       0x4b ./inc/Wire.o
+                0x0000000000800df0                _ZN7TwoWire8rxBufferE
+                0x0000000000800e10                _ZN7TwoWire13rxBufferIndexE
+                0x0000000000800e11                _ZN7TwoWire14rxBufferLengthE
+                0x0000000000800e12                _ZN7TwoWire9txAddressE
+                0x0000000000800e13                _ZN7TwoWire8txBufferE
+                0x0000000000800e33                _ZN7TwoWire13txBufferIndexE
+                0x0000000000800e34                _ZN7TwoWire14txBufferLengthE
+                0x0000000000800e35                _ZN7TwoWire12transmittingE
+                0x0000000000800e36                _ZN7TwoWire14user_onRequestE
+                0x0000000000800e38                _ZN7TwoWire14user_onReceiveE
+                0x0000000000800e3a                Wire
+ .bss           0x0000000000800e3b        0x0 ./inc/istream.o
+ .bss           0x0000000000800e3b        0x0 ./inc/ostream.o
+ .bss           0x0000000000800e3b        0x0 ./inc/pins_arduino.o
+ .bss           0x0000000000800e3b        0x0 ./inc/ssd0323.o
+ .bss           0x0000000000800e3b       0x6c ./inc/twi.o
+ .bss           0x0000000000800ea7        0x0 ./aktors.o
+ .bss           0x0000000000800ea7        0x0 ./blinker.o
+ .bss           0x0000000000800ea7        0x0 ./clock_me.o
+ .bss           0x0000000000800ea7        0x0 ./config.o
+ .bss           0x0000000000800ea7        0x0 ./debug.o
+ .bss           0x0000000000800ea7        0x0 ./display.o
+ .bss           0x0000000000800ea7        0x0 ./dz.o
+ .bss           0x0000000000800ea7        0x0 ./file_manager_v2.o
+ .bss           0x0000000000800ea7        0x0 ./fuel.o
+ .bss           0x0000000000800ea7        0x0 ./gear.o
+ .bss           0x0000000000800ea7        0x0 ./gps.o
+ .bss           0x0000000000800ea7        0x0 ./helper.o
+ .bss           0x0000000000800ea7       0x16 ./main.o
+                0x0000000000800ea7                pFilemanager_v2
+                0x0000000000800ea9                pDebug
+                0x0000000000800eab                pSD
+                0x0000000000800ead                pConfig
+                0x0000000000800eaf                pOLED
+                0x0000000000800eb1                pMenu
+                0x0000000000800eb3                pSpeedo
+                0x0000000000800eb5                pSprint
+                0x0000000000800eb7                pSensors
+                0x0000000000800eb9                pAktors
+                0x0000000000800ebb                pTimer
+ .bss           0x0000000000800ebd        0x5 ./menu.o
+                0x0000000000800ebd                menu_marker
+                0x0000000000800ebf                menu_start
+                0x0000000000800ec1                menu_preload
+ .bss           0x0000000000800ec2        0x0 ./oiler.o
+ .bss           0x0000000000800ec2        0x0 ./reset.o
+ .bss           0x0000000000800ec2        0x0 ./sd.o
+ .bss           0x0000000000800ec2        0x0 ./sensors.o
+ .bss           0x0000000000800ec2        0x0 ./speed.o
+ .bss           0x0000000000800ec2        0x0 ./speedo.o
+ .bss           0x0000000000800ec2        0x0 ./sprint.o
+ .bss           0x0000000000800ec2        0x0 ./stepper.o
+ .bss           0x0000000000800ec2        0x0 ./temperature.o
+ .bss           0x0000000000800ec2        0x0 ./tetris.o
+ .bss           0x0000000000800ec2        0x0 ./timer.o
+ .bss           0x0000000000800ec2        0x0 ./voltage.o
+ .bss           0x0000000000800ec2        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+ .bss           0x0000000000800ec2        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+ .bss           0x0000000000800ec2        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_analog.c.o)
+ .bss           0x0000000000800ec2        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring_digital.c.o)
+ .bss           0x0000000000800ec2        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+ .bss           0x0000000000800ec2        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(Print.cpp.o)
+ .bss           0x0000000000800ec2        0x0 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(malloc.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exit.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isalpha.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(isspace.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(tolower.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(toupper.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp_P.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy_P.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strlen_P.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcmp.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memcpy.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(memset.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcat.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strchr.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcmp.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strcpy.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncmp.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strncpy.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrchr.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strstr.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(itoa.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ltoa.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sprintf.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(addsf3x.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(asin.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cmpsf2.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cos.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(divsf3x.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixsfsi.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floatsisf.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(floor.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_arccos.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_cmp.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_inf.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mintl.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_mpack.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_nan.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powser.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscA.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_pscB.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_round.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_sinus.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_split3.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_trunc.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_zero.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(gesf2.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(mulsf3x.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(pow.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sin.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(sqrt.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen_P.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strnlen.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(strrev.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fputc.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(exp.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(fp_norm2.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(inverse.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(ldexp.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(log.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(modf.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodqi4.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodhi4.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodhi4.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_divmodsi4.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_clear_bss.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_ctors.o)
+ .bss           0x0000000000800ec2        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_tablejump_elpm.o)
  *(.bss*)
- .bss.intFunc   0x0000000000800eb0       0x10 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
+ .bss.intFunc   0x0000000000800ec2       0x10 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WInterrupts.c.o)
  .bss.timer0_overflow_count
-                0x0000000000800ec0        0x4 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
-                0x0000000000800ec0                timer0_overflow_count
+                0x0000000000800ed2        0x4 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+                0x0000000000800ed2                timer0_overflow_count
  .bss.timer0_millis
-                0x0000000000800ec4        0x4 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
-                0x0000000000800ec4                timer0_millis
+                0x0000000000800ed6        0x4 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+                0x0000000000800ed6                timer0_millis
  .bss.timer0_fract
-                0x0000000000800ec8        0x1 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
+                0x0000000000800eda        0x1 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(wiring.c.o)
  .bss.rx_buffer
-                0x0000000000800ec9       0x84 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000800ec9                rx_buffer
+                0x0000000000800edb       0x84 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000800edb                rx_buffer
  .bss.rx_buffer2
-                0x0000000000800f4d       0x84 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000800f4d                rx_buffer2
+                0x0000000000800f5f       0x84 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000800f5f                rx_buffer2
  .bss.rx_buffer3
-                0x0000000000800fd1       0x84 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000800fd1                rx_buffer3
- .bss.Serial    0x0000000000801055       0x13 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000801055                Serial
- .bss.Serial2   0x0000000000801068       0x13 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x0000000000801068                Serial2
- .bss.Serial3   0x000000000080107b       0x13 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
-                0x000000000080107b                Serial3
+                0x0000000000800fe3       0x84 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000800fe3                rx_buffer3
+ .bss.Serial    0x0000000000801067       0x13 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x0000000000801067                Serial
+ .bss.Serial2   0x000000000080107a       0x13 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x000000000080107a                Serial2
+ .bss.Serial3   0x000000000080108d       0x13 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(HardwareSerial.cpp.o)
+                0x000000000080108d                Serial3
  .bss._ZZN6StringixEjE19dummy_writable_char
-                0x000000000080108e        0x1 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
+                0x00000000008010a0        0x1 /home/jkw/Store/17 - Speedmaster/Firmware/inc/libArduinoCore2560.a(WString.cpp.o)
  *(COMMON)
- COMMON         0x000000000080108f        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(malloc.o)
-                0x000000000080108f                __brkval
-                0x0000000000801091                __flp
-                0x0000000000801093                PROVIDE (__bss_end, .)
-                0x0000000000029158                __data_load_start = LOADADDR (.data)
-                0x0000000000029b28                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00000000008010a1        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/libc.a(malloc.o)
+                0x00000000008010a1                __brkval
+                0x00000000008010a3                __flp
+                0x00000000008010a5                PROVIDE (__bss_end, .)
+                0x0000000000029178                __data_load_start = LOADADDR (.data)
+                0x0000000000029b5a                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0000000000801093        0x0
-                0x0000000000801093                PROVIDE (__noinit_start, .)
+.noinit         0x00000000008010a5        0x0
+                0x00000000008010a5                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x0000000000801093                PROVIDE (__noinit_end, .)
-                0x0000000000801093                _end = .
-                0x0000000000801093                PROVIDE (__heap_start, .)
+                0x00000000008010a5                PROVIDE (__noinit_end, .)
+                0x00000000008010a5                _end = .
+                0x00000000008010a5                PROVIDE (__heap_start, .)
 
 .eeprom         0x0000000000810000        0x0
  *(.eeprom*)
@@ -2504,6 +2504,7 @@ Print::println(char const*)                       /home/jkw/Store/17 - Speedmast
                                                   ./speed.o
                                                   ./sd.o
                                                   ./menu.o
+                                                  ./gps.o
                                                   ./dz.o
                                                   ./display.o
                                                   ./config.o
@@ -2727,6 +2728,7 @@ Serial                                            /home/jkw/Store/17 - Speedmast
                                                   ./reset.o
                                                   ./menu.o
                                                   ./main.o
+                                                  ./gps.o
                                                   ./file_manager_v2.o
                                                   ./dz.o
                                                   ./display.o
@@ -2776,7 +2778,7 @@ Speedo_sensors::check_vars()                      ./sensors.o
                                                   ./main.o
 Speedo_sensors::clear_vars()                      ./sensors.o
                                                   ./main.o
-Speedo_sensors::flatIt(int, short*, int, float)   ./sensors.o
+Speedo_sensors::flatIt(int, unsigned char*, char, float) ./sensors.o
                                                   ./voltage.o
                                                   ./temperature.o
                                                   ./speed.o
