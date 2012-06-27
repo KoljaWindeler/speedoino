@@ -234,17 +234,38 @@
 <pad name="1-" x="8.23" y="9.785" drill="1.2" diameter="2.54"/>
 <hole x="0" y="10.5" drill="4.3"/>
 <hole x="0" y="-10.5" drill="4.3"/>
+<wire x1="-5.3" y1="11.4" x2="-3.7" y2="13" width="0.127" layer="21"/>
+<wire x1="-3.7" y1="13" x2="16.6" y2="13" width="0.127" layer="21"/>
+<wire x1="16.6" y1="13" x2="22.8" y2="6.8" width="0.127" layer="21"/>
+<wire x1="22.8" y1="6.8" x2="22.8" y2="-6.7" width="0.127" layer="21"/>
+<wire x1="22.8" y1="-6.7" x2="16.5" y2="-13" width="0.127" layer="21"/>
+<wire x1="16.5" y1="-13" x2="-3.6" y2="-13" width="0.127" layer="21"/>
+<wire x1="-3.6" y1="-13" x2="-9.6" y2="-7" width="0.127" layer="21"/>
+<wire x1="-9.6" y1="-7" x2="-9.6" y2="7.1" width="0.127" layer="21"/>
+<wire x1="-9.6" y1="7.1" x2="-5.3" y2="11.4" width="0.127" layer="21"/>
 <polygon width="0.127" layer="21">
-<vertex x="14" y="13"/>
-<vertex x="16.6" y="13"/>
-<vertex x="22.8" y="6.8"/>
-<vertex x="22.8" y="-6.7"/>
-<vertex x="16.5" y="-13"/>
-<vertex x="-3.6" y="-13"/>
-<vertex x="-9.6" y="-7"/>
-<vertex x="-9.6" y="7.1"/>
-<vertex x="-3.6" y="13.1"/>
-<vertex x="-3.6" y="13"/>
+<vertex x="-3.8" y="12.75"/>
+<vertex x="-3.65" y="12.9"/>
+<vertex x="16.6" y="12.9"/>
+<vertex x="22.75" y="6.75"/>
+<vertex x="22.75" y="-6.65"/>
+<vertex x="16.45" y="-12.95"/>
+<vertex x="-3.55" y="-12.95"/>
+<vertex x="-9.55" y="-6.95"/>
+<vertex x="-9.55" y="0.05"/>
+<vertex x="-9.5" y="0"/>
+<vertex x="-1" y="0"/>
+<vertex x="-1" y="-0.25" curve="90"/>
+<vertex x="-0.2" y="-1.05"/>
+<vertex x="0.05" y="-1.05" curve="90"/>
+<vertex x="1.05" y="-0.05"/>
+<vertex x="1.05" y="0.1" curve="90"/>
+<vertex x="0.1" y="1.05"/>
+<vertex x="-0.1" y="1.05" curve="90"/>
+<vertex x="-1" y="0.15"/>
+<vertex x="-1" y="0.1"/>
+<vertex x="-9.55" y="0.1"/>
+<vertex x="-9.55" y="7.05"/>
 </polygon>
 </package>
 <package name="MT3329">

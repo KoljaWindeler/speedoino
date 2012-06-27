@@ -77,7 +77,9 @@ int main(void) {
 
 
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
-	pDebug->sprintlnp(PSTR(GIT_REV));
+	pDebug->sprintp(PSTR(GIT_REV));				// print Software release
+	pDebug->sprintp(PSTR(" HW:"));
+	Serial.println(pConfig->get_hw_version());	// print Hardware release
 
 	Wire.begin();				// BEFORE Clock_init(), Clock is in the sensor class and needs I²C
 	pSD->init(); 				// try open SD Card

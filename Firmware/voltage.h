@@ -18,6 +18,7 @@ public:
 	bool check_vars();
 	int get();
 	void calc();
+	bool bat_empty;
 private:
 	int value;
 	unsigned char value_counter;

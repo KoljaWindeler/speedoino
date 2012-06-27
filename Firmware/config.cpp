@@ -17,8 +17,41 @@
 
 #include "global.h"
 #include      <EEPROM.h>
-configuration::configuration(){
-};
+configuration::configuration(){};
+configuration::~configuration(){};
+
+
+int configuration::get_hw_version(){
+	// HW: 6 + (int)(not( 0x00 | (PC0<<2) | (PG1<<1) | (PG0<<0)))
+	int return_value=0;
+
+	// PG0 -> Bit0
+	// PG1 -> Bit1
+	// PC0 -> Bit2
+
+	// set all to input
+	// Pin 3 und 4 auf Eingang und andere im ursprünglichen Zustand belassen:
+	// DDRB &= ~((1 << DDB3) | (1 << DDB4));
+	// Pin 0 und 3 wieder auf Ausgang und andere im ursprünglichen Zustand belassen:
+	// DDRB |= (1 << DDB0) | (1 << DDB3);
+	DDRG &= ~((1<<DDG0) | (1<<DDG1));
+	DDRC &= ~((1<<DDC0));
+
+	// set pull up to all inputs
+	// PORTC |= (1<<PC7);    /* internen Pull-Up an PC7 aktivieren */
+	PORTG |= ((1<<PG1) | (1<<PG0));
+	PORTC |= ((1<<PC0));
+
+	// read inputs
+	return_value=6 + (int)(not( 0x00 | ((PINC & (1<<PC0))<<2) | ((PING & (1<<PG1))<<1) | ((PING & (1<<PG0))<<0)));
+
+	// disable all PULLUPS
+	PORTG &= ~((1<<PG1) | (1<<PG0));
+	PORTC &= ~((1<<PC0));
+
+	// return that value
+	return return_value;
+}
 
 void configuration::ram_info() {
 	int size = 8192; // Use 2048 with ATmega328
@@ -30,9 +63,7 @@ void configuration::ram_info() {
 	pDebug->sprintlnp(PSTR(" Byte heap free"));
 }
 
-configuration::~configuration(){
 
-};
 /*********** write config *******************
  * hier die config datei schreiben, und anhand des
  * Dateinamens checken welche var hier gespeichert

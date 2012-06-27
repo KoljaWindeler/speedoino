@@ -23,6 +23,7 @@ public:
 	int write(const char filename[]);
 	int clear_vars();
 	int read(const char filename[]);
+	int get_hw_version();
 	int read_skin();
 	int compare_substr( char *string1, char *string2, int amount );
 	void km_save();

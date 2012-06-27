@@ -412,17 +412,30 @@ void speedo_disp::init_speedo(){
 	pinMode(29,INPUT); // interessiert keine sau, aber da der pin jetzt extern auf masse gezogen wird sollte der hier nicht besser kein Pegel treiben
 	init(phase,ref);
 	clear_screen();
+
+	// if hardware version is above 6, there is an emergency V_BACKUP_driver for the GPS
+	// if bat is empty, inform user
+	if(pConfig->get_hw_version()>6 && pSensors->m_voltage->bat_empty){
+		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS Bat empty"),3,2,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("cold fixing now"),2,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("this will take a min"),0,4,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
+		_delay_ms(10000);
+	}
+
+	// if storage init failed notify as well
 	if(pSD->sd_failed){
-		pOLED->clear_screen();
 		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(pSpeedo->default_font,PSTR("SD access strange"),1,2,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(pSpeedo->default_font,PSTR("all max values==-99"),0,3,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
 		_delay_ms(5000);
-	} else if(WELCOME){ // wenn die Karte ok ist können wir startup zeigen, wenn wir wollen
+	}
+
+	// wenn die Karte ok ist können wir startup zeigen, wenn wir wollen
+	if(WELCOME){
 		show_animation(startup);
 		Serial.println("welcome done");
-	} else {
-		clear_screen();
-	};
+	}
 };

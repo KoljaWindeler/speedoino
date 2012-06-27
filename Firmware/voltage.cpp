@@ -50,5 +50,24 @@ void speedo_voltage::clear_vars(){
 
 void speedo_voltage::init(){
 	pinMode(VOLTAGE_PIN,INPUT);
+	bat_empty=false;
+
+	// if hardware version is above 6, there is an emergency V_BACKUP_driver for the GPS
+	if(pConfig->get_hw_version()>6){
+		// 1. Set analog measurment pin connected to the backup bat to input
+		// 2. Measure value, 2V min => if < 1.9V -> activate emergency voltage, 1.9 / 5 * 1024 < 389
+
+		// 1
+		pinMode(8,INPUT); // measure pin
+		pinMode(24,INPUT); // driver pin, but keep it as input until measurent is completed
+
+		// 2
+		if(analogRead(8)<389){
+			pinMode(24,OUTPUT); // activate driver pin
+			digitalWrite(24,HIGH);
+			bat_empty=true;
+		}
+	}
+
 };
 

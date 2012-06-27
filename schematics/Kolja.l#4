@@ -243,7 +243,7 @@
 <wire x1="-3.6" y1="-13" x2="-9.6" y2="-7" width="0.127" layer="21"/>
 <wire x1="-9.6" y1="-7" x2="-9.6" y2="7.1" width="0.127" layer="21"/>
 <wire x1="-9.6" y1="7.1" x2="-5.3" y2="11.4" width="0.127" layer="21"/>
-<polygon width="0.127" layer="21">
+<polygon width="0.127" layer="41" pour="hatch">
 <vertex x="-3.8" y="12.75"/>
 <vertex x="-3.65" y="12.9"/>
 <vertex x="16.6" y="12.9"/>
