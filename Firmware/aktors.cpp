@@ -181,6 +181,7 @@ void Speedo_aktors::set_rgb_out(int r,int g,int b,int save){
 };
 /* 10ms pro schritt -> 0 to 256 = 2,56 sec */
 void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps, int set_in_out){
+
 	if(r>255) r=255;
 	if(g>255) g=255;
 	if(b>255) b=255;
@@ -324,7 +325,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 				dimm_state=STATIC_COLOR_REACHED;
 			};
 		} else {
-			pAktors->dimm_rgb_to(pAktors->static_color.r,pAktors->static_color.g,pAktors->static_color.b,15,0); // 25*10ms = 250 ms
+			pAktors->dimm_rgb_to(pAktors->static_color.r,pAktors->static_color.g,pAktors->static_color.b,350,0); // 25*10ms = 250 ms
 			dimm_state=DIMM_TO_STATIC_COLOR;
 		};
 
@@ -333,7 +334,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 		if(pSensors->m_speed->getSpeed()>=kmh_max_value){
 			if(dimm_state!=MAX_REACHED){
 				if(dimm){
-					dimm_rgb_to(int(kmh_end_color.r),int(kmh_end_color.g),int(kmh_end_color.b),256,0);
+					dimm_rgb_to(int(kmh_end_color.r),int(kmh_end_color.g),int(kmh_end_color.b),350,0);
 				} else {
 					pAktors->set_rgb_out(int(kmh_end_color.r),int(kmh_end_color.g),int(kmh_end_color.b));
 				};
@@ -342,7 +343,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 		} else if(pSensors->m_speed->getSpeed()<=kmh_min_value){
 			if(dimm_state!=MIN_REACHED){
 				if(dimm)
-					dimm_rgb_to(kmh_start_color.r,kmh_start_color.g,kmh_start_color.b,256,0);
+					dimm_rgb_to(kmh_start_color.r,kmh_start_color.g,kmh_start_color.b,350,0);
 				else {
 					pAktors->set_rgb_out(kmh_start_color.r,kmh_start_color.g,kmh_start_color.b);
 					dimm_state=MIN_REACHED;
@@ -356,7 +357,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 			temp_g = float(kmh_end_color.g-kmh_start_color.g)/float(kmh_differ)*(pSensors->m_speed->getSpeed()-kmh_min_value)+kmh_start_color.g;
 			temp_b = float(kmh_end_color.b-kmh_start_color.b)/float(kmh_differ)*(pSensors->m_speed->getSpeed()-kmh_min_value)+kmh_start_color.b;
 			if(dimm)
-				dimm_rgb_to(temp_r,temp_g,temp_b,256,0);
+				dimm_rgb_to(temp_r,temp_g,temp_b,350,0);
 			else
 				pAktors->set_rgb_out(temp_r,temp_g,temp_b);
 		};
@@ -366,7 +367,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 		if(pSensors->m_dz->exact>=unsigned(dz_max_value)){
 			if(dimm_state!=MAX_REACHED){
 				if(dimm){
-					dimm_rgb_to(int(dz_end_color.r),int(dz_end_color.g),int(dz_end_color.b),256,0);
+					dimm_rgb_to(int(dz_end_color.r),int(dz_end_color.g),int(dz_end_color.b),350,0);
 				} else {
 					pAktors->set_rgb_out(int(dz_end_color.r),int(dz_end_color.g),int(dz_end_color.b));
 				};
@@ -376,7 +377,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 		} else if(pSensors->m_dz->exact<=unsigned(dz_min_value)){
 			if(dimm_state!=MIN_REACHED){
 				if(dimm)
-					dimm_rgb_to(dz_start_color.r,dz_start_color.g,dz_start_color.b,256,0);
+					dimm_rgb_to(dz_start_color.r,dz_start_color.g,dz_start_color.b,350,0);
 				else {
 					pAktors->set_rgb_out(dz_start_color.r,dz_start_color.g,dz_start_color.b);
 					dimm_state=MIN_REACHED;
@@ -390,7 +391,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 			temp_g = float(dz_end_color.g-dz_start_color.g)/float(dz_differ)*(pSensors->m_dz->exact-dz_min_value)+dz_start_color.g;
 			temp_b = float(dz_end_color.b-dz_start_color.b)/float(dz_differ)*(pSensors->m_dz->exact-dz_min_value)+dz_start_color.b;
 			if(dimm)
-				dimm_rgb_to(temp_r,temp_g,temp_b,256,0);
+				dimm_rgb_to(temp_r,temp_g,temp_b,350,0);
 			else
 				pAktors->set_rgb_out(temp_r,temp_g,temp_b);
 		};
@@ -402,7 +403,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 		if(pSensors->m_temperature->get_oil_temp()>=oil_max_value){
 			if(dimm_state!=MAX_REACHED){
 				if(dimm){
-					dimm_rgb_to(int(oil_end_color.r),int(oil_end_color.g),int(oil_end_color.b),256,0);
+					dimm_rgb_to(int(oil_end_color.r),int(oil_end_color.g),int(oil_end_color.b),350,0);
 				} else {
 					pAktors->set_rgb_out(int(oil_end_color.r),int(oil_end_color.g),int(oil_end_color.b));
 				};
@@ -411,7 +412,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 		} else if(pSensors->m_temperature->get_oil_temp()<=oil_min_value){
 			if(dimm_state!=MIN_REACHED){
 				if(dimm)
-					dimm_rgb_to(oil_start_color.r,oil_start_color.g,oil_start_color.b,256,0);
+					dimm_rgb_to(oil_start_color.r,oil_start_color.g,oil_start_color.b,350,0);
 				else {
 					pAktors->set_rgb_out(oil_start_color.r,oil_start_color.g,oil_start_color.b);
 					dimm_state=MIN_REACHED;
@@ -424,7 +425,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 			temp_g = float(oil_end_color.g-oil_start_color.g)/float(oil_differ)*(pSensors->m_temperature->get_oil_temp()-oil_min_value)+oil_start_color.g;
 			temp_b = float(oil_end_color.b-oil_start_color.b)/float(oil_differ)*(pSensors->m_temperature->get_oil_temp()-oil_min_value)+oil_start_color.b;
 			if(dimm){
-				dimm_rgb_to(temp_r,temp_g,temp_b,256,0);
+				dimm_rgb_to(temp_r,temp_g,temp_b,350,0);
 			} else {
 				pAktors->set_rgb_out(temp_r,temp_g,temp_b);
 			};
@@ -442,7 +443,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 		} else if(pSensors->m_temperature->get_water_temp()<=water_min_value){
 			if(dimm_state!=MIN_REACHED){
 				if(dimm)
-					dimm_rgb_to(water_start_color.r,water_start_color.g,water_start_color.b,256,0);
+					dimm_rgb_to(water_start_color.r,water_start_color.g,water_start_color.b,350,0);
 				else {
 					pAktors->set_rgb_out(water_start_color.r,water_start_color.g,water_start_color.b);
 					dimm_state=MIN_REACHED;
@@ -455,7 +456,7 @@ int Speedo_aktors::update_outer_leds(bool dimm){
 			temp_g = float(water_end_color.g-water_start_color.g)/float(water_differ)*(pSensors->m_temperature->get_water_temp()-water_min_value)+water_start_color.g;
 			temp_b = float(water_end_color.b-water_start_color.b)/float(water_differ)*(pSensors->m_temperature->get_water_temp()-water_min_value)+water_start_color.b;
 			if(dimm){
-				dimm_rgb_to(temp_r,temp_g,temp_b,256,0);
+				dimm_rgb_to(temp_r,temp_g,temp_b,350,0);
 			} else {
 				pAktors->set_rgb_out(temp_r,temp_g,temp_b);
 			};

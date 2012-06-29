@@ -1257,8 +1257,8 @@ Disassembly of section .text:
     1e00:	20 48 57 3a 00                                       HW:.
 
 00001e05 <_ZZ4mainE3__c_0>:
-    1e05:	76 30 2e 33 2e 36 2d 38 36 2d 67 35 63 35 66 33     v0.3.6-86-g5c5f3
-    1e15:	31 33 00                                            13.
+    1e05:	76 30 2e 33 2e 36 2d 38 38 2d 67 65 37 37 35 65     v0.3.6-88-ge775e
+    1e15:	37 63 00                                            7c.
 
 00001e18 <_ZZ4mainE3__c>:
     1e18:	3d 3d 3d 20 53 70 65 65 64 6f 69 6e 6f 20 3d 3d     === Speedoino ==
@@ -1550,8 +1550,8 @@ Disassembly of section .text:
     2231:	63 6f 6e 74 61 63 74 20 6d 65 20 61 74 00           contact me at.
 
 0000223f <_ZZN11speedo_menu7displayEvE3__c_102>:
-    223f:	76 30 2e 33 2e 36 2d 38 36 2d 67 35 63 35 66 33     v0.3.6-86-g5c5f3
-    224f:	31 33 00                                            13.
+    223f:	76 30 2e 33 2e 36 2d 38 38 2d 67 65 37 37 35 65     v0.3.6-88-ge775e
+    224f:	37 63 00                                            7c.
 
 00002252 <_ZZN11speedo_menu7displayEvE3__c_101>:
     2252:	73 74 61 72 74 65 64 20 34 2e 32 30 31 30 00        started 4.2010.
@@ -18493,8 +18493,8 @@ Disassembly of section .text:
     ac02:	70 e0       	ldi	r23, 0x00	; 0
     ac04:	50 e0       	ldi	r21, 0x00	; 0
     ac06:	30 e0       	ldi	r19, 0x00	; 0
-    ac08:	0f e0       	ldi	r16, 0x0F	; 15
-    ac0a:	10 e0       	ldi	r17, 0x00	; 0
+    ac08:	0e e5       	ldi	r16, 0x5E	; 94
+    ac0a:	11 e0       	ldi	r17, 0x01	; 1
     ac0c:	ee 24       	eor	r14, r14
     ac0e:	ff 24       	eor	r15, r15
     ac10:	c5 db       	rcall	.-2166   	; 0xa39c <_ZN13Speedo_aktors11dimm_rgb_toEiiiii>
@@ -18804,7 +18804,7 @@ Disassembly of section .text:
     aeba:	4e 81       	ldd	r20, Y+6	; 0x06
     aebc:	5f 81       	ldd	r21, Y+7	; 0x07
     aebe:	98 01       	movw	r18, r16
-    aec0:	00 e0       	ldi	r16, 0x00	; 0
+    aec0:	0e e5       	ldi	r16, 0x5E	; 94
     aec2:	11 e0       	ldi	r17, 0x01	; 1
     aec4:	ee 24       	eor	r14, r14
     aec6:	ff 24       	eor	r15, r15
@@ -18857,7 +18857,7 @@ Disassembly of section .text:
     af28:	70 e0       	ldi	r23, 0x00	; 0
     af2a:	50 e0       	ldi	r21, 0x00	; 0
     af2c:	30 e0       	ldi	r19, 0x00	; 0
-    af2e:	00 e0       	ldi	r16, 0x00	; 0
+    af2e:	0e e5       	ldi	r16, 0x5E	; 94
     af30:	11 e0       	ldi	r17, 0x01	; 1
     af32:	ee 24       	eor	r14, r14
     af34:	ff 24       	eor	r15, r15
@@ -18907,7 +18907,7 @@ Disassembly of section .text:
     af90:	70 e0       	ldi	r23, 0x00	; 0
     af92:	50 e0       	ldi	r21, 0x00	; 0
     af94:	30 e0       	ldi	r19, 0x00	; 0
-    af96:	00 e0       	ldi	r16, 0x00	; 0
+    af96:	0e e5       	ldi	r16, 0x5E	; 94
     af98:	11 e0       	ldi	r17, 0x01	; 1
     af9a:	ee 24       	eor	r14, r14
     af9c:	ff 24       	eor	r15, r15
@@ -19115,7 +19115,7 @@ Disassembly of section .text:
     b162:	70 e0       	ldi	r23, 0x00	; 0
     b164:	50 e0       	ldi	r21, 0x00	; 0
     b166:	30 e0       	ldi	r19, 0x00	; 0
-    b168:	00 e0       	ldi	r16, 0x00	; 0
+    b168:	0e e5       	ldi	r16, 0x5E	; 94
     b16a:	11 e0       	ldi	r17, 0x01	; 1
     b16c:	ee 24       	eor	r14, r14
     b16e:	ff 24       	eor	r15, r15
@@ -19372,7 +19372,7 @@ Disassembly of section .text:
     b3a8:	4e 81       	ldd	r20, Y+6	; 0x06
     b3aa:	5f 81       	ldd	r21, Y+7	; 0x07
     b3ac:	98 01       	movw	r18, r16
-    b3ae:	00 e0       	ldi	r16, 0x00	; 0
+    b3ae:	0e e5       	ldi	r16, 0x5E	; 94
     b3b0:	11 e0       	ldi	r17, 0x01	; 1
     b3b2:	ee 24       	eor	r14, r14
     b3b4:	ff 24       	eor	r15, r15
