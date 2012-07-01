@@ -157,31 +157,40 @@ void speedo_temperature::read_water_temp() {
 
 	// werte auslesen
 	unsigned int water_value=analogRead(WATER_TEMP_PIN);
-	// kann bis zu 225.060 werden bei 40°C etwa 470 ohm: 470+220=690 Ohm, U/R=I => 5/690=0,007246377A, R*I=U, 1,594202899V, Wert=326
+	/* kann bis zu 225.060 werden bei 40°C etwa 470 ohm: 470+220=690 Ohm, U/R=I => 5/690=0,007246377A, R*I=U, 1,594202899V, Wert=326
+	 * wenn temp < 102 sein soll, dann ergibt 1020 schon ein error, bei 102=(1024-X)/10 => x <= 4
+	 * Da haben wir also 4*5V/1024 über dem PT100 und den Rest über 390Ohm
+	 * 0,01953125 V über dem PT100 und 4,98046875V über 390Ohm, -> PT100: 1,529411765 Ohm
+	 */
 	int temp=(1024-water_value)/10; // max 102
 	if(temp>0 && temp<102){
 		int r_temp=round((int)((unsigned long)(water_value*39)/temp)); // 39*1024 > 32000
 		//Serial.print("Oel Wert eingelesen: "); Serial.print(oil_value); Serial.print(" zwischenschritt "); Serial.println(r_temp);
 		// LUT  wert ist z.B. 94°C somit 102 ohm => dann wird hier in der for schleife bei i=13 ausgelößt, also guck ich mir den her + den davor an
-		for(int i=0;i<19;i++){ // 0 .. 18 müssen durchsucht werden das sind die LUT positionen
-			if(r_temp>=water_r_werte[i]){ // den einen richtigen raussuchen
-				int j=i-1;  if(j<0) j=0; // j=12
-				int offset=r_temp-water_r_werte[i]; // wieviel höher ist mein messwert als den, den ich nicht wollte => 102R-100R => 2R
-				int differ_r=water_r_werte[j]-water_r_werte[i]; // wie weit sind die realen widerstands werte auseinander 10R
-				int differ_t=water_t_werte[i]-water_t_werte[j]; // wie weit sind die realen temp werte auseinander 5°C
-				int aktueller_wert=round(10*(water_t_werte[i]-offset*differ_t/differ_r));
-				water_temp_value=pSensors->flatIt(aktueller_wert,&water_temp_value_counter,60,water_temp_value);
+		// wenn unser ermittelter R KLEINER ist als der kleinste R, dann haben wir da mehr grad als maximum und brauchen nicht interpolieren
+		if(r_temp<water_r_werte[18]){
+			water_temp_value=pSensors->flatIt(10*water_t_werte[18],&water_temp_value_counter,60,water_temp_value);
+		} else {
+			for(int i=0;i<19;i++){ // 0 .. 18 müssen durchsucht werden das sind die LUT positionen
+				if(r_temp>=water_r_werte[i]){ // den einen richtigen raussuchen
+					int j=i-1;  if(j<0) j=0; // j=12
+					int offset=r_temp-water_r_werte[i]; // wieviel höher ist mein messwert als den, den ich nicht wollte => 102R-100R => 2R
+					int differ_r=water_r_werte[j]-water_r_werte[i]; // wie weit sind die realen widerstands werte auseinander 10R
+					int differ_t=water_t_werte[i]-water_t_werte[j]; // wie weit sind die realen temp werte auseinander 5°C
+					int aktueller_wert=round(10*(water_t_werte[i]-offset*differ_t/differ_r));
+					water_temp_value=pSensors->flatIt(aktueller_wert,&water_temp_value_counter,60,water_temp_value);
 
-				if(TEMP_DEBUG){
-					Serial.print("Water Wert eingelesen: ");
-					Serial.print(water_value);
-					Serial.print(" und interpretiert als R ");
-					Serial.print(r_temp);
-					Serial.print(" und geplaettet: ");
-					Serial.println(int(round(water_temp_value)));
-				}
-				water_temp_fail_status=0;
-				break; // break the for loop
+					if(TEMP_DEBUG){
+						Serial.print("Water Wert eingelesen: ");
+						Serial.print(water_value);
+						Serial.print(" und interpretiert als R ");
+						Serial.print(r_temp);
+						Serial.print(" und geplaettet: ");
+						Serial.println(int(round(water_temp_value)));
+					}
+					water_temp_fail_status=0;
+					break; // break the for loop
+				};
 			};
 		};
 	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
