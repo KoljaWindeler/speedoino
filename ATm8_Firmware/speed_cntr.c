@@ -22,7 +22,7 @@
  *****************************************************************************/
 
 #include <avr/io.h>
-#include <avr/signal.h>
+#include <avr/interrupt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "global.h"
@@ -76,11 +76,11 @@ void speed_cntr_Move(signed int soll_pos){
 
 	if(speed>800){ // 800
 		speed=800;
-	} else 	if(differ_steps<50){
+	} else 	if(differ_steps<100){
 		speed=75; //400
-	} else 	if(speed<150){
+	} else 	if(speed<300){
 		speed=100; //400
-	} else 	if(speed<250){
+	} else 	if(speed<500){
 		speed=150; //400
 	};
 //	char tempw[20];
@@ -113,7 +113,7 @@ void speed_cntr_Move(signed int soll_pos){
 		TCCR1B |= (1<<CS10);
 	}
 	// Only move if number of steps to move is not zero.
-	else if(differ_steps >= 2){
+	else if(differ_steps > 1){
 
 		// Refer to documentation for detailed information about these calculations.
 		if(srd.run_state==STOP){
@@ -148,17 +148,17 @@ void speed_cntr_Move(signed int soll_pos){
 			// wenn wir für beschleunigung und entschleunigung zusammen MEHR als die gesamt schritte bräuchten
 			if((step_to_max_speed<<1) >= differ_steps){
 				srd.decel_steps_neg = -(differ_steps>>1); // negativ soviel schritte, wie ich positiv zum speedup gebraucht hab
-				if(srd.dir==CCW){
-					srd.decel_start = srd.position - (differ_steps>>1);
-					//uart_SendString("b)1\r\n");
-				} else { // der motor dreht hoch, dann ist
-					srd.decel_start = srd.position + (differ_steps>>1);
-					//uart_SendString("b)2\r\n");
-				};
-			}
-			else{ // sonst können wir einfach mal annehmen das wir zum entschleunigen genausoviel brauchen wie für beschleunigen
+			} else { // sonst können wir einfach mal annehmen das wir zum entschleunigen genausoviel brauchen wie für beschleunigen
 				srd.decel_steps_neg = -step_to_max_speed;
 			}
+
+			// berechne bremspunkt abhängig von der drehrichtung
+			if(srd.dir==CW){
+				srd.decel_start = srd.position + differ_steps + srd.decel_steps_neg; // da descel_steps negativ ist
+			} else { // der motor dreht hoch, dann ist
+				srd.decel_start = srd.position - differ_steps - srd.decel_steps_neg; // pos - gesamt schritte - (- bremsschritte)
+			};
+
 			// We must decelrate at least 1 step to stop.
 			if(srd.decel_steps_neg == 0){
 				srd.decel_steps_neg = -1;
@@ -168,22 +168,18 @@ void speed_cntr_Move(signed int soll_pos){
 			if(srd.step_delay <= srd.min_delay){
 				srd.step_delay = srd.min_delay;
 				srd.run_state = RUN;
-			}
-			else{
+			} else {
 				srd.run_state = ACCEL;
 			}
 
-
-
-			OCR1A = 10;
-			// Set Timer/Counter to divide clock by 1
-			TCCR1B |= (1<<CS10);
+			OCR1A = 10; 			// mach mal ein paar schritte (10)
+			TCCR1B |= (1<<CS10);	// Set Timer/Counter to divide clock by 1
 
 		} else if(srd.run_state==RUN){
 			//uart_SendString("3\r\n");
 			// is it neccesary to speed up?
 			int min_delay = A_T_x100 / speed;
-			if(abs(min_delay-srd.min_delay)>1000){
+			if(abs(min_delay-srd.min_delay)>100){
 				srd.min_delay = min_delay;
 				srd.run_state = STOP;
 				//uart_SendString("--> GoTo ACCEL\r\n");
