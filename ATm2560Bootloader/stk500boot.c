@@ -315,9 +315,9 @@ int main(void)
 	unsigned long	boot_timer;
 	unsigned int	boot_state;
 
-	/* enabled in pa1 to read if its a bluetooth reset*/
-	DDRA  &= ~(1<<PA1); // one input --> 2.kleinstes bit 0, nicht a0 aber a1
-	PORTA |= 1<<PA1; // with pullup
+	/* enabled in ph3 to read if its a bluetooth reset*/
+	DDRH  &= ~(1<<PH3); // one input
+	PORTH |= 1<<PH3; // with pullup
 
 
 	boot_timer	=	0;
@@ -389,7 +389,7 @@ int main(void)
 			_delay_ms(0.001);
 			/////////Kolja/////////
 			// nur wenn das bit gesetzt ist
-			if(bit_is_set(PINA,1)){
+			if(bit_is_set(PINH,3)){
 			/////////Kolja/////////
 				boot_timer++;
 			/////////Kolja/////////

@@ -36,7 +36,6 @@ void speedo_reset::clear_vars(){
 
 void speedo_reset::init(){
 	Serial3.begin(19200);
-	pinMode(reset_enabled_pin,OUTPUT);
 	pinMode(reset_toogle_pin,OUTPUT);
 	if(EEPROM.read(149)==1){ // glatte 1 heisst ist an, alle andere heisst ist aus
 		set_active(false,true); // eeprom is set,set var
@@ -49,7 +48,7 @@ void speedo_reset::init(){
 };
 
 void speedo_reset::set_active(bool save_to_eeprom,bool save_to_var){
-	digitalWrite(reset_enabled_pin,HIGH);
+	Serial3.print("$r1*");
 	if(save_to_var){
 		reset_enabled=true;
 	}
@@ -66,7 +65,7 @@ void speedo_reset::set_active(bool save_to_eeprom,bool save_to_var){
 };
 
 void speedo_reset::set_deactive(bool save_to_eeprom,bool save_to_var){
-	digitalWrite(reset_enabled_pin,LOW);
+	Serial3.print("$r0*");
 	if(save_to_var){
 		reset_enabled=false;
 	}

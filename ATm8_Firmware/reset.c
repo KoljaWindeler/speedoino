@@ -8,54 +8,51 @@
 #include "reset.h"
 
 void reset_init(){
-	// IO konfigurieren
-	DDRB = 0x00;  // b hat nur iscp header und einen enable eingang, b0
-	PORTB = 0x01; // an den bauen wir einen pull up, und machen den lowactive!
-
-	// LED's
+	// IO konfigurieren - LED's
 	DDRD = 0x00 |(1<<PD5) |(1<<PD6) |(1<<PD7); // 3x led AUSGANG
-	PORTD = 0x1F; // alle LEDs an, alle eingänge auf pullup, 20 - 50 kR => 0.1 - 0.25 mA
+	PORTD = 0xFF & ~((1<<PD7) | (1<<PD6) | (1<<PD5) | (1<<PD3)); // alle LEDs an, alle einguenge auf pullup bis auf D3, 20 - 50 kR => 0.1 - 0.25 mA
 
 	// interrupts aktivieren
-	MCUCR |= (1<<ISC00) | (1<<ISC10);           //jede Flanke von INT0 oder INT1 als auslöser
-	MCUCR &= ~((1<<ISC01) | (1<<ISC11));        //jede Flanke von INT0 oder INT1 als auslöser
-	GICR  |= (1<<INT0) | (1<<INT1);				//Global Interrupt Flag für INT0 und INT1
+	MCUCR |= (1<<ISC00) | (1<<ISC10);           //jede Flanke von INT0 oder INT1 als auslueser
+	MCUCR &= ~((1<<ISC01) | (1<<ISC11));        //jede Flanke von INT0 oder INT1 als auslueser
+	GICR  |= (1<<INT0) | (1<<INT1);				//Global Interrupt Flag fuer INT0 und INT1
 
 	counter_bt=0;
 	counter_avr=0;
 	reset_led=0; // damit die am anfang etwas leuchtet, show ...
 	reset_bt_running=0; // 1=bt reset am laufen, 0=nix
 	reset_avr_running=0;// 1=avr reset am laufen, 0=nix
+	reset_global_active=1; // 1 = active, 0 = inactive
 	last_avr_state=0; // 1=letzte flanke war steigend,0=fallend
 	last_bt_state=0;  // 1=letzte flanke war steigend,0=fallend
 	last_rst=0;
 	counter_bt_init=0;
 }
 
-// funktion zum rücksetzen und eventuellen verweilen (spezial_down=1) im bootloader
+// funktion zum ruecksetzen und eventuellen verweilen (spezial_down=1) im bootloader
 void reset(int spezial_down){
-	if(bit_is_set(PINB,0)){//HIGH active, oder mal sehen was ein leere pin so macht, pullup ziehts hoch aktives runterziehen zum deaktiveren
+	if(reset_global_active){
 		/* Vorgehen:
 		 * 1. Interrupts aus
 		 * 2. Reset starten
 		 * 3. Spezialleitung auf LOW
 		 * 4. LED AN
 		 * 5. Warten
-		 * 6. Reset wieder zurückschalten
+		 * 6. Reset wieder zurueckschalten
 		 * 7. LED wider aus
-		 * 8. Spezialleitung wieder zurück als input
+		 * 8. Spezialleitung wieder zurueck als input
 		 */
 		// 1. interrupts aus
 		cli();
 
 		// 2. Pin c5 auf Ausgang und auf LOW ziehen
-		DDRC  |=  (1<<PC5); // alles eingänge bis auf pc5 ( reset )
+		DDRC  |=  (1<<PC5); // pc5 auf ausgang ( reset )
 		PORTC &= ~(1 << RST_PIN); // reset auf low
 
 		// 3. spezialleitung auf masse ziehen
 		if(spezial_down==1){
-			DDRB = 0x00 | (1<<PB0); // alles eingänge bis auf pb0
-			PORTB &= ~(1); //<< PB0 bt-flash-spezial-pin auf HIGH debug
+			DDRD |= (1<<PD3); // pd3 auf ausgang
+			PORTD &= ~(1<<PD3); // pd3 auf low
 		}
 
 		// 4. LED an
@@ -65,14 +62,14 @@ void reset(int spezial_down){
 		_delay_ms(200);
 
 		// 6.
-		DDRC   &= ~(1<<PC5) ; // Reset ausgang wieder auf zuhören schalten
+		DDRC   &= ~(1<<PC5) ; // Reset ausgang wieder auf zuhueren schalten
 		PORTC  |= 1<<PC5; // und ihm ein pull up geben
 
-		// 7. eventuell mehr warten, dann aber zurück als input
+		// 7. eventuell mehr warten, dann aber zurueck als input
 		if(spezial_down==1){
 			_delay_ms(10); // extrazeit im bootloader
-			PORTB |= (1); //<< PB0 bt-flash-spezial-pin auf HIGH ( wie pull up auch )
-			DDRB = 0x00; // b hat nur iscp header und einen enable eingang, b0
+			PORTD |= (1<<PD3); //<< PD3 bt-flash-spezial-pin auf HIGH ( wie pull up auch )
+			DDRD &= ~(1<<PD3); // PD3 wieder auf eingang setzen
 		}
 
 		// 8. LED aus
@@ -82,7 +79,7 @@ void reset(int spezial_down){
 	}
 	counter_avr=0;
 	counter_bt=0;
-	reset_avr_running=0; // macht das hier sinn? bluetooth sollte hier nicht zurück gesetzt werden
+	reset_avr_running=0; // macht das hier sinn? bluetooth sollte hier nicht zurueck gesetzt werden
 	// bluetooth macht hier den reset und erst wenn es blinkt dann gibt er ihn frei,
 };
 
@@ -95,10 +92,10 @@ void config_timer0(){
 
 /* overflow vom timer 0 ..
  * 256*64/8.000.000 = 2,048ms
- * 100 * 2,048 = 204,8 ms zum auslösen, weil es aber mehr als 2 Herz sind und wir auf beide flanken triggern, -> >4Hz -> <250ms
+ * 100 * 2,048 = 204,8 ms zum ausluesen, weil es aber mehr als 2 Herz sind und wir auf beide flanken triggern, -> >4Hz -> <250ms
 */
 ISR(TIMER0_OVF_vect){
-	if(bit_is_set(PINB,0)){//wenn es high ist soll resetet werden
+	if(reset_global_active){//wenn es high ist soll resetet werden
 		if(counter_bt>=100 && !reset_bt_running && counter_bt_init>10){ //
 			reset_bt_running=1;
 			reset(1);
@@ -111,7 +108,7 @@ ISR(TIMER0_OVF_vect){
 			last_rst=1;
 		}
 
-		// nur hochzählen wenn auch wirklich kein reset gerade am laufen ist, wir wollen ja kein reset beim flashen
+		// nur hochzuehlen wenn auch wirklich kein reset gerade am laufen ist, wir wollen ja kein reset beim flashen
 		if(reset_bt_running==0 && reset_avr_running==0){
 			counter_bt++;
 			counter_avr++;
@@ -123,12 +120,12 @@ ISR(TIMER0_OVF_vect){
 
 
 
-// interrupt handle für pin-pd2, hier hängt der BT empfänger dran
+// interrupt handle fuer pin-pd2, hier huengt der BT empfuenger dran
 // reagiert auf jede Flanke
 ISR(INT0_vect){
 	if(counter_bt_init<=10) counter_bt_init++;
 	if(bit_is_clear(PIND,2) && last_bt_state){ //wenn der pin low und die var high
-		// hier könnte man die Zeit ausgebena
+		// hier kuennte man die Zeit ausgebena
 		PORTD &= ~(1 << BT_LED); // led aus
 		last_bt_state=0;
 		counter_bt=0;
@@ -147,14 +144,14 @@ ISR(INT0_vect){
 
 
 
-// interrupt handle für pin-pd2, hier hängt der AVR dran
-// reagiert auf fallende Flanke, hier die LED AN machen und den zähler resetten
+// interrupt handle fuer pin-pd2, hier huengt der AVR dran
+// reagiert auf fallende Flanke, hier die LED AN machen und den zuehler resetten
 ISR(INT1_vect){
-	/* das ist total geil mit dem last_avr_state: wenn der avr sich programmbedingt aufhängt
-	 * ist sagen wir mal der pin low, dann wird das hier ausgeführt, danach läuft der puffer über,
-	 * der AVR startet aber nicht durch, last_avr_state=0 && bit_stays_clear zumindest wird der hängende
+	/* das ist total geil mit dem last_avr_state: wenn der avr sich programmbedingt aufhuengt
+	 * ist sagen wir mal der pin low, dann wird das hier ausgefuehrt, danach lueuft der puffer ueber,
+	 * der AVR startet aber nicht durch, last_avr_state=0 && bit_stays_clear zumindest wird der huengende
 	 * avr nicht zyklisch an dem Pin wackeln und dadurch wird der reset nicht freigegeben und ein
-	 * langsam startendes device bleibt nicht in einer resetschleife hängen, TOP ;)
+	 * langsam startendes device bleibt nicht in einer resetschleife huengen, TOP ;)
 	 */
 	if(bit_is_clear(PIND,3) && last_avr_state){ // fallende flanke, sollte also low sein
 		PORTD |= (1 << AVR_LED);// led an

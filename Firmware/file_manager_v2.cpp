@@ -212,6 +212,8 @@ void speedo_filemanager_v2::parse_command(){
 			/*
 			 * Now process the STK500 commands, see Atmel Appnote AVR068
 			 */
+			bool change_disp=false; 
+			 
 			if(DEBUG_TRANSFER){
 				char buffer[10];
 				if(floor(msgBuffer[0]/16)>10){
@@ -251,32 +253,28 @@ void speedo_filemanager_v2::parse_command(){
 				////////////////////////// UP DOWN LEFT RIGHT /////////////////////////////
 
 			} else if(msgBuffer[0]==CMD_GO_LEFT){
-				pMenu->go_left(false); // i won't wait on main loop, i update it myself
-				pMenu->display();
+				pMenu->go_left(true); // i wait on main loop, i won't update it myself
 				isLeave	=	1;
 				msgLength		=	2;
 				msgBuffer[0]	= 	CMD_GO_LEFT;
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_RIGHT){
-				pMenu->go_right(false); // i won't wait on main loop, i update it myself
-				pMenu->display();
+				pMenu->go_right(true); // i wait on main loop, i won't update it myself
 				isLeave	=	1;
 				msgLength		=	2;
 				msgBuffer[0]	= 	CMD_GO_RIGHT;
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_UP){
-				pMenu->go_up(false); // i won't wait on main loop, i update it myself
-				pMenu->display();
+				pMenu->go_up(true); // i wait on main loop, i won't update it myself
 				isLeave	=	1;
 				msgLength		=	2;
 				msgBuffer[0]	= 	CMD_GO_UP;
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_DOWN){
-				pMenu->go_down(false); // i won't wait on main loop, i update it myself
-				pMenu->display();
+				pMenu->go_down(true); // i wait on main loop, i won't update it myself
 				isLeave	=	1;
 				msgLength		=	2;
 				msgBuffer[0]	= 	CMD_GO_DOWN;

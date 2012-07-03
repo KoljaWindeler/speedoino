@@ -5,36 +5,36 @@
  *      Author: kolja
  *
  *  Aufgaben des ATMega:
- *  1. Sobald eine Bluetoothverbindung aufgebaut wird einen Reset auslösen
- *  2. Wenn der große Prozessor nichts mehr sagt diesen Resetten können ( Watchdog Funktion )
- *  3. Den Reset global unterdrücken können
- *  4. Per UART antworten können warum resettet wurde
- *  5. Im Falle eines BT Reset den Bootloader des großen daran hindern schneller durchzulaufen als Daten gesendet werden können
+ *  1. Sobald eine Bluetoothverbindung aufgebaut wird einen Reset ausluesen
+ *  2. Wenn der grouee Prozessor nichts mehr sagt diesen Resetten kuennen ( Watchdog Funktion )
+ *  3. Den Reset global unterdruecken kuennen
+ *  4. Per UART antworten kuennen warum resettet wurde
+ *  5. Im Falle eines BT Reset den Bootloader des groueen daran hindern schneller durchzulaufen als Daten gesendet werden kuennen
  *
  *  Konzept:
- *  Wir haben 2 Counter, counter_bt und counter_avr, die werden hochgezählt,
+ *  Wir haben 2 Counter, counter_bt und counter_avr, die werden hochgezuehlt,
  *  momentan etwas(!) langsamer als 1kHz ( 1ms warten + if's )
  *  Wenn einer von beiden den Schwellwert aus CYCLES_FOR_* erreicht dann wird ein RESET
- *  ausgelöst. Das heisst eine HIGH - LOW - HIGH Kombination am Reset Pin.
+ *  ausgeluest. Das heisst eine HIGH - LOW - HIGH Kombination am Reset Pin.
  *  Wenn es ein BT Reset ist dann sollte die ganze geschichte erst dann wieder freigegeben
  *  werden, wenn eine toggelnde Flanke am Connect Pin gefunden wird.
  *
- *  FALLS der AVR überhaupt abschmiert, soll hier ergänzt werden:
- *  Der AVR sollte in einem Takt ähnlich dem des Bluetooth "togglen",
- *  sobald er mal nicht togglet läuft sein zähler auch über und resettet wie bei BT
+ *  FALLS der AVR ueberhaupt abschmiert, soll hier erguenzt werden:
+ *  Der AVR sollte in einem Takt uehnlich dem des Bluetooth "togglen",
+ *  sobald er mal nicht togglet lueuft sein zuehler auch ueber und resettet wie bei BT
  *  eigentlicht das gleiche.
  *
- *  zusätzlich sollte der avr bestimmen können das die ganze geschichte deaktiviert wird,
+ *  zusuetzlich sollte der avr bestimmen kuennen das die ganze geschichte deaktiviert wird,
  *  z.B. der Filemanager verweilt sehr lang ohne loop
  *  Daher ist der pin PinB0 vom AVR auf LOW zu ziehen um den Reset zu deaktivieren,
- *  wir ziehen den dann unsererseits intern per pullup auf high und somit können wir resetten
+ *  wir ziehen den dann unsererseits intern per pullup auf high und somit kuennen wir resetten
  *  wenn der AVR nix sagt, also z.B. kein Programm hat.
  *
  *  Startup: zum testen einmal mit allen augen zwinkern. Alle LED's an, nach 1000ms programmstart
  *  und damit wieder aus.
  *
  *  Wenn wir einen Bluetooth reset haben, schalten wir den PinB0 als Ausgang und ziehen ihn auf Masse
- *  da der Bootloader des großen einen Input mit Pullup schaltet. In der Zeit die der Pin auf Masse liegt
+ *  da der Bootloader des groueen einen Input mit Pullup schaltet. In der Zeit die der Pin auf Masse liegt
  *  wird der Count der des Bootloader deaktiviert.
  */
 // includes
@@ -99,20 +99,27 @@ int main(){
 
 				speed_cntr_Move(steps);
 
-			} else if(UART_RxBuffer[0] == 'y'){
+			} else if(UART_RxBuffer[0] == 'y'){ // ask why we reseted
 				uart_SendByte('$');
 				uart_SendByte('y');
 				uart_SendByte(last_rst+'0');
 				uart_SendByte('*');
-				last_rst=0; // setze den status zurück damit wir immer einen frischen abfragen, wenn der große jetzt neustartet aber es steht da power, dann wissen wir, das war nicht der kleine, solange wie nicht wirklich einen powerlost hatten
+				last_rst=0; // setze den status zurueck damit wir immer einen frischen abfragen, wenn der grouee jetzt neustartet aber es steht da power, dann wissen wir, das war nicht der kleine, solange wie nicht wirklich einen powerlost hatten
 				status.cmd = FALSE;
-			} else if(UART_RxBuffer[0]=='p'){
+			} else if(UART_RxBuffer[0]=='p'){ // get position
 				uart_SendByte('$');
 				uart_SendByte('p');
 				uart_SendInt(srd.position);
 				uart_SendByte('*');
 				status.cmd = FALSE;
-			}
+			} else if(UART_RxBuffer[0]=='r'){ // set reset status
+				if(UART_RxBuffer[1]=='0'){
+					reset_global_active=0;
+				} else {
+					reset_global_active=1;
+				};
+				status.cmd = FALSE;
+			};
 		}
 	}//end while(1)
 }
