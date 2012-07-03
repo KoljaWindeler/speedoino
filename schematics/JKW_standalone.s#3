@@ -6725,6 +6725,17 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 <wire x1="1.25" y1="-1" x2="1.25" y2="1" width="0.127" layer="21"/>
 <smd name="V_IN" x="0.775" y="0.55" dx="0.65" dy="0.6" layer="1"/>
 </package>
+<package name="PLCC-4">
+<wire x1="-1.6" y1="-1.35" x2="1.6" y2="-1.35" width="0.127" layer="21"/>
+<wire x1="-1.6" y1="0.75" x2="-1.6" y2="-1.35" width="0.127" layer="21"/>
+<wire x1="1.6" y1="1.35" x2="1.6" y2="-1.35" width="0.127" layer="21"/>
+<smd name="P$1" x="-1.35" y="0.725" dx="0.8" dy="0.75" layer="1"/>
+<smd name="P$2" x="-1.35" y="-0.725" dx="0.8" dy="0.75" layer="1"/>
+<smd name="P$3" x="1.35" y="-0.725" dx="0.8" dy="0.75" layer="1"/>
+<smd name="P$4" x="1.35" y="0.725" dx="0.8" dy="0.75" layer="1"/>
+<wire x1="-1.1" y1="1.35" x2="1.6" y2="1.35" width="0.127" layer="21"/>
+<wire x1="-1.6" y1="0.75" x2="-1.1" y2="1.35" width="0.127" layer="21"/>
+</package>
 </packages>
 <symbols>
 <symbol name="RG_LED">
@@ -6938,6 +6949,23 @@ Mentor SMD Drucktaster 12 V/DC 50 mA Serie 1254 1254.1307  5.2N
 <wire x1="12.7" y1="5.08" x2="-15.24" y2="5.08" width="0.254" layer="94"/>
 <wire x1="-15.24" y1="5.08" x2="-15.24" y2="-5.08" width="0.254" layer="94"/>
 <pin name="EN" x="-10.16" y="-10.16" length="middle" rot="R90"/>
+</symbol>
+<symbol name="LED">
+<pin name="ANODE" x="-5.08" y="0" visible="off" length="short"/>
+<pin name="CATHODE" x="3.048" y="0" visible="off" length="short" rot="R180"/>
+<wire x1="-2.54" y1="1.778" x2="-2.54" y2="-1.778" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="-1.778" x2="0.508" y2="0" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="1.778" x2="0.508" y2="0" width="0.254" layer="94"/>
+<wire x1="0.508" y1="0" x2="0.508" y2="1.778" width="0.254" layer="94"/>
+<wire x1="0.508" y1="0" x2="0.508" y2="-1.778" width="0.254" layer="94"/>
+<wire x1="1.016" y1="1.27" x2="1.778" y2="2.794" width="0.254" layer="94"/>
+<wire x1="1.778" y1="2.794" x2="1.27" y2="2.54" width="0.254" layer="94"/>
+<wire x1="1.27" y1="2.54" x2="1.778" y2="2.286" width="0.254" layer="94"/>
+<wire x1="1.778" y1="2.286" x2="1.778" y2="2.794" width="0.254" layer="94"/>
+<wire x1="2.032" y1="1.016" x2="2.794" y2="2.54" width="0.254" layer="94"/>
+<wire x1="2.794" y1="2.54" x2="2.286" y2="2.286" width="0.254" layer="94"/>
+<wire x1="2.286" y1="2.286" x2="2.794" y2="2.032" width="0.254" layer="94"/>
+<wire x1="2.794" y1="2.032" x2="2.794" y2="2.54" width="0.254" layer="94"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -7176,6 +7204,23 @@ Mouser 81-LXDC2HL33A-055, 2.55€, 3.3V out | 300mA</description>
 <connect gate="G$1" pin="GND" pad="GND"/>
 <connect gate="G$1" pin="V_IN" pad="V_IN"/>
 <connect gate="G$1" pin="V_OUT" pad="V_OUT"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="PLCC4_LED">
+<description>CLM4B-GKW-CWBYA693, Mouser 941-CLM4BGKWCWBYA693, Vin 3.6 - 4.2, If 30mA, 0.223€</description>
+<gates>
+<gate name="G$1" symbol="LED" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="PLCC-4">
+<connects>
+<connect gate="G$1" pin="ANODE" pad="P$1 P$2 P$3"/>
+<connect gate="G$1" pin="CATHODE" pad="P$4"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -22652,13 +22697,11 @@ unfilled</description>
 <part name="C6" library="RCLDT" deviceset="C" device="0805" value="10u/3.3V"/>
 <part name="U$4" library="SUPPLY" deviceset="GND" device=""/>
 <part name="GPS" library="Kolja" deviceset="MT3329" device=""/>
-<part name="R_GR_BL_L" library="OPTO" deviceset="LED" device="0805" value="BL_L"/>
-<part name="D_GR_BLR" library="OPTO" deviceset="LED" device="0805" value="BL_R"/>
 <part name="D_RE_OIL" library="OPTO" deviceset="LED" device="0805" value="OIL M 645-598-8110-107F "/>
 <part name="D_BL_HB" library="OPTO" deviceset="LED" device="0805" value="HighB _  645-598-8191-107F "/>
 <part name="U$11" library="SUPPLY" deviceset="GND" device=""/>
-<part name="R_BL_L" library="RCLDT" deviceset="R" device="0805" value="250R"/>
-<part name="R_BL_R" library="RCLDT" deviceset="R" device="0805" value="250R"/>
+<part name="R_BL_L" library="RCLDT" deviceset="R" device="0805" value="33R"/>
+<part name="R_BL_R" library="RCLDT" deviceset="R" device="0805" value="33R"/>
 <part name="R_OIL" library="RCLDT" deviceset="R" device="0805" value="565R"/>
 <part name="R_HIGHB" library="RCLDT" deviceset="R" device="0805" value="490R"/>
 <part name="R_REED_DOWN" library="RCLDT" deviceset="R" device="0805" value="5k / n.b. (Reed)"/>
@@ -22688,8 +22731,7 @@ unfilled</description>
 <part name="T2" library="RCLDT" deviceset="T-P-FET" device="BSS139" value="Farnell: 1299313 "/>
 <part name="T3" library="RCLDT" deviceset="T-P-FET" device="BSS139" value="Farnell: 1299313 "/>
 <part name="U$21" library="SUPPLY" deviceset="GND" device=""/>
-<part name="D_GR_N" library="OPTO" deviceset="LED" device="0805" value="N _ M 645-598-8110-107F "/>
-<part name="R_N" library="RCLDT" deviceset="R" device="0805" value="560R"/>
+<part name="R_N" library="RCLDT" deviceset="R" device="0805" value="33R"/>
 <part name="5V_F" library="Kolja" deviceset="POLY_FUSE" device="" value="600mA"/>
 <part name="D17" library="RCLDT" deviceset="D-S" device="SMB-A+K" value="SS24"/>
 <part name="12V_F1" library="Kolja" deviceset="POLY_FUSE" device="" value="1.1A"/>
@@ -22828,7 +22870,10 @@ unfilled</description>
 <part name="C28" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
 <part name="C29" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
 <part name="C30" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
-<part name="U$10" library="Kolja" deviceset="LXDC2HL33A-055" device=""/>
+<part name="DC3.3" library="Kolja" deviceset="LXDC2HL33A-055" device=""/>
+<part name="R_GR_BL_L" library="Kolja" deviceset="PLCC4_LED" device=""/>
+<part name="D_GR_BLR" library="Kolja" deviceset="PLCC4_LED" device=""/>
+<part name="D_GR_N" library="Kolja" deviceset="PLCC4_LED" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -23138,12 +23183,6 @@ unfilled</description>
 </instance>
 <instance part="U$4" gate="G$1" x="343" y="157"/>
 <instance part="GPS" gate="G$1" x="297.18" y="139.7" rot="R270"/>
-<instance part="R_GR_BL_L" gate="G$1" x="243.84" y="20.32" smashed="yes" rot="R180">
-<attribute name="NAME" x="238.8616" y="24.8539" size="2.032" layer="95" rot="R270"/>
-</instance>
-<instance part="D_GR_BLR" gate="G$1" x="256.54" y="20.32" smashed="yes" rot="R180">
-<attribute name="NAME" x="251.5616" y="24.8539" size="2.032" layer="95" rot="R270"/>
-</instance>
 <instance part="D_RE_OIL" gate="G$1" x="269.24" y="20.32" smashed="yes" rot="R180">
 <attribute name="NAME" x="264.2616" y="24.8539" size="2.032" layer="95" rot="R270"/>
 </instance>
@@ -23218,9 +23257,6 @@ unfilled</description>
 <instance part="T2" gate="G$1" x="-5.08" y="0" rot="MR90"/>
 <instance part="T3" gate="G$1" x="0" y="10.16" rot="MR90"/>
 <instance part="U$21" gate="G$1" x="10.16" y="15.24" rot="R90"/>
-<instance part="D_GR_N" gate="G$1" x="294.64" y="20.32" smashed="yes" rot="R180">
-<attribute name="NAME" x="289.6616" y="24.8539" size="2.032" layer="95" rot="R270"/>
-</instance>
 <instance part="R_N" gate="G$1" x="294.64" y="7.62" smashed="yes" rot="R90">
 <attribute name="VALUE" x="292.735" y="5.08" size="1.778" layer="96" rot="R90"/>
 </instance>
@@ -23501,7 +23537,10 @@ unfilled</description>
 <attribute name="NAME" x="0" y="55.88" size="2.032" layer="95" rot="MR0"/>
 <attribute name="VALUE" x="5.08" y="60.96" size="1.778" layer="96" rot="MR0"/>
 </instance>
-<instance part="U$10" gate="G$1" x="139.7" y="-2.54" rot="MR270"/>
+<instance part="DC3.3" gate="G$1" x="139.7" y="-2.54" rot="MR270"/>
+<instance part="R_GR_BL_L" gate="G$1" x="243.84" y="20.32" rot="R90"/>
+<instance part="D_GR_BLR" gate="G$1" x="256.54" y="20.32" rot="R90"/>
+<instance part="D_GR_N" gate="G$1" x="294.64" y="20.32" rot="R90"/>
 </instances>
 <busses>
 </busses>
@@ -23558,7 +23597,7 @@ unfilled</description>
 <pinref part="C11" gate="C" pin="2"/>
 <pinref part="C18" gate="C" pin="2"/>
 <pinref part="PWR_R78" gate="G$1" pin="P$2"/>
-<pinref part="U$10" gate="G$1" pin="GND"/>
+<pinref part="DC3.3" gate="G$1" pin="GND"/>
 <wire x1="149.86" y1="-2.54" x2="170.18" y2="-2.54" width="0.1524" layer="91"/>
 <label x="162.56" y="-2.54" size="1.778" layer="95"/>
 <pinref part="C6" gate="C" pin="1"/>
@@ -23786,25 +23825,28 @@ unfilled</description>
 <pinref part="C_QUA_2" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<wire x1="243.84" y1="25.4" x2="243.84" y2="30.48" width="0.1524" layer="91"/>
+<wire x1="243.84" y1="25.4" x2="243.84" y2="23.368" width="0.1524" layer="91"/>
+<wire x1="243.84" y1="23.368" x2="243.84" y2="30.48" width="0.1524" layer="91"/>
 <wire x1="243.84" y1="30.48" x2="256.54" y2="30.48" width="0.1524" layer="91"/>
-<wire x1="256.54" y1="30.48" x2="256.54" y2="25.4" width="0.1524" layer="91"/>
+<wire x1="256.54" y1="30.48" x2="256.54" y2="23.368" width="0.1524" layer="91"/>
+<wire x1="256.54" y1="23.368" x2="256.54" y2="25.4" width="0.1524" layer="91"/>
 <wire x1="256.54" y1="30.48" x2="269.24" y2="30.48" width="0.1524" layer="91"/>
 <wire x1="269.24" y1="30.48" x2="281.94" y2="30.48" width="0.1524" layer="91"/>
 <wire x1="281.94" y1="30.48" x2="281.94" y2="25.4" width="0.1524" layer="91"/>
 <junction x="243.84" y="30.48"/>
 <junction x="256.54" y="30.48"/>
-<pinref part="R_GR_BL_L" gate="G$1" pin="K"/>
 <pinref part="U$11" gate="G$1" pin="GND"/>
-<pinref part="D_GR_BLR" gate="G$1" pin="K"/>
 <pinref part="D_BL_HB" gate="G$1" pin="K"/>
-<pinref part="D_GR_N" gate="G$1" pin="K"/>
 <wire x1="281.94" y1="30.48" x2="294.64" y2="30.48" width="0.1524" layer="91"/>
-<wire x1="294.64" y1="30.48" x2="294.64" y2="25.4" width="0.1524" layer="91"/>
+<wire x1="294.64" y1="30.48" x2="294.64" y2="23.368" width="0.1524" layer="91"/>
 <pinref part="D_RE_OIL" gate="G$1" pin="K"/>
+<wire x1="294.64" y1="23.368" x2="294.64" y2="25.4" width="0.1524" layer="91"/>
 <wire x1="269.24" y1="25.4" x2="269.24" y2="30.48" width="0.1524" layer="91"/>
 <junction x="269.24" y="30.48"/>
 <junction x="281.94" y="30.48"/>
+<pinref part="R_GR_BL_L" gate="G$1" pin="CATHODE"/>
+<pinref part="D_GR_N" gate="G$1" pin="CATHODE"/>
+<pinref part="D_GR_BLR" gate="G$1" pin="CATHODE"/>
 </segment>
 <segment>
 <pinref part="R_REED_DOWN" gate="G$1" pin="2"/>
@@ -24249,13 +24291,14 @@ unfilled</description>
 <pinref part="5V_F" gate="G$1" pin="P$1"/>
 <wire x1="209.55" y1="33.02" x2="208.28" y2="33.02" width="0.1524" layer="91"/>
 <wire x1="170.18" y1="10.16" x2="165.1" y2="10.16" width="0.1524" layer="91"/>
-<pinref part="U$10" gate="G$1" pin="V_IN"/>
-<pinref part="U$10" gate="G$1" pin="EN"/>
+<pinref part="DC3.3" gate="G$1" pin="V_IN"/>
+<pinref part="DC3.3" gate="G$1" pin="EN"/>
 <wire x1="149.86" y1="7.62" x2="165.1" y2="7.62" width="0.1524" layer="91"/>
 <wire x1="165.1" y1="7.62" x2="165.1" y2="2.54" width="0.1524" layer="91"/>
 <wire x1="165.1" y1="2.54" x2="149.86" y2="2.54" width="0.1524" layer="91"/>
 <wire x1="165.1" y1="7.62" x2="165.1" y2="10.16" width="0.1524" layer="91"/>
 <junction x="165.1" y="7.62"/>
+<junction x="215.9" y="33.02"/>
 </segment>
 <segment>
 <wire x1="-256.54" y1="220.98" x2="-259.08" y2="220.98" width="0.1524" layer="91"/>
@@ -24501,7 +24544,7 @@ unfilled</description>
 <wire x1="154.94" y1="-22.86" x2="142.24" y2="-22.86" width="0.1524" layer="91"/>
 <label x="139.7" y="-22.86" size="1.778" layer="95"/>
 <pinref part="C6" gate="C" pin="2"/>
-<pinref part="U$10" gate="G$1" pin="V_OUT"/>
+<pinref part="DC3.3" gate="G$1" pin="V_OUT"/>
 <wire x1="149.86" y1="-7.62" x2="154.94" y2="-7.62" width="0.1524" layer="91"/>
 <wire x1="154.94" y1="-7.62" x2="154.94" y2="-15.24" width="0.1524" layer="91"/>
 <junction x="154.94" y="-15.24"/>
@@ -25605,15 +25648,15 @@ unfilled</description>
 <net name="N$33" class="0">
 <segment>
 <wire x1="243.84" y1="15.24" x2="243.84" y2="12.7" width="0.1524" layer="91"/>
-<pinref part="R_GR_BL_L" gate="G$1" pin="A"/>
 <pinref part="R_BL_L" gate="G$1" pin="2"/>
+<pinref part="R_GR_BL_L" gate="G$1" pin="ANODE"/>
 </segment>
 </net>
 <net name="N$34" class="0">
 <segment>
-<wire x1="256.54" y1="12.7" x2="256.54" y2="15.24" width="0.1524" layer="91"/>
-<pinref part="D_GR_BLR" gate="G$1" pin="A"/>
 <pinref part="R_BL_R" gate="G$1" pin="2"/>
+<pinref part="D_GR_BLR" gate="G$1" pin="ANODE"/>
+<wire x1="256.54" y1="15.24" x2="256.54" y2="12.7" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$39" class="0">
@@ -26156,8 +26199,8 @@ unfilled</description>
 <net name="N$28" class="0">
 <segment>
 <pinref part="R_N" gate="G$1" pin="2"/>
-<pinref part="D_GR_N" gate="G$1" pin="A"/>
 <wire x1="294.64" y1="15.24" x2="294.64" y2="12.7" width="0.1524" layer="91"/>
+<pinref part="D_GR_N" gate="G$1" pin="ANODE"/>
 </segment>
 </net>
 <net name="BL_R_IN_H" class="0">
