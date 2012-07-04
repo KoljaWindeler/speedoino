@@ -52,7 +52,8 @@ typedef struct {
  * the timer1 frequency is the clock frequency divided by 8.
  */
 // Timer/Counter 1 running on 4mhz
-#define T1_FREQ F_CPU
+//#define T1_FREQ F_CPU
+#define T1_FREQ 460750
 
 //! Number of (full)steps per round on stepper motor in use.
 #define FSPR 781

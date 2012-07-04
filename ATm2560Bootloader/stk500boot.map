@@ -117,7 +117,7 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x000000000003e000      0x84a
+.text           0x000000000003e000      0x85e
  *(.vectors)
  .vectors       0x000000000003e000       0xe4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
                 0x000000000003e000                __vectors
@@ -230,20 +230,20 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
                 0x000000000003e126                __vector_18
                 0x000000000003e126                __vector_20
                 0x000000000003e126                __vector_42
- .text          0x000000000003e12a      0x71c stk500boot.o
+ .text          0x000000000003e12a      0x730 stk500boot.o
                 0x000000000003e142                delay_ms
                 0x000000000003e160                main
- .text          0x000000000003e846        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .text          0x000000000003e846        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
-                0x000000000003e846                . = ALIGN (0x2)
+ .text          0x000000000003e85a        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .text          0x000000000003e85a        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+                0x000000000003e85a                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x000000000003e846        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .text.libgcc   0x000000000003e846        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
-                0x000000000003e846                . = ALIGN (0x2)
+ .text.libgcc   0x000000000003e85a        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .text.libgcc   0x000000000003e85a        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+                0x000000000003e85a                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000000000003e846        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
-                0x000000000003e846                exit
-                0x000000000003e846                _exit
+ .fini9         0x000000000003e85a        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+                0x000000000003e85a                exit
+                0x000000000003e85a                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -262,11 +262,11 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000000000003e846        0x4 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .fini0         0x000000000003e85a        0x4 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
  *(.fini0)
-                0x000000000003e84a                _etext = .
+                0x000000000003e85e                _etext = .
 
-.data           0x0000000000800200       0x14 load address 0x000000000003e84a
+.data           0x0000000000800200       0x14 load address 0x000000000003e85e
                 0x0000000000800200                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800200        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
@@ -292,8 +292,8 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
  *(.bss*)
  *(COMMON)
                 0x0000000000800214                PROVIDE (__bss_end, .)
-                0x000000000003e84a                __data_load_start = LOADADDR (.data)
-                0x000000000003e85e                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x000000000003e85e                __data_load_start = LOADADDR (.data)
+                0x000000000003e872                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0000000000800214        0x0
                 0x0000000000800214                PROVIDE (__noinit_start, .)

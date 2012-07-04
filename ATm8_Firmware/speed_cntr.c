@@ -53,7 +53,7 @@ void speed_cntr_Move(signed int soll_pos){
 	//! Number of steps before we hit max speed.
 	unsigned int step_to_max_speed;
 	unsigned int differ_steps;
-	unsigned int accel=240;
+	unsigned int accel=240*8;
 	int speed=0;
 
 	if(soll_pos>MAX_POS) soll_pos=MAX_POS;
@@ -110,7 +110,8 @@ void speed_cntr_Move(signed int soll_pos){
 		srd.step_delay = 1000;
 		OCR1A = 10;
 		// Run Timer/Counter 1 with prescaler = 1.
-		TCCR1B |= (1<<CS10);
+		//TCCR1B |= (1<<CS10);
+		TCCR1B |= ((0<<CS12)|(1<<CS11)|(0<<CS10));
 	}
 	// Only move if number of steps to move is not zero.
 	else if(differ_steps > 1){
@@ -173,7 +174,8 @@ void speed_cntr_Move(signed int soll_pos){
 			}
 
 			OCR1A = 10; 			// mach mal ein paar schritte (10)
-			TCCR1B |= (1<<CS10);	// Set Timer/Counter to divide clock by 1
+			//TCCR1B |= (1<<CS10);	// Set Timer/Counter to divide clock by 1
+			TCCR1B |= ((0<<CS12)|(1<<CS11)|(0<<CS10));
 
 		} else if(srd.run_state==RUN){
 			//uart_SendString("3\r\n");
@@ -325,7 +327,9 @@ ISR(TIMER1_COMPA_vect){
 
 		rest = 0;
 		// Stop Timer/Counter 1.
-		TCCR1B &= ~(1<<CS10 | 1<<CS11);
+		//TCCR1B &= ~(1<<CS10 | 1<<CS11);
+		TCCR1B &= ~(1<<CS10 | 1<<CS11 | 1<<CS12);
+
 
 		char temp[20];
 		sprintf(temp,"Stop,%i\r\n",srd.position);
