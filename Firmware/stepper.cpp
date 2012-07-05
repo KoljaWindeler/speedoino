@@ -25,7 +25,7 @@ bool speedo_stepper::go_to(int winkel,int overwrite){
 	Serial3.print("$m");
 	Serial3.print(winkel);
 	Serial3.print("*");
-
+//
 //	Serial.print(millis());
 //	Serial.print(",");
 //	Serial.println(winkel);

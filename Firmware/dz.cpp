@@ -95,7 +95,7 @@ void speedo_dz::calc() {
 		previous_time=now;
 	};
 
-	if(DEMO_MODE){
+	if(DEMO_MODE || false){
 		if(differ>250){
 			previous_time=now;
 			int temp=analogRead(OIL_TEMP_PIN)-180;
