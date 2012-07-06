@@ -77,7 +77,7 @@ void speedo_dz::calc() {
 		//exact=dz;
 		exact=pSensors->flatIt(dz,&dz_faktor_counter,4,exact);						// IIR mit Rückführungsfaktor 3 für DZmotor
 		exact_disp=pSensors->flatIt(dz,&dz_disp_faktor_counter,20,exact_disp);		// IIR mit Rückführungsfaktor 19 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
-		rounded=250*round(exact_disp/250); 											// auf 250er Runden
+		rounded=50*round(exact_disp/50); 											// auf 250er Runden
 		/* values */
 
 		/* gear */

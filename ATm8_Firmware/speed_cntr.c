@@ -108,7 +108,7 @@ void speed_cntr_Move(signed int soll_pos){
 			// Set accelration by calc the first (c0) step delay .
 			// step_delay = 1/tt * sqrt(2*alpha/accel)
 			// step_delay = ( tfreq*0.676/100 )*100 * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-			srd.step_delay = (T1_FREQ_148 * sqrt_2(A_SQ / accel))/100;
+			srd.step_delay = (T1_FREQ_148 * sqrt_2(A_SQ / accel))/240; // changed 5/7/2012 from /100
 
 			// Find out after how many steps does the speed hit the max speed limit.
 			// step_to_max_speed = speed^2 / (2*alpha*accel)
