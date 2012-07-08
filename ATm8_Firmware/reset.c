@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <avr/iom8.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdlib.h>
@@ -9,7 +10,7 @@
 
 void reset_init(){
 	// IO konfigurieren - LED's
-	DDRD = 0x00 |(1<<PD5) |(1<<PD6) |(1<<PD7); // 3x led AUSGANG
+	DDRD = 0x00 |(1<<PD4) |(1<<PD5) |(1<<PD6) |(1<<PD7); // 3x led AUSGANG, d4=Powerchecker
 	PORTD = 0xFF & ~((1<<PD7) | (1<<PD6) | (1<<PD5) | (1<<PD3)); // alle LEDs an, alle einguenge auf pullup bis auf D3, 20 - 50 kR => 0.1 - 0.25 mA
 
 	// interrupts aktivieren
@@ -117,8 +118,6 @@ ISR(TIMER0_OVF_vect){
 	};
 };
 	
-
-
 
 // interrupt handle fuer pin-pd2, hier huengt der BT empfuenger dran
 // reagiert auf jede Flanke

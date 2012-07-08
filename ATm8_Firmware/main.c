@@ -39,11 +39,13 @@
  */
 // includes
 #include <avr/io.h>
+#include <avr/iom8.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "global.h"
 #include "uart.h"
 #include "sm_driver.h"
@@ -54,7 +56,7 @@ speedRampData srd;
 
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 volatile struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
-
+bool emergency_shutdown=false;
 
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 void Init(void)
@@ -83,8 +85,8 @@ void Init(void)
 int main(){
 	Init();
 	while(1) {
+		check_power_state();
 		// If a command is received, check the command and act on it.
-
 		if(status.cmd == TRUE){
 			if(UART_RxBuffer[0] == 'm'){
 				status.cmd = FALSE;
@@ -119,7 +121,38 @@ int main(){
 					reset_global_active=1;
 				};
 				status.cmd = FALSE;
-			};
+			} else if(UART_RxBuffer[0] == 'o'){
+				status.cmd = FALSE;
+				int new_position=UART_RxBuffer[1]-'0';
+				int i=2;
+				while(UART_RxBuffer[i]!=0x00){
+					new_position=new_position*10+UART_RxBuffer[i]-'0';
+					i++;
+				}
+				if(new_position>2000) new_position=2000;
+				if(new_position<0) new_position=0;
+
+				if(srd.run_state==STOP){
+					srd.position=new_position;
+				};
+
+			}
+
 		}
 	}//end while(1)
 }
+
+void check_power_state(){
+	if(bit_is_clear(PIND,4)){ // kein Spannung mehr auf dem Pin, vor der Diode
+		GICR  &= ~((1<<INT0) | (1<<INT1));	//Global Interrupt Flag deaktivieren fuer INT0 und INT1
+		PORTD &= ~(1 << RST_LED); // led aus strom sparen
+		PORTD &= ~(1 << BT_LED); // led aus
+		PORTD &= ~(1 << AVR_LED); // led aus
+		emergency_shutdown=true;
+		speed_cntr_Move(0);
+	} else if(emergency_shutdown){
+		// ups, doch strom wieder da
+		GICR  |= (1<<INT0) | (1<<INT1);				//Global Interrupt Flag fuer INT0 und INT1
+		emergency_shutdown=false;
+	}
+};
