@@ -17,11 +17,19 @@ speedo_stepper::~speedo_stepper(){
 void speedo_stepper::init(){
 	Serial3.begin(19200); // macht eigentlich schon der reset, aber zur sicherheit
 	Serial3.flush();
-	init_steps_to_go=2;
-	go_to(MOTOR_OVERWRITE_END_POS,1);
+	init_steps_to_go=3;
+	overwrite_pos(200);
+	go_to(0);
 };
 
-bool speedo_stepper::go_to(int winkel,int overwrite){
+void speedo_stepper::overwrite_pos(int new_pos){
+	Serial3.flush();
+	Serial3.print("$o");
+	Serial3.print(new_pos);
+	Serial3.print("*");
+}
+
+bool speedo_stepper::go_to(int winkel){
 	Serial3.print("$m");
 	Serial3.print(winkel);
 	Serial3.print("*");

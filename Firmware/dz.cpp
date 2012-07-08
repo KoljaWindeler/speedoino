@@ -38,30 +38,36 @@ void speedo_dz::calc() {
 	unsigned long differ=now-previous_time; 								// zeit seit dem letzte mal abholen der daten
 	unsigned int  now_peaks=peak_count; 									// aktueller dz zähler stand, separate var damit der peakcount weiter verndert werden koennte
 	if(pAktors->m_stepper->init_steps_to_go!=0){
-		if(pAktors->m_stepper->init_steps_to_go>=2){
+		if(pAktors->m_stepper->init_steps_to_go>=3){
+			if(pAktors->m_stepper->get_pos()!=0){		//
+				pAktors->m_stepper->go_to(0);
+			} else {
+				pAktors->m_stepper->init_steps_to_go=2; 					// nächsten schritt vorbereiten
+			}
+		} else if(pAktors->m_stepper->init_steps_to_go==2){
 			if(pAktors->m_stepper->get_pos()!=MOTOR_OVERWRITE_END_POS){		// motor noch nicht am ende angekommen
-				pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS,0); 		// weiter dorthin scheuchen
+				pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS); 		// weiter dorthin scheuchen
 			} else { 														// motor angekommen
 				pAktors->m_stepper->init_steps_to_go=1; 					// nächsten schritt vorbereiten
 			}
 		} else if(pAktors->m_stepper->init_steps_to_go==1){
 			if(pAktors->m_stepper->get_pos()!=0){   						// motor noch nicht am anfang angekommen
-				pAktors->m_stepper->go_to(0,0); 							// weiter dorthin scheuchen
+				pAktors->m_stepper->go_to(0); 							// weiter dorthin scheuchen
 			} else { 														// motor angekommen
 				pAktors->m_stepper->init_steps_to_go=0; 					// fertig
 			}
 		}
-	} else 	if(now_peaks>4 && differ>100){ 									// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+	} else 	if(now_peaks>4 && differ>10){ 									// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
 		//now_peaks=now_peaks>>anzahl_shift;								// könnte ja sein das man weniger umdrehungen als funken hat, hornet hat 2 Funken je Umdrehun
-		/* bei 15krpm = 25 peaks
-		 * differ => 100 --> 60000/100=600
-		 * 600 * 25 => 15.000
-		 *
-		 * bei 1400rpm => 685 ms f
-		 * r 16 Peaks
-		 * 60000/685 = 88
-		 * 88 * 16 = 1408
-		 */
+		// die maximale übertragungsrate zwischen ATm8 und ATm2560 sollte nicht überschritten werden
+		// pro Übertragung werden benötigt: 19200 Baud, 2400 Byte/sek, 7 Byte, 2,916667 ms, machen wir mal 10 ms draus.
+		// bei 15.000 U/min => 250 U/sec
+		// da bei der Hornet 2 Zündungen pro Umdrehung vorkommen
+		// 500 Pulse / sec => 2ms zwischen 2 Pulsen, 5 Pulse in 10 ms
+		//
+		// bei 1.300 U/min => 21,6 U/min
+		// 43 Pulse / sec => 23ms zwischen 2 Pulsen, 5 Pulse in 116,27ms
+
 		unsigned int dz=60000/differ*now_peaks/2; // Drehzahl berechnet (60.000 weil ms => min)
 		if(dz>15000){ // wenn man über 15000 U/min => Abstand von 2 Zündungen = 60000[ms/min]/15000[U/min] = 4 [ms/U]
 			dz=previous_dz; // alten Wert halten, kann nicht sein
@@ -75,23 +81,23 @@ void speedo_dz::calc() {
 
 		/* values */
 		//exact=dz;
-		exact=pSensors->flatIt(dz,&dz_faktor_counter,4,exact);						// IIR mit Rückführungsfaktor 3 für DZmotor
-		exact_disp=pSensors->flatIt(dz,&dz_disp_faktor_counter,20,exact_disp);		// IIR mit Rückführungsfaktor 19 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
+		exact=pSensors->flatIt(dz,&dz_faktor_counter,2,exact);						// IIR mit Rückführungsfaktor 1 für DZmotor
+		exact_disp=pSensors->flatIt(dz,&dz_disp_faktor_counter,10,exact_disp);		// IIR mit Rückführungsfaktor 9 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
 		rounded=50*round(exact_disp/50); 											// auf 250er Runden
 		/* values */
 
 		/* gear */
-		pSensors->m_gear->calc();// alle 250 ms, also mit 4Hz den Gang berechnen
+		pSensors->m_gear->calc();// blockt intern alle aufrufe die vor ablauf von 250 ms kommen
 		/* gear */
 
 		/*stepper*/
-		pAktors->m_stepper->go_to(exact/11.73,0); // einfach mal probieren, sonst flatit
+		pAktors->m_stepper->go_to(exact/11.73); // einfach mal probieren, sonst flatit
 		/*stepper*/
 	} else if(now-previous_time>500){
 		rounded=0;
 		exact=0;
 		// zeiger
-		pAktors->m_stepper->go_to(0,0);
+		pAktors->m_stepper->go_to(0);
 		previous_time=now;
 	};
 
@@ -113,7 +119,7 @@ void speedo_dz::calc() {
 			pSensors->m_gear->calc();
 			// zeiger
 			// 2 => 2*880=> 2k stepper
-			pAktors->m_stepper->go_to(round(exact/11.73),0);
+			pAktors->m_stepper->go_to(round(exact/11.73));
 
 
 

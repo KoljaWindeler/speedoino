@@ -25,6 +25,9 @@ public:
 	// used to calibration mode && to calc to gear in speedo mode
 	float faktor_flat;
 	unsigned char faktor_counter;
+
+private:
+	unsigned long last_time_executed;
 };
 
 

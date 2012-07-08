@@ -25,6 +25,7 @@ speedo_gear::~speedo_gear(){
 void speedo_gear::init(){
 	pinMode(kupplungs_pin,INPUT);
 	digitalWrite(kupplungs_pin,HIGH); // input mit pull up
+	last_time_executed=millis();
 }
 
 bool speedo_gear::check_vars(){
@@ -52,48 +53,38 @@ void speedo_gear::clear_vars(){
 
 /* prozedure wird alle 250 ms aufgerufen und ermittelt den gang, packt ihn in ein tiefpass und stellt das ergebniss zur verfügung */
 void speedo_gear::calc(){
-	// faktor berechnen
-	if(pSensors->m_speed->get_mag_speed()>0){ // ich fahre also mit min 4 km/h .. dadurch wird der faktor max 15000/4=3500 .. das mal 16 ist noch im INT bereich
-		if(!digitalRead(kupplungs_pin) && faktor_counter!=0){//Kupplung gezogen, einmalig laut geben was seit dem letzten mal so an min und max und flat ausgekommen ist
-			faktor_counter=0; // damit nach dem kuppeln die alten werte verworfen werden
-		} else if(digitalRead(kupplungs_pin)) { // Kupplung nicht gezogen, also gang berechnen
-			int faktor=pSensors->m_dz->exact/pSensors->m_speed->get_mag_speed(); // wie ist denn wohl der faktor
-			faktor_flat=pSensors->flatIt(faktor*10,&faktor_counter,8,faktor_flat); // mal sehen ob man so eine art tiefpass faktor sinnvoll nutzen kann
+	if(millis()-last_time_executed>250){
+		last_time_executed=millis();
+
+		// faktor berechnen
+		if(pSensors->m_speed->get_mag_speed()>0){ // ich fahre also mit min 4 km/h .. dadurch wird der faktor max 15000/4=3500 .. das mal 16 ist noch im INT bereich
+			if(!digitalRead(kupplungs_pin) && faktor_counter!=0){//Kupplung gezogen, einmalig laut geben was seit dem letzten mal so an min und max und flat ausgekommen ist
+				faktor_counter=0; // damit nach dem kuppeln die alten werte verworfen werden
+			} else if(digitalRead(kupplungs_pin)) { // Kupplung nicht gezogen, also gang berechnen
+				int faktor=pSensors->m_dz->exact/pSensors->m_speed->get_mag_speed(); // wie ist denn wohl der faktor
+				faktor_flat=pSensors->flatIt(faktor*10,&faktor_counter,8,faktor_flat); // mal sehen ob man so eine art tiefpass faktor sinnvoll nutzen kann
 
 
-			//n_gang[1]=1350 // übersetzung gang 1
-			//n_gang[2]=900  // übersetzung gang 2
-			//n_gang[3]=725  // übersetzung gang 3
-			//n_gang[4]=600  // übersetzung gang 4
-			//n_gang[5]=518  // übersetzung gang 5
-			//n_gang[6]=442  // übersetzung gang 6
+				//n_gang[1]=1350 // übersetzung gang 1
+				//n_gang[2]=900  // übersetzung gang 2
+				//n_gang[3]=725  // übersetzung gang 3
+				//n_gang[4]=600  // übersetzung gang 4
+				//n_gang[5]=518  // übersetzung gang 5
+				//n_gang[6]=442  // übersetzung gang 6
 
-			if(faktor_flat>=n_gang[6]*0.9 && faktor_flat<=n_gang[1]*1.3){ // 1755 - 397
-				unsigned int abstand=n_gang[1]; // 1350
-				for(int a=1; a<=6; a++){
-					if( abs(faktor_flat-n_gang[a]) < abstand ){
-						abstand=abs(faktor_flat-n_gang[a]);
-						gang=a;
+				if(faktor_flat>=n_gang[6]*0.9 && faktor_flat<=n_gang[1]*1.3){ // 1755 - 397
+					unsigned int abstand=n_gang[1]; // 1350
+					for(int a=1; a<=6; a++){
+						if( abs(faktor_flat-n_gang[a]) < abstand ){
+							abstand=abs(faktor_flat-n_gang[a]);
+							gang=a;
+						}
 					}
-				}
-			};
-
-			//			char a_faktor[5]; // XXXX[\0]
-			//			sprintf(a_faktor,"%04i",faktor_flat%10000);
-			//			pOLED->string(pSpeedo->default_font,a_faktor,17,1,0,DISP_BRIGHTNESS,0);
-
-			//			if(faktor_flat>=n_gang[6] && faktor_flat<=n_gang[0]){ // faktor 		// 1700 - 0400 //
-			//				if     (faktor_flat<n_gang[0] && faktor_flat>=n_gang[1]){  gang=1; }// 1700 - 1000 // 1350
-			//				else if(faktor_flat<n_gang[1] && faktor_flat>=n_gang[2]){  gang=2; }// 1000 - 0800 // 900
-			//				else if(faktor_flat<n_gang[2] && faktor_flat>=n_gang[3]){  gang=3; }// 0800 - 0650 // 725
-			//				else if(faktor_flat<n_gang[3] && faktor_flat>=n_gang[4]){  gang=4; }// 0650 - 0550 // 600
-			//				else if(faktor_flat<n_gang[4] && faktor_flat>=n_gang[5]){  gang=5; }// 0550 - 0485 // 518
-			//				else if(faktor_flat<n_gang[5] && faktor_flat>=n_gang[6]){  gang=6; }// 0485 - 0400 // 442
-			//			};
-
-		}
-	} else { // wenn ich gar nicht fahre ..
-		gang=-1;  // hier 0 einsetzen für "N" bei 0 km/h oder -1 für keine Ausgabe bei 0 km/h
+				};
+			}
+		} else { // wenn ich gar nicht fahre ..
+			gang=-1;  // hier 0 einsetzen für "N" bei 0 km/h oder -1 für keine Ausgabe bei 0 km/h
+		};
 	};
 }
 
