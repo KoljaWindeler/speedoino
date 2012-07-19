@@ -7,11 +7,15 @@
 #include <stdint.h>
 #include "global.h"
 #include "reset.h"
+int ledstate=0;
 
 void reset_init(){
 	// IO konfigurieren - LED's
-	DDRD = 0x00 |(1<<PD4) |(1<<PD5) |(1<<PD6) |(1<<PD7); // 3x led AUSGANG, d4=Powerchecker
-	PORTD = 0xFF & ~((1<<PD7) | (1<<PD6) | (1<<PD5) | (1<<PD3)); // alle LEDs an, alle einguenge auf pullup bis auf D3, 20 - 50 kR => 0.1 - 0.25 mA
+	//DDRD 0=eingang, 1=ausgang
+	//PORTD 1=pullup 0=kein pullup
+	DDRD = 0x00 |(1<<PD5) |(1<<PD6) |(1<<PD7); // 3x led AUSGANG,
+	PORTD = 0x00; // kein Pull up, zwei eingänge die getrieben werden, eine RX/TX Leitung und die LEDS werden selbst gesteuert
+	//0xFF & ~((1<<PD7) | (1<<PD6) | (1<<PD5) | (1<<PD3)); // alle LEDs an, alle einguenge auf pullup bis auf D3, 20 - 50 kR => 0.1 - 0.25 mA
 
 	// interrupts aktivieren
 	MCUCR |= (1<<ISC00) | (1<<ISC10);           //jede Flanke von INT0 oder INT1 als auslueser
@@ -23,7 +27,7 @@ void reset_init(){
 	reset_led=0; // damit die am anfang etwas leuchtet, show ...
 	reset_bt_running=0; // 1=bt reset am laufen, 0=nix
 	reset_avr_running=0;// 1=avr reset am laufen, 0=nix
-	reset_global_active=1; // 1 = active, 0 = inactive
+	reset_global_active=0; // 1 = active, 0 = inactive
 	last_avr_state=0; // 1=letzte flanke war steigend,0=fallend
 	last_bt_state=0;  // 1=letzte flanke war steigend,0=fallend
 	last_rst=0;
@@ -63,7 +67,7 @@ void reset(int spezial_down){
 		_delay_ms(200);
 
 		// 6.
-		DDRC   &= ~(1<<PC5) ; // Reset ausgang wieder auf zuhueren schalten
+		DDRC   &= ~(1<<PC5) ; // Reset ausgang wieder auf zuhoeren schalten
 		PORTC  |= 1<<PC5; // und ihm ein pull up geben
 
 		// 7. eventuell mehr warten, dann aber zurueck als input
@@ -85,25 +89,29 @@ void reset(int spezial_down){
 };
 
 void config_timer0(){
-	// Timer/Counter 0 prescaler 64 => 8Mhz 125khz
+	// Timer/Counter 0 prescaler 64 => 4Mhz 63,5khz
 	TCCR0 = (1<<CS01) | (1<<CS00);
 	// Timer/Counter 0 Overflog timer0 interrupt
 	TIMSK |= (1<<TOIE0) ;
 }
 
 /* overflow vom timer 0 ..
- * 256*64/8.000.000 = 2,048ms
- * 100 * 2,048 = 204,8 ms zum ausluesen, weil es aber mehr als 2 Herz sind und wir auf beide flanken triggern, -> >4Hz -> <250ms
-*/
+ * prescale 64, cpu_freq=4mhz => 64/4.000.000 = 0,000016sec each increment
+ * Timer0 is a 8-Bit Timer => 2⁸=256 Counts to overflow = 0,000016sec*256=0,004096 sec= 4,096 ms
+ * Bluetooth pin is: 312ms high,312ms low, we have an interrupt on pin change so we can reset after (312/4,096)*1,1 where 10% is safety
+ * 84 Timer overruns is max
+ *
+ * AVR: Lets say 15sec, 15/0,004=3750 Overruns
+ */
 ISR(TIMER0_OVF_vect){
 	if(reset_global_active){//wenn es high ist soll resetet werden
-		if(counter_bt>=100 && !reset_bt_running && counter_bt_init>10){ //
+		if(counter_bt>=84 && !reset_bt_running && counter_bt_init>10){ //
 			reset_bt_running=1;
 			reset(1);
 			last_rst=2;
 		}
 		
-		if(counter_avr>=5000 && !reset_avr_running){ // 5000 * 1/1000khz => 5sec
+		if(counter_avr>=3750 && !reset_avr_running){
 			reset_avr_running=1;
 			reset(1); // run reset ohne langen bootloader quatsch
 			last_rst=1;

@@ -82,6 +82,11 @@ void InitUART(void)
 	UART_state = 0;
 }
 
+void disable_uart(){
+	UBRRH = 0x00;
+	UBRRL = 0x00;
+	UCSRB = 0x00;
+};
 
 
 /*! \brief send a byte.

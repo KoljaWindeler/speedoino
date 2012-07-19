@@ -56,13 +56,21 @@ speedRampData srd;
 
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 volatile struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
-bool emergency_shutdown=false;
-
+bool emergency_shutdown;
+bool emergency_extra_pos_offset_set;
+unsigned char voltage_down_counter=0;
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 void Init(void)
 {
+	emergency_shutdown=false;
+	emergency_extra_pos_offset_set=false;
+
+	DDRB=0x00;
+	DDRC=0x00;
+	DDRD=0x00;
 	// Init of motor driver IO pins
 	sm_driver_Init_IO();
+
 	// Init of uart
 	InitUART();
 	// Init Reset,LED Pins
@@ -88,7 +96,7 @@ int main(){
 		check_power_state();
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
-			if(UART_RxBuffer[0] == 'm'){
+			if(UART_RxBuffer[0] == 'm'){ // move
 				status.cmd = FALSE;
 				int steps=UART_RxBuffer[1]-'0';
 				int i=2;
@@ -121,7 +129,7 @@ int main(){
 					reset_global_active=1;
 				};
 				status.cmd = FALSE;
-			} else if(UART_RxBuffer[0] == 'o'){
+			} else if(UART_RxBuffer[0] == 'o'){ // set offset
 				status.cmd = FALSE;
 				int new_position=UART_RxBuffer[1]-'0';
 				int i=2;
@@ -142,17 +150,45 @@ int main(){
 	}//end while(1)
 }
 
+void check_helper(){
+	if(bit_is_clear(PIND,4)){
+		uart_SendString("$");
+	}
+}
+
 void check_power_state(){
 	if(bit_is_clear(PIND,4)){ // kein Spannung mehr auf dem Pin, vor der Diode
-		GICR  &= ~((1<<INT0) | (1<<INT1));	//Global Interrupt Flag deaktivieren fuer INT0 und INT1
-		PORTD &= ~(1 << RST_LED); // led aus strom sparen
-		PORTD &= ~(1 << BT_LED); // led aus
-		PORTD &= ~(1 << AVR_LED); // led aus
-		emergency_shutdown=true;
-		speed_cntr_Move(0);
-	} else if(emergency_shutdown){
-		// ups, doch strom wieder da
-		GICR  |= (1<<INT0) | (1<<INT1);				//Global Interrupt Flag fuer INT0 und INT1
-		emergency_shutdown=false;
-	}
+		voltage_down_counter++;
+		// wenn der counter nicht geht, erstmal mit 100nF probieren und dann vielleicht als PullUp auslegen?
+		if(voltage_down_counter>10){ // ~ 50µsec direkt nacheinander
+			// input interrupts für reset abwerfen
+			GICR  &= ~((1<<INT0) | (1<<INT1));	//Global Interrupt Flag deaktivieren fuer INT0 und INT1
+			TIMSK &= ~(1<<TOIE0); // Timer overrun aus
+
+			// Kommunikation weg
+			disable_uart();
+
+			// LED's ausklinken
+			DDRB = 0x00;
+			PORTB = 0x00;
+			//		PORTC &= 0x00; // motor abwerfen ...  ahh dumme idee
+			DDRD = 0x00;
+			PORTD = 0x00;
+
+			// merken das wir im shutdown sind
+			emergency_shutdown=true;
+
+			// fahrt anstarten
+			srd.position=250;
+			speed_cntr_Move(0);
+		}
+	} else {
+		voltage_down_counter=0;
+		if(emergency_shutdown){
+			// ups, doch strom wieder da
+			Init();
+			srd.position=200;
+			speed_cntr_Move(0);
+		} // return from emergency
+	} // voltage is up
 };

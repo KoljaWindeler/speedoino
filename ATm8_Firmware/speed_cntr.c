@@ -49,26 +49,26 @@ extern speedRampData srd;
  */
 void speed_cntr_Move(signed int soll_pos){
 
-
 	//! Number of steps before we hit max speed.
 	unsigned int step_to_max_speed;
 	unsigned int differ_steps;
 	unsigned int accel=240*8;
 	int speed=0;
+	speedRampData srd_next=srd; // copy all facts
 
 	if(soll_pos>MAX_POS) soll_pos=MAX_POS;
 	if(soll_pos<=0) soll_pos=0;
 
 	// Set direction from differ of step value.
-	if(soll_pos < srd.position){
-		srd.dir_next = CCW;
-		differ_steps=srd.position-soll_pos;
-		speed=srd.position-soll_pos; //"8/3"
+	if(soll_pos < srd_next.position){
+		srd_next.dir_next = CCW;
+		differ_steps=srd_next.position-soll_pos;
+		speed=srd_next.position-soll_pos; //"8/3"
 	}
 	else{
-		srd.dir_next = CW;
-		differ_steps=soll_pos-srd.position;
-		speed=soll_pos-srd.position; //"8/3"
+		srd_next.dir_next = CW;
+		differ_steps=soll_pos-srd_next.position;
+		speed=soll_pos-srd_next.position; //"8/3"
 	}
 
 
@@ -79,36 +79,38 @@ void speed_cntr_Move(signed int soll_pos){
 		speed=800;
 	}
 
+	//if(differ_steps < 0){ differ_steps=0; };
 
 	// If moving only 1 step.
 	if(differ_steps == 1){
 		// Move one step...
-		srd.accel_steps = -1;
+		srd_next.accel_steps = -1;
 		// ...in DECEL state.
-		srd.run_state = DECEL;
+		srd_next.run_state = DECEL;
 		// Just a short delay so main() can act on 'running'.
-		srd.step_delay = 1000;
+		srd_next.step_delay = 1000;
 		OCR1A = 10;
 		// Run Timer/Counter 1 with prescaler = 1.
 		//TCCR1B |= (1<<CS10);
+
 		TCCR1B |= ((0<<CS12)|(1<<CS11)|(0<<CS10));
 	}
 	// Only move if number of steps to move is not zero.
 	else if(differ_steps > 1){
 
 		// Refer to documentation for detailed information about these calculations.
-		if(srd.run_state==STOP){
-			srd.dir=srd.dir_next; // now set previous saved direction
+		if(srd_next.run_state==STOP){
+			srd_next.dir=srd_next.dir_next; // now set previous saved direction
 			// Set max speed limit, by calc min_delay to use in timer.
 			// min_delay = (alpha / tt)/ w
-			srd.min_delay = A_T_x100 / speed; // 1611216,4 / speed =
-			//sprintf(temp,"%i\r\n",srd.min_delay);
+			srd_next.min_delay = A_T_x100 / speed; // 1611216,4 / speed =
+			//sprintf(temp,"%i\r\n",srd_next.min_delay);
 			//uart_SendString(temp);
 
 			// Set accelration by calc the first (c0) step delay .
 			// step_delay = 1/tt * sqrt(2*alpha/accel)
 			// step_delay = ( tfreq*0.676/100 )*100 * sqrt( (2*alpha*10000000000) / (accel*100) )/10000
-			srd.step_delay = (T1_FREQ_148 * sqrt_2(A_SQ / accel))/240; // changed 5/7/2012 from /100
+			srd_next.step_delay = (T1_FREQ_148 * sqrt_2(A_SQ / accel))/240; // changed 5/7/2012 from /100
 
 			// Find out after how many steps does the speed hit the max speed limit.
 			// step_to_max_speed = speed^2 / (2*alpha*accel)
@@ -121,37 +123,37 @@ void speed_cntr_Move(signed int soll_pos){
 
 			// wenn wir für beschleunigung und entschleunigung zusammen MEHR als die gesamt schritte bräuchten
 			if((step_to_max_speed*2) >= differ_steps){
-				srd.decel_steps_neg = -(differ_steps/2); // negativ soviel schritte, wie ich positiv zum speedup gebraucht hab
+				srd_next.decel_steps_neg = -(differ_steps/2); // negativ soviel schritte, wie ich positiv zum speedup gebraucht hab
 			} else { // sonst können wir einfach mal annehmen das wir zum entschleunigen genausoviel brauchen wie für beschleunigen
-				srd.decel_steps_neg = -step_to_max_speed;
+				srd_next.decel_steps_neg = -step_to_max_speed;
 			}
 
 			// berechne bremspunkt abhängig von der drehrichtung
-			if(srd.dir==CW){
-				srd.decel_start = srd.position + differ_steps + srd.decel_steps_neg; // da descel_steps negativ ist
+			if(srd_next.dir==CW){
+				srd_next.decel_start = srd_next.position + differ_steps + srd_next.decel_steps_neg; // da descel_steps negativ ist
 			} else { // der motor dreht hoch, dann ist
-				srd.decel_start = srd.position - differ_steps - srd.decel_steps_neg; // pos - gesamt schritte - (- bremsschritte)
+				srd_next.decel_start = srd_next.position - differ_steps - srd_next.decel_steps_neg; // pos - gesamt schritte - (- bremsschritte)
 			};
 
 			// We must decelrate at least 1 step to stop.
-			if(srd.decel_steps_neg == 0){
-				srd.decel_steps_neg = -1;
+			if(srd_next.decel_steps_neg == 0){
+				srd_next.decel_steps_neg = -1;
 			}
 
 			// If the maximum speed is so low that we dont need to go via accelration state.
-			if(srd.step_delay <= srd.min_delay){
-				srd.step_delay = srd.min_delay;
-				srd.run_state = RUN;
+			if(srd_next.step_delay <= srd_next.min_delay){
+				srd_next.step_delay = srd_next.min_delay;
+				srd_next.run_state = RUN;
 			} else {
-				srd.run_state = ACCEL;
+				srd_next.run_state = ACCEL;
 			}
 
 			OCR1A = 10; 			// mach mal ein paar schritte (10)
 			//TCCR1B |= (1<<CS10);	// Set Timer/Counter to divide clock by 1
 			TCCR1B |= ((0<<CS12)|(1<<CS11)|(0<<CS10));
-		} else if(srd.run_state==DECEL){
-			if((soll_pos+srd.decel_steps_neg>srd.decel_start && srd.dir==CW) || (soll_pos+srd.decel_steps_neg<srd.decel_start && srd.dir==CCW)){
-				srd.min_delay = A_T_x100 / speed;
+		} else if(srd_next.run_state==DECEL){
+			if((soll_pos+srd_next.decel_steps_neg>srd_next.decel_start && srd_next.dir==CW) || (soll_pos+srd_next.decel_steps_neg<srd_next.decel_start && srd_next.dir==CCW)){
+				srd_next.min_delay = A_T_x100 / speed;
 				//srd_step_delay = (T1_FREQ_148 * Sqr(A_SQ /accel)) / 100 DO NOT CHANGE IT
 				step_to_max_speed = speed * (speed / ((A_x20000 *accel) / 100));
 
@@ -160,86 +162,109 @@ void speed_cntr_Move(signed int soll_pos){
 				};
 
 				// wenn wir für beschleunigung und entschleunigungzusammen MEHR als die gesamt schritte bräuchten
-				if((step_to_max_speed * 2 + srd.accel_steps) >=differ_steps){ // srd_accel_steps ist im decel mode negativ
-					srd.decel_steps_neg = -(differ_steps -(differ_steps + srd.accel_steps) / 2); // wenn wir ein dreieck haben
+				if((step_to_max_speed * 2 + srd_next.accel_steps) >=differ_steps){ // srd_accel_steps ist im decel mode negativ
+					srd_next.decel_steps_neg = -(differ_steps -(differ_steps + srd_next.accel_steps) / 2); // wenn wir ein dreieck haben
 				} else {	// sonst können wir einfach mal annehmen das wir zum entschleunigen genausoviel brauchen wie für beschleunigen
-					srd.decel_steps_neg = -step_to_max_speed;
+					srd_next.decel_steps_neg = -step_to_max_speed;
 				};
 
 				// berechne bremspunkt abhängig von der drehrichtung
-				if(srd.dir_next == CW) {
-					srd.decel_start = srd.position + differ_steps+ srd.decel_steps_neg; // da descel_steps negativ ist
+				if(srd_next.dir_next == CW) {
+					srd_next.decel_start = srd_next.position + differ_steps+ srd_next.decel_steps_neg; // da descel_steps negativ ist
 				} else { // der motor dreht hoch, dann ist
-					srd.decel_start = srd.position - differ_steps- srd.decel_steps_neg; // pos - gesamt schritte - (- bremsschritte)
+					srd_next.decel_start = srd_next.position - differ_steps- srd_next.decel_steps_neg; // pos - gesamt schritte - (- bremsschritte)
 				};
 
-				srd.accel_steps = -srd.accel_steps;
-				srd.accel_steps = 0; // geiler wäre 0
+				srd_next.accel_steps = -srd_next.accel_steps;
+				srd_next.accel_steps = 0; // geiler wäre 0
 
 				// We must decelrate at least 1 step to stop.
-				if(srd.decel_steps_neg == 0){
-					srd.decel_steps_neg = -1;
+				if(srd_next.decel_steps_neg == 0){
+					srd_next.decel_steps_neg = -1;
 				};
 
 				// If the maximum speed is so low that we dont need to go via accelration state.
-				if(srd.step_delay <= srd.min_delay){
-					srd.step_delay = srd.min_delay;
-					srd.run_state = RUN;
+				if(srd_next.step_delay <= srd_next.min_delay){
+					srd_next.step_delay = srd_next.min_delay;
+					srd_next.run_state = RUN;
 				} else {
-					srd.run_state = ACCEL;
+					srd_next.run_state = ACCEL;
 				};
 			};
-		} else if(srd.run_state==RUN){
+		} else if(srd_next.run_state==RUN){
 			//uart_SendString("3\r\n");
 			////////////// is it neccesary to speed up? //////////////
 			int min_delay = A_T_x100 / speed;
-			if(abs(min_delay-srd.min_delay)>100){
-				srd.min_delay = min_delay;
+			if(abs(min_delay-srd_next.min_delay)>100){
+				// yes, speed up
+				srd_next.min_delay = min_delay;
 				step_to_max_speed = speed * (speed /((A_x20000 * accel) / 100));
-				if((step_to_max_speed * 2) - srd.accel_steps>= differ_steps){ // wir sind ja schon ein teil der rampe gefahren, srd_accel_steps weit
+
+				/* this is danger! wir wissen ja nicht genau, sind wir vielleicht arsch langsam
+				* zu unserer jetzigen geschwindigkeit hingeschlichen. oder waren wir mit gleicher
+				* beschleunigung unterwegs? Schöner wäre es zu sagen:
+				* Wir haben differ_steps bis wir da sind wo wir hin wollen
+				* Schaffen wir das auf dem Weg dort hin auf max speed zu kommen ?
+				* Ja, wenn die Anzahl an schritten um von der jetzigen Geschwindigkeit auf max_speed zu kommen
+				* PLUS die anzahl an bremsschritten ... wenn das mehr ist als differ_steps
+				* Die Bremsschritte zu berechnen ist einfach, das ist "steps_to_max_speed" aber wieviele schritte
+				* brauchen wir von unserer aktuellen geschwindigkeit (implizit in srd_next.step_delay enthalten) auf max_speed ??
+				*
+				* Die Zeit zwischen den Steps wird ja erstmal im Startwert nur von ACCELL=240 abhängig "berechnet" (ist eigentlich fix)
+				* Und dann wird sie anhand der gefahrenen schritte kleiner gemacht .. hey cool das ist IMMER der gleiche verlauf
+				* die deckelung kommt dann über "min_delay" rein
+				*
+				*/
+				if((step_to_max_speed * 2) - srd_next.accel_steps>= differ_steps){ // wir sind ja schon ein teil der rampe gefahren, srd_accel_steps weit
 					// hier kommen wir rein wenn differ_steps nicht groß genug ist, also dreieck
-					srd.decel_steps_neg = -((differ_steps + srd.accel_steps) / 2); // zum entschleunigen haben wir unsere aktuelle breite + meine geschwindigkeit
+					// leider geil :D
+					srd_next.decel_steps_neg = -((differ_steps + srd_next.accel_steps) / 2); // zum entschleunigen haben wir unsere aktuelle breite + meine geschwindigkeit
 				} else { // sonst können wir einfach mal annehmen das wir zum entschleunigen genausoviel brauchen wie für beschleunigen
-					srd.decel_steps_neg = -step_to_max_speed;
+					srd_next.decel_steps_neg = -step_to_max_speed;
 				};
 
 				// berechne bremspunkt abhängig von der drehrichtung
-				if(srd.dir_next == CW) {
-					srd.decel_start = srd.position + differ_steps + srd.decel_steps_neg; // da descel_steps negativ ist
+				if(srd_next.dir_next == CW) {
+					srd_next.decel_start = srd_next.position + differ_steps + srd_next.decel_steps_neg; // da descel_steps negativ ist
 				} else { // der motor dreht hoch, dann ist
-					srd.decel_start = srd.position -differ_steps - srd.decel_steps_neg; // pos - gesamt schritte - (-bremsschritte)
+					srd_next.decel_start = srd_next.position -differ_steps - srd_next.decel_steps_neg; // pos - gesamt schritte - (-bremsschritte)
 				};
 
 				// We must decelrate at least 1 step to stop.
-				if(srd.decel_steps_neg == 0){
-					srd.decel_steps_neg = -1;
+				if(srd_next.decel_steps_neg == 0){
+					srd_next.decel_steps_neg = -1;
 				};
-				srd.run_state = ACCEL; // -> Use STOP to reaccel?
+				srd_next.run_state = ACCEL; // -> Use STOP to reaccel?
 				//uart_SendString("--> GoTo ACCEL\r\n");
 			}
 			////////////// is it neccesary to speed up? //////////////
 
-			if(srd.dir==CW){
-				if(srd.position+(-srd.decel_steps_neg)>=soll_pos){	// wenn wir mit der entschleunigungsrampe das gerade noch so, oder schon gar nicht mehr schaffen, dann sofort abbremsen
-					srd.run_state = DECEL;
-					srd.accel_steps = srd.decel_steps_neg;
+			if(srd_next.dir==CW){
+				if(srd_next.position+(-srd_next.decel_steps_neg)>=soll_pos){	// wenn wir mit der entschleunigungsrampe das gerade noch so, oder schon gar nicht mehr schaffen, dann sofort abbremsen
+					srd_next.run_state = DECEL;
+					srd_next.accel_steps = srd_next.decel_steps_neg;
 					char temp[30];
-					sprintf(temp,"1:%i,%i,%i\r\n",srd.accel_steps,srd.position,soll_pos);
+					sprintf(temp,"1:%i,%i,%i\r\n",srd_next.accel_steps,srd_next.position,soll_pos);
 					//uart_SendString(temp);
 				} else { // wenn wir noch easy Zeit haben zum bremsen
-					srd.decel_start = soll_pos-(-srd.decel_steps_neg);
+					srd_next.decel_start = soll_pos-(-srd_next.decel_steps_neg);
 				};
 			} else {
-				if(srd.position+srd.decel_steps_neg<=soll_pos){
-					srd.run_state = DECEL;
-					srd.accel_steps = srd.decel_steps_neg;
+				if(srd_next.position+srd_next.decel_steps_neg<=soll_pos){
+					srd_next.run_state = DECEL;
+					srd_next.accel_steps = srd_next.decel_steps_neg;
 				} else {
-					srd.decel_start = soll_pos+(-srd.decel_steps_neg);
+					srd_next.decel_start = soll_pos+(-srd_next.decel_steps_neg);
 				};
 			};
 		}
 	}
 	//uart_SendString(temp);
+	// now copy all facts to the operation struct, but without getting interrupted
+	cli();
+	srd=srd_next;
+	sei();
+	// now copy all facts to the operation struct, but without getting interrupted
 }
 
 

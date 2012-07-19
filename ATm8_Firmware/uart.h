@@ -37,6 +37,7 @@
 #define CLR_UDRIE (UCSR0B &= ~(1<<UDRIE0))
 
 void InitUART(void);
+void disable_uart();
 void uart_SendByte(char data);
 void uart_SendString(char Tab[]);
 void uart_SendInt(int Tall);
