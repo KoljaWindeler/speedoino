@@ -588,8 +588,8 @@ int main(void)
 			case CMD_LEAVE_PROGMODE_ISP:
 				isLeave	=	1;
 				//*	fall thru
-
-			case CMD_SET_PARAMETER: // häh??
+				break;
+			case CMD_SET_PARAMETER: // same as enter progmode
 			case CMD_ENTER_PROGMODE_ISP:
 				msgLength		=	2;
 				msgBuffer[1]	=	STATUS_CMD_OK;
