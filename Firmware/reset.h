@@ -9,7 +9,6 @@
 #define RESET_H_
 class speedo_reset{
 #define reset_toogle_pin 6
-#define reset_enabled_pin 23
 #define rst_blink_freq 330
 public:
 	speedo_reset(void);

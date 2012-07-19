@@ -214,15 +214,17 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	};
 	if(!(addinfo2_widget.x==-1 && addinfo2_widget.y==-1)){ // only show it if pos != -1/-1
 		// now, print variable messages, additional infos, see top comment (3)
-		/// warnung wegen zu hoher Drehzahl, wenn der sensor nicht angeschlossen ist, dann meldet get_temp_oil() ohnehin seh hohe werte
-		if(pSensors->m_temperature->get_oil_temp()<600 && pSensors->m_dz->rounded>7000){
-			if(disp_zeile_bak[ADD_INFO2]!=101){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
-				disp_zeile_bak[ADD_INFO2]=101;
-				pDebug->speedo_loop(10,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("Motor noch kalt"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
-			};
-
+		/// warnung wegen zu hoher Drehzahl, erstmal checken ob wir von der drehzahl her in betrachtkommen
+		if(pSensors->m_dz->rounded>7000){
+			if((pSensors->m_temperature->get_oil_temp()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || 		// temperatur < 60°
+					(pSensors->m_temperature->get_water_temp()<600 && pSensors->m_temperature->water_temp_fail_status==0)){ // und keine Fehler beim lesen
+				if(disp_zeile_bak[ADD_INFO2]!=101){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+					disp_zeile_bak[ADD_INFO2]=101;
+					pDebug->speedo_loop(10,0,previousMillis," ");
+					pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
+					pOLED->string_P(addinfo2_widget.font,PSTR("Motor noch kalt"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+				};
+			}
 		}
 		///// Temp to high /////
 		else if(pSensors->m_temperature->get_oil_temp()>=pSensors->m_temperature->oil_warning_temp && pSensors->m_temperature->get_oil_temp()<8888){

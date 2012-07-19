@@ -37,6 +37,7 @@ void speedo_reset::clear_vars(){
 void speedo_reset::init(){
 	Serial3.begin(19200);
 	pinMode(reset_toogle_pin,OUTPUT);
+
 	if(EEPROM.read(149)==1){ // glatte 1 heisst ist an, alle andere heisst ist aus
 		set_active(false,true); // eeprom is set,set var
 	} else {

@@ -38,26 +38,63 @@ void speedo_dz::calc() {
 	unsigned long differ=now-previous_time; 								// zeit seit dem letzte mal abholen der daten
 	unsigned int  now_peaks=peak_count; 									// aktueller dz zähler stand, separate var damit der peakcount weiter verndert werden koennte
 	if(pAktors->m_stepper->init_steps_to_go!=0){
-		if(pAktors->m_stepper->init_steps_to_go>=3){
+		if(pAktors->m_stepper->init_steps_to_go>=5){
 			if(pAktors->m_stepper->get_pos()!=0){		//
 				pAktors->m_stepper->go_to(0);
 			} else {
-				pAktors->m_stepper->init_steps_to_go=2; 					// nächsten schritt vorbereiten
+				pAktors->m_stepper->init_steps_to_go=4; 					// nächsten schritt vorbereiten
 			}
-		} else if(pAktors->m_stepper->init_steps_to_go==2){
+		} else if(pAktors->m_stepper->init_steps_to_go==4){
 			if(pAktors->m_stepper->get_pos()!=MOTOR_OVERWRITE_END_POS){		// motor noch nicht am ende angekommen
 				pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS); 		// weiter dorthin scheuchen
 			} else { 														// motor angekommen
-				pAktors->m_stepper->init_steps_to_go=1; 					// nächsten schritt vorbereiten
+				pAktors->m_stepper->init_steps_to_go=3; 					// nächsten schritt vorbereiten
+			}
+		} else if(pAktors->m_stepper->init_steps_to_go==3){
+			if(pAktors->m_stepper->get_pos()!=0){   						// motor noch nicht am anfang angekommen
+				pAktors->m_stepper->go_to(0); 							// weiter dorthin scheuchen
+			} else { 														// motor angekommen
+				pAktors->m_stepper->init_steps_to_go=2; 					// fertig
+			}
+		} else if(pAktors->m_stepper->init_steps_to_go==2){
+			if(pAktors->m_stepper->get_pos()!=80){   						// motor noch nicht am anfang angekommen
+				pAktors->m_stepper->overwrite_pos(80);
+			} else { 														// motor angekommen
+				pAktors->m_stepper->init_steps_to_go=1; 					// fertig
 			}
 		} else if(pAktors->m_stepper->init_steps_to_go==1){
 			if(pAktors->m_stepper->get_pos()!=0){   						// motor noch nicht am anfang angekommen
-				pAktors->m_stepper->go_to(0); 							// weiter dorthin scheuchen
+				pAktors->m_stepper->go_to(0);
 			} else { 														// motor angekommen
 				pAktors->m_stepper->init_steps_to_go=0; 					// fertig
 			}
 		}
-	} else 	if(now_peaks>4 && differ>10){ 									// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+	} else if(false){
+		if(differ>112){
+			previous_time=now;
+			int temp=analogRead(OIL_TEMP_PIN)-180;
+			if(temp<0) temp=0;
+			if (temp>600) temp=600;
+			rounded=15000-temp*25;
+
+			//			int speed_me_up=50; // gut mit 50
+			//			if(((millis()/speed_me_up)%210)<50){
+			//				rounded=0;
+			//			} else {
+			//				rounded=((millis()/speed_me_up)%210)*70;
+			//			};
+			pSensors->m_gear->calc();
+			// zeiger
+			// 2 => 2*880=> 2k stepper
+			//pAktors->m_stepper->go_to(round(exact/11.73));
+			//pAktors->m_stepper->go_to(round(exact/11.73));
+
+			// wir versuchen das vorfahren zu simulieren
+			int dz=2000+random(12);
+			exact=pSensors->flatIt(dz,&dz_faktor_counter,4,exact);
+			pAktors->m_stepper->go_to(round(110+random(1)));
+		}
+	} else if(now_peaks>4 && differ>100){ 									// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
 		//now_peaks=now_peaks>>anzahl_shift;								// könnte ja sein das man weniger umdrehungen als funken hat, hornet hat 2 Funken je Umdrehun
 		// die maximale übertragungsrate zwischen ATm8 und ATm2560 sollte nicht überschritten werden
 		// pro Übertragung werden benötigt: 19200 Baud, 2400 Byte/sek, 7 Byte, 2,916667 ms, machen wir mal 10 ms draus.
@@ -81,7 +118,7 @@ void speedo_dz::calc() {
 
 		/* values */
 		//exact=dz;
-		exact=pSensors->flatIt(dz,&dz_faktor_counter,2,exact);						// IIR mit Rückführungsfaktor 1 für DZmotor
+		exact=pSensors->flatIt(dz,&dz_faktor_counter,4,exact);						// IIR mit Rückführungsfaktor 1 für DZmotor
 		exact_disp=pSensors->flatIt(dz,&dz_disp_faktor_counter,10,exact_disp);		// IIR mit Rückführungsfaktor 9 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
 		rounded=50*round(exact_disp/50); 											// auf 250er Runden
 		/* values */
@@ -99,32 +136,6 @@ void speedo_dz::calc() {
 		// zeiger
 		pAktors->m_stepper->go_to(0);
 		previous_time=now;
-	};
-
-	if(DEMO_MODE || false){
-		if(differ>250){
-			previous_time=now;
-			int temp=analogRead(OIL_TEMP_PIN)-180;
-			if(temp<0) temp=0;
-			if (temp>600) temp=600;
-			rounded=15000-temp*25;
-
-			//			int speed_me_up=50; // gut mit 50
-			//			if(((millis()/speed_me_up)%210)<50){
-			//				rounded=0;
-			//			} else {
-			//				rounded=((millis()/speed_me_up)%210)*70;
-			//			};
-			exact=rounded;
-			pSensors->m_gear->calc();
-			// zeiger
-			// 2 => 2*880=> 2k stepper
-			pAktors->m_stepper->go_to(round(exact/11.73));
-
-
-
-
-		}
 	};
 };
 
@@ -160,3 +171,4 @@ bool speedo_dz::check_vars(){
 	}
 	return false;
 };
+
