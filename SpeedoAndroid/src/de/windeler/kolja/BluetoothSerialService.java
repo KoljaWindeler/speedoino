@@ -82,6 +82,8 @@ public class BluetoothSerialService {
 
 	private static final UUID SerialPortServiceClass_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+	public BluetoothDevice last_connected_device;
+
 	// Member fields
 	private final BluetoothAdapter mAdapter;
 	private final Handler mHandler;
@@ -191,6 +193,7 @@ public class BluetoothSerialService {
 
 		// Start the thread to connect with the given device
 		Log.e(TAG,"start thread to connect...");
+		last_connected_device=device;
 		mConnectThread = new ConnectThread(device);
 		Log.i(TAG,"starte jetzt mConnectedThread 2");
 		mConnectThread.start();
@@ -470,7 +473,7 @@ public class BluetoothSerialService {
 
 			return 1;
 		}
-		
+
 		Log.i(TAG_SEM,"BT Telegramm will starten, warte auf den semaphore");
 		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 		semaphore.acquire();
@@ -482,8 +485,8 @@ public class BluetoothSerialService {
 		}
 
 		seqNum=(seqNum+1)%256; // wir starten mit 0 und setzten im notfall auch zu 0 zurueck, daher immer VOR dem senden inkrementieren
-		
-		
+
+
 		if(rx_tx_state==ST_IDLE){
 			if(msgLength<=0) return 2;
 			c=(byte)MESSAGE_START;
@@ -689,7 +692,7 @@ public class BluetoothSerialService {
 						Log.i(TAG,"size: [3]="+String.valueOf((int)msgBuffer[3]&0xff)+" [4]="+String.valueOf((int)msgBuffer[4]&0xff)+" [5]="+String.valueOf((int)msgBuffer[5]&0xff)+" [6]="+String.valueOf((int)msgBuffer[6]&0xff));
 						long size=0;
 						for (int i = 3; i < 7; i++)	{
-						   size = (size << 8) + (msgBuffer[i] & 0xff);
+							size = (size << 8) + (msgBuffer[i] & 0xff);
 						}
 						Log.i(TAG,"size="+String.valueOf(size));
 						bundle.putLong("size", size);
@@ -782,7 +785,7 @@ public class BluetoothSerialService {
 			semaphore.release();
 			Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 			Log.i(TAG_SEM,"get dir hat den semaphore zurueck gegeben");
-			
+
 			// fortschritt schreiben
 			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION); // typ egal wir zeigen alles an
 			Bundle bundle = new Bundle();
@@ -795,7 +798,7 @@ public class BluetoothSerialService {
 		}
 		return 0;
 	};
-	
+
 	public int getFile(String filename, String dlBaseDir,Handler mHandlerUpdate, String file_size) throws InterruptedException {
 		Log.i(TAG,"getFile gestartet: filename "+filename+" dlBasedir "+dlBaseDir);
 
@@ -842,7 +845,7 @@ public class BluetoothSerialService {
 		status=1;
 		while(status!=STATUS_EOF){
 			Log.i(TAG,"Whileschleifeniteration");
-			
+
 			// fortschritt schreiben
 			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 			Bundle bundle = new Bundle();
@@ -910,7 +913,7 @@ public class BluetoothSerialService {
 
 			// loese desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der naechsten 
 			// runde, wieder einen semphore ohne einschraenkung bekommen
-			
+
 			if((msgBuffer[1]&0x00ff)==(STATUS_CMD_FAILED&0x00ff)){
 				status=STATUS_EOF;
 			} else if ((msgBuffer[1]&0x00ff)==(STATUS_EOF&0x00ff)) {
@@ -970,11 +973,11 @@ public class BluetoothSerialService {
 
 		while(upload_status!=STATUS_EOF){
 			Log.i(TAG_RECV,"Vor dem Send item"+String.valueOf(item));
-			
+
 			// fortschritt schreiben
 			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 			Bundle bundle = new Bundle();
-			
+
 			String shown_message=null;
 			int per_transfered=(int) (transfered_bytes*100/filesize);
 			if(per_transfered<120){
@@ -989,7 +992,7 @@ public class BluetoothSerialService {
 			bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
 			msg.setData(bundle);
 			mHandlerUpdate.sendMessage(msg); 
-			
+
 			// datei auslesen und in puffer packen
 			bytesToSend=startOfPayload; // 										17
 			//in.reset(); // rewind file
@@ -1068,9 +1071,9 @@ public class BluetoothSerialService {
 		try {						in.close();			} 
 		catch (IOException e) {		e.printStackTrace(); return_value=-3;	}
 		if(return_value==0){
-//			if(!file.delete()){
-//				return_value=-4;
-//			}
+			//			if(!file.delete()){
+			//				return_value=-4;
+			//			}
 		}
 		return return_value;
 	}
@@ -1190,6 +1193,65 @@ public class BluetoothSerialService {
 		}
 		Log.i(TAG, "return 0");
 		return 0;
+
+	}
+
+	public void uploadFirmware(String filename)throws IOException, InterruptedException {
+		// TODO Auto-generated method stub
+		Log.i(TAG, "uploadFirmware soll laden:"+filename);
+		byte send[] = new byte[256*1024]; // so groß wie es maximal werten kann, 256k
+		if(false){
+		// open File
+		File file = new File(filename);
+		FileInputStream in = null;
+
+		try { 								in = new FileInputStream(file);		} 
+		catch (FileNotFoundException e) { 	e.printStackTrace();				}
+
+		// jetzt datei parsen
+		byte hex_sentence[]=new byte[100]; // nur eine hex zeile
+		int byte_read=999; // wieviel byte hab ich gelesen
+		int file_pos=0; // pointer of position in file
+
+		while(byte_read>0){
+			byte_read=0;
+			// eine Zeile einlesen
+			byte[] one_char=new byte[1];
+			boolean new_line_found=false;
+			int count_byte_read=0;
+			while(!new_line_found && count_byte_read<100){ // maximal 100 byte lesen, aber hauptsächlich bis umbruch
+				count_byte_read+=in.read(one_char, file_pos, 1);
+				hex_sentence[count_byte_read-1]=one_char[0];
+				if(count_byte_read>=2){
+					if(hex_sentence[count_byte_read-1]==0x0a && hex_sentence[count_byte_read-2]==0x0d){
+						new_line_found=true;
+						byte_read=count_byte_read;
+					}
+				} else if(count_byte_read==0){
+					count_byte_read=100;
+				}
+			};
+			// jetzt haben wir ein satz gelesen, parsen wir ihn also
+			if(new_line_found){
+				if(hex_sentence[0]==0x3a && hex_sentence[7]==0x30 && hex_sentence[8]==0x30){
+					int length=(hex_sentence[1]-0x30)<<8 | (hex_sentence[2]-0x30);
+					int offset=(hex_sentence[3]-0x30)<<24 | (hex_sentence[4]-0x30)<<16 | (hex_sentence[5]-0x30)<<8 | hex_sentence[6];
+					for(int pos=offset;pos<offset+length;pos++){
+						send[pos]=hex_sentence[9+pos-offset];
+					}
+				}
+			}
+		};
+		};
+
+
+		stop();
+		// Get the BLuetoothDevice object
+		// Attempt to connect to the device
+		// delay
+		connect(last_connected_device);
+		// send "go to 0" on and on, until there is a answere
+		// for 0 .. 
 
 	}
 }

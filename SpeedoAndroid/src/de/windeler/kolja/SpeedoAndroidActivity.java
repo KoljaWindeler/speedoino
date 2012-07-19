@@ -52,6 +52,7 @@ OnClickListener {
 	private getFileDialog _getFileDialog;
 	private putFileDialog _putFileDialog;
 	private delFileDialog _delFileDialog;
+	private firmwareBurnDialog _firmwareBurnDialog;
 	private String dl_basedir = "/";
 	private String t2a_dest = "";
 	private long t2a_size = 0;
@@ -73,6 +74,7 @@ OnClickListener {
 	private Button browseToUploadMap;
 	private Button browseToUploadConfig;
 	private Button browseToUploadGfx;
+	private Button browseToUploadFirmware;
 	private Button browseToRouteMap;
 	private Button mloadRoot;
 	private Button DlselButton;
@@ -101,6 +103,7 @@ OnClickListener {
 	private static final int REQUEST_CONVERT_MAP = 8; // convert maps
 	private static final int REQUEST_SHOW_MAP = 9; // open maps
 	private static final int REQUEST_SHOW_MAP_DONE = 10; // open maps
+	private static final int REQUEST_UPLOAD_FIRMWARE = 11; // open maps
 
 
 	// transfer messages
@@ -185,6 +188,8 @@ OnClickListener {
 		browseToRouteMap.setOnClickListener(this);
 		browseToUploadConfig = (Button) findViewById(R.id.browseToUploadConfig);
 		browseToUploadConfig.setOnClickListener(this);
+		browseToUploadGfx = (Button) findViewById(R.id.browseToUploadFirmware);
+		browseToUploadGfx.setOnClickListener(this);
 		mloadRoot = (Button) findViewById(R.id.loadRoot);
 		mloadRoot.setOnClickListener(this);
 		DlselButton = (Button) findViewById(R.id.DownloadButtonSelect);
@@ -413,6 +418,15 @@ OnClickListener {
 				intent = new Intent(getBaseContext(), RouteMap.class);
 				intent.putExtra(RouteMap.INPUT_FILE_NAME, filePath);
 				startActivityForResult(intent, REQUEST_SHOW_MAP_DONE);
+			};
+			break;
+		case REQUEST_UPLOAD_FIRMWARE:
+			// hier jetzt die firmware laden, und dann übertragen... huijuijui
+			if (resultCode == RESULT_OK) {
+				filePath = data.getStringExtra(FileDialog.RESULT_PATH);
+				Log.i(TAG, "Der Resultcode war OK, der Pfad:" + filePath);
+				_firmwareBurnDialog = new firmwareBurnDialog(this);
+				_firmwareBurnDialog.execute(filePath,"GFX" + filePath.substring(filePath.lastIndexOf('/'))); // /mnt/sdcard/Download/bild.sng,
 			};
 			break;
 		case RESULT_CANCELED:
@@ -725,6 +739,12 @@ OnClickListener {
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_SHOW_MAP);
 			break;
+		case R.id.browseToUploadFirmware:
+			intent = new Intent(getBaseContext(), FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_UPLOAD_FIRMWARE);
+			break;
 		default:
 			Log.i(TAG, "Hier wurde was geklickt das ich nicht kenne!!");
 			break;
@@ -909,6 +929,61 @@ OnClickListener {
 			};
 		};
 
+	}
+
+	// klasse die das updaten der firmware machen soll ... uiuiui
+	// ausfuehrt
+	
+	protected class firmwareBurnDialog extends AsyncTask<String, Integer, String> {
+		private Context context;
+		ProgressDialog dialog;
+
+		public firmwareBurnDialog(Context cxt) {
+			context = cxt;
+			dialog = new ProgressDialog(context);
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			Log.i("JKW","starte put file");
+			try {
+				// hier jetzt file laden in var und dann feuer
+				// shit wir müssen in den boot loader, disconnect, reconnect nötig ... hmm
+				mSerialService.uploadFirmware(params[1]);
+//				Log.i("JKW","delete file passed");
+//				mSerialService.putFile(params[0], params[1], mHandlerUpdate);
+//				Log.i("JKW","put file passed");
+//				if (params[1].substring(0, 3).contentEquals("GFX")) {
+//					mSerialService.showgfx(params[1].substring(params[1]
+//							.lastIndexOf('/') + 1));
+//				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			;
+			return "japp";
+		}
+
+		@Override
+		protected void onPreExecute() {
+			dialog.setMessage("Flashing Firmware ...");
+			dialog.show();
+		};
+
+		@Override
+		protected void onPostExecute(String result) {
+			dialog.dismiss();
+		}
+
+		private final Handler mHandlerUpdate = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				dialog.setMessage(msg.getData().getString(BYTE_TRANSFERED));
+				Log.i(TAG, "update prozenzzahl");
+			};
+		};
 	}
 
 	protected class showGFX extends AsyncTask<String, Integer, String> {
