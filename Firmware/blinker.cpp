@@ -51,7 +51,8 @@ void moped_blinker::check(){
 void moped_blinker::set_start(unsigned long dist,int kmh){
 	start=dist;
 	if(kmh>80){ // wenn man bei über 80 km/h den Blinker anmacht
-		start+=high_speed_add; // bekommt man 200 meter mehr, bevor die Warnung kommt
+		start+=high_speed_add-80+kmh; // bekommt man 200 meter mehr, bevor die Warnung kommt
+		// + etwas mehr durch den speed
 	};
 }
 

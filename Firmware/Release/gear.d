@@ -1,5 +1,4 @@
-gear.d gear.o: ../gear.cpp ../global.h ../clock_me.h \
- /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/Wire.h ../dz.h ../gps.h \
+gear.d gear.o: ../gear.cpp ../global.h ../clock_me.h ../dz.h ../gps.h \
  ../blinker.h ../temperature.h ../fuel.h ../gear.h ../speed.h ../reset.h \
  ../oiler.h ../voltage.h ../stepper.h ../display.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/ssd0323.h \
@@ -29,13 +28,11 @@ gear.d gear.o: ../gear.cpp ../global.h ../clock_me.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/bufstream.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/SdFatUtil.h ../config.h \
  ../timer.h ../sprint.h ../speedo.h ../menu.h ../sensors.h ../aktors.h \
- ../debug.h ../file_manager_v2.h ../version.h ../tetris.h
+ ../debug.h ../file_manager_v2.h ../version.h ../tetris.h ../inc/I2C.h
 
 ../global.h:
 
 ../clock_me.h:
-
-/home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/Wire.h:
 
 ../dz.h:
 
@@ -136,3 +133,5 @@ gear.d gear.o: ../gear.cpp ../global.h ../clock_me.h \
 ../version.h:
 
 ../tetris.h:
+
+../inc/I2C.h:

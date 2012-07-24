@@ -15,6 +15,7 @@ public:
 	speedo_stepper();
 	~speedo_stepper();
 	void init();
+	bool go_to(int winkel,int accel,int speed);
 	bool go_to(int winkel);
 	int get_pos();
 	void overwrite_pos(int new_pos);

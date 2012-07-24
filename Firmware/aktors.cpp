@@ -94,12 +94,15 @@ bool Speedo_aktors::check_vars(){
 
 		water_min_value=200;
 		water_max_value=500;
+		pDebug->sprintlnp(PSTR("Var check failed"));
 		return true;
 	}
+	pDebug->sprintlnp(PSTR("Var check passed"));
 	return false;
 };
 
 void Speedo_aktors::init(){
+	pDebug->sprintp(PSTR("Aktoren init ..."));
 	/* vier werte paare:
 	 * 1. Außen -> ändert sich öfters mal, wird mit std werten geladen
 	 * 2. Innen -> ändert sich eigentlich nie
@@ -138,6 +141,7 @@ void Speedo_aktors::init(){
 
 	// stepper drehen
 	m_stepper->init();
+	pDebug->sprintlnp(PSTR(" Done"));
 };
 
 void Speedo_aktors::set_rgb_in(int r,int g,int b){

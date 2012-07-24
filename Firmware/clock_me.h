@@ -9,7 +9,6 @@
 #define CLOCK_ME_H_
 
 ////////////// DCF 77 / RTC_DS1307 ///////////////////////
-#include      <Wire.h>   // i2c
 class speedo_clock  // shell class for the clock
 {
 #define DS1307_I2C_ADDRESS 0x68  // This is the I2C address of the rtc

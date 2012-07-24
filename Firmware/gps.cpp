@@ -478,10 +478,27 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 };
 
 // return values of the gps_field, convertet as long
-long speedo_gps::get_info(int select){
+long speedo_gps::get_info(unsigned char select){
 	if(gps_count==-1){
 		return 0;
 	};
+
+	unsigned char gps_older_counter=gps_count;
+	/* Handling of gps_count:
+	// gps_count_up[0] will be set, as soon as the second dataset is processed
+	// if gps_count_up[1] is set, the first dataset is processed and gps_count is increased
+	// so we need to look at the older sample for the data, related to dataset 1
+	// this is done, by adding 29 to gps_output_counter and calculating the modulo of
+	// max values .. so (2+29)%30=31%30=1 or (0+29)%30=29
+	// same happens if the gps save routine will be runned. the routine sets both
+	// flags to false and you can not longer suggest which dataset came last,
+	// but its safe to decrease the counter in this case as well.
+	// So decreasing is only bound to gps_count_up[0]
+	*/
+	if(!gps_count_up[0]){
+		gps_older_counter=(gps_older_counter+29)%30;
+	};
+
 	switch(select){
 	case 0:
 		return gps_time[gps_count];
@@ -496,18 +513,18 @@ long speedo_gps::get_info(int select){
 		return gps_lati[gps_count];
 		break;
 	case 4:
-		return gps_alt[gps_count];
+		return gps_alt[gps_older_counter];
 		break;
 	case 5:
 		return long(gps_speed_arr[gps_count]);
 		break;
 	case 6:
-		if(long(gps_sats[gps_count])>20) { return 20; }; //höhö
-		if(long(gps_sats[gps_count])<0) { return 0; };
-		return long(gps_sats[gps_count]);
+		if(long(gps_sats[gps_older_counter])>20) { return 20; }; //höhö
+		if(long(gps_sats[gps_older_counter])<0) { return 0; };
+		return long(gps_sats[gps_older_counter]);
 		break;
 	case 7:
-		return long(gps_fix[gps_count]);
+		return long(gps_fix[gps_older_counter]);
 		break;
 	case 8:
 		return long(gps_course[gps_count]);

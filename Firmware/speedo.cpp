@@ -128,6 +128,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * else just draw the number of km/h, but only refresh it if the difference is higher than 2 or we are very slow (below 10)
 	 ************************* geschwindigkeit *********************/
 	int temp_speed=pSensors->m_speed->getSpeed();
+	int temp_gps_speed=pSensors->m_speed->get_mag_speed();
 	if(!(kmh_widget.x==-1 && kmh_widget.y==-1)){ // only show it if pos != -1/-1
 		if(disp_zeile_bak[SPEED_VALUE]==-99){ // storage has been resetet, draw everything
 			sprintf(char_buffer,"%3i",temp_speed);
@@ -142,28 +143,29 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			// depend on skinsettings danger, 2 places to edit the kmh size
 			pOLED->string(kmh_widget.font,char_buffer,kmh_widget.x,kmh_widget.y,0,DISP_BRIGHTNESS,0); //   6/2
 			disp_zeile_bak[SPEED_VALUE]=int(temp_speed+1);
-		};
+		} else if(temp_speed==0 && ((abs(disp_zeile_bak[SPEED_VALUE]-(temp_gps_speed+1))>1) || (abs(disp_zeile_bak[SPEED_VALUE]-(temp_gps_speed+1))==1 && temp_gps_speed<10))){
+			sprintf(char_buffer,"%3i",temp_gps_speed);
+			pDebug->speedo_loop(4,0,previousMillis," "); // debug
+			// depend on skinsettings danger, 2 places to edit the kmh size
+			pOLED->string(kmh_widget.font,char_buffer,kmh_widget.x,kmh_widget.y,0,DISP_BRIGHTNESS,0); //   6/2
+			disp_zeile_bak[SPEED_VALUE]=int(temp_gps_speed+1);
+		}
 	};
 	/************************* speed *********************/
 	/********************* additional informations *****************************
 	 * first we have to separate between the navigation state
 	 * if the menu_state ==1  we will show something like
 	 *    102 km/h           <-- speedo, printed with the code on top of this section
-	 * 5800 U/min | 4 GPS    <-- engine rpm, gps info  (1)
-	 *     Day 342.km        <-- one storage, chosen in the setup section (2)
-	 * |||||||||||||||||||   <-- the highlighted "info" field, this could be anything like (flasher/navigation/engine cold) (3)
+	 * 5800 U/min | 4 GPS    <-- engine rpm, gps info  (1),(2)
+	 *     Day 342.km        <-- one storage, chosen in the setup section (3)
+	 * |||||||||||||||||||   <-- the highlighted "info" field, this could be anything like (flasher/navigation/engine cold) (4)
 	 ***********************************************************************/
 	// see comment on top, number (1)
 	//pSensors->m_dz->calc(); // calc in main loop to run the stepper in every menu
 	if(!(dz_widget.x==-1 && dz_widget.y==-1)){ // only show it if pos != -1/-1
-		int sats=pSensors->m_gps->get_info(6);
-		if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->m_dz->rounded+1+sats)){
+		if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->m_dz->rounded+1)){
 			if(disp_zeile_bak[DZ_VALUE]==-99){ //schreib alles neu, auch die buchstaben
-				if(pSensors->m_gps->valid>4 || sats==0){ // GPS is invalid
-					sprintf(char_buffer,"%5i U/min | no GPS",pSensors->m_dz->rounded); // auf glatte 250er
-				} else {
-					sprintf(char_buffer,"%5i U/min | %2i GPS",pSensors->m_dz->rounded,int(sats)%100); // auf glatte 250er
-				};
+				sprintf(char_buffer,"%5i U/min",pSensors->m_dz->rounded); // auf glatte 250er
 				pDebug->speedo_loop(5,0,previousMillis," ");
 				// depend on skinsettings
 				pOLED->string(dz_widget.font,char_buffer,dz_widget.x,dz_widget.y,0,DISP_BRIGHTNESS,0);
@@ -171,21 +173,29 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				sprintf(char_buffer,"%5i",pSensors->m_dz->rounded);
 				pDebug->speedo_loop(6,0,previousMillis," ");
 				pOLED->string(dz_widget.font,char_buffer,dz_widget.x,dz_widget.y,0,DISP_BRIGHTNESS,0);
-				// GPS //
-				if(pSensors->m_gps->valid>=4 || sats==0){ // GPS is invalid wenn wir 3 sec nix gehört haben
-					sprintf(char_buffer,"no GPS");
-				} else {
-					sprintf(char_buffer,"%2i GPS",sats%100);
-				};
-				// depend on skinsettings
-				pOLED->string(dz_widget.font,char_buffer,dz_widget.x+14,dz_widget.y,0,DISP_BRIGHTNESS,0); // TODO
 			};
-			disp_zeile_bak[DZ_VALUE]=int(pSensors->m_dz->rounded+1+sats);
+			disp_zeile_bak[DZ_VALUE]=int(pSensors->m_dz->rounded+1);
 		};
 	};
 
+	// see comment on top (2)
+	if(!(gps_widget.x==-1 && gps_widget.y==-1)){ // only show it if pos != -1/-1
+		int sats=pSensors->m_gps->get_info(6);
+		if(disp_zeile_bak[GPS_VALUE]!=int(sats+1)){
+			if(disp_zeile_bak[GPS_VALUE]==-99){ //schreib alles neu, auch die buchstaben
+				sprintf(char_buffer,"no GPS");
+				pDebug->speedo_loop(6,0,previousMillis," ");
+			} else { // nur eine änderung im wert
+				sprintf(char_buffer,"%2i",int(sats)%100);
+				pDebug->speedo_loop(6,0,previousMillis," ");
+			};
+			pOLED->string(gps_widget.font,char_buffer,gps_widget.x,gps_widget.y,0,DISP_BRIGHTNESS,0);
+			disp_zeile_bak[GPS_VALUE]=int(1+sats);
+		};
+	};
+
+	// see on top comment, number (3)
 	if(!(addinfo_widget.x==-1 && addinfo_widget.y==-1)){ // only show it if pos != -1/-1
-		// see on top comment, number (2)
 		if(unsigned(disp_zeile_bak[ADD_INFO])!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)){ // immer wenn sich trip_dist ändert den string ausgeben der direkt drüber steht, auf 0.1 km genau
 			// trip[8] => gesamt/100 => 100er Meter, 27.342,8 => 28
 			disp_zeile_bak[ADD_INFO]=int(pSensors->m_gps->mod(floor(trip_dist[8]/100),100));
@@ -213,7 +223,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		};
 	};
 	if(!(addinfo2_widget.x==-1 && addinfo2_widget.y==-1)){ // only show it if pos != -1/-1
-		// now, print variable messages, additional infos, see top comment (3)
+		// now, print variable messages, additional infos, see top comment (4)
 		/// warnung wegen zu hoher Drehzahl, erstmal checken ob wir von der drehzahl her in betrachtkommen
 		if(pSensors->m_dz->rounded>7000){
 			if((pSensors->m_temperature->get_oil_temp()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || 		// temperatur < 60°
@@ -287,6 +297,15 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
 				pOLED->string_P(addinfo2_widget.font,PSTR("Water read failed"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+			};
+
+		}
+		else if(kmh_widget.x!=-1 && kmh_widget.y!=-1 && pSensors->m_speed->get_mag_speed()==0 && pSensors->m_speed->get_sat_speed()>20 && pSensors->m_gps->get_info(6)>3){
+			if(disp_zeile_bak[ADD_INFO2]!=110){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=110;
+				pDebug->speedo_loop(14,0,previousMillis," ");
+				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
+				pOLED->string_P(addinfo2_widget.font,PSTR("Reed sensor error"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
 			};
 
 		}
@@ -395,17 +414,17 @@ void speedo_speedo::clear_vars(){
 void speedo_speedo::check_vars(){
 	if(pSD->sd_failed==true){
 		// skinning
-		pSpeedo->water_widget.x=-1;
-		pSpeedo->water_widget.y=-1;
+		pSpeedo->water_widget.x=0;
+		pSpeedo->water_widget.y=0;
 		pSpeedo->water_widget.symbol=true;
 		pSpeedo->water_widget.font=STD_SMALL_1X_FONT;
 
-		pSpeedo->oil_widget.x=0;
-		pSpeedo->oil_widget.y=0;
+		pSpeedo->oil_widget.x=-1;
+		pSpeedo->oil_widget.y=-1;
 		pSpeedo->oil_widget.symbol=true;
 		pSpeedo->oil_widget.font=STD_SMALL_1X_FONT;
 
-		pSpeedo->air_widget.x=15;
+		pSpeedo->air_widget.x=14;
 		pSpeedo->air_widget.y=0;
 		pSpeedo->air_widget.symbol=true;
 		pSpeedo->air_widget.font=STD_SMALL_1X_FONT;
@@ -424,6 +443,10 @@ void speedo_speedo::check_vars(){
 		pSpeedo->dz_widget.x=0;
 		pSpeedo->dz_widget.y=4;
 		pSpeedo->dz_widget.font=STD_SMALL_1X_FONT;
+
+		pSpeedo->gps_widget.x=14;
+		pSpeedo->gps_widget.y=4;
+		pSpeedo->gps_widget.font=STD_SMALL_1X_FONT;
 
 		pSpeedo->addinfo_widget.x=0;
 		pSpeedo->addinfo_widget.y=5;

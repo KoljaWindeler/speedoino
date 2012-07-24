@@ -21,7 +21,7 @@ public:
 	void clear_vars();
 	bool check_vars();
 	void recv_data();
-	long get_info(int select);
+	long get_info(unsigned char select);
 	void loop();
 	void check_flag();
 	void SendByte(unsigned char data);

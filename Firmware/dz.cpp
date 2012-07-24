@@ -40,19 +40,19 @@ void speedo_dz::calc() {
 	if(pAktors->m_stepper->init_steps_to_go!=0){
 		if(pAktors->m_stepper->init_steps_to_go>=5){
 			if(pAktors->m_stepper->get_pos()!=0){		//
-				pAktors->m_stepper->go_to(0);
+				pAktors->m_stepper->go_to(0,FAST_ACCEL,FAST_SPEED);			// 240*8 = 1920
 			} else {
 				pAktors->m_stepper->init_steps_to_go=4; 					// nächsten schritt vorbereiten
 			}
 		} else if(pAktors->m_stepper->init_steps_to_go==4){
 			if(pAktors->m_stepper->get_pos()!=MOTOR_OVERWRITE_END_POS){		// motor noch nicht am ende angekommen
-				pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS); 		// weiter dorthin scheuchen
+				pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS,FAST_ACCEL,FAST_SPEED);// weiter dorthin scheuchen
 			} else { 														// motor angekommen
 				pAktors->m_stepper->init_steps_to_go=3; 					// nächsten schritt vorbereiten
 			}
 		} else if(pAktors->m_stepper->init_steps_to_go==3){
 			if(pAktors->m_stepper->get_pos()!=0){   						// motor noch nicht am anfang angekommen
-				pAktors->m_stepper->go_to(0); 							// weiter dorthin scheuchen
+				pAktors->m_stepper->go_to(0,FAST_ACCEL,FAST_SPEED);			// weiter dorthin scheuchen
 			} else { 														// motor angekommen
 				pAktors->m_stepper->init_steps_to_go=2; 					// fertig
 			}
@@ -64,7 +64,7 @@ void speedo_dz::calc() {
 			}
 		} else if(pAktors->m_stepper->init_steps_to_go==1){
 			if(pAktors->m_stepper->get_pos()!=0){   						// motor noch nicht am anfang angekommen
-				pAktors->m_stepper->go_to(0);
+				pAktors->m_stepper->go_to(0,80,200);
 			} else { 														// motor angekommen
 				pAktors->m_stepper->init_steps_to_go=0; 					// fertig
 			}
@@ -72,27 +72,33 @@ void speedo_dz::calc() {
 	} else if(false){
 		if(differ>112){
 			previous_time=now;
-			int temp=analogRead(OIL_TEMP_PIN)-180;
-			if(temp<0) temp=0;
-			if (temp>600) temp=600;
-			rounded=15000-temp*25;
 
-			//			int speed_me_up=50; // gut mit 50
-			//			if(((millis()/speed_me_up)%210)<50){
-			//				rounded=0;
-			//			} else {
-			//				rounded=((millis()/speed_me_up)%210)*70;
-			//			};
+			int demo_mode=2;
+
+			if(demo_mode==1){
+				int temp=analogRead(OIL_TEMP_PIN)-180;
+				if(temp<0) temp=0;
+				if (temp>600) temp=600;
+				rounded=15000-temp*25;
+				exact=rounded;
+				rounded=exact_disp;
+			} else if(demo_mode==2){
+				if(int(floor(millis()/1000))%10<=5){
+				int dz=random(15000);
+				exact=pSensors->flatIt(dz,&dz_faktor_counter,3,exact);
+				exact_disp=exact;
+				rounded=exact_disp;
+				};
+			} else if(demo_mode==3){
+				int speed_me_up=50; // gut mit 50
+				if(((millis()/speed_me_up)%210)<50){
+					rounded=0;
+				} else {
+					rounded=((millis()/speed_me_up)%210)*70;
+				};
+			};
 			pSensors->m_gear->calc();
-			// zeiger
-			// 2 => 2*880=> 2k stepper
-			//pAktors->m_stepper->go_to(round(exact/11.73));
-			//pAktors->m_stepper->go_to(round(exact/11.73));
-
-			// wir versuchen das vorfahren zu simulieren
-			int dz=2000+random(12);
-			exact=pSensors->flatIt(dz,&dz_faktor_counter,4,exact);
-			pAktors->m_stepper->go_to(round(110+random(1)));
+			pAktors->m_stepper->go_to(exact/11.73);
 		}
 	} else if(now_peaks>4 && differ>100){ 									// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
 		//now_peaks=now_peaks>>anzahl_shift;								// könnte ja sein das man weniger umdrehungen als funken hat, hornet hat 2 Funken je Umdrehun

@@ -108,7 +108,7 @@ int speedo_speed::getSpeed(){
 	unsigned long differ=jetzt-last_time;
 
 	if(differ<1000){
-		if(reed_speed > gps_takeover &&	signed(pSensors->m_gps->speed) > gps_takeover && pSensors->m_gps->valid<=2){ // gps valid innerhalb der letzten 3 sek und über 80 kmh, das 1sek rumdümpeln raus
+		if(reed_speed > gps_takeover &&	signed(pSensors->m_gps->speed) > gps_takeover && pSensors->m_gps->valid<=2 && abs(reed_speed-pSensors->m_gps->speed)<10){ // gps valid innerhalb der letzten 3 sek und über 80 kmh, das 1sek rumdümpeln raus
 			return pSensors->m_gps->speed;
 		} else {
 			return reed_speed;

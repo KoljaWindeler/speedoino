@@ -29,11 +29,33 @@ void speedo_stepper::overwrite_pos(int new_pos){
 	Serial3.print("*");
 }
 
+bool speedo_stepper::go_to(int winkel,int accel,int speed){
+	Serial3.print("$m");
+	Serial3.print(winkel);
+	Serial3.print(",");
+	Serial3.print(accel);
+	Serial3.print(",");
+	Serial3.print(speed);
+	Serial3.print("*");
+
+	// debug
+//	Serial.print("$m");
+//	Serial.print(winkel);
+//	Serial.print(",");
+//	Serial.print(accel);
+//	Serial.print(",");
+//	Serial.print(speed);
+//	Serial.print("*");
+
+	return true;
+};
+
 bool speedo_stepper::go_to(int winkel){
 	Serial3.print("$m");
 	Serial3.print(winkel);
 	Serial3.print("*");
-//
+
+	//
 //	Serial.print(millis());
 //	Serial.print(",");
 //	Serial.println(winkel);

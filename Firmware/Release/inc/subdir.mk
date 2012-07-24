@@ -5,49 +5,46 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../inc/EEPROM.cpp \
+../inc/I2C.cpp \
 ../inc/Sd2Card.cpp \
 ../inc/SdFat.cpp \
 ../inc/SdFatUtil.cpp \
 ../inc/SdFile.cpp \
 ../inc/SdStream.cpp \
 ../inc/SdVolume.cpp \
-../inc/Wire.cpp \
 ../inc/istream.cpp \
 ../inc/ostream.cpp \
 ../inc/ssd0323.cpp 
 
 C_SRCS += \
-../inc/pins_arduino.c \
-../inc/twi.c 
+../inc/pins_arduino.c 
 
 OBJS += \
 ./inc/EEPROM.o \
+./inc/I2C.o \
 ./inc/Sd2Card.o \
 ./inc/SdFat.o \
 ./inc/SdFatUtil.o \
 ./inc/SdFile.o \
 ./inc/SdStream.o \
 ./inc/SdVolume.o \
-./inc/Wire.o \
 ./inc/istream.o \
 ./inc/ostream.o \
 ./inc/pins_arduino.o \
-./inc/ssd0323.o \
-./inc/twi.o 
+./inc/ssd0323.o 
 
 C_DEPS += \
-./inc/pins_arduino.d \
-./inc/twi.d 
+./inc/pins_arduino.d 
 
 CPP_DEPS += \
 ./inc/EEPROM.d \
+./inc/I2C.d \
 ./inc/Sd2Card.d \
 ./inc/SdFat.d \
 ./inc/SdFatUtil.d \
 ./inc/SdFile.d \
 ./inc/SdStream.d \
 ./inc/SdVolume.d \
-./inc/Wire.d \
 ./inc/istream.d \
 ./inc/ostream.d \
 ./inc/ssd0323.d 

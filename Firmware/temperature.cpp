@@ -74,6 +74,8 @@ bool speedo_temperature::check_vars(){
 }
 
 void speedo_temperature::init(){
+	I2c.begin();
+	I2c.timeOut(1000); // 1000 ms to get Temperature
 	Serial.println("Temp init done.");
 }
 
@@ -212,17 +214,15 @@ void speedo_temperature::read_water_temp() {
 
 void speedo_temperature::read_air_temp() {
 	// get i2c tmp102 //
-	int sensorAddress = 0b01001001;  // From datasheet sensor address is 0x91 shift the address 1 bit right, the Wire library only needs the 7 most significant bits for the address
+	int sensorAddress = 0b01001001;  // From datasheet sensor address is 0x91 shift the address 1 bit right
 	byte msb;
 	byte lsb;
-
-	Wire.requestFrom(sensorAddress,2);
+	I2c.read(sensorAddress,0x00,2);
 	if(TEMP_DEBUG){ Serial.println("request abgeschickt"); }
-	if (Wire.available() >= 2)  // if two bytes were received
-	{
+	if (I2c.available() >= 2){  // if two bytes were received
 		if(TEMP_DEBUG){ Serial.println("2 Byte im Puffer"); }
-		msb = Wire.receive();  // receive high byte (full degrees)
-		lsb = Wire.receive();  // receive low byte (fraction degrees)
+		msb = I2c.receive();  // receive high byte (full degrees)
+		lsb = I2c.receive();  // receive low byte (fraction degrees)
 		air_temp_value = ((msb) << 4);  // MSB
 		air_temp_value|= (lsb >> 4);    // LSB
 		air_temp_value = round(air_temp_value*0.625); // round and save

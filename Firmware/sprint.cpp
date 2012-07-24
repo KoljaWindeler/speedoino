@@ -63,10 +63,10 @@ void speedo_sprint::loop(){
 		// geschwindigkeit
 		if(pSpeedo->disp_zeile_bak[0]==-99){ // wenn es gerade reseted wurde -> alles hinmalen
 			sprintf(char_buffer,"%3i km/h",speed);
-			pOLED->string(STD_SMALL_2X_FONT,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font+1,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
 		}   else if(pSpeedo->disp_zeile_bak[0]!=speed+1){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
 			sprintf(char_buffer,"%3i",speed);
-			pOLED->string(STD_SMALL_2X_FONT,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font+1,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
 		};
 		pSpeedo->disp_zeile_bak[0]=int(speed+1); // zustand sichern
 
@@ -75,10 +75,10 @@ void speedo_sprint::loop(){
 		pSensors->m_dz->calc();
 		if(pSpeedo->disp_zeile_bak[2]==-99){ // wenn es gerade reseted wurde -> alles hinmalen
 			sprintf(char_buffer,"%5u U/min",pSensors->m_dz->rounded);
-			pOLED->string(STD_SMALL_1X_FONT,char_buffer,5,1,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
 		} else if (pSpeedo->disp_zeile_bak[2]!=signed(pSensors->m_dz->rounded+1)){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
 			sprintf(char_buffer,"%5u",pSensors->m_dz->rounded);
-			pOLED->string(STD_SMALL_1X_FONT,char_buffer,5,1,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
 		};
 		pSpeedo->disp_zeile_bak[2]=int(pSensors->m_dz->rounded+1); // zustand sichern
 
@@ -102,14 +102,14 @@ void speedo_sprint::loop(){
 		if(pSpeedo->disp_zeile_bak[1]==-99){ // alles hinschreiben
 			pSpeedo->disp_zeile_bak[1]=1; // 1 ist nicht 0 und nicht sprint_time+1 => 2. schleife wird gestartet ...
 			sprintf(char_buffer,"%02i,%03i sec",(int)floor(sprint_time/1000),(int)floor((sprint_time%1000)));
-			pOLED->string(STD_SMALL_1X_FONT,char_buffer,6,6,0,DISP_BRIGHTNESS,0);
+			pOLED->string(pSpeedo->default_font,char_buffer,6,6,0,DISP_BRIGHTNESS,0);
 		} else if(pSpeedo->disp_zeile_bak[1]!=signed(sprint_time+1)){
 			pSpeedo->disp_zeile_bak[1]=int(sprint_time+1);
 			sprintf(char_buffer,"%02i,%03i",(int)floor(sprint_time/1000),(int)floor((sprint_time%1000)));
 			if(blink_show){
-				pOLED->string(STD_SMALL_1X_FONT,char_buffer,6,6,0,DISP_BRIGHTNESS,0);
+				pOLED->string(pSpeedo->default_font,char_buffer,6,6,0,DISP_BRIGHTNESS,0);
 			} else {
-				pOLED->string(STD_SMALL_1X_FONT,"          ",6,6,0,DISP_BRIGHTNESS,0);
+				pOLED->string(pSpeedo->default_font,"          ",6,6,0,DISP_BRIGHTNESS,0);
 				pSpeedo->disp_zeile_bak[1]=-99;
 			};
 		};

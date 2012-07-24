@@ -41,6 +41,7 @@
 
 #include <WProgram.h>
 #include <util/delay.h> // timing
+#include "inc/I2C.h"
 void setup();
 
 #endif /* FKT_H_ */

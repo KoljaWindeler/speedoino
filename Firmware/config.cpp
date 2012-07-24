@@ -787,6 +787,12 @@ int configuration::parse(char* buffer){
 		parse_short(buffer,seperator,&pSpeedo->dz_widget.y);
 	} else if(strcmp_P(name,PSTR("dz_widget.font"))==0){
 		parse_short(buffer,seperator,&pSpeedo->dz_widget.font);
+	} else if(strcmp_P(name,PSTR("gps_widget.x"))==0){
+		parse_short(buffer,seperator,&pSpeedo->gps_widget.x);
+	} else if(strcmp_P(name,PSTR("gps_widget.y"))==0){
+		parse_short(buffer,seperator,&pSpeedo->gps_widget.y);
+	} else if(strcmp_P(name,PSTR("gps_widget.font"))==0){
+		parse_short(buffer,seperator,&pSpeedo->gps_widget.font);
 	} else if(strcmp_P(name,PSTR("addinfo_widget.x"))==0){
 		parse_short(buffer,seperator,&pSpeedo->addinfo_widget.x);
 	} else if(strcmp_P(name,PSTR("addinfo_widget.y"))==0){
@@ -1236,7 +1242,7 @@ void configuration::day_trip_check(){
 
 
 void configuration::EEPROM_init(){
-	pDebug->sprintlnp(PSTR("Lade EEPROM"));
+	pDebug->sprintp(PSTR("Lade EEPROM... "));
 	//Serial.println("-> Lade KM von SD Karte");
 	pSpeedo->m_trip_mode=EEPROM.read(2);
 	if(pSpeedo->m_trip_mode>9 || pSpeedo->m_trip_mode<0) {    pSpeedo->m_trip_mode=1;       };
@@ -1264,5 +1270,6 @@ void configuration::EEPROM_init(){
 	} else {
 		pSensors->m_gps->navi_active=false;
 	};
+	pDebug->sprintlnp(PSTR("Done"));
 
 };

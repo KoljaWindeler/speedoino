@@ -25,17 +25,18 @@ typedef struct {
 
 class speedo_speedo{
 
-#define       OIL_TEMP 0
-#define       AIR_TEMP 1
-#define       SPEED_VALUE 2
-#define       DZ_VALUE 3
-#define       ADD_INFO 4
-#define       ADD_INFO2 5
-#define       TIME_BAK 6
-#define       GEAR_VALUE 7
-#define       FUEL_VALUE 8
-#define		  ARROW 9
-#define		  WATER_TEMP 10
+#define       	OIL_TEMP 0
+#define       	AIR_TEMP 1
+#define       	SPEED_VALUE 2
+#define       	DZ_VALUE 3
+#define       	ADD_INFO 4
+#define       	ADD_INFO2 5
+#define       	TIME_BAK 6
+#define       	GEAR_VALUE 7
+#define       	FUEL_VALUE 8
+#define		  	ARROW 9
+#define		  	WATER_TEMP 10
+#define			GPS_VALUE 11
 
 public:
 	void loop(unsigned long previousMillis);
@@ -43,7 +44,7 @@ public:
 	void clear_vars();
 	void check_vars();
 	short int 	  m_trip_mode; // welcher wert angezeigt wird, 1= day 2=bla 3=blabla etc
-	int 		  disp_zeile_bak[11];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
+	int 		  disp_zeile_bak[12];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
 	int           max_speed[9];      // array of the max speed values sollte dem speedo_speedo gehören
 	unsigned long avg_timebase[9];
 	unsigned long trip_dist[9]; // 0=Total, 1=Non permanent, 2=Day, 3=Tour, 4=Quick, 5=Fuel, 6=Oiler, 7=Saison, 8=Board
@@ -53,7 +54,7 @@ public:
 	int minimum;
 
 	widget		kmhchar_widget,oil_widget,water_widget,air_widget,arrow_widget,kmh_widget,dz_widget;
-	widget		fuel_widget,gear_widget,addinfo_widget,addinfo2_widget,clock_widget;
+	widget		fuel_widget,gear_widget,addinfo_widget,addinfo2_widget,clock_widget,gps_widget;
 	short default_font;
 
 

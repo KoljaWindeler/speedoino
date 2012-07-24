@@ -8,6 +8,9 @@
 #ifndef DZ_H_
 #define DZ_H_
 
+#define FAST_SPEED 600
+#define FAST_ACCEL 1000
+
 /**************** DZ *******************/
 void helper();
 class speedo_dz{
