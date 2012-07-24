@@ -34,6 +34,7 @@ kmhchar_widget.font=0;
 fuel_widget.x=8;
 fuel_widget.y=6;
 fuel_widget.symbol=1;
+fuel_widget.font=1;
 
 oil_widget.x=7;
 oil_widget.y=2;
@@ -65,3 +66,7 @@ addinfo_widget.y=-1;
 
 addinfo2_widget.x=0;
 addinfo2_widget.y=0;
+
+gps_widget.x=14;
+gps_widget.y=4;
+gps_widget.font=1;

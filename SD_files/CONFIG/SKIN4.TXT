@@ -1,4 +1,4 @@
-#Koljas Porsche Tacho, Anordnung wie bei standard
+#Koljas minimal Tacho, nur kmh_big und Gang
 # Die erste Zeile wird als Beschreibung genutzt wenn sie mit einem "#" anfängt, bitte umlaute vermeiden.
 # Kommentarzeilen grundsätzlich mit einem "#" beginnen lassen und nicht hinter einem zu parsenden string
 # also nicht: "fuel_widget.x<=14; #damit es passt"
@@ -23,50 +23,51 @@
 # VISITOR_SMALL_3X_FONT	17
 # VISITOR_SMALL_4X_FONT	18
 
+fuel_widget.x=-1;
+fuel_widget.y=-1;
+fuel_widget.symbol=0;
 
-fuel_widget.x=14;
-fuel_widget.y=7;
-fuel_widget.symbol=1;
-fuel_widget.font=15;
+oil_widget.x=-1;
+oil_widget.y=-1;
+oil_widget.symbol=0;
 
-oil_widget.x=0;
-oil_widget.y=0;
-oil_widget.symbol=1;
-oil_widget.font=15;
+water_widget.x=-1;
+water_widget.y=-1;
+water_widget.symbol=1;
+water_widget.font=15;
 
-air_widget.x=14;
-air_widget.y=0;
-air_widget.symbol=1;
-air_widget.font=15;
+air_widget.x=-1;
+air_widget.y=-1;
+air_widget.symbol=0;
 
-clock_widget.x=0;
-clock_widget.y=7;
-clock_widget.symbol=1;
-clock_widget.font=15;
+clock_widget.x=-1;
+clock_widget.y=-1;
+clock_widget.symbol=0;
 
-arrow_widget.x=0;
-arrow_widget.y=1;
+arrow_widget.x=-1;
+arrow_widget.y=-1;
 
-kmh_widget.x=6;
+kmh_widget.x=3;
 kmh_widget.y=2;
-kmh_widget.font=16;
+kmh_widget.font=4;
 
-kmhchar_widget.x=12;
-kmhchar_widget.y=3;
-kmhchar_widget.font=15;
+kmhchar_widget.x=15;
+kmhchar_widget.y=5;
+kmhchar_widget.font=0;
 
-gear_widget.x=11;
-gear_widget.y=7;
-gear_widget.font=15;
+gear_widget.x=17;
+gear_widget.y=2;
+gear_widget.font=2;
 
-dz_widget.x=0;
-dz_widget.y=4;
-dz_widget.font=15;
+dz_widget.x=-1;
+dz_widget.y=-1;
 
-addinfo_widget.x=5;
-addinfo_widget.y=5;
-addinfo_widget.font=15;
+addinfo_widget.x=-1;
+addinfo_widget.y=-1;
 
 addinfo2_widget.x=0;
-addinfo2_widget.y=6;
-addinfo2_widget.font=15;
+addinfo2_widget.y=7;
+
+gps_widget.x=14;
+gps_widget.y=4;
+gps_widget.font=1;
