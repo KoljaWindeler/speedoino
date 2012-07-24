@@ -22,6 +22,7 @@
  *****************************************************************************/
 
 #include <avr/io.h>
+#include <avr/iom8.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,12 +48,11 @@ extern speedRampData srd;
  *  \param accel  Accelration to use, in 0.01*rad/sec^2.
  *  \param speed  Max speed, in 0.01*rad/sec.
  */
-void speed_cntr_Move(signed int soll_pos){
-
+void speed_cntr_Move(signed int soll_pos, unsigned int accel, unsigned int max_speed){
 	//! Number of steps before we hit max speed.
 	unsigned int step_to_max_speed;
 	unsigned int differ_steps;
-	unsigned int accel=240*8;
+	//unsigned int accel=10*8;// 21.7.  von 240 -> 180
 	int speed=0;
 	speedRampData srd_next=srd; // copy all facts
 
@@ -72,14 +72,14 @@ void speed_cntr_Move(signed int soll_pos){
 	}
 
 
-	speed*=8/3;
+	speed*=2; // 21.7.  von 8/3 -> 2
 	if(speed < 6){
 		speed = 6;
-	} else if(speed>800){
-		speed=800;
+	} else if(speed>max_speed){
+		speed=max_speed;
 	}
 
-	//if(differ_steps < 0){ differ_steps=0; };
+	if(differ_steps < 0){ differ_steps=0; };
 
 	// If moving only 1 step.
 	if(differ_steps == 1){
@@ -90,10 +90,8 @@ void speed_cntr_Move(signed int soll_pos){
 		// Just a short delay so main() can act on 'running'.
 		srd_next.step_delay = 1000;
 		OCR1A = 10;
-		// Run Timer/Counter 1 with prescaler = 1.
-		//TCCR1B |= (1<<CS10);
-
-		TCCR1B |= ((0<<CS12)|(1<<CS11)|(0<<CS10));
+		// Run Timer/Counter 1 with prescaler = 8.
+		TCCR1B |= T1_RUN;
 	}
 	// Only move if number of steps to move is not zero.
 	else if(differ_steps > 1){
@@ -149,8 +147,8 @@ void speed_cntr_Move(signed int soll_pos){
 			}
 
 			OCR1A = 10; 			// mach mal ein paar schritte (10)
-			//TCCR1B |= (1<<CS10);	// Set Timer/Counter to divide clock by 1
-			TCCR1B |= ((0<<CS12)|(1<<CS11)|(0<<CS10));
+			// prescale 8
+			TCCR1B |= T1_RUN;
 		} else if(srd_next.run_state==DECEL){
 			if((soll_pos+srd_next.decel_steps_neg>srd_next.decel_start && srd_next.dir==CW) || (soll_pos+srd_next.decel_steps_neg<srd_next.decel_start && srd_next.dir==CCW)){
 				srd_next.min_delay = A_T_x100 / speed;
@@ -296,6 +294,12 @@ void speed_cntr_Init_Timer1(void){
  *  and controls the speed of the stepper motor.
  *  A new step delay is calculated to follow wanted speed profile
  *  on basis of accel/decel parameters.
+ *
+ *  Timer1 läuft als 16-Bit Timer.
+ *  Max 65535
+ *  Speed: Prescale 8 => F_CPU=4Mhz/8 = 524288Hz
+ *  Timer max timeout = 0xffff/524288=0,124998093 sec
+ *  Timer timeout = 0x0fff/524288=0,007810593 sec
  */
 ISR(TIMER1_COMPA_vect){
 	// Holds next delay period.
@@ -312,8 +316,7 @@ ISR(TIMER1_COMPA_vect){
 
 		//rest = 0;
 		// Stop Timer/Counter 1.
-		//TCCR1B &= ~(1<<CS10 | 1<<CS11);
-		TCCR1B &= ~(1<<CS10 | 1<<CS11 | 1<<CS12);
+		TCCR1B &= T1_STOP;
 
 		// Reset counter.
 		srd.accel_steps = 0;// Set Timer/Counter to divide clock by 1
@@ -330,7 +333,6 @@ ISR(TIMER1_COMPA_vect){
 				srd.position++;
 		}
 		new_step_delay = srd.step_delay - ((2 * (long)srd.step_delay)/(4 * srd.accel_steps + 1));
-		//new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) + rest)/(4 * srd.accel_steps + 1));
 		//rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_steps + 1);
 		// Check if we should start decelration.
 		if(srd.position == srd.decel_start) {
@@ -380,6 +382,7 @@ ISR(TIMER1_COMPA_vect){
 		// Check if we at last step
 		if(srd.accel_steps >= 0){
 			srd.run_state = STOP;
+			OCR1A=0x03ff;
 		}
 		break;
 	}

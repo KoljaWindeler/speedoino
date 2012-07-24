@@ -59,6 +59,8 @@ volatile struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
 bool emergency_shutdown;
 bool emergency_extra_pos_offset_set;
 unsigned char voltage_down_counter=0;
+unsigned int speed=200;
+unsigned int accel=80;
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 void Init(void)
 {
@@ -87,28 +89,63 @@ void Init(void)
 	sei();
 	//_delay_us(1000);
 	config_timer0();
+
+	//Just to be sure
+	speed=200;
+	accel=80;
 }
 
 
 int main(){
 	Init();
 	while(1) {
-		check_power_state();
+//		check_power_state();
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
-			if(UART_RxBuffer[0] == 'm'){ // move
+			/////////////////////////// MOVE /////////////////////////////////////
+			if(UART_RxBuffer[0] == 'm'){
 				status.cmd = FALSE;
-				int steps=UART_RxBuffer[1]-'0';
+				int set_pos=UART_RxBuffer[1]-'0';
 				int i=2;
+				int pos0_accel1_speed2=0;
 				while(UART_RxBuffer[i]!=0x00){
-					steps=steps*10+UART_RxBuffer[i]-'0';
+					if(UART_RxBuffer[i]>='0' && UART_RxBuffer[i]<='9'){
+						if(pos0_accel1_speed2==0){
+							set_pos=set_pos*10+UART_RxBuffer[i]-'0';
+						} else if(pos0_accel1_speed2==1){
+							accel=accel*10+UART_RxBuffer[i]-'0';
+						} else if(pos0_accel1_speed2==2){
+							speed=speed*10+UART_RxBuffer[i]-'0';
+						}
+					} else if(UART_RxBuffer[i]==','){
+						pos0_accel1_speed2++;
+						if(pos0_accel1_speed2==1){
+							accel=0;
+						} else if(pos0_accel1_speed2==2){
+							speed=0;
+						}
+					}
 					i++;
 				}
-				if(steps>2000) steps=2000;
-				if(steps<0) steps=0;
 
-				speed_cntr_Move(steps);
+				// check input
+				if(set_pos>MAX_POS){ set_pos=MAX_POS; }
+				else if(set_pos<0){ set_pos=0; };
 
+				if(accel>240*8 || accel<=0){ accel=80; };
+				if(speed>800 || speed<=0){ speed=200; };
+
+
+				// check if we have troubles
+				if(srd.position>MAX_POS || srd.position<0){
+					srd.position=MAX_POS;
+					srd.run_state=STOP;
+					speed_cntr_Move(0,80,200);
+				} else {
+					speed_cntr_Move(set_pos,accel,speed);
+				};
+			/////////////////////////// MOVE /////////////////////////////////////
+			///////////////////// ask reset reason ///////////////////////////////
 			} else if(UART_RxBuffer[0] == 'y'){ // ask why we reseted
 				uart_SendByte('$');
 				uart_SendByte('y');
@@ -116,19 +153,25 @@ int main(){
 				uart_SendByte('*');
 				last_rst=0; // setze den status zurueck damit wir immer einen frischen abfragen, wenn der grouee jetzt neustartet aber es steht da power, dann wissen wir, das war nicht der kleine, solange wie nicht wirklich einen powerlost hatten
 				status.cmd = FALSE;
+			///////////////////// ask reset reason ///////////////////////////////
+			///////////////////// ask for position ///////////////////////////////
 			} else if(UART_RxBuffer[0]=='p'){ // get position
 				uart_SendByte('$');
 				uart_SendByte('p');
 				uart_SendInt(srd.position);
 				uart_SendByte('*');
 				status.cmd = FALSE;
+			///////////////////// ask for position ///////////////////////////////
+			//////////////////// (de)activate reset //////////////////////////////
 			} else if(UART_RxBuffer[0]=='r'){ // set reset status
 				if(UART_RxBuffer[1]=='0'){
 					reset_global_active=0;
-				} else {
+				} else if(UART_RxBuffer[1]=='1'){
 					reset_global_active=1;
 				};
 				status.cmd = FALSE;
+			//////////////////// (de)activate reset //////////////////////////////
+			//////////////////// set pointer offset //////////////////////////////
 			} else if(UART_RxBuffer[0] == 'o'){ // set offset
 				status.cmd = FALSE;
 				int new_position=UART_RxBuffer[1]-'0';
@@ -145,22 +188,20 @@ int main(){
 				};
 
 			}
+			//////////////////// set pointer offset //////////////////////////////
 
 		}
 	}//end while(1)
 }
 
-void check_helper(){
-	if(bit_is_clear(PIND,4)){
-		uart_SendString("$");
-	}
-}
 
 void check_power_state(){
 	if(bit_is_clear(PIND,4)){ // kein Spannung mehr auf dem Pin, vor der Diode
+//		uart_SendString("$");
 		voltage_down_counter++;
 		// wenn der counter nicht geht, erstmal mit 100nF probieren und dann vielleicht als PullUp auslegen?
 		if(voltage_down_counter>10){ // ~ 50µsec direkt nacheinander
+//			uart_SendString("%");
 			// input interrupts für reset abwerfen
 			GICR  &= ~((1<<INT0) | (1<<INT1));	//Global Interrupt Flag deaktivieren fuer INT0 und INT1
 			TIMSK &= ~(1<<TOIE0); // Timer overrun aus
@@ -180,7 +221,7 @@ void check_power_state(){
 
 			// fahrt anstarten
 			srd.position=250;
-			speed_cntr_Move(0);
+			speed_cntr_Move(0,accel,speed);
 		}
 	} else {
 		voltage_down_counter=0;
@@ -188,7 +229,7 @@ void check_power_state(){
 			// ups, doch strom wieder da
 			Init();
 			srd.position=200;
-			speed_cntr_Move(0);
+			speed_cntr_Move(0,accel,speed);
 		} // return from emergency
 	} // voltage is up
 };

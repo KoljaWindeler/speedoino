@@ -27,7 +27,7 @@ void reset_init(){
 	reset_led=0; // damit die am anfang etwas leuchtet, show ...
 	reset_bt_running=0; // 1=bt reset am laufen, 0=nix
 	reset_avr_running=0;// 1=avr reset am laufen, 0=nix
-	reset_global_active=0; // 1 = active, 0 = inactive
+	reset_global_active=1; // 1 = active, 0 = inactive
 	last_avr_state=0; // 1=letzte flanke war steigend,0=fallend
 	last_bt_state=0;  // 1=letzte flanke war steigend,0=fallend
 	last_rst=0;
@@ -98,20 +98,20 @@ void config_timer0(){
 /* overflow vom timer 0 ..
  * prescale 64, cpu_freq=4mhz => 64/4.000.000 = 0,000016sec each increment
  * Timer0 is a 8-Bit Timer => 2⁸=256 Counts to overflow = 0,000016sec*256=0,004096 sec= 4,096 ms
- * Bluetooth pin is: 312ms high,312ms low, we have an interrupt on pin change so we can reset after (312/4,096)*1,1 where 10% is safety
- * 84 Timer overruns is max
+ * Bluetooth pin is: 312ms high,312ms low, we have an interrupt on pin change so we can reset after (312/4,096)*1,2 where 20% is safety
+ * 91 Timer overruns is max
  *
- * AVR: Lets say 15sec, 15/0,004=3750 Overruns
+ * AVR: Lets say 30sec, 30/0,004=7500 Overruns
  */
 ISR(TIMER0_OVF_vect){
 	if(reset_global_active){//wenn es high ist soll resetet werden
-		if(counter_bt>=84 && !reset_bt_running && counter_bt_init>10){ //
+		if(counter_bt>=91 && !reset_bt_running && counter_bt_init>10){ //
 			reset_bt_running=1;
 			reset(1);
 			last_rst=2;
 		}
 		
-		if(counter_avr>=3750 && !reset_avr_running){
+		if(counter_avr>=7500 && !reset_avr_running){
 			reset_avr_running=1;
 			reset(1); // run reset ohne langen bootloader quatsch
 			last_rst=1;
@@ -163,13 +163,11 @@ ISR(INT1_vect){
 	if(bit_is_clear(PIND,3) && last_avr_state){ // fallende flanke, sollte also low sein
 		PORTD |= (1 << AVR_LED);// led an
 		last_avr_state=0;
-		counter_avr=0;
-		if(reset_avr_running==1){	reset_avr_running=0;		}
 	} else if(bit_is_set(PIND,3) && !last_avr_state) { // wenn der pin high und wir vorher low waren
 		PORTD &= ~(1 << AVR_LED); // led aus
 		last_avr_state=1;
-		counter_avr=0;
-		if(reset_avr_running==1){	reset_avr_running=0;		}
 	}
+	counter_avr=0;
+	reset_avr_running=0;
 }
 
