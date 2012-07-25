@@ -94,16 +94,17 @@ LICENSE:
 #include	<avr/common.h>
 #include	<stdlib.h>
 #include	"command.h"
+#include	"display.h"
 
 
 #ifndef EEWE
-	#define EEWE 1
+#define EEWE 1
 #endif
 #ifndef EEMWE
-	#define EEMWE 2
+#define EEMWE 2
 #endif
 
-#define	_DEBUG_SERIAL_
+//#define	_DEBUG_SERIAL_
 
 /*
  * Uncomment the following lines to save code space
@@ -241,7 +242,6 @@ void delay_ms(unsigned int timedelay)
 	}
 }
 
-
 //*****************************************************************************
 /*
  * send single byte to USART, wait until transmission is completed
@@ -260,10 +260,131 @@ static int	Serial_Available(void)
 	return(UART_STATUS_REG & (1 << UART_RECEIVE_COMPLETE));	// wait for data
 }
 
+//************************************************************************
+// basic display functions
+static void senden_spi(unsigned char zeichen){
+	unsigned char a=0, b=0b10000000;
+	fastWriteLow(SPI_CS); // cs auf low => aktivieren
+	fastWriteHigh(SPI_CLK); // clock auf high, zu fallender flanke werden daten �bernommen
+
+	for(a=0;a<8;a++){ /* a = 0..7, wegen 8 pixel zeichen breite */
+		if(zeichen&b)	
+			fastWriteHigh(SPI_DATA); /* wenn zeichen&b dann porta bit 0 auf high serial data line */
+		else 
+			fastWriteLow(SPI_DATA); /* PORTA bit 0 auf low zwingen serial data line */
+		fastWriteLow(SPI_CLK); // clock auf high, zu fallender flanke werden daten �bernommen
+		fastWriteHigh(SPI_CLK); // clock auf high, zu fallender flanke werden daten �bernommen
+		b=b>>1;	/* bitmaske einen nach recht schieben => msb first ?! */
+	}
+	fastWriteHigh(SPI_CS); // cs auf high => deaktivieren
+}
+
+/////////////////////////////// command funktion ///////////////////////////////
+static void send_command(unsigned char theCommand){
+	fastWriteLow(SPI_CD); //turn to command mode
+	senden_spi(theCommand);
+	fastWriteHigh(SPI_CD); //turn to data mode
+}
+
+/////////////////////////////// data funktion ///////////////////////////////
+static void send_char(unsigned char zeichen){
+	fastWriteHigh(SPI_CD); //turn to data mode
+	senden_spi(zeichen);
+}
+//************************************************************************	
+
+//************************************************************************
+// init display
+static void init_display(void){
+	DDRC = 0x00 | (1<<PC7) | (1<<PC5) | (1<<PC3) | (1<<PC2) | (1<<PC1);
+
+	_delay_ms(1); // TODO: Change to 1 ?
+
+	fastWriteHigh(SPI_CS);
+	fastWriteLow(SPI_CD);
+	fastWriteLow(SPI_DATA);
+	fastWriteLow(SPI_CLK);
+
+	// reset
+	fastWriteLow(SPI_RESET);
+	_delay_ms(1);
+	fastWriteHigh(SPI_RESET);
+	//_delay_ms(1);
+
+	// init sequenze
+	/////////////////////////////
+	// XXXXXX | Normale | 180� //
+	// ----------------------- //
+	// Re-Map | 0x41 | 0x52 //
+	// Offset | 0x44 | 0x4C //
+	/////////////////////////////
+
+	send_command(0x15);	send_command(0x00);	send_command(0x3F);	// Column Address
+	send_command(0x75);	send_command(0x00);	send_command(0x3F);
+	send_command(0x81);	send_command(0x66);	// Contrast Control
+	send_command(0x86);// Current Range
+	send_command(0xA0);	send_command(0x52);// Re-map
+	send_command(0xA1);	send_command(0x00);// Display Start Line
+	send_command(0xA2);	send_command(0x4C);// Display Offset
+	send_command(0xA4);// Display Mode
+	send_command(0xA8);	send_command(0x3F);// Multiplex Ratio
+	send_command(0xB1);	send_command(0xA8);// set prechange // Phase Length
+	send_command(0xB2);	send_command(0x46);// Row Period
+	send_command(0xB3);	send_command(0xF1); // war f1 // Display Clock Divide
+	send_command(0xBF);	send_command(0x0D);// VSL
+	send_command(0xBE);	send_command(0x02);	send_command(0xBC);	send_command(0x38); // VCOMH
+	send_command(0xB8);	send_command(0x01);	send_command(0x11);	send_command(0x22);	send_command(0x32);	 // Gamma
+	send_command(0x43);	send_command(0x54);	send_command(0x65);	send_command(0x76);
+	send_command(0xAD); /* Set DC-DC */
+	send_command(0x02); /* 03=ON, 02=Off */
+	send_command(0xAF); // Display ON/OFF
+	/* AF=ON, AE=Sleep Mode */
+};
+
+// display filled rect
+static void clear_screen(){
+	send_command(0x15);
+	send_command(0x00);
+	send_command(0x7F);
+	send_command(0x75);
+	send_command(0x00);
+	send_command(0x3F);
+	for (int a=0;a<(128*32);a++){
+		send_char(0x00);
+	}
+}
+
+// display horizontal line
+static void draw_line(unsigned char x,unsigned char y,unsigned char width){
+	send_command(0x15);
+	send_command(x/2);
+	send_command((width-1+x)/2);
+	send_command(0x75);
+	send_command(y);
+	send_command(y);
+	int a;
+	for(a=0;a<(width/2);a++){
+		send_char(0xff);
+	};
+}
+
+
+// set pixel
+static void set2pixels(unsigned char x, unsigned char y,unsigned char first,unsigned char second){
+	send_command(0x15);
+	send_command(x/2);
+	send_command((x+1)/2);
+	send_command(0x75);
+	send_command(y);
+	send_command(y+1);
+	char ba=(second&0x0f)+((first&0x0f)<<4);
+	send_char(ba);
+}
+//************************************************************************
 
 
 
-#define	MAX_TIME_COUNT	(F_CPU >> 1)
+#define	 MAX_TIME_COUNT	(F_CPU >> 1)
 //*****************************************************************************
 static unsigned char recchar_timeout(void)
 {
@@ -315,9 +436,11 @@ int main(void)
 	unsigned long	boot_timer;
 	unsigned int	boot_state;
 
+	/////////Kolja von hier/////////
 	/* enabled in ph3 to read if its a bluetooth reset*/
 	DDRH  &= ~(1<<PH3); // one input
 	PORTH |= 1<<PH3; // with pullup
+	/////////Kolja bis hier/////////
 
 
 	boot_timer	=	0;
@@ -340,8 +463,10 @@ int main(void)
 
 	asm volatile ("nop");			// wait until port has changed
 
-	/////////Kolja/////////
-	_delay_ms(2);
+	/////////Kolja von hier/////////
+	init_display(); // this is the moment when we can init the display
+	clear_screen();
+	//_delay_ms(2);
 	msgLength		=	11;
 	msgBuffer[1] 	=	STATUS_CMD_OK;
 	msgBuffer[2] 	=	8;
@@ -380,21 +505,24 @@ int main(void)
 	}
 	sendchar(checksum);
 	seqNum++;
-	/////////Kolja/////////
+
+
+	//filled_rect(0,0,128,20,0xff);
+	/////////Kolja bis hier /////////
 
 	while (boot_state==0)
 	{
 		while ((!(Serial_Available())) && (boot_state == 0))		// wait for data
 		{
 			_delay_ms(0.001);
-			/////////Kolja/////////
+			/////////Kolja von hier /////////
 			// nur wenn das bit gesetzt ist
 			if(bit_is_set(PINH,3)){
-			/////////Kolja/////////
+				/////////Kolja bis hier/////////
 				boot_timer++;
-			/////////Kolja/////////
+				/////////Kolja von hier /////////
 			}
-			/////////Kolja/////////
+			/////////Kolja bis hier /////////
 
 			if (boot_timer > boot_timeout)
 			{
@@ -511,12 +639,36 @@ int main(void)
 				{
 					unsigned char signatureIndex = msgBuffer[6];
 
-					if ( signatureIndex == 0 )
+					if ( signatureIndex == 0 ){
+						draw_line(0,LOADING_Y,128);
+						draw_line(0,LOADING_Y+4,128);
+						// top optimize it written by hand:
+						send_command(0x15);
+						send_command(0);
+						send_command(0);
+						send_command(0x75);
+						send_command(LOADING_Y+1);
+						send_command(LOADING_Y+3);
+						send_char(0xf0);
+						send_char(0xf0);
+						send_char(0xf0);
+
+						send_command(0x15);
+						send_command(63);
+						send_command(64);
+						send_command(0x75);
+						send_command(LOADING_Y+1);
+						send_command(LOADING_Y+3);
+						send_char(0x0f);
+						send_char(0x0f);
+						send_char(0x0f);
+
 						answerByte = (SIGNATURE_BYTES >>16) & 0x000000FF;
-					else if ( signatureIndex == 1 )
+					} else if ( signatureIndex == 1 ) {
 						answerByte = (SIGNATURE_BYTES >> 8) & 0x000000FF;
-					else
+					} else {
 						answerByte = SIGNATURE_BYTES & 0x000000FF;
+					};
 				}
 				else if ( msgBuffer[4] & 0x50 )
 				{
@@ -537,6 +689,8 @@ int main(void)
 					msgBuffer[5] = answerByte;
 					msgBuffer[6] = STATUS_CMD_OK;
 				}
+				// darf nicht in dem init kommen, sonst malen wir das jedes mal - bei jedem Startup, auch wenn wir das gar nicht wollen
+
 			}
 			break;
 
@@ -611,6 +765,8 @@ int main(void)
 				msgBuffer[1]	=	STATUS_CMD_OK;
 				msgBuffer[2]	=	signature;
 				msgBuffer[3]	=	STATUS_CMD_OK;
+
+
 			}
 			break;
 
@@ -707,6 +863,16 @@ int main(void)
 					} while (size);					// Loop until all bytes written
 
 					boot_page_write(tempaddress);
+
+					//show progress
+					send_command(0x15);
+					send_command(124*tempaddress/APP_END/2+1);
+					send_command(124*tempaddress/APP_END/2+1);
+					send_command(0x75);
+					send_command(LOADING_Y+2);
+					send_command(LOADING_Y+2);
+					send_char(0xff);
+					//show progress
 					boot_spm_busy_wait();
 					boot_rww_enable();				// Re-enable the RWW section
 				}

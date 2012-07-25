@@ -20,7 +20,7 @@ stk500boot.o: stk500boot.c \
  /usr/lib/gcc/avr/4.5.3/../../../avr/include/util/delay.h \
  /usr/lib/gcc/avr/4.5.3/../../../avr/include/util/delay_basic.h \
  /usr/lib/gcc/avr/4.5.3/../../../avr/include/math.h \
- /usr/lib/gcc/avr/4.5.3/../../../avr/include/stdlib.h command.h
+ /usr/lib/gcc/avr/4.5.3/../../../avr/include/stdlib.h command.h display.h
 
 /usr/lib/gcc/avr/4.5.3/../../../avr/include/inttypes.h:
 
@@ -67,3 +67,5 @@ stk500boot.o: stk500boot.c \
 /usr/lib/gcc/avr/4.5.3/../../../avr/include/stdlib.h:
 
 command.h:
+
+display.h:
