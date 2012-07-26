@@ -121,7 +121,7 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x000000000003e000      0xb52
+.text           0x000000000003e000      0xc4a
  *(.vectors)
  .vectors       0x000000000003e000       0xe4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
                 0x000000000003e000                __vectors
@@ -234,26 +234,26 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
                 0x000000000003e126                __vector_18
                 0x000000000003e126                __vector_20
                 0x000000000003e126                __vector_42
- .text          0x000000000003e12a      0x9a2 stk500boot.o
+ .text          0x000000000003e12a      0xa9a stk500boot.o
                 0x000000000003e1be                delay_ms
                 0x000000000003e1dc                main
- .text          0x000000000003eacc        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
- .text          0x000000000003eacc        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
- .text          0x000000000003eacc        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .text          0x000000000003eacc        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
-                0x000000000003eacc                . = ALIGN (0x2)
+ .text          0x000000000003ebc4        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
+ .text          0x000000000003ebc4        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
+ .text          0x000000000003ebc4        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .text          0x000000000003ebc4        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+                0x000000000003ebc4                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x000000000003eacc       0x3e /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
-                0x000000000003eacc                __mulsi3
- .text.libgcc   0x000000000003eb0a       0x44 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
-                0x000000000003eb0a                __udivmodsi4
- .text.libgcc   0x000000000003eb4e        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .text.libgcc   0x000000000003eb4e        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
-                0x000000000003eb4e                . = ALIGN (0x2)
+ .text.libgcc   0x000000000003ebc4       0x3e /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
+                0x000000000003ebc4                __mulsi3
+ .text.libgcc   0x000000000003ec02       0x44 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
+                0x000000000003ec02                __udivmodsi4
+ .text.libgcc   0x000000000003ec46        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .text.libgcc   0x000000000003ec46        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+                0x000000000003ec46                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000000000003eb4e        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
-                0x000000000003eb4e                exit
-                0x000000000003eb4e                _exit
+ .fini9         0x000000000003ec46        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+                0x000000000003ec46                exit
+                0x000000000003ec46                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -272,49 +272,49 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000000000003eb4e        0x4 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .fini0         0x000000000003ec46        0x4 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
  *(.fini0)
-                0x000000000003eb52                _etext = .
+                0x000000000003ec4a                _etext = .
 
-.data           0x0000000000800200       0x14 load address 0x000000000003eb52
+.data           0x0000000000800200       0x3e load address 0x000000000003ec4a
                 0x0000000000800200                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800200        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
- .data          0x0000000000800200       0x13 stk500boot.o
- .data          0x0000000000800213        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
- .data          0x0000000000800213        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
- .data          0x0000000000800213        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .data          0x0000000000800213        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+ .data          0x0000000000800200       0x3d stk500boot.o
+ .data          0x000000000080023d        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
+ .data          0x000000000080023d        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
+ .data          0x000000000080023d        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .data          0x000000000080023d        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
  *(.data*)
  *(.rodata)
  *(.rodata*)
  *(.gnu.linkonce.d*)
-                0x0000000000800214                . = ALIGN (0x2)
- *fill*         0x0000000000800213        0x1 00
-                0x0000000000800214                _edata = .
-                0x0000000000800214                PROVIDE (__data_end, .)
+                0x000000000080023e                . = ALIGN (0x2)
+ *fill*         0x000000000080023d        0x1 00
+                0x000000000080023e                _edata = .
+                0x000000000080023e                PROVIDE (__data_end, .)
 
-.bss            0x0000000000800214        0x0
-                0x0000000000800214                PROVIDE (__bss_start, .)
+.bss            0x000000000080023e        0x0
+                0x000000000080023e                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x0000000000800214        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
- .bss           0x0000000000800214        0x0 stk500boot.o
- .bss           0x0000000000800214        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
- .bss           0x0000000000800214        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
- .bss           0x0000000000800214        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
- .bss           0x0000000000800214        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
+ .bss           0x000000000080023e        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr6/crtm2560.o
+ .bss           0x000000000080023e        0x0 stk500boot.o
+ .bss           0x000000000080023e        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_mulsi3.o)
+ .bss           0x000000000080023e        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_udivmodsi4.o)
+ .bss           0x000000000080023e        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_exit.o)
+ .bss           0x000000000080023e        0x0 /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a(_copy_data.o)
  *(.bss*)
  *(COMMON)
-                0x0000000000800214                PROVIDE (__bss_end, .)
-                0x000000000003eb52                __data_load_start = LOADADDR (.data)
-                0x000000000003eb66                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x000000000080023e                PROVIDE (__bss_end, .)
+                0x000000000003ec4a                __data_load_start = LOADADDR (.data)
+                0x000000000003ec88                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0000000000800214        0x0
-                0x0000000000800214                PROVIDE (__noinit_start, .)
+.noinit         0x000000000080023e        0x0
+                0x000000000080023e                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x0000000000800214                PROVIDE (__noinit_end, .)
-                0x0000000000800214                _end = .
-                0x0000000000800214                PROVIDE (__heap_start, .)
+                0x000000000080023e                PROVIDE (__noinit_end, .)
+                0x000000000080023e                _end = .
+                0x000000000080023e                PROVIDE (__heap_start, .)
 
 .eeprom         0x0000000000810000        0x0
  *(.eeprom*)
@@ -378,31 +378,31 @@ LOAD /usr/lib/gcc/avr/4.5.3/avr6/libgcc.a
  .debug_pubnames
                 0x0000000000000000       0x37 stk500boot.o
 
-.debug_info     0x0000000000000000      0x78c
+.debug_info     0x0000000000000000      0x86a
  *(.debug_info)
- .debug_info    0x0000000000000000      0x78c stk500boot.o
+ .debug_info    0x0000000000000000      0x86a stk500boot.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x0000000000000000      0x2e1
+.debug_abbrev   0x0000000000000000      0x2f1
  *(.debug_abbrev)
- .debug_abbrev  0x0000000000000000      0x2e1 stk500boot.o
+ .debug_abbrev  0x0000000000000000      0x2f1 stk500boot.o
 
-.debug_line     0x0000000000000000      0xbe1
+.debug_line     0x0000000000000000      0xd48
  *(.debug_line)
- .debug_line    0x0000000000000000      0xbe1 stk500boot.o
+ .debug_line    0x0000000000000000      0xd48 stk500boot.o
 
 .debug_frame    0x0000000000000000       0x90
  *(.debug_frame)
  .debug_frame   0x0000000000000000       0x90 stk500boot.o
 
-.debug_str      0x0000000000000000      0x281
+.debug_str      0x0000000000000000      0x2ad
  *(.debug_str)
- .debug_str     0x0000000000000000      0x281 stk500boot.o
-                                        0x2cb (size before relaxing)
+ .debug_str     0x0000000000000000      0x2ad stk500boot.o
+                                        0x2fc (size before relaxing)
 
-.debug_loc      0x0000000000000000      0xbf5
+.debug_loc      0x0000000000000000      0xd44
  *(.debug_loc)
- .debug_loc     0x0000000000000000      0xbf5 stk500boot.o
+ .debug_loc     0x0000000000000000      0xd44 stk500boot.o
 
 .debug_macinfo
  *(.debug_macinfo)

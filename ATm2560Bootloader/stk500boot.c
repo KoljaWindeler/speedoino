@@ -95,6 +95,7 @@ LICENSE:
 #include	<stdlib.h>
 #include	"command.h"
 #include	"display.h"
+#include   "logo.h"
 
 
 #ifndef EEWE
@@ -342,7 +343,7 @@ static void init_display(void){
 };
 
 // display filled rect
-static void clear_screen(){
+static void clear_screen(void){
 	send_command(0x15);
 	send_command(0x00);
 	send_command(0x7F);
@@ -368,18 +369,61 @@ static void draw_line(unsigned char x,unsigned char y,unsigned char width){
 	};
 }
 
+static void show_logo(void){
+	unsigned char a,zeile,buchstabe;
+	unsigned char x=15;
+	unsigned char y=47;
 
-// set pixel
-static void set2pixels(unsigned char x, unsigned char y,unsigned char first,unsigned char second){
-	send_command(0x15);
-	send_command(x/2);
-	send_command((x+1)/2);
-	send_command(0x75);
-	send_command(y);
-	send_command(y+1);
-	char ba=(second&0x0f)+((first&0x0f)<<4);
-	send_char(ba);
+	unsigned char data,send_me;
+	for(a=0;a<9;a++){
+		if(a==0){ // S
+			buchstabe=5;
+		} else if(a==1){ // P
+			buchstabe=6;
+		} else if(a==2 || a==3){ // E
+			buchstabe=0;
+		} else if(a==4){ // D
+			buchstabe=1;
+		} else if(a==5 || a==8){ // O
+			buchstabe=4;
+		} else if(a==6){ // I
+			buchstabe=2;
+		} else if(a==7){ // N
+			buchstabe=3;
+		}
+		// SPEEDOINO
+		send_command(0x15);
+		send_command(x);
+		send_command(x+2); // buchstaben sind 5px breit + spacer
+		send_command(0x75);
+		send_command(y);
+		send_command(y+5); // und 5 px hoch
+
+		buchstabe=buchstabe*6;
+		for(zeile=0;zeile<6;zeile++){
+			data=speedoino_data[buchstabe];
+			buchstabe++;
+
+			send_me=0x00;
+			if(data&0b10000000)	send_me|=0xf0;
+			if(data&0b01000000)	send_me|=0x0f;
+			send_char(send_me);
+
+			send_me=0x00;
+			if(data&0b00100000)	send_me|=0xf0;
+			if(data&0b00010000)	send_me|=0x0f;
+			send_char(send_me);
+
+			send_me=0x00;
+			if(data&0b00001000)	send_me|=0xf0;
+			if(data&0b00000100)	send_me|=0x0f;
+			send_char(send_me);
+		};
+
+		x+=3;
+	};
 }
+
 //************************************************************************
 
 
@@ -663,6 +707,8 @@ int main(void)
 						send_char(0x0f);
 						send_char(0x0f);
 
+						show_logo();
+
 						answerByte = (SIGNATURE_BYTES >>16) & 0x000000FF;
 					} else if ( signatureIndex == 1 ) {
 						answerByte = (SIGNATURE_BYTES >> 8) & 0x000000FF;
@@ -740,7 +786,9 @@ int main(void)
 			break;
 
 			case CMD_LEAVE_PROGMODE_ISP:
-				isLeave	=	1;
+				isLeave			=	1;
+				msgLength		=	2;
+				msgBuffer[1]	=	STATUS_CMD_OK;
 				//*	fall thru
 				break;
 			case CMD_SET_PARAMETER: // same as enter progmode
