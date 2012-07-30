@@ -27,7 +27,7 @@ stepper.d stepper.o: ../stepper.cpp ../global.h ../clock_me.h ../dz.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/ArduinoStream.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/bufstream.h \
  /home/jkw/Store/17\ -\ Speedmaster/Firmware/inc/SdFatUtil.h ../config.h \
- ../timer.h ../sprint.h ../speedo.h ../menu.h ../sensors.h ../aktors.h \
+ ../timer.h ../sprint.h ../speedo.h ../menu.h ../aktors.h ../sensors.h \
  ../debug.h ../file_manager_v2.h ../version.h ../tetris.h ../inc/I2C.h
 
 ../global.h:
@@ -122,9 +122,9 @@ stepper.d stepper.o: ../stepper.cpp ../global.h ../clock_me.h ../dz.h \
 
 ../menu.h:
 
-../sensors.h:
-
 ../aktors.h:
+
+../sensors.h:
 
 ../debug.h:
 

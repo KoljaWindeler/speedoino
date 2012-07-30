@@ -78,22 +78,22 @@ void Speedo_sensors::check_vars(){
 };
 
 void Speedo_sensors::single_read(){
-	pDebug->sprintp(PSTR("Sensor single read ... "));
-	pDebug->sprintp(PSTR("clock,"));
+	pDebug->sprintlnp(PSTR("Sensor single read ... "));
+	pDebug->sprintp(PSTR("Reading: clock ... "));
 	pSensors->m_clock->inc();  // sekunden hochzählen
-	pDebug->sprintp(PSTR("gps,"));
+	pDebug->sprintp(PSTR("done\r\nReading: GPS ... "));
 	pSensors->m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
-	pDebug->sprintp(PSTR("air,"));
+	pDebug->sprintp(PSTR("done\r\nReading: Air temp ... "));
 	pSensors->m_temperature->read_air_temp();  // temperaturen aktualisieren
-	pDebug->sprintp(PSTR("oil,"));
+	pDebug->sprintp(PSTR("done\r\nReading: Oil temp ... "));
 	pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
-	pDebug->sprintp(PSTR("water,"));
+	pDebug->sprintp(PSTR("done\r\nReading: Water temp ... "));
 	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren
-	pDebug->sprintp(PSTR("oiler,"));
+	pDebug->sprintp(PSTR("done\r\nReading: Oiler ... "));
 	pSensors->m_oiler->check_value(); // gucken ob wir ölen müssten
-	pDebug->sprintp(PSTR("voltage,"));
+	pDebug->sprintp(PSTR("done\r\nReading: Voltages ... "));
 	pSensors->m_voltage->calc(); // spannungscheck
-	pDebug->sprintlnp(PSTR("Done"));
+	pDebug->sprintlnp(PSTR("done\r\nSensor single read ... Done"));
 };
 
 

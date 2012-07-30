@@ -97,7 +97,7 @@ bool Speedo_aktors::check_vars(){
 		pDebug->sprintlnp(PSTR("Var check failed"));
 		return true;
 	}
-	pDebug->sprintlnp(PSTR("Var check passed"));
+	pDebug->sprintlnp(PSTR("Checking Var: Passed"));
 	return false;
 };
 
@@ -535,7 +535,7 @@ int Speedo_aktors::set_bt_pin(){
 
 				if(ask_bt(&at_commands[0])==0){
 					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,7);
-					_delay_ms(10000);
+					_delay_ms(2000);
 					return 0;
 				}
 			}
@@ -545,7 +545,7 @@ int Speedo_aktors::set_bt_pin(){
 		pOLED->string_P(pSpeedo->default_font,PSTR("failed, hmmm"),0,1);
 		_delay_ms(5000);
 	}
-	_delay_ms(10000);
+	_delay_ms(2000);
 	return -2;
 }
 

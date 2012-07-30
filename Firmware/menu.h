@@ -7,6 +7,7 @@
 
 #ifndef MENU_H_
 #define MENU_H_
+#include "aktors.h"
 ////////////// menu ///////////////////////
 class speedo_menu {
 
@@ -46,6 +47,7 @@ private:
 	unsigned long button_time;                      // Zeitpunkt des letzen Button kontakt
 	unsigned long button_first_push;                // für "halten". Zeitpunkt des ersten Kontakt
 	void set_buttons(bool left,bool up,bool down,bool right);
+	void color_select_menu(unsigned long base_state,led_simple *led_from, led_simple *led_to, int *min, int *max,bool button_state);
 };
 extern speedo_menu* pMenu;
 ////////////// menu ///////////////////////
