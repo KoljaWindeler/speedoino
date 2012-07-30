@@ -1008,7 +1008,7 @@ void speedo_menu::display(){ // z.B. state = 26
 
 		/////////////////////// speed based color fade ///////////////////
 	} else if(floor(state/10)==652 || floor(state/100)==652){
-		color_select_menu(652,&pAktors->kmh_start_color,&pAktors->kmh_end_color,&pAktors->kmh_min_value,&pAktors->kmh_max_value,button_state);
+		color_select_menu(state,652,&pAktors->kmh_start_color,&pAktors->kmh_end_color,&pAktors->kmh_min_value,&pAktors->kmh_max_value,button_state);
 		////////////////// control //////////////////
 	} else if(floor(state/1000)==652){
 		state/=10;
@@ -2508,7 +2508,7 @@ int speedo_menu::center_me(char* input,int length){
 // todo: LED mode übergeben
 // 491705 vor der ganzen aktion
 
-void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_from, led_simple *led_to, int *min, int *max,bool button_state){
+void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state,led_simple *led_from, led_simple *led_to, int *min, int *max,bool button_state){
 	Serial.println("select menu start");
 	if(floor(state/10)==base_state){
 		Serial.println("sneaky");
