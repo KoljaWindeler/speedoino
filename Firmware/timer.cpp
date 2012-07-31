@@ -63,7 +63,7 @@ void speedo_timer::every_qsec() {
 	if((millis()-every_qsecond_timer)>=250){
 		every_qsecond_timer=millis();
 		pSensors->m_blinker->check();    // blinken wir?
-		pAktors->update_outer_leds(false);
+		pAktors->update_outer_leds(false,false);
 	};
 };
 

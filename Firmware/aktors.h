@@ -51,12 +51,14 @@ public:
 	void set_rgb_in(int r,int g,int b,int save);
 	void set_rgb_out(int r,int g,int b);
 	void set_rgb_out(int r,int g,int b,int save);
-	void dimm_rgb_to(int r,int g,int b,int max_dimm_steps, int set_in_out);
+	void dimm_rgb_to(int r,int g,int b,int max_dimm_steps);
 	void timer_overflow();
 	bool dimm_available();
-	int  update_outer_leds(bool dimm);
+	int  update_outer_leds(bool dimm,bool overwrite);
 	int set_bt_pin();
 	int ask_bt(char *command);
+	void stop_dimmer();
+	void set_active_dimmer(bool state);
 	speedo_stepper* m_stepper;
 	led_area RGB;
 	led_simple dz_flasher,oil_start_color,oil_end_color,water_start_color,water_end_color,kmh_start_color,kmh_end_color,dz_start_color,dz_end_color,static_color;
@@ -66,7 +68,7 @@ public:
 private:
 	int dimm_steps,dimm_step,in_out;
 	short int dimm_state;
-
+	bool colorfade_active;
 
 };
 extern Speedo_aktors* pAktors;

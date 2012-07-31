@@ -956,19 +956,6 @@ int configuration::parse(char* buffer){
 	} else if(strcmp_P(name,PSTR("rgb_out_dz_end_b"))==0){
 		parse_int(buffer,seperator,&temp);
 		pAktors->dz_end_color.b=temp;
-
-	} else if(strcmp_P(name,PSTR("rgb_in_r"))==0){
-		parse_int(buffer,seperator,&temp);
-		pAktors->RGB.inner.r.actual=temp;
-		pAktors->set_rgb_in(pAktors->RGB.inner.r.actual,pAktors->RGB.inner.g.actual,pAktors->RGB.inner.b.actual,1);
-	} else if(strcmp_P(name,PSTR("rgb_in_g"))==0){
-		parse_int(buffer,seperator,&temp);
-		pAktors->RGB.inner.g.actual=temp;
-		pAktors->set_rgb_in(pAktors->RGB.inner.r.actual,pAktors->RGB.inner.g.actual,pAktors->RGB.inner.b.actual,1);
-	} else if(strcmp_P(name,PSTR("rgb_in_b"))==0){
-		parse_int(buffer,seperator,&temp);
-		pAktors->RGB.inner.b.actual=temp;
-		pAktors->set_rgb_in(pAktors->RGB.inner.r.actual,pAktors->RGB.inner.g.actual,pAktors->RGB.inner.b.actual,1);
 	} else if(strcmp_P(name,PSTR("led_mode"))==0){
 		parse_short(buffer,seperator,&pAktors->led_mode);
 		/////// RGB LEDs /////////

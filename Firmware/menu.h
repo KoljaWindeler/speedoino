@@ -28,7 +28,7 @@ public:
 	void back();
 	void draw(const char** menu, int entries);
 	void yesno(const char first[30],const char second[30],const char third[30]);
-	void del_conf(char first[20],char second[20]);
+	void popup(const char *first,const char *second);
 	int  center_me(char* input,int legth);
 	bool go_left(bool update_twice);
 	bool go_right(bool update_twice);
@@ -47,7 +47,7 @@ private:
 	unsigned long button_time;                      // Zeitpunkt des letzen Button kontakt
 	unsigned long button_first_push;                // für "halten". Zeitpunkt des ersten Kontakt
 	void set_buttons(bool left,bool up,bool down,bool right);
-	void color_select_menu(unsigned long base_state,led_simple *led_from, led_simple *led_to, int *min, int *max,bool button_state);
+	void color_select_menu(int base_state,led_simple *led_from, led_simple *led_to, int *min, int *max, int upper_limit, bool button_state, const char *name, const char *unit, char set_led_mode, bool just_one_line_mode);
 };
 extern speedo_menu* pMenu;
 ////////////// menu ///////////////////////
