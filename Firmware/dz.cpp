@@ -69,7 +69,7 @@ void speedo_dz::calc() {
 				pAktors->m_stepper->init_steps_to_go=0; 					// fertig
 			}
 		}
-	} else if(false){
+	} else if(DEMO_MODE){
 		if(differ>112){
 			previous_time=now;
 
@@ -85,7 +85,7 @@ void speedo_dz::calc() {
 			} else if(demo_mode==2){
 				if(int(floor(millis()/1000))%10<=5){
 				int dz=random(15000);
-				exact=pSensors->flatIt(dz,&dz_faktor_counter,3,exact);
+				exact=pSensors->flatIt(dz,&dz_faktor_counter,30,exact);
 				exact_disp=exact;
 				rounded=exact_disp;
 				};
@@ -98,7 +98,8 @@ void speedo_dz::calc() {
 				};
 			};
 			pSensors->m_gear->calc();
-			pAktors->m_stepper->go_to(exact/11.73);
+			//pAktors->m_stepper->go_to(exact/11.73);
+			pAktors->m_stepper->go_to(exact/11.5);
 		}
 	} else if(now_peaks>4 && differ>100){ 									// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
 		//now_peaks=now_peaks>>anzahl_shift;								// könnte ja sein das man weniger umdrehungen als funken hat, hornet hat 2 Funken je Umdrehun

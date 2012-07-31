@@ -20,13 +20,13 @@
 // andere sachen
 #include "display.h"
 #include "sd.h"
-#include "config.h" // vor timer
-#include "timer.h" //nach config
+#include "config.h" 	// vor timer
+#include "timer.h" 	//nach config
 #include "sprint.h"
 #include "speedo.h"
 #include "menu.h"
-#include "sensors.h" // als vorletztes
-#include "aktors.h" // als letztes
+#include "sensors.h" 	// als vorletztes
+#include "aktors.h" 	// als letztes
 #include "debug.h"
 #include "file_manager_v2.h"
 #include "version.h"
@@ -35,7 +35,7 @@
 // development settings //
 #define       GPS_SPEED_ONLY  false   // to ignore the magnetic value  -> hmm das ist doof, aber muss erstmal alleine arbeiten, mal sehen ob der gang angezeigt wird -> wenn ja => mag rennt
 #define       BUTTONS_OFF     false   // disable all buttons
-#define       DEMO_MODE       false   // shows dummy values
+#define       DEMO_MODE       true   // shows dummy values
 #define       WELCOME         true    // die frau am start
 /**********************************  working settings ********************************/
 

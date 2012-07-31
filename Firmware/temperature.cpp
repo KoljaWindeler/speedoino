@@ -242,7 +242,7 @@ int speedo_temperature::get_air_temp(){
 
 int speedo_temperature::get_oil_temp(){
 	if(DEMO_MODE)
-		return (10+((millis()/1000)%100))*10+((millis()/1000)%10);
+		return 302+((millis()/2000)%100)*7+((millis()/1000)%10);
 	else if(pSpeedo->trip_dist[2]==0 && get_air_temp()!=999 && oil_temp_value!=8888 && oil_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
 		return get_air_temp()-1;
 	else
@@ -251,7 +251,7 @@ int speedo_temperature::get_oil_temp(){
 
 int speedo_temperature::get_water_temp(){
 	if(DEMO_MODE)
-		return (102+((millis()/1000)%10))*10+((millis()/1000)%10);
+		return 302+((millis()/2000)%100)*7+((millis()/1000)%10);
 	else if(pSpeedo->trip_dist[2]==0  && get_air_temp()!=999 && water_temp_value!=8888 && water_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
 		return get_air_temp()-1;
 	else

@@ -315,22 +315,6 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",pAktors->kmh_max_value); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
-					///////////// RGB LEDs ///////////////
-					strcpy_P(buffer, PSTR("rgb_in_r="));
-					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",int(pAktors->RGB.inner.r.actual)); // 12 chars max: max_=1=300\n\0
-					pSD->writeString(file, buffer);
-
-					strcpy_P(buffer, PSTR("rgb_in_g="));
-					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",int(pAktors->RGB.inner.g.actual)); // 12 chars max: max_=1=300\n\0
-					pSD->writeString(file, buffer);
-
-					strcpy_P(buffer, PSTR("rgb_in_b="));
-					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",int(pAktors->RGB.inner.b.actual)); // 12 chars max: max_=1=300\n\0
-					pSD->writeString(file, buffer);
-
 					////////////// static color /////////////
 					strcpy_P(buffer, PSTR("rgb_out_static_r="));
 					pSD->writeString(file, buffer);
