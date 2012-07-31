@@ -173,7 +173,7 @@ void speedo_menu::display(){ // z.B. state = 26
 	if(state==0){
 		if(MENU_DEBUG){Serial.println("Menustate war 0, daher biege ich ihn auf SPEEDOINO um");};
 		state=11;
-		display();
+		update_display=true;
 	}
 	////////////////////////////////////////////////////// Hauptmenu ////////////////////////////////////////////////////////
 	else if(state<10) {
@@ -429,7 +429,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		delete m_tetris;
 		PCICR |=(1<<PCIE1); // PCINT Activieren
 		back();
-		display();
+		update_display=true;
 	}
 	// Menüpunkt 6 -> Customize //
 	else if(floor(state/10)==6) { //6[X]
@@ -527,7 +527,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		// save,change,restore,and show one preview image
 		unsigned long save_state=state;
 		state=11;
-		display();
+		update_display=true;
 		state=save_state;
 		pSpeedo->loop(0);
 	}
@@ -544,7 +544,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->clear_screen();
 
 		state=11;
-		display();
+		update_display=true;
 	}
 	///////////////////// trip show setup //////////////////////////
 	else if(floor(state/10)==62) {
@@ -692,7 +692,7 @@ void speedo_menu::display(){ // z.B. state = 26
 				}
 			};
 		};
-		display();
+		update_display=true;
 	}
 	else if(floor(state/10000)==63 || floor(state/100000)==63 || floor(state/1000000)==63){
 		if(floor(state/1000000)==63){
@@ -796,7 +796,7 @@ void speedo_menu::display(){ // z.B. state = 26
 				}
 			};
 		};
-		display();
+		update_display=true;
 	}
 	else if(floor(state/100)==64 || floor(state/1000)==64 || floor(state/10000)==64){
 		if(floor(state/10000)==64){
@@ -914,7 +914,7 @@ void speedo_menu::display(){ // z.B. state = 26
 				state=state*10+1;
 			}
 		};
-		display();
+		update_display=true;
 		/////////////////// COLOR setup ////////////////
 	} else if(floor(state/100)==651){
 		if(state_helper==2){
@@ -1004,6 +1004,7 @@ void speedo_menu::display(){ // z.B. state = 26
 	} else if(floor(state/1000)==651){
 		state/=10;
 		state_helper++;
+<<<<<<< HEAD
 		display();
 
 		/////////////////////// speed based color fade ///////////////////
@@ -1612,7 +1613,26 @@ void speedo_menu::display(){ // z.B. state = 26
 		state_helper++;
 		display();
 	}
+=======
+		update_display=true;
+>>>>>>> 2f30a6c5c8a827b442b7b723470d6ae55ee12db6
 
+	/////////////////////// speed based color fade ///////////////////
+	} else if(floor(state/10)==652 || floor(state/100)==652 ||floor(state/1000)==652){
+		color_select_menu(652,&pAktors->kmh_start_color,&pAktors->kmh_end_color,&pAktors->kmh_min_value,&pAktors->kmh_max_value,button_state, "km\h",1);
+
+	/////////////////////// rpm based color fade ///////////////////
+	} else if(floor(state/10)==653 || floor(state/100)==653 || floor(state/1000)==653){
+		color_select_menu(653,&pAktors->dz_start_color,&pAktors->dz_end_color,&pAktors->dz_min_value,&pAktors->dz_max_value,button_state, "rpm",2);
+	
+	/////////////////////// oil based color fade ///////////////////
+	} else if(floor(state/10)==654 || floor(state/100)==654 || floor(state/1000)==654){
+		color_select_menu(654,&pAktors->oil_start_color,&pAktors->oil_end_color,&pAktors->oil_min_value,&pAktors->oil_max_value,button_state, "Oil",3);
+	
+	/////////////////////// water based color fade ///////////////////
+	} else if(floor(state/10)==655 || floor(state/100)==655 || floor(state/1000)==655){
+		color_select_menu(654,&pAktors->water_start_color,&pAktors->water_end_color,&pAktors->water_min_value,&pAktors->water_max_value,button_state, "Water",4);
+	
 	///////////////////////// set bt pin ///////////////////////////
 	else if(floor(state/10)==67){
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
@@ -1634,7 +1654,7 @@ void speedo_menu::display(){ // z.B. state = 26
 				_delay_ms(2000);
 			};
 		};
-		display();
+		update_display=true;
 	}
 	else if((floor(state/100)==67) | (floor(state/1000)==67) | (floor(state/10000)==67) | (floor(state/100000)==67)){ //67[x][x][x][x][1]
 		if(floor(state/100000)==67){
@@ -1711,7 +1731,7 @@ void speedo_menu::display(){ // z.B. state = 26
 	else if(floor(state/10)==71) { // 00071[X]
 		if(state%10>6){	// gänge höher als 6
 			state=716;
-			display();
+			update_display=true;
 		} else {		// erstmal ne message
 			pOLED->clear_screen();
 			pOLED->highlight_bar(0,0,128,8);
@@ -1745,7 +1765,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
 		_delay_ms(300);
 		state=711;
-		display();
+		update_display=true;
 	}
 	///////////////////// speed calibration //////////////////////////
 	else if(floor(state/10)==72) {
@@ -1762,7 +1782,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->string_P(pSpeedo->default_font,PSTR("saved"),6,3);
 		_delay_ms(300);
 		state=721;
-		display();
+		update_display=true;
 	}
 	////////// display phase ////////////////
 	else if(floor(state/10)==73 || floor(state/10)==731|| floor(state/10)==7311 || floor(state/10)==73111) {
@@ -1921,11 +1941,11 @@ void speedo_menu::display(){ // z.B. state = 26
 				pOLED->clear_screen();
 			}
 			back();
-			display();
+			update_display=true;
 		} else {
 			state=7711;
 			pSpeedo->reset_bak(); // reset damit die variablen wieder leer sind
-			display();
+			update_display=true;
 		}
 		////////////////////////////////// water temp setup //////////////////////////////////
 	} else if(floor(state/100)==77) {
@@ -1962,11 +1982,11 @@ void speedo_menu::display(){ // z.B. state = 26
 				pOLED->clear_screen();
 			}
 			back();
-			display();
+			update_display=true;
 		} else {
 			state=7811;
 			pSpeedo->reset_bak(); // reset damit die variablen wieder leer sind
-			display();
+			update_display=true;
 		}
 		////////////////////////////////// oil temp setup //////////////////////////////////
 	} else if(floor(state/100)==78) {
@@ -2024,7 +2044,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		// 892 -> 901
 		if(state>900)
 			state=811;
-		display(); 	// müssen wir hier nicht display aufrufen?
+		update_display=true; 	// müssen wir hier nicht display aufrufen?
 	}
 	else if(floor(state/100)==8 && state%10==9){ // 8[X]9
 		state-=18; // 949 -> 931
@@ -2032,7 +2052,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		// 911 -> 919 -> 901
 		if(state==801)
 			state=891;
-		display(); // müssen wir hier nicht display aufrufen?
+		update_display=true; // müssen wir hier nicht display aufrufen?
 	}
 	/////////////////// löschen abfrage ////////////////////
 	else if(floor(state/1000)==8){  // 9[X]11
@@ -2074,7 +2094,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->string(pSpeedo->default_font,"cleared",2,4);
 		_delay_ms(800);
 		state=floor(state/100);
-		display();
+		update_display=true;
 	}
 	//////////////////////// fuel added /////////////////////////////
 	else if(floor(state/10)==9){ // 00009x
@@ -2118,12 +2138,12 @@ void speedo_menu::display(){ // z.B. state = 26
 		pConfig->write("speedo.txt");
 		_delay_ms(500);
 		state=11; // damit kann man durch rechts/links drücken wieder zum tacho springen
-		display();
+		update_display=true;
 	}
 	// jump here for filemanager
 	else if(floor(state/10)==999999) {
 		state=11;
-		display();
+		update_display=true;
 	}
 	///////////////////// "notfall" //////////////////////////
 	else {
@@ -2348,8 +2368,10 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	// also entweder ist der letzte button_down schon länger als der menu_button_timeout her
 	// oder zumindest länger als fast_timeout UND der first push ist ausreichend lang her
 	// oder per serielle konsole
-	if(update_display){
+	unsigned char n=0; // count loop of "display()" max = 5
+	while(update_display && n<5){
 		update_display=false;
+		n++;
 		display();
 	}
 
@@ -2505,25 +2527,29 @@ int speedo_menu::center_me(char* input,int length){
 }
 
 // color_select_menu(state,652,&pAktors->kmh_start_color,&pAktors->kmh_end_color,&pAktors->kmh_min_value,&pAktors->kmh_max_value);
-// todo: LED mode übergeben
 // 491705 vor der ganzen aktion
 
+<<<<<<< HEAD
 void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state,led_simple *led_from, led_simple *led_to, int *min, int *max,bool button_state){
 	Serial.println("select menu start");
+=======
+void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_from, led_simple *led_to, int *min, int *max,bool button_state, char[] name, unsigned char set_led_mode){
+>>>>>>> 2f30a6c5c8a827b442b7b723470d6ae55ee12db6
 	if(floor(state/10)==base_state){
-		Serial.println("sneaky");
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
+		// wenn wir starten bei 652 und gehen rechts, sind wir in 6521, 652 ist base, old_state auch, daher ist dann der neue state 65211
 		if(	old_state==base_state ){
-			Serial.println("up");
 			state=state*10+1;
 			state_helper=0;
-			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		// wir sind nach links, jetzt müssen wir checken: sind wir das weil wir zurück aus dem Menü wollten, oder 
+		// wollten wir nur ein Feld weiter nach links. Die Felder sind numeriert in "state_helper"
 		} else {
-			Serial.println("down");
+			// wirklich zurück ins Hauptmenü
 			if(state_helper==0){
 				back(); // calc menu_state
 
-				pAktors->led_mode=1;
+				pAktors->led_mode=set_led_mode;
 				pConfig->storage_outdated=true;
 
 				// store to SD
@@ -2537,18 +2563,20 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 						_delay_ms(5000);
 					}
 				};
+			// doch nur ein Feld weiter nach links
 			} else {
 				state_helper--;
 				state=state*10+1;
 			}
 		};
-		display();
+		// in each case, redraw this menu, cause this is just a "state in the middle"
+		update_display=true;
 		/////////////////// COLOR setup ////////////////
 	} else if(floor(state/100)==base_state){
 		if(state_helper==7){
 			set_buttons(button_state,button_state,button_state,!button_state); // no right
 		}
-		// aktuelle werte
+		// show actual selected color "on screen"
 		int r,g,b;
 		if(state_helper<4){
 			r=led_from->r;
@@ -2560,6 +2588,7 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 			b=led_to->b;
 		}
 		pAktors->set_rgb_out(r,g,b);
+		
 		// neue werte
 		if(state%10==2){ // unten
 			pConfig->storage_outdated=true;
@@ -2625,14 +2654,16 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 			// Red   Green   Blue
 			// 255    255    255
 			pOLED->highlight_bar(0,24,128,16);
-			pOLED->string_P(pSpeedo->default_font,PSTR("km/h Red Green Blue"),1,3,15,0,0);
+			pOLED->string(pSpeedo->default_font,name,1,3,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Red Green Blue"),6,3,15,0,0);
 			pOLED->highlight_bar(0,48,128,16);
-			pOLED->string_P(pSpeedo->default_font,PSTR("km/h Red Green Blue"),1,6,15,0,0);
+			pOLED->string(pSpeedo->default_font,name,1,6,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("Red Green Blue"),6,6,15,0,0);
 			pSpeedo->disp_zeile_bak[0]=304;
 		};
 
 		char temp[4];
-		sprintf(temp,"%3i",int(*min%1000));
+		sprintf(temp,"%3i",int(*min%1000)/2.55); // to scale from 0..255 to 0..100
 		int front,back;
 		if(state_helper==0){
 			back = 0;
@@ -2642,7 +2673,7 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 			front = 0;
 		}
 		pOLED->string(pSpeedo->default_font,temp,1,4,back,front,0);
-		sprintf(temp,"%3i",int(led_from->r%1000));
+		sprintf(temp,"%3i",int(led_from->r%1000)/2.55); // to scale from 0..255 to 0..100
 		if(state_helper==1){
 			back = 0;
 			front = 15;
@@ -2651,7 +2682,7 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 			front = 0;
 		}
 		pOLED->string(pSpeedo->default_font,temp,6,4,back,front,0);
-		sprintf(temp,"%3i",int(led_from->g%1000));
+		sprintf(temp,"%3i",int(led_from->g%1000)/2.55); // to scale from 0..255 to 0..100
 		if(state_helper==2){
 			back = 0;
 			front = 15;
@@ -2660,7 +2691,7 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 			front = 0;
 		}
 		pOLED->string(pSpeedo->default_font,temp,12,4,back,front,0);
-		sprintf(temp,"%3i",int(led_from->b%1000));
+		sprintf(temp,"%3i",int(led_from->b%1000)/2.55); // to scale from 0..255 to 0..100
 		if(state_helper==3){
 			back = 0;
 			front = 15;
@@ -2669,7 +2700,7 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 			front = 0;
 		}
 		pOLED->string(pSpeedo->default_font,temp,17,4,back,front,0);
-		sprintf(temp,"%3i",int(*max%1000));
+		sprintf(temp,"%3i",int(*max%1000)/2.55); // to scale from 0..255 to 0..100
 		if(state_helper==4){
 			back = 0;
 			front = 15;
@@ -2678,7 +2709,7 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 			front = 0;
 		}
 		pOLED->string(pSpeedo->default_font,temp,1,7,back,front,0);
-		sprintf(temp,"%3i",int(led_to->r%1000));
+		sprintf(temp,"%3i",int(led_to->r%1000)/2.55); // to scale from 0..255 to 0..100
 		if(state_helper==5){
 			back = 0;
 			front = 15;
@@ -2687,7 +2718,7 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 			front = 0;
 		}
 		pOLED->string(pSpeedo->default_font,temp,6,7,back,front,0);
-		sprintf(temp,"%3i",int(led_to->g%1000));
+		sprintf(temp,"%3i",int(led_to->g%1000)/2.55); // to scale from 0..255 to 0..100
 		if(state_helper==6){
 			back = 0;
 			front = 15;
@@ -2696,7 +2727,7 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 			front = 0;
 		}
 		pOLED->string(pSpeedo->default_font,temp,12,7,back,front,0);
-		sprintf(temp,"%3i",int(led_to->b%1000));
+		sprintf(temp,"%3i",int(led_to->b%1000)/2.55); // to scale from 0..255 to 0..100
 		if(state_helper==7){
 			back = 0;
 			front = 15;
@@ -2705,5 +2736,10 @@ void speedo_menu::color_select_menu(unsigned long state,unsigned long base_state
 			front = 0;
 		}
 		pOLED->string(pSpeedo->default_font,temp,17,7,back,front,0);
+	////////////////// control //////////////////
+	} else if(floor(state/1000)==base_state){
+		state/=10;
+		state_helper++;
+		update_display=true;
 	};
 };
