@@ -1705,7 +1705,7 @@ min. Width 0,18mm</description>
 <element name="L10" library="RCLDT" package="0805+603" value="BLM21PG221SN1" x="58.82" y="20.58" smashed="yes">
 <attribute name="NAME" x="57.6175" y="21.5125" size="0.6096" layer="25"/>
 </element>
-<element name="IC2" library="µP´s+Pic´s" package="TQFP-32_7X7" value="AT-MEGA-8" x="145.6" y="38.83" smashed="yes" rot="MR180">
+<element name="IC2" library="µP´s+Pic´s" package="TQFP-32_7X7" value="AT-MEGA-8L" x="145.6" y="38.83" smashed="yes" rot="MR180">
 <attribute name="NAME" x="148.1411" y="37.6679" size="0.6096" layer="26" rot="MR180"/>
 </element>
 <element name="AT8_REF" library="RCLDT" package="0805" value="10R" x="145.7" y="31.1" smashed="yes" rot="MR90">

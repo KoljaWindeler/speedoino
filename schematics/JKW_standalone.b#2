@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -2192,6 +2192,10 @@ min. Width 0,18mm</description>
 <element name="C4" library="RCLDT" package="0805" value="100nF" x="87.3" y="36.2" rot="R90"/>
 <element name="PWR" library="pinhead" package="1X02" value="" x="143.1" y="26.7" rot="R225"/>
 <element name="PWR1" library="pinhead" package="1X02" value="" x="16.4" y="63.2"/>
+<element name="R_HB1" library="RCLDT" package="0805" value="600R" x="-5.7" y="-9.4"/>
+<element name="R_HB2" library="RCLDT" package="0805" value="600R" x="-5.7" y="-11.2"/>
+<element name="R_HB3" library="RCLDT" package="0805" value="600R" x="-5.7" y="-13"/>
+<element name="R_HB4" library="RCLDT" package="0805" value="600R" x="-5.7" y="-14.8"/>
 </elements>
 <signals>
 <signal name="REED">
@@ -3578,9 +3582,9 @@ min. Width 0,18mm</description>
 <wire x1="47.5" y1="44.36" x2="47.5" y2="47.5" width="0.254" layer="16"/>
 <via x="47.5" y="47.5" extent="1-16" drill="0.3"/>
 <wire x1="47.5" y1="47.5" x2="18.6" y2="47.5" width="0.254" layer="1"/>
-<contactref element="D_P_MCCOI" pad="3"/>
-<wire x1="18.8" y1="42.8" x2="18.8" y2="42.7" width="0.254" layer="16"/>
 <wire x1="18.8" y1="42.7" x2="18.2" y2="42.7" width="0.254" layer="16"/>
+<contactref element="R_HB4" pad="1"/>
+<wire x1="-6.716" y1="-14.8" x2="14.6" y2="24.3" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="D49">
 <contactref element="IC4" pad="35"/>
@@ -4897,7 +4901,6 @@ min. Width 0,18mm</description>
 <wire x1="14.6" y1="30.184" x2="14.6" y2="27.8" width="0.254" layer="1"/>
 </signal>
 <signal name="OIL_PR_IN">
-<contactref element="SPEEDOSTECKER" pad="P$3"/>
 <contactref element="D21" pad="3"/>
 <contactref element="IC4" pad="89"/>
 <wire x1="48" y1="28.36" x2="48" y2="23.7" width="0.254" layer="16"/>
@@ -4905,7 +4908,6 @@ min. Width 0,18mm</description>
 <wire x1="50.4" y1="21.3" x2="50.4" y2="13" width="0.254" layer="16"/>
 <wire x1="34" y1="12.4" x2="33.4" y2="13" width="0.254" layer="16"/>
 <wire x1="33.4" y1="13" x2="33.4" y2="27" width="0.254" layer="16"/>
-<wire x1="18.1" y1="27.8" x2="18.1" y2="28.6" width="0.254" layer="1"/>
 <wire x1="18.1" y1="28.6" x2="19.6" y2="30.1" width="0.254" layer="1"/>
 <wire x1="19.6" y1="30.1" x2="22.3" y2="30.1" width="0.254" layer="1"/>
 <wire x1="22.3" y1="30.1" x2="24.6" y2="27.8" width="0.254" layer="1"/>
@@ -4914,6 +4916,8 @@ min. Width 0,18mm</description>
 <via x="33.4" y="27" extent="1-16" drill="0.3"/>
 <wire x1="34" y1="12.4" x2="49.8" y2="12.4" width="0.254" layer="16"/>
 <wire x1="49.8" y1="12.4" x2="50.4" y2="13" width="0.254" layer="16"/>
+<contactref element="R_HB1" pad="2"/>
+<wire x1="-4.684" y1="-9.4" x2="33.4" y2="13" width="0" layer="19" extent="1-16"/>
 </signal>
 <signal name="N$2">
 </signal>
@@ -4937,26 +4941,24 @@ min. Width 0,18mm</description>
 <wire x1="25.168" y1="10.484" x2="23.5" y2="10.484" width="0.254" layer="16"/>
 </signal>
 <signal name="N$41">
-<contactref element="SPEEDOSTECKER" pad="P$14"/>
 <contactref element="R_E0_1" pad="1"/>
 <contactref element="D_P_EX_D2" pad="3"/>
 <wire x1="10.8" y1="12.416" x2="10.8" y2="13.8" width="0.254" layer="16"/>
-<wire x1="18.1" y1="17.3" x2="17.5" y2="17.3" width="0.254" layer="16"/>
 <wire x1="17.5" y1="17.3" x2="14.5" y2="14.3" width="0.254" layer="16"/>
 <wire x1="14.5" y1="14.3" x2="11.3" y2="14.3" width="0.254" layer="16"/>
 <wire x1="11.3" y1="14.3" x2="10.8" y2="13.8" width="0.254" layer="16"/>
 <wire x1="10.8" y1="12.416" x2="7.684" y2="12.416" width="0.254" layer="16"/>
 <wire x1="7.684" y1="12.416" x2="7.6" y2="12.5" width="0.254" layer="16"/>
+<contactref element="R_HB2" pad="2"/>
+<wire x1="-4.684" y1="-11.2" x2="7.684" y2="12.416" width="0" layer="19" extent="1-16"/>
 </signal>
 <signal name="N$42">
 <contactref element="SPEEDOSTECKER" pad="P$13"/>
-<contactref element="D18" pad="3"/>
-<contactref element="R_E1_1" pad="1"/>
 <wire x1="21.6" y1="17.3" x2="21.6" y2="13.05" width="0.254" layer="16"/>
-<wire x1="23.5" y1="12.516" x2="22.966" y2="13.05" width="0.254" layer="16"/>
 <wire x1="22.966" y1="13.05" x2="21.6" y2="13.05" width="0.254" layer="16"/>
 <wire x1="21.6" y1="13.05" x2="20.95" y2="13.05" width="0.254" layer="16"/>
-<wire x1="20.95" y1="13.05" x2="20.65" y2="12.75" width="0.254" layer="16"/>
+<contactref element="R_HB3" pad="1"/>
+<wire x1="-6.716" y1="-13" x2="20.95" y2="13.05" width="0" layer="19" extent="1-16"/>
 </signal>
 <signal name="N$43">
 <contactref element="SPEEDOSTECKER" pad="P$16"/>
@@ -5831,6 +5833,28 @@ min. Width 0,18mm</description>
 <wire x1="145.9" y1="20.05" x2="145.9" y2="18.216" width="0.254" layer="16"/>
 <wire x1="145.9" y1="18.216" x2="143.932" y2="18.216" width="0.254" layer="16"/>
 <wire x1="143.932" y1="18.216" x2="143.7" y2="17.984" width="0.254" layer="16"/>
+</signal>
+<signal name="N$70">
+<contactref element="SPEEDOSTECKER" pad="P$3"/>
+<contactref element="R_HB1" pad="1"/>
+<wire x1="-6.716" y1="-9.4" x2="18.1" y2="27.8" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$89">
+<contactref element="SPEEDOSTECKER" pad="P$14"/>
+<contactref element="R_HB2" pad="1"/>
+<wire x1="-6.716" y1="-11.2" x2="18.1" y2="17.3" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$90">
+<contactref element="D18" pad="3"/>
+<contactref element="R_HB3" pad="2"/>
+<contactref element="R_E1_1" pad="1"/>
+<wire x1="23.5" y1="12.516" x2="20.65" y2="12.75" width="0" layer="19" extent="16-16"/>
+<wire x1="-4.684" y1="-13" x2="20.65" y2="12.75" width="0" layer="19" extent="1-16"/>
+</signal>
+<signal name="N$91">
+<contactref element="D_P_MCCOI" pad="3"/>
+<contactref element="R_HB4" pad="2"/>
+<wire x1="-4.684" y1="-14.8" x2="18.8" y2="42.8" width="0" layer="19" extent="1-16"/>
 </signal>
 </signals>
 </board>

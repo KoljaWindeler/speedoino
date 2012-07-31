@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -2601,6 +2601,7 @@ min. Width 0,18mm</description>
 <contactref element="GPS_C3" pad="1"/>
 <contactref element="GPS_C4" pad="1"/>
 <wire x1="54.61" y1="22.466" x2="55.8" y2="18.95" width="0" layer="19" extent="1-1"/>
+<via x="55.9" y="22.25" extent="1-16" drill="0.3"/>
 </signal>
 <signal name="DZ">
 <contactref element="R_DZ" pad="2"/>
@@ -4280,8 +4281,10 @@ min. Width 0,18mm</description>
 <contactref element="12V_F1" pad="P$2"/>
 <wire x1="57.8375" y1="20.55" x2="57.8675" y2="20.58" width="0.6096" layer="1"/>
 <wire x1="48.13" y1="19.65" x2="49.03" y2="20.55" width="0.6096" layer="1"/>
-<wire x1="49.03" y1="20.55" x2="57.8375" y2="20.55" width="0.6096" layer="1"/>
-<wire x1="57.8375" y1="20.55" x2="54.61" y2="20.434" width="0" layer="19" extent="1-1"/>
+<wire x1="49.03" y1="20.55" x2="54.6" y2="20.55" width="0.6096" layer="1"/>
+<wire x1="54.6" y1="20.55" x2="57.8375" y2="20.55" width="0.6096" layer="1"/>
+<wire x1="54.61" y1="20.434" x2="54.6" y2="20.434" width="0.4064" layer="1"/>
+<wire x1="54.6" y1="20.434" x2="54.6" y2="20.55" width="0.4064" layer="1"/>
 </signal>
 <signal name="N$3">
 <contactref element="AT8_REF" pad="2"/>
