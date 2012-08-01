@@ -402,6 +402,10 @@ void speedo_menu::display(){ // z.B. state = 26
 	else if(floor(state/10)==57){ //57[x]
 		pOLED->animation(state%10);
 	}
+	else if(floor(state/100)==57){
+		state/=10;
+		update_display=true;
+	}
 
 	////////////////////////////////// ABOUT //////////////////////////////////
 	else if(floor(state/10)==58) { // 00058X
@@ -1454,6 +1458,9 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 		n++;
 		display();
 	}
+	if(n>0){
+		return true;
+	}
 
 
 	if(bt_keys_en){ // auf keinen Fall hier lesen, wenn wir gerade im Import sind, sonder haut uns jeder Straßenname mit w||a||s||d raus
@@ -1467,7 +1474,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	};
 
 
-	if(hw_keys_en || button_first_push!=0){		// hier gehen wir nur rein wenn ein interrupt da war oder einer der buttons noch gedrückt ist
+	if(hw_keys_en || button_first_push!=0){		// hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedrückt ist
 		if((millis()>(button_time+menu_button_timeout)) ||
 				((button_first_push>0 && millis()>(button_first_push+menu_button_fast_delay)) && millis()>(menu_button_fast_timeout+button_time)) ){ // halbe sek timeout
 			//////////////////////// rechts ist gedrückt ////////////////////////

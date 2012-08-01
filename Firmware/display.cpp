@@ -327,29 +327,22 @@ void speedo_disp::show_animation(const char command[]){
 		// tasten bis auf "nachlinks" aus, menu_state eine eben nach rechts schieben
 		pMenu->button_oben_valid=true;
 		pMenu->button_links_valid=true;
-		pMenu->button_rechts_valid=false;
+		pMenu->button_rechts_valid=true;
 		pMenu->button_unten_valid=true;
-		boolean killed=false;
+		int state_before=pMenu->state%100;
 
 		// animation starten
-		char *char_buffer;
-		char_buffer = (char*) malloc (22);
-		if (char_buffer==NULL) pDebug->sprintlnp(PSTR("Malloc failed"));
-		else memset(char_buffer,'\0',22);
-
 		for(int i=start; i<=ende; i++){
 			if(sd2ssd(filename,i)>0){
 				i=ende;
-				killed=true;
 				clear_screen();
 				string(pSpeedo->default_font,"Open file failed",3,2,0,DISP_BRIGHTNESS,0);
-				string(pSpeedo->default_font,char_buffer,4,3,0,DISP_BRIGHTNESS,0);
 			}
-			delay(warte); // check ob das hier viel aendert
-			if(pMenu->button_test(true,true))  {  i=ende; killed=true; pMenu->display(); } // muss man dann nicht vorher den state hochsetzen?!
+			for(int i=0; i<warte; i++){
+				_delay_ms(1); // check ob das hier viel aendert
+			};
+			if((pMenu->state%100)!=state_before)  { i=ende;  } // muss man dann nicht vorher den state hochsetzen?!
 		};
-
-		free(char_buffer);
 
 	}
 	pSensors->m_reset->restore();
@@ -379,19 +372,19 @@ void speedo_disp::animation(int a){
 		show_animation("SIMP.TXT,0,19,15"); // 200 -> 15
 		break;
 	case 2: //////////////////// girl ///////////////////
-		show_animation("BLO.TXT,0,37,15");
+		show_animation("BULLET.SGF,0,77,20");
 		break;
 	case 3:
-		show_animation("DJ.TXT,0,0,0");
+		show_animation("FROG.SGF,0,7,200");
 		break;
 	case 4:
-		show_animation("JTM.TXT,0,37,15");
-		break;
-	case 5:
 		show_animation("LG2.TXT,0,1,400");
 		break;
+	case 5:
+		show_animation("JTM.TXT,0,37,15");
+		break;
 	case 6: //////////////////// nur "honda" "hornet" ///////////////////
-		show_animation("SIMP.TXT,0,19,15");
+		show_animation("BLO.TXT,0,37,15");
 		break;
 	case 7: //////////////////// hornet - biene ///////////////////
 		show_animation("TM.TXT,0,6,15");
@@ -399,9 +392,10 @@ void speedo_disp::animation(int a){
 		show_animation("TM.TXT,0,6,15");
 		break;
 	case 8: //////////////////// Titten-Maus ///////////////////
-		show_animation("SIMP.TXT,0,19,15");
+		show_animation("LG2.TXT,0,1,400");
 		break;
 	case 9: //////////////////// hornet-logo ///////////////////
+		show_animation("LG2.TXT,0,1,400");
 		//
 		break;
 	};

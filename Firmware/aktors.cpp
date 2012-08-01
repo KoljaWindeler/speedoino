@@ -109,37 +109,27 @@ void Speedo_aktors::init(){
 	 * 3. Flasher -> Farbe zu der übergeblendet wird wenn die schaltdrehzahl erreicht wird
 	 * 4. out_base -> Farbkopie von Außen
 	 */
-	// innen
-	pinMode(RGB_IN_R,OUTPUT);
-	pinMode(RGB_IN_G,OUTPUT);
-	pinMode(RGB_IN_B,OUTPUT);
-	// außen
-	pinMode(RGB_OUT_R,OUTPUT);
-	pinMode(RGB_OUT_G,OUTPUT);
-	pinMode(RGB_OUT_B,OUTPUT);
-
 
 	dimm_step=0;
 	dimm_steps=0;
 	colorfade_active=true;
 
-
+	// innen
+	pinMode(RGB_IN_R,OUTPUT);
+	pinMode(RGB_IN_G,OUTPUT);
+	pinMode(RGB_IN_B,OUTPUT);
 	// beleuchtung
 	analogWrite(RGB_IN_R,0);
 	analogWrite(RGB_IN_G,0);
 	analogWrite(RGB_IN_B,0);
 	// beleuchtung
 
+	// außen
+	pinMode(RGB_OUT_R,OUTPUT);
+	pinMode(RGB_OUT_G,OUTPUT);
+	pinMode(RGB_OUT_B,OUTPUT);
+
 	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
-	//	if(led_mode==0){
-	//		dimm_rgb_to(static_color.r,static_color.g,static_color.b,256,0);
-	//	} else if(led_mode==1){
-	//		dimm_rgb_to(kmh_start_color.r,kmh_start_color.g,kmh_start_color.b,256,0);
-	//	} else if(led_mode==2){
-	//		dimm_rgb_to(dz_start_color.r,dz_start_color.g,dz_start_color.b,256,0);
-	//	} else if(led_mode==3){
-	//		dimm_rgb_to(oil_start_color.r,oil_start_color.g,oil_start_color.b,256,0);
-	//	}
 	update_outer_leds(true,true);
 
 	// stepper drehen
@@ -205,6 +195,9 @@ void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps){
 	TIFR3  |= (1<<TOV3);
 };
 
+ISR(TIMER3_OVF_vect){
+	pAktors->timer_overflow();
+}
 void Speedo_aktors::timer_overflow(){
 	int r=int(round((float(int(RGB.r.to)-int(RGB.r.from))*dimm_step)/dimm_steps))+int(RGB.r.from);
 	int g=int(round((float(int(RGB.g.to)-int(RGB.g.from))*dimm_step)/dimm_steps))+int(RGB.g.from);
@@ -227,7 +220,6 @@ void Speedo_aktors::timer_overflow(){
 		RGB.r.from=RGB.r.to;
 		RGB.g.from=RGB.g.to;
 		RGB.b.from=RGB.b.to;
-
 	};
 };
 
@@ -243,9 +235,7 @@ bool Speedo_aktors::dimm_available(){
 		return false;
 };
 
-ISR(TIMER3_OVF_vect){
-	pAktors->timer_overflow();
-}
+
 
 /* defines:
  *
@@ -301,7 +291,7 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){
 
 	} else if(led_mode>0){
 		///////// color fader //////////
-		int max_value,min_value,actual_value;
+		int max_value=0,min_value=0,actual_value=0;
 		led_simple from_color, to_color;
 
 		///////// select values  ///////
