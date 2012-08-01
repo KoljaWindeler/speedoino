@@ -62,7 +62,8 @@ void speedo_gear::calc(){
 				faktor_counter=0; // damit nach dem kuppeln die alten werte verworfen werden
 			} else if(digitalRead(kupplungs_pin)) { // Kupplung nicht gezogen, also gang berechnen
 				int faktor=pSensors->m_dz->exact/pSensors->m_speed->get_mag_speed(); // wie ist denn wohl der faktor
-				faktor_flat=pSensors->flatIt(faktor*10,&faktor_counter,8,faktor_flat); // mal sehen ob man so eine art tiefpass faktor sinnvoll nutzen kann
+				// changed from 8 to 4, to reduce delay while calculation //1.8.2012
+				faktor_flat=pSensors->flatIt(faktor*10,&faktor_counter,4,faktor_flat); // mal sehen ob man so eine art tiefpass faktor sinnvoll nutzen kann
 
 
 				//n_gang[1]=1350 // übersetzung gang 1
