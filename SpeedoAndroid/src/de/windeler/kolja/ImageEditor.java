@@ -1,9 +1,12 @@
 package de.windeler.kolja;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import android.R.string;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -145,8 +148,15 @@ public class ImageEditor extends Activity implements OnClickListener{
 		} else { // image konnte nicht geöffnet werden
 			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 			alertDialog.setTitle("Warning");
-			alertDialog.setMessage("Could not open file as image!");
-			alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
+			alertDialog.setMessage("Could not open file as image! Upload anyway?");
+			alertDialog.setButton("Yes",new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {	 
+					getIntent().putExtra(OUTPUT_FILE_PATH,getIntent().getStringExtra(INPUT_FILE_NAME));
+					setResult(RESULT_OK, getIntent());
+					finish();
+				}});
+			alertDialog.setButton2("No",new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {	finish();	}});
 			alertDialog.show();
@@ -159,7 +169,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 		}
 	}
 	
-	public void convert_image(String filename_in, String filename_out, Integer warning) throws IOException{
+	public void convert_image(String filename_in, String filename_out, Integer warning, boolean append) throws IOException{
 		FileInputStream in;
 		BufferedInputStream buf;
 		
@@ -196,7 +206,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 				};
 			};
 			
-			out = new FileOutputStream(filename_out);	
+			out = new FileOutputStream(filename_out,append);	
 			out.write(converted_image_buffer,0,converted_image_buffer.length);
 			out.close();
 			
@@ -232,8 +242,46 @@ public class ImageEditor extends Activity implements OnClickListener{
 			String result_filename = basedir+image_filename.getText().toString()+".sgf";				// 
 			String input_filename = getIntent().getStringExtra(INPUT_FILE_NAME);
 			
-			try {						convert_image(input_filename, result_filename, 1);	} 
-			catch (IOException e) {		e.printStackTrace();								}; 
+			// check if there are more images with the same name
+			int animation_frames=0;
+			String filename_wihtout_ext=input_filename.substring(0, input_filename.lastIndexOf("."));
+			String ext=input_filename.substring(input_filename.lastIndexOf("."));
+			Log.i("JKW","Check filename:"+filename_wihtout_ext);
+			boolean upload_animation=false;
+			if(filename_wihtout_ext.endsWith("0")){
+				
+				
+				//File file = getContext().getFileStreamPath(filename.substring(0, filename.length()-2));
+				File file = new File(filename_wihtout_ext.substring(0,filename_wihtout_ext.length()-1)+String.valueOf(animation_frames)+ext);
+
+				while(file.exists()){
+					animation_frames++;
+					file = new File(filename_wihtout_ext.substring(0,filename_wihtout_ext.length()-1)+String.valueOf(animation_frames)+ext);
+				}
+				animation_frames--; // einmal zurück, letzten gabs nicht mehr
+				
+				// show dialog
+				AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+				alertDialog.setTitle("Warning");
+				alertDialog.setMessage("found an animation, upload full animation?");
+				alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {	this.
+						upload_animation=true;	}});
+				alertDialog.show();
+				// show dialog
+			} 
+			
+			if(upload_animation){
+				for(int i=0;i<=animation_frames;i++){
+					String input_filename_convert=filename_wihtout_ext.substring(0,filename_wihtout_ext.length()-1)+String.valueOf(i)+ext;
+					try {						convert_image(input_filename_convert, result_filename, 1,true);	} 
+					catch (IOException e) {		e.printStackTrace();								};
+				};				
+			} else {
+				try {						convert_image(input_filename, result_filename, 1,false);	} 
+				catch (IOException e) {		e.printStackTrace();								};
+			};
  
 
 			Log.i("JKW","Aus dem ImageEditor gebe ich den Dateinamen "+result_filename+" zurück");
