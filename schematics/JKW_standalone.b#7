@@ -3756,9 +3756,9 @@ min. Width 0,18mm</description>
 <signal name="D8">
 <contactref element="IC4" pad="17"/>
 <contactref element="T2" pad="1"/>
-<wire x1="56.65" y1="43.05" x2="82.55" y2="43.05" width="0.254" layer="1"/>
+<wire x1="56.65" y1="43.05" x2="82.45" y2="43.05" width="0.254" layer="1"/>
 <wire x1="53.95" y1="45.75" x2="56.65" y2="43.05" width="0.254" layer="1"/>
-<via x="83.2" y="42.4" extent="1-16" drill="0.3"/>
+<via x="83.2" y="42.3" extent="1-16" drill="0.3"/>
 <wire x1="84.9" y1="42.3" x2="85.3" y2="42.7" width="0.254" layer="16"/>
 <wire x1="85.3" y1="42.7" x2="85.3" y2="43.9913" width="0.254" layer="16"/>
 <wire x1="85.3" y1="43.9913" x2="85.2026" y2="44.0887" width="0.254" layer="16"/>
@@ -3769,9 +3769,8 @@ min. Width 0,18mm</description>
 <wire x1="31.8" y1="45.5" x2="32" y2="45.7" width="0.254" layer="16"/>
 <via x="32" y="45.7" extent="1-16" drill="0.3"/>
 <wire x1="32" y1="45.7" x2="32.05" y2="45.75" width="0.254" layer="1"/>
-<wire x1="84.9" y1="42.3" x2="83.3" y2="42.3" width="0.254" layer="16"/>
-<wire x1="83.3" y1="42.3" x2="83.2" y2="42.4" width="0.254" layer="16"/>
-<wire x1="83.2" y1="42.4" x2="82.55" y2="43.05" width="0.254" layer="1"/>
+<wire x1="82.45" y1="43.05" x2="83.2" y2="42.3" width="0.254" layer="1"/>
+<wire x1="83.2" y1="42.3" x2="84.9" y2="42.3" width="0.254" layer="16"/>
 </signal>
 <signal name="D9">
 <contactref element="IC4" pad="18"/>
@@ -5207,9 +5206,9 @@ min. Width 0,18mm</description>
 <contactref element="R_BL_L" pad="1"/>
 <contactref element="R_GR_BL_L" pad="P$4"/>
 <wire x1="113.65" y1="57.184" x2="113.6" y2="57.134" width="0.254" layer="16"/>
-<wire x1="113.6" y1="57.134" x2="113.6" y2="55" width="0.254" layer="16"/>
-<via x="113.6" y="55" extent="1-16" drill="0.3"/>
-<wire x1="113.6" y1="55" x2="113.6" y2="54.945" width="0.254" layer="1"/>
+<wire x1="113.6" y1="57.134" x2="113.6" y2="55.9" width="0.254" layer="16"/>
+<via x="113.6" y="55.9" extent="1-16" drill="0.3"/>
+<wire x1="113.6" y1="55.9" x2="113.6" y2="54.945" width="0.254" layer="1"/>
 <wire x1="113.6" y1="54.945" x2="114.75" y2="53.795" width="0.254" layer="1"/>
 </signal>
 <signal name="N$34">

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -2624,7 +2624,7 @@ min. Width 0,18mm</description>
 <via x="25.05" y="15.275" extent="1-16" drill="0.3"/>
 <contactref element="D_P_MCCOI" pad="1"/>
 <via x="86.325" y="58.6" extent="1-16" drill="0.3"/>
-<via x="105.625" y="52" extent="1-16" drill="0.3"/>
+<via x="105.625" y="52.2" extent="1-16" drill="0.3"/>
 <via x="97.725" y="41.875" extent="1-16" drill="0.3"/>
 <via x="103.825" y="68.275" extent="1-16" drill="0.3"/>
 <via x="89.825" y="67.075" extent="1-16" drill="0.3"/>
@@ -5772,17 +5772,16 @@ min. Width 0,18mm</description>
 <wire x1="136.1" y1="54" x2="146.884" y2="54" width="0.254" layer="1"/>
 <wire x1="146.884" y1="54" x2="146.984" y2="53.9" width="0.254" layer="1"/>
 <wire x1="94.525" y1="51.566" x2="96.2" y2="51.566" width="0.254" layer="1"/>
-<wire x1="96.2" y1="51.566" x2="97.2021" y2="51.566" width="0.254" layer="1"/>
-<wire x1="97.2021" y1="51.566" x2="97.5681" y2="51.2" width="0.254" layer="1"/>
-<wire x1="97.5681" y1="51.2" x2="99.5" y2="51.2" width="0.254" layer="1"/>
-<wire x1="99.5" y1="51.2" x2="121.7" y2="51.2" width="0.254" layer="1"/>
-<wire x1="121.7" y1="51.2" x2="122.2" y2="51.7" width="0.254" layer="1"/>
 <via x="122.2" y="51.7" extent="1-16" drill="0.3"/>
 <wire x1="96.225" y1="52.5889" x2="96.225" y2="51.591" width="0.254" layer="1"/>
 <wire x1="96.225" y1="51.591" x2="96.2" y2="51.566" width="0.254" layer="1"/>
-<wire x1="99.5" y1="52.5889" x2="99.5" y2="51.2" width="0.254" layer="1"/>
 <wire x1="122.2" y1="49.8" x2="123.1" y2="48.9" width="0.254" layer="16"/>
 <wire x1="123.1" y1="48.9" x2="123.9" y2="48.9" width="0.254" layer="16"/>
+<wire x1="96.2" y1="51.566" x2="99.3" y2="51.566" width="0.254" layer="1"/>
+<wire x1="99.3" y1="51.566" x2="122.066" y2="51.566" width="0.254" layer="1"/>
+<wire x1="122.066" y1="51.566" x2="122.2" y2="51.7" width="0.254" layer="1"/>
+<wire x1="99.5" y1="52.5889" x2="99.5" y2="51.766" width="0.254" layer="1"/>
+<wire x1="99.5" y1="51.766" x2="99.3" y2="51.566" width="0.254" layer="1"/>
 </signal>
 <signal name="N$70">
 <contactref element="SPEEDOSTECKER" pad="P$3"/>
