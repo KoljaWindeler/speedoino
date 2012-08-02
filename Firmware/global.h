@@ -43,5 +43,6 @@
 #include <util/delay.h> // timing
 #include "inc/I2C.h"
 void setup();
+void init_speedo();
 
 #endif /* FKT_H_ */

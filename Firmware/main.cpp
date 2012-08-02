@@ -68,13 +68,8 @@ speedo_timer*   		pTimer=new speedo_timer(); 		// brauch ich ja nur hier, den br
  * -> eine stelle finden an der man den sd error zurücksetzen kann, also im menü finden
  * -> bootloader mit verify
  ******************* TODO List ***************************/
-int main(void) {
-	init();
-	/******************** setup procedure ********************************************
-	 * all initialisations must been made before the main loop
-	 ******************** setup procedure ********************************************/
+void init_speedo(void){
 	Serial.begin(115200);
-
 
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
 	pDebug->sprintp(PSTR(GIT_REV));				// print Software release
@@ -111,6 +106,16 @@ int main(void) {
 	pConfig->ram_info();
 	pDebug->sprintlnp(PSTR("=== Setup finished ==="));
 	Serial.flush(); // jaja, hallo liebes bluetooth modul, will keiner wissen das du alles echos solange wir nicht mit dem pc verbunden sind ...
+}
+
+
+int main(void) {
+	init();
+	init_speedo();
+	/******************** setup procedure ********************************************
+	 * all initialisations must been made before the main loop
+	 ******************** setup procedure ********************************************/
+
 
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop, before THIS

@@ -53,6 +53,13 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		pSensors->m_oiler->check_value(); // gucken ob wir ölen müssten
 		pSensors->m_voltage->calc(); // spannungscheck
 		pConfig->km_save();    // avg,max,trips hochzählen, immer wenn ss==59 ist store to sd card
+
+		if(pSD->sd_failed){
+			pSD->init();
+			if(!pSD->sd_failed){
+				init_speedo();
+			}
+		}
 	}
 };
 
