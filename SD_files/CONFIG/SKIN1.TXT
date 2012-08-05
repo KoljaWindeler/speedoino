@@ -89,5 +89,5 @@ addinfo2_widget.font=15;
 default_font=15;
 
 gps_widget.x=14;
-gps_widget.y=4;
+gps_widget.y=5;
 gps_widget.font=15;

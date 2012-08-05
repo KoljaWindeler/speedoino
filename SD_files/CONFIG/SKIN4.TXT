@@ -69,5 +69,5 @@ addinfo2_widget.x=0;
 addinfo2_widget.y=7;
 
 gps_widget.x=14;
-gps_widget.y=4;
+gps_widget.y=5;
 gps_widget.font=1;

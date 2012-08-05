@@ -1,6 +1,7 @@
+#This is an auto-generated file from (MonDay) 721
 n_gang_1=1350;
 n_gang_2=900;
-n_gang_3=-1;
+n_gang_3=712;
 n_gang_4=600;
 n_gang_5=518;
-n_gang_6=442;
+n_gang_6=470;
