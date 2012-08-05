@@ -7,7 +7,7 @@
 
 #ifndef CONFIG_H_
 #define CONFIG_H_
-#include      <EEPROM.h>                     // EPROM Libary
+//#include      <EEPROM.h>                     // EPROM Libary
 ///////////// CONFIG /////////////////////////
 /*********************************** config erzeugen *********************************
  * denk dran das zu splitten:
@@ -28,6 +28,7 @@ public:
 	int compare_substr( char *string1, char *string2, int amount );
 	void km_save();
 	void EEPROM_init();
+	unsigned char eeprom_read(int address);
 	void day_trip_check();
 	void ram_info();
 	bool storage_outdated;

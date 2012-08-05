@@ -39,10 +39,10 @@ uint8_t const SDA_PIN = 20;
 uint8_t const SCL_PIN = 21;
 
 // SPI port
-uint8_t const SS_PIN = 53;
-uint8_t const MOSI_PIN = 51;
-uint8_t const MISO_PIN = 50;
-uint8_t const SCK_PIN = 52;
+uint8_t const SS_PIN = PB0;
+uint8_t const MOSI_PIN = PB2;
+uint8_t const MISO_PIN = PB3;
+uint8_t const SCK_PIN = PB1;
 
 static const pin_map_t digitalPinMap[] = {
   {&DDRE, &PINE, &PORTE, 0},  // E0  0

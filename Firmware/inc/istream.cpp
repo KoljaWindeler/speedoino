@@ -19,6 +19,7 @@
  */
 #include <float.h>
 #include <istream.h>
+#include <ctype.h>
 //------------------------------------------------------------------------------
 /**
  * Extract a character if one is available.

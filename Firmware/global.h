@@ -39,9 +39,14 @@
 #define       WELCOME         true    // die frau am start
 /**********************************  working settings ********************************/
 
-#include <WProgram.h>
+//#include <WProgram.h>
+#include "wiring.h"
+#include <avr/eeprom.h>
 #include <util/delay.h> // timing
+#include "inc/wiring.h"
 #include "inc/I2C.h"
+#include "inc/HardwareSerial.h"
+#include "inc/wiring.h"
 void setup();
 void init_speedo();
 

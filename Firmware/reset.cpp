@@ -38,7 +38,7 @@ void speedo_reset::init(){
 	Serial3.begin(19200);
 	pinMode(reset_toogle_pin,OUTPUT);
 
-	if(EEPROM.read(149)==1){ // glatte 1 heisst ist an, alle andere heisst ist aus
+	if(eeprom_read_byte((const uint8_t *)149)==1){ // glatte 1 heisst ist an, alle andere heisst ist aus
 		set_active(false,true); // eeprom is set,set var
 	} else {
 		set_deactive(false,true); // eeprom is set,set var
@@ -55,7 +55,7 @@ void speedo_reset::set_active(bool save_to_eeprom,bool save_to_var){
 	}
 	if(save_to_eeprom){
 		byte tempByte = (1 & 0xFF);
-		EEPROM.write(149,tempByte);
+		eeprom_write_byte((uint8_t *)149,tempByte);
 	}
 	if(RESET_DEBUG){
 		pDebug->sprintlnp(PSTR("Reset enabled"));
@@ -72,7 +72,7 @@ void speedo_reset::set_deactive(bool save_to_eeprom,bool save_to_var){
 	}
 	if(save_to_eeprom){
 		byte tempByte = (0 & 0xFF);
-		EEPROM.write(149,tempByte);
+		eeprom_write_byte((uint8_t *)149,tempByte);
 	};
 
 	if(RESET_DEBUG){

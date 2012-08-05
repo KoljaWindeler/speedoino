@@ -1,13 +1,8 @@
 inc/pins_arduino.d inc/pins_arduino.o: ../inc/pins_arduino.c \
- /home/jkw/links/eclipse_ws/ArduinoCore/wiring_private.h \
- /home/jkw/links/eclipse_ws/ArduinoCore/wiring.h \
- /home/jkw/links/eclipse_ws/ArduinoCore/binary.h \
- /home/jkw/links/eclipse_ws/ArduinoCore/pins_arduino.h
+ ../inc/wiring_private.h ../inc/wiring.h ../inc/pins_arduino.h
 
-/home/jkw/links/eclipse_ws/ArduinoCore/wiring_private.h:
+../inc/wiring_private.h:
 
-/home/jkw/links/eclipse_ws/ArduinoCore/wiring.h:
+../inc/wiring.h:
 
-/home/jkw/links/eclipse_ws/ArduinoCore/binary.h:
-
-/home/jkw/links/eclipse_ws/ArduinoCore/pins_arduino.h:
+../inc/pins_arduino.h:

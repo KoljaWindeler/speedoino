@@ -529,6 +529,9 @@ long speedo_gps::get_info(unsigned char select){
 	case 8:
 		return long(gps_course[gps_count]);
 		break;
+	case 9:
+		return valid;
+		break;
 	}
 	return -1;
 };
@@ -706,7 +709,7 @@ int speedo_gps::get_order(char char_buffer[]){
 void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 	// da diese funktion nur aufgerufen wird wenn vorher der navi_pointer geändert wurde speichern wir hier den pointer um das so selten wie nötig zu machen
 	byte tempByte = (navi_point & 0xFF);
-	EEPROM.write(147,tempByte);
+	eeprom_write_byte((uint8_t *)147,tempByte);
 
 	if(NAVI_DEBUG){ pDebug->sprintlnp(PSTR("Versuche NAVI.SMF zu oeffnen")); };
 

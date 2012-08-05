@@ -142,6 +142,7 @@ int			menu_ende=menu_lines-1;
 #define menu_second_wait 100  // spike länge
 int			fuel_added=90; // predefined value "added fuel"
 bool		menu_preload;
+unsigned int addr;
 ///// vars ////////////
 
 ////// bei veränderung des state => einmaliges zeichen des menüs ///////
@@ -235,11 +236,11 @@ void speedo_menu::display(){ // z.B. state = 26
 			pSensors->m_gps->navi_active=true;
 			pSensors->m_gps->generate_new_order();
 			byte tempByte = (1 & 0xFF);
-			EEPROM.write(146,tempByte); // store navistate to eeprom
+			eeprom_write_byte((uint8_t *)146,tempByte); // store navistate to eeprom
 		} else if((state%10)==2){
 			pSensors->m_gps->navi_active=false;
 			byte tempByte = (0 & 0xFF);
-			EEPROM.write(146,tempByte); // store navistate to eeprom
+			eeprom_write_byte((uint8_t *)146,tempByte); // store navistate to eeprom
 		};
 		state=311;
 		pOLED->clear_screen();
@@ -583,7 +584,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		else { // speichern des neuen Werts
 			pSpeedo->m_trip_mode=state%10;
 			byte tempByte = (pSpeedo->m_trip_mode & 0xFF);
-			EEPROM.write(2,tempByte);
+			eeprom_write_byte((uint8_t *)2,tempByte);
 		};
 		draw(&menu_trip_setup[0],sizeof(menu_trip_setup)/sizeof(menu_trip_setup[0]));
 		// hier noch 2do
@@ -878,9 +879,9 @@ void speedo_menu::display(){ // z.B. state = 26
 
 			pOLED->init(pOLED->phase,pOLED->ref);
 			byte tempByte = (pOLED->phase & 0xFF);
-			EEPROM.write(144,tempByte);
+			eeprom_write_byte((uint8_t *)144,tempByte);
 			tempByte = (pOLED->ref & 0xFF);
-			EEPROM.write(145,tempByte);
+			eeprom_write_byte((uint8_t *)145,tempByte);
 
 		} else if(state%10==2){
 			if(floor(state/10)==73) { pOLED->phase=pOLED->phase-16; }
@@ -890,9 +891,9 @@ void speedo_menu::display(){ // z.B. state = 26
 
 			pOLED->init(pOLED->phase,pOLED->ref);
 			byte tempByte = (pOLED->phase & 0xFF);
-			EEPROM.write(144,tempByte);
+			eeprom_write_byte((uint8_t *)144,tempByte);
 			tempByte = (pOLED->ref & 0xFF);
-			EEPROM.write(145,tempByte);
+			eeprom_write_byte((uint8_t *)145,tempByte);
 		};
 
 		int olc=0,orc=0;
@@ -928,18 +929,17 @@ void speedo_menu::display(){ // z.B. state = 26
 	else if(state==7411) {
 		set_buttons(!button_state,!button_state,!button_state,!button_state); // message only
 		byte tempByte;
-
-		EEPROM.write(2, 1& 0xFF);   // tripmode=1
+		eeprom_write_byte((uint8_t *)2, 1& 0xFF);   // tripmode=1
 
 		tempByte = ((int)15 & 0xFF);
-		EEPROM.write(147, tempByte); // Navi_pos=0
-		EEPROM.write(148, tempByte); // Winterzeit=0
-		EEPROM.write(149, (int)1 & 0xFF); // reset_enable=>1
+		eeprom_write_byte((uint8_t *)147, tempByte); // Navi_pos=0
+		eeprom_write_byte((uint8_t *)148, tempByte); // Winterzeit=0
+		eeprom_write_byte((uint8_t *)149, (int)1 & 0xFF); // reset_enable=>1
 		tempByte = ((int)92 & 0xFF);
-		EEPROM.write(150, tempByte); // fuel_max=9.2 l
+		eeprom_write_byte((uint8_t *)150, tempByte); // fuel_max=9.2 l
 		tempByte = ((int)0 & 0xFF);
-		EEPROM.write(151, tempByte); // fuel_step=0
-		EEPROM.write(152, tempByte); // fuel_counter=0
+		eeprom_write_byte((uint8_t *)151, tempByte); // fuel_step=0
+		eeprom_write_byte((uint8_t *)152, tempByte); // fuel_counter=0
 
 
 		pSD->sd_failed=false;
@@ -964,7 +964,7 @@ void speedo_menu::display(){ // z.B. state = 26
 
 		if(state%10==9 || state%10==2 ) { // has changed, save it
 			byte tempByte = (pSensors->m_clock->get_dayls() & 0xFF);
-			EEPROM.write(148,tempByte);
+			eeprom_write_byte((uint8_t *)148,tempByte);
 		};
 
 		state=751; // resume state

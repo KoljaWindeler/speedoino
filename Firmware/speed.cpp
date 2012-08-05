@@ -25,6 +25,7 @@ speedo_speed::~speedo_speed(){
 void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==HIGH){ // außen drum herum
 	unsigned long jetzt=millis();
 	unsigned long differ=jetzt-last_time;
+	status=0;
 	if(differ>250){ // mit max 10 hz und nach peak anzahl neu berechnen
 		int temp_reed_speed=round(((reifen_umfang*1000*speed_peaks)/differ) * 3.6 ); // 1 Magnet // eventuell /360*280 => wenn 280° zwischen dem letzen und dem ersten flattern liegen, aber ich denke das werden eher 358° sein
 		if(SPEED_DEBUG){
@@ -49,14 +50,22 @@ void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==
 	};
 };
 
-void helper_speed(){
-	pSensors->m_speed->calc();
-}
+
+ISR(INT5_vect){	pSensors->m_speed->calc(); } // der eingentliche
+ISR(INT6_vect){	pSensors->m_speed->calc(); } // der dazugebrückte
+
 
 void speedo_speed::init (){
-	pinMode(SPEED_PIN, INPUT); // interrupt 1
-	attachInterrupt(1, helper_speed, RISING); // pin 3
-	Serial.println("Speed init done");
+	DDRE  |=  (1<<SPEED_PIN); // interrupt 5 eingang
+	EIMSK |= (1<<INT5); // Enable Interrupt
+	EICRB |= (1<<ISC50) | (1<<ISC51); // rising edge on INT5
+
+	DDRE  |=  (1<<PE6); // interrupt 6 eingang
+	EIMSK |= (1<<INT6); // Enable Interrupt
+	EICRB |= (1<<ISC60) | (1<<ISC61); // rising edge on INT5
+
+	status=0; // alles gut
+	pDebug->sprintlnp(PSTR("Speed init done"));
 };
 
 void speedo_speed::clear_vars(){
@@ -113,6 +122,9 @@ int speedo_speed::getSpeed(){
 		} else {
 			return reed_speed;
 		};
+	} else if(pSensors->m_gps->get_info(INFO_SAT)>3 && pSensors->m_gps->get_info(INFO_VALID)<3 && pSensors->m_gps->get_info(INFO_SPEED)>20) { // wir haben lange nichts mehr vom reed gehört, gps sagt wir fahren
+		status=1;
+		return pSensors->m_gps->speed;
 	} else {
 		reed_speed=0;
 		return 0;

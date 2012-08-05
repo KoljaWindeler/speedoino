@@ -17,8 +17,9 @@
  * along with the Arduino Sd2Card Library.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-#include <WProgram.h>
+//#include <WProgram.h>
 #include "Sd2Card.h"
+#include "wiring.h"
 //------------------------------------------------------------------------------
 #ifndef SOFTWARE_SPI
 // functions for hardware SPI
@@ -200,14 +201,16 @@ uint32_t Sd2Card::cardSize() {
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectHigh() {
-  digitalWrite(chipSelectPin_, HIGH);
+  //digitalWrite(chipSelectPin_, HIGH);
+  PORTB|=(1<<chipSelectPin_);
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectLow() {
 #ifndef SOFTWARE_SPI
   spiInit(spiRate_);
 #endif  // SOFTWARE_SPI
-  digitalWrite(chipSelectPin_, LOW);
+  PORTB&=~(1<<chipSelectPin_);
+  //digitalWrite(chipSelectPin_, LOW);
 }
 //------------------------------------------------------------------------------
 /** Erase a range of blocks.
@@ -286,18 +289,23 @@ bool Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
   uint32_t arg;
 
   // set pin modes
-  pinMode(chipSelectPin_, OUTPUT);
+  DDRB|=(1<<chipSelectPin_);
+  //pinMode(chipSelectPin_, OUTPUT);
   chipSelectHigh();
-  pinMode(SPI_MISO_PIN, INPUT);
-  pinMode(SPI_MOSI_PIN, OUTPUT);
-  pinMode(SPI_SCK_PIN, OUTPUT);
+  DDRB&=~(1<<SPI_MISO_PIN);
+  //pinMode(SPI_MISO_PIN, INPUT);
+  DDRB|=(1<<SPI_MOSI_PIN) | (1<<SPI_SCK_PIN);
+  //pinMode(SPI_MOSI_PIN, OUTPUT);
+  //pinMode(SPI_SCK_PIN, OUTPUT);
 
 #ifndef SOFTWARE_SPI
   // SS must be in output mode even it is not chip select
-  pinMode(SS_PIN, OUTPUT);
+  DDRB|=(1<<SS_PIN);
+  //pinMode(SS_PIN, OUTPUT);
   // set SS high - may be chip select for another SPI device
 #if SET_SPI_SS_HIGH
-  digitalWrite(SS_PIN, HIGH);
+  PORTB|=(1<<SS_PIN);
+  //digitalWrite(SS_PIN, HIGH);
 #endif  // SET_SPI_SS_HIGH
   // set SCK rate for initialization commands
   spiRate_ = SPI_SD_INIT_RATE;

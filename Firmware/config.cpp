@@ -16,7 +16,6 @@
  */
 
 #include "global.h"
-#include      <EEPROM.h>
 configuration::configuration(){};
 configuration::~configuration(){};
 
@@ -1179,8 +1178,8 @@ void configuration::km_save(){
 
 void configuration::day_trip_check(){
 	//load date_of_today
-	int temp =EEPROM.read(3);
-	int temp2=EEPROM.read(4);
+	int temp =eeprom_read_byte((const uint8_t *)3);
+	int temp2=eeprom_read_byte((const uint8_t *)4);
 	int date_of_today=temp+100*temp2;
 	// reset day trip at next day
 	// wenn keine RTC verbunden, dann gibt clock_getdate() 0 zurueck.
@@ -1201,9 +1200,9 @@ void configuration::day_trip_check(){
 		if(pSensors->m_clock->getdate()!=0){ // wenn wir heute einen anderen tag haben als im "heute" vom eeprom steht dann schreiben wir das heute in den eeprom
 			// write "today"
 			byte tempByte = ((int)floor(pSensors->m_clock->getdate()/100) & 0xFF);
-			EEPROM.write(4,tempByte);
+			eeprom_write_byte((uint8_t *)4,tempByte);
 			tempByte = ((int)floor(pSensors->m_clock->getdate()%100) & 0xFF);
-			EEPROM.write(3,tempByte);
+			eeprom_write_byte((uint8_t *)3,tempByte);
 
 			storage_outdated=true; // zum speichern zwingen
 			write("speedo.txt"); // und ab dafuer
@@ -1215,7 +1214,7 @@ void configuration::day_trip_check(){
 void configuration::EEPROM_init(){
 	pDebug->sprintp(PSTR("Lade EEPROM... "));
 	//Serial.println("-> Lade KM von SD Karte");
-	pSpeedo->m_trip_mode=EEPROM.read(2);
+	pSpeedo->m_trip_mode=eeprom_read_byte((const uint8_t *)2);
 	if(pSpeedo->m_trip_mode>9 || pSpeedo->m_trip_mode<0) {    pSpeedo->m_trip_mode=1;       };
 
 	// immer reseten -> non permanent
@@ -1225,17 +1224,17 @@ void configuration::EEPROM_init(){
 
 
 	// load winterzeit
-	pSensors->m_clock->set_date_time(-1,-1,-1,-1,-1,-1,-1,EEPROM.read(148));
+	pSensors->m_clock->set_date_time(-1,-1,-1,-1,-1,-1,-1,eeprom_read_byte((const uint8_t *)148));
 
 	// load naviposition
-	pSensors->m_gps->navi_point=EEPROM.read(147);
+	pSensors->m_gps->navi_point=eeprom_read_byte((const uint8_t *)147);
 
 	// display setup
-	pOLED->phase=EEPROM.read(144);
-	pOLED->ref=EEPROM.read(145);
+	pOLED->phase=eeprom_read_byte((const uint8_t *)144);
+	pOLED->ref=eeprom_read_byte((const uint8_t *)145);
 
 	// load navi on off
-	if(EEPROM.read(146)==1){
+	if(eeprom_read_byte((const uint8_t *)146)==1){
 		pSensors->m_gps->navi_active=true;
 		pSensors->m_gps->generate_new_order();
 	} else {

@@ -1,6 +1,6 @@
 /*
-  EEPROM.h - EEPROM library
-  Copyright (c) 2006 David A. Mellis.  All right reserved.
+  Stream.h - base class for character-based streams.
+  Copyright (c) 2010 David A. Mellis.  All right reserved.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -17,19 +17,18 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef EEPROM_h
-#define EEPROM_h
+#ifndef Stream_h
+#define Stream_h
 
 #include <inttypes.h>
+#include "Print.h"
 
-class EEPROMClass
+class Stream : public Print
 {
   public:
-    uint8_t read(int);
-    void write(int, uint8_t);
+    virtual int available() = 0;
+    virtual int read() = 0;
+    virtual void flush() = 0;
 };
 
-extern EEPROMClass EEPROM;
-
 #endif
-

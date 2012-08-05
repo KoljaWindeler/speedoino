@@ -8,7 +8,10 @@
 #ifndef GPS_H_
 #define GPS_H_
 
-#define       SERIAL_BUFFER_SIZE 75   // größe des char buffers für die seriellen gps daten
+#define    SERIAL_BUFFER_SIZE 75   // größe des char buffers für die seriellen gps daten
+#define		INFO_SAT 6
+#define		INFO_VALID 9
+#define		INFO_SPEED 5
 /**************** gps *******************/
 class speedo_gps{
 #define SIMPLE_MARK 1

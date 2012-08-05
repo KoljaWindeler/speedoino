@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lArduinoCore2560
+LIBS :=
 

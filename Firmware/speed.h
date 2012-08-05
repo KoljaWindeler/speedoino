@@ -9,7 +9,7 @@
 #define SPEED_H_
 
 class speedo_speed{
-#define SPEED_PIN 3
+#define SPEED_PIN PE5
 public:
 	speedo_speed();
 	~speedo_speed();
@@ -22,6 +22,7 @@ public:
 	void check_umfang();
 	int get_sat_speed();
 	int 		  gps_takeover;
+	unsigned char status;
 	float 		  reifen_umfang;
 	// für die kalibrierung
 	float flat_value_calibrate_umfang;

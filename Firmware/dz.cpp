@@ -101,7 +101,11 @@ void speedo_dz::calc() {
 			//pAktors->m_stepper->go_to(exact/11.73);
 			pAktors->m_stepper->go_to(exact/11.5);
 		}
-	} else if(now_peaks>4 && differ>100){ 									// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+	} else if(now_peaks>4 && differ>50){ 									// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+		// am 3.8. von 100 auf 50 geändert
+		// bei 4.000 rpm => 66 pps => 15ms Pro Peak, 4 Peaks in 60 ms
+		// somit kann man mit 50 statt 100 bis 4800 doppelt so schnell reagieren,
+		// mit 100ms war das sehr träge, mal sehen ob das die COM schnittstelle hergibt
 		//now_peaks=now_peaks>>anzahl_shift;								// könnte ja sein das man weniger umdrehungen als funken hat, hornet hat 2 Funken je Umdrehun
 		// die maximale übertragungsrate zwischen ATm8 und ATm2560 sollte nicht überschritten werden
 		// pro Übertragung werden benötigt: 19200 Baud, 2400 Byte/sek, 7 Byte, 2,916667 ms, machen wir mal 10 ms draus.
@@ -146,13 +150,15 @@ void speedo_dz::calc() {
 	};
 };
 
-void helper(){
+ISR(INT4_vect){
 	pSensors->m_dz->counter();
 }
 
 
 void speedo_dz::init() {
-	attachInterrupt(0, helper, RISING ); // interrupt handler für signalwechsel 0=DigiPin 2
+	EIMSK |= (1<<INT4); // Enable Interrupt
+	EICRB |= (1<<ISC40) | (1<<ISC41); // rising edge on INT4
+
 	Serial.println("DZ init done");
 	blitz_en=false;
 	Serial3.flush();

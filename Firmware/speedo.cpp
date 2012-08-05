@@ -300,7 +300,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			};
 
 		}
-		else if(kmh_widget.x!=-1 && kmh_widget.y!=-1 && pSensors->m_speed->get_mag_speed()==0 && pSensors->m_speed->get_sat_speed()>20 && pSensors->m_gps->get_info(6)>3){
+		else if(kmh_widget.x!=-1 && kmh_widget.y!=-1 && pSensors->m_speed->status==1){
 			if(disp_zeile_bak[ADD_INFO2]!=110){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=110;
 				pDebug->speedo_loop(14,0,previousMillis," ");
@@ -387,7 +387,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		pSensors->m_gps->navi_point++;
 		// store change
 		byte tempByte = (pSensors->m_gps->navi_point & 0xFF);
-		EEPROM.write(147,tempByte);
+		eeprom_write_byte((uint8_t *)147,tempByte);
 		pMenu->state=11; // reset state
 		pSensors->m_gps->generate_new_order();
 	} else if(pSensors->m_gps->navi_active && (pMenu->state%10)==9){ // hoch gedrückt
@@ -395,7 +395,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		if(pSensors->m_gps->navi_point<1) { pSensors->m_gps->navi_point=0; };
 		// store change
 		byte tempByte = (pSensors->m_gps->navi_point & 0xFF);
-		EEPROM.write(147,tempByte);
+		eeprom_write_byte((uint8_t *)147,tempByte);
 		pMenu->state=11; // reset state
 		pSensors->m_gps->generate_new_order();
 	}
@@ -417,58 +417,58 @@ void speedo_speedo::check_vars(){
 		pSpeedo->water_widget.x=0;
 		pSpeedo->water_widget.y=0;
 		pSpeedo->water_widget.symbol=true;
-		pSpeedo->water_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->water_widget.font=VISITOR_SMALL_1X_FONT;
 
 		pSpeedo->oil_widget.x=-1;
 		pSpeedo->oil_widget.y=-1;
 		pSpeedo->oil_widget.symbol=true;
-		pSpeedo->oil_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->oil_widget.font=VISITOR_SMALL_1X_FONT;
 
 		pSpeedo->air_widget.x=14;
 		pSpeedo->air_widget.y=0;
 		pSpeedo->air_widget.symbol=true;
-		pSpeedo->air_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->air_widget.font=VISITOR_SMALL_1X_FONT;
 
 		pSpeedo->arrow_widget.x=0;
 		pSpeedo->arrow_widget.y=1;
 
 		pSpeedo->kmh_widget.x=6;
 		pSpeedo->kmh_widget.y=2;
-		pSpeedo->kmh_widget.font=STD_SMALL_2X_FONT;
+		pSpeedo->kmh_widget.font=VISITOR_SMALL_3X_FONT;
 
-		pSpeedo->kmhchar_widget.x=12;
-		pSpeedo->kmhchar_widget.y=3;
-		pSpeedo->kmhchar_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->kmhchar_widget.x=15;
+		pSpeedo->kmhchar_widget.y=4;
+		pSpeedo->kmhchar_widget.font=VISITOR_SMALL_1X_FONT;
 
-		pSpeedo->dz_widget.x=0;
-		pSpeedo->dz_widget.y=4;
-		pSpeedo->dz_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->dz_widget.x=-1;
+		pSpeedo->dz_widget.y=-1;
+		pSpeedo->dz_widget.font=VISITOR_SMALL_1X_FONT;
 
-		pSpeedo->gps_widget.x=14;
-		pSpeedo->gps_widget.y=4;
-		pSpeedo->gps_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->gps_widget.x=8;
+		pSpeedo->gps_widget.y=5;
+		pSpeedo->gps_widget.font=VISITOR_SMALL_1X_FONT;
 
-		pSpeedo->addinfo_widget.x=0;
-		pSpeedo->addinfo_widget.y=5;
-		pSpeedo->addinfo_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->addinfo_widget.x=-1;
+		pSpeedo->addinfo_widget.y=-1;
+		pSpeedo->addinfo_widget.font=VISITOR_SMALL_1X_FONT;
 
 		pSpeedo->addinfo2_widget.x=0;
 		pSpeedo->addinfo2_widget.y=6;
-		pSpeedo->addinfo2_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->addinfo2_widget.font=VISITOR_SMALL_1X_FONT;
 
-		pSpeedo->clock_widget.x=1;
+		pSpeedo->clock_widget.x=0;
 		pSpeedo->clock_widget.y=7;
 		pSpeedo->clock_widget.symbol=true;
-		pSpeedo->clock_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->clock_widget.font=VISITOR_SMALL_1X_FONT;
 
 		pSpeedo->gear_widget.x=11;
 		pSpeedo->gear_widget.y=7;
-		pSpeedo->gear_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->gear_widget.font=VISITOR_SMALL_1X_FONT;
 
 		pSpeedo->fuel_widget.x=14;
 		pSpeedo->fuel_widget.y=7;
 		pSpeedo->fuel_widget.symbol=true;
-		pSpeedo->fuel_widget.font=STD_SMALL_1X_FONT;
+		pSpeedo->fuel_widget.font=VISITOR_SMALL_1X_FONT;
 
 		pSpeedo->default_font=VISITOR_SMALL_1X_FONT;
 		// skinning

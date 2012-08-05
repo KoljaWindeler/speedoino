@@ -26,6 +26,7 @@
 #include <SdFatConfig.h>
 #include <avr/pgmspace.h>
 #include <WProgram.h>
+#include "wiring.h"
 #include <SdVolume.h>
 //------------------------------------------------------------------------------
 /**

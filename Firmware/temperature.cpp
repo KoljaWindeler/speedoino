@@ -57,8 +57,8 @@ bool speedo_temperature::check_vars(){
 		};
 
 		// Water
-		r_werte={1000,700,550,400,330,250,230,210,195,150,140,135,110,100, 90, 80, 20, 15, 10}; // widerstandswerte
-		t_werte={  27, 35, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95,100,105,110,115,120,125}; // passender Temperaturwert
+		r_werte={354,323,241,198,157,135,111,93,80,64,52,43,37,30,23,18,15,10,9}; // widerstandswerte
+		t_werte={  30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,116}; // passender Temperaturwert
 		for(unsigned int j=0; j<sizeof(water_r_werte)/sizeof(water_r_werte[0]); j++){
 			water_r_werte[j]=r_werte[j];
 			water_t_werte[j]=t_werte[j];

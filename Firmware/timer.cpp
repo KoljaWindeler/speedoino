@@ -54,8 +54,11 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		pSensors->m_voltage->calc(); // spannungscheck
 		pConfig->km_save();    // avg,max,trips hochzählen, immer wenn ss==59 ist store to sd card
 
-		if(pSD->sd_failed){
-			pSD->init();
+		if(pSD->sd_failed && (millis()/1000)%30==0){
+			Serial.print(millis());
+			Serial.print("-");
+			pSD->power_up(1);
+			Serial.println(millis());
 			if(!pSD->sd_failed){
 				init_speedo();
 			}
