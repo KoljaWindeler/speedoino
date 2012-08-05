@@ -59,6 +59,7 @@ volatile struct GLOBAL_FLAGS status = {FALSE, FALSE, 0};
 bool emergency_shutdown;
 bool emergency_extra_pos_offset_set;
 unsigned char voltage_down_counter=0;
+unsigned char voltage_up_counter=0;
 unsigned int speed=200;
 unsigned int accel=80;
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
@@ -99,7 +100,7 @@ void Init(void)
 int main(){
 	Init();
 	while(1) {
-//		check_power_state();
+		check_power_state();
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
 			/////////////////////////// MOVE /////////////////////////////////////
@@ -198,9 +199,10 @@ int main(){
 void check_power_state(){
 	if(bit_is_clear(PIND,4)){ // kein Spannung mehr auf dem Pin, vor der Diode
 //		uart_SendString("$");
+		//voltage_up_counter=0;
 		voltage_down_counter++;
 		// wenn der counter nicht geht, erstmal mit 100nF probieren und dann vielleicht als PullUp auslegen?
-		if(voltage_down_counter>10){ // ~ 50µsec direkt nacheinander
+		if(voltage_down_counter>50){ // ~ 50µsec direkt nacheinander
 //			uart_SendString("%");
 			// input interrupts für reset abwerfen
 			GICR  &= ~((1<<INT0) | (1<<INT1));	//Global Interrupt Flag deaktivieren fuer INT0 und INT1
@@ -222,14 +224,38 @@ void check_power_state(){
 			// fahrt anstarten
 			srd.position=250;
 			speed_cntr_Move(0,accel,speed);
+		//} else {
+			// wir sind im normal modus, haben aber kein strom von der vorsorgung, könnte
+			// sein das wir ein "repower" haben, nach einem Spike, oder weil der kondensator
+			// nur wieder spannung aufgebaut hat .. um zu testen ob es der Kondensator ist
+			// bestromen wir die Wicklungen der Spulen, das sollte ein sehr leerer Kondensator
+			// nicht lang schaffen können
+
+//			sm_driver_Init_IO();
+//			sm_driver_StepOutput(0);
+//			voltage_down_counter++;
 		}
 	} else {
 		voltage_down_counter=0;
-		if(emergency_shutdown){
+		// solange up noch nicht bei 10 ist, zählen wir hoch und bestromen die windungen
+		// erst wenn er 10 zyklen lang die spannung halten kann fahren wir den Zeiger zurück
+
+		if(emergency_shutdown){// && voltage_up_counter>=10){
 			// ups, doch strom wieder da
-			Init();
+//			uart_SendString("(");
+			Init(); // setzt dann auch emergency_shutdown zurück
 			srd.position=200;
 			speed_cntr_Move(0,accel,speed);
-		} // return from emergency
+		} /*else if(emergency_shutdown){
+//			uart_SendString(")");
+			// wir sind im notfall modus, haben wieder strom von der vorsorgung, könnte
+			// sein das wir ein "repower" haben, nach einem Spike, oder weil der kondensator
+			// nur wieder spannung aufgebaut hat .. um zu testen ob es der Kondensator ist
+			// bestromen wir die Wicklungen der Spulen, das sollte ein sehr leerer Kondensator
+			// nicht lang schaffen können
+//			sm_driver_Init_IO();
+//			sm_driver_StepOutput(0);
+			voltage_up_counter++;
+		}*/
 	} // voltage is up
 };
