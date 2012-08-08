@@ -4561,15 +4561,8 @@ min. Width 0,18mm</description>
 <via x="83.6" y="50.7" extent="1-16" drill="0.3"/>
 <wire x1="89.4" y1="50.1" x2="89.4" y2="49.1" width="0.254" layer="1"/>
 <wire x1="89.4" y1="49.1" x2="89.1" y2="48.8" width="0.254" layer="1"/>
-<wire x1="89.1" y1="48.8" x2="88.6" y2="48.8" width="0.254" layer="1"/>
-<wire x1="88.6" y1="48.8" x2="88.5" y2="48.9" width="0.254" layer="1"/>
-<wire x1="88.5" y1="48.9" x2="88.5" y2="50.1" width="0.254" layer="1"/>
-<wire x1="88.5" y1="50.1" x2="88.2" y2="50.4" width="0.254" layer="1"/>
-<wire x1="88.2" y1="50.4" x2="86.9" y2="50.4" width="0.254" layer="1"/>
-<wire x1="86.9" y1="50.4" x2="86.5" y2="50.8" width="0.254" layer="1"/>
-<wire x1="86.5" y1="50.8" x2="84" y2="50.8" width="0.254" layer="1"/>
-<wire x1="84" y1="50.8" x2="83.9" y2="50.7" width="0.254" layer="1"/>
-<wire x1="83.9" y1="50.7" x2="83.6" y2="50.7" width="0.254" layer="1"/>
+<wire x1="89.1" y1="48.8" x2="85.5" y2="48.8" width="0.254" layer="1"/>
+<wire x1="85.5" y1="48.8" x2="83.6" y2="50.7" width="0.254" layer="1"/>
 </signal>
 <signal name="N$57">
 <contactref element="RGB_2" pad="1-"/>
@@ -6043,7 +6036,8 @@ min. Width 0,18mm</description>
 <wire x1="83.7" y1="26" x2="83.7" y2="40.3" width="0.254" layer="16"/>
 <wire x1="83.7" y1="40.3" x2="86.4" y2="43" width="0.254" layer="16"/>
 <via x="108.2" y="42" extent="1-16" drill="0.3"/>
-<wire x1="108.2" y1="42" x2="108.2" y2="44" width="0.254" layer="16"/>
+<wire x1="108.2" y1="42" x2="108.2" y2="43.9" width="0.254" layer="16"/>
+<wire x1="108.2" y1="43.9" x2="108.2" y2="44" width="0.254" layer="16"/>
 <wire x1="108.2" y1="42" x2="107.7" y2="42.5" width="0.254" layer="1"/>
 <wire x1="107.7" y1="42.5" x2="103.7" y2="42.5" width="0.254" layer="1"/>
 <wire x1="103.7" y1="42.5" x2="100.8" y2="45.4" width="0.254" layer="1"/>
@@ -6051,7 +6045,8 @@ min. Width 0,18mm</description>
 <wire x1="86.6" y1="45.4" x2="86.4" y2="45.2" width="0.254" layer="1"/>
 <via x="86.4" y="45.2" extent="1-16" drill="0.3"/>
 <wire x1="86.4" y1="45.2" x2="86.4" y2="43" width="0.254" layer="16"/>
-<wire x1="108.2" y1="44" x2="108.215" y2="43.8708" width="0" layer="19" extent="16-16"/>
+<wire x1="108.215" y1="43.8708" x2="108.215" y2="43.885" width="0.254" layer="16"/>
+<wire x1="108.215" y1="43.885" x2="108.2" y2="43.9" width="0.254" layer="16"/>
 </signal>
 <signal name="N$101">
 <contactref element="Q4" pad="1"/>
@@ -6127,13 +6122,15 @@ min. Width 0,18mm</description>
 <wire x1="95.5" y1="18.8" x2="92" y2="22.3" width="0.254" layer="16"/>
 <wire x1="92" y1="22.3" x2="92" y2="44.7" width="0.254" layer="16"/>
 <via x="103.2" y="41.3" extent="1-16" drill="0.3"/>
-<wire x1="103.2" y1="43.8" x2="103.1" y2="43.9" width="0.254" layer="16"/>
+<wire x1="103.2" y1="43.8" x2="103.15" y2="43.85" width="0.254" layer="16"/>
+<wire x1="103.135" y1="43.865" x2="103.1" y2="43.9" width="0.254" layer="16"/>
 <wire x1="103.2" y1="43.8" x2="103.2" y2="41.3" width="0.254" layer="16"/>
 <via x="92" y="44.7" extent="1-16" drill="0.3"/>
 <wire x1="92" y1="44.7" x2="100.5" y2="44.7" width="0.254" layer="1"/>
 <wire x1="100.5" y1="44.7" x2="103.2" y2="42" width="0.254" layer="1"/>
 <wire x1="103.2" y1="42" x2="103.2" y2="41.3" width="0.254" layer="1"/>
-<wire x1="103.1" y1="43.9" x2="103.135" y2="43.8708" width="0" layer="19" extent="16-16"/>
+<wire x1="103.135" y1="43.8708" x2="103.135" y2="43.865" width="0.254" layer="16"/>
+<wire x1="103.135" y1="43.865" x2="103.15" y2="43.85" width="0.254" layer="16"/>
 </signal>
 <signal name="N$105">
 <contactref element="Q8" pad="1"/>

@@ -22205,6 +22205,8 @@ grid 5.08 mm</description>
 <part name="GPS_C3" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
 <part name="GPS_C4" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
 <part name="U$18" library="SUPPLY" deviceset="GND" device=""/>
+<part name="C4" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
+<part name="PWR" library="pinhead" deviceset="PINHD-1X2" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -22932,6 +22934,8 @@ grid 5.08 mm</description>
 <attribute name="VALUE" x="-121.92" y="-2.54" size="1.778" layer="96" rot="R270"/>
 </instance>
 <instance part="U$18" gate="G$1" x="-119.38" y="-2.54"/>
+<instance part="C4" gate="C" x="-93.98" y="218.44" rot="R180"/>
+<instance part="PWR" gate="G$1" x="-322.58" y="165.1" rot="R180"/>
 </instances>
 <busses>
 </busses>
@@ -23084,6 +23088,9 @@ grid 5.08 mm</description>
 <label x="-85.852" y="203.708" size="1.778" layer="95"/>
 <pinref part="BLUETOOTH" gate="G$1" pin="P$10_GND"/>
 <pinref part="C36" gate="C" pin="1"/>
+<wire x1="-86.36" y1="210.82" x2="-86.36" y2="218.44" width="0.1524" layer="91"/>
+<pinref part="C4" gate="C" pin="1"/>
+<wire x1="-86.36" y1="218.44" x2="-88.9" y2="218.44" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <wire x1="-15.24" y1="226.06" x2="-7.62" y2="226.06" width="0.1524" layer="91"/>
@@ -23612,6 +23619,11 @@ grid 5.08 mm</description>
 <wire x1="-124.46" y1="2.54" x2="-119.38" y2="2.54" width="0.1524" layer="91"/>
 <wire x1="-119.38" y1="2.54" x2="-119.38" y2="0" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="PWR" gate="G$1" pin="1"/>
+<wire x1="-320.04" y1="162.56" x2="-307.34" y2="162.56" width="0.1524" layer="91"/>
+<label x="-314.96" y="162.56" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="DZ" class="0">
 <segment>
@@ -23975,6 +23987,11 @@ grid 5.08 mm</description>
 <wire x1="-172.72" y1="30.48" x2="-172.72" y2="40.64" width="0.1524" layer="91"/>
 <junction x="-172.72" y="40.64"/>
 </segment>
+<segment>
+<pinref part="PWR" gate="G$1" pin="2"/>
+<wire x1="-320.04" y1="165.1" x2="-307.34" y2="165.1" width="0.1524" layer="91"/>
+<label x="-314.96" y="165.1" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="CONNECT" class="0">
 <segment>
@@ -24010,7 +24027,8 @@ grid 5.08 mm</description>
 </segment>
 <segment>
 <wire x1="-76.2" y1="223.52" x2="-106.68" y2="223.52" width="0.1524" layer="91"/>
-<wire x1="-106.68" y1="223.52" x2="-106.68" y2="210.82" width="0.1524" layer="91"/>
+<wire x1="-106.68" y1="223.52" x2="-106.68" y2="218.44" width="0.1524" layer="91"/>
+<wire x1="-106.68" y1="218.44" x2="-106.68" y2="210.82" width="0.1524" layer="91"/>
 <wire x1="-106.68" y1="210.82" x2="-106.68" y2="185.42" width="0.1524" layer="91"/>
 <wire x1="-106.68" y1="185.42" x2="-76.2" y2="185.42" width="0.1524" layer="91"/>
 <wire x1="-106.68" y1="223.52" x2="-106.68" y2="238.76" width="0.1524" layer="91"/>
@@ -24023,6 +24041,9 @@ grid 5.08 mm</description>
 <pinref part="C36" gate="C" pin="2"/>
 <wire x1="-99.06" y1="210.82" x2="-106.68" y2="210.82" width="0.1524" layer="91"/>
 <junction x="-106.68" y="210.82"/>
+<pinref part="C4" gate="C" pin="2"/>
+<wire x1="-99.06" y1="218.44" x2="-106.68" y2="218.44" width="0.1524" layer="91"/>
+<junction x="-106.68" y="218.44"/>
 </segment>
 <segment>
 <wire x1="-261.62" y1="43.18" x2="-284.48" y2="43.18" width="0.1524" layer="91"/>

@@ -21935,7 +21935,7 @@ grid 5.08 mm</description>
 <part name="U$159" library="SUPPLY" deviceset="GND" device=""/>
 <part name="U$161" library="SUPPLY" deviceset="GND" device=""/>
 <part name="GND4" library="SparkFun" deviceset="GND" device=""/>
-<part name="IC2" library="µP´s+Pic´s" deviceset="AT-MEGA-8" device=""/>
+<part name="IC2" library="µP´s+Pic´s" deviceset="AT-MEGA-8" device="" value="AT-MEGA-8L"/>
 <part name="AT8_REF" library="RCLDT" deviceset="R" device="0805" value="10R"/>
 <part name="U$5" library="SUPPLY" deviceset="GND" device=""/>
 <part name="C1" library="RCLDT" deviceset="C" device="0805" value="100nF"/>

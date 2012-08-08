@@ -24302,9 +24302,13 @@ grid 5.08 mm</description>
 <pinref part="IC4" gate="1" pin="PL1(ICP5)"/>
 </segment>
 <segment>
-<pinref part="SPEEDOSTECKER" gate="G$1" pin="MC_COI"/>
-<wire x1="185.42" y1="177.8" x2="144.78" y2="177.8" width="0.1524" layer="91"/>
-<pinref part="R_HB4" gate="G$1" pin="1"/>
+<pinref part="R_HB4" gate="G$1" pin="2"/>
+<wire x1="134.62" y1="177.8" x2="127" y2="177.8" width="0.1524" layer="91"/>
+<pinref part="D_P_MCCOI" gate="G$1" pin="C"/>
+<wire x1="127" y1="175.26" x2="127" y2="177.8" width="0.1524" layer="91"/>
+<junction x="127" y="177.8"/>
+<wire x1="127" y1="177.8" x2="119.38" y2="177.8" width="0.1524" layer="91"/>
+<label x="139.7" y="177.8" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="D49" class="0">
@@ -26283,15 +26287,11 @@ grid 5.08 mm</description>
 <junction x="167.64" y="121.92"/>
 </segment>
 </net>
-<net name="N$91" class="0">
+<net name="N$92" class="0">
 <segment>
-<pinref part="R_HB4" gate="G$1" pin="2"/>
-<wire x1="134.62" y1="177.8" x2="127" y2="177.8" width="0.1524" layer="91"/>
-<pinref part="D_P_MCCOI" gate="G$1" pin="C"/>
-<wire x1="127" y1="175.26" x2="127" y2="177.8" width="0.1524" layer="91"/>
-<junction x="127" y="177.8"/>
-<wire x1="127" y1="177.8" x2="119.38" y2="177.8" width="0.1524" layer="91"/>
-<label x="139.7" y="177.8" size="1.778" layer="95"/>
+<pinref part="SPEEDOSTECKER" gate="G$1" pin="MC_COI"/>
+<wire x1="185.42" y1="177.8" x2="144.78" y2="177.8" width="0.1524" layer="91"/>
+<pinref part="R_HB4" gate="G$1" pin="1"/>
 </segment>
 </net>
 </nets>
