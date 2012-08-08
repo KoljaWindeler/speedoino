@@ -350,7 +350,8 @@ static void clear_screen(void){
 	send_command(0x75);
 	send_command(0x00);
 	send_command(0x3F);
-	for (int a=0;a<(128*32);a++){
+	int a;
+	for (a=0;a<(128*32);a++){
 		send_char(0x00);
 	}
 }
@@ -483,7 +484,8 @@ int main(void)
 	/////////Kolja von hier/////////
 	/* enabled in ph3 to read if its a bluetooth reset*/
 	DDRH  &= ~(1<<PH3); // one input
-	PORTH |= 1<<PH3; // with pullup
+	PORTH =  0x00 | (1<<PH3); // with pullup
+
 	/////////Kolja bis hier/////////
 
 
