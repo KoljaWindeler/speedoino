@@ -159,6 +159,7 @@ void speedo_dz::init() {
 	EIMSK |= (1<<INT4); // Enable Interrupt
 	EICRB |= (1<<ISC40) | (1<<ISC41); // rising edge on INT4
 
+
 	Serial.println("DZ init done");
 	blitz_en=false;
 	Serial3.flush();

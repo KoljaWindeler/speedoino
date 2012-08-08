@@ -931,6 +931,10 @@ void speedo_menu::display(){ // z.B. state = 26
 		byte tempByte;
 		eeprom_write_byte((uint8_t *)2, 1& 0xFF);   // tripmode=1
 
+
+		eeprom_write_byte((uint8_t *)144, 0xA8); // display
+		eeprom_write_byte((uint8_t *)145, 0x38); // display
+
 		tempByte = ((int)15 & 0xFF);
 		eeprom_write_byte((uint8_t *)147, tempByte); // Navi_pos=0
 		eeprom_write_byte((uint8_t *)148, tempByte); // Winterzeit=0

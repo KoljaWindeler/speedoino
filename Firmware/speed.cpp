@@ -52,17 +52,11 @@ void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==
 
 
 ISR(INT5_vect){	pSensors->m_speed->calc(); } // der eingentliche
-ISR(INT6_vect){	pSensors->m_speed->calc(); } // der dazugebrückte
-
 
 void speedo_speed::init (){
-	DDRE  |=  (1<<SPEED_PIN); // interrupt 5 eingang
+	DDRE  &=~(0<<SPEED_PIN); // interrupt 5 eingang
 	EIMSK |= (1<<INT5); // Enable Interrupt
 	EICRB |= (1<<ISC50) | (1<<ISC51); // rising edge on INT5
-
-	DDRE  |=  (1<<PE6); // interrupt 6 eingang
-	EIMSK |= (1<<INT6); // Enable Interrupt
-	EICRB |= (1<<ISC60) | (1<<ISC61); // rising edge on INT5
 
 	status=0; // alles gut
 	pDebug->sprintlnp(PSTR("Speed init done"));

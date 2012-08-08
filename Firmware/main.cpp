@@ -70,16 +70,15 @@ speedo_timer*   		pTimer=new speedo_timer(); 		// brauch ich ja nur hier, den br
  ******************* TODO List ***************************/
 void init_speedo(void){
 	Serial.begin(115200);
-
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
 	pDebug->sprintp(PSTR(GIT_REV));				// print Software release
 	pDebug->sprintp(PSTR(" HW:"));
 	Serial.println(pConfig->get_hw_version());	// print Hardware release
 
 	pSD->init(); 				// try open SD Card
-
 	// first, set all variables to a zero value
 	pSensors->init(); 			// start every init sequence of each sensor
+
 	pSensors->clear_vars();		// clear all sensor values;
 	pAktors->clear_vars();		// clear outer LED
 	pSpeedo->clear_vars();		// refresh cycle
@@ -95,7 +94,6 @@ void init_speedo(void){
 	pSensors->check_vars();		// check if config read was successful
 	pSpeedo->check_vars();		// rettet das Skinning wenn SD_failed von den sensoren auf true gesetzt wird
 	pSensors->single_read();	// read all sensor values once to ensure we are ready to show them
-
 	pAktors->init();			// Start outer LEDs // ausschlag des zeigers // Motorausschlag und block bis motor voll ausgeschlagen, solange das letzte intro bild halten
 	pConfig->EEPROM_init(); 	// read vars from eeprom, reset Day Based storage etc
 	pOLED->init_speedo(); 		// Start Screen //execute this AFTER Config->init(), init() will load  phase,config,startup. PopUp will be shown if sd access fails
