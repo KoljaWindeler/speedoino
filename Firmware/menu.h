@@ -46,6 +46,7 @@ public:
 private:
 	unsigned long button_time;                      // Zeitpunkt des letzen Button kontakt
 	unsigned long button_first_push;                // für "halten". Zeitpunkt des ersten Kontakt
+	bool just_marker_update;
 	void set_buttons(bool left,bool up,bool down,bool right);
 	void color_select_menu(int base_state,led_simple *led_from, led_simple *led_to, int *min, int *max, int upper_limit, bool button_state, const char *name, const char *unit, char set_led_mode, bool just_one_line_mode);
 };

@@ -108,13 +108,11 @@ void init_speedo(void){
 
 
 int main(void) {
-	init();
-	init_speedo();
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop
 	 ******************** setup procedure ********************************************/
-
-
+	init();
+	init_speedo();
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop, before THIS
 	 ******************** setup procedure ********************************************/

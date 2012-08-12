@@ -373,6 +373,7 @@ void speedo_disp::animation(int a){
 		break;
 	case 2: //////////////////// girl ///////////////////
 		show_animation("BULLET.SGF,0,77,20");
+		show_animation("LG2.TXT,0,1,400");
 		break;
 	case 3:
 		show_animation("FROG.SGF,0,7,200");

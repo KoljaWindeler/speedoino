@@ -546,9 +546,9 @@ void speedo_menu::display(){ // z.B. state = 26
 		// save,change,restore,and show one preview image
 		unsigned long save_state=state;
 		state=11;
-		update_display=true;
-		state=save_state;
+		display(); // nicht schön, aber das muss sein :D
 		pSpeedo->loop(0);
+		state=save_state;
 	}
 
 	//////////////////////// skin speichern -> zum menüpunkt 11 gehen und alles ist gut ////////////////////////////
@@ -1312,7 +1312,7 @@ void speedo_menu::draw(const char** menu, int entries){
 		Serial.println(menu_start);
 	};
 	////////// Menu Caption /////////////
-	pOLED->filled_rect(0,0,128,12,0);
+	pOLED->filled_rect(0,0,128,8,0);
 	char char_buffer[22];
 
 	strcpy_P(char_buffer, (char*)pgm_read_word(&(menu_titel[level_1])));
@@ -1336,29 +1336,55 @@ void speedo_menu::draw(const char** menu, int entries){
 	if (buffer==NULL) pDebug->sprintlnp(PSTR("Malloc failed 2"));
 	else memset(buffer,'\0',30);
 
-	for(int k=menu_start;k<=menu_ende;k++){
-		if(y==(menu_marker+1)){
-			fg=0;
-			hg=DISP_BRIGHTNESS;
-			pOLED->highlight_bar(0,8*y-1,128,9); // mit hintergrundfarbe nen kasten malen
-		} else {
-			fg=DISP_BRIGHTNESS;
-			hg=0;
-			pOLED->filled_rect(0,8*y,128,8,0); // mit hintergrundfarbe nen kasten malen
+	// we got two modes, seperated by "just_marker_update" if its true,
+	// that just update the marker bar, eg draw two line,
+	// else update the whole screen
+	if(just_marker_update){
+		// we just have to repaint two lines, the actual "menu_marker" line plus the one above/below
+		// draw maker line
+		pOLED->highlight_bar(0,8*(menu_marker+1),128,8);
+		strcpy_P(buffer, (char*)pgm_read_word(&(menu[menu_start+menu_marker])));
+		pOLED->string(pSpeedo->default_font,buffer,2,(menu_marker+1),DISP_BRIGHTNESS,0,0);
+
+		// lets see which one is the second: assuming that its the one below so the menu_marker_line + 1
+		int second_line_switch=+1;
+		if(old_state<state){
+			// okay, failed, its the one above
+			second_line_switch=-1;
+		}
+		//draw it
+		pOLED->filled_rect(0,8*(menu_marker+second_line_switch+1),128,8,0); // mit hintergrundfarbe nen kasten malen
+		strcpy_P(buffer, (char*)pgm_read_word(&(menu[int(menu_start+menu_marker+second_line_switch)])));
+		pOLED->string(pSpeedo->default_font,buffer,2,int(menu_marker+second_line_switch+1),0,DISP_BRIGHTNESS,0);
+		just_marker_update=false;
+
+	} else {
+
+		// draw it all
+		for(int k=menu_start;k<=menu_ende;k++){
+			if(y==(menu_marker+1)){
+				fg=0;
+				hg=DISP_BRIGHTNESS;
+				pOLED->highlight_bar(0,8*y,128,8); // mit hintergrundfarbe nen kasten malen
+			} else {
+				fg=DISP_BRIGHTNESS;
+				hg=0;
+				pOLED->filled_rect(0,8*y,128,8,0); // mit hintergrundfarbe nen kasten malen
+			};
+			// copy string vom flash
+			strcpy_P(buffer, (char*)pgm_read_word(&(menu[k])));
+			pOLED->string(pSpeedo->default_font,buffer,2,y,hg,fg,0);
+			// copy string vom flash
+			y++; // abstand festlegen
 		};
-		// copy string vom flash
-		strcpy_P(buffer, (char*)pgm_read_word(&(menu[k])));
-		pOLED->string(pSpeedo->default_font,buffer,2,y,hg,fg,0);
-		// copy string vom flash
-		y++; // abstand festlegen
-	};
+
+		while(y<8){ // die zeilen unter dem Menü ausmmalen
+			pOLED->filled_rect(0,8*y,128,8,0); // mit hintergrundfarbe nen kasten malen
+			y++;
+		}
+	}
 	// free text buffer
 	free(buffer);
-
-	while(y<8){ // die zeilen unter dem Menü ausmmalen
-		pOLED->filled_rect(0,8*y,128,8,0); // mit hintergrundfarbe nen kasten malen
-		y++;
-	}
 	///////// Menu ausgeben ////////////
 };
 ///// ein text menü zeichnen ////////////
@@ -1368,7 +1394,9 @@ void speedo_menu::draw(const char** menu, int entries){
 // wenn man es mit go_left(true) aufruft, dann wird display autak ausgeführt
 bool speedo_menu::go_left(bool update_twice){
 	old_state=state;
+	just_marker_update=false;
 	state=floor(state/10);
+
 	if((state%10)>menu_lines){ // bei 8,9
 		menu_marker=menu_lines-1;// ganz unten
 		menu_start=(state%10)-menu_lines; // 8 - 7 => 1 bis 8
@@ -1388,6 +1416,7 @@ bool speedo_menu::go_left(bool update_twice){
 bool speedo_menu::go_right(bool update_twice){
 	// menu var umsetzen
 	old_state=state;
+	just_marker_update=false;
 	menu_start=0; // rechts -> leeres menu
 	menu_ende=menu_lines-1;
 	menu_marker=0;
@@ -1410,7 +1439,9 @@ bool speedo_menu::go_up(bool update_twice){
 			menu_ende=menu_max; // und wir sind ganz unten am ende 8=8
 			menu_marker=menu_lines-1; // und der marker ist ganz unten
 		};
-	};
+	} else {
+		just_marker_update=true;
+	}
 
 	//recalc level
 	// z.b. 00061 -> 00060 => 60%10=0 -> soll 69
@@ -1436,7 +1467,9 @@ bool speedo_menu::go_down(bool update_twice){
 			menu_start=0;
 			menu_ende=menu_lines-1;
 		};
-	};
+	} else {
+		just_marker_update=true;
+	}
 
 	//recalc level
 	state++;
@@ -1580,6 +1613,7 @@ void speedo_menu::init(){
 	button_time=millis();
 	button_first_push=millis();
 	update_display=false;
+	just_marker_update=false;
 
 	Serial.println("Menu init done");
 };

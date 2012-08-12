@@ -1218,6 +1218,7 @@ int8_t SdFile::readDir(dir_t* dir) {
     // return if normal file or subdirectory
     if (DIR_IS_FILE_OR_SUBDIR(dir)) return n;
   }
+  return 0;
 }
 //------------------------------------------------------------------------------
 // Read next directory entry into the cache
