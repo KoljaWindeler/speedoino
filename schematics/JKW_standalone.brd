@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -311,21 +311,6 @@ MELF 0.10 W</description>
 <rectangle x1="-0.2286" y1="0.7112" x2="0.2286" y2="1.2954" layer="51"/>
 <rectangle x1="0.7112" y1="-1.2954" x2="1.1684" y2="-0.7112" layer="51"/>
 <rectangle x1="-1.1684" y1="-1.2954" x2="-0.7112" y2="-0.7112" layer="51"/>
-</package>
-<package name="SOD80C">
-<description>&lt;B&gt;DIODE&lt;/B&gt;</description>
-<wire x1="1.3208" y1="0.7874" x2="-1.3208" y2="0.7874" width="0.1524" layer="51"/>
-<wire x1="1.3208" y1="-0.7874" x2="-1.3208" y2="-0.7874" width="0.1524" layer="51"/>
-<wire x1="0.627" y1="0.6" x2="-0.373" y2="0" width="0.2032" layer="21"/>
-<wire x1="-0.373" y1="0" x2="0.627" y2="-0.6" width="0.2032" layer="21"/>
-<wire x1="0.627" y1="-0.6" x2="0.627" y2="0.6" width="0.2032" layer="21"/>
-<smd name="C" x="-1.7" y="0" dx="1.4" dy="1.8" layer="1"/>
-<smd name="A" x="1.7" y="0" dx="1.4" dy="1.8" layer="1"/>
-<text x="-1.524" y="1.143" size="1.27" layer="25">&gt;NAME</text>
-<text x="-1.524" y="-2.413" size="1.27" layer="27">&gt;VALUE</text>
-<rectangle x1="-1.8542" y1="-0.8636" x2="-1.2954" y2="0.8636" layer="51"/>
-<rectangle x1="1.2954" y1="-0.8636" x2="1.8542" y2="0.8636" layer="51"/>
-<rectangle x1="-0.8636" y1="-0.7874" x2="-0.254" y2="0.7874" layer="21"/>
 </package>
 <package name="SOD323-W">
 <description>&lt;b&gt;SOD323 Wave soldering&lt;/b&gt; Philips SC01_Mounting_1996.pdf</description>
@@ -2170,7 +2155,6 @@ min. Width 0,18mm</description>
 <attribute name="VALUE" x="1.025" y="26.605" size="1.27" layer="27" rot="R270"/>
 </element>
 <element name="D8" library="diode" package="SOT23" value="5.5V" x="17.3" y="36.5" rot="R180"/>
-<element name="D12" library="diode" package="SOD80C" value="20V-Zdiode" x="67.6" y="17.3" rot="R180"/>
 <element name="R_REED_UP" library="RCLDT" package="0805" value="n.b.(Honda Signal) / 5k (Reed)" x="31.8" y="17.5" smashed="yes" rot="R270">
 <attribute name="NAME" x="31.6825" y="15.7525" size="0.6096" layer="25" rot="R270"/>
 <attribute name="VALUE" x="30.1825" y="20.1525" size="0.6096" layer="27" rot="R270"/>
@@ -2235,12 +2219,12 @@ min. Width 0,18mm</description>
 <attribute name="NAME" x="18.095" y="40.595" size="1.27" layer="26" rot="MR180"/>
 <attribute name="VALUE" x="23.075" y="44.705" size="1.27" layer="28" rot="MR270"/>
 </element>
-<element name="D20" library="diode" package="SOT23" value="5.5V" x="11.5" y="34.8" rot="R180"/>
+<element name="D20" library="diode" package="SOT23" value="5.5V" x="11.4" y="38.5" rot="R180"/>
 <element name="CP1" library="Kolja" package="SMD/SMT_6.6/6.6" value="220µF/16V" x="71.5" y="23.8" rot="R270"/>
 <element name="CP2" library="Kolja" package="SMD/SMT_6.6/6.6" value="220µF/16V" x="64.4" y="23.8" rot="R270"/>
 <element name="CP3" library="Kolja" package="SMD/SMT_6.6/6.6" value="220µF/16V" x="77.1" y="35.4" rot="R180"/>
 <element name="CP4" library="Kolja" package="SMD/SMT_6.6/6.6" value="220µF/16V" x="64.4" y="31.9" rot="R90"/>
-<element name="D3" library="diode" package="SOT23" value="5.5V" x="24.9" y="18.4" rot="MR0"/>
+<element name="D3" library="diode" package="SOT23" value="5.5V" x="25.6" y="17" rot="MR0"/>
 <element name="D10" library="diode" package="SOT23" value="5.5V" x="32.3" y="29.3" rot="MR180"/>
 <element name="D21" library="diode" package="SOT23" value="5.5V" x="21.7" y="34.4" rot="R180"/>
 <element name="D22" library="diode" package="SOT23" value="5.5V" x="3.9" y="26.4" rot="MR90"/>
@@ -2259,13 +2243,13 @@ min. Width 0,18mm</description>
 <element name="C_EMERGENCY" library="Kolja" package="GOLDCAP" value="DX-5R5H334U" x="149" y="21.9" rot="R135"/>
 <element name="T11" library="RCLDT" package="SOT-23" value="Mouser: 771-2N7002BK215 , N-Channel, 60V 350mA, SOT-23, 0,052€" x="117.6" y="43.2" rot="MR270"/>
 <element name="D13" library="diode" package="SOT23" value="5.5V" x="47.7" y="26.2" rot="R180"/>
-<element name="C5" library="RCLDT" package="0805" value="100nF" x="39.2" y="51.2" rot="R180"/>
-<element name="C7" library="RCLDT" package="0805" value="100nF" x="49.4" y="51.1"/>
+<element name="C5" library="RCLDT" package="0805" value="22pF" x="39.2" y="51.2" rot="R180"/>
+<element name="C7" library="RCLDT" package="0805" value="22pF" x="49.4" y="51.1"/>
 <element name="C31" library="RCLDT" package="0805" value="100nF" x="38" y="24" rot="MR0"/>
 <element name="C32" library="RCLDT" package="0805" value="100nF" x="38" y="25.7" rot="MR0"/>
 <element name="C33" library="RCLDT" package="0805" value="100nF" x="38" y="27.5" rot="MR0"/>
 <element name="C34" library="RCLDT" package="0805" value="100nF" x="35.8" y="35.2" rot="R180"/>
-<element name="C35" library="RCLDT" package="0805" value="22p" x="37.6" y="52.8" rot="MR90"/>
+<element name="C35" library="RCLDT" package="0805" value="100nF" x="37.6" y="52.8" rot="MR90"/>
 <element name="C36" library="RCLDT" package="0805" value="100nF" x="100.5" y="18.7"/>
 <element name="R_SD_PWR_UP" library="RCLDT" package="0805" value="10k" x="14.4" y="47.3" rot="R270"/>
 <element name="R_RES_UP" library="RCLDT" package="0805" value="10k" x="35.6" y="52.8" rot="MR90"/>
@@ -2326,6 +2310,11 @@ min. Width 0,18mm</description>
 <element name="R_B_LED_13" library="RCLDT" package="0805" value="10k" x="79" y="40.1" rot="MR270"/>
 <element name="R_B_LED_14" library="RCLDT" package="0805" value="10k" x="88.9" y="46.1" rot="MR180"/>
 <element name="R_B_LED_15" library="RCLDT" package="0805" value="10k" x="103.1" y="54.2"/>
+<element name="D11" library="diode" package="SOT23" value="20V-Zdiode" x="64.3" y="17.7" rot="R90"/>
+<element name="R_R_LED_12" library="RCLDT" package="0805" value="220R" x="68.2" y="16.7" rot="R180"/>
+<element name="R_OIL_OV" library="RCLDT" package="0805" value="1k" x="11.5" y="34.7" rot="R90"/>
+<element name="R_HB5" library="RCLDT" package="0805" value="600R" x="25.8" y="24.6"/>
+<element name="R_OIL_OV1" library="RCLDT" package="0805" value="1k" x="24.5" y="19.7" rot="MR180"/>
 </elements>
 <signals>
 <signal name="REED">
@@ -2589,7 +2578,6 @@ min. Width 0,18mm</description>
 <contactref element="R_HB_DOWN" pad="2"/>
 <contactref element="D1" pad="1"/>
 <contactref element="D8" pad="1"/>
-<contactref element="D12" pad="A"/>
 <contactref element="SPEEDOSTECKER" pad="P$11"/>
 <contactref element="R_FLASHL_DOWN" pad="2"/>
 <contactref element="D2" pad="1"/>
@@ -2614,7 +2602,7 @@ min. Width 0,18mm</description>
 <via x="110.65" y="23.275" extent="1-16" drill="0.3"/>
 <via x="42.5" y="39.85" extent="1-16" drill="0.3"/>
 <via x="42.4" y="35.45" extent="1-16" drill="0.3"/>
-<via x="26.65" y="37.075" extent="1-16" drill="0.3"/>
+<via x="26.45" y="37.075" extent="1-16" drill="0.3"/>
 <wire x1="52" y1="28.36" x2="52.0192" y2="28.3408" width="0.254" layer="16"/>
 <via x="89.05" y="41.275" extent="1-16" drill="0.3"/>
 <via x="105.75" y="32.575" extent="1-16" drill="0.3"/>
@@ -2626,7 +2614,7 @@ min. Width 0,18mm</description>
 <via x="101.65" y="28.175" extent="1-16" drill="0.3"/>
 <via x="96.55" y="28.175" extent="1-16" drill="0.3"/>
 <via x="96.55" y="24" extent="1-16" drill="0.3"/>
-<via x="25.05" y="15.275" extent="1-16" drill="0.3"/>
+<via x="26.45" y="14.375" extent="1-16" drill="0.3"/>
 <contactref element="D_P_MCCOI" pad="1"/>
 <via x="86.325" y="58.6" extent="1-16" drill="0.3"/>
 <via x="105.625" y="52.2" extent="1-16" drill="0.3"/>
@@ -2734,6 +2722,9 @@ min. Width 0,18mm</description>
 <contactref element="R_B_LED_13" pad="2"/>
 <contactref element="R_B_LED_14" pad="2"/>
 <contactref element="R_B_LED_15" pad="2"/>
+<contactref element="R_R_LED_12" pad="1"/>
+<wire x1="14.6" y1="37.716" x2="12.35" y2="39.6" width="0" layer="19" extent="1-1"/>
+<wire x1="51.166" y1="22.5" x2="51.7" y2="26.35" width="0" layer="19" extent="1-1"/>
 <wire x1="149.816" y1="40.8" x2="145.9937" y2="43.1607" width="0" layer="19" extent="1-16"/>
 </signal>
 <signal name="DZ">
@@ -3511,8 +3502,6 @@ min. Width 0,18mm</description>
 <wire x1="62.5" y1="42.7" x2="62.5" y2="54.8" width="0.254" layer="16"/>
 </signal>
 <signal name="NG_IN">
-<contactref element="SPEEDOSTECKER" pad="P$5"/>
-<wire x1="21.6" y1="24.3" x2="23.5" y2="24.3" width="0.254" layer="16"/>
 <contactref element="D10" pad="3"/>
 <contactref element="IC4" pad="88"/>
 <wire x1="32.4" y1="28.1" x2="32.3" y2="28.2" width="0.254" layer="16"/>
@@ -3520,15 +3509,15 @@ min. Width 0,18mm</description>
 <wire x1="48.5" y1="28.36" x2="48.5" y2="24" width="0.254" layer="16"/>
 <wire x1="48.5" y1="24" x2="51.1" y2="21.4" width="0.254" layer="16"/>
 <wire x1="51.1" y1="21.4" x2="51.1" y2="12.8" width="0.254" layer="16"/>
-<via x="23.5" y="24.3" extent="1-16" drill="0.3"/>
-<wire x1="23.5" y1="24.3" x2="32.1" y2="24.3" width="0.254" layer="1"/>
-<wire x1="32.1" y1="24.3" x2="32.3" y2="24.5" width="0.254" layer="1"/>
 <via x="32.3" y="24.5" extent="1-16" drill="0.3"/>
 <wire x1="51.1" y1="12.8" x2="50.1" y2="11.8" width="0.254" layer="16"/>
 <wire x1="50.1" y1="11.8" x2="33.8" y2="11.8" width="0.254" layer="16"/>
 <wire x1="33.8" y1="11.8" x2="32.8" y2="12.8" width="0.254" layer="16"/>
 <wire x1="32.8" y1="12.8" x2="32.8" y2="24" width="0.254" layer="16"/>
 <wire x1="32.8" y1="24" x2="32.3" y2="24.5" width="0.254" layer="16"/>
+<contactref element="R_HB5" pad="2"/>
+<wire x1="26.816" y1="24.6" x2="32.2" y2="24.6" width="0.254" layer="1"/>
+<wire x1="32.2" y1="24.6" x2="32.3" y2="24.5" width="0.254" layer="1"/>
 </signal>
 <signal name="D42">
 <contactref element="IC4" pad="42"/>
@@ -4208,29 +4197,26 @@ min. Width 0,18mm</description>
 </signal>
 <signal name="A1">
 <contactref element="IC4" pad="96"/>
-<contactref element="R_OIL_UP" pad="1"/>
-<contactref element="SPEEDOSTECKER" pad="P$2"/>
 <wire x1="44.5" y1="28.36" x2="44.5" y2="25.8" width="0.254" layer="16"/>
-<via x="26.5" y="31.2" extent="1-16" drill="0.3"/>
-<wire x1="26.5" y1="31.2" x2="12.216" y2="31.2" width="0.254" layer="1"/>
-<wire x1="12.216" y1="31.2" x2="11.6" y2="31.816" width="0.254" layer="1"/>
-<wire x1="11.1" y1="27.8" x2="10.7" y2="27.8" width="0.254" layer="1"/>
-<wire x1="10.7" y1="27.8" x2="10" y2="28.5" width="0.254" layer="1"/>
-<wire x1="10" y1="28.5" x2="10" y2="31.2" width="0.254" layer="1"/>
-<wire x1="10" y1="31.2" x2="10.5" y2="31.7" width="0.254" layer="1"/>
-<wire x1="10.5" y1="31.7" x2="11.484" y2="31.7" width="0.254" layer="1"/>
-<wire x1="11.484" y1="31.7" x2="11.6" y2="31.816" width="0.254" layer="1"/>
-<contactref element="D20" pad="3"/>
-<wire x1="11.5" y1="33.7" x2="11.6" y2="33.6" width="0.254" layer="1"/>
-<wire x1="11.6" y1="33.6" x2="11.6" y2="31.816" width="0.254" layer="1"/>
 <via x="37.1" y="21.8" extent="1-16" drill="0.3"/>
 <wire x1="37.1" y1="21.8" x2="36.7" y2="21.8" width="0.254" layer="1"/>
 <wire x1="36.7" y1="21.8" x2="35.9" y2="21" width="0.254" layer="1"/>
 <wire x1="35.9" y1="21" x2="26.5" y2="21" width="0.254" layer="1"/>
 <via x="26.5" y="21" extent="1-16" drill="0.3"/>
-<wire x1="26.5" y1="21" x2="26.5" y2="31.2" width="0.254" layer="16"/>
 <wire x1="44.5" y1="25.8" x2="40.5" y2="21.8" width="0.254" layer="16"/>
 <wire x1="40.5" y1="21.8" x2="37.1" y2="21.8" width="0.254" layer="16"/>
+<contactref element="R_OIL_OV" pad="2"/>
+<contactref element="D20" pad="3"/>
+<wire x1="11.4" y1="37.4" x2="11.4" y2="35.816" width="0.254" layer="1"/>
+<wire x1="11.4" y1="35.816" x2="11.5" y2="35.716" width="0.254" layer="1"/>
+<wire x1="11.5" y1="35.716" x2="11.5" y2="36.8" width="0.254" layer="1"/>
+<wire x1="11.5" y1="36.8" x2="15.4" y2="40.7" width="0.254" layer="1"/>
+<via x="26.9" y="40.6" extent="1-16" drill="0.3"/>
+<wire x1="26.9" y1="40.6" x2="27.2" y2="40.3" width="0.254" layer="16"/>
+<wire x1="27.2" y1="40.3" x2="27.2" y2="21.7" width="0.254" layer="16"/>
+<wire x1="27.2" y1="21.7" x2="26.5" y2="21" width="0.254" layer="16"/>
+<wire x1="15.4" y1="40.7" x2="26.8" y2="40.7" width="0.254" layer="1"/>
+<wire x1="26.8" y1="40.7" x2="26.9" y2="40.6" width="0.254" layer="1"/>
 </signal>
 <signal name="D45">
 <contactref element="IC4" pad="39"/>
@@ -4332,19 +4318,23 @@ min. Width 0,18mm</description>
 <contactref element="L10" pad="2"/>
 <contactref element="CP1" pad="POS"/>
 <contactref element="CP2" pad="POS"/>
-<contactref element="D12" pad="C"/>
-<wire x1="59.7725" y1="20.58" x2="64.28" y2="20.58" width="0.6096" layer="1"/>
+<wire x1="59.7725" y1="20.58" x2="61.6" y2="20.58" width="0.6096" layer="1"/>
+<wire x1="61.6" y1="20.58" x2="64.28" y2="20.58" width="0.6096" layer="1"/>
 <wire x1="64.28" y1="20.58" x2="64.4" y2="20.7" width="0.6096" layer="1"/>
 <wire x1="64.4" y1="20.7" x2="69.4" y2="20.7" width="0.6096" layer="1"/>
 <wire x1="69.4" y1="20.7" x2="71.5" y2="20.7" width="0.6096" layer="1"/>
 <wire x1="71.5" y1="20.7" x2="71.6" y2="20.8" width="0.6096" layer="1"/>
 <wire x1="71.6" y1="20.8" x2="76.585" y2="20.8" width="0.6096" layer="1"/>
 <wire x1="76.585" y1="20.8" x2="77.88" y2="22.095" width="0.6096" layer="1"/>
-<wire x1="69.3" y1="17.3" x2="69.3" y2="20.6" width="0.6096" layer="1"/>
 <wire x1="69.3" y1="20.6" x2="69.4" y2="20.7" width="0.6096" layer="1"/>
 <wire x1="71.5" y1="21.3" x2="71.5" y2="20.9" width="0.6096" layer="1"/>
 <wire x1="71.5" y1="20.9" x2="71.6" y2="20.8" width="0.6096" layer="1"/>
 <wire x1="64.4" y1="21.3" x2="64.4" y2="20.7" width="0.6096" layer="1"/>
+<contactref element="D11" pad="3"/>
+<wire x1="63.2" y1="17.7" x2="62.7" y2="17.7" width="0.254" layer="1"/>
+<wire x1="62.7" y1="17.7" x2="61.7" y2="18.7" width="0.254" layer="1"/>
+<wire x1="61.7" y1="18.7" x2="61.7" y2="20.48" width="0.254" layer="1"/>
+<wire x1="61.7" y1="20.48" x2="61.6" y2="20.58" width="0.254" layer="1"/>
 </signal>
 <signal name="12V_SAFE">
 <contactref element="L10" pad="1"/>
@@ -4833,22 +4823,16 @@ min. Width 0,18mm</description>
 <wire x1="43.95" y1="31.55" x2="44" y2="31.5" width="0.3048" layer="16"/>
 <wire x1="44" y1="31.5" x2="44" y2="28.36" width="0.3048" layer="16"/>
 <via x="43.95" y="31.55" extent="1-16" drill="0.3"/>
-<contactref element="R_WATER_UP" pad="2"/>
-<contactref element="SPEEDOSTECKER" pad="P$12"/>
-<wire x1="25.7" y1="20.516" x2="25.7" y2="32.15" width="0.254" layer="16"/>
+<wire x1="25.7" y1="19.884" x2="25.7" y2="32.15" width="0.254" layer="16"/>
 <wire x1="25.7" y1="32.15" x2="26.3" y2="32.75" width="0.254" layer="16"/>
 <via x="26.3" y="32.75" extent="1-16" drill="0.3"/>
 <wire x1="26.3" y1="32.75" x2="42.75" y2="32.75" width="0.254" layer="1"/>
-<contactref element="D3" pad="3"/>
-<wire x1="23.7" y1="22.9" x2="21.6" y2="20.8" width="0.254" layer="1"/>
-<wire x1="24.95" y1="23.066" x2="24.784" y2="22.9" width="0.254" layer="1"/>
-<wire x1="24.784" y1="22.9" x2="23.7" y2="22.9" width="0.254" layer="1"/>
 <wire x1="42.75" y1="32.75" x2="43.95" y2="31.55" width="0.254" layer="1"/>
-<wire x1="24.9" y1="19.5" x2="22.9" y2="19.5" width="0.254" layer="16"/>
-<wire x1="22.9" y1="19.5" x2="21.6" y2="20.8" width="0.254" layer="16"/>
-<wire x1="25.7" y1="20.516" x2="24.784" y2="19.6" width="0.254" layer="16"/>
-<wire x1="24.784" y1="19.6" x2="24.784" y2="19.616" width="0.254" layer="16"/>
-<wire x1="24.784" y1="19.616" x2="24.9" y2="19.5" width="0.254" layer="16"/>
+<contactref element="R_OIL_OV1" pad="2"/>
+<contactref element="D3" pad="3"/>
+<wire x1="25.6" y1="18.1" x2="25.516" y2="18.184" width="0.254" layer="16"/>
+<wire x1="25.516" y1="18.184" x2="25.516" y2="19.7" width="0.254" layer="16"/>
+<wire x1="25.516" y1="19.7" x2="25.7" y2="19.884" width="0.254" layer="16"/>
 </signal>
 <signal name="BL_L_IN">
 <contactref element="IC4" pad="8"/>
@@ -6220,6 +6204,41 @@ min. Width 0,18mm</description>
 <via x="112.7" y="72.5" extent="1-16" drill="0.3"/>
 <wire x1="112.7" y1="72.5" x2="112.9" y2="72.7" width="0.254" layer="1"/>
 <wire x1="112.9" y1="72.7" x2="116.2" y2="72.7" width="0.254" layer="1"/>
+</signal>
+<signal name="N$109">
+<contactref element="D11" pad="1"/>
+<contactref element="R_R_LED_12" pad="2"/>
+<wire x1="65.4" y1="16.75" x2="67.134" y2="16.75" width="0.254" layer="1"/>
+<wire x1="67.134" y1="16.75" x2="67.184" y2="16.7" width="0.254" layer="1"/>
+</signal>
+<signal name="N999">
+<contactref element="R_OIL_UP" pad="1"/>
+<contactref element="SPEEDOSTECKER" pad="P$2"/>
+<contactref element="R_OIL_OV" pad="1"/>
+<wire x1="11.1" y1="27.8" x2="10.7" y2="27.8" width="0.254" layer="1"/>
+<wire x1="10.7" y1="27.8" x2="10" y2="28.5" width="0.254" layer="1"/>
+<wire x1="10" y1="28.5" x2="10" y2="31.2" width="0.254" layer="1"/>
+<wire x1="10" y1="31.2" x2="10.5" y2="31.7" width="0.254" layer="1"/>
+<wire x1="10.5" y1="31.7" x2="11.484" y2="31.7" width="0.254" layer="1"/>
+<wire x1="11.484" y1="31.7" x2="11.6" y2="31.816" width="0.254" layer="1"/>
+<wire x1="11.6" y1="31.816" x2="11.6" y2="33.584" width="0.254" layer="1"/>
+<wire x1="11.6" y1="33.584" x2="11.5" y2="33.684" width="0.254" layer="1"/>
+</signal>
+<signal name="N$110">
+<contactref element="SPEEDOSTECKER" pad="P$5"/>
+<contactref element="R_HB5" pad="1"/>
+<wire x1="21.6" y1="24.3" x2="24.484" y2="24.3" width="0.254" layer="1"/>
+<wire x1="24.484" y1="24.3" x2="24.784" y2="24.6" width="0.254" layer="1"/>
+</signal>
+<signal name="N$111">
+<contactref element="R_WATER_UP" pad="2"/>
+<contactref element="SPEEDOSTECKER" pad="P$12"/>
+<contactref element="R_OIL_OV1" pad="1"/>
+<wire x1="23.7" y1="22.9" x2="21.6" y2="20.8" width="0.254" layer="1"/>
+<wire x1="24.95" y1="23.066" x2="24.784" y2="22.9" width="0.254" layer="1"/>
+<wire x1="24.784" y1="22.9" x2="23.7" y2="22.9" width="0.254" layer="1"/>
+<wire x1="21.6" y1="20.8" x2="22.7" y2="19.7" width="0.254" layer="16"/>
+<wire x1="22.7" y1="19.7" x2="23.484" y2="19.7" width="0.254" layer="16"/>
 </signal>
 </signals>
 </board>
