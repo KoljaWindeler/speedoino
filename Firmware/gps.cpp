@@ -56,9 +56,6 @@ void speedo_gps::init(){
 
 	// hier das gps konfigurieren ..  yeah yeah yeah
 	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
-
-
-
 	pDebug->sprintlnp(PSTR("GPS init done"));
 };
 
@@ -68,7 +65,7 @@ void speedo_gps::clear_vars(){
 	memset(gps_buffer2,'*',SERIAL_BUFFER_SIZE); // '*' ist endchar fuer gps signale, super "filler"
 
 	ringbuf_counter=0;
-	first_valid_gps=true;
+	first_dataset=true;
 	gps_ready1=false;
 	gps_ready2=false;
 	gps_state=0;
@@ -192,10 +189,6 @@ void speedo_gps::check_flag(){
 		};
 		// debug
 		parse(gps_buffer1,1);         // Daten übergeben
-		if(first_valid_gps && pSensors->m_clock->getdate()>=101 && pSensors->m_clock->getdate()<=1231){
-			pConfig->day_trip_check();
-			first_valid_gps=false;
-		};
 		gps_ready1=false;
 	};
 
@@ -287,16 +280,23 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		// Uhr stellen
 		int temp_mon=int(floor(temp_gps_date/100))%100;
 		int temp_day=floor(temp_gps_date/10000);
-		pSensors->m_clock->set_date_time(
-				int(temp_gps_date-temp_mon*100-temp_day*10000)%100,
-				temp_mon,
-				temp_day,
-				int(floor(temp_gps_time/10000))%24,
-				int(floor(temp_gps_time/100))%100,
-				temp_gps_time%100,
-				-1,
-				-1
-		);
+		if(first_dataset || status=='A'){
+
+			pSensors->m_clock->set_date_time(
+					int(temp_gps_date-temp_mon*100-temp_day*10000)%100,
+					temp_mon,
+					temp_day,
+					int(floor(temp_gps_time/10000))%24,
+					int(floor(temp_gps_time/100))%100,
+					temp_gps_time%100,
+					-1,
+					-1
+			);
+			if(first_dataset){
+				pConfig->day_trip_check();
+				first_dataset=false;
+			}
+		};
 
 		if(status=='A'){
 			valid=0;
@@ -494,7 +494,7 @@ long speedo_gps::get_info(unsigned char select){
 	// flags to false and you can not longer suggest which dataset came last,
 	// but its safe to decrease the counter in this case as well.
 	// So decreasing is only bound to gps_count_up[0]
-	*/
+	 */
 	if(!gps_count_up[0]){
 		gps_older_counter=(gps_older_counter+29)%30;
 	};

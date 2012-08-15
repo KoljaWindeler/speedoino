@@ -214,7 +214,7 @@ void speedo_temperature::read_water_temp() {
 
 void speedo_temperature::read_air_temp() {
 	// get i2c tmp102 //
-	int sensorAddress = 0b01001001;  // From datasheet sensor address is 0x91 shift the address 1 bit right
+	int sensorAddress = 0b01001000;  // From datasheet sensor address is 0x91 shift the address 1 bit right
 	byte msb;
 	byte lsb;
 	I2c.read(sensorAddress,0x00,2);
@@ -223,9 +223,9 @@ void speedo_temperature::read_air_temp() {
 		if(TEMP_DEBUG){ Serial.println("2 Byte im Puffer"); }
 		msb = I2c.receive();  // receive high byte (full degrees)
 		lsb = I2c.receive();  // receive low byte (fraction degrees)
-		air_temp_value = ((msb) << 4);  // MSB
-		air_temp_value|= (lsb >> 4);    // LSB
-		air_temp_value = round(air_temp_value*0.625); // round and save
+		air_temp_value = ((msb) << 3);  // MSB
+		air_temp_value|= (lsb >> 5);    // LSB
+		air_temp_value = round(air_temp_value*1.25); // round and save
 		if(TEMP_DEBUG){ Serial.print("Air value "); Serial.println(air_temp_value); }
 	} else {
 		air_temp_value = 999;

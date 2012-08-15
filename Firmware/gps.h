@@ -52,7 +52,6 @@ public:
 	int note_this_place;                          // damit kann man marker auf die strecke setzen
 	int valid;
 	bool navi_active;
-	bool first_valid_gps;
 	int gps_write_status;
 
 private:
@@ -64,6 +63,7 @@ private:
 	bool inner_circle;
 	bool gps_ready1;
 	bool gps_ready2;
+	bool first_dataset;
 	int gps_state;
 	int ringbuf_counter; // position im ring-empfangs-buffer
 	char gps_buffer1[SERIAL_BUFFER_SIZE]; // buffer zum entgegennehmen der seriellen daten
