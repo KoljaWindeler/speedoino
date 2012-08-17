@@ -475,3 +475,4 @@ int Speedo_aktors::ask_bt(char *command){
 	};
 	return -1;
 }
+

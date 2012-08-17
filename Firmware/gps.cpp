@@ -91,6 +91,7 @@ void speedo_gps::clear_vars(){
 	gps_write_status=0;
 	speed=0;
 
+	motion_start=-1;
 	active_file=0; //default datei navi0.smf
 }
 
@@ -383,6 +384,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			};
 			// uiuiuiuiuiuiui
 		}
+		set_drive_status(speed,temp_gps_time%100,gps_sats[gps_count],status);
 	} // anderer modus, gpgga empfangen
 	else if(datensatz==2){ // altitude, fix ok?,sats,
 		/* GPS Datensatz 2:
@@ -876,3 +878,29 @@ void speedo_gps::SendString(const char Str[])
 	while(Str[n])
 		SendByte(Str[n++]);
 }
+
+bool speedo_gps::get_drive_status(){
+	if(motion_start<0) return false;
+	int sec_in_motion=motion_start-(millis()/1000);
+	if(sec_in_motion>5){
+		return true;
+	} else {
+		return false;
+	}
+};
+
+
+void speedo_gps::set_drive_status(int speed, int ss, int sat, char status){
+	if(status=='A'){ //measurement valid
+		if(speed>10){
+			if(motion_start==-1){
+				motion_start=(millis()/1000)%32000;
+			};
+		} else {
+			motion_start=-1;
+		}
+	} else {
+		motion_start=-1;
+	}
+};
+

@@ -79,7 +79,7 @@ PROGMEM const char *menu_fade[9] = { fade_m_0,fade_m_1,fade_m_2,fade_m_3,fade_m_
 prog_char einfo_m_0[] PROGMEM = "1. GPS infos 1/2";
 prog_char einfo_m_1[] PROGMEM = "2. GPS infos 2/2";
 prog_char einfo_m_2[] PROGMEM = "3. Sensors";
-prog_char einfo_m_3[] PROGMEM = "4. -";
+prog_char einfo_m_3[] PROGMEM = "4. Stepper";
 prog_char einfo_m_4[] PROGMEM = "5. -";
 prog_char einfo_m_5[] PROGMEM = "6. Test Watchdog";
 prog_char einfo_m_6[] PROGMEM = "7. Show Animation";
@@ -117,7 +117,7 @@ prog_char trip_setup_m_0[] PROGMEM = "Total";   // "String 0" etc are strings to
 prog_char trip_setup_m_1[] PROGMEM = "NonPermanent";
 prog_char trip_setup_m_2[] PROGMEM = "Day";
 prog_char trip_setup_m_3[] PROGMEM = "Tour";
-prog_char trip_setup_m_4[] PROGMEM = "Quick";
+prog_char trip_setup_m_4[] PROGMEM = "Chain/Tire";
 prog_char trip_setup_m_5[] PROGMEM = "Fuel";
 prog_char trip_setup_m_6[] PROGMEM = "Oiler";
 prog_char trip_setup_m_7[] PROGMEM = "Saison";
@@ -390,6 +390,15 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->draw_water(10,16);
 		pOLED->draw_air(20,24);
 		pOLED->draw_oil(10,32);
+	}
+	//////////////////////// extend voltage info ////////////////////////////
+	else if(floor(state/10)==54) {
+		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
+		// Menu vorbereiten
+		pSpeedo->reset_bak();
+		pOLED->clear_screen();
+		pOLED->highlight_bar(0,0,128,8);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Additional info"),2,0,15,0,0);
 	}
 	//////////////////////// TEST des watchdogs durch absitzen ////////////////////////
 	else if(floor(state/10)==56){ // 56[X]

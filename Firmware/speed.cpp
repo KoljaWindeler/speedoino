@@ -116,7 +116,7 @@ int speedo_speed::getSpeed(){
 		} else {
 			return reed_speed;
 		};
-	} else if(pSensors->m_gps->get_info(INFO_SAT)>3 && pSensors->m_gps->get_info(INFO_VALID)<3 && pSensors->m_gps->get_info(INFO_SPEED)>20) { // wir haben lange nichts mehr vom reed gehört, gps sagt wir fahren
+	} else if(pSensors->m_gps->get_drive_status()) { // wir haben lange nichts mehr vom reed gehört, gps sagt wir fahren
 		status=1;
 		return pSensors->m_gps->speed;
 	} else {

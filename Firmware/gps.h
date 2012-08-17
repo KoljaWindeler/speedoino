@@ -29,7 +29,7 @@ public:
 	void check_flag();
 	void SendByte(unsigned char data);
 	void SendString(const char Str[]);
-
+	bool get_drive_status();
 
 	unsigned long calc_dist(unsigned long longitude,unsigned long latitude);
 	unsigned long mod(unsigned long zahl,unsigned long teiler);
@@ -65,12 +65,14 @@ private:
 	bool gps_ready2;
 	bool first_dataset;
 	int gps_state;
+	int motion_start;
 	int ringbuf_counter; // position im ring-empfangs-buffer
 	char gps_buffer1[SERIAL_BUFFER_SIZE]; // buffer zum entgegennehmen der seriellen daten
 	char gps_buffer2[SERIAL_BUFFER_SIZE]; // buffer zum entgegennehmen der seriellen daten
 	void store_to_sd();
 	void parse(char linea[SERIAL_BUFFER_SIZE],int datensatz);
 	void calc_navi();
+	void set_drive_status(int speed, int ss, int sat, char status);
 
 };
 /**************** gps *******************/

@@ -101,7 +101,8 @@ void speedo_dz::calc() {
 			//pAktors->m_stepper->go_to(exact/11.73);
 			pAktors->m_stepper->go_to(exact/11.5);
 		}
-	} else if(now_peaks>4 && differ>50){ 									// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+	} else if(now_peaks>4 && differ>25){ 				// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+		// am 17.8. von 50 auf 25 geändert ... das sind jetzt 40 Hz, mal sehen ob das noch klappt
 		// am 3.8. von 100 auf 50 geändert
 		// bei 4.000 rpm => 66 pps => 15ms Pro Peak, 4 Peaks in 60 ms
 		// somit kann man mit 50 statt 100 bis 4800 doppelt so schnell reagieren,

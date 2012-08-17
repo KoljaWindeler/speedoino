@@ -150,6 +150,10 @@ int main(void) {
 		else if(pMenu->state==531){
 			pSensors->loop();
 		}
+		//////////////////// stepper mode ///////////////////
+		else if(pMenu->state==541){
+			pAktors->m_stepper->loop();
+		}
 		//////////////////// gps scan ///////////////////
 		else if(pMenu->state==511){
 			pSensors->m_gps->loop();

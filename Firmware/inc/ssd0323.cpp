@@ -432,6 +432,7 @@ void ssd0323::string(short font,const char str[],unsigned char spalte, unsigned 
 	string(font,str,spalte,zeile,0,15,0);
 }
 
+
 /////////////////////////////// string to display 5x8 ///////////////////////////////
 void ssd0323::string(short font,const char str[],unsigned char spalte, unsigned char zeile, unsigned char back, unsigned char color,unsigned char offset){
 	switch(font){
