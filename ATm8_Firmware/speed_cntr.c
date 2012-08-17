@@ -192,7 +192,7 @@ void speed_cntr_Move(signed int soll_pos, unsigned int accel, unsigned int max_s
 		} else if(srd_next.run_state==RUN){
 			//uart_SendString("3\r\n");
 			////////////// is it neccesary to speed up? //////////////
-			int min_delay = A_T_x100 / speed;
+			int min_delay = A_T_x100 / speed; // 1611216,4 / (6..200) = 268536 .. 8056,082
 			if(abs(min_delay-srd_next.min_delay)>100){
 				// yes, speed up
 				srd_next.min_delay = min_delay;
@@ -340,7 +340,7 @@ ISR(TIMER1_COMPA_vect){
 			srd.run_state = DECEL;
 		}
 		// Chech if we hitted max speed.
-		else if(new_step_delay <= srd.min_delay) {
+		else if(new_step_delay <= srd.min_delay || srd.accel_steps>(-srd.decel_steps_neg)) { // geht das?
 			last_accel_delay = new_step_delay;
 			new_step_delay = srd.min_delay;
 			//rest = 0;
@@ -357,7 +357,7 @@ ISR(TIMER1_COMPA_vect){
 				srd.position++;
 		}
 		new_step_delay = srd.min_delay;
-		// Chech if we should start decelration.
+		// Check if we should start decelration.
 		if((srd.dir==CW && srd.position >= srd.decel_start) || ((srd.dir==CCW && srd.position <= srd.decel_start))) {
 			srd.accel_steps = srd.decel_steps_neg;
 			// Start decelration with same delay as accel ended with.

@@ -163,6 +163,18 @@ int main(){
 				uart_SendByte('*');
 				status.cmd = FALSE;
 			///////////////////// ask for position ///////////////////////////////
+			///////////////////// ask for status ///////////////////////////////
+			} else if(UART_RxBuffer[0]=='g'){ // get status
+				uart_SendByte('$');
+				uart_SendByte('g');
+				uart_SendInt(srd.position);
+				uart_SendByte(',');
+				uart_SendInt(srd.step_delay);
+				uart_SendByte(',');
+				uart_SendInt(srd.run_state);
+				uart_SendByte('*');
+				status.cmd = FALSE;
+			///////////////////// ask for status ///////////////////////////////
 			//////////////////// (de)activate reset //////////////////////////////
 			} else if(UART_RxBuffer[0]=='r'){ // set reset status
 				if(UART_RxBuffer[1]=='0'){

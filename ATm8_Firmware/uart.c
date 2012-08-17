@@ -108,12 +108,12 @@ void uart_SendByte(char data){
  *
  *  \param Str  String to be sent.
  */
-void uart_SendString(char Str[])
-{
-	unsigned char n = 0;
-	while(Str[n])
-		uart_SendByte(Str[n++]);
-}
+//void uart_SendString(char Str[])
+//{
+//	unsigned char n = 0;
+//	while(Str[n])
+//		uart_SendByte(Str[n++]);
+//}
 
 /*! \brief Sends a integer.
  *
