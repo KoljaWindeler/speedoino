@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.2">
+<eagle version="6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -7107,26 +7107,6 @@ Mentor SMD Drucktaster 12 V/DC 50 mA Serie 1254 1254.1307  5.2N
 <wire x1="0" y1="4.318" x2="-0.762" y2="3.556" width="0.254" layer="94"/>
 <wire x1="0" y1="4.318" x2="0.762" y2="3.556" width="0.254" layer="94"/>
 </symbol>
-<symbol name="LED_3X">
-<pin name="ANODE" x="-7.62" y="0" visible="off" length="middle"/>
-<pin name="CATHODE" x="5.08" y="0" visible="off" length="middle" rot="R180"/>
-<wire x1="-2.54" y1="1.778" x2="-2.54" y2="-1.778" width="0.254" layer="94"/>
-<wire x1="-2.54" y1="-1.778" x2="0" y2="0" width="0.254" layer="94"/>
-<wire x1="-2.54" y1="1.778" x2="0" y2="0" width="0.254" layer="94"/>
-<wire x1="0" y1="0" x2="0" y2="1.778" width="0.254" layer="94"/>
-<wire x1="0" y1="0" x2="0" y2="-1.778" width="0.254" layer="94"/>
-<wire x1="1.016" y1="1.27" x2="1.778" y2="2.794" width="0.254" layer="94"/>
-<wire x1="1.778" y1="2.794" x2="1.27" y2="2.54" width="0.254" layer="94"/>
-<wire x1="1.27" y1="2.54" x2="1.778" y2="2.286" width="0.254" layer="94"/>
-<wire x1="1.778" y1="2.286" x2="1.778" y2="2.794" width="0.254" layer="94"/>
-<wire x1="2.032" y1="1.016" x2="2.794" y2="2.54" width="0.254" layer="94"/>
-<wire x1="2.794" y1="2.54" x2="2.286" y2="2.286" width="0.254" layer="94"/>
-<wire x1="2.286" y1="2.286" x2="2.794" y2="2.032" width="0.254" layer="94"/>
-<wire x1="2.794" y1="2.032" x2="2.794" y2="2.54" width="0.254" layer="94"/>
-<pin name="P$1" x="5.08" y="-2.54" length="short" rot="R180"/>
-<pin name="P$2" x="5.08" y="-5.08" length="short" rot="R180"/>
-<wire x1="2.54" y1="-5.08" x2="2.54" y2="0" width="0.127" layer="94"/>
-</symbol>
 <symbol name="LED">
 <pin name="ANODE" x="-5.08" y="0" visible="off" length="short"/>
 <pin name="CATHODE" x="3.048" y="0" visible="off" length="short" rot="R180"/>
@@ -7474,25 +7454,6 @@ Mentor SMD Drucktaster 12 V/DC 50 mA Serie 1254 1254.1307  5.2N
 <connects>
 <connect gate="G$1" pin="GND" pad="MINUS"/>
 <connect gate="G$1" pin="PLUS" pad="PLUS"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-<deviceset name="CLP6B-WKW-CD0E0233">
-<description>Mouser 941-CLP6BWKWCD0E0233, WHITE, 0,685€, 14000mcd, 3x50mA</description>
-<gates>
-<gate name="G$1" symbol="LED_3X" x="0" y="0"/>
-</gates>
-<devices>
-<device name="" package="PLCC-6">
-<connects>
-<connect gate="G$1" pin="ANODE" pad="1+ 2+ 3+"/>
-<connect gate="G$1" pin="CATHODE" pad="1-"/>
-<connect gate="G$1" pin="P$1" pad="2-"/>
-<connect gate="G$1" pin="P$2" pad="3-"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -20890,9 +20851,7 @@ www.irf.com&lt;p&gt;
 <part name="R_R_LED_1" library="RCLDT" deviceset="R" device="0805" value="92R"/>
 <part name="R_G_LED_1" library="RCLDT" deviceset="R" device="0805" value="110R"/>
 <part name="R_B_LED_1" library="RCLDT" deviceset="R" device="0805" value="80R"/>
-<part name="R_R_LED_0" library="RCLDT" deviceset="R" device="0805" value="24R"/>
-<part name="R_G_LED_0" library="RCLDT" deviceset="R" device="0805" value="24R"/>
-<part name="R_B_LED_0" library="RCLDT" deviceset="R" device="0805" value="24R"/>
+<part name="R_R_LED_0" library="RCLDT" deviceset="R" device="0805" value="52R"/>
 <part name="T1" library="RCLDT" deviceset="T-P-FET" device="BSS139" value="Mouser: 771-2N7002BK215 , N-Channel, 60V 350mA, SOT-23, 0,052€"/>
 <part name="T2" library="RCLDT" deviceset="T-P-FET" device="BSS139" value="Mouser: 771-2N7002BK215 , N-Channel, 60V 350mA, SOT-23, 0,052€"/>
 <part name="T3" library="RCLDT" deviceset="T-P-FET" device="BSS139" value="Mouser: 771-2N7002BK215 , N-Channel, 60V 350mA, SOT-23, 0,052€"/>
@@ -21035,7 +20994,6 @@ www.irf.com&lt;p&gt;
 <part name="C36" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
 <part name="R_SD_PWR_UP" library="RCLDT" deviceset="R" device="0805" value="10k"/>
 <part name="R_RES_UP" library="RCLDT" deviceset="R" device="0805" value="10k"/>
-<part name="U$1" library="Kolja" deviceset="CLP6B-WKW-CD0E0233" device=""/>
 <part name="U$3" library="Kolja" deviceset="CLM4B-BKW-CTBVA363" device=""/>
 <part name="U$11" library="Kolja" deviceset="CLM4B-RKW-CWAXBAA3" device=""/>
 <part name="RGB_1" library="Kolja" deviceset="RGB_LED" device=""/>
@@ -21109,6 +21067,7 @@ www.irf.com&lt;p&gt;
 <part name="R_OIL_OV" library="RCLDT" deviceset="R" device="0805" value="1k"/>
 <part name="R_HB5" library="RCLDT" deviceset="R" device="0805" value="600R"/>
 <part name="R_OIL_OV1" library="RCLDT" deviceset="R" device="0805" value="1k"/>
+<part name="U$22" library="Kolja" deviceset="CLM4B-RKW-CWAXBAA3" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -21447,12 +21406,6 @@ www.irf.com&lt;p&gt;
 <instance part="R_R_LED_0" gate="G$1" x="43.18" y="-76.2" smashed="yes">
 <attribute name="VALUE" x="53.34" y="-75.565" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="R_G_LED_0" gate="G$1" x="43.18" y="-78.74" smashed="yes">
-<attribute name="VALUE" x="53.34" y="-78.105" size="1.778" layer="96" rot="R180"/>
-</instance>
-<instance part="R_B_LED_0" gate="G$1" x="43.18" y="-81.28" smashed="yes">
-<attribute name="VALUE" x="53.34" y="-80.645" size="1.778" layer="96" rot="R180"/>
-</instance>
 <instance part="T1" gate="G$1" x="71.12" y="-25.4" rot="MR90"/>
 <instance part="T2" gate="G$1" x="86.36" y="-15.24" rot="MR90"/>
 <instance part="T3" gate="G$1" x="101.6" y="5.08" rot="MR90"/>
@@ -21676,7 +21629,6 @@ www.irf.com&lt;p&gt;
 <instance part="C36" gate="C" x="-93.98" y="210.82" rot="R180"/>
 <instance part="R_SD_PWR_UP" gate="G$1" x="-35.56" y="119.38" rot="MR90"/>
 <instance part="R_RES_UP" gate="G$1" x="-294.64" y="208.28" rot="MR90"/>
-<instance part="U$1" gate="G$1" x="15.24" y="-76.2"/>
 <instance part="U$3" gate="G$1" x="383.54" y="2.54" rot="R90"/>
 <instance part="U$11" gate="G$1" x="370.84" y="2.54" rot="R90"/>
 <instance part="RGB_1" gate="G$1" x="17.78" y="-40.64"/>
@@ -21808,6 +21760,7 @@ www.irf.com&lt;p&gt;
 <instance part="R_OIL_OV" gate="G$1" x="55.88" y="231.14" rot="R180"/>
 <instance part="R_HB5" gate="G$1" x="91.44" y="187.96" rot="R180"/>
 <instance part="R_OIL_OV1" gate="G$1" x="58.42" y="139.7" rot="R180"/>
+<instance part="U$22" gate="G$1" x="25.4" y="-76.2"/>
 </instances>
 <busses>
 </busses>
@@ -22617,8 +22570,8 @@ www.irf.com&lt;p&gt;
 </segment>
 <segment>
 <pinref part="SUPPLY15" gate="G$1" pin="VDD"/>
-<wire x1="7.62" y1="-76.2" x2="-2.54" y2="-76.2" width="0.1524" layer="91"/>
-<pinref part="U$1" gate="G$1" pin="ANODE"/>
+<wire x1="20.32" y1="-76.2" x2="-2.54" y2="-76.2" width="0.1524" layer="91"/>
+<pinref part="U$22" gate="G$1" pin="ANODE"/>
 </segment>
 <segment>
 <pinref part="SUPPLY1" gate="G$1" pin="VDD"/>
@@ -23563,10 +23516,10 @@ www.irf.com&lt;p&gt;
 <segment>
 <pinref part="T11" gate="G$1" pin="G"/>
 <wire x1="63.5" y1="-76.2" x2="63.5" y2="-81.28" width="0.1524" layer="91"/>
-<label x="66.04" y="-78.74" size="1.778" layer="95" rot="R90"/>
 <pinref part="R_B_LED_12" gate="G$1" pin="1"/>
 <wire x1="63.5" y1="-81.28" x2="63.5" y2="-83.82" width="0.1524" layer="91"/>
 <junction x="63.5" y="-81.28"/>
+<label x="60.96" y="-86.36" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="D22" class="0">
@@ -23957,13 +23910,6 @@ www.irf.com&lt;p&gt;
 <wire x1="30.48" y1="-5.08" x2="27.94" y2="-5.08" width="0.1524" layer="91"/>
 <pinref part="RGB_2" gate="G$1" pin="B_-"/>
 <pinref part="R_B_LED_1" gate="G$1" pin="1"/>
-</segment>
-</net>
-<net name="N$65" class="0">
-<segment>
-<wire x1="38.1" y1="-81.28" x2="20.32" y2="-81.28" width="0.1524" layer="91"/>
-<pinref part="R_B_LED_0" gate="G$1" pin="1"/>
-<pinref part="U$1" gate="G$1" pin="P$2"/>
 </segment>
 </net>
 <net name="N$24" class="0">
@@ -24633,32 +24579,10 @@ www.irf.com&lt;p&gt;
 </net>
 <net name="N$71" class="0">
 <segment>
-<pinref part="R_B_LED_0" gate="G$1" pin="2"/>
 <pinref part="T11" gate="G$1" pin="D"/>
-<wire x1="48.26" y1="-81.28" x2="55.88" y2="-81.28" width="0.1524" layer="91"/>
-<wire x1="55.88" y1="-81.28" x2="55.88" y2="-78.74" width="0.1524" layer="91"/>
-<pinref part="R_G_LED_0" gate="G$1" pin="2"/>
-<wire x1="55.88" y1="-78.74" x2="55.88" y2="-76.2" width="0.1524" layer="91"/>
 <wire x1="55.88" y1="-76.2" x2="55.88" y2="-68.58" width="0.1524" layer="91"/>
-<wire x1="48.26" y1="-78.74" x2="55.88" y2="-78.74" width="0.1524" layer="91"/>
 <pinref part="R_R_LED_0" gate="G$1" pin="2"/>
 <wire x1="48.26" y1="-76.2" x2="55.88" y2="-76.2" width="0.1524" layer="91"/>
-<junction x="55.88" y="-78.74"/>
-<junction x="55.88" y="-76.2"/>
-</segment>
-</net>
-<net name="N$16" class="0">
-<segment>
-<pinref part="R_R_LED_0" gate="G$1" pin="1"/>
-<pinref part="U$1" gate="G$1" pin="CATHODE"/>
-<wire x1="20.32" y1="-76.2" x2="38.1" y2="-76.2" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$63" class="0">
-<segment>
-<wire x1="20.32" y1="-78.74" x2="38.1" y2="-78.74" width="0.1524" layer="91"/>
-<pinref part="R_G_LED_0" gate="G$1" pin="1"/>
-<pinref part="U$1" gate="G$1" pin="P$1"/>
 </segment>
 </net>
 <net name="N$64" class="0">
@@ -25286,6 +25210,15 @@ www.irf.com&lt;p&gt;
 <wire x1="185.42" y1="162.56" x2="147.32" y2="162.56" width="0.1524" layer="91"/>
 <wire x1="147.32" y1="162.56" x2="147.32" y2="139.7" width="0.1524" layer="91"/>
 <pinref part="R_OIL_OV1" gate="G$1" pin="1"/>
+</segment>
+</net>
+<net name="N$16" class="0">
+<segment>
+<pinref part="R_R_LED_0" gate="G$1" pin="1"/>
+<wire x1="27.94" y1="-76.2" x2="28.448" y2="-76.2" width="0.1524" layer="91"/>
+<pinref part="U$22" gate="G$1" pin="CATHODE"/>
+<wire x1="28.448" y1="-76.2" x2="38.1" y2="-76.2" width="0.1524" layer="91"/>
+<junction x="28.448" y="-76.2"/>
 </segment>
 </net>
 </nets>
