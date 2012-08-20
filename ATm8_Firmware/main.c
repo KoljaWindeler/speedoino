@@ -39,7 +39,7 @@
  */
 // includes
 #include <avr/io.h>
-#include <avr/iom8.h>
+//#include <avr/iom328p.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdio.h>
@@ -217,8 +217,8 @@ void check_power_state(){
 		if(voltage_down_counter>50){ // ~ 50µsec direkt nacheinander
 //			uart_SendString("%");
 			// input interrupts für reset abwerfen
-			GICR  &= ~((1<<INT0) | (1<<INT1));	//Global Interrupt Flag deaktivieren fuer INT0 und INT1
-			TIMSK &= ~(1<<TOIE0); // Timer overrun aus
+			EIMSK  &= ~((1<<INT0) | (1<<INT1));	//Global Interrupt Flag deaktivieren fuer INT0 und INT1
+			TIMSK0 &= ~(1<<TOIE0); // Timer overrun aus
 
 			// Kommunikation weg
 			disable_uart();

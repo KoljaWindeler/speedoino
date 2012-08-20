@@ -51,8 +51,8 @@ typedef struct {
  * Modify this according to frequency used. Because of the prescaler setting,
  * the timer1 frequency is the clock frequency divided by 8.
  */
-// Timer/Counter 1 running on 4/8mhz
-#define T1_FREQ 460750 // ? häh ?
+// Timer/Counter 1 running on 8mhz
+#define T1_FREQ 921500 // ? häh ?
 
 //! Number of (full)steps per round on stepper motor in use.
 #define FSPR 781
@@ -73,7 +73,7 @@ typedef struct {
 
 // Maths constants. To simplify maths when calculating in speed_cntr_Move().
 #define ALPHA (2*3.14159/SPR)                    // 2*pi/spr || 2*3.1459/(781*2)=0,004028041
-#define A_T_x100 ((long)(ALPHA*T1_FREQ*100))     // (ALPHA / T1_FREQ)*100 || 0,004028041*4000000*100  = 1611216,4
+#define A_T_x100 ((long)(ALPHA*T1_FREQ*100))     // (ALPHA / T1_FREQ)*100 || 0,004028041*8000000*100  = 3222432,8
 #define T1_FREQ_148 ((int)((T1_FREQ*0.676)/100)) // divided by 100 and scaled by 0.676
 #define A_SQ (long)(ALPHA*2*10000000000)         // ALPHA*2*10000000000
 #define A_x20000 (int)(ALPHA*20000)              // ALPHA*20000

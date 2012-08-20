@@ -65,7 +65,7 @@ all: Watchdog.elf secondary-outputs
 Watchdog.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: AVR C++ Linker'
-	avr-g++ -Wl,-Map,Watchdog.map,--cref -mmcu=atmega8 -o "Watchdog.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	avr-g++ -Wl,-Map,Watchdog.map,--cref -mmcu=atmega328p -o "Watchdog.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -83,13 +83,13 @@ Watchdog.eep: Watchdog.elf
 
 sizedummy: Watchdog.elf
 	@echo 'Invoking: Print Size'
-	-avr-size --format=avr --mcu=atmega8 Watchdog.elf
+	-avr-size --format=avr --mcu=atmega328p Watchdog.elf
 	@echo 'Finished building: $@'
 	@echo ' '
 
 avrdudedummy: Watchdog.elf
 	@echo 'Invoking: AVRDude'
-	/usr/bin/avrdude -pm8 -cavrisp2 -Pusb -B1  -u -Uflash:w:Watchdog.hex:a -Ulfuse:w:0xa3:m -Uhfuse:w:0xdf:m
+	/usr/bin/avrdude -pm328p -cavrisp2 -Pusb -B1  -u -Uflash:w:Watchdog.hex:a -Ulfuse:w:0xe2:m -Uhfuse:w:0xd2:m -Uefuse:w:0xfe:m
 	@echo 'Finished building: $@'
 	@echo ' '
 

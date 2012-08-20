@@ -65,12 +65,12 @@ void InitUART(void)
 #error Systematischer Fehler der Baudrate grsser 1% und damit zu hoch!
 #endif
 
-	UBRRH = UBRR_VAL >> 8;
-	UBRRL = UBRR_VAL & 0xFF;
+	UBRR0H = UBRR_VAL >> 8;
+	UBRR0L = UBRR_VAL & 0xFF;
 
 	//UCSR0A = 1<<UDRE0;
 	/* Enable receiver and transmitter, rx and tx int */
-	UCSRB |= (1<<RXEN)|(1<<TXEN)|(1<<RXCIE); // rx,tx,rx interrupt
+	UCSR0B |= (1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0); // rx,tx,rx interrupt
 	/* Set frame format: 8data, 1stop bit */
 	//UCSR0C = (3<<UCSZ00);
 
@@ -83,9 +83,9 @@ void InitUART(void)
 }
 
 void disable_uart(){
-	UBRRH = 0x00;
-	UBRRL = 0x00;
-	UCSRB = 0x00;
+	UBRR0H = 0x00;
+	UBRR0L = 0x00;
+	UCSR0B = 0x00;
 };
 
 
@@ -97,8 +97,8 @@ void disable_uart(){
  *  \param data  Data to be sent.
  */
 void uart_SendByte(char data){
-	while((UCSRA & (1<< UDRE)) == 0) {};
-	UDR=data;
+	while((UCSR0A & (1<< UDRE0)) == 0) {};
+	UDR0=data;
 };
 
 /*! \brief Sends a string.
@@ -149,7 +149,7 @@ void uart_SendInt(int x)
 ISR(USART_RXC_vect){
 	unsigned char data;
 	// Read the received data.
-	data = UDR;
+	data = UDR0;
 	//uart_SendByte(data);
 	// Put the data into RxBuf
 	if(status.cmd == FALSE || 1 ){

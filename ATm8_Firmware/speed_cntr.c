@@ -22,7 +22,7 @@
  *****************************************************************************/
 
 #include <avr/io.h>
-#include <avr/iom8.h>
+//#include <avr/iom328p.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,7 +88,7 @@ void speed_cntr_Move(signed int soll_pos, unsigned int accel, unsigned int max_s
 		// ...in DECEL state.
 		srd_next.run_state = DECEL;
 		// Just a short delay so main() can act on 'running'.
-		srd_next.step_delay = 1000;
+		srd_next.step_delay = 2000;
 		OCR1A = 10;
 		// Run Timer/Counter 1 with prescaler = 8.
 		TCCR1B |= T1_RUN;
@@ -101,7 +101,7 @@ void speed_cntr_Move(signed int soll_pos, unsigned int accel, unsigned int max_s
 			srd_next.dir=srd_next.dir_next; // now set previous saved direction
 			// Set max speed limit, by calc min_delay to use in timer.
 			// min_delay = (alpha / tt)/ w
-			srd_next.min_delay = A_T_x100 / speed; // 1611216,4 / speed =
+			srd_next.min_delay = A_T_x100 / speed; // 3222432,8 / speed =
 			//sprintf(temp,"%i\r\n",srd_next.min_delay);
 			//uart_SendString(temp);
 
@@ -282,7 +282,7 @@ void speed_cntr_Init_Timer1(void){
 	// Timer/Counter 1 in mode 4 CTC (Not running).
 	TCCR1B = (1<<WGM12);
 	// Timer/Counter 1 Output Compare A Match Interrupt enable.
-	TIMSK |= (1<<OCIE1A);
+	TIMSK0 |= (1<<OCIE1A);
 }
 
 /*! \brief Timer/Counter1 Output Compare A Match Interrupt.

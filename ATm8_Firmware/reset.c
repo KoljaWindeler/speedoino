@@ -1,5 +1,5 @@
 #include <avr/io.h>
-#include <avr/iom8.h>
+//#include <avr/iom328p.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdlib.h>
@@ -18,9 +18,9 @@ void reset_init(){
 	//0xFF & ~((1<<PD7) | (1<<PD6) | (1<<PD5) | (1<<PD3)); // alle LEDs an, alle einguenge auf pullup bis auf D3, 20 - 50 kR => 0.1 - 0.25 mA
 
 	// interrupts aktivieren
-	MCUCR |= (1<<ISC00) | (1<<ISC10);           //jede Flanke von INT0 oder INT1 als auslueser
-	MCUCR &= ~((1<<ISC01) | (1<<ISC11));        //jede Flanke von INT0 oder INT1 als auslueser
-	GICR  |= (1<<INT0) | (1<<INT1);				//Global Interrupt Flag fuer INT0 und INT1
+	EICRA |= (1<<ISC00) | (1<<ISC10);           //jede Flanke von INT0 oder INT1 als auslueser
+	EICRA &= ~((1<<ISC01) | (1<<ISC11));        //jede Flanke von INT0 oder INT1 als auslueser
+	EIMSK  |= (1<<INT0) | (1<<INT1);				//Global Interrupt Flag fuer INT0 und INT1
 
 	counter_bt=0;
 	counter_avr=0;
@@ -89,29 +89,29 @@ void reset(int spezial_down){
 };
 
 void config_timer0(){
-	// Timer/Counter 0 prescaler 64 => 4Mhz 63,5khz
-	TCCR0 = (1<<CS01) | (1<<CS00);
+	// Timer/Counter 0 prescaler 64 => 8Mhz 127khz
+	TCCR0B = (1<<CS01) | (1<<CS00);
 	// Timer/Counter 0 Overflog timer0 interrupt
-	TIMSK |= (1<<TOIE0) ;
+	TIMSK0 |= (1<<TOIE0) ;
 }
 
 /* overflow vom timer 0 ..
- * prescale 64, cpu_freq=4mhz => 64/4.000.000 = 0,000016sec each increment
- * Timer0 is a 8-Bit Timer => 2⁸=256 Counts to overflow = 0,000016sec*256=0,004096 sec= 4,096 ms
- * Bluetooth pin is: 312ms high,312ms low, we have an interrupt on pin change so we can reset after (312/4,096)*1,2 where 20% is safety
- * 91 Timer overruns is max
+ * prescale 64, cpu_freq=8mhz => 64/8.000.000 = 0,000008sec each increment
+ * Timer0 is a 8-Bit Timer => 2⁸=256 Counts to overflow = 0,000008sec*256=0,002048 sec= 2,048 ms
+ * Bluetooth pin is: 312ms high,312ms low, we have an interrupt on pin change so we can reset after (312/2,048)*1,2 where 20% is safety
+ * 182 Timer overruns is max
  *
- * AVR: Lets say 30sec, 30/0,004=7500 Overruns
+ * AVR: Lets say 30sec, 30/0,002=15000 Overruns
  */
 ISR(TIMER0_OVF_vect){
 	if(reset_global_active){//wenn es high ist soll resetet werden
-		if(counter_bt>=91 && !reset_bt_running && counter_bt_init>10){ //
+		if(counter_bt>=182 && !reset_bt_running && counter_bt_init>10){ //
 			reset_bt_running=1;
 			reset(1);
 			last_rst=2;
 		}
 		
-		if(counter_avr>=7500 && !reset_avr_running){
+		if(counter_avr>=15000 && !reset_avr_running){
 			reset_avr_running=1;
 			reset(1); // run reset ohne langen bootloader quatsch
 			last_rst=1;
