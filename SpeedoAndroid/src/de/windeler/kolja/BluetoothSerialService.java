@@ -235,6 +235,47 @@ public class BluetoothSerialService {
 		mHandler.sendMessage(msg);
 
 		setState(STATE_CONNECTED_AND_SEARCHING);
+		
+		//wait 5 sec to prevent goint to bootloader
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		int failCounter=0;
+		final String TAG_LOGIN = "LOGIN";
+		while(!preamble_found){
+			byte send[] = new byte[1];
+			send[0] = CMD_SIGN_ON;
+			Log.i(TAG_LOGIN,"sign_on sendet");
+			try {
+				send(send, 1,1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				semaphore.release();
+				e.printStackTrace();
+			}
+		
+			semaphore.release();
+			
+			if(status==ST_EMERGENCY_RELEASE){
+				Log.i(TAG_LOGIN,"sign_on notfall release");
+				// hier sowas wie: 
+				failCounter++;
+				if(failCounter>30){
+					Log.i(TAG_LOGIN,"sign_on mehr als 30 versuche");
+					setState(STATE_NONE);
+					break;
+				}
+			} else { 
+				setState(STATE_CONNECTED);
+				Log.i(TAG_LOGIN,"sign_on done");
+				break;
+			}
+		}
+		
 	}
 
 	/**
@@ -410,17 +451,6 @@ public class BluetoothSerialService {
 					bytes = mmInStream.read(buffer);
 					for(int i=0;i<bytes;i++){
 						process_incoming((char)buffer[i]);
-						if(!preamble_found){
-							if(finished_str[finished_counter]==buffer[i]){
-								finished_counter++;
-								if(finished_counter==temp.length()){
-									setState(STATE_CONNECTED);
-									preamble_found=true;
-								}
-							} else {
-								finished_counter=0;
-							}
-						}
 					}
 				} catch (IOException e) {
 					Log.e(TAG, "disconnected", e);
@@ -457,13 +487,17 @@ public class BluetoothSerialService {
 	public void reset_seq() {
 		seqNum=0;
 	}
+	
+	public int send(byte data[],int msgLength ) throws InterruptedException {
+		return send(data,msgLength,2000);
+	}
 
-	public int send(byte data[],int msgLength) throws InterruptedException{
+	public int send(byte data[],int msgLength, int time) throws InterruptedException{
 		byte	checksum		= 0;
 		byte 	c				= 0;
 		byte 	p				= 0;
 		// nur senden, wenn wir nicht gerade was empfangen
-		if(getState()!=STATE_CONNECTED){
+		if(getState()!=STATE_CONNECTED && data[0]!=CMD_SIGN_ON){
 			Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_TOAST);
 			Bundle bundle = new Bundle();
 			bundle.putString(SpeedoAndroidActivity.TOAST, "You are not connected to a Speedoino");
@@ -480,7 +514,7 @@ public class BluetoothSerialService {
 		Log.i(TAG_SEM,"send hat den semaphore");
 
 		// da der Tacho, nach 2sek den fast response mode verlaesst, muessen wir die seq neu zaehlen
-		if(System.currentTimeMillis()-lastSend>2000){
+		if(System.currentTimeMillis()-lastSend>time || data[0]==CMD_SIGN_ON){
 			reset_seq();
 		}
 
@@ -521,7 +555,7 @@ public class BluetoothSerialService {
 
 			// install guard, 2sec until check of receive
 			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
-			mTimerHandle.postDelayed(mCheckResponseTimeTask, 2000);
+			mTimerHandle.postDelayed(mCheckResponseTimeTask, time);
 			return 0;
 
 		} else {
@@ -1201,51 +1235,53 @@ public class BluetoothSerialService {
 		Log.i(TAG, "uploadFirmware soll laden:"+filename);
 		byte send[] = new byte[256*1024]; // so groß wie es maximal werten kann, 256k
 		if(false){
-		// open File
-		File file = new File(filename);
-		FileInputStream in = null;
+			// open File
+			File file = new File(filename);
+			FileInputStream in = null;
 
-		try { 								in = new FileInputStream(file);		} 
-		catch (FileNotFoundException e) { 	e.printStackTrace();				}
+			try { 								in = new FileInputStream(file);		} 
+			catch (FileNotFoundException e) { 	e.printStackTrace();				}
 
-		// jetzt datei parsen
-		byte hex_sentence[]=new byte[100]; // nur eine hex zeile
-		int byte_read=999; // wieviel byte hab ich gelesen
-		int file_pos=0; // pointer of position in file
+			// jetzt datei parsen
+			byte hex_sentence[]=new byte[100]; // nur eine hex zeile
+			int byte_read=999; // wieviel byte hab ich gelesen
+			int file_pos=0; // pointer of position in file
 
-		while(byte_read>0){
-			byte_read=0;
-			// eine Zeile einlesen
-			byte[] one_char=new byte[1];
-			boolean new_line_found=false;
-			int count_byte_read=0;
-			while(!new_line_found && count_byte_read<100){ // maximal 100 byte lesen, aber hauptsächlich bis umbruch
-				count_byte_read+=in.read(one_char, file_pos, 1);
-				hex_sentence[count_byte_read-1]=one_char[0];
-				if(count_byte_read>=2){
-					if(hex_sentence[count_byte_read-1]==0x0a && hex_sentence[count_byte_read-2]==0x0d){
-						new_line_found=true;
-						byte_read=count_byte_read;
+			while(byte_read>0){
+				byte_read=0;
+				// eine Zeile einlesen
+				byte[] one_char=new byte[1];
+				boolean new_line_found=false;
+				int count_byte_read=0;
+				while(!new_line_found && count_byte_read<100){ // maximal 100 byte lesen, aber hauptsächlich bis umbruch
+					count_byte_read+=in.read(one_char, file_pos, 1);
+					hex_sentence[count_byte_read-1]=one_char[0];
+					if(count_byte_read>=2){
+						if(hex_sentence[count_byte_read-1]==0x0a && hex_sentence[count_byte_read-2]==0x0d){
+							new_line_found=true;
+							byte_read=count_byte_read;
+						}
+					} else if(count_byte_read==0){
+						count_byte_read=100;
 					}
-				} else if(count_byte_read==0){
-					count_byte_read=100;
+				};
+				// jetzt haben wir ein satz gelesen, parsen wir ihn also
+				if(new_line_found){
+					if(hex_sentence[0]==0x3a && hex_sentence[7]==0x30 && hex_sentence[8]==0x30){
+						int length=(hex_sentence[1]-0x30)<<8 | (hex_sentence[2]-0x30);
+						int offset=(hex_sentence[3]-0x30)<<24 | (hex_sentence[4]-0x30)<<16 | (hex_sentence[5]-0x30)<<8 | hex_sentence[6];
+						for(int pos=offset;pos<offset+length;pos++){
+							send[pos]=hex_sentence[9+pos-offset];
+						}
+					}
 				}
 			};
-			// jetzt haben wir ein satz gelesen, parsen wir ihn also
-			if(new_line_found){
-				if(hex_sentence[0]==0x3a && hex_sentence[7]==0x30 && hex_sentence[8]==0x30){
-					int length=(hex_sentence[1]-0x30)<<8 | (hex_sentence[2]-0x30);
-					int offset=(hex_sentence[3]-0x30)<<24 | (hex_sentence[4]-0x30)<<16 | (hex_sentence[5]-0x30)<<8 | hex_sentence[6];
-					for(int pos=offset;pos<offset+length;pos++){
-						send[pos]=hex_sentence[9+pos-offset];
-					}
-				}
-			}
-		};
 		};
 
 
 		stop();
+		start();
+		Thread.sleep(1000);
 		// Get the BLuetoothDevice object
 		// Attempt to connect to the device
 		// delay

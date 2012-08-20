@@ -273,7 +273,6 @@ OnClickListener {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu, menu);
 		mMenuItemConnect = menu.getItem(0);
-		// menu.add(0,EDIT_CONTACT, 0, "Edit"). setIcon(R.drawable.edit_icon);
 		return true;
 	}
 
@@ -460,8 +459,7 @@ OnClickListener {
 				case BluetoothSerialService.STATE_CONNECTED:
 					if (mStatus != null) {
 						mStatus.setText("Connected,Speedoino found");
-					}
-					;
+					};
 
 					update_visible_elements(true);
 

@@ -266,9 +266,12 @@ public class ImageEditor extends Activity implements OnClickListener{
 				alertDialog.setMessage("found an animation, upload full animation?");
 				alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
 					@Override
-					public void onClick(DialogInterface arg0, int arg1) {	this.
-						upload_animation=true;	}});
+					public void onClick(DialogInterface arg0, int arg1) {	
+						//upload_animation=true;	
+						finish();
+						}});
 				alertDialog.show();
+				upload_animation=true;
 				// show dialog
 			} 
 			
