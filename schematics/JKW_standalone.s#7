@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.2">
+<eagle version="6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -21101,6 +21101,10 @@ www.irf.com&lt;p&gt;
 <part name="SUPPLY21" library="supply2" deviceset="VDD" device=""/>
 <part name="U$20" library="SUPPLY" deviceset="GND" device=""/>
 <part name="PE" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
+<part name="R_B_LED_12" library="RCLDT" deviceset="R" device="0805" value="10k"/>
+<part name="R_B_LED_13" library="RCLDT" deviceset="R" device="0805" value="10k"/>
+<part name="R_B_LED_14" library="RCLDT" deviceset="R" device="0805" value="10k"/>
+<part name="R_B_LED_15" library="RCLDT" deviceset="R" device="0805" value="10k"/>
 </parts>
 <sheets>
 <sheet>
@@ -21779,6 +21783,18 @@ www.irf.com&lt;p&gt;
 <attribute name="NAME" x="-99.06" y="-2.54" size="2.032" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-93.98" y="2.54" size="1.778" layer="96" rot="R270"/>
 </instance>
+<instance part="R_B_LED_12" gate="G$1" x="68.58" y="-81.28" smashed="yes">
+<attribute name="VALUE" x="71.12" y="-78.105" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="R_B_LED_13" gate="G$1" x="78.74" y="-27.94" smashed="yes" rot="R90">
+<attribute name="VALUE" x="75.565" y="-25.4" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="R_B_LED_14" gate="G$1" x="91.44" y="-27.94" smashed="yes" rot="R90">
+<attribute name="VALUE" x="88.265" y="-25.4" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="R_B_LED_15" gate="G$1" x="106.68" y="-27.94" smashed="yes" rot="R90">
+<attribute name="VALUE" x="103.505" y="-25.4" size="1.778" layer="96" rot="R270"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -22052,7 +22068,7 @@ www.irf.com&lt;p&gt;
 <wire x1="109.22" y1="2.54" x2="109.22" y2="-12.7" width="0.1524" layer="91"/>
 <wire x1="109.22" y1="-12.7" x2="91.44" y2="-12.7" width="0.1524" layer="91"/>
 <wire x1="109.22" y1="-12.7" x2="109.22" y2="-22.86" width="0.1524" layer="91"/>
-<wire x1="109.22" y1="-22.86" x2="76.2" y2="-22.86" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="-22.86" x2="106.68" y2="-22.86" width="0.1524" layer="91"/>
 <junction x="109.22" y="-12.7"/>
 <junction x="109.22" y="7.62"/>
 <pinref part="U$21" gate="G$1" pin="GND"/>
@@ -22060,8 +22076,17 @@ www.irf.com&lt;p&gt;
 <pinref part="T2" gate="G$1" pin="S"/>
 <pinref part="T1" gate="G$1" pin="S"/>
 <pinref part="T12" gate="G$1" pin="S"/>
+<wire x1="106.68" y1="-22.86" x2="91.44" y2="-22.86" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="-22.86" x2="78.74" y2="-22.86" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="-22.86" x2="76.2" y2="-22.86" width="0.1524" layer="91"/>
 <wire x1="96.52" y1="2.54" x2="109.22" y2="2.54" width="0.1524" layer="91"/>
 <junction x="109.22" y="2.54"/>
+<pinref part="R_B_LED_13" gate="G$1" pin="2"/>
+<junction x="78.74" y="-22.86"/>
+<pinref part="R_B_LED_14" gate="G$1" pin="2"/>
+<junction x="91.44" y="-22.86"/>
+<pinref part="R_B_LED_15" gate="G$1" pin="2"/>
+<junction x="106.68" y="-22.86"/>
 </segment>
 <segment>
 <pinref part="GPS" gate="G$1" pin="GND2"/>
@@ -22362,8 +22387,12 @@ www.irf.com&lt;p&gt;
 <segment>
 <pinref part="T11" gate="G$1" pin="S"/>
 <pinref part="U$17" gate="G$1" pin="GND"/>
-<wire x1="66.04" y1="-68.58" x2="83.82" y2="-68.58" width="0.1524" layer="91"/>
+<wire x1="66.04" y1="-68.58" x2="73.66" y2="-68.58" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="-68.58" x2="83.82" y2="-68.58" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="-68.58" x2="83.82" y2="-78.74" width="0.1524" layer="91"/>
+<pinref part="R_B_LED_12" gate="G$1" pin="2"/>
+<wire x1="73.66" y1="-81.28" x2="73.66" y2="-68.58" width="0.1524" layer="91"/>
+<junction x="73.66" y="-68.58"/>
 </segment>
 <segment>
 <pinref part="GPS_C4" gate="C" pin="1"/>
@@ -23122,9 +23151,13 @@ www.irf.com&lt;p&gt;
 <label x="104.14" y="-35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="T3" gate="G$1" pin="G"/>
 <pinref part="T12" gate="G$1" pin="G"/>
-<wire x1="104.14" y1="-5.08" x2="104.14" y2="-35.56" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="-5.08" x2="104.14" y2="-33.02" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="-33.02" x2="104.14" y2="-48.26" width="0.1524" layer="91"/>
 <wire x1="93.98" y1="-5.08" x2="104.14" y2="-5.08" width="0.1524" layer="91"/>
 <junction x="104.14" y="-5.08"/>
+<pinref part="R_B_LED_15" gate="G$1" pin="1"/>
+<wire x1="106.68" y1="-33.02" x2="104.14" y2="-33.02" width="0.1524" layer="91"/>
+<junction x="104.14" y="-33.02"/>
 </segment>
 </net>
 <net name="D8" class="0">
@@ -23134,9 +23167,13 @@ www.irf.com&lt;p&gt;
 <pinref part="IC4" gate="1" pin="PH5(OC4C)"/>
 </segment>
 <segment>
-<wire x1="88.9" y1="-20.32" x2="88.9" y2="-35.56" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="-20.32" x2="88.9" y2="-33.02" width="0.1524" layer="91"/>
 <label x="88.9" y="-35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="T2" gate="G$1" pin="G"/>
+<pinref part="R_B_LED_14" gate="G$1" pin="1"/>
+<wire x1="88.9" y1="-33.02" x2="88.9" y2="-48.26" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="-33.02" x2="88.9" y2="-33.02" width="0.1524" layer="91"/>
+<junction x="88.9" y="-33.02"/>
 </segment>
 </net>
 <net name="D9" class="0">
@@ -23146,9 +23183,13 @@ www.irf.com&lt;p&gt;
 <pinref part="IC4" gate="1" pin="PH6(OC2B)"/>
 </segment>
 <segment>
-<wire x1="73.66" y1="-30.48" x2="73.66" y2="-35.56" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="-30.48" x2="73.66" y2="-33.02" width="0.1524" layer="91"/>
 <label x="73.66" y="-35.56" size="1.778" layer="95" rot="R90"/>
 <pinref part="T1" gate="G$1" pin="G"/>
+<pinref part="R_B_LED_13" gate="G$1" pin="1"/>
+<wire x1="73.66" y1="-33.02" x2="73.66" y2="-48.26" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="-33.02" x2="73.66" y2="-33.02" width="0.1524" layer="91"/>
+<junction x="73.66" y="-33.02"/>
 </segment>
 </net>
 <net name="D39" class="0">
@@ -23522,8 +23563,11 @@ www.irf.com&lt;p&gt;
 </segment>
 <segment>
 <pinref part="T11" gate="G$1" pin="G"/>
-<wire x1="63.5" y1="-76.2" x2="63.5" y2="-78.74" width="0.1524" layer="91"/>
+<wire x1="63.5" y1="-76.2" x2="63.5" y2="-81.28" width="0.1524" layer="91"/>
 <label x="66.04" y="-78.74" size="1.778" layer="95" rot="R90"/>
+<pinref part="R_B_LED_12" gate="G$1" pin="1"/>
+<wire x1="63.5" y1="-81.28" x2="63.5" y2="-83.82" width="0.1524" layer="91"/>
+<junction x="63.5" y="-81.28"/>
 </segment>
 </net>
 <net name="D22" class="0">

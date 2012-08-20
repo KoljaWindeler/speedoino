@@ -21105,7 +21105,7 @@ www.irf.com&lt;p&gt;
 <part name="R_B_LED_14" library="RCLDT" deviceset="R" device="0805" value="10k"/>
 <part name="R_B_LED_15" library="RCLDT" deviceset="R" device="0805" value="10k"/>
 <part name="D11" library="diode" deviceset="ZENER-DIODE" device="SOT23" value="20V-Zdiode"/>
-<part name="R_R_LED_12" library="RCLDT" deviceset="R" device="0805" value="92R"/>
+<part name="R_R_LED_12" library="RCLDT" deviceset="R" device="0805" value="220R"/>
 </parts>
 <sheets>
 <sheet>
@@ -21796,11 +21796,11 @@ www.irf.com&lt;p&gt;
 <attribute name="VALUE" x="103.505" y="-25.4" size="1.778" layer="96" rot="R270"/>
 </instance>
 <instance part="D11" gate="G$1" x="177.8" y="10.16" smashed="yes" rot="MR90">
-<attribute name="NAME" x="179.705" y="0.762" size="1.778" layer="95" rot="MR90"/>
-<attribute name="VALUE" x="174.371" y="-4.318" size="1.778" layer="96" rot="MR90"/>
+<attribute name="NAME" x="179.705" y="-1.778" size="1.778" layer="95" rot="MR90"/>
+<attribute name="VALUE" x="179.451" y="5.842" size="1.778" layer="96" rot="MR90"/>
 </instance>
 <instance part="R_R_LED_12" gate="G$1" x="177.8" y="0" smashed="yes" rot="R90">
-<attribute name="VALUE" x="177.165" y="10.16" size="1.778" layer="96" rot="R270"/>
+<attribute name="VALUE" x="175.895" y="-2.54" size="1.778" layer="96" rot="R90"/>
 </instance>
 </instances>
 <busses>

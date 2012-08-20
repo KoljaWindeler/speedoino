@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -20788,7 +20788,7 @@ www.irf.com&lt;p&gt;
 <part name="U$159" library="SUPPLY" deviceset="GND" device=""/>
 <part name="U$161" library="SUPPLY" deviceset="GND" device=""/>
 <part name="GND4" library="SparkFun" deviceset="GND" device=""/>
-<part name="IC2" library="µP´s+Pic´s" deviceset="AT-MEGA-8" device="" value="AT-MEGA-8L"/>
+<part name="IC2" library="µP´s+Pic´s" deviceset="AT-MEGA-8" device="" value="AT-MEGA-328P-AU"/>
 <part name="AT8_REF" library="RCLDT" deviceset="R" device="0805" value="10R"/>
 <part name="U$5" library="SUPPLY" deviceset="GND" device=""/>
 <part name="C1" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
@@ -21068,6 +21068,8 @@ www.irf.com&lt;p&gt;
 <part name="R_HB5" library="RCLDT" deviceset="R" device="0805" value="600R"/>
 <part name="R_OIL_OV1" library="RCLDT" deviceset="R" device="0805" value="1k"/>
 <part name="U$22" library="Kolja" deviceset="CLM4B-RKW-CWAXBAA3" device=""/>
+<part name="R_L3" library="RCLDT" deviceset="R" device="0805" value="1k"/>
+<part name="SUPPLY22" library="supply2" deviceset="VDD" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -21158,7 +21160,7 @@ www.irf.com&lt;p&gt;
 <text x="10.668" y="170.688" size="1.778" layer="91" rot="R90">ARD_RX</text>
 <text x="-19.812" y="165.608" size="1.778" layer="91">ARD_TX</text>
 <text x="228.28" y="246.38" size="3.81" layer="95">i2c_temp</text>
-<text x="-220.98" y="66.04" size="5.08" layer="95">ATmega8</text>
+<text x="-220.98" y="66.04" size="5.08" layer="95">ATmega328P-AU</text>
 <text x="340.36" y="55.88" size="3.81" layer="95">Lichtlein &amp; Blinker</text>
 <text x="-7.62" y="53.34" size="3.81" layer="95">Instrumenten Beleuchtung</text>
 <text x="-274.828" y="101.092" size="1.6764" layer="91" rot="R180">RGB_INST</text>
@@ -21761,6 +21763,10 @@ www.irf.com&lt;p&gt;
 <instance part="R_HB5" gate="G$1" x="91.44" y="187.96" rot="R180"/>
 <instance part="R_OIL_OV1" gate="G$1" x="58.42" y="139.7" rot="R180"/>
 <instance part="U$22" gate="G$1" x="25.4" y="-76.2"/>
+<instance part="R_L3" gate="G$1" x="-142.24" y="53.34" smashed="yes">
+<attribute name="VALUE" x="-132.08" y="53.975" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="SUPPLY22" gate="G$1" x="-149.86" y="60.96"/>
 </instances>
 <busses>
 </busses>
@@ -22721,6 +22727,12 @@ www.irf.com&lt;p&gt;
 <junction x="-88.9" y="-5.08"/>
 <pinref part="PE" gate="C" pin="2"/>
 <junction x="-96.52" y="-5.08"/>
+</segment>
+<segment>
+<pinref part="R_L3" gate="G$1" pin="1"/>
+<pinref part="SUPPLY22" gate="G$1" pin="VDD"/>
+<wire x1="-147.32" y1="53.34" x2="-149.86" y2="53.34" width="0.1524" layer="91"/>
+<wire x1="-149.86" y1="53.34" x2="-149.86" y2="58.42" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="CONNECT" class="0">
@@ -23720,9 +23732,18 @@ www.irf.com&lt;p&gt;
 <pinref part="IC2" gate="G$1" pin="RESET"/>
 </segment>
 <segment>
-<wire x1="-134.62" y1="43.18" x2="-134.62" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="-134.62" y1="43.18" x2="-134.62" y2="53.34" width="0.1524" layer="91"/>
 <label x="-134.3152" y="68.6816" size="1.778" layer="95" rot="R270"/>
 <pinref part="JP2" gate="A" pin="2"/>
+<pinref part="R_L3" gate="G$1" pin="2"/>
+<wire x1="-134.62" y1="53.34" x2="-134.62" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="-137.16" y1="53.34" x2="-134.62" y2="53.34" width="0.1524" layer="91"/>
+<junction x="-134.62" y="53.34"/>
+</segment>
+<segment>
+<pinref part="IC4" gate="1" pin="(ICP1)PD4"/>
+<wire x1="-185.42" y1="162.56" x2="-170.18" y2="162.56" width="0.1524" layer="91"/>
+<label x="-182.88" y="162.56" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="P2" class="0">
