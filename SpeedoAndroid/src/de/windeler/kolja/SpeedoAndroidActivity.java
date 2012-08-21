@@ -425,7 +425,7 @@ OnClickListener {
 				filePath = data.getStringExtra(FileDialog.RESULT_PATH);
 				Log.i(TAG, "Der Resultcode war OK, der Pfad:" + filePath);
 				_firmwareBurnDialog = new firmwareBurnDialog(this);
-				_firmwareBurnDialog.execute(filePath,"GFX" + filePath.substring(filePath.lastIndexOf('/'))); // /mnt/sdcard/Download/bild.sng,
+				_firmwareBurnDialog.execute(filePath,filePath); // /mnt/sdcard/Download/bild.sng,
 			};
 			break;
 		case RESULT_CANCELED:
@@ -947,7 +947,7 @@ OnClickListener {
 			try {
 				// hier jetzt file laden in var und dann feuer
 				// shit wir müssen in den boot loader, disconnect, reconnect nötig ... hmm
-				mSerialService.uploadFirmware(params[1]);
+				mSerialService.uploadFirmware(params[1],mHandlerUpdate);
 //				Log.i("JKW","delete file passed");
 //				mSerialService.putFile(params[0], params[1], mHandlerUpdate);
 //				Log.i("JKW","put file passed");

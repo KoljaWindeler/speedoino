@@ -1230,11 +1230,11 @@ public class BluetoothSerialService {
 
 	}
 
-	public void uploadFirmware(String filename)throws IOException, InterruptedException {
+	public void uploadFirmware(String filename,Handler mHandlerUpdate)throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
 		Log.i(TAG, "uploadFirmware soll laden:"+filename);
 		byte send[] = new byte[256*1024]; // so groß wie es maximal werten kann, 256k
-		if(false){
+		if(true){
 			// open File
 			File file = new File(filename);
 			FileInputStream in = null;
@@ -1246,6 +1246,8 @@ public class BluetoothSerialService {
 			byte hex_sentence[]=new byte[100]; // nur eine hex zeile
 			int byte_read=999; // wieviel byte hab ich gelesen
 			int file_pos=0; // pointer of position in file
+			int highes_pos=0;
+			int overflow=0;
 
 			while(byte_read>0){
 				byte_read=0;
@@ -1255,26 +1257,67 @@ public class BluetoothSerialService {
 				int count_byte_read=0;
 				while(!new_line_found && count_byte_read<100){ // maximal 100 byte lesen, aber hauptsächlich bis umbruch
 					count_byte_read+=in.read(one_char, file_pos, 1);
-					hex_sentence[count_byte_read-1]=one_char[0];
-					if(count_byte_read>=2){
-						if(hex_sentence[count_byte_read-1]==0x0a && hex_sentence[count_byte_read-2]==0x0d){
-							new_line_found=true;
-							byte_read=count_byte_read;
+					if(count_byte_read>0){
+						hex_sentence[count_byte_read-1]=one_char[0];
+						if(count_byte_read>=2){
+							if(hex_sentence[count_byte_read-1]==0x0a && hex_sentence[count_byte_read-2]==0x0d){
+								new_line_found=true;
+								byte_read=count_byte_read;
+							}
+						} else if(count_byte_read==0){
+							count_byte_read=100;
 						}
-					} else if(count_byte_read==0){
-						count_byte_read=100;
-					}
+					};
 				};
 				// jetzt haben wir ein satz gelesen, parsen wir ihn also
 				if(new_line_found){
 					if(hex_sentence[0]==0x3a && hex_sentence[7]==0x30 && hex_sentence[8]==0x30){
-						int length=(hex_sentence[1]-0x30)<<8 | (hex_sentence[2]-0x30);
-						int offset=(hex_sentence[3]-0x30)<<24 | (hex_sentence[4]-0x30)<<16 | (hex_sentence[5]-0x30)<<8 | hex_sentence[6];
-						for(int pos=offset;pos<offset+length;pos++){
-							send[pos]=hex_sentence[9+pos-offset];
+						// ascii hex to int
+						for(int i=1;i<7; i++){
+							if(hex_sentence[i]>=0x30 && hex_sentence[i]<=0x39){
+								hex_sentence[i]-=0x30;
+							} else if(hex_sentence[i]>=0x41 && hex_sentence[i]<=0x46){
+								hex_sentence[i]-=0x41;
+							}
 						}
-					}
-				}
+						
+						long length=(hex_sentence[1])<<4 | (hex_sentence[2]);
+						long offset=(hex_sentence[3])<<12 | (hex_sentence[4])<<8 | (hex_sentence[5])<<4 | (hex_sentence[6]);
+						for(long pos=0;pos<length;pos++){
+							long search_pos=9+pos;
+							
+							// da es nur 4 Byte für die adresse gibt müssen wir weiterzählen im kopf
+							if(offset>60000){
+								pos=pos+1-1;
+							}
+							pos+=overflow*65536+offset;
+							if(pos==65535){
+								overflow++;
+							}
+							
+							if(pos>=256*1024 || search_pos>=100 || pos<0){
+								pos=256*1024-1;
+							}
+							
+							Log.i(TAG,"Lese ein in Position "+pos);
+							send[(int)(pos)]=hex_sentence[(int) (search_pos)];
+							if(pos>highes_pos){ highes_pos=(int)pos; };
+						} // pos
+						
+						// fortschritt schreiben
+						Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+						Bundle bundle = new Bundle();
+
+						String shown_message=null;
+						shown_message=String.valueOf(highes_pos)+ " Byte read from hex file";
+						bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
+						msg.setData(bundle);
+						mHandlerUpdate.sendMessage(msg);
+						// fortschritt schreiben
+						
+					} // richtige hex_sequence
+				} // hab eine new line
+				new_line_found=!new_line_found;
 			};
 		};
 
