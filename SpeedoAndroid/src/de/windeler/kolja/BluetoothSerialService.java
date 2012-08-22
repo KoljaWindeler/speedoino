@@ -26,16 +26,11 @@ import java.io.OutputStream;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
-import de.windeler.kolja.R.string;
-import de.windeler.kolja.SpeedoAndroidActivity.getFileDialog;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.graphics.LightingColorFilter;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -82,7 +77,7 @@ public class BluetoothSerialService {
 
 	private static final UUID SerialPortServiceClass_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-	public BluetoothDevice last_connected_device;
+	public BluetoothDevice last_connected_device=null;
 
 	// Member fields
 	private final BluetoothAdapter mAdapter;
@@ -182,7 +177,7 @@ public class BluetoothSerialService {
 	 * Start the ConnectThread to initiate a connection to a remote device.
 	 * @param device  The BluetoothDevice to connect
 	 */
-	public synchronized void connect(BluetoothDevice device) {
+	public synchronized void connect(BluetoothDevice device,boolean goto_bootloader) {
 		// Cancel any thread attempting to make a connection
 		if (mState == STATE_CONNECTING) {
 			if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
@@ -196,6 +191,7 @@ public class BluetoothSerialService {
 		last_connected_device=device;
 		mConnectThread = new ConnectThread(device);
 		Log.i(TAG,"starte jetzt mConnectedThread 2");
+		mConnectThread.setGotoBootloader(goto_bootloader);
 		mConnectThread.start();
 		Log.i(TAG,"mConnectedThread ist durch 2");
 		setState(STATE_CONNECTING);
@@ -205,8 +201,9 @@ public class BluetoothSerialService {
 	 * Start the ConnectedThread to begin managing a Bluetooth connection
 	 * @param socket  The BluetoothSocket on which the connection was made
 	 * @param device  The BluetoothDevice that has been connected
+	 * @throws InterruptedException 
 	 */
-	public synchronized void connected(BluetoothSocket socket, BluetoothDevice device) {
+	public synchronized void connected(BluetoothSocket socket, BluetoothDevice device, boolean goto_bootloader) throws InterruptedException {
 		Log.i(TAG, "connected");
 
 		// Cancel the thread that completed the connection
@@ -235,47 +232,58 @@ public class BluetoothSerialService {
 		mHandler.sendMessage(msg);
 
 		setState(STATE_CONNECTED_AND_SEARCHING);
-		
-		//wait 5 sec to prevent goint to bootloader
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		int failCounter=0;
-		final String TAG_LOGIN = "LOGIN";
-		while(!preamble_found){
-			byte send[] = new byte[1];
-			send[0] = CMD_SIGN_ON;
-			Log.i(TAG_LOGIN,"sign_on sendet");
+
+		if(!goto_bootloader){
+			//wait 5 sec to prevent goint to bootloader
 			try {
-				send(send, 1,1000);
+				Thread.sleep(6000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
-				semaphore.release();
 				e.printStackTrace();
 			}
-		
-			semaphore.release();
+
+
+			int failCounter=0;
+			final String TAG_LOGIN = "LOGIN";
 			
-			if(status==ST_EMERGENCY_RELEASE){
-				Log.i(TAG_LOGIN,"sign_on notfall release");
-				// hier sowas wie: 
-				failCounter++;
-				if(failCounter>30){
-					Log.i(TAG_LOGIN,"sign_on mehr als 30 versuche");
-					setState(STATE_NONE);
+			//setState(STATE_CONNECTED);
+			
+			while(!preamble_found){
+				byte send[] = new byte[1];
+				send[0] = CMD_SIGN_ON;
+				Log.i(TAG_LOGIN,"sign_on sendet");
+				try {
+					send(send, 1,1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					semaphore.release();
+					e.printStackTrace();
+				}
+
+				// dadurch das wir nur einen semaphor token haben, und den schon send hat müssen wir hier warten
+				// bis a) receive den frei gibt oder b) der timer, dann bekommen wir den und können den gleich zurück
+				// geben, wir wollen ja nur solange gebremst werden.
+				Log.i(TAG_SEM,"connected thread wartet");
+				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+				semaphore.acquire();
+				semaphore.release();
+
+				if(status==ST_EMERGENCY_RELEASE){
+					Log.i(TAG_LOGIN,"sign_on notfall release");
+					// hier sowas wie: 
+					failCounter++;
+					if(failCounter>30){
+						Log.i(TAG_LOGIN,"sign_on mehr als 30 versuche");
+						setState(STATE_NONE);
+						break;
+					}
+				} else { 
+					setState(STATE_CONNECTED);
+					Log.i(TAG_LOGIN,"sign_on done");
 					break;
 				}
-			} else { 
-				setState(STATE_CONNECTED);
-				Log.i(TAG_LOGIN,"sign_on done");
-				break;
 			}
 		}
-		
 	}
 
 	/**
@@ -307,7 +315,7 @@ public class BluetoothSerialService {
 		ConnectedThread r;
 		// Synchronize a copy of the ConnectedThread
 		synchronized (this) {
-			if (mState != STATE_CONNECTED) return;
+			//if (mState != STATE_CONNECTED) return;
 			r = mConnectedThread;
 		}
 		// Perform the write unsynchronized
@@ -333,10 +341,10 @@ public class BluetoothSerialService {
 	/**
 	 * Indicate that the connection was lost and notify the UI Activity.
 	 */
-	private void connectionLost() {
-		setState(STATE_NONE);
-		BluetoothSerialService.this.start();
-	}
+	//	private void connectionLost() {
+	//		setState(STATE_NONE);
+	//		BluetoothSerialService.this.start();
+	//	}
 
 	/**
 	 * This thread runs while attempting to make an outgoing connection
@@ -346,6 +354,7 @@ public class BluetoothSerialService {
 	private class ConnectThread extends Thread {
 		private final BluetoothSocket mmSocket;
 		private final BluetoothDevice mmDevice;
+		private boolean goto_bootloader=false;
 
 		public ConnectThread(BluetoothDevice device) {
 			mmDevice = device;
@@ -360,6 +369,10 @@ public class BluetoothSerialService {
 				Log.e(TAG, "create() failed", e);
 			}
 			mmSocket = tmp;
+		}
+
+		public void setGotoBootloader(boolean b) {
+			goto_bootloader=b;			
 		}
 
 		public void run() {
@@ -395,7 +408,12 @@ public class BluetoothSerialService {
 			}
 
 			// Start the connected thread
-			connected(mmSocket, mmDevice);
+			try {
+				connected(mmSocket, mmDevice, goto_bootloader);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		public void cancel() {
@@ -487,7 +505,7 @@ public class BluetoothSerialService {
 	public void reset_seq() {
 		seqNum=0;
 	}
-	
+
 	public int send(byte data[],int msgLength ) throws InterruptedException {
 		return send(data,msgLength,2000);
 	}
@@ -571,8 +589,8 @@ public class BluetoothSerialService {
 				reset_seq();
 				Log.i(TAG,"timer notfall, gebe semaphore zurueck");
 				Log.i(TAG_RECV,"timer notfall, gebe semaphore zurueck");
-				//semaphore.release();
-				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+				semaphore.release();
+				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei durch notfall");
 				Log.i(TAG_SEM,"Notfall timer hat den semaphore zurueck gegeben");
 				status=ST_EMERGENCY_RELEASE;
 
@@ -1231,7 +1249,6 @@ public class BluetoothSerialService {
 	}
 
 	public void uploadFirmware(String filename,Handler mHandlerUpdate)throws IOException, InterruptedException {
-		// TODO Auto-generated method stub
 		Log.i(TAG, "uploadFirmware soll laden:"+filename);
 		byte send[] = new byte[256*1024]; // so groß wie es maximal werten kann, 256k
 		if(true){
@@ -1246,10 +1263,10 @@ public class BluetoothSerialService {
 			byte hex_sentence[]=new byte[100]; // nur eine hex zeile
 			int byte_read=999; // wieviel byte hab ich gelesen
 			int file_pos=0; // pointer of position in file
-			int highes_pos=0;
+			long highes_pos=0;
 			int overflow=0;
 
-			while(byte_read>0){
+			while(byte_read>0 && false){
 				byte_read=0;
 				// eine Zeile einlesen
 				byte[] one_char=new byte[1];
@@ -1257,7 +1274,7 @@ public class BluetoothSerialService {
 				int count_byte_read=0;
 				while(!new_line_found && count_byte_read<100){ // maximal 100 byte lesen, aber hauptsächlich bis umbruch
 					count_byte_read+=in.read(one_char, file_pos, 1);
-					if(count_byte_read>0){
+					if(count_byte_read>0 && count_byte_read<100){
 						hex_sentence[count_byte_read-1]=one_char[0];
 						if(count_byte_read>=2){
 							if(hex_sentence[count_byte_read-1]==0x0a && hex_sentence[count_byte_read-2]==0x0d){
@@ -1267,57 +1284,97 @@ public class BluetoothSerialService {
 						} else if(count_byte_read==0){
 							count_byte_read=100;
 						}
-					};
+					} else if(count_byte_read<0) {
+						new_line_found=false;
+						byte_read=0;
+						break;
+					}
 				};
 				// jetzt haben wir ein satz gelesen, parsen wir ihn also
 				if(new_line_found){
 					if(hex_sentence[0]==0x3a && hex_sentence[7]==0x30 && hex_sentence[8]==0x30){
+						// generate length and offset of the acutal read line
 						// ascii hex to int
+						// e.g. ": 10 FFF0 00 	CF D9 00 E0 10 E0 55 C6 C7 01 62 E0 76 E1 0F 94 	6A"
 						for(int i=1;i<7; i++){
-							if(hex_sentence[i]>=0x30 && hex_sentence[i]<=0x39){
-								hex_sentence[i]-=0x30;
-							} else if(hex_sentence[i]>=0x41 && hex_sentence[i]<=0x46){
-								hex_sentence[i]-=0x41;
+							if(hex_sentence[i]>='0' && hex_sentence[i]<='9'){
+								hex_sentence[i]-='0';
+							} else if(hex_sentence[i]>='A' && hex_sentence[i]<='F'){
+								hex_sentence[i]-=('A'-10);
 							}
 						}
-						
-						long length=(hex_sentence[1])<<4 | (hex_sentence[2]);
-						long offset=(hex_sentence[3])<<12 | (hex_sentence[4])<<8 | (hex_sentence[5])<<4 | (hex_sentence[6]);
-						for(long pos=0;pos<length;pos++){
-							long search_pos=9+pos;
-							
+						// e.g. length = 0x10, offset = 0xFFF0
+						int length=(hex_sentence[1])<<4 | (hex_sentence[2]);
+						int offset=(hex_sentence[3])<<12 | (hex_sentence[4])<<8 | (hex_sentence[5])<<4 | (hex_sentence[6]);
+
+						// run the whole length and copy the data from the sencence to the send array
+						// e.g. pos=[0..16]
+						for(int pos=0;pos<length;pos++){
+							// to have the postion in the hex string
+							// since pos = [0..length_from_header]
+							// but the data are in [9..length_from_header+9] so we have to add 9
+							// in addition the result byte are dobbled in the hex sentence
+							// e.g. pos_in_hex_sentence=[9..2*16+9]=[9..41], pos_in_send_array=[0..16]
+							int pos_in_hex_sentence=2*pos+9;
+							int pos_in_send_array=pos;
+
 							// da es nur 4 Byte für die adresse gibt müssen wir weiterzählen im kopf
+
+							// debug
 							if(offset>60000){
-								pos=pos+1-1;
+								pos_in_send_array=pos_in_send_array+1-1;
 							}
-							pos+=overflow*65536+offset;
-							if(pos==65535){
+							// debug
+
+							// wir sind auf jeden fall um den offset weiter 
+							// und eventuell sogar noch um bis zu dreimal den overflow
+							// e.g. pos_in_send_array=[0xFFF0 .. 0xFFF0+0x10]=[0xFFF0 .. 0x10000]=[65520 .. 65536]
+							pos_in_send_array+=offset;
+							pos_in_send_array+=overflow*65536;
+							if(pos_in_send_array==65535 || pos_in_send_array==131071 || pos_in_send_array==196607){
 								overflow++;
 							}
-							
-							if(pos>=256*1024 || search_pos>=100 || pos<0){
-								pos=256*1024-1;
-							}
-							
-							Log.i(TAG,"Lese ein in Position "+pos);
-							send[(int)(pos)]=hex_sentence[(int) (search_pos)];
-							if(pos>highes_pos){ highes_pos=(int)pos; };
-						} // pos
-						
-						// fortschritt schreiben
-						Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-						Bundle bundle = new Bundle();
+							if(pos_in_send_array>highes_pos){ highes_pos=pos_in_send_array; };
 
-						String shown_message=null;
-						shown_message=String.valueOf(highes_pos)+ " Byte read from hex file";
-						bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
-						msg.setData(bundle);
-						mHandlerUpdate.sendMessage(msg);
+							//debug
+							if(pos_in_send_array>=256*1024 || pos_in_hex_sentence>=100 || pos_in_send_array<0|| pos_in_hex_sentence<0){
+								pos_in_send_array=256*1024-1;
+							}
+							Log.i(TAG,"Lese ein in Position "+pos);
+							//debug
+
+
+							// convert from ascii hex to byte hex
+							// since a byte (0x00-0xff) is based on two hex values (0x0-0xf) and the hex_sentence has a byte (0x30-0x39,0x41-0x46) per ascii hex(0x0-0x9,0xA-0xF)
+							// after conversion from ascii hex to hex we have to build a byte out of the the hex digits, by adding the upper hex, shifted by 4 bit to the lower hex
+							// e.g. pos_in_hex_sentence=[9..41], pos_in_send_array=[65520 .. 65536]
+							// e.g. pos=0 pos_in_send_array[65520]=pos_in_hex_sentence[9]<4 | pos_in_hex_sentence[10]
+							// e.g. pos=1 pos_in_send_array[65521]=pos_in_hex_sentence[11]<4 | pos_in_hex_sentence[12]
+							for(int i=pos_in_hex_sentence;i<=pos_in_hex_sentence+1; i++){
+								if(hex_sentence[i]>='0' && hex_sentence[i]<='9'){
+									hex_sentence[i]-='0';
+								} else if(hex_sentence[i]>='A' && hex_sentence[i]<='F'){
+									hex_sentence[i]-=('A'-10);
+								}
+							}		
+							send[pos_in_send_array]=(byte) ((hex_sentence[pos_in_hex_sentence]&0x0F)<<4 | (hex_sentence[pos_in_hex_sentence+1]&0x0F));
+						} // pos
+
+						if(highes_pos%5==0){
+							// fortschritt schreiben
+							Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+							Bundle bundle = new Bundle();
+
+							String shown_message=null;
+							shown_message=String.valueOf(Math.floor(highes_pos/100)/10)+" KB read from hex file";
+							bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
+							msg.setData(bundle);
+							mHandlerUpdate.sendMessage(msg);
+						}
 						// fortschritt schreiben
-						
+
 					} // richtige hex_sequence
 				} // hab eine new line
-				new_line_found=!new_line_found;
 			};
 		};
 
@@ -1328,7 +1385,61 @@ public class BluetoothSerialService {
 		// Get the BLuetoothDevice object
 		// Attempt to connect to the device
 		// delay
-		connect(last_connected_device);
+		if(last_connected_device!=null){
+			connect(last_connected_device,true);
+		} else {
+			// this should not be possible, deaktivate buttons!!
+		}
+		
+		// jetzt stk500v2 kompatibel die versionsnummer abfragen
+		int failCounter=0;
+		final String TAG_LOGIN = "LOGIN";
+		preamble_found=false;
+		while(!preamble_found){
+			byte send2[] = new byte[20];
+			send2[0] = CMD_SIGN_ON;
+			Log.i(TAG_LOGIN,"sign_on sendet");
+			try {
+				send(send2, 1,50);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				semaphore.release();
+				e.printStackTrace();
+			}
+
+			Log.i(TAG_SEM,"firmwareflash wartet");
+			Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+			semaphore.acquire();
+			semaphore.release();
+
+			if(status==ST_EMERGENCY_RELEASE){
+				Log.i(TAG_LOGIN,"sign_on notfall release");
+				// hier sowas wie: 
+				failCounter++;
+				if(failCounter>30){
+					Log.i(TAG_LOGIN,"sign_on mehr als 30 versuche");
+					setState(STATE_NONE);
+					break;
+				}
+			} else { 	
+				setState(STATE_CONNECTED);
+				Log.i(TAG_LOGIN,"sign_on done");
+				send2[0]=0x1D;
+				send2[4]=0x30;
+				send2[6]=0x00;
+				send(send2,7,100);
+				Log.i(TAG_SEM,"sign on wartet");
+				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+				semaphore.acquire();
+				semaphore.release();
+				if(status==ST_EMERGENCY_RELEASE){
+					Log.i(TAG_LOGIN,"Could not get sinature");
+				} else { 
+					Log.i(TAG_LOGIN,"Signature found");
+				};
+				break;
+			}
+		}
 		// send "go to 0" on and on, until there is a answere
 		// for 0 .. 
 

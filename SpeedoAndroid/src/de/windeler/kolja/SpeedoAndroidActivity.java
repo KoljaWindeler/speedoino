@@ -315,7 +315,7 @@ OnClickListener {
 						.getRemoteDevice(address);
 				// Attempt to connect to the device
 				Log.e(TAG, "Device selected, connecting ...");
-				mSerialService.connect(device);
+				mSerialService.connect(device,false);
 			}
 			break;
 
