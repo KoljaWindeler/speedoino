@@ -514,6 +514,7 @@ int main(void)
 	clear_screen();
 	//_delay_ms(2);
 	msgLength		=	11;
+	msgBuffer[0] 	=	CMD_SIGN_ON;
 	msgBuffer[1] 	=	STATUS_CMD_OK;
 	msgBuffer[2] 	=	8;
 	msgBuffer[3] 	=	'A';
