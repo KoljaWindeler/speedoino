@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.2">
+<eagle version="6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -23452,6 +23452,7 @@ www.irf.com&lt;p&gt;
 <segment>
 <wire x1="-241.3" y1="-35.56" x2="-226.06" y2="-35.56" width="0.1524" layer="91"/>
 <label x="-246.38" y="-35.56" size="1.778" layer="95"/>
+<pinref part="U$1" gate="G$1" pin="(!RESET!/PCINT14)PC6"/>
 </segment>
 <segment>
 <wire x1="-134.62" y1="43.18" x2="-134.62" y2="53.34" width="0.1524" layer="91"/>
