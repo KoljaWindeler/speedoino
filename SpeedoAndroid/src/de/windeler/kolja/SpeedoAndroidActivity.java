@@ -38,9 +38,10 @@ public class SpeedoAndroidActivity extends TabActivity implements
 OnClickListener {
 	// Name of the connected device
 	private static final String TAG = "JKW";
-
 	private MenuItem mMenuItemConnect;
-	private BluetoothAdapter mBluetoothAdapter = null;
+	public BluetoothAdapter mBluetoothAdapter = null;
+	private String firmware_flash_filename=null;
+	private String firmware_flash_bluetooth_device=null;
 	public static final String DEVICE_NAME = "device_name";
 	public static final String TOAST = "toast";
 	public static final String result = "result";
@@ -93,6 +94,7 @@ OnClickListener {
 	public static final int MESSAGE_SET_VERSION = 9;
 	public static final int MESSAGE_SET_LOG = 10;
 	public static final int MESSAGE_DIR_APPEND = 11;
+	public static final int MESSAGE_CREATE_CONNECTION = 12;
 
 	private static final int REQUEST_CONNECT_DEVICE = 1;
 	private static final int REQUEST_ENABLE_BT = 2;
@@ -103,7 +105,8 @@ OnClickListener {
 	private static final int REQUEST_CONVERT_MAP = 8; // convert maps
 	private static final int REQUEST_SHOW_MAP = 9; // open maps
 	private static final int REQUEST_SHOW_MAP_DONE = 10; // open maps
-	private static final int REQUEST_UPLOAD_FIRMWARE = 11; // open maps
+	private static final int REQUEST_UPLOAD_FIRMWARE = 11; // firmware
+	private static final int REQUEST_SELECTED_DEVICE = 12; // get selected bluetooth device
 
 
 	// transfer messages
@@ -223,37 +226,37 @@ OnClickListener {
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		// If the adapter is null, then Bluetooth is not supported
 		if (mBluetoothAdapter == null) {
-			toast = Toast.makeText(this, "Bluetooth is not available",
-					Toast.LENGTH_LONG);
-			toast.show();
-			// finish();
-			return;
+		toast = Toast.makeText(this, "Bluetooth is not available",
+		Toast.LENGTH_LONG);
+		toast.show();
+		// finish();
+		return;
 		}
-
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////// Bluetooth startup & shutdown /////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public void onStart() {
 		super.onStart();
-
 		// If BT is not on, request that it be enabled.
 		// setupChat() will then be called during onActivityResult
 		if (mBluetoothAdapter != null) {
 			if (!mBluetoothAdapter.isEnabled()) {
-				Intent enableIntent = new Intent(
-						BluetoothAdapter.ACTION_REQUEST_ENABLE);
-				startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-				// Otherwise, setup the chat session
+			Intent enableIntent = new Intent(
+			BluetoothAdapter.ACTION_REQUEST_ENABLE);
+			startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+			// Otherwise, setup the chat session
 			} else {
-				if (mSerialService == null)
-					setupBT();
+			if (mSerialService == null)
+			setupBT();
 			}
-		}
+			}
 	}
 
 	private void setupBT() {
 		Log.d(TAG, "setupBT()");
-
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		mSerialService = new BluetoothSerialService(this, mHandlerBT);
 	}
@@ -267,7 +270,14 @@ OnClickListener {
 		Log.e(TAG, "--- ON DESTROY ---");
 
 	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////// Bluetooth startup & shutdown /////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////// men� & buttons steuerung ///////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -298,7 +308,139 @@ OnClickListener {
 		}
 		return false;
 	}
+	
+	@Override
+	public void onClick(View arg0) {
+		Intent intent; // reusable
+		switch (arg0.getId()) {
+		case R.id.button_left:
+			byte send2[] = new byte[1];
+			send2[0] = CMD_GO_LEFT;
+			try {
+				Log.i("SEND","goleft()");
+				mSerialService.send(send2, 1);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			break;
+		case R.id.button_up:
+			byte send3[] = new byte[1];
+			send3[0] = CMD_GO_UP;
+			try {
+				Log.i("SEND","goup()");
+				mSerialService.send(send3, 1);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			break;
+		case R.id.button_right:
+			byte send4[] = new byte[1];
+			send4[0] = CMD_GO_RIGHT;
+			try {
+				Log.i("SEND","goright()");
+				mSerialService.send(send4, 1);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			break;
+		case R.id.button_down:
+			byte send5[] = new byte[1];
+			send5[0] = CMD_GO_DOWN;
+			try {
+				Log.i("SEND","godown()");
+				mSerialService.send(send5, 1);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			break;
+		case R.id.browseToUploadMap:
+			intent = new Intent(getBaseContext(), FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_OPEN_MAP);
+			break;
+		case R.id.browseToUploadConfig:
+			intent = new Intent(getBaseContext(), FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_OPEN_CONFIG);
+			break;
+		case R.id.browseToUploadGfx:
+			intent = new Intent(getBaseContext(), FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_OPEN_GFX);
+			break;
+		case R.id.loadRoot:
+			_getDirDialog = new getDirDialog(this);
+			_getDirDialog.execute("/");
+			break;
+		case R.id.DownloadButtonSelect:
+			Log.i(TAG, "download gedrueckt");
+			_getFileDialog = new getFileDialog(this);
+			_getFileDialog.execute(t2a_dest, dl_basedir, String.valueOf(t2a_size));
+			break;
+		case R.id.DeleteButton:
+			Log.i(TAG, " delete gedrueckt!");
+			_delFileDialog = new delFileDialog(this);
+			_delFileDialog.execute(t2a_dest);
+			break;
+		case R.id.browseToRouteMap:
+			intent = new Intent(getBaseContext(), FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_SHOW_MAP);
+			break;
+		case R.id.browseToUploadFirmware:
+			firmware_update(1,null,null);
+			break;
+		default:
+			Log.i(TAG, "Hier wurde was geklickt das ich nicht kenne!!");
+			break;
+		}
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			if (back_pushed == 1) {
+				mSerialService.stop();
+				mSerialService.start();
+				update_visible_elements(false);
+				finish();
+			} else {
+				toast = Toast.makeText(this,
+						this.getString(R.string.push_back_twice),
+						Toast.LENGTH_LONG);
+				toast.show();
+				back_pushed = 1;
+				// install guard, 2sec until check of receive
+				mTimerHandle.removeCallbacks(mCheckDoublePushBack);
+				mTimerHandle.postDelayed(mCheckDoublePushBack, 2000);
+			}
+		} else if (keyCode == KeyEvent.KEYCODE_HOME) {
+			mSerialService.stop();
+			mSerialService.start();
+			finish();
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+		return true;
+	}
 
+	// just resetting the "back" pushed
+	private Runnable mCheckDoublePushBack = new Runnable() {
+		public void run() {
+			back_pushed = 0;
+		}
+	};
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////// men� & buttons steuerung ///////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// externe activitys steuern ///////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult " + resultCode + " " + requestCode);
 		String filePath;
@@ -311,11 +453,25 @@ OnClickListener {
 				String address = data.getExtras().getString(
 						DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 				// Get the BLuetoothDevice object
-				BluetoothDevice device = mBluetoothAdapter
-						.getRemoteDevice(address);
+				BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 				// Attempt to connect to the device
 				Log.e(TAG, "Device selected, connecting ...");
-				mSerialService.connect(device,false);
+				try {
+					mSerialService.connect(device,false);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			break;
+			
+		case REQUEST_SELECTED_DEVICE:
+			if (resultCode == Activity.RESULT_OK) {
+				// Get the device MAC address
+				String address = data.getExtras().getString(
+						DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+				// tell firmware update which device has been selected
+				firmware_update(0,null,address);
 			}
 			break;
 
@@ -420,12 +576,11 @@ OnClickListener {
 			};
 			break;
 		case REQUEST_UPLOAD_FIRMWARE:
-			// hier jetzt die firmware laden, und dann übertragen... huijuijui
+			// hier jetzt die firmware laden, und dann �bertragen... huijuijui
 			if (resultCode == RESULT_OK) {
 				filePath = data.getStringExtra(FileDialog.RESULT_PATH);
 				Log.i(TAG, "Der Resultcode war OK, der Pfad:" + filePath);
-				_firmwareBurnDialog = new firmwareBurnDialog(this);
-				_firmwareBurnDialog.execute(filePath,filePath); // /mnt/sdcard/Download/bild.sng,
+				firmware_update(0,filePath, null); // mit dateinamen starten
 			};
 			break;
 		case RESULT_CANCELED:
@@ -436,7 +591,14 @@ OnClickListener {
 			break;
 		}
 	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// externe activitys steuern ///////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////// BLUETOOTH connection handling /////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 	private int getStatusLastCommand() {
 		return statusLastCommand;
 	}
@@ -444,347 +606,15 @@ OnClickListener {
 	private void setStatusLastCommand(int status) {
 		statusLastCommand = status;
 	}
-
-	// The Handler that gets information back from the BluetoothService
-	private final Handler mHandlerBT = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-
-			// state switch
-			case MESSAGE_STATE_CHANGE:
-				Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-
-				switch (msg.arg1) {
-				case BluetoothSerialService.STATE_CONNECTED:
-					if (mStatus != null) {
-						mStatus.setText("Connected,Speedoino found");
-					};
-
-					update_visible_elements(true);
-
-					toast = Toast.makeText(getApplicationContext(),
-							"Connected, Speedoino found", Toast.LENGTH_SHORT);
-					toast.show();
-
-					mTimerHandle.postDelayed(mCheckVer, 500);
-					break;
-
-				case BluetoothSerialService.STATE_CONNECTING:
-					if (mMenuItemConnect != null) {
-						// mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-						mMenuItemConnect.setTitle(R.string.disconnect);
-					}
-					if (mStatus != null) {
-						mStatus.setText("Connecting...");
-					}
-					;
-					toast = Toast.makeText(getApplicationContext(),
-							"Connecting ...", Toast.LENGTH_SHORT);
-					toast.show();
-					break;
-
-				case BluetoothSerialService.STATE_NONE:
-					if (mStatus != null) {
-						mStatus.setText(R.string.not_connected);
-					}
-					;
-					if (mVersion != null) {
-						mVersion.setText(R.string.bindestrich);
-					}
-					;
-					if (mLog != null) {
-						mLog.setText(R.string.bindestrich);
-					}
-					;
-
-					update_visible_elements(false);
-
-					TextView mselfile = (TextView) findViewById(R.id.dl_selected_file);
-					mselfile.setText(R.string.no_selected_file);
-
-					toast = Toast.makeText(getApplicationContext(),
-							"Connection closed...", Toast.LENGTH_SHORT);
-					toast.show();
-					break;
-
-				case BluetoothSerialService.STATE_CONNECTED_AND_SEARCHING:
-					if (mStatus != null) {
-						mStatus.setText("Connected, searching...");
-					}
-					;
-					break;
-				}
-				break;
-
-				// display popup
-			case MESSAGE_TOAST: // ?
-				toast = Toast.makeText(getApplicationContext(), msg.getData()
-						.getString(TOAST), Toast.LENGTH_SHORT);
-				setStatusLastCommand(msg.getData().getInt(result));
-				toast.show();
-				break;
-
-			case MESSAGE_SET_LOG:
-				mLog.setText(msg.getData().getString(TOAST));
-				break;
-
-			case MESSAGE_SET_VERSION:
-				mVersion.setText(msg.getData().getString(TOAST));
-				break;
-
-			case MESSAGE_DIR_APPEND:
-
-				if (dir_completed == true) {
-					dir_completed = false;
-					mDownload.setText("");
-					filesMap.clear();
-					typeMap.clear();
-					sizeMap.clear();
-					dirsMap.clear();
-					mList.clear();
-				};
-				String name = msg.getData().getString("name");
-				int type = msg.getData().getInt("type");
-				long size = msg.getData().getLong("size");
-
-				Log.i(TAG,
-						"CMD:" + name + " item nr:"
-								+ String.valueOf(mSerialService.item));
-
-				if (type == 1) { // file
-					filesMap.put(name, name);
-					typeMap.put(name, 1);
-					sizeMap.put(name, size);
-				} else if (type == 2) { // dir
-					dirsMap.put(name, name);
-					typeMap.put(name, 2);
-					sizeMap.put(name, size);
-				};
-				if (type == STATUS_EOF) {
-					dir_completed = true;
-					Log.d(TAG, "beginne liste aufzubauen");
-
-					// send to display												
-					SimpleAdapter fileList = new SimpleAdapter(getApplicationContext(), mList,
-							R.layout.file_dialog_row,
-							new String[] { ITEM_KEY, ITEM_IMAGE, ITEM_KEY_LOW }, new int[] {
-						R.id.fdrowtext, R.id.fdrowimage, R.id.fdrowtext_lower });
-
-					if (dir_path != "/") {
-						addItem("/", R.drawable.folder,-1);
-						typeMap.put("/", 2);
-					};
-
-					for (String dir : dirsMap.tailMap("").values()) {
-						if (dir.toString().length() > 23) {
-							addItem(dir.toString().substring(0, 20) + "...",R.drawable.folder,-1);
-						} else {
-							addItem(dir, R.drawable.folder,-1);
-						}
-					}
-
-					for (String file : filesMap.tailMap("").values()) {
-						long file_size=0;
-						file_size = sizeMap.get(file);
-						if (file.toString().length() > 23) {
-							addItem(file.toString().substring(0, 20) + "...",R.drawable.file,file_size);
-						} else {
-							addItem(file, R.drawable.file,file_size);
-						}
-					}
-					mDLListView.setAdapter(fileList);
-
-					mDLListView
-					.setOnItemClickListener(new OnItemClickListener() {
-						public void onItemClick(AdapterView<?> arg0,
-								View arg1, int arg2, long arg3) {
-							String name = null;
-							Integer type = 0;
-							Long size = (long) 0;
-							HashMap<String, Object> item = new HashMap<String, Object>();
-
-							item = mList.get(arg2);
-							name = (String) item.get(ITEM_KEY);
-							type = typeMap.get(name);
-							size = sizeMap.get(name);
-
-							if (type == 1) {
-								t2a_dest = "";
-								if (dir_path != "/") // z.B. CONFIG
-									t2a_dest = dir_path + "/"; // CONFIG/
-								t2a_dest = t2a_dest + name; // CONFIG/BASE.TXT
-								t2a_size = size;
-
-								TextView mselfile = (TextView) findViewById(R.id.dl_selected_file);
-								mselfile.setText("Selected file: "
-										+ t2a_dest);
-
-								DlselButton.setEnabled(true);
-								DeleteButton.setEnabled(true);
-							} else if (type == 2) {
-								dir_path = name;
-								_getDirDialog = new getDirDialog(arg0
-										.getContext());
-								_getDirDialog.execute(name);
-							}
-						} // public void onItemClick(A
-					}); // setOnItemClickListener(...
-				} // if(type==STATUS_EOF){
-				break;
-
-			case MESSAGE_CMD_UNKNOWN:
-				mLog.setText(R.string.unknown);
-				toast = Toast.makeText(getApplicationContext(),
-						R.string.unknown, Toast.LENGTH_SHORT);
-				toast.show();
-				break;
-
-			case MESSAGE_CMD_FAILED:
-				mLog.setText(R.string.noresponse);
-				toast = Toast.makeText(getApplicationContext(),
-						R.string.noresponse, Toast.LENGTH_SHORT);
-				toast.show();
-				break;
-
-				// show device popup
-			case MESSAGE_DEVICE_NAME:
-				// save the connected device's name
-				toast = Toast.makeText(getApplicationContext(),
-						"Connected, searching Speedoino", Toast.LENGTH_SHORT);
-				toast.show();
-				break;
-
-			}
-		}
-	};
-
-	@Override
-	public void onClick(View arg0) {
-		Intent intent; // reusable
-		switch (arg0.getId()) {
-		case R.id.button_left:
-			byte send2[] = new byte[1];
-			send2[0] = CMD_GO_LEFT;
-			try {
-				mSerialService.send(send2, 1);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			break;
-		case R.id.button_up:
-			byte send3[] = new byte[1];
-			send3[0] = CMD_GO_UP;
-			try {
-				mSerialService.send(send3, 1);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			break;
-		case R.id.button_right:
-			byte send4[] = new byte[1];
-			send4[0] = CMD_GO_RIGHT;
-			try {
-				mSerialService.send(send4, 1);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			break;
-		case R.id.button_down:
-			byte send5[] = new byte[1];
-			send5[0] = CMD_GO_DOWN;
-			try {
-				mSerialService.send(send5, 1);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			break;
-		case R.id.browseToUploadMap:
-			intent = new Intent(getBaseContext(), FileDialog.class);
-			intent.putExtra(FileDialog.START_PATH, dl_basedir);
-			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
-			startActivityForResult(intent, REQUEST_OPEN_MAP);
-			break;
-		case R.id.browseToUploadConfig:
-			intent = new Intent(getBaseContext(), FileDialog.class);
-			intent.putExtra(FileDialog.START_PATH, dl_basedir);
-			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
-			startActivityForResult(intent, REQUEST_OPEN_CONFIG);
-			break;
-		case R.id.browseToUploadGfx:
-			intent = new Intent(getBaseContext(), FileDialog.class);
-			intent.putExtra(FileDialog.START_PATH, dl_basedir);
-			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
-			startActivityForResult(intent, REQUEST_OPEN_GFX);
-			break;
-		case R.id.loadRoot:
-			_getDirDialog = new getDirDialog(this);
-			_getDirDialog.execute("/");
-			break;
-		case R.id.DownloadButtonSelect:
-			Log.i(TAG, "download gedrueckt");
-			_getFileDialog = new getFileDialog(this);
-			_getFileDialog.execute(t2a_dest, dl_basedir, String.valueOf(t2a_size));
-			break;
-		case R.id.DeleteButton:
-			Log.i(TAG, " delete gedrueckt!");
-			_delFileDialog = new delFileDialog(this);
-			_delFileDialog.execute(t2a_dest);
-			break;
-		case R.id.browseToRouteMap:
-			intent = new Intent(getBaseContext(), FileDialog.class);
-			intent.putExtra(FileDialog.START_PATH, dl_basedir);
-			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
-			startActivityForResult(intent, REQUEST_SHOW_MAP);
-			break;
-		case R.id.browseToUploadFirmware:
-			intent = new Intent(getBaseContext(), FileDialog.class);
-			intent.putExtra(FileDialog.START_PATH, dl_basedir);
-			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
-			startActivityForResult(intent, REQUEST_UPLOAD_FIRMWARE);
-			break;
-		default:
-			Log.i(TAG, "Hier wurde was geklickt das ich nicht kenne!!");
-			break;
-		}
-	}
-
-	private void addItem(String fileName, int imageId, long size) {
-		HashMap<String, Object> item = new HashMap<String, Object>();
-		item.put(ITEM_KEY, fileName);
-		if(size>=100*1024*1024){ // ab 100mb
-			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+" MB");
-		} else if(size>=10*1024*1024){ // ab 10mb
-			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+"."+String.valueOf((size/1024/102)%10)+" MB");
-		} else if(size>=1024*1024){ // ab 1mb
-			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+"."+String.valueOf((size/1024/10)%100)+" MB");
-		} else if(size>=100*1024){ // ab 100kb
-			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+" KB");
-		} else if(size>=10*1024){ // ab 10kb
-			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+"."+String.valueOf((size/102)%10)+" KB");
-		} else if(size>=1024){ // ab 1kb
-			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+"."+String.valueOf((size/10)%100)+" KB");
-		} else if(size>0){	// solange es nicht 0 ist
-			item.put(ITEM_KEY_LOW, String.valueOf(size)+" Byte");
-		} else {
-			item.put(ITEM_KEY_LOW, " ");
-		};
-		item.put(ITEM_IMAGE, imageId);
-		mList.add(item);
-	}
-
-	private Runnable mCheckVer = new Runnable() {
-		public void run() {
-			byte send[] = new byte[1];
-			send[0] = CMD_SIGN_ON;
-			try {
-				mSerialService.send(send, 1);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	};
-
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////// BLUETOOTH connection handling /////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////// BLUETOOTH classes for function in background ////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// klasse die das loading fenster startet und im hintergrund "dir" ausfuehrt
 	protected class getDirDialog extends AsyncTask<String, Integer, String> {
 		private Context context;
@@ -929,9 +759,7 @@ OnClickListener {
 
 	}
 
-	// klasse die das updaten der firmware machen soll ... uiuiui
-	// ausfuehrt
-	
+	// klasse die das updaten der firmware machen soll ausfuehrt
 	protected class firmwareBurnDialog extends AsyncTask<String, Integer, String> {
 		private Context context;
 		ProgressDialog dialog;
@@ -943,18 +771,14 @@ OnClickListener {
 
 		@Override
 		protected String doInBackground(String... params) {
-			Log.i("JKW","starte put file");
+			Log.i("JKW","starte firmwareBurnDialog");
 			try {
-				// hier jetzt file laden in var und dann feuer
-				// shit wir müssen in den boot loader, disconnect, reconnect nötig ... hmm
-				mSerialService.uploadFirmware(params[1],mHandlerUpdate);
-//				Log.i("JKW","delete file passed");
-//				mSerialService.putFile(params[0], params[1], mHandlerUpdate);
-//				Log.i("JKW","put file passed");
-//				if (params[1].substring(0, 3).contentEquals("GFX")) {
-//					mSerialService.showgfx(params[1].substring(params[1]
-//							.lastIndexOf('/') + 1));
-//				}
+				// params[0] ist der filename
+				// params[1] ist das Bluetooth device
+				int return_value=mSerialService.uploadFirmware(params[0],mHandlerUpdate,params[1]);
+				if(return_value>0){
+					Log.i(TAG, "Warum kam denn uploadFirmware mit status "+String.valueOf(return_value)+" zurueck");
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -978,8 +802,10 @@ OnClickListener {
 		private final Handler mHandlerUpdate = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
-				dialog.setMessage(msg.getData().getString(BYTE_TRANSFERED));
-				Log.i(TAG, "update prozenzzahl");
+				if(msg.what==MESSAGE_SET_VERSION){
+					dialog.setMessage(msg.getData().getString(BYTE_TRANSFERED));
+					//Log.i(TAG, "update prozenzzahl");
+				}
 			};
 		};
 	}
@@ -1041,7 +867,305 @@ OnClickListener {
 				Log.i(TAG, "update prozenzzahl");
 			};
 		};
+	}	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////// BLUETOOTH classes for function in background ////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// The Handler that gets information back from the BluetoothService
+	private final Handler mHandlerBT = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+
+			// state switch
+			case MESSAGE_STATE_CHANGE:
+				Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+
+				switch (msg.arg1) {
+				case BluetoothSerialService.STATE_CONNECTED:
+					if (mStatus != null) {
+						mStatus.setText("Connected,Speedoino found");
+					};
+
+					update_visible_elements(true);
+
+					toast = Toast.makeText(getApplicationContext(),"Connected, Speedoino found", Toast.LENGTH_SHORT);
+					toast.show();
+
+					//mTimerHandle.postDelayed(mCheckVer, 500);
+					break;
+
+				case BluetoothSerialService.STATE_CONNECTING:
+					if (mMenuItemConnect != null) {
+						// mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+						mMenuItemConnect.setTitle(R.string.disconnect);
+					}
+					if (mStatus != null) {
+						mStatus.setText("Connecting...");
+					};
+					toast = Toast.makeText(getApplicationContext(),
+							"Connecting ...", Toast.LENGTH_SHORT);
+					toast.show();
+					break;
+
+				case BluetoothSerialService.STATE_NONE:
+					if (mStatus != null) {
+						mStatus.setText(R.string.not_connected);
+					};
+					if (mVersion != null) {
+						mVersion.setText(R.string.bindestrich);
+					};
+					if (mLog != null) {
+						mLog.setText(R.string.bindestrich);
+					};
+
+					update_visible_elements(false);
+
+					TextView mselfile = (TextView) findViewById(R.id.dl_selected_file);
+					mselfile.setText(R.string.no_selected_file);
+
+					toast = Toast.makeText(getApplicationContext(),
+							"Connection closed...", Toast.LENGTH_SHORT);
+					toast.show();
+					break;
+
+				case BluetoothSerialService.STATE_CONNECTED_AND_SEARCHING:
+					if (mStatus != null) {
+						mStatus.setText("Connected, searching...");
+					};
+					break;
+				}
+				break;
+
+				// display popup
+			case MESSAGE_TOAST: // ?
+				toast = Toast.makeText(getApplicationContext(), msg.getData()
+						.getString(TOAST), Toast.LENGTH_SHORT);
+				setStatusLastCommand(msg.getData().getInt(result));
+				toast.show();
+				break;
+
+			case MESSAGE_SET_LOG:
+				mLog.setText(msg.getData().getString(TOAST));
+				break;
+
+			case MESSAGE_SET_VERSION:
+				mVersion.setText(msg.getData().getString(TOAST));
+				break;
+
+			case MESSAGE_DIR_APPEND:
+				if (dir_completed == true) {
+					dir_completed = false;
+					mDownload.setText("");
+					filesMap.clear();
+					typeMap.clear();
+					sizeMap.clear();
+					dirsMap.clear();
+					mList.clear();
+				};
+				String name = msg.getData().getString("name");
+				int type = msg.getData().getInt("type");
+				long size = msg.getData().getLong("size");
+
+				Log.i(TAG,
+						"CMD:" + name + " item nr:"
+								+ String.valueOf(mSerialService.item));
+
+				if (type == 1) { // file
+					filesMap.put(name, name);
+					typeMap.put(name, 1);
+					sizeMap.put(name, size);
+				} else if (type == 2) { // dir
+					dirsMap.put(name, name);
+					typeMap.put(name, 2);
+					sizeMap.put(name, size);
+				};
+				if (type == STATUS_EOF) {
+					dir_completed = true;
+					Log.d(TAG, "beginne liste aufzubauen");
+
+					// send to display												
+					SimpleAdapter fileList = new SimpleAdapter(getApplicationContext(), mList,
+							R.layout.file_dialog_row,
+							new String[] { ITEM_KEY, ITEM_IMAGE, ITEM_KEY_LOW }, new int[] {
+						R.id.fdrowtext, R.id.fdrowimage, R.id.fdrowtext_lower });
+
+					if (dir_path != "/") {
+						addItem("/", R.drawable.folder,-1);
+						typeMap.put("/", 2);
+					};
+
+					for (String dir : dirsMap.tailMap("").values()) {
+						if (dir.toString().length() > 23) {
+							addItem(dir.toString().substring(0, 20) + "...",R.drawable.folder,-1);
+						} else {
+							addItem(dir, R.drawable.folder,-1);
+						}
+					}
+
+					for (String file : filesMap.tailMap("").values()) {
+						long file_size=0;
+						file_size = sizeMap.get(file);
+						if (file.toString().length() > 23) {
+							addItem(file.toString().substring(0, 20) + "...",R.drawable.file,file_size);
+						} else {
+							addItem(file, R.drawable.file,file_size);
+						}
+					}
+					mDLListView.setAdapter(fileList);
+
+					mDLListView
+					.setOnItemClickListener(new OnItemClickListener() {
+						public void onItemClick(AdapterView<?> arg0,
+								View arg1, int arg2, long arg3) {
+							String name = null;
+							Integer type = 0;
+							Long size = (long) 0;
+							HashMap<String, Object> item = new HashMap<String, Object>();
+
+							item = mList.get(arg2);
+							name = (String) item.get(ITEM_KEY);
+							type = typeMap.get(name);
+							size = sizeMap.get(name);
+
+							if (type == 1) {
+								t2a_dest = "";
+								if (dir_path != "/") // z.B. CONFIG
+									t2a_dest = dir_path + "/"; // CONFIG/
+								t2a_dest = t2a_dest + name; // CONFIG/BASE.TXT
+								t2a_size = size;
+
+								TextView mselfile = (TextView) findViewById(R.id.dl_selected_file);
+								mselfile.setText("Selected file: "
+										+ t2a_dest);
+
+								DlselButton.setEnabled(true);
+								DeleteButton.setEnabled(true);
+							} else if (type == 2) {
+								dir_path = name;
+								_getDirDialog = new getDirDialog(arg0
+										.getContext());
+								_getDirDialog.execute(name);
+							}
+						} // public void onItemClick(A
+					}); // setOnItemClickListener(...
+				} // if(type==STATUS_EOF){
+				break;
+
+			case MESSAGE_CMD_UNKNOWN:
+				mLog.setText(R.string.unknown);
+				toast = Toast.makeText(getApplicationContext(),
+						R.string.unknown, Toast.LENGTH_SHORT);
+				toast.show();
+				break;
+
+			case MESSAGE_CMD_FAILED:
+				mLog.setText(R.string.noresponse);
+				toast = Toast.makeText(getApplicationContext(),
+						R.string.noresponse, Toast.LENGTH_SHORT);
+				toast.show();
+				break;
+
+				// show device popup
+			case MESSAGE_DEVICE_NAME:
+				// save the connected device's name
+				toast = Toast.makeText(getApplicationContext(),
+						"Connected, searching Speedoino", Toast.LENGTH_SHORT);
+				toast.show();
+				break;
+
+			}
+		}
+	};
+
+	
+	
+	
+	/* prozedure zum updaten der firmware
+	* wir ben�tigen zum updaten zwei dinge: den dateinamen des hex files und 
+	* den bluetooth string des devices, die funktion firmware_update wird initial
+	* �ber den button gestartet, ruft ihrerseits dann mindestens den intent f�r die
+	* datei auswahl auf (und, falls keine Verbindung besteht, den BT auswahl dialog)
+	* und staretet dann den flashvorgang
+	* die funktion endet mit dem aufruf der anderen intents, wird aber von ihnen wieder
+	* augerufen, tricky
+	*/
+	private void firmware_update(int init,String input_file, String bluetooth_adr){
+		// first call, set vars
+		if(init==1){
+			firmware_flash_filename=null;
+			if(mSerialService.last_connected_device!=null){
+				firmware_flash_bluetooth_device=mSerialService.last_connected_device.getAddress();
+			} else {
+				firmware_flash_bluetooth_device=null;
+			}
+		}
+		
+		//mal sehen ob wir aufruf parameter haben
+		if(input_file!=null){ firmware_flash_filename=input_file; };
+		if(bluetooth_adr!=null){ firmware_flash_bluetooth_device=bluetooth_adr; };
+		
+		// wenn wir hingegen noch nicht alle aufruf parameter haben, entsprechende activity starten
+		
+		// get filename
+		if(firmware_flash_filename==null){
+			Intent intent = new Intent(getBaseContext(), FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_UPLOAD_FIRMWARE);
+			return; // ende
+		}
+		
+		// get device
+		if(firmware_flash_bluetooth_device==null){
+			Intent serverIntent = new Intent(this, DeviceListActivity.class);
+			startActivityForResult(serverIntent, REQUEST_SELECTED_DEVICE);
+			return; // ende
+		}
+		
+		// sobald wir beides haben: start
+		_firmwareBurnDialog = new firmwareBurnDialog(this);
+		_firmwareBurnDialog.execute(firmware_flash_filename,firmware_flash_bluetooth_device); // /mnt/sdcard/Download/bild.sng,
+	};
+
+
+	private void addItem(String fileName, int imageId, long size) {
+		HashMap<String, Object> item = new HashMap<String, Object>();
+		item.put(ITEM_KEY, fileName);
+		if(size>=100*1024*1024){ // ab 100mb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+" MB");
+		} else if(size>=10*1024*1024){ // ab 10mb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+"."+String.valueOf((size/1024/102)%10)+" MB");
+		} else if(size>=1024*1024){ // ab 1mb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+"."+String.valueOf((size/1024/10)%100)+" MB");
+		} else if(size>=100*1024){ // ab 100kb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+" KB");
+		} else if(size>=10*1024){ // ab 10kb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+"."+String.valueOf((size/102)%10)+" KB");
+		} else if(size>=1024){ // ab 1kb
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+"."+String.valueOf((size/10)%100)+" KB");
+		} else if(size>0){	// solange es nicht 0 ist
+			item.put(ITEM_KEY_LOW, String.valueOf(size)+" Byte");
+		} else {
+			item.put(ITEM_KEY_LOW, " ");
+		};
+		item.put(ITEM_IMAGE, imageId);
+		mList.add(item);
 	}
+
+	private Runnable mCheckVer = new Runnable() {
+		public void run() {
+			byte send[] = new byte[1];
+			send[0] = CMD_SIGN_ON;
+			try {
+				Log.i("SEND","signon()");
+				mSerialService.send(send, 1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	};
 
 	public void update_visible_elements(boolean visible) {
 		if (mSerialService == null
@@ -1071,38 +1195,5 @@ OnClickListener {
 		}
 	}
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			if (back_pushed == 1) {
-				mSerialService.stop();
-				mSerialService.start();
-				update_visible_elements(false);
-				finish();
-			} else {
-				toast = Toast.makeText(this,
-						this.getString(R.string.push_back_twice),
-						Toast.LENGTH_LONG);
-				toast.show();
-				back_pushed = 1;
-				// install guard, 2sec until check of receive
-				mTimerHandle.removeCallbacks(mCheckDoublePushBack);
-				mTimerHandle.postDelayed(mCheckDoublePushBack, 2000);
-			}
-		} else if (keyCode == KeyEvent.KEYCODE_HOME) {
-			mSerialService.stop();
-			mSerialService.start();
-			finish();
-		} else {
-			return super.onKeyDown(keyCode, event);
-		}
-		return true;
-	}
-
-	// just resetting the "back" pushed
-	private Runnable mCheckDoublePushBack = new Runnable() {
-		public void run() {
-			back_pushed = 0;
-		}
-	};
+	
 }
