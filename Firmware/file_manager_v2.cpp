@@ -137,7 +137,23 @@ void speedo_filemanager_v2::parse_command(){
 						Serial.println(c,DEC);
 					}
 					//////////////////
-					msgLength		=	c;
+					msgLength		=	c<<8;
+					msgParseState	=	ST_MSG_SIZE_2;
+					checksum		^=	c;
+					break;
+
+				case ST_MSG_SIZE_2:
+					//////////////////
+					if(DEBUG_TRANSFER){
+						pOLED->string(0,"4",0,1);
+						_delay_ms(500);
+					}
+					if(DEBUG_TRANSFER_INTENSIV){
+						Serial.print("MSG size:");
+						Serial.println(c,DEC);
+					}
+					//////////////////
+					msgLength		|=	c;
 					msgParseState	=	ST_GET_TOKEN;
 					checksum		^=	c;
 					break;
@@ -146,7 +162,7 @@ void speedo_filemanager_v2::parse_command(){
 					if ( c == TOKEN ){
 						//////////////////
 						if(DEBUG_TRANSFER){
-							pOLED->string(0,"4",0,1);
+							pOLED->string(0,"5",0,1);
 							_delay_ms(500);
 						}
 						if(DEBUG_TRANSFER_INTENSIV){
@@ -164,7 +180,7 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_GET_DATA:
 					//////////////////
 					if(DEBUG_TRANSFER){
-						pOLED->string(0,"5",0,1);
+						pOLED->string(0,"6",0,1);
 						_delay_ms(500);
 					}
 					if(DEBUG_TRANSFER_INTENSIV){
@@ -187,7 +203,7 @@ void speedo_filemanager_v2::parse_command(){
 					if ( c == checksum){
 						//////////////////
 						if(DEBUG_TRANSFER){
-							pOLED->string(0,"6",0,1);
+							pOLED->string(0,"7",0,1);
 							_delay_ms(500);
 						}
 						if(DEBUG_TRANSFER_INTENSIV){
@@ -213,7 +229,7 @@ void speedo_filemanager_v2::parse_command(){
 			 * Now process the STK500 commands, see Atmel Appnote AVR068
 			 */
 			bool change_disp=false; 
-			 
+
 			if(DEBUG_TRANSFER){
 				char buffer[10];
 				if(floor(msgBuffer[0]/16)>10){
@@ -620,8 +636,11 @@ void speedo_filemanager_v2::parse_command(){
 			checksum	^=	seqNum;
 
 			//c			=	msgLength&0x00FF;
-			Serial.print((char)msgLength);
-			checksum ^= msgLength;
+			Serial.print((char)(msgLength>>8));
+			checksum ^= (msgLength>>8);
+
+			Serial.print((char)(msgLength&0xff));
+			checksum ^= (msgLength&0xff);
 
 			Serial.print((char)TOKEN);
 			checksum ^= TOKEN;
