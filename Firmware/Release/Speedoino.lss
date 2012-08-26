@@ -1269,8 +1269,8 @@ Disassembly of section .text:
     1e3b:	20 48 57 3a 00                                       HW:.
 
 00001e40 <_ZZ11init_speedovE3__c_0>:
-    1e40:	76 30 2e 33 2e 36 2d 31 36 34 2d 67 63 36 36 39     v0.3.6-164-gc669
-    1e50:	33 64 63 00                                         3dc.
+    1e40:	76 30 2e 33 2e 36 2d 31 36 37 2d 67 62 63 35 33     v0.3.6-167-gbc53
+    1e50:	33 31 33 00                                         313.
 
 00001e54 <_ZZ11init_speedovE3__c>:
     1e54:	3d 3d 3d 20 53 70 65 65 64 6f 69 6e 6f 20 3d 3d     === Speedoino ==
@@ -1776,8 +1776,8 @@ Disassembly of section .text:
     2589:	63 6f 6e 74 61 63 74 20 6d 65 20 61 74 00           contact me at.
 
 00002597 <_ZZN11speedo_menu7displayEvE3__c_22>:
-    2597:	76 30 2e 33 2e 36 2d 31 36 34 2d 67 63 36 36 39     v0.3.6-164-gc669
-    25a7:	33 64 63 00                                         3dc.
+    2597:	76 30 2e 33 2e 36 2d 31 36 37 2d 67 62 63 35 33     v0.3.6-167-gbc53
+    25a7:	33 31 33 00                                         313.
 
 000025ab <_ZZN11speedo_menu7displayEvE3__c_21>:
     25ab:	48 57 20 76 65 72 73 69 6f 6e 3a 00                 HW version:.

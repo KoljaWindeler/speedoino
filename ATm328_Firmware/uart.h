@@ -48,7 +48,4 @@ void set_tx(unsigned char value);
 extern unsigned char UART_RxBuffer[UART_RX_BUFFER_SIZE];
 
 
-ISR(USART_RXC_vect);
-ISR(USART_TXC_vect);
-
 #endif
