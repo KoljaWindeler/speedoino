@@ -39,7 +39,6 @@
  */
 // includes
 #include <avr/io.h>
-//#include <avr/iom328p.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdio.h>
@@ -65,6 +64,7 @@ unsigned int accel=80;
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 void Init(void)
 {
+
 	emergency_shutdown=false;
 	emergency_extra_pos_offset_set=false;
 
@@ -76,9 +76,10 @@ void Init(void)
 
 	// Init of uart
 	InitUART();
+
+
 	// Init Reset,LED Pins
 	reset_init();
-
 
 	// Set stepper motor driver output
 	sm_driver_StepOutput(0);
@@ -86,21 +87,22 @@ void Init(void)
 	// Init of Timer/Counter1
 	speed_cntr_Init_Timer1();
 
-
 	sei();
-	//_delay_us(1000);
+
+	// reset timer aktivieren
 	config_timer0();
 
 	//Just to be sure
 	speed=200;
 	accel=80;
+
 }
 
 
 int main(){
 	Init();
 	while(1) {
-		check_power_state();
+		//check_power_state();
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
 			/////////////////////////// MOVE /////////////////////////////////////
@@ -145,8 +147,8 @@ int main(){
 				} else {
 					speed_cntr_Move(set_pos,accel,speed);
 				};
-			/////////////////////////// MOVE /////////////////////////////////////
-			///////////////////// ask reset reason ///////////////////////////////
+				/////////////////////////// MOVE /////////////////////////////////////
+				///////////////////// ask reset reason ///////////////////////////////
 			} else if(UART_RxBuffer[0] == 'y'){ // ask why we reseted
 				uart_SendByte('$');
 				uart_SendByte('y');
@@ -154,16 +156,16 @@ int main(){
 				uart_SendByte('*');
 				last_rst=0; // setze den status zurueck damit wir immer einen frischen abfragen, wenn der grouee jetzt neustartet aber es steht da power, dann wissen wir, das war nicht der kleine, solange wie nicht wirklich einen powerlost hatten
 				status.cmd = FALSE;
-			///////////////////// ask reset reason ///////////////////////////////
-			///////////////////// ask for position ///////////////////////////////
+				///////////////////// ask reset reason ///////////////////////////////
+				///////////////////// ask for position ///////////////////////////////
 			} else if(UART_RxBuffer[0]=='p'){ // get position
 				uart_SendByte('$');
 				uart_SendByte('p');
 				uart_SendInt(srd.position);
 				uart_SendByte('*');
 				status.cmd = FALSE;
-			///////////////////// ask for position ///////////////////////////////
-			///////////////////// ask for status ///////////////////////////////
+				///////////////////// ask for position ///////////////////////////////
+				///////////////////// ask for status ///////////////////////////////
 			} else if(UART_RxBuffer[0]=='g'){ // get status
 				uart_SendByte('$');
 				uart_SendByte('g');
@@ -174,8 +176,8 @@ int main(){
 				uart_SendInt(srd.run_state);
 				uart_SendByte('*');
 				status.cmd = FALSE;
-			///////////////////// ask for status ///////////////////////////////
-			//////////////////// (de)activate reset //////////////////////////////
+				///////////////////// ask for status ///////////////////////////////
+				//////////////////// (de)activate reset //////////////////////////////
 			} else if(UART_RxBuffer[0]=='r'){ // set reset status
 				if(UART_RxBuffer[1]=='0'){
 					reset_global_active=0;
@@ -183,8 +185,8 @@ int main(){
 					reset_global_active=1;
 				};
 				status.cmd = FALSE;
-			//////////////////// (de)activate reset //////////////////////////////
-			//////////////////// set pointer offset //////////////////////////////
+				//////////////////// (de)activate reset //////////////////////////////
+				//////////////////// set pointer offset //////////////////////////////
 			} else if(UART_RxBuffer[0] == 'o'){ // set offset
 				status.cmd = FALSE;
 				int new_position=UART_RxBuffer[1]-'0';
@@ -210,12 +212,12 @@ int main(){
 
 void check_power_state(){
 	if(bit_is_clear(PIND,4)){ // kein Spannung mehr auf dem Pin, vor der Diode
-//		uart_SendString("$");
+		//		uart_SendString("$");
 		//voltage_up_counter=0;
 		voltage_down_counter++;
 		// wenn der counter nicht geht, erstmal mit 100nF probieren und dann vielleicht als PullUp auslegen?
 		if(voltage_down_counter>50){ // ~ 50µsec direkt nacheinander
-//			uart_SendString("%");
+			//			uart_SendString("%");
 			// input interrupts für reset abwerfen
 			EIMSK  &= ~((1<<INT0) | (1<<INT1));	//Global Interrupt Flag deaktivieren fuer INT0 und INT1
 			TIMSK0 &= ~(1<<TOIE0); // Timer overrun aus
@@ -236,16 +238,16 @@ void check_power_state(){
 			// fahrt anstarten
 			srd.position=250;
 			speed_cntr_Move(0,accel,speed);
-		//} else {
+			//} else {
 			// wir sind im normal modus, haben aber kein strom von der vorsorgung, könnte
 			// sein das wir ein "repower" haben, nach einem Spike, oder weil der kondensator
 			// nur wieder spannung aufgebaut hat .. um zu testen ob es der Kondensator ist
 			// bestromen wir die Wicklungen der Spulen, das sollte ein sehr leerer Kondensator
 			// nicht lang schaffen können
 
-//			sm_driver_Init_IO();
-//			sm_driver_StepOutput(0);
-//			voltage_down_counter++;
+			//			sm_driver_Init_IO();
+			//			sm_driver_StepOutput(0);
+			//			voltage_down_counter++;
 		}
 	} else {
 		voltage_down_counter=0;
@@ -254,7 +256,7 @@ void check_power_state(){
 
 		if(emergency_shutdown){// && voltage_up_counter>=10){
 			// ups, doch strom wieder da
-//			uart_SendString("(");
+			//			uart_SendString("(");
 			Init(); // setzt dann auch emergency_shutdown zurück
 			srd.position=200;
 			speed_cntr_Move(0,accel,speed);

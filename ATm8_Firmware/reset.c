@@ -20,7 +20,7 @@ void reset_init(){
 	// interrupts aktivieren
 	EICRA |= (1<<ISC00) | (1<<ISC10);           //jede Flanke von INT0 oder INT1 als auslueser
 	EICRA &= ~((1<<ISC01) | (1<<ISC11));        //jede Flanke von INT0 oder INT1 als auslueser
-	EIMSK  |= (1<<INT0) | (1<<INT1);				//Global Interrupt Flag fuer INT0 und INT1
+	EIMSK  |= (1<<INT0) | (1<<INT1);			//Global Interrupt Flag fuer INT0 und INT1
 
 	counter_bt=0;
 	counter_avr=0;
@@ -90,9 +90,9 @@ void reset(int spezial_down){
 
 void config_timer0(){
 	// Timer/Counter 0 prescaler 64 => 8Mhz 127khz
-	TCCR0B = (1<<CS01) | (1<<CS00);
-	// Timer/Counter 0 Overflog timer0 interrupt
-	TIMSK0 |= (1<<TOIE0) ;
+	 TIMSK0 = (1<<TOIE0);   //Enable a timer overflow interrupt
+	 TCCR0A = 0;         //just a normal overflow
+	 TCCR0B = (1<<CS01) | (1<<CS00);   //count
 }
 
 /* overflow vom timer 0 ..
@@ -101,17 +101,19 @@ void config_timer0(){
  * Bluetooth pin is: 312ms high,312ms low, we have an interrupt on pin change so we can reset after (312/2,048)*1,2 where 20% is safety
  * 182 Timer overruns is max
  *
- * AVR: Lets say 30sec, 30/0,002=15000 Overruns
+ * AVR: Lets say 20sec, 20/0,002=10000 Overruns
  */
+
 ISR(TIMER0_OVF_vect){
+	TCNT0=0;   //reset the counter
 	if(reset_global_active){//wenn es high ist soll resetet werden
 		if(counter_bt>=182 && !reset_bt_running && counter_bt_init>10){ //
 			reset_bt_running=1;
 			reset(1);
 			last_rst=2;
 		}
-		
-		if(counter_avr>=15000 && !reset_avr_running){
+
+		if(counter_avr>=10000 && !reset_avr_running){
 			reset_avr_running=1;
 			reset(1); // run reset ohne langen bootloader quatsch
 			last_rst=1;
@@ -122,7 +124,7 @@ ISR(TIMER0_OVF_vect){
 			counter_bt++;
 			counter_avr++;
 		};
-		
+
 	};
 };
 	

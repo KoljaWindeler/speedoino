@@ -31,6 +31,7 @@
 #include "sm_driver.h"
 #include "speed_cntr.h"
 #include "uart.h"
+#include <util/delay.h>
 
 //! Cointains data for timer interrupt.
 extern speedRampData srd;
@@ -145,10 +146,12 @@ void speed_cntr_Move(signed int soll_pos, unsigned int accel, unsigned int max_s
 			} else {
 				srd_next.run_state = ACCEL;
 			}
-
+			uart_SendString("starte timer\n\r");
 			OCR1A = 10; 			// mach mal ein paar schritte (10)
 			// prescale 8
 			TCCR1B |= T1_RUN;
+			TCNT1=0;   //reset the counter
+
 		} else if(srd_next.run_state==DECEL){
 			if((soll_pos+srd_next.decel_steps_neg>srd_next.decel_start && srd_next.dir==CW) || (soll_pos+srd_next.decel_steps_neg<srd_next.decel_start && srd_next.dir==CCW)){
 				srd_next.min_delay = A_T_x100 / speed;
@@ -282,7 +285,7 @@ void speed_cntr_Init_Timer1(void){
 	// Timer/Counter 1 in mode 4 CTC (Not running).
 	TCCR1B = (1<<WGM12);
 	// Timer/Counter 1 Output Compare A Match Interrupt enable.
-	TIMSK0 |= (1<<OCIE1A);
+	TIMSK1 |= (1<<OCIE1A);
 }
 
 /*! \brief Timer/Counter1 Output Compare A Match Interrupt.
@@ -297,9 +300,8 @@ void speed_cntr_Init_Timer1(void){
  *
  *  Timer1 läuft als 16-Bit Timer.
  *  Max 65535
- *  Speed: Prescale 8 => F_CPU=4Mhz/8 = 524288Hz
- *  Timer max timeout = 0xffff/524288=0,124998093 sec
- *  Timer timeout = 0x0fff/524288=0,007810593 sec
+ *  Speed: Prescale 8 => F_CPU=8Mhz/8 = 1000000Hz
+ *  Timer max timeout = 0xffff/1000000=0,065535 sec
  */
 ISR(TIMER1_COMPA_vect){
 	// Holds next delay period.

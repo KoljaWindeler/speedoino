@@ -89,7 +89,7 @@ sizedummy: Watchdog.elf
 
 avrdudedummy: Watchdog.elf
 	@echo 'Invoking: AVRDude'
-	/usr/bin/avrdude -pm328p -cavrisp2 -Pusb -B1  -u -Uflash:w:Watchdog.hex:a -Ulfuse:w:0xe2:m -Uhfuse:w:0xd2:m -Uefuse:w:0xfe:m
+	/usr/bin/avrdude -pm328p -cavrisp2 -Pusb -B1 -u -Uflash:w:Watchdog.hex:a -Ulfuse:w:0xe2:m -Uhfuse:w:0xd2:m -Uefuse:w:0x6:m
 	@echo 'Finished building: $@'
 	@echo ' '
 

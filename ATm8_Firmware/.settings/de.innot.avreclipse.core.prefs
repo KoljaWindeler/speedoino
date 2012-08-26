@@ -24,7 +24,7 @@ avrtarget/avrdude/ProgrammerID=programmerconfig.3
 avrtarget/avrdude/UseCounter=false
 avrtarget/avrdude/WriteEEPROM=false
 avrtarget/avrdude/WriteFlash=true
-avrtarget/de.innot.avreclipse.configuration.app.release.528643736/ClockFrequency=4000000
+avrtarget/de.innot.avreclipse.configuration.app.release.528643736/ClockFrequency=8000000
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/ExtRAMSize=0
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/ExtendedRAM=false
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/MCUType=atmega328p
@@ -36,7 +36,7 @@ avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/EEPROM
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/EEPROMFromConfig=true
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/FlashFile=
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/FlashFromConfig=true
-avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/ByteValues=226\:210\:254
+avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/ByteValues=226\:210\:6
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/FileName=
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/MCUid=atmega328p
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/UseFile=false

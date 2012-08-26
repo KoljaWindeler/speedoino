@@ -23,6 +23,7 @@
 #include "uart.h"
 #include "sm_driver.h"
 #include "speed_cntr.h"
+#include <util/delay.h>
 
 //! RX buffer for uart.
 unsigned char UART_RxBuffer[UART_RX_BUFFER_SIZE];
@@ -53,14 +54,14 @@ void InitUART(void)
 
 	// interrupt + UART
 #ifndef F_CPU
-#warning "F_CPU war noch nicht definiert, wird nun nachgeholt mit 16Mhz"
+#warning "F_CPU war noch nicht definiert, wird nun nachgeholt mit 4Mhz"
 #endif
 
 	// Berechnungen
 #define BAUD 19200UL // Baudrate
-#define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1) // clever runden
-#define BAUD_REAL (F_CPU/(16*(UBRR_VAL+1))) // Reale Baudrate
-#define BAUD_ERROR ((BAUD_REAL*1000)/BAUD) // Fehler in Promille, 1000 = kein Fehler.
+#define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1) // clever runden // 12,520833333
+#define BAUD_REAL (F_CPU/(16*(UBRR_VAL+1))) // Reale Baudrate // 19230,769230769
+#define BAUD_ERROR ((BAUD_REAL*1000)/BAUD) // Fehler in Promille, 1000 = kein Fehler. // 1001,5625
 #if ((BAUD_ERROR<990) || (BAUD_ERROR>1010))
 #error Systematischer Fehler der Baudrate grsser 1% und damit zu hoch!
 #endif
@@ -72,7 +73,7 @@ void InitUART(void)
 	/* Enable receiver and transmitter, rx and tx int */
 	UCSR0B |= (1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0); // rx,tx,rx interrupt
 	/* Set frame format: 8data, 1stop bit */
-	//UCSR0C = (3<<UCSZ00);
+	//UCSR0C |= (1<<UCSZ01) | (1<<UCSZ00)             ;    // Asynchron 8N1
 
 
 	// Flush Buffers
@@ -108,12 +109,12 @@ void uart_SendByte(char data){
  *
  *  \param Str  String to be sent.
  */
-//void uart_SendString(char Str[])
-//{
-//	unsigned char n = 0;
-//	while(Str[n])
-//		uart_SendByte(Str[n++]);
-//}
+void uart_SendString(char Str[])
+{
+	unsigned char n = 0;
+	while(Str[n])
+		uart_SendByte(Str[n++]);
+}
 
 /*! \brief Sends a integer.
  *
@@ -146,11 +147,11 @@ void uart_SendInt(int x)
  *  RX interrupt handler.
  *  RX interrupt always enabled.
  */
-ISR(USART_RXC_vect){
+ISR(USART_RX_vect){
 	unsigned char data;
 	// Read the received data.
 	data = UDR0;
-	//uart_SendByte(data);
+//	uart_SendByte(data);
 	// Put the data into RxBuf
 	if(status.cmd == FALSE || 1 ){
 		if(data=='$'){
