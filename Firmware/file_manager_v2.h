@@ -22,23 +22,31 @@ class speedo_filemanager_v2{
 	#define MESSAGE_START			0x1B        //= ESC = 27 decimal
 	#define TOKEN					0x0E
 
-	#define CMD_SIGN_ON				0x01
-	#define CMD_LEAVE_FM			0x04
-	#define CMD_GO_LEFT				0x05
-	#define CMD_GO_RIGHT			0x06
-	#define CMD_GO_UP				0x07
-	#define CMD_GO_DOWN				0x08
-	#define CMD_DIR					0x11
-	#define CMD_GET_FILE			0x12
-	#define CMD_PUT_FILE			0x13
-	#define CMD_DEL_FILE			0x14
-	#define CMD_SHOW_GFX			0x15
-
 	#define STATUS_CMD_OK          0x00
 	#define	 STATUS_EOF				0x10
 	#define STATUS_CMD_FAILED      0xC0
 	#define STATUS_CKSUM_ERROR     0xC1
 	#define STATUS_CMD_UNKNOWN     0xC9
+
+	#define CMD_SIGN_ON				0x01
+	#define CMD_LEAVE_FM			0x04
+	#define CMD_LOAD_ADDRESS		0x06
+	#define CMD_LEAVE_PROGMODE_ISP	0x11
+	#define CMD_CHIP_ERASE_ISP		0x12
+	#define CMD_PROGRAM_FLASH_ISP	0x13
+	#define CMD_SPI_MULTI			0x1D
+	#define CMD_GO_LEFT				0x25
+	#define CMD_GO_RIGHT			0x26
+	#define CMD_GO_UP				0x27
+	#define CMD_GO_DOWN				0x28
+	#define CMD_DIR					0x31
+	#define CMD_GET_FILE			0x32
+	#define CMD_PUT_FILE			0x33
+	#define CMD_DEL_FILE			0x34
+	#define CMD_SHOW_GFX			0x35
+	#define CMD_FILE_RECEIVE		0x39
+
+
 
 	#define WAIT_MS_FOR_DATA		2000
 
