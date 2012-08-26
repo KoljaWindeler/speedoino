@@ -23,6 +23,38 @@ Speedo_aktors::Speedo_aktors(){
 Speedo_aktors::~Speedo_aktors(){
 };
 
+
+void Speedo_aktors::run_reset(){
+	pOLED->clear_screen();
+	pOLED->string_P(pSpeedo->default_font,PSTR("Running Update"),3,3);
+	// pin as output
+	//DDRD |= (1<<ATM328RESETPIN);
+	DDRL |= (1<<ATM328RESETPIN);
+	// set low -> low active
+	//PORTD &= ~(1<<ATM328RESETPIN);
+	PORTL &= ~(1<<ATM328RESETPIN);
+	_delay_ms(50);
+	//PORTD |= (1<<ATM328RESETPIN);
+	PORTL |= (1<<ATM328RESETPIN);
+	// set high, as pull up
+	//DDRD |= (1<<ATM328RESETPIN);
+	DDRL |= (1<<ATM328RESETPIN);
+	//PORTD |= (1<<ATM328RESETPIN);
+	PORTL |= (1<<ATM328RESETPIN);
+
+	// tunnel mode
+	unsigned long timeout=millis();
+	while(millis()-timeout>5000){
+		timeout=millis();
+		while(Serial.available()>0){
+			Serial3.print(Serial.read(),BYTE);
+		}
+		while(Serial3.available()>0){
+			Serial.print(Serial3.read(),BYTE);
+		}
+	}
+}
+
 void Speedo_aktors::clear_vars(){
 	kmh_min_value=0;
 	kmh_max_value=0;

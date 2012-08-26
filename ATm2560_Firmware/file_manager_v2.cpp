@@ -618,6 +618,14 @@ void speedo_filemanager_v2::parse_command(){
 					msgBuffer[2]=return_value & 0xFF;
 				}
 				////////////////////////////// SHOW GFX /////////////////////////////////
+				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
+			} else if(msgBuffer[0]==CMD_RESET_SMALL_AVR){
+				msgLength=2; // cmd + status ok
+				msgBuffer[0]=CMD_RESET_SMALL_AVR;
+				msgBuffer[1]=STATUS_CMD_OK;
+				pAktors->run_reset();
+				pMenu->display();
+				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
 				///////////////////////////// EMERGENCY /////////////////////////////////
 
 			} else {

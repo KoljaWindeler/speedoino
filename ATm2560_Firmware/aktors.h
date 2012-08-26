@@ -14,6 +14,8 @@
 #define RGB_IN_R 13
 #define RGB_IN_G 10
 #define RGB_IN_B 11
+//#define ATM328RESETPIN PD4
+#define ATM328RESETPIN PL7
 
 
 typedef struct{
@@ -49,6 +51,7 @@ public:
 	void set_rgb_out(int r,int g,int b,int save);
 	void dimm_rgb_to(int r,int g,int b,int max_dimm_steps);
 	void timer_overflow();
+	void run_reset();
 	bool dimm_available();
 	int  update_outer_leds(bool dimm,bool overwrite);
 	int set_bt_pin();

@@ -45,6 +45,7 @@ class speedo_filemanager_v2{
 	#define CMD_DEL_FILE			0x34
 	#define CMD_SHOW_GFX			0x35
 	#define CMD_FILE_RECEIVE		0x39
+	#define CMD_RESET_SMALL_AVR		0x40
 
 
 
