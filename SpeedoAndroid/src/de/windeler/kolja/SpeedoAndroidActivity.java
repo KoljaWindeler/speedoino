@@ -127,6 +127,7 @@ OnClickListener {
 	public static final byte CMD_DEL_FILE				=  0x34;
 	public static final byte CMD_SHOW_GFX				=  0x35;
 	public static final byte CMD_FILE_RECEIVE			=  0x39;
+	public static final byte CMD_RESET_SMALL_AVR		=  0x40;
 
 
 	public static final char STATUS_CMD_OK      =  0x00;

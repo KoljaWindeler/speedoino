@@ -121,6 +121,7 @@ public class BluetoothSerialService {
 	public static final byte CMD_DEL_FILE				=  0x34;
 	public static final byte CMD_SHOW_GFX				=  0x35;
 	public static final byte CMD_FILE_RECEIVE			=  0x39;
+	public static final byte CMD_RESET_SMALL_AVR		=  0x40;
 
 
 	public static final char STATUS_CMD_OK      =  0x00;
@@ -834,6 +835,7 @@ public class BluetoothSerialService {
 				case CMD_DEL_FILE:
 				case CMD_SHOW_GFX:
 				case CMD_FILE_RECEIVE:
+				case CMD_RESET_SMALL_AVR:
 					break;
 
 				default:
@@ -1377,7 +1379,7 @@ public class BluetoothSerialService {
 		long highest_pos=0;
 		int overflow=0;
 
-		while(byte_read>0){ ///////////!!!!!!!!! DEBUG ////////// false wegnehmen
+		while(byte_read>0){ ///////////!!!!!!!!! DEBUG //////////
 			byte_read=0;
 			// eine Zeile einlesen
 			byte[] one_char=new byte[1];
@@ -1495,10 +1497,12 @@ public class BluetoothSerialService {
 
 		////// hier beginnt teil 3, die verbindung aufbauen //////
 		// fortschritt schreiben
-		Message msg2 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+		Message msg2=mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 		String shown_message=null;
-		shown_message="Trying to connect to the Bootload";
 		Bundle bundle2 = new Bundle();
+
+		msg2 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+		shown_message="Trying to connect to the Bootload";
 		bundle2.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
 		msg2.setData(bundle2);
 		mHandlerUpdate.sendMessage(msg2);
@@ -1516,9 +1520,41 @@ public class BluetoothSerialService {
 		if(getState()==STATE_CONNECTING){
 			error=4;
 			return error;
-		}
-		////// hier beginnt teil 3, die verbindung aufbauen //////
+		} else {
+			/*/// jetzt müssen wir uns überlegen:
+			 * ist das File maximal 32k groß ? 
+			 * -> wenn ja: ATm2560
+			 * --> Dann müssen wir in den Bootloader
+			 * --> Connection abbauen und neu aufbauen
+			 * --> dann STK500v2 
+			 * -> wenn nein: ATm328
+			 * --> Dann brauchen wir nur ein bestimmtes
+			 * --> Command schicken, der ATm2560 resettet
+			 * --> den ATm328 und tunnelt den Transfer
+			 */
+			if(highest_pos<=32768){
+				// wir flashen einen ATm328
+				Thread.sleep(10000); // 10 sek um den bootvorgang abzuwarten
+				byte send2[] = new byte[300];
+				send2[0] = CMD_RESET_SMALL_AVR;
+				Log.i("connect","sign_on sendet");
+				Log.i("SEND","upload_fileware0()");
+				if(send_save(send2, 1, 750, 15)==0){ // 750ms timeout, 15 retries, das hier wartet nochmal bis zu ~10sec
+					if(msgBuffer[1]!=STATUS_CMD_OK){
+						error=401;
+						return error;
+					};
+					setState(STATE_CONNECTED);
+					Thread.sleep(10); // wait 10 ms
+					Log.i(TAG_LOGIN,"reset done");
+				} else {
+					error=41;
+					return error;
+				}
+			};
 
+			////// hier beginnt teil 3, die verbindung aufbauen //////
+		} 	
 
 		////// hier beginnt teil 4, Den Bootloader fangen  //////
 		// jetzt stk500v2 kompatibel die versionsnummer abfragen
@@ -1527,6 +1563,10 @@ public class BluetoothSerialService {
 		Log.i("connect","sign_on sendet");
 		Log.i("SEND","upload_fileware1()");
 		if(send_save(send2,1, 750, 15)==0){ // 750ms timeout, 15 retries
+			if(msgBuffer[1]!=STATUS_CMD_OK){
+				error=50;
+				return error;
+			};
 			setState(STATE_CONNECTED);
 			Thread.sleep(10); // wait 10 ms
 			Log.i(TAG_LOGIN,"sign_on done");
@@ -1544,18 +1584,30 @@ public class BluetoothSerialService {
 		send2[6]=0x00;
 		Log.i("SEND","upload_fileware2()");
 		if(send_save(send2,7,1000,3)==0){
+			if(msgBuffer[1]!=STATUS_CMD_OK){
+				error=601;
+				return error;
+			};
 			Log.i(TAG_LOGIN,"get_sig 0/2 done");
 			prozessor_id|=((msgBuffer[5]&0xff)<<16);
 			Log.i(TAG_LOGIN,"Prozessor: "+String.valueOf(prozessor_id));
 			send2[6]=0x01;
 			Log.i("SEND","upload_fileware3()");
 			if(send_save(send2,7,1000,3)==0){
+				if(msgBuffer[1]!=STATUS_CMD_OK){
+					error=602;
+					return error;
+				};
 				Log.i(TAG_LOGIN,"get_sig 1/2 done");
 				prozessor_id|=((msgBuffer[5]&0xff)<<8);
 				Log.i(TAG_LOGIN,"Prozessor: "+String.valueOf(prozessor_id));
 				send2[6]=0x02;
 				Log.i("SEND","upload_fileware4()");
 				if(send_save(send2,7,1000,3)==0){
+					if(msgBuffer[1]!=STATUS_CMD_OK){
+						error=603;
+						return error;
+					};
 					Log.i(TAG_LOGIN,"get_sig 2/2 done");
 					prozessor_id|=((msgBuffer[5]&0xff));
 					Log.i(TAG_LOGIN,"Prozessor: "+String.valueOf(prozessor_id));
@@ -1581,6 +1633,10 @@ public class BluetoothSerialService {
 		if(send_save(send2,7,3000,1)!=0){
 			return 61;
 		}
+		if(msgBuffer[1]!=STATUS_CMD_OK){
+			error=611;
+			return error;
+		};
 
 		send2[0]=CMD_LOAD_ADDRESS;
 		send2[1]=(byte) 0x80;
@@ -1591,6 +1647,10 @@ public class BluetoothSerialService {
 		if(send_save(send2,6,3000,1)!=0){
 			return 62;
 		}
+		if(msgBuffer[1]!=STATUS_CMD_OK){
+			error=621;
+			return error;
+		};
 
 		send2[0]=CMD_PROGRAM_FLASH_ISP;
 		for(int send_position=0;send_position<=highest_pos;send_position+=256){
