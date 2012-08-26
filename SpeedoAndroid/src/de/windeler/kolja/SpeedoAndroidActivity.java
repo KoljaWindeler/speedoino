@@ -110,15 +110,30 @@ OnClickListener {
 
 
 	// transfer messages
-	public static final byte CMD_SIGN_ON = 0x01;
-	public static final byte CMD_LEAVE_FM = 0x04;
-	public static final byte CMD_GO_LEFT = 0x05;
-	public static final byte CMD_GO_RIGHT = 0x06;
-	public static final byte CMD_GO_UP = 0x07;
-	public static final byte CMD_GO_DOWN = 0x08;
-	public static final byte CMD_FILE_RECEIVE = 0x09;
-	public static final byte CMD_DIR = 0x11;
-	public static final char STATUS_EOF = 0x10;
+	public static final byte CMD_SIGN_ON				=  0x01;
+	public static final byte CMD_LEAVE_FM				=  0x04;
+	public static final byte CMD_LOAD_ADDRESS			=  0x06;
+	public static final byte CMD_LEAVE_PROGMODE_ISP	=  0x11;
+	public static final byte CMD_CHIP_ERASE_ISP		=  0x12;
+	public static final byte CMD_PROGRAM_FLASH_ISP	=  0x13;
+	public static final byte CMD_SPI_MULTI			=  0x1D;
+	public static final byte CMD_GO_LEFT				=  0x25;
+	public static final byte CMD_GO_RIGHT				=  0x26;
+	public static final byte CMD_GO_UP				=  0x27;
+	public static final byte CMD_GO_DOWN				=  0x28;
+	public static final byte CMD_DIR					=  0x31;
+	public static final byte CMD_GET_FILE				=  0x32;
+	public static final byte CMD_PUT_FILE				=  0x33;
+	public static final byte CMD_DEL_FILE				=  0x34;
+	public static final byte CMD_SHOW_GFX				=  0x35;
+	public static final byte CMD_FILE_RECEIVE			=  0x39;
+
+
+	public static final char STATUS_CMD_OK      =  0x00;
+	public static final char STATUS_CMD_FAILED  =  0xC0;
+	public static final char STATUS_CKSUM_ERROR =  0xC1;
+	public static final char STATUS_CMD_UNKNOWN =  0xC9;
+	public static final char STATUS_EOF		   =  0x10;
 
 	// dir me
 	private String dir_path = "";
@@ -174,6 +189,7 @@ OnClickListener {
 		mLog = (TextView) findViewById(R.id.log_value);
 		mStatus = (TextView) findViewById(R.id.status_value);
 		mVersion = (TextView) findViewById(R.id.version_value);
+		mVersion.setOnClickListener(this);
 		mDownload = (TextView) findViewById(R.id.Download_textView);
 		mLeftButton = (Button) findViewById(R.id.button_left);
 		mLeftButton.setOnClickListener(this);
@@ -200,6 +216,7 @@ OnClickListener {
 		DeleteButton = (Button) findViewById(R.id.DeleteButton);
 		DeleteButton.setOnClickListener(this);
 		mDLListView = (ListView) findViewById(R.id.dlList);
+		
 		update_visible_elements(false);
 
 		if (mLog != null)
@@ -313,6 +330,9 @@ OnClickListener {
 	public void onClick(View arg0) {
 		Intent intent; // reusable
 		switch (arg0.getId()) {
+		case R.id.version_value:
+			mCheckVer.run();
+			break;
 		case R.id.button_left:
 			byte send2[] = new byte[1];
 			send2[0] = CMD_GO_LEFT;

@@ -101,30 +101,33 @@ public class BluetoothSerialService {
 	public static final int STATE_CONNECTED = 3;  // now connected to a remote device
 	public static final int STATE_CONNECTED_AND_SEARCHING = 4;  // now connected to a remote device
 
-	public static final byte MESSAGE_START 		=  0x1B;
-	public static final byte TOKEN				=  0x0E;
+	public static final byte MESSAGE_START 			=  0x1B;
+	public static final byte TOKEN					=  0x0E;
 
-	public static final byte CMD_SIGN_ON			=  0x01;
-	public static final byte CMD_LEAVE_FM			=  0x04;
-	public static final byte CMD_GO_LEFT			=  0x05;
-	public static final byte CMD_GO_RIGHT			=  0x06;
-	public static final byte CMD_GO_UP				=  0x07;
-	public static final byte CMD_GO_DOWN			=  0x08;
-	public static final byte CMD_FILE_RECEIVE		=  0x09;
-	public static final byte CMD_DIR				=  0x11;
-	public static final byte CMD_GET_FILE			=  0x12;
-	public static final byte CMD_PUT_FILE			=  0x13;
-	public static final byte CMD_DEL_FILE			=  0x14;
-	public static final byte CMD_SHOW_GFX			=  0x15;
-	public static final byte CMD_SPI_MULTI			=  0x1D;
-	public static final byte CMD_PROGRAM_FLASH_ISP	=  0x13;
+	public static final byte CMD_SIGN_ON				=  0x01;
+	public static final byte CMD_LEAVE_FM				=  0x04;
+	public static final byte CMD_LOAD_ADDRESS			=  0x06;
 	public static final byte CMD_LEAVE_PROGMODE_ISP	=  0x11;
+	public static final byte CMD_CHIP_ERASE_ISP		=  0x12;
+	public static final byte CMD_PROGRAM_FLASH_ISP	=  0x13;
+	public static final byte CMD_SPI_MULTI			=  0x1D;
+	public static final byte CMD_GO_LEFT				=  0x25;
+	public static final byte CMD_GO_RIGHT				=  0x26;
+	public static final byte CMD_GO_UP				=  0x27;
+	public static final byte CMD_GO_DOWN				=  0x28;
+	public static final byte CMD_DIR					=  0x31;
+	public static final byte CMD_GET_FILE				=  0x32;
+	public static final byte CMD_PUT_FILE				=  0x33;
+	public static final byte CMD_DEL_FILE				=  0x34;
+	public static final byte CMD_SHOW_GFX				=  0x35;
+	public static final byte CMD_FILE_RECEIVE			=  0x39;
+
 
 	public static final char STATUS_CMD_OK      =  0x00;
 	public static final char STATUS_CMD_FAILED  =  0xC0;
 	public static final char STATUS_CKSUM_ERROR =  0xC1;
 	public static final char STATUS_CMD_UNKNOWN =  0xC9;
-	public static final char STATUS_EOF		    =  0x10;
+	public static final char STATUS_EOF		   =  0x10;
 
 	/**
 	 * Constructor. Prepares a new BluetoothChat session.
@@ -137,7 +140,7 @@ public class BluetoothSerialService {
 		mHandler = handler;
 		mContext = context;
 	}
-	
+
 	/**
 	 * Set the current state of the chat connection
 	 * @param state  An integer defining the current connection state
@@ -194,8 +197,8 @@ public class BluetoothSerialService {
 		// Cancel any thread currently running a connection
 		if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
 
-		
-		
+
+
 		// Start the thread to connect with the given device
 		Log.e("connect","start thread to connect...");
 		last_connected_device=device;
@@ -255,9 +258,9 @@ public class BluetoothSerialService {
 
 			int failCounter=0;
 			final String TAG_LOGIN = "LOGIN";
-			
+
 			//setState(STATE_CONNECTED);
-			
+
 			while(!preamble_found){
 				byte send[] = new byte[1];
 				send[0] = CMD_SIGN_ON;
@@ -321,7 +324,7 @@ public class BluetoothSerialService {
 	 * @param out The bytes to write
 	 * @see ConnectedThread#write(byte[])
 	 */
-	public void write(byte out) {
+	public void write(byte out[],int count) {
 		// Create temporary object
 		ConnectedThread r;
 		// Synchronize a copy of the ConnectedThread
@@ -344,7 +347,7 @@ public class BluetoothSerialService {
 			r = mConnectedThread;
 		}
 		// Perform the write unsynchronized
-		r.write(out);
+		r.write(out,count);
 	}
 
 	/**
@@ -507,9 +510,9 @@ public class BluetoothSerialService {
 		 * Write to the connected OutStream.
 		 * @param out  The bytes to write
 		 */
-		public void write(byte out) {
+		public void write(byte out[],int count) {
 			try {
-				mmOutStream.write(out);
+				mmOutStream.write(out, 0, count);
 
 				// Share the sent message back to the UI Activity
 				//mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_WRITE, buffer.length, -1, buffer).sendToTarget();
@@ -530,7 +533,7 @@ public class BluetoothSerialService {
 	public void reset_seq() {
 		seqNum=0;
 	}
-	
+
 	// beim save send gucken wir uns an ob wir auf die anfrage hin auch noch eine antwort erhalten
 	// haben, falls nicht machen wir sogar retries
 	public int send_save(byte data[],int msgLength, int timeout, int retries ){
@@ -547,7 +550,7 @@ public class BluetoothSerialService {
 			if(return_value>0){
 				break;
 			}
-			
+
 			// jetzt holen wir uns einen, das blockiert uns bis 
 			// a) Receive uns den semaphore von send zur�ck gegeben hat
 			// oder 
@@ -582,9 +585,9 @@ public class BluetoothSerialService {
 	}
 
 	public int send(byte data[],int msgLength, int time) throws InterruptedException{
-		byte	checksum		= 0;
-		byte 	c				= 0;
-		byte 	p				= 0;
+		byte[]	checksum = {0};
+		byte 	c[] = {0};
+		byte 	p[] = {0};
 		// nur senden, wenn wir nicht gerade was empfangen
 		if(getState()!=STATE_CONNECTED && data[0]!=CMD_SIGN_ON){
 			Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_TOAST);
@@ -612,37 +615,38 @@ public class BluetoothSerialService {
 
 		if(rx_tx_state==ST_IDLE){
 			if(msgLength<=0) return 2;
-			c=(byte)MESSAGE_START;
+			c[0]=(byte)MESSAGE_START;
 			Log.i(TAG_TIME,"MSG_START send");
-			write(c);		// Message Start
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+" /MSG_START");
-			checksum	=	c;
-			c=(byte)(seqNum&0x00FF);
-			write(c);		// Seq Nr
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)c)&0x00ff)+" /Seq Nr");
-			checksum	^=	c;
-			c=(byte) (msgLength&0xFF00);
-			write(c);		// length max 255
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+" /length of msg highbyte");
-			checksum ^= c;
-			c=(byte) (msgLength&0x00FF);
-			write(c);		// length max 255
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+" /length of msg lowbyte");
-			checksum ^= c;
-			c=(byte)TOKEN;
-			write(c);		// Token
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c)+" /TOKEN");
-			checksum ^= TOKEN;
+			write(c,1);		// Message Start
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c[0])+" /MSG_START");
+			checksum[0]	=	c[0];
+			c[0]=(byte)(seqNum&0x00FF);
+			write(c,1);		// Seq Nr
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)c[0])&0x00ff)+" /Seq Nr");
+			checksum[0]	^=	c[0];
+			c[0]=(byte) ((msgLength&0xFF00)>>8);
+			write(c,1);		// length max 255
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c[0])+" /length of msg highbyte");
+			checksum[0] ^= c[0];
+			c[0]=(byte) (msgLength&0x00FF);
+			write(c,1);		// length max 255
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c[0])+" /length of msg lowbyte");
+			checksum[0] ^= c[0];
+			c[0]=(byte)TOKEN;
+			write(c,1);		// Token
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)c[0])+" /TOKEN");
+			checksum[0] ^= TOKEN;
 
 
 			for(int i=0; i<msgLength; i++){
-				p	=	data[i];
-				write(p);	// send some data
-				checksum ^= p;
-				Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)p)&0x00ff)+"/"+String.valueOf((char)p)+"   /DATA "+String.valueOf(i+1)+"/"+String.valueOf(msgLength));
+				p[0]	=	data[i];
+				checksum[0] ^= p[0];
+				//Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)p)&0x00ff)+"/"+String.valueOf((char)p)+"   /DATA "+String.valueOf(i+1)+"/"+String.valueOf(msgLength));
 			}
-			write(checksum);	//	CHECKSUM
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)checksum)+" /Checksum");
+			write(data,msgLength);
+			write(checksum,1);	//	CHECKSUM
+			Log.i(TAG_TIME,"checksum send "+String.valueOf(msgLength));
+			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)checksum[0])+" /Checksum");
 			rx_tx_state=ST_START; // start listening
 
 			// install guard, 2sec until check of receive
@@ -712,7 +716,7 @@ public class BluetoothSerialService {
 			checksum		^=	data;
 			Log.i(TAG,"msgLength preview="+String.valueOf((int)msgLength));
 			break;
-			
+
 		case ST_MSG_SIZE_2:
 			Log.i(TAG,"MSG size2 erhalten");
 			msgLength		|=	(data&0x000000FF);		
@@ -816,14 +820,22 @@ public class BluetoothSerialService {
 
 					reset_seq();
 					break;
-					
-				// list of valid commands, the active task will process the data
+
+					// list of valid commands, the active task will process the data
 				case CMD_DIR: 		// durch einen doofen zufall kann das hier auch LEAVE_PRGM_MODE sein, dann ist die l�nge aber nur 2, bei dem dir ist sie >2 daher kann man das unterscheiden
 				case CMD_GET_FILE: 	// nothing to do, just keep it in buffer, get_file() will care for it.
 				case CMD_PUT_FILE: 	// this is the same like CMD_PROGRAM_FLASH_ISP 	// nothing to do, just keep it in buffer, put_file() or fireware() will care for it. // depending on who asked for this
 				case CMD_SPI_MULTI:
+				case CMD_LEAVE_FM:
+				case CMD_LOAD_ADDRESS:
+				case CMD_LEAVE_PROGMODE_ISP:
+				case CMD_CHIP_ERASE_ISP:
+				case CMD_PROGRAM_FLASH_ISP:
+				case CMD_DEL_FILE:
+				case CMD_SHOW_GFX:
+				case CMD_FILE_RECEIVE:
 					break;
-					
+
 				default:
 					Log.i(TAG,"unknown command received:"+String.valueOf(msgBuffer[0]));
 					// irgendwie das commando nochmal senden
@@ -896,7 +908,7 @@ public class BluetoothSerialService {
 			semaphore.release();
 			Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 			Log.i(TAG_SEM,"get dir hat den semaphore zurueck gegeben");
-			
+
 			// auswerten der Ergebnisse
 			String str = new String(msgBuffer);
 			if(msgLength>2){
@@ -922,7 +934,7 @@ public class BluetoothSerialService {
 				msg.setData(bundle);
 				mHandler.sendMessage(msg);
 			};
-			
+
 
 			// fortschritt schreiben
 			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION); // typ egal wir zeigen alles an
@@ -1339,17 +1351,17 @@ public class BluetoothSerialService {
 
 	///////////////////////////// FIRMWARE UPDATE /////////////////////////////
 	/* die uploadFirmware prozedure besteht aus den teilen:
-	* 1. Die Datei des �bergebenen Dateinamen �ffnen und einlesen
-	* 2. Die Verbindung zum Bluetooth device zu beenden, so sie existiert
-	* 3. Die Verbindung neu aufbauen (der reconnect startet den Bootloader) mit der gleichen Ger�te id ODER den Dialog zur Auswahl des Ger�ts anzuzeigen
-	* 4. Den Bootloader fangen 
-	* 5. Die ID des Bootloaders abzufragen
-	* 6. Die Firmware aus dem HexFile in den Controller schreiben
-	*/
+	 * 1. Die Datei des �bergebenen Dateinamen �ffnen und einlesen
+	 * 2. Die Verbindung zum Bluetooth device zu beenden, so sie existiert
+	 * 3. Die Verbindung neu aufbauen (der reconnect startet den Bootloader) mit der gleichen Ger�te id ODER den Dialog zur Auswahl des Ger�ts anzuzeigen
+	 * 4. Den Bootloader fangen 
+	 * 5. Die ID des Bootloaders abzufragen
+	 * 6. Die Firmware aus dem HexFile in den Controller schreiben
+	 */
 	public int uploadFirmware(String filename,Handler mHandlerUpdate,String flashingDevice)throws IOException, InterruptedException {
 		Log.i(TAG, "uploadFirmware soll laden:"+filename);
 		int error=0;
-		
+
 		////// hier beginnt teil 1, die datei �ffnen und in ein array parsen //////
 		byte send[] = new byte[256*1024]; // so gro� wie es maximal werten kann, 256k
 		File file = new File(filename);
@@ -1471,16 +1483,16 @@ public class BluetoothSerialService {
 			return error;
 		}
 		////// hier beginnt teil 1, die datei �ffnen und in ein array parsen //////
-		
-		
+
+
 		////// hier beginnt teil 2, die verbindung abbauen //////
 		if(last_connected_device!=null){
 			stop();
 			Thread.sleep(1000);
 		};
 		////// hier beginnt teil 2, die verbindung abbauen //////
-		
-		
+
+
 		////// hier beginnt teil 3, die verbindung aufbauen //////
 		// fortschritt schreiben
 		Message msg2 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1491,11 +1503,11 @@ public class BluetoothSerialService {
 		msg2.setData(bundle2);
 		mHandlerUpdate.sendMessage(msg2);
 		// fortschritt schreiben
-		
+
 		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(flashingDevice);
 		connect(device, true);
-		
+
 		int wait_time=0;
 		while( getState()==STATE_CONNECTING && wait_time<5000){
 			Thread.sleep(1);
@@ -1506,8 +1518,8 @@ public class BluetoothSerialService {
 			return error;
 		}
 		////// hier beginnt teil 3, die verbindung aufbauen //////
-		
-		
+
+
 		////// hier beginnt teil 4, Den Bootloader fangen  //////
 		// jetzt stk500v2 kompatibel die versionsnummer abfragen
 		byte send2[] = new byte[300];
@@ -1516,14 +1528,15 @@ public class BluetoothSerialService {
 		Log.i("SEND","upload_fileware1()");
 		if(send_save(send2,1, 750, 15)==0){ // 750ms timeout, 15 retries
 			setState(STATE_CONNECTED);
+			Thread.sleep(10); // wait 10 ms
 			Log.i(TAG_LOGIN,"sign_on done");
 		} else {
 			error=5;
 			return error;
 		}
 		////// hier beginnt teil 4, Den Bootloader fangen  //////
-		
-		
+
+
 		////// hier beginnt teil 5, Die ID des Bootloaders abzufragen  //////	
 		int prozessor_id=0;
 		send2[0]=CMD_SPI_MULTI;
@@ -1549,16 +1562,36 @@ public class BluetoothSerialService {
 				}
 			}
 		}
-		if(prozessor_id!=0x1E9801){ // ATm2560 Signature
+		if(prozessor_id!=0x1E9801){ // ATm2560 Signature 2004993
 			error=6;
-			return error;
+			//return error;
 		};
 		////// hier beginnt teil 5, Die ID des Bootloaders abzufragen  //////
-		
-		
-		////// hier beginnt teil 6, Die Firmware aus dem HexFile in den Controller schreiben ////// 
-		//[06] . [80] . [00] . [00] . [00]
-		
+
+
+		////// hier beginnt teil 6, Die Firmware aus dem HexFile in den Controller schreiben //////
+
+		send2[0]=CMD_CHIP_ERASE_ISP;
+		send2[1]=0x09;
+		send2[2]=0x00;
+		send2[3]=(byte) 0xAC;
+		send2[4]=(byte) 0x80;
+		send2[5]=0x00;
+		send2[6]=0x00;
+		if(send_save(send2,7,3000,1)!=0){
+			return 61;
+		}
+
+		send2[0]=CMD_LOAD_ADDRESS;
+		send2[1]=(byte) 0x80;
+		send2[2]=0x00;
+		send2[3]=0x00;
+		send2[4]=0x00;
+		send2[5]=(byte) 0x8f;
+		if(send_save(send2,6,3000,1)!=0){
+			return 62;
+		}
+
 		send2[0]=CMD_PROGRAM_FLASH_ISP;
 		for(int send_position=0;send_position<=highest_pos;send_position+=256){
 			int max_size_to_send=(int) (highest_pos-send_position+1); // bei 100byte im hex file -> highes pos=99 -> wenn send_position=99, dann m�ssen wir sehr wohl das 99te Byte noch senden
@@ -1566,12 +1599,12 @@ public class BluetoothSerialService {
 			// store length in telegramm
 			send2[1]=(byte) ((max_size_to_send&0x0000ff00)>>8);// high byte
 			send2[2]=(byte)((max_size_to_send)&0x000000ff);// low byte
-			
+
 			// prepare telegramm 
 			for(int msgPosition=0; msgPosition<max_size_to_send; msgPosition++){
 				send2[10+msgPosition]=send[send_position+msgPosition];
 			}
-			
+
 			// send telegramm and check response
 			Log.i("SEND","upload_fileware5()");
 			if(send_save(send2,max_size_to_send+10,3000,1)==0){
@@ -1583,10 +1616,10 @@ public class BluetoothSerialService {
 				error=8;
 				return error;
 			};
-			
+
 			// fortschritt schreiben
 			msg2 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-			shown_message=String.valueOf(Math.floor(send_position/100)/10)+" KB written to Speedoino";
+			shown_message=String.valueOf(Math.floor(send_position/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/1000))+" KB written to Speedoino";
 			bundle2.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
 			msg2.setData(bundle2);
 			mHandlerUpdate.sendMessage(msg2);
