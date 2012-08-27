@@ -217,7 +217,7 @@ OnClickListener {
 		DeleteButton = (Button) findViewById(R.id.DeleteButton);
 		DeleteButton.setOnClickListener(this);
 		mDLListView = (ListView) findViewById(R.id.dlList);
-		
+
 		update_visible_elements(false);
 
 		if (mLog != null)
@@ -244,11 +244,11 @@ OnClickListener {
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		// If the adapter is null, then Bluetooth is not supported
 		if (mBluetoothAdapter == null) {
-		toast = Toast.makeText(this, "Bluetooth is not available",
-		Toast.LENGTH_LONG);
-		toast.show();
-		// finish();
-		return;
+			toast = Toast.makeText(this, "Bluetooth is not available",
+					Toast.LENGTH_LONG);
+			toast.show();
+			// finish();
+			return;
 		}
 	}
 
@@ -262,15 +262,15 @@ OnClickListener {
 		// setupChat() will then be called during onActivityResult
 		if (mBluetoothAdapter != null) {
 			if (!mBluetoothAdapter.isEnabled()) {
-			Intent enableIntent = new Intent(
-			BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-			// Otherwise, setup the chat session
+				Intent enableIntent = new Intent(
+						BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+				// Otherwise, setup the chat session
 			} else {
-			if (mSerialService == null)
-			setupBT();
+				if (mSerialService == null)
+					setupBT();
 			}
-			}
+		}
 	}
 
 	private void setupBT() {
@@ -292,7 +292,7 @@ OnClickListener {
 	/////////////////////////////// Bluetooth startup & shutdown /////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
-	
+
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// men� & buttons steuerung ///////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,7 +326,7 @@ OnClickListener {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void onClick(View arg0) {
 		Intent intent; // reusable
@@ -420,7 +420,7 @@ OnClickListener {
 			break;
 		}
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -458,7 +458,7 @@ OnClickListener {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// men� & buttons steuerung ///////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// externe activitys steuern ///////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -485,7 +485,7 @@ OnClickListener {
 				}
 			}
 			break;
-			
+
 		case REQUEST_SELECTED_DEVICE:
 			if (resultCode == Activity.RESULT_OK) {
 				// Get the device MAC address
@@ -615,7 +615,7 @@ OnClickListener {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// externe activitys steuern ///////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////// BLUETOOTH connection handling /////////////////////////////////////
@@ -627,12 +627,12 @@ OnClickListener {
 	private void setStatusLastCommand(int status) {
 		statusLastCommand = status;
 	}
-	
+
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////// BLUETOOTH connection handling /////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	
+
+
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////// BLUETOOTH classes for function in background ////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -783,6 +783,9 @@ OnClickListener {
 	// klasse die das updaten der firmware machen soll ausfuehrt
 	protected class firmwareBurnDialog extends AsyncTask<String, Integer, String> {
 		private Context context;
+		private String shown_message=null;
+		private String temp_message=null;
+		private int last_update_state=0;
 		ProgressDialog dialog;
 
 		public firmwareBurnDialog(Context cxt) {
@@ -824,7 +827,30 @@ OnClickListener {
 			@Override
 			public void handleMessage(Message msg) {
 				if(msg.what==MESSAGE_SET_VERSION){
-					dialog.setMessage(msg.getData().getString(BYTE_TRANSFERED));
+					// state 1 = loading file
+					if(msg.getData().getInt("state")==1){
+						// if never shown	
+						if(last_update_state!=msg.getData().getInt("state")){
+							last_update_state=msg.getData().getInt("state");
+							shown_message=temp_message;
+						}
+						temp_message=String.valueOf(Math.floor(msg.getData().getInt("size")/100)/10)+" KB read from hex file";
+						dialog.setMessage(temp_message);
+					}else if(msg.getData().getInt("state")>1){
+						// if never shown before in this state
+						if(last_update_state!=msg.getData().getInt("state")){
+							last_update_state=msg.getData().getInt("state");
+							if(shown_message!=null){
+								shown_message=shown_message+temp_message+"\n";
+							} else {
+								shown_message="- "+temp_message+"\n";
+							}
+							Log.i("msg_update", msg.getData().getString("msg"));
+						}
+						temp_message="- "+msg.getData().getString("msg");
+						dialog.setMessage(shown_message+temp_message);
+
+					}
 					//Log.i(TAG, "update prozenzzahl");
 				}
 			};
@@ -1100,18 +1126,18 @@ OnClickListener {
 		}
 	};
 
-	
-	
-	
+
+
+
 	/* prozedure zum updaten der firmware
-	* wir ben�tigen zum updaten zwei dinge: den dateinamen des hex files und 
-	* den bluetooth string des devices, die funktion firmware_update wird initial
-	* �ber den button gestartet, ruft ihrerseits dann mindestens den intent f�r die
-	* datei auswahl auf (und, falls keine Verbindung besteht, den BT auswahl dialog)
-	* und staretet dann den flashvorgang
-	* die funktion endet mit dem aufruf der anderen intents, wird aber von ihnen wieder
-	* augerufen, tricky
-	*/
+	 * wir ben�tigen zum updaten zwei dinge: den dateinamen des hex files und 
+	 * den bluetooth string des devices, die funktion firmware_update wird initial
+	 * �ber den button gestartet, ruft ihrerseits dann mindestens den intent f�r die
+	 * datei auswahl auf (und, falls keine Verbindung besteht, den BT auswahl dialog)
+	 * und staretet dann den flashvorgang
+	 * die funktion endet mit dem aufruf der anderen intents, wird aber von ihnen wieder
+	 * augerufen, tricky
+	 */
 	private void firmware_update(int init,String input_file, String bluetooth_adr){
 		// first call, set vars
 		if(init==1){
@@ -1122,13 +1148,13 @@ OnClickListener {
 				firmware_flash_bluetooth_device=null;
 			}
 		}
-		
+
 		//mal sehen ob wir aufruf parameter haben
 		if(input_file!=null){ firmware_flash_filename=input_file; };
 		if(bluetooth_adr!=null){ firmware_flash_bluetooth_device=bluetooth_adr; };
-		
+
 		// wenn wir hingegen noch nicht alle aufruf parameter haben, entsprechende activity starten
-		
+
 		// get filename
 		if(firmware_flash_filename==null){
 			Intent intent = new Intent(getBaseContext(), FileDialog.class);
@@ -1137,14 +1163,14 @@ OnClickListener {
 			startActivityForResult(intent, REQUEST_UPLOAD_FIRMWARE);
 			return; // ende
 		}
-		
+
 		// get device
 		if(firmware_flash_bluetooth_device==null){
 			Intent serverIntent = new Intent(this, DeviceListActivity.class);
 			startActivityForResult(serverIntent, REQUEST_SELECTED_DEVICE);
 			return; // ende
 		}
-		
+
 		// sobald wir beides haben: start
 		_firmwareBurnDialog = new firmwareBurnDialog(this);
 		_firmwareBurnDialog.execute(firmware_flash_filename,firmware_flash_bluetooth_device); // /mnt/sdcard/Download/bild.sng,
@@ -1216,5 +1242,5 @@ OnClickListener {
 		}
 	}
 
-	
+
 }

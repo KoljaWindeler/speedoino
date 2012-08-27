@@ -590,7 +590,7 @@ public class BluetoothSerialService {
 		byte 	c[] = {0};
 		byte 	p[] = {0};
 		// nur senden, wenn wir nicht gerade was empfangen
-		if(getState()!=STATE_CONNECTED && data[0]!=CMD_SIGN_ON){
+		if(getState()!=STATE_CONNECTED && data[0]!=CMD_SIGN_ON && data[0]!=CMD_RESET_SMALL_AVR){
 			Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_TOAST);
 			Bundle bundle = new Bundle();
 			bundle.putString(SpeedoAndroidActivity.TOAST, "You are not connected to a Speedoino");
@@ -607,7 +607,7 @@ public class BluetoothSerialService {
 		Log.i(TAG_SEM,"send hat den semaphore");
 
 		// da der Tacho, nach 2sek den fast response mode verlaesst, muessen wir die seq neu zaehlen
-		if(System.currentTimeMillis()-lastSend>time || data[0]==CMD_SIGN_ON){
+		if(System.currentTimeMillis()-lastSend>time || data[0]==CMD_SIGN_ON || data[0]==CMD_RESET_SMALL_AVR){
 			reset_seq();
 		}
 
@@ -1363,6 +1363,8 @@ public class BluetoothSerialService {
 	public int uploadFirmware(String filename,Handler mHandlerUpdate,String flashingDevice)throws IOException, InterruptedException {
 		Log.i(TAG, "uploadFirmware soll laden:"+filename);
 		int error=0;
+		
+
 
 		////// hier beginnt teil 1, die datei �ffnen und in ein array parsen //////
 		byte send[] = new byte[256*1024]; // so gro� wie es maximal werten kann, 256k
@@ -1465,98 +1467,159 @@ public class BluetoothSerialService {
 					} // pos
 
 					// send update
-					if(highest_pos%5==0){ 
+					if(highest_pos%15==1){ 
 						// fortschritt schreiben
-						Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-						Bundle bundle = new Bundle();
-
-						String shown_message=null;
-						shown_message=String.valueOf(Math.floor(highest_pos/100)/10)+" KB read from hex file";
-						bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
-						msg.setData(bundle);
-						mHandlerUpdate.sendMessage(msg);
+						Message msg2 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+						Bundle bundle2 = new Bundle();
+						bundle2.putInt("size", (int) highest_pos);
+						bundle2.putInt("state", 1);
+						msg2.setData(bundle2);
+						mHandlerUpdate.sendMessage(msg2);
 					}
 					// fortschritt schreiben
 				} // richtige hex_sequence
 			} // hab eine new line
 		}; // while byte_read>0
 		if(highest_pos==0){ // wir haben exakt nichts gelesen, das ist eher schlecht
+			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			Bundle bundle = new Bundle();
+			bundle.putString("msg", "Empty Hex File found, leaving");
+			bundle.putInt("state", 101);
+			msg.setData(bundle);
+			mHandlerUpdate.sendMessage(msg);
+			Thread.sleep(3000);
 			error=3;
 			return error;
 		}
 		////// hier beginnt teil 1, die datei �ffnen und in ein array parsen //////
 
 
-		////// hier beginnt teil 2, die verbindung abbauen //////
-		if(last_connected_device!=null){
-			stop();
-			Thread.sleep(1000);
-		};
-		////// hier beginnt teil 2, die verbindung abbauen //////
+		int remaining_tries=0;
+		boolean connection_established=false;
+		while(remaining_tries<4 && !connection_established){
+			remaining_tries++;
 
+			////// hier beginnt teil 2, die verbindung abbauen //////
+			if(last_connected_device!=null && getState()!=STATE_NONE){
+				stop();
+				// fortschritt schreiben
+				Message msg3 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+				Bundle bundle = new Bundle();
+				bundle.putString("msg", "Disconnecting...");
+				bundle.putInt("state", 2);
+				msg3.setData(bundle);
+				mHandlerUpdate.sendMessage(msg3);
 
-		////// hier beginnt teil 3, die verbindung aufbauen //////
-		// fortschritt schreiben
-		Message msg2=mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-		String shown_message=null;
-		Bundle bundle2 = new Bundle();
-
-		msg2 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-		shown_message="Trying to connect to the Bootload";
-		bundle2.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
-		msg2.setData(bundle2);
-		mHandlerUpdate.sendMessage(msg2);
-		// fortschritt schreiben
-
-		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(flashingDevice);
-		connect(device, true);
-
-		int wait_time=0;
-		while( getState()==STATE_CONNECTING && wait_time<5000){
-			Thread.sleep(1);
-			wait_time++;
-		}	
-		if(getState()==STATE_CONNECTING){
-			error=4;
-			return error;
-		} else {
-			/*/// jetzt müssen wir uns überlegen:
-			 * ist das File maximal 32k groß ? 
-			 * -> wenn ja: ATm2560
-			 * --> Dann müssen wir in den Bootloader
-			 * --> Connection abbauen und neu aufbauen
-			 * --> dann STK500v2 
-			 * -> wenn nein: ATm328
-			 * --> Dann brauchen wir nur ein bestimmtes
-			 * --> Command schicken, der ATm2560 resettet
-			 * --> den ATm328 und tunnelt den Transfer
-			 */
-			if(highest_pos<=32768){
-				// wir flashen einen ATm328
-				Thread.sleep(10000); // 10 sek um den bootvorgang abzuwarten
-				byte send2[] = new byte[300];
-				send2[0] = CMD_RESET_SMALL_AVR;
-				Log.i("connect","sign_on sendet");
-				Log.i("SEND","upload_fileware0()");
-				if(send_save(send2, 1, 750, 15)==0){ // 750ms timeout, 15 retries, das hier wartet nochmal bis zu ~10sec
-					if(msgBuffer[1]!=STATUS_CMD_OK){
-						error=401;
-						return error;
-					};
-					setState(STATE_CONNECTED);
-					Thread.sleep(10); // wait 10 ms
-					Log.i(TAG_LOGIN,"reset done");
-				} else {
-					error=41;
-					return error;
-				}
+				Thread.sleep(1000);
 			};
+			////// hier beginnt teil 2, die verbindung abbauen //////
+
 
 			////// hier beginnt teil 3, die verbindung aufbauen //////
-		} 	
+			// fortschritt schreiben
+			Message msg3 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			Bundle bundle = new Bundle();
+			bundle.putString("msg", "Connecting to Bootload, try "+String.valueOf(remaining_tries)+"/3");
+			bundle.putInt("state", 3);
+			msg3.setData(bundle);
+			mHandlerUpdate.sendMessage(msg3);
+			// fortschritt schreiben
+
+			BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(flashingDevice);
+			connect(device, true);
+			
+			Thread.sleep(50); // to make sure, the connection has at least 50 msec do realize it is not yet connected
+			int wait_time=0; // maximal 5 sekunden darauf warten das sich der state von connecting auf connected dreht
+			while( getState()!=STATE_CONNECTED_AND_SEARCHING && wait_time<5000){
+				Thread.sleep(1);
+				wait_time++;
+			}	
+			if(getState()!=STATE_CONNECTED_AND_SEARCHING){
+				error=4;
+				
+				Message msg4 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+				Bundle bundle4 = new Bundle();
+				bundle4.putString("msg", "Connection not established");
+				bundle4.putInt("state", 102);
+				msg4.setData(bundle4);
+				mHandlerUpdate.sendMessage(msg4);
+				
+				//return error;
+			} else {
+				connection_established=true;
+				
+				Message msg4 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+				Bundle bundle4 = new Bundle();
+				bundle4.putString("msg", "Connection established");
+				bundle4.putInt("state", 103);
+				msg4.setData(bundle4);
+				mHandlerUpdate.sendMessage(msg4);
+				
+				/*/// jetzt müssen wir uns überlegen:
+				 * ist das File maximal 32k groß ? 
+				 * -> wenn ja: ATm2560
+				 * --> Dann müssen wir in den Bootloader
+				 * --> Connection abbauen und neu aufbauen
+				 * --> dann STK500v2 
+				 * -> wenn nein: ATm328
+				 * --> Dann brauchen wir nur ein bestimmtes
+				 * --> Command schicken, der ATm2560 resettet
+				 * --> den ATm328 und tunnelt den Transfer
+				 */
+				if(highest_pos<=32768){
+					// wir flashen einen ATm328
+					// fortschritt schreiben
+					Message msg5 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+					Bundle bundle5 = new Bundle();
+					bundle5.putString("msg", "Connected, sending reset to AT328 in 10sec");
+					bundle5.putInt("state", 4);
+					msg5.setData(bundle5);
+					mHandlerUpdate.sendMessage(msg5);
+					// fortschritt schreiben
+
+					Thread.sleep(10000); // 10 sek um den bootvorgang abzuwarten
+					byte send2[] = new byte[300];
+					send2[0] = CMD_RESET_SMALL_AVR;
+					Log.i("connect","sign_on sendet");
+					Log.i("SEND","upload_fileware0()");
+					if(send_save(send2, 1, 750, 15)==0){ // 750ms timeout, 15 retries, das hier wartet nochmal bis zu ~10sec
+						if(msgBuffer[1]!=STATUS_CMD_OK){
+							error=401;
+							return error;
+						};
+						setState(STATE_CONNECTED);
+						Thread.sleep(10); // wait 10 ms
+						Log.i(TAG_LOGIN,"reset done");
+					} else {
+						error=41;
+						return error;
+					}
+				};
+				////// hier beginnt teil 3, die verbindung aufbauen //////
+			} 	
+		}
+		
+		if(!connection_established){
+			// fortschritt schreiben
+			Message msg5 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			Bundle bundle5 = new Bundle();
+			bundle5.putString("msg", "Could no establish connection");
+			bundle5.putInt("state", 41);
+			msg5.setData(bundle5);
+			mHandlerUpdate.sendMessage(msg5);
+			Thread.sleep(10000);
+		}
 
 		////// hier beginnt teil 4, Den Bootloader fangen  //////
+		// fortschritt schreiben
+		Message msg3 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+		Bundle bundle3 = new Bundle();
+		bundle3.putString("msg", "Sending sign on");
+		bundle3.putInt("state", 5);
+		msg3.setData(bundle3);
+		mHandlerUpdate.sendMessage(msg3);
+		// fortschritt schreiben
 		// jetzt stk500v2 kompatibel die versionsnummer abfragen
 		byte send2[] = new byte[300];
 		send2[0] = CMD_SIGN_ON;
@@ -1570,6 +1633,14 @@ public class BluetoothSerialService {
 			setState(STATE_CONNECTED);
 			Thread.sleep(10); // wait 10 ms
 			Log.i(TAG_LOGIN,"sign_on done");
+			// fortschritt schreiben
+			Bundle bundle = new Bundle();
+			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			bundle.putString("msg", "Sign on done");
+			bundle.putInt("state", 88);
+			msg.setData(bundle);
+			mHandlerUpdate.sendMessage(msg);
+			// fortschritt schreiben
 		} else {
 			error=5;
 			return error;
@@ -1578,51 +1649,76 @@ public class BluetoothSerialService {
 
 
 		////// hier beginnt teil 5, Die ID des Bootloaders abzufragen  //////	
-		int prozessor_id=0;
-		send2[0]=CMD_SPI_MULTI;
-		send2[4]=0x30;
-		send2[6]=0x00;
-		Log.i("SEND","upload_fileware2()");
-		if(send_save(send2,7,1000,3)==0){
-			if(msgBuffer[1]!=STATUS_CMD_OK){
-				error=601;
-				return error;
-			};
-			Log.i(TAG_LOGIN,"get_sig 0/2 done");
-			prozessor_id|=((msgBuffer[5]&0xff)<<16);
-			Log.i(TAG_LOGIN,"Prozessor: "+String.valueOf(prozessor_id));
-			send2[6]=0x01;
-			Log.i("SEND","upload_fileware3()");
+		boolean correct_id_found=false;
+		int retries=0;
+		while(retries<4 && !correct_id_found){
+			retries++;
+
+			// fortschritt schreiben
+			Bundle bundle9 = new Bundle();
+			Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			bundle9.putString("msg", "Requesting ID, try "+String.valueOf(retries)+"/3");
+			bundle9.putInt("state", 44);
+			msg9.setData(bundle9);
+			mHandlerUpdate.sendMessage(msg9);
+			// fortschritt schreiben
+
+			int prozessor_id=0;
+			send2[0]=CMD_SPI_MULTI;
+			send2[4]=0x30;
+			send2[6]=0x00;
+			Log.i("SEND","upload_fileware2()");
 			if(send_save(send2,7,1000,3)==0){
 				if(msgBuffer[1]!=STATUS_CMD_OK){
-					error=602;
+					error=601;
 					return error;
 				};
-				Log.i(TAG_LOGIN,"get_sig 1/2 done");
-				prozessor_id|=((msgBuffer[5]&0xff)<<8);
+				Log.i(TAG_LOGIN,"get_sig 0/2 done");
+				prozessor_id|=((msgBuffer[5]&0xff)<<16);
 				Log.i(TAG_LOGIN,"Prozessor: "+String.valueOf(prozessor_id));
-				send2[6]=0x02;
-				Log.i("SEND","upload_fileware4()");
+				send2[6]=0x01;
+				Log.i("SEND","upload_fileware3()");
 				if(send_save(send2,7,1000,3)==0){
 					if(msgBuffer[1]!=STATUS_CMD_OK){
-						error=603;
+						error=602;
 						return error;
 					};
-					Log.i(TAG_LOGIN,"get_sig 2/2 done");
-					prozessor_id|=((msgBuffer[5]&0xff));
+					Log.i(TAG_LOGIN,"get_sig 1/2 done");
+					prozessor_id|=((msgBuffer[5]&0xff)<<8);
 					Log.i(TAG_LOGIN,"Prozessor: "+String.valueOf(prozessor_id));
+					send2[6]=0x02;
+					Log.i("SEND","upload_fileware4()");
+					if(send_save(send2,7,1000,3)==0){
+						if(msgBuffer[1]!=STATUS_CMD_OK){
+							error=603;
+							return error;
+						};
+						Log.i(TAG_LOGIN,"get_sig 2/2 done");
+						prozessor_id|=((msgBuffer[5]&0xff));
+						Log.i(TAG_LOGIN,"Prozessor: "+String.valueOf(prozessor_id));
+					}
 				}
 			}
-		}
-		if(prozessor_id!=0x1E9801){ // ATm2560 Signature 2004993
-			error=6;
-			//return error;
+			if(prozessor_id!=0x1E9801){ // ATm2560 Signature 2004993
+				error=6;
+				//return error;
+			} else {
+				correct_id_found=true;
+				
+				// fortschritt schreiben
+				Bundle bundle8 = new Bundle();
+				Message msg8 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+				bundle8.putString("msg", "ATm2560 ID found");
+				bundle8.putInt("state", 45);
+				msg8.setData(bundle8);
+				mHandlerUpdate.sendMessage(msg8);
+				// fortschritt schreiben
+			}
 		};
 		////// hier beginnt teil 5, Die ID des Bootloaders abzufragen  //////
 
 
 		////// hier beginnt teil 6, Die Firmware aus dem HexFile in den Controller schreiben //////
-
 		send2[0]=CMD_CHIP_ERASE_ISP;
 		send2[1]=0x09;
 		send2[2]=0x00;
@@ -1678,18 +1774,31 @@ public class BluetoothSerialService {
 			};
 
 			// fortschritt schreiben
-			msg2 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-			shown_message=String.valueOf(Math.floor(send_position/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/1000))+" KB written to Speedoino";
-			bundle2.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
-			msg2.setData(bundle2);
-			mHandlerUpdate.sendMessage(msg2);
+			Bundle bundle = new Bundle();
+			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			bundle.putString("msg", "Speedoino at "+String.valueOf(Math.floor(send_position/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/1000))+" KB");
+			bundle.putInt("state", 7);
+			msg.setData(bundle);
+			mHandlerUpdate.sendMessage(msg);
 			// fortschritt schreiben
+
 		}
 		// send leave_programmer command
 		send2[0]=CMD_LEAVE_PROGMODE_ISP;
 		Log.i("SEND","upload_fileware6()");
 		send_save(send2,1,1000,1);	
 		////// hier beginnt teil 6, Die Firmware aus dem HexFile in den Controller schreiben ////// 
+		// fortschritt schreiben
+		Bundle bundle = new Bundle();
+		Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+		bundle.putString("msg", "Thanks for using");
+		bundle.putInt("state", 97);
+		msg.setData(bundle);
+		mHandlerUpdate.sendMessage(msg);
+		
+		Thread.sleep(10000);
+		
+		
 		return 0;
 	}
 	///////////////////////////// FIRMWARE UPDATE /////////////////////////////
