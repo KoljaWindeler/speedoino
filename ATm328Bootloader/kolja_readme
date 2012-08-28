@@ -1,6 +1,0 @@
-make atmega328
-
-avrdude	-pm328p -cavrisp2 -Pusb -B10 -u -Uflash:w:optiboot_atmega328.hex:a -Ulfuse:w:0xe2:m -Uhfuse:w:0xd2:m -Uefuse:w:0x6:m
-
-vielleicht reicht auch d4 im h fuse -> 512 words=1k sonst 1024 words => 2k bootloader oder sogar noch kleiner
-
