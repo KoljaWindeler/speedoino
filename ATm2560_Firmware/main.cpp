@@ -119,6 +119,19 @@ int main(void) {
 	unsigned long   previousMillis = 0;
 	/* main loop, this will be repeated on and on */
 	for (;;) {
+
+		//////////////////////////////////////////////////
+		pSensors->m_reset->set_deactive(false,false);
+		while(true){
+			while(Serial3.available()>0){
+				Serial.print(Serial3.read(),BYTE);
+			}
+			while(Serial.available()>0){
+				Serial3.print(Serial.read(),BYTE);
+			}
+		}
+		//////////////////////////////////////////////////
+
 		while(Serial3.available()>0){
 			Serial.print(Serial3.read(),BYTE);
 		}
