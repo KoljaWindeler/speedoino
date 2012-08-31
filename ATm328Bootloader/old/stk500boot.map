@@ -15,7 +15,7 @@ Linker script and memory map
 Address of section .data set to 0x800100
 LOAD stk500boot.o
 LOAD /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avr5/libm.a
-Address of section .text set to 0x7800
+Address of section .text set to 0x7000
 
 .hash
  *(.hash)
@@ -107,27 +107,27 @@ Address of section .text set to 0x7800
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000007800      0x4ac
+.text           0x0000000000007000      0x4c8
  *(.vectors)
  *(.vectors)
  *(.progmem.gcc*)
  *(.progmem*)
-                0x0000000000007800                . = ALIGN (0x2)
-                0x0000000000007800                __trampolines_start = .
+                0x0000000000007000                . = ALIGN (0x2)
+                0x0000000000007000                __trampolines_start = .
  *(.trampolines)
- .trampolines   0x0000000000007800        0x0 linker stubs
+ .trampolines   0x0000000000007000        0x0 linker stubs
  *(.trampolines*)
-                0x0000000000007800                __trampolines_end = .
+                0x0000000000007000                __trampolines_end = .
  *(.jumptables)
  *(.jumptables*)
  *(.lowtext)
  *(.lowtext*)
-                0x0000000000007800                __ctors_start = .
+                0x0000000000007000                __ctors_start = .
  *(.ctors)
-                0x0000000000007800                __ctors_end = .
-                0x0000000000007800                __dtors_start = .
+                0x0000000000007000                __ctors_end = .
+                0x0000000000007000                __dtors_start = .
  *(.dtors)
-                0x0000000000007800                __dtors_end = .
+                0x0000000000007000                __dtors_end = .
  SORT(*)(.ctors)
  SORT(*)(.dtors)
  *(.init0)
@@ -149,15 +149,15 @@ Address of section .text set to 0x7800
  *(.init8)
  *(.init8)
  *(.init9)
- .init9         0x0000000000007800        0xe stk500boot.o
-                0x0000000000007800                __jumpMain
+ .init9         0x0000000000007000       0x10 stk500boot.o
+                0x0000000000007000                __jumpMain
  *(.init9)
  *(.text)
- .text          0x000000000000780e      0x49e stk500boot.o
-                0x0000000000007826                main
-                0x0000000000007cac                . = ALIGN (0x2)
+ .text          0x0000000000007010      0x4b8 stk500boot.o
+                0x000000000000701e                main
+                0x00000000000074c8                . = ALIGN (0x2)
  *(.text.*)
-                0x0000000000007cac                . = ALIGN (0x2)
+                0x00000000000074c8                . = ALIGN (0x2)
  *(.fini9)
  *(.fini9)
  *(.fini8)
@@ -178,9 +178,9 @@ Address of section .text set to 0x7800
  *(.fini1)
  *(.fini0)
  *(.fini0)
-                0x0000000000007cac                _etext = .
+                0x00000000000074c8                _etext = .
 
-.data           0x0000000000800100       0x14 load address 0x0000000000007cac
+.data           0x0000000000800100       0x14 load address 0x00000000000074c8
                 0x0000000000800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800100       0x13 stk500boot.o
@@ -200,8 +200,8 @@ Address of section .text set to 0x7800
  *(.bss*)
  *(COMMON)
                 0x0000000000800114                PROVIDE (__bss_end, .)
-                0x0000000000007cac                __data_load_start = LOADADDR (.data)
-                0x0000000000007cc0                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00000000000074c8                __data_load_start = LOADADDR (.data)
+                0x00000000000074dc                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0000000000800114        0x0
                 0x0000000000800114                PROVIDE (__noinit_start, .)
@@ -270,31 +270,31 @@ Address of section .text set to 0x7800
  .debug_pubnames
                 0x0000000000000000       0x2a stk500boot.o
 
-.debug_info     0x0000000000000000      0x429
+.debug_info     0x0000000000000000      0x4bf
  *(.debug_info)
- .debug_info    0x0000000000000000      0x429 stk500boot.o
+ .debug_info    0x0000000000000000      0x4bf stk500boot.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x0000000000000000      0x1b6
+.debug_abbrev   0x0000000000000000      0x1af
  *(.debug_abbrev)
- .debug_abbrev  0x0000000000000000      0x1b6 stk500boot.o
+ .debug_abbrev  0x0000000000000000      0x1af stk500boot.o
 
-.debug_line     0x0000000000000000      0x749
+.debug_line     0x0000000000000000      0x7a0
  *(.debug_line)
- .debug_line    0x0000000000000000      0x749 stk500boot.o
+ .debug_line    0x0000000000000000      0x7a0 stk500boot.o
 
 .debug_frame    0x0000000000000000       0x40
  *(.debug_frame)
  .debug_frame   0x0000000000000000       0x40 stk500boot.o
 
-.debug_str      0x0000000000000000      0x1d5
+.debug_str      0x0000000000000000      0x20a
  *(.debug_str)
- .debug_str     0x0000000000000000      0x1d5 stk500boot.o
-                                        0x216 (size before relaxing)
+ .debug_str     0x0000000000000000      0x20a stk500boot.o
+                                        0x24b (size before relaxing)
 
-.debug_loc      0x0000000000000000      0x811
+.debug_loc      0x0000000000000000      0x808
  *(.debug_loc)
- .debug_loc     0x0000000000000000      0x811 stk500boot.o
+ .debug_loc     0x0000000000000000      0x808 stk500boot.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -306,8 +306,8 @@ LOAD linker stubs
  .debug_pubtypes
                 0x0000000000000000       0x46 stk500boot.o
 
-.debug_ranges   0x0000000000000000       0x80
- .debug_ranges  0x0000000000000000       0x80 stk500boot.o
+.debug_ranges   0x0000000000000000       0x78
+ .debug_ranges  0x0000000000000000       0x78 stk500boot.o
 
 Cross Reference Table
 

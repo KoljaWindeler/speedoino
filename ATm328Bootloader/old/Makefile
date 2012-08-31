@@ -2,7 +2,7 @@
 # Makefile to compile and link stk500boot bootloader
 # Author: Peter Fleury
 # File:   $Id: makefile,v 1.4 2008/05/25 09:13:07 peter Exp $
-# based on WinAVR Makefile Template written by Eric B. Weddington, Jï¿½rg Wunsch, et al.
+# based on WinAVR Makefile Template written by Eric B. Weddington, Jörg Wunsch, et al.
 #
 # Adjust F_CPU below to the clock frequency in Mhz of your AVR target
 # Adjust BOOTLOADER_ADDRESS to your AVR target
@@ -32,37 +32,29 @@
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
 
+
 # MCU name
-#MCU = atmega8
-#MCU = atmega88
-#MCU = atmega168
 MCU = atmega328
-#MCU = atmega16
-#MCU = atmega128
+
+
 
 # Processor frequency.
 #     This will define a symbol, F_CPU, in all source code files equal to the 
 #     processor frequency. You can then use this symbol in your source code to 
 #     calculate timings. Do NOT tack on a 'UL' at the end, this will be done
 #     automatically to create a 32-bit value in your source code.
-
 F_CPU = 8000000
-#F_CPU = 3686400
-#F_CPU = 11059200
-#F_CPU = 14745600
-#F_CPU = 18432000
-#F_CPU = 20000000
+
 
 # Bootloader
 # Please adjust if using a different AVR
-# 0x0e00*2 = 0x1C00  for ATmega8   512 words Boot Size
-# 0x0C00*2 = 0x1800  for ATmega88  1024 words Boot Size
-# 0x3C00*2 = 0x7800  for ATmega328 1024 words Boot Size
-# 0xFC00*2 = 0x1F800 for ATmega128 1024 words Boot Size
-# 0x1E00*2 = 0x3C00  for ATmega16  512 Boot Size
-# 0x1C00*2 = 0x3800  for ATmega16  1024 Boot Size
-
-BOOTLOADER_ADDRESS = 7800
+# 0x0e00*2=0x1C00 for ATmega8  512 words Boot Size
+#mein makefile vom 2560 sagt: BOOTLOADER_ADDRESS = 3E000
+#gleichzeitig sagen die fuses das der bootloader zu 1f000 springen soll
+#1f000 als word adresse ist 3e000 als byte adresse
+#für den 328 kann ich als fuse maximal 3800 wählen kann
+#muss ins makefile 2*3800 rein, also 0x7000
+BOOTLOADER_ADDRESS = 7000
 
 
 # Output format. (can be srec, ihex, binary)

@@ -15,7 +15,11 @@ stk500boot.o: stk500boot.c \
  /usr/lib/gcc/avr/4.5.3/../../../avr/include/avr/eeprom.h \
  /usr/lib/gcc/avr/4.5.3/include/stddef.h \
  /usr/lib/gcc/avr/4.5.3/include-fixed/limits.h \
- /usr/lib/gcc/avr/4.5.3/../../../avr/include/avr/pgmspace.h command.h
+ /usr/lib/gcc/avr/4.5.3/../../../avr/include/avr/pgmspace.h \
+ /usr/lib/gcc/avr/4.5.3/../../../avr/include/avr/wdt.h \
+ /usr/lib/gcc/avr/4.5.3/../../../avr/include/util/delay.h \
+ /usr/lib/gcc/avr/4.5.3/../../../avr/include/util/delay_basic.h \
+ /usr/lib/gcc/avr/4.5.3/../../../avr/include/math.h command.h
 
 /usr/lib/gcc/avr/4.5.3/../../../avr/include/inttypes.h:
 
@@ -50,5 +54,13 @@ stk500boot.o: stk500boot.c \
 /usr/lib/gcc/avr/4.5.3/include-fixed/limits.h:
 
 /usr/lib/gcc/avr/4.5.3/../../../avr/include/avr/pgmspace.h:
+
+/usr/lib/gcc/avr/4.5.3/../../../avr/include/avr/wdt.h:
+
+/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/delay.h:
+
+/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/delay_basic.h:
+
+/usr/lib/gcc/avr/4.5.3/../../../avr/include/math.h:
 
 command.h:

@@ -1,0 +1,5 @@
+make
+
+avrdude -pm328p -cavrisp2 -Pusb -V -Uflash:w:stk500boot.hex:a -v -Ulfuse:w:0xe2:m -Uhfuse:w:0xd2:m -Uefuse:w:0x6:m
+
+avr-size stk500boot.elf --format=avr --mcu=atmega328p
