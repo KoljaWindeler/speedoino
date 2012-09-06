@@ -76,8 +76,8 @@ LICENSE:
  * Uncomment the following lines to save code space 
  */
 #define REMOVE_PROGRAM_LOCK_BIT_SUPPORT	// disable program lock bits
-//#define REMOVE_CMD_SPI_MULTI							// disable processing of SPI_MULTI commands
-//#define REMOVE_WATCHDOG_START							// disable bootloaderstart after watchdogreset
+//#define REMOVE_CMD_SPI_MULTI			// disable processing of SPI_MULTI commands
+//#define REMOVE_WATCHDOG_START			// disable bootloaderstart after watchdogreset
 
 
 
