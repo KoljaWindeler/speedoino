@@ -76,63 +76,22 @@ LICENSE:
  * Uncomment the following lines to save code space 
  */
 #define REMOVE_PROGRAM_LOCK_BIT_SUPPORT	// disable program lock bits
-#define REMOVE_BOOTLOADER_LED						// no LED to show active bootloader
-#define REMOVE_PROG_PIN_PULLUP					// disable internal pullup, use external 
 //#define REMOVE_CMD_SPI_MULTI							// disable processing of SPI_MULTI commands
 //#define REMOVE_WATCHDOG_START							// disable bootloaderstart after watchdogreset
 
-/*
- *  Uncomment to leave bootloader and jump to application after programming.
- */
-//#define ENABLE_LEAVE_BOOTLADER           
-
-/* 
- * Pin "PROG_PIN" on port "PROG_PORT" has to be pulled low
- * (active low) to start the bootloader 
- * uncomment #define REMOVE_PROG_PIN_PULLUP if using an external pullup
- */
-#if defined (__AVR_ATmega128__)
-#define PROG_PORT  PORTE
-#define PROG_DDR   DDRE
-#define PROG_IN    PINE
-#define PROG_PIN   PINE0
-#else
-#define PROG_PORT  PORTD
-#define PROG_DDR   DDRD
-#define PROG_IN    PIND
-#define PROG_PIN   PIND4
-#endif
-/*
- * Active-low LED on pin "PROGLED_PIN" on port "PROGLED_PORT" 
- * indicates that bootloader is active
- */
-#if defined (__AVR_ATmega128__)
-#define PROGLED_PORT PORTB
-#define PROGLED_DDR  DDRB
-#define PROGLED_PIN  PINB7
-#else
-#define PROGLED_PORT PORTC
-#define PROGLED_DDR  DDRC
-#define PROGLED_PIN  PINC0
-#endif
-
-/*
- * define which UART channel will be used, if device with two UARTs is used
- */
-//#define USE_USART1        // undefined means use USART0
 
 
 /*
  * UART Baudrate, AVRStudio AVRISP only accepts 115200 bps
  */
-//#define BAUDRATE 115200
-#define BAUDRATE 9600
+#define BAUDRATE 115200
+//#define BAUDRATE 9600
 
 
 /*
  *  Enable (1) or disable (0) USART double speed operation
  */
-#define UART_BAUDRATE_DOUBLE_SPEED 0
+#define UART_BAUDRATE_DOUBLE_SPEED 1
 
 
 /*
@@ -202,15 +161,15 @@ LICENSE:
 /* 
  * ATMega with one USART
  */ 
-#define	UART_BAUD_RATE_LOW					UBRRL
-#define	UART_STATUS_REG							UCSRA
-#define	UART_CONTROL_REG						UCSRB
-#define	UART_ENABLE_TRANSMITTER			TXEN
-#define	UART_ENABLE_RECEIVER				RXEN
-#define	UART_TRANSMIT_COMPLETE			TXC
-#define	UART_RECEIVE_COMPLETE				RXC
-#define	UART_DATA_REG								UDR
-#define UART_DOUBLE_SPEED						U2X
+#define UART_BAUD_RATE_LOW			UBRRL
+#define	 UART_STATUS_REG			UCSRA
+#define	 UART_CONTROL_REG			UCSRB
+#define	 UART_ENABLE_TRANSMITTER	TXEN
+#define	 UART_ENABLE_RECEIVER		RXEN
+#define	 UART_TRANSMIT_COMPLETE		TXC
+#define	 UART_RECEIVE_COMPLETE		RXC
+#define	 UART_DATA_REG				UDR
+#define UART_DOUBLE_SPEED			U2X
 
 #elif  defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega162__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) \
 		|| defined(__AVR_AT90CAN32__) || defined(__AVR_AT90CAN64__) || defined(__AVR_AT90CAN128__) || defined(__AVR_ATmega328__)
@@ -218,31 +177,31 @@ LICENSE:
  *  ATMega with two USART, select USART for bootloader using USE_USART1 define
  */ 
 #ifndef USE_USART1
-#define	UART_BAUD_RATE_LOW				UBRR0L
+#define	UART_BAUD_RATE_LOW			UBRR0L
 #ifdef UBRR0H
 #define UART_BAUD_RATE_HIGH			UBRR0H
 #endif
-#define	UART_STATUS_REG						UCSR0A
-#define	UART_CONTROL_REG					UCSR0B
+#define	UART_STATUS_REG				UCSR0A
+#define	UART_CONTROL_REG			UCSR0B
 #define	UART_ENABLE_TRANSMITTER		TXEN0
-#define	UART_ENABLE_RECEIVER			RXEN0
+#define	UART_ENABLE_RECEIVER		RXEN0
 #define	UART_TRANSMIT_COMPLETE		TXC0
-#define	UART_RECEIVE_COMPLETE			RXC0
-#define	UART_DATA_REG							UDR0
-#define UART_DOUBLE_SPEED					U2X0
+#define	UART_RECEIVE_COMPLETE		RXC0
+#define	UART_DATA_REG				UDR0
+#define UART_DOUBLE_SPEED			U2X0
 #else
-#define	UART_BAUD_RATE_LOW				UBRR1L
+#define	UART_BAUD_RATE_LOW			UBRR1L
 #ifdef UBRR1H
 #define UART_BAUD_RATE_HIGH			UBRR1H
 #endif
-#define	UART_STATUS_REG						UCSR1A
-#define	UART_CONTROL_REG					UCSR1B
+#define	UART_STATUS_REG				UCSR1A
+#define	UART_CONTROL_REG			UCSR1B
 #define	UART_ENABLE_TRANSMITTER		TXEN1
-#define	UART_ENABLE_RECEIVER			RXEN1
+#define	UART_ENABLE_RECEIVER		RXEN1
 #define	UART_TRANSMIT_COMPLETE		TXC1
-#define	UART_RECEIVE_COMPLETE			RXC1
-#define	UART_DATA_REG							UDR1
-#define UART_DOUBLE_SPEED					U2X1
+#define	UART_RECEIVE_COMPLETE		RXC1
+#define	UART_DATA_REG				UDR1
+#define UART_DOUBLE_SPEED			U2X1
 #endif
 
 #else
@@ -253,7 +212,7 @@ LICENSE:
 /*
  * Macros to map the new ATmega88/168 EEPROM bits
  */
-#ifdef EEMPE        				        		            
+#ifdef EEMPE
 #define EEMWE EEMPE
 #define EEWE  EEPE
 #endif
@@ -269,11 +228,8 @@ LICENSE:
 /*
  * Macro to calculate UBBR from XTAL and baudrate
  */
-#if UART_BAUDRATE_DOUBLE_SPEED
 #define UART_BAUD_SELECT(baudRate,xtalCpu) (((float)(xtalCpu))/(((float)(baudRate))*8.0)-1.0+0.5)
-#else
-#define UART_BAUD_SELECT(baudRate,xtalCpu) (((float)(xtalCpu))/(((float)(baudRate))*16.0)-1.0+0.5)
-#endif
+
 
 
 /*
@@ -292,11 +248,7 @@ LICENSE:
 /*
  * use 16bit address variable for ATmegas with <= 64K flash
  */
-#if defined(RAMPZ)
-typedef uint32_t address_t;
-#else
 typedef uint16_t address_t;
-#endif
 
 
 /*
@@ -324,9 +276,6 @@ void __jumpMain(void)
 
 	asm volatile ( "clr __zero_reg__" );                       // GCC depends on register r1 set to 0
 	asm volatile ( "out %0, __zero_reg__" :: "I" (_SFR_IO_ADDR(SREG)) );  // set SREG to 0
-#ifndef REMOVE_PROG_PIN_PULLUP	 
-	PROG_PORT |= (1<<PROG_PIN);		                           // Enable internal pullup
-#endif    
 	asm volatile ( "rjmp main");                               // jump to main()
 }
 
@@ -341,14 +290,6 @@ static void sendchar(char c)
 	UART_STATUS_REG |= (1 << UART_TRANSMIT_COMPLETE);          // delete TXCflag
 }
 
-/*
- * Read single byte from USART, block if no data available
- */
-//static unsigned char recchar(void)
-//{
-//	while(!(UART_STATUS_REG & (1 << UART_RECEIVE_COMPLETE)));  // wait for data
-//	return UART_DATA_REG;
-//}
 
 //************************************************************************
 static int	Serial_Available(void)
@@ -410,14 +351,14 @@ int main(void)
 	boot_timeout =	250000; // 7 seconds , approx 2us per step when optimize "s"
 
 	/*
-		 * Init UART
-		 * set baudrate and enable USART receiver and transmiter without interrupts
-		 */
-	#if UART_BAUDRATE_DOUBLE_SPEED
-		UART_STATUS_REG		|=	(1 <<UART_DOUBLE_SPEED);
-	#endif
-		UART_BAUD_RATE_LOW	=	UART_BAUD_SELECT(BAUDRATE,F_CPU);
-		UART_CONTROL_REG	=	(1 << UART_ENABLE_RECEIVER) | (1 << UART_ENABLE_TRANSMITTER);
+	 * Init UART
+	 * set baudrate and enable USART receiver and transmiter without interrupts
+	 */
+#if UART_BAUDRATE_DOUBLE_SPEED
+	UART_STATUS_REG		|=	(1 <<UART_DOUBLE_SPEED);
+#endif
+	UART_BAUD_RATE_LOW	=	UART_BAUD_SELECT(BAUDRATE,F_CPU);
+	UART_CONTROL_REG	=	(1 << UART_ENABLE_RECEIVER) | (1 << UART_ENABLE_TRANSMITTER);
 
 
 	msgLength		=	11;
@@ -464,7 +405,7 @@ int main(void)
 		while ((!(Serial_Available())) && (boot_state == 0))		// wait for data
 		{
 			_delay_ms(0.001);
-//			boot_timer++;
+			boot_timer++;
 
 			if (boot_timer > boot_timeout)
 			{
@@ -497,15 +438,15 @@ int main(void)
 				}
 
 
-//				sendchar('f');
-//										sendchar('o');
-//										sendchar('u');
-//										sendchar('n');
-//										sendchar('d');
-//										sendchar(' ');
-//										sendchar('c');
-//										sendchar(':');
-//										sendchar(c);
+				//				sendchar('f');
+				//										sendchar('o');
+				//										sendchar('u');
+				//										sendchar('n');
+				//										sendchar('d');
+				//										sendchar(' ');
+				//										sendchar('c');
+				//										sendchar(':');
+				//										sendchar(c);
 
 
 				switch (msgParseState){
@@ -583,7 +524,6 @@ int main(void)
 
 			switch (msgBuffer[0])
 			{
-#ifndef REMOVE_CMD_SPI_MULTI
 			case CMD_SPI_MULTI:
 			{
 				unsigned char answerByte = 0;
@@ -609,7 +549,6 @@ int main(void)
 				msgBuffer[6] = STATUS_CMD_OK;
 			}
 			break;
-#endif
 
 			case CMD_SIGN_ON:
 				msgLength = 11;
@@ -657,9 +596,7 @@ int main(void)
 			break;
 
 			case CMD_LEAVE_PROGMODE_ISP:
-#ifdef ENABLE_LEAVE_BOOTLADER
 				isLeave = 1;
-#endif
 			case CMD_ENTER_PROGMODE_ISP:
 			case CMD_SET_PARAMETER:
 				msgLength = 2;
@@ -714,21 +651,6 @@ int main(void)
 			}
 			break;
 
-#ifndef REMOVE_PROGRAM_LOCK_BIT_SUPPORT
-			case CMD_PROGRAM_LOCK_ISP:
-			{
-				unsigned char lockBits = msgBuffer[4];
-
-				lockBits = (~lockBits) & 0x3C;  // mask BLBxx bits
-				boot_lock_bits_set(lockBits);	// and program it
-				boot_spm_busy_wait();
-
-				msgLength = 3;
-				msgBuffer[1] = STATUS_CMD_OK;
-				msgBuffer[2] = STATUS_CMD_OK;
-			}
-			break;
-#endif
 			case CMD_CHIP_ERASE_ISP:
 				eraseAddress = 0;
 				msgLength = 2;
@@ -736,11 +658,7 @@ int main(void)
 				break;
 
 			case CMD_LOAD_ADDRESS:
-#if defined(RAMPZ)
-				address = ( ((address_t)(msgBuffer[1])<<24)|((address_t)(msgBuffer[2])<<16)|((address_t)(msgBuffer[3])<<8)|(msgBuffer[4]) )<<1;
-#else
 				address = ( ((msgBuffer[3])<<8)|(msgBuffer[4]) )<<1;  //convert word to byte address
-#endif
 				msgLength = 2;
 				msgBuffer[1] = STATUS_CMD_OK;
 				break;
@@ -815,11 +733,7 @@ int main(void)
 
 					// Read FLASH
 					do {
-#if defined(RAMPZ)
-						data = pgm_read_word_far(address);
-#else
 						data = pgm_read_word_near(address);
-#endif
 						*p++ = (unsigned char)data;         //LSB
 						*p++ = (unsigned char)(data >> 8);	//MSB
 						address    += 2;  	 // Select next word in memory
@@ -881,9 +795,6 @@ int main(void)
 
 		}	//while
 
-#ifndef REMOVE_BOOTLOADER_LED
-		PROGLED_DDR  &= ~(1<<PROGLED_PIN);   // set to default
-#endif
 	}	//if
 
 
