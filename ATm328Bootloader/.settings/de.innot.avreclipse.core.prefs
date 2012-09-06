@@ -24,7 +24,7 @@ avrtarget/avrdude/ProgrammerID=programmerconfig.3
 avrtarget/avrdude/UseCounter=false
 avrtarget/avrdude/WriteEEPROM=false
 avrtarget/avrdude/WriteFlash=true
-avrtarget/de.innot.avreclipse.configuration.app.release.212905855/ClockFrequency=8000000
+avrtarget/de.innot.avreclipse.configuration.app.release.212905855/ClockFrequency=16000000
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/ExtRAMSize=0
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/ExtendedRAM=false
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/MCUType=atmega328p
@@ -36,7 +36,7 @@ avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/EEPROM
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/EEPROMFromConfig=true
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/FlashFile=${workspace_loc\:/ATm328Bootloader/stk500boot.hex}
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/FlashFromConfig=false
-avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Fuses/ByteValues=194\:218\:6
+avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Fuses/ByteValues=206\:218\:6
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Fuses/FileName=
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Fuses/MCUid=atmega328p
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Fuses/UseFile=false

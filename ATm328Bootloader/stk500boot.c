@@ -78,7 +78,7 @@ LICENSE:
 #define REMOVE_PROGRAM_LOCK_BIT_SUPPORT	// disable program lock bits
 #define REMOVE_BOOTLOADER_LED						// no LED to show active bootloader
 #define REMOVE_PROG_PIN_PULLUP					// disable internal pullup, use external 
-#define REMOVE_CMD_SPI_MULTI							// disable processing of SPI_MULTI commands
+//#define REMOVE_CMD_SPI_MULTI							// disable processing of SPI_MULTI commands
 //#define REMOVE_WATCHDOG_START							// disable bootloaderstart after watchdogreset
 
 /*
@@ -125,7 +125,8 @@ LICENSE:
 /*
  * UART Baudrate, AVRStudio AVRISP only accepts 115200 bps
  */
-#define BAUDRATE 115200
+//#define BAUDRATE 115200
+#define BAUDRATE 9600
 
 
 /*
@@ -181,7 +182,7 @@ LICENSE:
 #elif defined (__AVR_ATmega128__)
 #define SIGNATURE_BYTES 0x1E9702
 #elif defined (__AVR_ATmega328__)
-#define SIGNATURE_BYTES 0x1E9406
+#define SIGNATURE_BYTES 0x1E950F
 #elif defined (__AVR_AT90CAN32__)
 #define SIGNATURE_BYTES 0x1E9581
 #elif defined (__AVR_AT90CAN64__)
@@ -302,7 +303,7 @@ typedef uint16_t address_t;
  * function prototypes
  */ 
 static void sendchar(char c);
-static unsigned char recchar(void);
+//static unsigned char recchar(void);
 
 
 /*
@@ -343,9 +344,46 @@ static void sendchar(char c)
 /*
  * Read single byte from USART, block if no data available
  */
-static unsigned char recchar(void)
+//static unsigned char recchar(void)
+//{
+//	while(!(UART_STATUS_REG & (1 << UART_RECEIVE_COMPLETE)));  // wait for data
+//	return UART_DATA_REG;
+//}
+
+//************************************************************************
+static int	Serial_Available(void)
 {
-	while(!(UART_STATUS_REG & (1 << UART_RECEIVE_COMPLETE)));  // wait for data
+	return(UART_STATUS_REG & (1 << UART_RECEIVE_COMPLETE));	// wait for data
+}
+
+#define	 MAX_TIME_COUNT	(F_CPU >> 1)
+static unsigned char recchar_timeout(void)
+{
+	uint32_t count = 0;
+
+	while (!(UART_STATUS_REG & (1 << UART_RECEIVE_COMPLETE)))
+	{
+		// wait for data
+		count++;
+		if (count > MAX_TIME_COUNT)
+		{
+			unsigned int	data;
+#if (FLASHEND > 0x0FFFF)
+			data	=	pgm_read_word_far(0);	//*	get the first word of the user program
+#else
+			data	=	pgm_read_word_near(0);	//*	get the first word of the user program
+#endif
+			if (data != 0xffff)					//*	make sure its valid before jumping to it.
+			{
+				asm volatile(
+						"clr	r30		\n\t"
+						"clr	r31		\n\t"
+						"ijmp	\n\t"
+				);
+			}
+			count	=	0;
+		}
+	}
 	return UART_DATA_REG;
 }
 
@@ -356,56 +394,32 @@ int main(void)
 	address_t       address = 0;
 	address_t       eraseAddress = 0;	
 	unsigned char   msgParseState;
-	unsigned int    i = 0;
+	unsigned int	ii				=	0;
 	unsigned char   checksum = 0;
 	unsigned char   seqNum = 1;
 	unsigned int    msgLength = 0;
 	unsigned char   msgBuffer[285];
 	unsigned char   c, *p;
 	unsigned char   isLeave = 0;
-	uint8_t					start_bootloader = 0;
+	unsigned long	boot_timeout;
+	unsigned long	boot_timer;
+	unsigned int	boot_state;
+
+	boot_timer	 =	0;
+	boot_state	 =	0;
+	boot_timeout =	250000; // 7 seconds , approx 2us per step when optimize "s"
 
 	/*
-	 * Init UART
-	 * set baudrate and enable USART receiver and transmiter without interrupts 
-	 */     
-#if UART_BAUDRATE_DOUBLE_SPEED
-	UART_STATUS_REG |= (1 <<UART_DOUBLE_SPEED);
-#endif
+		 * Init UART
+		 * set baudrate and enable USART receiver and transmiter without interrupts
+		 */
+	#if UART_BAUDRATE_DOUBLE_SPEED
+		UART_STATUS_REG		|=	(1 <<UART_DOUBLE_SPEED);
+	#endif
+		UART_BAUD_RATE_LOW	=	UART_BAUD_SELECT(BAUDRATE,F_CPU);
+		UART_CONTROL_REG	=	(1 << UART_ENABLE_RECEIVER) | (1 << UART_ENABLE_TRANSMITTER);
 
-#ifdef UART_BAUD_RATE_HIGH    
-	UART_BAUD_RATE_HIGH = 0;     
-#endif       
-	UART_BAUD_RATE_LOW = UART_BAUD_SELECT(BAUDRATE,F_CPU);
-	UART_CONTROL_REG   = (1 << UART_ENABLE_RECEIVER) | (1 << UART_ENABLE_TRANSMITTER); 
 
-	/*
-	 * Branch to bootloader or application code ?
-	 */	
-
-#ifndef REMOVE_WATCHDOG_START
-	if((MCUSR & (1 << WDRF)))
-	{
-		start_bootloader = 1;
-	}
-
-	MCUSR &= ~(1<<WDRF);
-	wdt_disable();
-#endif
-
-	//  sendchar('B');
-	//  sendchar('o');
-	//  sendchar('o');
-	//  sendchar('t');
-	//  sendchar('l');
-	//  sendchar('o');
-	//  sendchar('a');
-	//  sendchar('d');
-	//  sendchar('e');
-	//  sendchar('r');
-	//  sendchar('.');
-	//  sendchar('.');
-	//  sendchar('.');
 	msgLength		=	11;
 	msgBuffer[0] 	=	CMD_SIGN_ON;
 	msgBuffer[1] 	=	STATUS_CMD_OK;
@@ -445,118 +459,127 @@ int main(void)
 	}
 	sendchar(checksum);
 	seqNum++;
-
-
-	_delay_ms(100);
-
-	if((UART_STATUS_REG & (1 << UART_RECEIVE_COMPLETE)))
+	while (boot_state==0)
 	{
-		char cmdChar = UART_DATA_REG;
-		if(cmdChar == 'x') start_bootloader = 1;
+		while ((!(Serial_Available())) && (boot_state == 0))		// wait for data
+		{
+			_delay_ms(0.001);
+//			boot_timer++;
+
+			if (boot_timer > boot_timeout)
+			{
+				boot_state	=	1; // (after ++ -> boot_state=2 bootloader timeout, jump to main 0x00000 )
+			}
+		}
+		boot_state++; // ( if boot_state=1 bootloader received byte from UART, enter bootloader mode)
 	}
 
-#ifndef REMOVE_PROG_PIN_PULLUP
-	if(!(PROG_IN & (1<<PROG_PIN))) start_bootloader = 1;
-#endif
 
-	if(start_bootloader || 1)
-	{ 	    
-#ifndef REMOVE_BOOTLOADER_LED
-		/* PROG_PIN pulled low, indicate with LED that bootloader is active */
-		PROGLED_DDR  |= (1<<PROGLED_PIN);
-		PROGLED_PORT &= ~(1<<PROGLED_PIN);
-#endif
-		/* Send "OK" to terminal, indicate that bootloader is active */
-//		sendchar('A');
-//		sendchar('c');
-//		sendchar('t');
-//		sendchar('i');
-//		sendchar('v');
-//		sendchar('e');
-
-		/* main loop */
-		while(!isLeave)                             
-		{   
+	if (boot_state==1)
+	{
+		//*	main loop
+		while (!isLeave)
+		{
 			/*
 			 * Collect received bytes to a complete message
-			 */            
-			msgParseState = ST_START;
+			 */
+			msgParseState	=	ST_START;
 			while ( msgParseState != ST_PROCESS )
 			{
-				c = recchar();
-				switch (msgParseState)
+				if (boot_state==1)
 				{
+					boot_state	=	0;
+					c			=	UART_DATA_REG;
+				}
+				else
+				{
+					c	=	recchar_timeout();
+				}
+
+
+//				sendchar('f');
+//										sendchar('o');
+//										sendchar('u');
+//										sendchar('n');
+//										sendchar('d');
+//										sendchar(' ');
+//										sendchar('c');
+//										sendchar(':');
+//										sendchar(c);
+
+
+				switch (msgParseState){
 				case ST_START:
-					if( c == MESSAGE_START )
+					if ( c == MESSAGE_START )
 					{
-						msgParseState = ST_GET_SEQ_NUM;
-						checksum = MESSAGE_START^0;
+						msgParseState	=	ST_GET_SEQ_NUM;
+						checksum		=	MESSAGE_START^0;
 					}
 					break;
 
 				case ST_GET_SEQ_NUM:
 					if ( (c == 1) || (c == seqNum) )
 					{
-						seqNum = c;
-						msgParseState = ST_MSG_SIZE_1;
-						checksum ^= c;
+						seqNum			=	c;
+						msgParseState	=	ST_MSG_SIZE_1;
+						checksum		^=	c;
 					}
 					else
 					{
-						msgParseState = ST_START;
+						msgParseState	=	ST_START;
 					}
 					break;
 
 				case ST_MSG_SIZE_1:
-					msgLength = (unsigned int)c<<8;
-					msgParseState = ST_MSG_SIZE_2;
-					checksum ^= c;
+					msgLength		=	c<<8;
+					msgParseState	=	ST_MSG_SIZE_2;
+					checksum		^=	c;
 					break;
 
 				case ST_MSG_SIZE_2:
-					msgLength |= c;
-					msgParseState = ST_GET_TOKEN;
-					checksum ^= c;
+					msgLength		|=	c;
+					msgParseState	=	ST_GET_TOKEN;
+					checksum		^=	c;
 					break;
 
 				case ST_GET_TOKEN:
 					if ( c == TOKEN )
 					{
-						msgParseState = ST_GET_DATA;
-						checksum ^= c;
-						i = 0;
+						msgParseState	=	ST_GET_DATA;
+						checksum		^=	c;
+						ii				=	0;
 					}
 					else
 					{
-						msgParseState = ST_START;
+						msgParseState	=	ST_START;
 					}
 					break;
 
 				case ST_GET_DATA:
-					msgBuffer[i++] = c;
-					checksum ^= c;
-					if ( i == msgLength )
+					msgBuffer[ii++]	=	c;
+					checksum		^=	c;
+					if (ii == msgLength )
 					{
-						msgParseState = ST_GET_CHECK;
+						msgParseState	=	ST_GET_CHECK;
 					}
 					break;
 
 				case ST_GET_CHECK:
-					if( c == checksum )
+					if ( c == checksum )
 					{
-						msgParseState = ST_PROCESS;
+						msgParseState	=	ST_PROCESS;
 					}
 					else
 					{
-						msgParseState = ST_START;
+						msgParseState	=	ST_START;
 					}
 					break;
-				}//switch
-			}//while(msgParseState)
+				}	//	switch
+			}	//	while(msgParseState)
 
-				/*
-				 * Now process the STK500 commands, see Atmel Appnote AVR068
-				 */
+			/*
+			 * Now process the STK500 commands, see Atmel Appnote AVR068
+			 */
 
 			switch (msgBuffer[0])
 			{
@@ -635,7 +658,7 @@ int main(void)
 
 			case CMD_LEAVE_PROGMODE_ISP:
 #ifdef ENABLE_LEAVE_BOOTLADER
-isLeave = 1;
+				isLeave = 1;
 #endif
 			case CMD_ENTER_PROGMODE_ISP:
 			case CMD_SET_PARAMETER:
@@ -862,38 +885,31 @@ isLeave = 1;
 		PROGLED_DDR  &= ~(1<<PROGLED_PIN);   // set to default
 #endif
 	}	//if
-	else
-	{
-//		sendchar('A');
-//		sendchar('b');
-//		sendchar('o');
-//		sendchar('r');
-//		sendchar('t');
-//		sendchar('e');
-//		sendchar('d');
-//		sendchar('\n');
 
-	}
+
+	asm volatile ("nop");			// wait until port has changed
+
 	/*
 	 * Now leave bootloader
 	 */
-#ifndef REMOVE_PROG_PIN_PULLUP	
-	PROG_PORT &= ~(1<<PROG_PIN);    // set to default
-#endif	
-	boot_rww_enable();              // enable application section
 
-	// Jump to Reset vector in Application Section
-	// (clear register, push this register to the stack twice = adress 0x0000/words, and return to this address) 
-	asm volatile ( 
-			"clr r1" "\n\t"
-			"push r1" "\n\t"
-			"push r1" "\n\t"
-			"ret"     "\n\t"
-			::);
+	UART_STATUS_REG	&=	0xfd;
+	boot_rww_enable();				// enable application section
+
+
+	asm volatile(
+			"clr	r30		\n\t"
+			"clr	r31		\n\t"
+			"ijmp	\n\t"
+	);
+	//	asm volatile ( "push r1" "\n\t"		// Jump to Reset vector in Application Section
+	//					"push r1" "\n\t"
+	//					"ret"	 "\n\t"
+	//					::);
 
 	/*
 	 * Never return to stop GCC to generate exit return code
-	 * Actually we will never reach this point, but the compiler doesn't 
+	 * Actually we will never reach this point, but the compiler doesn't
 	 * understand this
 	 */
 	for(;;);
