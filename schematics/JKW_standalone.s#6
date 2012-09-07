@@ -23259,6 +23259,7 @@ www.irf.com&lt;p&gt;
 <text x="-264.16" y="2.54" size="1.778" layer="91" rot="R90">Spacer Boden - Platine 4mm M2.5</text>
 <text x="-137.16" y="-15.24" size="1.778" layer="91">Bluetooth toggle</text>
 <text x="-144.78" y="-20.32" size="1.778" layer="91">V meas</text>
+<text x="68.58" y="91.44" size="1.778" layer="91">there is a Diode at the Port to protect it against the 12V</text>
 </plain>
 <instances>
 <instance part="IC1" gate="A" x="58.42" y="180.34" rot="R180"/>
@@ -26828,7 +26829,7 @@ www.irf.com&lt;p&gt;
 <label x="139.7" y="203.2" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$89" class="0">
+<net name="12V_PERMANENT" class="0">
 <segment>
 <pinref part="SPEEDOSTECKER" gate="G$1" pin="EX_IN_OUT_D2"/>
 <wire x1="185.42" y1="147.32" x2="177.8" y2="147.32" width="0.1524" layer="91"/>
