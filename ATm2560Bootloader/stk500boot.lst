@@ -2215,23 +2215,23 @@
  2322               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 stk500boot.c
-     /tmp/cc5dgkSS.s:2      *ABS*:000000000000003f __SREG__
-     /tmp/cc5dgkSS.s:3      *ABS*:000000000000003e __SP_H__
-     /tmp/cc5dgkSS.s:4      *ABS*:000000000000003d __SP_L__
-     /tmp/cc5dgkSS.s:5      *ABS*:0000000000000034 __CCP__
-     /tmp/cc5dgkSS.s:6      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cc5dgkSS.s:7      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cc5dgkSS.s:17     .text:0000000000000000 sendchar
-     /tmp/cc5dgkSS.s:43     .text:0000000000000018 senden_spi
-     /tmp/cc5dgkSS.s:93     .text:000000000000003c send_command
-     /tmp/cc5dgkSS.s:114    .text:0000000000000046 send_char
-     /tmp/cc5dgkSS.s:133    .text:000000000000004e draw_line.clone.0
-     /tmp/cc5dgkSS.s:193    .init9:0000000000000000 __jumpMain
-     /tmp/cc5dgkSS.s:203    *ABS*:00000000000021ff __stack
-     /tmp/cc5dgkSS.s:282    .text:00000000000000b2 main
-     /tmp/cc5dgkSS.s:241    .text:0000000000000094 delay_ms
-     /tmp/cc5dgkSS.s:2177   .data:0000000000000000 speedoino_data
-     /tmp/cc5dgkSS.s:2222   .data:000000000000002a CSWTCH.7
+     /tmp/ccyhvJR7.s:2      *ABS*:000000000000003f __SREG__
+     /tmp/ccyhvJR7.s:3      *ABS*:000000000000003e __SP_H__
+     /tmp/ccyhvJR7.s:4      *ABS*:000000000000003d __SP_L__
+     /tmp/ccyhvJR7.s:5      *ABS*:0000000000000034 __CCP__
+     /tmp/ccyhvJR7.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccyhvJR7.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccyhvJR7.s:17     .text:0000000000000000 sendchar
+     /tmp/ccyhvJR7.s:43     .text:0000000000000018 senden_spi
+     /tmp/ccyhvJR7.s:93     .text:000000000000003c send_command
+     /tmp/ccyhvJR7.s:114    .text:0000000000000046 send_char
+     /tmp/ccyhvJR7.s:133    .text:000000000000004e draw_line.clone.0
+     /tmp/ccyhvJR7.s:193    .init9:0000000000000000 __jumpMain
+     /tmp/ccyhvJR7.s:203    *ABS*:00000000000021ff __stack
+     /tmp/ccyhvJR7.s:282    .text:00000000000000b2 main
+     /tmp/ccyhvJR7.s:241    .text:0000000000000094 delay_ms
+     /tmp/ccyhvJR7.s:2177   .data:0000000000000000 speedoino_data
+     /tmp/ccyhvJR7.s:2222   .data:000000000000002a CSWTCH.7
 
 UNDEFINED SYMBOLS
 __mulsi3

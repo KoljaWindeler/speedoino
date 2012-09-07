@@ -1,4 +1,3 @@
-#Thu Nov 10 08:33:52 CET 2011
 avrtarget/ClockFrequency=16000000
 avrtarget/ExtRAMSize=0
 avrtarget/ExtendedRAM=false
@@ -9,9 +8,9 @@ avrtarget/avrdude/BitBangDelay=
 avrtarget/avrdude/Bitclock=
 avrtarget/avrdude/EEPROMFile=
 avrtarget/avrdude/EEPROMFromConfig=true
-avrtarget/avrdude/FlashFile=
-avrtarget/avrdude/FlashFromConfig=true
-avrtarget/avrdude/Fuses/ByteValues=255\:216\:253
+avrtarget/avrdude/FlashFile=${workspace_loc\:/ATm2560Bootloader/stk500boot_v2_mega2560.hex}
+avrtarget/avrdude/FlashFromConfig=false
+avrtarget/avrdude/Fuses/ByteValues=255\:208\:253
 avrtarget/avrdude/Fuses/FileName=
 avrtarget/avrdude/Fuses/MCUid=atmega2560
 avrtarget/avrdude/Fuses/UseFile=false

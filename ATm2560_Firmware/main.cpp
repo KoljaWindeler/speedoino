@@ -122,6 +122,8 @@ int main(void) {
 
 		//////////////////////////////////////////////////
 		pSensors->m_reset->set_deactive(false,false);
+		Serial3.end();
+		Serial3.begin(115200);
 		while(true){
 			while(Serial3.available()>0){
 				Serial.print(Serial3.read(),BYTE);
