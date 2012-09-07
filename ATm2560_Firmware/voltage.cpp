@@ -28,6 +28,27 @@ void speedo_voltage::calc(){
 
 	int aktueller_wert=round(analogRead(VOLTAGE_PIN)/6.4);
 	value=pSensors->flatIt(aktueller_wert,&value_counter,3,value);
+
+	/////////////////////// clock mode stuff ///////////////////////////
+	//check mode
+	if(value<10){
+		pSpeedo->regular_startup=false;
+	} else {
+		pSpeedo->regular_startup=true;
+	}
+
+	if(start_time!=9999){ // i am in clock mode
+		// check if we still hold the "left" button, to extend the time
+		if(!(PINJ & (1<<menu_button_links))){ // button still down
+			start_time=millis()/1000;
+		};
+
+		// check if we have to deactivate us self
+		if((start_time+CLOCK_UP_TIME)>(millis()/1000)){ // clock was visible for 10 sec
+			PORTL &= ~(1<<PINL0); // shut down
+		};
+	}
+	/////////////////////// clock mode stuff ///////////////////////////
 }
 
 int speedo_voltage::get(){
@@ -69,5 +90,14 @@ void speedo_voltage::init(){
 		}
 	}
 
+	// do a initial read, to estimate if its a regular startup or a "show clock"-startup
+	calc();
+	if(!pSpeedo->regular_startup){
+		start_time=millis()/1000; // sec of start
+		DDRL |= (1<<PINL0); // define as output
+		PORTL |= (1<<PINL0); // set high
+	} else {
+		start_time=9999;
+	}
 };
 

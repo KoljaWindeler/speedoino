@@ -1617,7 +1617,12 @@ void speedo_menu::init(){
 	PCMSK1 |= ((1<<PCINT12)|(1<<PCINT13)|(1<<PCINT14)|(1<<PCINT15));										// PCINT freischalten
 	PCICR |=(1<<PCIE1);																						// PCINT Activieren
 
-	state=11;
+	// see if its a clock startup or a regular startup
+	if(pSpeedo->regular_startup){
+		state=11;
+	} else {
+		state=19; // clock mode
+	}
 	old_state=state;
 	button_time=millis();
 	button_first_push=millis();

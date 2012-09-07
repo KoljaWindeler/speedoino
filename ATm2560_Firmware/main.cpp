@@ -121,17 +121,17 @@ int main(void) {
 	for (;;) {
 
 		//////////////////////////////////////////////////
-		pSensors->m_reset->set_deactive(false,false);
-		Serial3.end();
-		Serial3.begin(115200);
-		while(true){
-			while(Serial3.available()>0){
-				Serial.print(Serial3.read(),BYTE);
-			}
-			while(Serial.available()>0){
-				Serial3.print(Serial.read(),BYTE);
-			}
-		}
+//		pSensors->m_reset->set_deactive(false,false);
+//		Serial3.end();
+//		Serial3.begin(115200);
+//		while(true){
+//			while(Serial3.available()>0){
+//				Serial.print(Serial3.read(),BYTE);
+//			}
+//			while(Serial.available()>0){
+//				Serial3.print(Serial.read(),BYTE);
+//			}
+//		}
 		//////////////////////////////////////////////////
 
 		while(Serial3.available()>0){
@@ -156,6 +156,10 @@ int main(void) {
 		 ************************ every deamon activity is clear, now draw speedo ********************/
 		if((pMenu->state/10)==1 || pMenu->state==7311111)  {
 			pSpeedo->loop(previousMillis);
+		}
+		////////////////// Clock Mode ////////////////////////
+		else if(pMenu->state==19){
+			pSensors->m_clock->loop();
 		}
 		//////////////////// Sprint Speedo ///////////////////
 		else if( pMenu->state==21 ) {

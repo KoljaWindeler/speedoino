@@ -142,3 +142,42 @@ void speedo_clock::inc(){
 void speedo_clock::copy(char* buffer){
 	sprintf(buffer,"%02i:%02i:%02i",m_hh%100,m_mm%100,m_ss%100);
 };
+
+void speedo_clock::loop(){
+#define CLOCKMODE_COL 6
+#define CLOCKMODE_ROW 3
+
+	if(pSpeedo->disp_zeile_bak[0]!=1){
+		pSpeedo->disp_zeile_bak[0]=1;
+		pOLED->clear_screen();
+		char temp[9];
+		sprintf(temp,"%02i:%02i:%02i",m_hh,m_mm,m_ss);
+		pOLED->string(pSpeedo->default_font,temp,CLOCKMODE_COL,CLOCKMODE_ROW);
+	};
+
+	// hour
+	if(pSpeedo->disp_zeile_bak[1]!=signed(m_hh)){
+		pSpeedo->disp_zeile_bak[1]=m_hh;
+		char temp[3];
+		sprintf(temp,"%02i",m_hh);
+		pOLED->string(pSpeedo->default_font,temp,CLOCKMODE_COL,CLOCKMODE_ROW);
+	};
+
+	// min
+	if(pSpeedo->disp_zeile_bak[2]!=signed(m_mm)){
+		pSpeedo->disp_zeile_bak[2]=m_mm;
+		char temp[3];
+		sprintf(temp,"%02i",m_mm);
+		pOLED->string(pSpeedo->default_font,temp,CLOCKMODE_COL+3,CLOCKMODE_ROW);
+	};
+
+	// sec
+	if(pSpeedo->disp_zeile_bak[3]!=get_ss()){
+		pSpeedo->disp_zeile_bak[3]=get_ss();
+		char temp[3];
+		sprintf(temp,"%02i",m_ss);
+		pOLED->string(pSpeedo->default_font,temp,CLOCKMODE_COL+6,CLOCKMODE_ROW);
+	};
+
+};
+

@@ -150,11 +150,15 @@ void Speedo_aktors::init(){
 	pinMode(RGB_IN_R,OUTPUT);
 	pinMode(RGB_IN_G,OUTPUT);
 	pinMode(RGB_IN_B,OUTPUT);
-	// beleuchtung
-	analogWrite(RGB_IN_R,0);
-	analogWrite(RGB_IN_G,0);
-	analogWrite(RGB_IN_B,0);
-	// beleuchtung
+
+	// see if its a clock startup or a regular startup
+	if(pSpeedo->regular_startup){
+		// beleuchtung
+		analogWrite(RGB_IN_R,0);
+		analogWrite(RGB_IN_G,0);
+		analogWrite(RGB_IN_B,0);
+		// beleuchtung
+	}
 
 	// außen
 	pinMode(RGB_OUT_R,OUTPUT);
@@ -162,7 +166,11 @@ void Speedo_aktors::init(){
 	pinMode(RGB_OUT_B,OUTPUT);
 
 	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
-	update_outer_leds(true,true);
+
+	// see if its a clock startup or a regular startup
+	if(pSpeedo->regular_startup){
+		update_outer_leds(true,true);
+	};
 
 	// stepper drehen
 	m_stepper->init();

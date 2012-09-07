@@ -10,6 +10,7 @@
 
 class speedo_voltage{
 #define VOLTAGE_PIN 2
+#define CLOCK_UP_TIME 10
 public:
 	speedo_voltage();
 	~speedo_voltage();
@@ -22,6 +23,7 @@ public:
 private:
 	int value;
 	unsigned char value_counter;
+	unsigned int start_time;
 };
 
 

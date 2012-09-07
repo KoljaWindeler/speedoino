@@ -338,7 +338,7 @@ void speedo_disp::show_animation(const char command[]){
 				clear_screen();
 				string(pSpeedo->default_font,"Open file failed",3,2,0,DISP_BRIGHTNESS,0);
 			}
-			for(int i=0; i<warte; i++){
+			for(int ii=0; ii<warte; ii++){
 				_delay_ms(1); // check ob das hier viel aendert
 			};
 			if((pMenu->state%100)!=state_before)  { i=ende;  } // muss man dann nicht vorher den state hochsetzen?!
@@ -430,7 +430,8 @@ void speedo_disp::init_speedo(){
 	}
 
 	// wenn die Karte ok ist können wir startup zeigen, wenn wir wollen
-	if(WELCOME){
+	// see if its a clock startup or a regular startup
+	if(pSpeedo->regular_startup){
 		show_animation(startup);
 	}
 	pDebug->sprintlnp(PSTR("Done"));
