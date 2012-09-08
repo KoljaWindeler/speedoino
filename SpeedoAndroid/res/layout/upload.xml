@@ -7,45 +7,90 @@
     android:orientation="vertical" >
 
     <LinearLayout
-        android:id="@+id/TextLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:orientation="horizontal" />
+        android:layout_width="fill_parent"
+        android:layout_height="40dp" >
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/browseToUploadMap"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/uploadmapfile" />
+        android:layout_gravity="fill" >
 
-    <Button
-        android:id="@+id/browseToUploadGfx"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/uploadgfxfile" />
-    
-    <Button
-        android:id="@+id/browseToUploadConfig"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/uploadconfigfile" />
-    
-    <Button
-        android:id="@+id/browseToUploadFirmware"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/uploadfirmware" />
+        <Button
+            android:id="@+id/browseToUploadMap"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginLeft="8dp"
+            android:background="@drawable/bt_map"
+            android:drawablePadding="10dp"
+            android:paddingTop="80dp"
+            android:text="@string/uploadmapfile"
+            android:shadowColor="#FFF"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="8"
+            android:textColor="#ff000000"
+            android:textSize="15dp"
+            android:textStyle="bold" />
 
-    <LinearLayout
-        android:id="@+id/TextLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="180dp"
-        android:orientation="horizontal" />
+        <Button
+            android:id="@+id/browseToUploadGfx"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/browseToUploadMap"
+            android:background="@drawable/bt_gfx"
+            android:drawablePadding="10dp"
+            android:paddingTop="80dp"
+            android:text="@string/uploadgfxfile"
+            android:shadowColor="#FFF"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="8"
+            android:textColor="#ff000000"
+            android:textSize="15dp"
+            android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/browseToRouteMap"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/RouteMap" />
+        <Button
+            android:id="@+id/browseToUploadConfig"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_below="@+id/browseToUploadMap"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bt_config"
+            android:drawablePadding="10dp"
+            android:paddingTop="80dp"
+            android:text="@string/uploadconfigfile"
+            android:shadowColor="#FFF"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="8"
+            android:textColor="#ff000000"
+            android:textSize="15dp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/browseToUploadFirmware"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_below="@+id/browseToUploadGfx"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_toRightOf="@+id/browseToUploadConfig"
+            android:background="@drawable/bt_hex"
+            android:text="@string/uploadfirmware"
+            android:drawablePadding="10dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="80dp"
+            android:shadowColor="#FFF"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="8"
+            android:textColor="#ff000000"
+            android:textSize="15dp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
 
 </LinearLayout>

@@ -1,0 +1,4 @@
+<menu xmlns:android="https://schemas.android.com/apk/res/android" xmlns:android1="http://schemas.android.com/apk/res/android">
+<item android1:title="Save as KML" android1:id="@+id/menu_save_kml"/>
+<item android1:title="Exit" android1:id="@+id/menu_exit"/>
+</menu> 

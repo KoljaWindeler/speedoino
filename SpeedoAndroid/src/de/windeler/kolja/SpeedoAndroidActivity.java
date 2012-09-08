@@ -1,3 +1,5 @@
+//00:1e:64:44:40:94
+
 package de.windeler.kolja;
 
 import java.io.File;
@@ -6,11 +8,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -67,7 +71,6 @@ OnClickListener {
 	private TextView mStatus;
 	private TextView mVersion;
 	private TextView mDownload;
-	private TextView mUpload;
 	private Button mLeftButton;
 	private Button mRightButton;
 	private Button mUpButton;
@@ -184,6 +187,13 @@ OnClickListener {
 						res.getDrawable(R.drawable.ic_tab_download))
 						.setContent(R.id.downloadLayout);
 		tabHost.addTab(spec);
+		
+		// add strategies tab // remember to include in the main.xml
+		spec = tabHost.newTabSpec("strategies2")
+					  .setIndicator("Tools",
+							  res.getDrawable(R.drawable.ic_tab_tool))
+							  .setContent(R.id.tool_Layout);
+		tabHost.addTab(spec);
 		// layout ende
 
 		// buttons
@@ -208,8 +218,8 @@ OnClickListener {
 		browseToRouteMap.setOnClickListener(this);
 		browseToUploadConfig = (Button) findViewById(R.id.browseToUploadConfig);
 		browseToUploadConfig.setOnClickListener(this);
-		browseToUploadGfx = (Button) findViewById(R.id.browseToUploadFirmware);
-		browseToUploadGfx.setOnClickListener(this);
+		browseToUploadFirmware = (Button) findViewById(R.id.browseToUploadFirmware);
+		browseToUploadFirmware.setOnClickListener(this);
 		mloadRoot = (Button) findViewById(R.id.loadRoot);
 		mloadRoot.setOnClickListener(this);
 		DlselButton = (Button) findViewById(R.id.DownloadButtonSelect);
@@ -230,6 +240,14 @@ OnClickListener {
 		File dir = new File(sdCard.getAbsolutePath() + "/Speedoino"); // /mnt/sdcard/Download/
 		if (!dir.exists()) {
 			if (dir.mkdir()) {
+				File temp_dir = new File(dir.getAbsolutePath() + "/CONFIG");
+				temp_dir.mkdir();
+				temp_dir = new File(dir.getAbsolutePath() + "/GFX");
+				temp_dir.mkdir();
+				temp_dir = new File(dir.getAbsolutePath() + "/GPS");
+				temp_dir.mkdir();
+				temp_dir = new File(dir.getAbsolutePath() + "/NAVI");
+				temp_dir.mkdir();
 				dl_basedir = dir.getAbsolutePath() + "/";
 			} else {
 				dl_basedir = sdCard.getAbsolutePath() + "/";
@@ -321,7 +339,13 @@ OnClickListener {
 			// doPreferences();
 			return true;
 		case R.id.menu_about:
-			// doDocumentKeys();
+			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+			alertDialog.setTitle("Info");
+			alertDialog.setMessage("This is the Speedoino support app. It is used to communicate with the Speedoino on your Motorbike. You can upload and download files und update the Firmware.\n For further info contact KKoolljjaa@gmail.com");
+			alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {	}});
+			alertDialog.show();
 			return true;
 		}
 		return false;
@@ -377,18 +401,21 @@ OnClickListener {
 		case R.id.browseToUploadMap:
 			intent = new Intent(getBaseContext(), FileDialog.class);
 			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.EXT_FILTER, "kml");
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_MAP);
 			break;
 		case R.id.browseToUploadConfig:
 			intent = new Intent(getBaseContext(), FileDialog.class);
 			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.EXT_FILTER, "");
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_CONFIG);
 			break;
 		case R.id.browseToUploadGfx:
 			intent = new Intent(getBaseContext(), FileDialog.class);
 			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.EXT_FILTER, "");
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_OPEN_GFX);
 			break;
@@ -409,6 +436,7 @@ OnClickListener {
 		case R.id.browseToRouteMap:
 			intent = new Intent(getBaseContext(), FileDialog.class);
 			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.EXT_FILTER, "gps");
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_SHOW_MAP);
 			break;
@@ -562,17 +590,16 @@ OnClickListener {
 				intent.putExtra(ImageEditor.INPUT_FILE_NAME, filePath);
 				intent.putExtra(ImageEditor.INPUT_DIR_PATH, dl_basedir);
 				startActivityForResult(intent, REQUEST_CONVERT_GFX);
-			}
-			;
+			};
 			break;
 		case REQUEST_CONVERT_GFX:
 			Log.i(TAG, "Image converter hat was zurueckgegeben ");
 			if (resultCode == RESULT_OK) {
 				filePath = data.getStringExtra(ImageEditor.OUTPUT_FILE_PATH);
 				Log.i(TAG, "Der Resultcode war OK, der Pfad:" + filePath);
+				// der Puf file dialog löscht zuerst die Datei und wenns eine GFX ist, zeigt er sogar ein Bild
 				_putFileDialog = new putFileDialog(this);
-				_putFileDialog.execute(filePath,
-						"GFX" + filePath.substring(filePath.lastIndexOf('/'))); // /mnt/sdcard/Download/bild.sng,
+				_putFileDialog.execute(filePath,"GFX" + filePath.substring(filePath.lastIndexOf('/'))); // /mnt/sdcard/Download/bild.sng,
 				// GFX/bild.sng
 
 				Log.i(TAG, "Datei wurde hochgeladen");
@@ -742,13 +769,15 @@ OnClickListener {
 		protected String doInBackground(String... params) {
 			Log.i("JKW","starte put file");
 			try {
+				// 1) first delete the target_file
 				mSerialService.delFile(params[1]);
 				Log.i("JKW","delete file passed");
+				// 2) then delete file 
 				mSerialService.putFile(params[0], params[1], mHandlerUpdate);
 				Log.i("JKW","put file passed");
+				// 3) and if it is a GFX File, show it
 				if (params[1].substring(0, 3).contentEquals("GFX")) {
-					mSerialService.showgfx(params[1].substring(params[1]
-							.lastIndexOf('/') + 1));
+					mSerialService.showgfx(params[1].substring(params[1].lastIndexOf('/') + 1));
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -1159,6 +1188,7 @@ OnClickListener {
 		if(firmware_flash_filename==null){
 			Intent intent = new Intent(getBaseContext(), FileDialog.class);
 			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.EXT_FILTER, "hex");
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_UPLOAD_FIRMWARE);
 			return; // ende

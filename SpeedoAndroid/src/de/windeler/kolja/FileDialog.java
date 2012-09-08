@@ -28,12 +28,14 @@ public class FileDialog extends ListActivity {
 	private static final String ROOT = "/";
 
 	public static final String START_PATH = "START_PATH";
+	public static final String EXT_FILTER = "";
 	public static final String RESULT_PATH = "RESULT_PATH";
 	public static final String RESULT = "ASD";
 	public static final String SELECTION_MODE = "SELECTION_MODE";
 
 	private List<String> path = null;
 	private TextView myPath;
+	private TextView myFilter;
 	private ArrayList<HashMap<String, Object>> mList;
 
 	private Button selectButton;
@@ -41,6 +43,7 @@ public class FileDialog extends ListActivity {
 	private LinearLayout layoutSelect;
 	private InputMethodManager inputManager;
 	private String parentPath;
+	private String extensionFilter;
 	private String currentPath = ROOT;
 
 	private File selectedFile;
@@ -54,6 +57,7 @@ public class FileDialog extends ListActivity {
 
 		setContentView(R.layout.file_dialog_main);
 		myPath = (TextView) findViewById(R.id.path);
+		myFilter = (TextView) findViewById(R.id.filter);
 
 		inputManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
@@ -84,8 +88,9 @@ public class FileDialog extends ListActivity {
 			}
 		}
 				);
-
+		
 		String startPath = getIntent().getStringExtra(START_PATH);
+		extensionFilter = getIntent().getStringExtra(EXT_FILTER);
 		if (startPath != null) {
 			getDir(startPath);
 		} else {
@@ -123,6 +128,12 @@ public class FileDialog extends ListActivity {
 			files = f.listFiles();
 		}
 		myPath.setText(getText(R.string.location) + ": " + currentPath);
+		
+		if(extensionFilter.length()>0){
+			myFilter.setText(getText(R.string.filter) + ": showing only " + extensionFilter + "-files");
+		} else {
+			myFilter.setText(getText(R.string.filter) + ": showing all files");
+		}
 
 		if (!currentPath.equals(ROOT)) {
 
@@ -172,6 +183,14 @@ public class FileDialog extends ListActivity {
 		}
 
 		for (String file : filesMap.tailMap("").values()) {
+			// hier if(filter) einbuane, TODO
+			if(extensionFilter.length()>0){
+				String this_extension=file.toString().substring(file.toString().lastIndexOf('.')+1).toLowerCase();
+				if(!this_extension.equals(extensionFilter.toLowerCase())){
+					continue;
+				}
+			};
+			
 			if(file.toString().length()>23){
 				addItem(file.toString().substring(0, 20)+"...", R.drawable.file);
 			} else {

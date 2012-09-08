@@ -2,13 +2,23 @@ package de.windeler.kolja;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -31,6 +41,8 @@ public class RouteMap extends MapActivity implements OnTouchListener
 	MapController mc;
 	GeoPoint p,p2,mapViewCenter;
 	String filename;
+	String date;
+	private MenuItem mMenuItemConnect;
 	int Zoomlevel;
 	boolean is_touched=false;
 	private OverlayItem speedo_gps_points;
@@ -38,6 +50,8 @@ public class RouteMap extends MapActivity implements OnTouchListener
 	private MyItemizedOverlay userPicOverlay;
 	private MyItemizedOverlay nearPicOverlay,nearPicPOIOverlay;
 	private ArrayList<GeoPoint> gps_points = new ArrayList<GeoPoint>();
+	private ArrayList<Integer> add_info_speed = new ArrayList<Integer>();
+	private ArrayList<String> add_info_time = new ArrayList<String>();
 	private ArrayList<GeoPoint> POI_points = new ArrayList<GeoPoint>();
 
 
@@ -68,12 +82,25 @@ public class RouteMap extends MapActivity implements OnTouchListener
 
 		filename = getIntent().getStringExtra(INPUT_FILE_NAME);
 		Log.d(DEBUG_TAG, "Start LoadRoute");
+		if(!filename.substring(filename.lastIndexOf('.')+1).toUpperCase().equals("GPS")){
+			// show dialog	
+			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+			alertDialog.setTitle("Warning");
+			alertDialog.setMessage("This is not a GPS file from the Speedoino");
+			alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {	
+					//upload_animation=true;	
+					finish();
+				}});
+			alertDialog.show();
 
-		loadRoutefromFile(filename);
-		loadVisiblePoints(mapView);
+		} else {
 
-
-		mapView.invalidate();
+			loadRoutefromFile(filename);
+			loadVisiblePoints(mapView);
+			mapView.invalidate();
+		};
 	}
 
 
@@ -110,7 +137,9 @@ public class RouteMap extends MapActivity implements OnTouchListener
 
 	protected boolean loadRoutefromFile(String filename){
 		gps_points.clear();
+		add_info_speed.clear();
 		POI_points.clear();
+		add_info_time.clear();
 		String line = "";
 		try {
 			// File zum Lesen oeffenen
@@ -132,6 +161,11 @@ public class RouteMap extends MapActivity implements OnTouchListener
 						longitude=Math.floor(longitude/1000000.0)*1000000+Math.round((longitude%1000000.0)*10/6);
 						p = new GeoPoint((int) (latitude),(int) (longitude));
 						gps_points.add(p);
+						int temp_int=Integer.parseInt(line.substring(34, 37));
+						add_info_speed.add(temp_int);
+						add_info_time.add(line.substring(0,6));
+						date=line.substring(7,13);
+
 						if(Integer.parseInt(line.substring(54,55))==1){
 							//Log.d(DEBUG_TAG, "POI: " + line);
 							POI_points.add(p);
@@ -358,6 +392,69 @@ public class RouteMap extends MapActivity implements OnTouchListener
 	}
 
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu_show_maps, menu);
+		mMenuItemConnect = menu.getItem(0);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_exit:
+			finish();
+			return true;
+		case R.id.menu_save_kml:
+			try {
+				save_as_kml();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return true;
+		}
+		return false;
+	}
+
+
+	private void save_as_kml() throws IOException {
+		// TODO Auto-generated method stub
+		String filename_out = filename.substring(0,filename.lastIndexOf('.'))+".kml";
+		FileOutputStream out = null;
+		out = new FileOutputStream(filename_out,false);
+		String output="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><kml xmlns=\"http://earth.google.com/kml/2.1\"><Document>\r\n";
+		out.write(output.getBytes());
+		output="<name>Speedoino Route</name><open>true</open><description>Captured by the Speedoino on "+date.substring(0,2)+"."+date.substring(2,4)+".20"+date.substring(4,6)+"</description>";
+		out.write(output.getBytes());
+		output="<Style id=\"routeStyle\"><LineStyle><color>7FFF0055</color><width>3.0</width></LineStyle></Style>";
+		out.write(output.getBytes());
+		output="<Style id=\"trackStyle\"><LineStyle><color>FFFF00FF</color><width>3.0</width></LineStyle></Style><Folder><name>Waypoints</name>";
+		out.write(output.getBytes());
+
+
+		for(int i=0;i<gps_points.size();i++){
+			p = gps_points.get(i);
+
+			output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"</description>";
+			out.write(output.getBytes());
+			output="<Style><IconStyle><color>FF0001ff</color><scale>0.25</scale><Icon><href>http://www.tischlerei-windeler.de/punkt.png</href></Icon></IconStyle></Style>";
+			out.write(output.getBytes());
+			output="<Point><coordinates>"+String.valueOf(p.getLongitudeE6()/1E6)+","+String.valueOf(p.getLatitudeE6()/1E6)+",0</coordinates></Point></Placemark>";
+			out.write(output.getBytes());
+
+		}
+		output = "</Folder></Document></kml>";
+		out.write(output.getBytes());
+		out.close();
+
+		// show file sharing dialog
+		Intent share = new Intent(Intent.ACTION_SEND);
+		share.setType("text/plain");
+		share.putExtra(Intent.EXTRA_STREAM,Uri.parse("file://"+filename_out));
+		startActivity(Intent.createChooser(share, "Send in addition"));
+	}
 
 }
 

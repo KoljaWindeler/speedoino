@@ -23,6 +23,7 @@
             <include layout="@layout/connect" />
             <include layout="@layout/download" />
             <include layout="@layout/upload" />
+            <include layout="@layout/tool_layout" />
             
         </FrameLayout>
     </LinearLayout>

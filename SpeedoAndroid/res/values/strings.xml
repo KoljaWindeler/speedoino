@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="uploadfirmware">Click to select Firmware Update hex</string>
+
+    <string name="uploadfirmware">Click to select\nFirmware Update\nHex-File</string>
+    <string name="uploadmapfile">Click to select\nMap-File</string>
+    <string name="uploadconfigfile">Click to select\nConfig-File</string>
+    <string name="uploadgfxfile">Click to select\nGFX-File</string>
+    
     <string name="hello">Hello World, SpeedoAndroidActivity!</string>
     <string name="app_name">SpeedoAndroid</string>
     <string name="checkVersion">Check Version</string>
@@ -25,12 +30,10 @@
     <string name="NextImageConverter">Save/Next</string>
     <string name="mapEditorCaption">Please set direction and description</string>
     <string name="MapEditor">Recorded GPS Route</string>
-    
     <string name="cancle">Cancel</string>
     <string name="ImageEditor">ImageConverter</string>
     <string name="SaveImageConverter">Upload</string>
     <string name="DiscardImageConverter">Discard</string>
-    
     <string name="disconnect">disconnect</string>
     <string name="not_connected">not connected</string>
     <string name="bt_not_enabled_leaving">Bluetooth not enabled</string>
@@ -42,9 +45,9 @@
     <string name="down">↓</string>
     <string name="Download">Download</string>
     <string name="Delete">Delete</string>
-    
     <string name="Select_file">Select file</string>
     <string name="location">Location</string>
+    <string name="filter">Filter</string>
     <string name="cant_read_folder">folder can\'t be read!</string>
     <string name="nnew">New</string>
     <string name="select">Select</string>
@@ -52,19 +55,14 @@
     <string name="cancel">Cancel</string>
     <string name="create">Save</string>
     <string name="no_data">No Data</string>
+
     <color name="gray">#ffff0000</color>
+
     <string name="RemoveMapConverter">Remove</string>
-    <string name="uploadmapfile">Click to select Map-File</string>
-    <string name="uploadconfigfile">Click to select Config-File</string>
-    <string name="uploadgfxfile">Click to select GFX-File</string>
-        
-	<string name="noresponse">No response from target</string>
-        
-	<string name="straight_on">↑</string>
-        
-	<string name="interprete_this">help me interprete this</string>
-	<string name="MapView">MapView</string>
-	<string name="RouteMap">Show Map</string>
-    
+    <string name="noresponse">No response from target</string>
+    <string name="straight_on">↑</string>
+    <string name="interprete_this">help me interprete this</string>
+    <string name="MapView">MapView</string>
+    <string name="RouteMap">Show captured\nSpeedoino Map</string>
 
 </resources>

@@ -983,6 +983,14 @@ public class BluetoothSerialService {
 		};
 
 		// open File
+		// lets see, what kind of file we have
+		if(filename.substring(filename.indexOf('/')+1).toLowerCase().equals("gps")){
+			dlBaseDir=dlBaseDir+"GPS/";
+		} else if(filename.substring(filename.indexOf('/')+1).toLowerCase().equals("sgf")){
+			dlBaseDir=dlBaseDir+"GFX/";
+		} else if(filename.substring(filename.indexOf('/')+1).toLowerCase().equals("smf")){
+			dlBaseDir=dlBaseDir+"NAVI/";
+		}
 		File dir = new File (dlBaseDir);
 		File file = new File(dir, filename.substring(filename.indexOf('/')+1));
 
@@ -1497,7 +1505,7 @@ public class BluetoothSerialService {
 
 		int remaining_tries=0;
 		boolean connection_established=false;
-		while(remaining_tries<4 && !connection_established){
+		while(remaining_tries<3 && !connection_established){
 			remaining_tries++;
 
 			////// hier beginnt teil 2, die verbindung abbauen //////
@@ -1557,10 +1565,10 @@ public class BluetoothSerialService {
 				msg4.setData(bundle4);
 				mHandlerUpdate.sendMessage(msg4);
 				
-				/*/// jetzt müssen wir uns überlegen:
-				 * ist das File maximal 32k groß ? 
+				/*/// jetzt mï¿½ssen wir uns ï¿½berlegen:
+				 * ist das File maximal 32k groï¿½ ? 
 				 * -> wenn ja: ATm2560
-				 * --> Dann müssen wir in den Bootloader
+				 * --> Dann mï¿½ssen wir in den Bootloader
 				 * --> Connection abbauen und neu aufbauen
 				 * --> dann STK500v2 
 				 * -> wenn nein: ATm328
@@ -1719,12 +1727,12 @@ public class BluetoothSerialService {
 					error=601;
 					
 					// fortschritt schreiben
-					Bundle bundle9 = new Bundle();
-					Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-					bundle9.putString("msg", "Unknown response, quitting");
-					bundle9.putInt("state", 55);
-					msg9.setData(bundle9);
-					mHandlerUpdate.sendMessage(msg9);
+					Bundle bundle39 = new Bundle();
+					Message msg39 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+					bundle39.putString("msg", "Unknown response, quitting");
+					bundle39.putInt("state", 55);
+					msg39.setData(bundle39);
+					mHandlerUpdate.sendMessage(msg39);
 					Thread.sleep(3000);
 					// fortschritt schreiben
 					
@@ -1778,7 +1786,7 @@ public class BluetoothSerialService {
 					}
 				}
 			}
-			if((prozessor_id==0x1E9801 && flash2560)||(prozessor_id==0x1E9514 && !flash2560)){ // ATm2560 Signature 2004993, oder ATm328 Signature 2004244
+			if((prozessor_id==0x1E9801 && flash2560==1)||(prozessor_id==0x1E9514 && flash2560==0)){ // ATm2560 Signature 2004993, oder ATm328 Signature 2004244
 			
 				correct_id_found=true;
 				
@@ -1870,7 +1878,7 @@ public class BluetoothSerialService {
 				Message msg49 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 				bundle49.putString("msg", "No response, quitting");
 				bundle49.putInt("state", 55);
-				msg49.setData(bundle9);
+				msg49.setData(bundle49);
 				mHandlerUpdate.sendMessage(msg49);
 				Thread.sleep(3000);
 				// fortschritt schreiben
