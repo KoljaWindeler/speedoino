@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.2">
+<eagle version="6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -23078,6 +23078,10 @@ www.irf.com&lt;p&gt;
 <part name="TX2" library="pinhead" deviceset="PINHD-1X2" device=""/>
 <part name="T_P_BRIDGE1" library="Kolja" deviceset="PMV160UP215" device=""/>
 <part name="D14" library="semicon-smd-ipc" deviceset="D-" device="A1-C3" value="771-PMBD7000235"/>
+<part name="GPS_C5" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
+<part name="C10" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
+<part name="C12" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
+<part name="C13" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
 </parts>
 <sheets>
 <sheet>
@@ -23787,6 +23791,13 @@ www.irf.com&lt;p&gt;
 <attribute name="NAME" x="61.722" y="95.885" size="1.778" layer="95"/>
 <attribute name="VALUE" x="51.562" y="90.551" size="1.778" layer="96"/>
 </instance>
+<instance part="GPS_C5" gate="C" x="236.22" y="162.56" smashed="yes" rot="R90">
+<attribute name="NAME" x="238.76" y="165.1" size="2.032" layer="95" rot="R90"/>
+<attribute name="VALUE" x="233.68" y="160.02" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="C10" gate="C" x="-312.42" y="50.8" rot="R270"/>
+<instance part="C12" gate="C" x="-307.34" y="50.8" rot="R270"/>
+<instance part="C13" gate="C" x="-302.26" y="50.8" rot="R270"/>
 </instances>
 <busses>
 </busses>
@@ -24121,9 +24132,13 @@ www.irf.com&lt;p&gt;
 </segment>
 <segment>
 <wire x1="-292.1" y1="45.72" x2="-297.18" y2="45.72" width="0.1524" layer="91"/>
-<wire x1="-297.18" y1="45.72" x2="-314.96" y2="45.72" width="0.1524" layer="91"/>
+<wire x1="-297.18" y1="58.42" x2="-302.26" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="-302.26" y1="58.42" x2="-307.34" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="-307.34" y1="58.42" x2="-312.42" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="-312.42" y1="58.42" x2="-314.96" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="-292.1" y1="35.56" x2="-297.18" y2="35.56" width="0.1524" layer="91"/>
 <wire x1="-297.18" y1="35.56" x2="-297.18" y2="45.72" width="0.1524" layer="91"/>
+<wire x1="-297.18" y1="45.72" x2="-297.18" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="-292.1" y1="22.86" x2="-297.18" y2="22.86" width="0.1524" layer="91"/>
 <wire x1="-297.18" y1="22.86" x2="-297.18" y2="33.02" width="0.1524" layer="91"/>
 <wire x1="-297.18" y1="33.02" x2="-297.18" y2="35.56" width="0.1524" layer="91"/>
@@ -24147,9 +24162,8 @@ www.irf.com&lt;p&gt;
 <junction x="-297.18" y="20.32"/>
 <junction x="-297.18" y="22.86"/>
 <junction x="-297.18" y="35.56"/>
-<junction x="-297.18" y="45.72"/>
 <junction x="-297.18" y="33.02"/>
-<label x="-309.88" y="45.72" size="1.778" layer="95"/>
+<label x="-309.88" y="58.42" size="1.778" layer="95"/>
 <pinref part="NHD_2.7" gate="G$1" pin="GND"/>
 <pinref part="NHD_2.7" gate="G$1" pin="GND2"/>
 <pinref part="NHD_2.7" gate="G$1" pin="GND4"/>
@@ -24160,6 +24174,16 @@ www.irf.com&lt;p&gt;
 <pinref part="NHD_2.7" gate="G$1" pin="GND9"/>
 <pinref part="NHD_2.7" gate="G$1" pin="GND10"/>
 <pinref part="NHD_2.7" gate="G$1" pin="GND3"/>
+<junction x="-297.18" y="45.72"/>
+<pinref part="C13" gate="C" pin="1"/>
+<wire x1="-302.26" y1="55.88" x2="-302.26" y2="58.42" width="0.1524" layer="91"/>
+<pinref part="C12" gate="C" pin="1"/>
+<wire x1="-307.34" y1="55.88" x2="-307.34" y2="58.42" width="0.1524" layer="91"/>
+<pinref part="C10" gate="C" pin="1"/>
+<wire x1="-312.42" y1="55.88" x2="-312.42" y2="58.42" width="0.1524" layer="91"/>
+<junction x="-302.26" y="58.42"/>
+<junction x="-307.34" y="58.42"/>
+<junction x="-312.42" y="58.42"/>
 </segment>
 <segment>
 <wire x1="-134.62" y1="35.56" x2="-134.62" y2="15.24" width="0.1524" layer="91"/>
@@ -24249,6 +24273,10 @@ www.irf.com&lt;p&gt;
 <pinref part="GND26" gate="1" pin="GND"/>
 <pinref part="GPS_C1" gate="C" pin="1"/>
 <wire x1="243.84" y1="157.48" x2="243.84" y2="154.94" width="0.1524" layer="91"/>
+<pinref part="GPS_C5" gate="C" pin="1"/>
+<wire x1="236.22" y1="157.48" x2="236.22" y2="154.94" width="0.1524" layer="91"/>
+<wire x1="236.22" y1="154.94" x2="243.84" y2="154.94" width="0.1524" layer="91"/>
+<junction x="243.84" y="154.94"/>
 </segment>
 <segment>
 <pinref part="GND25" gate="1" pin="GND"/>
@@ -24825,16 +24853,29 @@ www.irf.com&lt;p&gt;
 <junction x="-106.68" y="218.44"/>
 </segment>
 <segment>
-<wire x1="-292.1" y1="43.18" x2="-314.96" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="-292.1" y1="43.18" x2="-302.26" y2="43.18" width="0.1524" layer="91"/>
 <label x="-309.88" y="43.18" size="1.778" layer="95"/>
 <pinref part="NHD_2.7" gate="G$1" pin="VDD"/>
+<pinref part="C10" gate="C" pin="2"/>
+<wire x1="-302.26" y1="43.18" x2="-307.34" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="-307.34" y1="43.18" x2="-312.42" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="-312.42" y1="43.18" x2="-314.96" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="-312.42" y1="45.72" x2="-312.42" y2="43.18" width="0.1524" layer="91"/>
+<pinref part="C12" gate="C" pin="2"/>
+<wire x1="-307.34" y1="45.72" x2="-307.34" y2="43.18" width="0.1524" layer="91"/>
+<pinref part="C13" gate="C" pin="2"/>
+<wire x1="-302.26" y1="45.72" x2="-302.26" y2="43.18" width="0.1524" layer="91"/>
+<junction x="-312.42" y="43.18"/>
+<junction x="-307.34" y="43.18"/>
+<junction x="-302.26" y="43.18"/>
 </segment>
 <segment>
 <wire x1="292.1" y1="170.18" x2="287.02" y2="170.18" width="0.1524" layer="91"/>
 <wire x1="292.1" y1="167.64" x2="287.02" y2="167.64" width="0.1524" layer="91"/>
 <wire x1="287.02" y1="167.64" x2="287.02" y2="170.18" width="0.1524" layer="91"/>
 <wire x1="287.02" y1="170.18" x2="243.84" y2="170.18" width="0.1524" layer="91"/>
-<wire x1="243.84" y1="170.18" x2="231.14" y2="170.18" width="0.1524" layer="91"/>
+<wire x1="243.84" y1="170.18" x2="236.22" y2="170.18" width="0.1524" layer="91"/>
+<wire x1="236.22" y1="170.18" x2="231.14" y2="170.18" width="0.1524" layer="91"/>
 <wire x1="243.84" y1="167.64" x2="243.84" y2="170.18" width="0.1524" layer="91"/>
 <junction x="287.02" y="170.18"/>
 <junction x="243.84" y="170.18"/>
@@ -24842,6 +24883,9 @@ www.irf.com&lt;p&gt;
 <pinref part="GPS" gate="G$1" pin="VCC"/>
 <pinref part="GPS" gate="G$1" pin="EN"/>
 <pinref part="GPS_C1" gate="C" pin="2"/>
+<pinref part="GPS_C5" gate="C" pin="2"/>
+<wire x1="236.22" y1="167.64" x2="236.22" y2="170.18" width="0.1524" layer="91"/>
+<junction x="236.22" y="170.18"/>
 </segment>
 <segment>
 <wire x1="269.24" y1="109.22" x2="269.24" y2="68.58" width="0.1524" layer="91"/>
@@ -25489,9 +25533,9 @@ www.irf.com&lt;p&gt;
 <pinref part="JP1" gate="A" pin="6"/>
 </segment>
 <segment>
-<wire x1="-25.4" y1="96.52" x2="-12.7" y2="96.52" width="0.1524" layer="91"/>
-<label x="-27.94" y="97.79" size="1.778" layer="95"/>
+<wire x1="-40.64" y1="96.52" x2="-12.7" y2="96.52" width="0.1524" layer="91"/>
 <pinref part="ST2" gate="G$1" pin="DAT0"/>
+<label x="-35.56" y="96.52" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="D10" class="0">
