@@ -2,7 +2,7 @@
 <resources>
 
     <string name="uploadfirmware">Click to select\nFirmware Update\nHex-File</string>
-    <string name="uploadmapfile">Click to select\nMap-File</string>
+    <string name="uploadmapfile">Click to select\nNavigation-File</string>
     <string name="uploadconfigfile">Click to select\nConfig-File</string>
     <string name="uploadgfxfile">Click to select\nGFX-File</string>
     

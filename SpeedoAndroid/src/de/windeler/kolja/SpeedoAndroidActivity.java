@@ -1259,6 +1259,10 @@ OnClickListener {
 			mDownButton.setEnabled(false);
 			mLeftButton.setEnabled(false);
 			mRightButton.setEnabled(false);
+			mUpButton.setBackgroundResource(R.drawable.arrow_up_gray);
+			mDownButton.setBackgroundResource(R.drawable.arrow_down_gray);
+			mLeftButton.setBackgroundResource(R.drawable.arrow_left_gray);
+			mRightButton.setBackgroundResource(R.drawable.arrow_right_gray);
 		} else {
 			if (mMenuItemConnect != null) {
 				// mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
@@ -1269,6 +1273,10 @@ OnClickListener {
 			mDownButton.setEnabled(true);
 			mLeftButton.setEnabled(true);
 			mRightButton.setEnabled(true);
+			mUpButton.setBackgroundResource(R.drawable.arrow_up);
+			mDownButton.setBackgroundResource(R.drawable.arrow_down);
+			mLeftButton.setBackgroundResource(R.drawable.arrow_left);
+			mRightButton.setBackgroundResource(R.drawable.arrow_right);
 		}
 	}
 

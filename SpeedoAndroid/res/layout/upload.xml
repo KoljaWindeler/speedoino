@@ -43,7 +43,7 @@
             android:drawablePadding="10dp"
             android:paddingTop="80dp"
             android:text="@string/uploadgfxfile"
-            android:shadowColor="#FFF"
+            android:shadowColor="#FFF" 
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="8"

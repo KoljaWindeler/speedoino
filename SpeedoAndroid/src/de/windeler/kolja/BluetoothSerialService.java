@@ -1641,6 +1641,7 @@ public class BluetoothSerialService {
 			msg5.setData(bundle5);
 			mHandlerUpdate.sendMessage(msg5);
 			Thread.sleep(10000);
+			return -1;
 		}
 
 		////// hier beginnt teil 4, Den Bootloader fangen  //////
