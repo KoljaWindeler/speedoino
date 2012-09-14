@@ -2728,6 +2728,25 @@ Mouser 81-LXDC2HL33A-055, 2.55€, 3.3V out | 300mA</description>
 </device>
 </devices>
 </deviceset>
+<deviceset name="PMV160UP215">
+<description>PMV160UP215, - 1.2 A, 210mOhm Rds on, 
+0,061€</description>
+<gates>
+<gate name="G$1" symbol="MOSFET_P-KANAL" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="SOT23">
+<connects>
+<connect gate="G$1" pin="D" pad="3"/>
+<connect gate="G$1" pin="G" pad="1"/>
+<connect gate="G$1" pin="S" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </drawing>
