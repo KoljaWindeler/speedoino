@@ -27,6 +27,7 @@ Speedo_aktors::~Speedo_aktors(){
 void Speedo_aktors::run_reset(){
 	pOLED->clear_screen();
 	pOLED->string_P(pSpeedo->default_font,PSTR("Running Update"),3,3);
+	pOLED->string_P(pSpeedo->default_font,PSTR("on AT328P"),5,4);
 	// pin as output
 	//DDRD |= (1<<ATM328RESETPIN);
 	DDRL |= (1<<ATM328RESETPIN);
@@ -45,13 +46,15 @@ void Speedo_aktors::run_reset(){
 	// tunnel mode
 	unsigned long timeout=millis();
 	while(millis()-timeout>5000){
-		timeout=millis();
 		while(Serial.available()>0){
 			Serial3.print(Serial.read(),BYTE);
+			timeout=millis();
 		}
 		while(Serial3.available()>0){
 			Serial.print(Serial3.read(),BYTE);
+			timeout=millis();
 		}
+		pSensors->m_reset->toggle();
 	}
 }
 
