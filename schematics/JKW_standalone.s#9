@@ -25533,9 +25533,9 @@ www.irf.com&lt;p&gt;
 <pinref part="JP1" gate="A" pin="6"/>
 </segment>
 <segment>
-<wire x1="-25.4" y1="96.52" x2="-12.7" y2="96.52" width="0.1524" layer="91"/>
-<label x="-27.94" y="97.79" size="1.778" layer="95"/>
+<wire x1="-40.64" y1="96.52" x2="-12.7" y2="96.52" width="0.1524" layer="91"/>
 <pinref part="ST2" gate="G$1" pin="DAT0"/>
+<label x="-35.56" y="96.52" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="D10" class="0">

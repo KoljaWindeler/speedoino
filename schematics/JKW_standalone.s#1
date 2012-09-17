@@ -23832,7 +23832,8 @@ www.irf.com&lt;p&gt;
 <attribute name="VALUE" x="101.6" y="84.455" size="1.778" layer="96" rot="R180"/>
 </instance>
 <instance part="T13" gate="G$1" x="63.5" y="93.98" smashed="yes" rot="R270">
-<attribute name="NAME" x="65.659" y="86.995" size="1.778" layer="95" rot="MR0"/>
+<attribute name="VALUE" x="34.29" y="91.44" size="1.778" layer="96"/>
+<attribute name="NAME" x="59.69" y="88.9" size="1.778" layer="95"/>
 </instance>
 <instance part="GND15" gate="1" x="33.02" y="83.82"/>
 <instance part="R_DEAKT_DAUER_P1" gate="G$1" x="40.64" y="101.6" smashed="yes" rot="R180">

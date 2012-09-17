@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.2">
+<eagle version="6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -23143,6 +23143,8 @@ www.irf.com&lt;p&gt;
 <part name="R_B_LED_19" library="RCLDT" deviceset="R" device="0805" value="10k"/>
 <part name="R_B_LED_20" library="RCLDT" deviceset="R" device="0805" value="10k"/>
 <part name="R_DEAKT_DAUER_P2" library="RCLDT" deviceset="R" device="0805" value="5k "/>
+<part name="R_BL_L1" library="RCLDT" deviceset="R" device="0805" value="n.b."/>
+<part name="GND39" library="SparkFun" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -23878,6 +23880,10 @@ www.irf.com&lt;p&gt;
 <instance part="R_DEAKT_DAUER_P2" gate="G$1" x="63.5" y="86.36" smashed="yes" rot="R180">
 <attribute name="VALUE" x="68.58" y="84.455" size="1.778" layer="96" rot="R180"/>
 </instance>
+<instance part="R_BL_L1" gate="G$1" x="-299.72" y="157.48" smashed="yes" rot="MR0">
+<attribute name="VALUE" x="-297.18" y="159.385" size="1.778" layer="96" rot="MR0"/>
+</instance>
+<instance part="GND39" gate="1" x="-307.34" y="152.4"/>
 </instances>
 <busses>
 </busses>
@@ -24600,6 +24606,12 @@ www.irf.com&lt;p&gt;
 <wire x1="33.02" y1="101.6" x2="35.56" y2="101.6" width="0.1524" layer="91"/>
 <junction x="33.02" y="93.98"/>
 </segment>
+<segment>
+<pinref part="R_BL_L1" gate="G$1" pin="2"/>
+<pinref part="GND39" gate="1" pin="GND"/>
+<wire x1="-304.8" y1="157.48" x2="-307.34" y2="157.48" width="0.1524" layer="91"/>
+<wire x1="-307.34" y1="157.48" x2="-307.34" y2="154.94" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="DZ" class="0">
 <segment>
@@ -25195,10 +25207,15 @@ www.irf.com&lt;p&gt;
 <label x="-261.62" y="147.32" size="1.778" layer="95"/>
 <pinref part="IC4" gate="1" pin="PK5(ADC13/PCINT21)"/>
 <pinref part="TX1" gate="G$1" pin="1"/>
-<wire x1="-256.54" y1="147.32" x2="-289.56" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="-256.54" y1="147.32" x2="-281.94" y2="147.32" width="0.1524" layer="91"/>
 <pinref part="TX2" gate="G$1" pin="1"/>
+<wire x1="-281.94" y1="147.32" x2="-289.56" y2="147.32" width="0.1524" layer="91"/>
 <wire x1="-289.56" y1="147.32" x2="-299.72" y2="147.32" width="0.1524" layer="91"/>
 <junction x="-289.56" y="147.32"/>
+<pinref part="R_BL_L1" gate="G$1" pin="1"/>
+<wire x1="-294.64" y1="157.48" x2="-281.94" y2="157.48" width="0.1524" layer="91"/>
+<wire x1="-281.94" y1="157.48" x2="-281.94" y2="147.32" width="0.1524" layer="91"/>
+<junction x="-281.94" y="147.32"/>
 </segment>
 </net>
 <net name="A12" class="0">
