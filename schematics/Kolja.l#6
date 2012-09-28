@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
@@ -1227,6 +1227,14 @@
 <rectangle x1="-1.4286" y1="3.556" x2="-0.9714" y2="4.5466" layer="51"/>
 <rectangle x1="-2.2286" y1="3.556" x2="-1.7714" y2="4.5466" layer="51"/>
 <rectangle x1="-3.0286" y1="3.556" x2="-2.5714" y2="4.5466" layer="51"/>
+</package>
+<package name="SOT723">
+<smd name="P$1" x="0" y="0.5" dx="0.4" dy="0.4" layer="1"/>
+<smd name="P$2" x="-0.4" y="-0.5" dx="0.4" dy="0.4" layer="1"/>
+<smd name="P$3" x="0.4" y="-0.5" dx="0.4" dy="0.4" layer="1"/>
+<rectangle x1="-0.6" y1="-0.4" x2="0.6" y2="0.4" layer="21"/>
+<text x="1.1" y="0.6" size="1.27" layer="27">&gt;Value</text>
+<text x="1.2" y="-0.9" size="1.27" layer="25">&gt;Name</text>
 </package>
 </packages>
 <symbols>
