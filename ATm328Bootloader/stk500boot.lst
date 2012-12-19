@@ -1351,17 +1351,17 @@
  1406               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 stk500boot.c
-     /tmp/ccxEoU4o.s:2      *ABS*:000000000000003f __SREG__
-     /tmp/ccxEoU4o.s:3      *ABS*:000000000000003e __SP_H__
-     /tmp/ccxEoU4o.s:4      *ABS*:000000000000003d __SP_L__
-     /tmp/ccxEoU4o.s:5      *ABS*:0000000000000034 __CCP__
-     /tmp/ccxEoU4o.s:6      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccxEoU4o.s:7      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccxEoU4o.s:17     .text:0000000000000000 sendchar
-     /tmp/ccxEoU4o.s:45     .init9:0000000000000000 __jumpMain
-     /tmp/ccxEoU4o.s:55     *ABS*:00000000000008ff __stack
-     /tmp/ccxEoU4o.s:93     .text:0000000000000018 main
-     /tmp/ccxEoU4o.s:1346   .data:0000000000000000 CSWTCH.6
+     /tmp/ccTXt9mV.s:2      *ABS*:000000000000003f __SREG__
+     /tmp/ccTXt9mV.s:3      *ABS*:000000000000003e __SP_H__
+     /tmp/ccTXt9mV.s:4      *ABS*:000000000000003d __SP_L__
+     /tmp/ccTXt9mV.s:5      *ABS*:0000000000000034 __CCP__
+     /tmp/ccTXt9mV.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccTXt9mV.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccTXt9mV.s:17     .text:0000000000000000 sendchar
+     /tmp/ccTXt9mV.s:45     .init9:0000000000000000 __jumpMain
+     /tmp/ccTXt9mV.s:55     *ABS*:00000000000008ff __stack
+     /tmp/ccTXt9mV.s:93     .text:0000000000000018 main
+     /tmp/ccTXt9mV.s:1346   .data:0000000000000000 CSWTCH.6
 
 UNDEFINED SYMBOLS
 __do_copy_data

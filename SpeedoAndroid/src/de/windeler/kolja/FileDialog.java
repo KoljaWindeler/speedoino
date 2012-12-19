@@ -159,6 +159,13 @@ public class FileDialog extends ListActivity {
 					dirsMap.put(dirName, dirName);
 					dirsPathMap.put(dirName, file.getPath());
 				} else {
+					if(extensionFilter.length()>0){
+						String this_extension=file.toString().substring(file.toString().lastIndexOf('.')+1).toLowerCase();
+						if(!this_extension.equals(extensionFilter.toLowerCase())){
+							continue;
+						}
+					};
+					
 					filesMap.put(file.getName(), file.getName());
 					filesPathMap.put(file.getName(), file.getPath());
 				}

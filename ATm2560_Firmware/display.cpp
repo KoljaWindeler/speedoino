@@ -433,6 +433,8 @@ void speedo_disp::init_speedo(){
 	// see if its a clock startup or a regular startup
 	if(pSpeedo->regular_startup){
 		show_animation(startup);
+	} else {
+		clear_screen();
 	}
 	pDebug->sprintlnp(PSTR("Done"));
 };

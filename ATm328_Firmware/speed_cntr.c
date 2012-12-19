@@ -146,7 +146,7 @@ void speed_cntr_Move(signed int soll_pos, unsigned int accel, unsigned int max_s
 			} else {
 				srd_next.run_state = ACCEL;
 			}
-			uart_SendString("starte timer\n\r");
+//			uart_SendString("starte timer\n\r");
 			OCR1A = 10; 			// mach mal ein paar schritte (10)
 			// prescale 8
 			TCCR1B |= T1_RUN;

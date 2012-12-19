@@ -70,6 +70,7 @@ speedo_timer*   		pTimer=new speedo_timer(); 		// brauch ich ja nur hier, den br
  ******************* TODO List ***************************/
 void init_speedo(void){
 	Serial.begin(115200);
+
 	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
 	pDebug->sprintp(PSTR(GIT_REV));				// print Software release
 	pDebug->sprintp(PSTR(" HW:"));
@@ -108,11 +109,16 @@ void init_speedo(void){
 
 
 int main(void) {
+	wdt_enable(WDTO_8S);
+	MCUSR &= ~(1<<WDRF);
+	WDTCSR |= (1<<WDCE) | (1<<WDE);
+	WDTCSR = 0x00;
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop
 	 ******************** setup procedure ********************************************/
 	init();
 	init_speedo();
+
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop, before THIS
 	 ******************** setup procedure ********************************************/
@@ -121,17 +127,17 @@ int main(void) {
 	for (;;) {
 
 		//////////////////////////////////////////////////
-//		pSensors->m_reset->set_deactive(false,false);
-//		Serial3.end();
-//		Serial3.begin(115200);
-//		while(true){
-//			while(Serial3.available()>0){
-//				Serial.print(Serial3.read(),BYTE);
-//			}
-//			while(Serial.available()>0){
-//				Serial3.print(Serial.read(),BYTE);
-//			}
-//		}
+		//		pSensors->m_reset->set_deactive(false,false);
+		//		Serial3.end();
+		//		Serial3.begin(115200);
+		//		while(true){
+		//			while(Serial3.available()>0){
+		//				Serial.print(Serial3.read(),BYTE);
+		//			}
+		//			while(Serial.available()>0){
+		//				Serial3.print(Serial.read(),BYTE);
+		//			}
+		//		}
 		//////////////////////////////////////////////////
 
 		while(Serial3.available()>0){
@@ -157,13 +163,13 @@ int main(void) {
 		if((pMenu->state/10)==1 || pMenu->state==7311111)  {
 			pSpeedo->loop(previousMillis);
 		}
-		////////////////// Clock Mode ////////////////////////
-		else if(pMenu->state==19){
-			pSensors->m_clock->loop();
-		}
 		//////////////////// Sprint Speedo ///////////////////
 		else if( pMenu->state==21 ) {
 			pSprint->loop();
+		}
+		////////////////// Clock Mode ////////////////////////
+		else if(pMenu->state==291){
+			pSensors->m_clock->loop();
 		}
 		//////////////////// voltage mode ///////////////////
 		else if(pMenu->state==531){

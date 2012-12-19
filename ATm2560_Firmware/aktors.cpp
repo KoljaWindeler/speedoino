@@ -148,18 +148,16 @@ void Speedo_aktors::init(){
 	dimm_step=0;
 	dimm_steps=0;
 	colorfade_active=true;
+	control_lights=0x00;
+	led_area_controll=0x00;
 
 	// innen
-	pinMode(RGB_IN_R,OUTPUT);
-	pinMode(RGB_IN_G,OUTPUT);
-	pinMode(RGB_IN_B,OUTPUT);
+	//pinMode(RGB_IN_W,OUTPUT);
 
 	// see if its a clock startup or a regular startup
-	if(pSpeedo->regular_startup){
+	if(pSpeedo->regular_startup || true){
 		// beleuchtung
-		analogWrite(RGB_IN_R,0);
-		analogWrite(RGB_IN_G,0);
-		analogWrite(RGB_IN_B,0);
+//		analogWrite(RGB_IN_W,255);
 		// beleuchtung
 	}
 
@@ -177,6 +175,16 @@ void Speedo_aktors::init(){
 
 	// stepper drehen
 	m_stepper->init();
+
+
+	// init port rep
+	//	  Wire.beginTransmission(0x20);
+	//	  Wire.write(0x12);
+	//	  Wire.write(gpio);
+	//	  Wire.endTransmission();
+	I2c.write(PORT_REP_ADDR,0x00,0x00);
+	I2c.write(PORT_REP_ADDR,0x01,0x00);
+
 	pDebug->sprintlnp(PSTR(" Done"));
 };
 
@@ -448,8 +456,11 @@ int Speedo_aktors::set_bt_pin(){
 				}
 			}
 		} else {
-			pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,1);
-			_delay_ms(10000);
+			pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,3);
+			pOLED->string_P(pSpeedo->default_font,PSTR("DAMN"),14,4);
+			_delay_ms(4000);
+			Serial.end();
+			Serial.begin(115200);
 			return -9;
 		}
 	}
@@ -487,35 +498,70 @@ int Speedo_aktors::set_bt_pin(){
 
 int Speedo_aktors::ask_bt(char *command){
 	for(int looper=0;looper<3;looper++){
-		Serial.flush();
 		Serial.print(command);
 
 		// A T \r \n O K \r \n = 8
 
 		//warte bis der Buffer nicht voller wird
-		int j=-99;
-		while(j!=Serial.available()){
-			j=Serial.available();
-			_delay_ms(200);
+		_delay_ms(200);
+
+		char ok_state=0; // 0 teile von "o" "k"
+		while(Serial.available()){
+			char temp = Serial.read();
+			if(temp=='O'){
+				ok_state=1; // 1. TEIL
+			} else if(temp=='K' && ok_state==1){
+				return 0;
+
+			} else {
+				ok_state=0;
+			}
 		};
 
-		if(j>=4){								// bei 8 hat man "O" "K" "0x1D" "0x1A"
-			char answere[3]={0,0,0};
-			for(int i=0;i<j; i++){
-				if(i==j-4){						// I=0
-					answere[0]=Serial.read();	// answere[0]=O
-				} else if(i==j-3){				// I=1
-					answere[1]=Serial.read();	// answere[1]=K
-				} else {
-					Serial.read();
-				}
-			};
-
-			if(answere[0]=='O' && answere[1]=='K'){
-				return 0;
-			}
-		}
 	};
 	return -1;
 }
 
+int Speedo_aktors::set_expander(){
+	Serial.print("Feuer:");
+	Serial.println((int)control_lights);
+
+	I2c.write(PORT_REP_ADDR,PORT_REP_ADDR_GPIO_A,(int)control_lights);
+	I2c.write(PORT_REP_ADDR,PORT_REP_ADDR_GPIO_B,led_area_controll);
+	return 0;
+}
+
+int Speedo_aktors::set_controll_lights(unsigned char oil,unsigned char flasher_left,unsigned char n_gear,unsigned char flasher_right,unsigned char high_beam){
+	// light, 0=off, 1==on, x=dontcar
+	unsigned char input[5]={flasher_right,high_beam,n_gear,flasher_left,oil};
+	for(int i=3; i<8; i++){ // pins of port extender
+		if(input[i-3]==0){ // offset of 3 between first position (flasher_righ) in array and pin on port extender
+			control_lights&=~(1<<i);
+		} else if(input[i-3]==1){
+			control_lights|=(1<<i);
+		}
+	};
+
+	return set_expander();
+}
+
+int Speedo_aktors::set_rbg_active(int status){
+	unsigned char shifter[11]={5,6,2,7,4,1,1,2,3,0,0};
+	unsigned char port[11]={1,1,1,1,1,0,1,0,1,0,1};
+	for(int i=0; i<11; i++){
+		if(status&(1<<i)){
+			if(port[i]==0){
+				control_lights|=(1<<shifter[i]);
+			} else {
+				led_area_controll|=(1<<shifter[i]);
+			}
+		} else {
+			if(port[i]==0){
+				control_lights&=~(1<<shifter[i]);
+			} else {
+				led_area_controll&=~(1<<shifter[i]);
+			}
+		}
+	}
+	return set_expander();
+}

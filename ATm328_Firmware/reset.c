@@ -96,10 +96,10 @@ void config_timer0(){
 }
 
 /* overflow vom timer 0 ..
- * prescale 64, cpu_freq=8mhz => 64/8.000.000 = 0,000008sec each increment
- * Timer0 is a 8-Bit Timer => 2⁸=256 Counts to overflow = 0,000008sec*256=0,002048 sec= 2,048 ms
- * Bluetooth pin is: 312ms high,312ms low, we have an interrupt on pin change so we can reset after (312/2,048)*1,2 where 20% is safety
- * 182 Timer overruns is max
+ * prescale 64, cpu_freq=16mhz => 64/16.000.000 = 0,000004sec each increment
+ * Timer0 is a 8-Bit Timer => 2⁸=256 Counts to overflow = 0,000004sec*256=0,002048 sec= 1,024 ms
+ * Bluetooth pin is: 312ms high,312ms low, we have an interrupt on pin change so we can reset after (312/1,024)*1,2 where 20% is safety
+ * 364 Timer overruns is max
  *
  * AVR: Lets say 20sec, 20/0,002=10000 Overruns
  */
@@ -107,7 +107,7 @@ void config_timer0(){
 ISR(TIMER0_OVF_vect){
 	TCNT0=0;   //reset the counter
 	if(reset_global_active){//wenn es high ist soll resetet werden
-		if(counter_bt>=182 && !reset_bt_running && counter_bt_init>10){ //
+		if(counter_bt>=364 && !reset_bt_running && counter_bt_init>10){ //
 			reset_bt_running=1;
 			reset(1);
 			last_rst=2;

@@ -261,16 +261,17 @@ public class ImageEditor extends Activity implements OnClickListener{
 				animation_frames--; // einmal zurück, letzten gabs nicht mehr
 				
 				// show dialog
-				AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-				alertDialog.setTitle("Warning");
-				alertDialog.setMessage("found an animation, upload full animation?");
-				alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {	
-						//upload_animation=true;	
-						finish();
-						}});
-				alertDialog.show();
+//				AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+//				alertDialog.setTitle("Warning");
+//				alertDialog.setMessage("found an animation, upload full animation?");
+//				alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
+//					@Override
+//					public void onClick(DialogInterface arg0, int arg1) {	
+//						//upload_animation=true;	
+//						finish();
+//						}});
+//				alertDialog.show();
+				show_toast("Animation found, converting and uploading complete animation");
 				upload_animation=true;
 				// show dialog
 			} 

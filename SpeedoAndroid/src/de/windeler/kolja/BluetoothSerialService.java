@@ -62,6 +62,7 @@ public class BluetoothSerialService {
 	private char	msgBuffer[] = new char[300];
 	private int		ii			= 0;
 	private Handler mTimerHandle = new Handler();
+	private boolean silent=false;
 	public int item=0;
 	private String last_dir_received="-";
 
@@ -280,8 +281,10 @@ public class BluetoothSerialService {
 				// geben, wir wollen ja nur solange gebremst werden.
 				Log.i(TAG_SEM,"connected thread wartet");
 				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+				silent=true; // kein popup, da wir durchaus mal 1...2... timeouts abwarten müssen für den bootloader
 				semaphore.acquire();
 				semaphore.release();
+				silent=false; // popups, da normalerweise alle befehle ausgeführt werden sollten
 
 				if(status==ST_EMERGENCY_RELEASE){
 					Log.i(TAG_LOGIN,"sign_on notfall release");
@@ -674,12 +677,13 @@ public class BluetoothSerialService {
 				status=ST_EMERGENCY_RELEASE;
 				Log.i(TAG,"schreibe status:"+String.valueOf(status));
 
-
-				Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_TOAST);
-				Bundle bundle = new Bundle();
-				bundle.putString(SpeedoAndroidActivity.TOAST, "No response from target");
-				msg.setData(bundle);
-				mHandler.sendMessage(msg);
+				if(!silent){
+					Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_TOAST);
+					Bundle bundle = new Bundle();
+					bundle.putString(SpeedoAndroidActivity.TOAST, "No response from target");
+					msg.setData(bundle);
+					mHandler.sendMessage(msg);
+				}
 			};
 		}
 	};
@@ -1320,7 +1324,7 @@ public class BluetoothSerialService {
 		};
 		Log.i(TAG, "sendet");
 		Log.i("SEND","showgfx()");
-		int send_value=send(send, 2+filename.length());
+		int send_value=send(send, 2+filename.length(),10000); // 10 sec für die animation
 
 		if(send_value>0){
 			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
@@ -1372,7 +1376,7 @@ public class BluetoothSerialService {
 		Log.i(TAG, "uploadFirmware soll laden:"+filename);
 		int error=0;
 		int flash2560=1;
-		
+
 
 
 		////// hier beginnt teil 1, die datei ?ffnen und in ein array parsen //////
@@ -1537,7 +1541,7 @@ public class BluetoothSerialService {
 			BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 			BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(flashingDevice);
 			connect(device, true);
-			
+
 			Thread.sleep(50); // to make sure, the connection has at least 50 msec do realize it is not yet connected
 			int wait_time=0; // maximal 5 sekunden darauf warten das sich der state von connecting auf connected dreht
 			while( getState()!=STATE_CONNECTED_AND_SEARCHING && wait_time<5000){
@@ -1546,25 +1550,25 @@ public class BluetoothSerialService {
 			}	
 			if(getState()!=STATE_CONNECTED_AND_SEARCHING){
 				error=4;
-				
+
 				Message msg4 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 				Bundle bundle4 = new Bundle();
 				bundle4.putString("msg", "Connection not established");
 				bundle4.putInt("state", 102);
 				msg4.setData(bundle4);
 				mHandlerUpdate.sendMessage(msg4);
-				
+
 				//return error;
 			} else {
 				connection_established=true;
-				
+
 				Message msg4 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 				Bundle bundle4 = new Bundle();
 				bundle4.putString("msg", "Connection established");
 				bundle4.putInt("state", 103);
 				msg4.setData(bundle4);
 				mHandlerUpdate.sendMessage(msg4);
-				
+
 				/*/// jetzt m�ssen wir uns �berlegen:
 				 * ist das File maximal 32k gro� ? 
 				 * -> wenn ja: ATm2560
@@ -1596,7 +1600,7 @@ public class BluetoothSerialService {
 					if(send_save(send2, 1, 750, 15)==0){ // 750ms timeout, 15 retries, das hier wartet nochmal bis zu ~10sec
 						if(msgBuffer[1]!=STATUS_CMD_OK){
 							error=401;
-							
+
 							// fortschritt schreiben
 							Bundle bundle9 = new Bundle();
 							Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1606,7 +1610,7 @@ public class BluetoothSerialService {
 							mHandlerUpdate.sendMessage(msg9);
 							Thread.sleep(3000);
 							// fortschritt schreiben
-							
+
 							return error;
 						};
 						setState(STATE_CONNECTED);
@@ -1614,7 +1618,7 @@ public class BluetoothSerialService {
 						Log.i(TAG_LOGIN,"reset done");
 					} else {
 						error=41;
-						
+
 						// fortschritt schreiben
 						Bundle bundle9 = new Bundle();
 						Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1624,14 +1628,14 @@ public class BluetoothSerialService {
 						mHandlerUpdate.sendMessage(msg9);
 						Thread.sleep(3000);
 						// fortschritt schreiben
-						
+
 						return error;
 					}
 				};
 				////// hier beginnt teil 3, die verbindung aufbauen //////
 			} 	
 		}
-		
+
 		if(!connection_established){
 			// fortschritt schreiben
 			Message msg5 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1661,7 +1665,7 @@ public class BluetoothSerialService {
 		if(send_save(send2,1, 750, 15)==0){ // 750ms timeout, 15 retries
 			if(msgBuffer[1]!=STATUS_CMD_OK){
 				error=50;
-				
+
 				// fortschritt schreiben
 				Bundle bundle9 = new Bundle();
 				Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1671,7 +1675,7 @@ public class BluetoothSerialService {
 				mHandlerUpdate.sendMessage(msg9);
 				Thread.sleep(3000);
 				// fortschritt schreiben
-				
+
 				return error;
 			};
 			setState(STATE_CONNECTED);
@@ -1687,7 +1691,7 @@ public class BluetoothSerialService {
 			// fortschritt schreiben
 		} else {
 			error=5;
-			
+
 			// fortschritt schreiben
 			Bundle bundle9 = new Bundle();
 			Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1697,7 +1701,7 @@ public class BluetoothSerialService {
 			mHandlerUpdate.sendMessage(msg9);
 			Thread.sleep(3000);
 			// fortschritt schreiben
-			
+
 			return error;
 		}
 		////// hier beginnt teil 4, Den Bootloader fangen  //////
@@ -1726,7 +1730,7 @@ public class BluetoothSerialService {
 			if(send_save(send2,7,1000,3)==0){
 				if(msgBuffer[1]!=STATUS_CMD_OK){
 					error=601;
-					
+
 					// fortschritt schreiben
 					Bundle bundle39 = new Bundle();
 					Message msg39 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1736,7 +1740,7 @@ public class BluetoothSerialService {
 					mHandlerUpdate.sendMessage(msg39);
 					Thread.sleep(3000);
 					// fortschritt schreiben
-					
+
 					return error;
 				};
 				Log.i(TAG_LOGIN,"get_sig 0/2 done");
@@ -1747,7 +1751,7 @@ public class BluetoothSerialService {
 				if(send_save(send2,7,1000,3)==0){
 					if(msgBuffer[1]!=STATUS_CMD_OK){
 						error=602;
-						
+
 						// fortschritt schreiben
 						Bundle bundle19 = new Bundle();
 						Message msg19 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1757,7 +1761,7 @@ public class BluetoothSerialService {
 						mHandlerUpdate.sendMessage(msg19);
 						Thread.sleep(3000);
 						// fortschritt schreiben
-						
+
 						return error;
 					};
 					Log.i(TAG_LOGIN,"get_sig 1/2 done");
@@ -1768,7 +1772,7 @@ public class BluetoothSerialService {
 					if(send_save(send2,7,1000,3)==0){
 						if(msgBuffer[1]!=STATUS_CMD_OK){
 							error=603;
-							
+
 							// fortschritt schreiben
 							Bundle bundle29 = new Bundle();
 							Message msg29 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1778,7 +1782,7 @@ public class BluetoothSerialService {
 							mHandlerUpdate.sendMessage(msg29);
 							Thread.sleep(3000);
 							// fortschritt schreiben
-							
+
 							return error;
 						};
 						Log.i(TAG_LOGIN,"get_sig 2/2 done");
@@ -1788,9 +1792,9 @@ public class BluetoothSerialService {
 				}
 			}
 			if((prozessor_id==0x1E9801 && flash2560==1)||(prozessor_id==0x1E9514 && flash2560==0)){ // ATm2560 Signature 2004993, oder ATm328 Signature 2004244
-			
+
 				correct_id_found=true;
-				
+
 				// fortschritt schreiben
 				Bundle bundle8 = new Bundle();
 				Message msg8 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1858,7 +1862,7 @@ public class BluetoothSerialService {
 			if(send_save(send2,max_size_to_send+10,3000,1)==0){
 				if(msgBuffer[1]!=STATUS_CMD_OK){
 					error=7;
-					
+
 					// fortschritt schreiben
 					Bundle bundle9 = new Bundle();
 					Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1868,12 +1872,12 @@ public class BluetoothSerialService {
 					mHandlerUpdate.sendMessage(msg9);
 					Thread.sleep(3000);
 					// fortschritt schreiben
-					
+
 					return error;
 				};
 			} else {
 				error=8;
-				
+
 				// fortschritt schreiben
 				Bundle bundle49 = new Bundle();
 				Message msg49 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1883,7 +1887,7 @@ public class BluetoothSerialService {
 				mHandlerUpdate.sendMessage(msg49);
 				Thread.sleep(3000);
 				// fortschritt schreiben
-				
+
 				return error;
 			};
 
@@ -1910,8 +1914,8 @@ public class BluetoothSerialService {
 		msg37.setData(bundle37);
 		mHandlerUpdate.sendMessage(msg37);
 		Thread.sleep(10000);
-		
-		
+
+
 		return 0;
 	}
 	///////////////////////////// FIRMWARE UPDATE /////////////////////////////

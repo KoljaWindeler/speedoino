@@ -11,11 +11,19 @@
 #define RGB_OUT_R 7
 #define RGB_OUT_G 8
 #define RGB_OUT_B 9
-#define RGB_IN_R 13
-#define RGB_IN_G 10
-#define RGB_IN_B 11
+#define RGB_IN_W 13
+
 //#define ATM328RESETPIN PD4
 #define ATM328RESETPIN PL7
+#define PORT_REP_ADDR 0x20				// I2C Address of MCP23017 Chip
+#define PORT_REP_ADDR_GPIO_A 0x12     // Register Address of Port A
+#define PORT_REP_ADDR_GPIO_B 0x13     // Register Address of Port B
+#define FLASHER_RIGHT 3
+#define HIGH_BEAM 4
+#define NEUTRAL_GEAR 5
+#define FLASHER_LEFT 6
+#define OIL 7
+
 
 
 typedef struct{
@@ -58,6 +66,9 @@ public:
 	int ask_bt(char *command);
 	void stop_dimmer();
 	void set_active_dimmer(bool state);
+	int set_expander();
+	int set_controll_lights(unsigned char oil,unsigned char flasher_left,unsigned char n_gear,unsigned char flasher_right,unsigned char high_beam);
+	int set_rbg_active(int status);
 	speedo_stepper* m_stepper;
 	led RGB;
 	led_simple dz_flasher,oil_start_color,oil_end_color,water_start_color,water_end_color,kmh_start_color,kmh_end_color,dz_start_color,dz_end_color,static_color;
@@ -68,6 +79,8 @@ private:
 	int dimm_steps,dimm_step,in_out;
 	short int dimm_state;
 	bool colorfade_active;
+	unsigned char control_lights;
+	unsigned char led_area_controll;
 
 };
 extern Speedo_aktors* pAktors;

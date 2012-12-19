@@ -42,6 +42,7 @@
 //#include <WProgram.h>
 #include "wiring.h"
 #include <avr/eeprom.h>
+#include <avr/wdt.h>
 #include <util/delay.h> // timing
 #include "inc/wiring.h"
 #include "inc/I2C.h"

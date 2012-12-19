@@ -93,7 +93,10 @@ void Speedo_sensors::single_read(){
 	pSensors->m_oiler->check_value(); // gucken ob wir ölen müssten
 	pDebug->sprintp(PSTR("Done\r\nReading: Voltages ... "));
 	pSensors->m_voltage->calc(); // spannungscheck
-	pDebug->sprintlnp(PSTR("Done\r\nSensor single read ... Done"));
+	char temp[6];
+	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/10)),int(m_voltage->get()%10));
+	Serial.print(temp);
+	pDebug->sprintlnp(PSTR(" Done\r\nSensor single read ... Done"));
 };
 
 

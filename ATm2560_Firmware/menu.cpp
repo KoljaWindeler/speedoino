@@ -224,6 +224,10 @@ void speedo_menu::display(){ // z.B. state = 26
 		pSprint->lock=false;
 		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
+	///////////////////////////////////////////////////// STANDUHR ///////////////////////////////////////////////////////////
+	else if(state==291){
+		pSensors->m_clock->loop();
+	}
 	//////////////////////////////////////////////////// Menü für die Navigation ////////////////////////////////////////////////////
 	else if(floor(state/10)==3){ // 31/10 = 3
 		// Menu vorbereiten
@@ -1499,7 +1503,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	// oder zumindest länger als fast_timeout UND der first push ist ausreichend lang her
 	// oder per serielle konsole
 	unsigned char n=0; // count loop of "display()" max = 5
-	while(update_display && n<5){
+	while(update_display && n<5 && !hw_keys_en){
 		update_display=false;
 		n++;
 		display();
@@ -1509,7 +1513,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	}
 
 
-	if(bt_keys_en){ // auf keinen Fall hier lesen, wenn wir gerade im Import sind, sonder haut uns jeder Straßenname mit w||a||s||d raus
+	if(bt_keys_en){
 		if(Serial.available()>100){ // wenns zuviele sind flushen
 			Serial.flush();
 		} else if(Serial.available()>0){ // an sonsten gern
@@ -1520,7 +1524,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	};
 
 
-	if(hw_keys_en || button_first_push!=0){		// hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedrückt ist
+	if((hw_keys_en || button_first_push!=0) && pSpeedo->regular_startup){		// hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedrückt ist
 		if((millis()>(button_time+menu_button_timeout)) ||
 				((button_first_push>0 && millis()>(button_first_push+menu_button_fast_delay)) && millis()>(menu_button_fast_timeout+button_time)) ){ // halbe sek timeout
 			//////////////////////// rechts ist gedrückt ////////////////////////
@@ -1621,7 +1625,7 @@ void speedo_menu::init(){
 	if(pSpeedo->regular_startup){
 		state=11;
 	} else {
-		state=19; // clock mode
+		state=291; // clock mode
 	}
 	old_state=state;
 	button_time=millis();

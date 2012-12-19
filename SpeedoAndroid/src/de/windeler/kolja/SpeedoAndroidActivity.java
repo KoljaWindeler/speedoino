@@ -1245,9 +1245,7 @@ OnClickListener {
 	};
 
 	public void update_visible_elements(boolean visible) {
-		if (mSerialService == null
-				|| BluetoothSerialService.STATE_CONNECTED != mSerialService
-				.getState()) {
+		if (mSerialService == null	|| BluetoothSerialService.STATE_CONNECTED != mSerialService.getState()) {
 			if (mMenuItemConnect != null) {
 				// mMenuItemConnect.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 				mMenuItemConnect.setTitle(R.string.connect);

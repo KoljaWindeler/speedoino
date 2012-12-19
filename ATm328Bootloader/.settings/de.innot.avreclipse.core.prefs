@@ -36,7 +36,7 @@ avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/EEPROM
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/EEPROMFromConfig=true
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/FlashFile=${workspace_loc\:/ATm328Bootloader/stk500boot.hex}
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/FlashFromConfig=false
-avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Fuses/ByteValues=206\:218\:6
+avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Fuses/ByteValues=255\:210\:6
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Fuses/FileName=
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Fuses/MCUid=atmega328p
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Fuses/UseFile=false
@@ -45,7 +45,7 @@ avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Locks/
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Locks/FileName=
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Locks/MCUid=atmega328p
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Locks/UseFile=false
-avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Locks/Write=true
+avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/Locks/Write=false
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/NoChipErase=false
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/NoSigCheck=false
 avrtarget/de.innot.avreclipse.configuration.app.release.212905855/avrdude/NoVerify=false

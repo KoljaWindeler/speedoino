@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -4343,21 +4343,16 @@ min. Width 0,18mm</description>
 <wire x1="118.435" y1="6.44" x2="118.435" y2="14.065" width="0.254" layer="16"/>
 <wire x1="118.435" y1="14.065" x2="117.8" y2="14.7" width="0.254" layer="16"/>
 <via x="117.8" y="14.7" extent="1-16" drill="0.3"/>
-<wire x1="110.6" y1="15.7" x2="110" y2="15.1" width="0" layer="19" extent="1-16"/>
-<wire x1="110" y1="15.1" x2="105.7" y2="15.1" width="0" layer="19" extent="1-16"/>
-<wire x1="105.7" y1="15.1" x2="105.5" y2="15.3" width="0" layer="19" extent="1-16"/>
-<wire x1="105.5" y1="15.3" x2="105.5" y2="16.5" width="0" layer="19" extent="1-16"/>
-<wire x1="105.5" y1="16.5" x2="104.3" y2="16.5" width="0" layer="19" extent="1-16"/>
-<wire x1="104.3" y1="16.5" x2="104" y2="16.2" width="0.254" layer="1"/>
-<wire x1="105.5" y1="16.5" x2="106.695" y2="16.5" width="0" layer="19" extent="1-16"/>
-<wire x1="106.695" y1="16.5" x2="107.005" y2="15.79" width="0.254" layer="1"/>
+<wire x1="104.3" y1="16.5" x2="104" y2="16.2" width="0" layer="19" extent="1-16"/>
+<wire x1="106.695" y1="16.5" x2="107.005" y2="15.79" width="0" layer="19" extent="1-16"/>
 <wire x1="104.005" y1="15.79" x2="104" y2="16.19" width="0.4064" layer="1"/>
 <wire x1="104" y1="16.19" x2="104" y2="16.2" width="0.4064" layer="1"/>
 <wire x1="117.8" y1="14.7" x2="117.6" y2="14.5" width="0.254" layer="1"/>
 <wire x1="117.6" y1="14.5" x2="105.7" y2="14.5" width="0.254" layer="1"/>
 <wire x1="105.7" y1="14.5" x2="105.5" y2="14.7" width="0.254" layer="1"/>
-<wire x1="105.5" y1="14.7" x2="105.5" y2="15.3" width="0.254" layer="1"/>
-<wire x1="105.5" y1="15.3" x2="104.005" y2="15.79" width="0" layer="19" extent="1-16"/>
+<wire x1="105.5" y1="14.7" x2="105.5" y2="15.79" width="0.254" layer="1"/>
+<wire x1="104.005" y1="15.79" x2="105.5" y2="15.79" width="0.254" layer="1"/>
+<wire x1="105.5" y1="15.79" x2="107.005" y2="15.79" width="0.254" layer="1"/>
 </signal>
 <signal name="12V">
 <contactref element="D_VERPOL" pad="A"/>
@@ -4594,14 +4589,12 @@ min. Width 0,18mm</description>
 <signal name="ARD_RX_5">
 <contactref element="RX_H" pad="1"/>
 <contactref element="TX" pad="1"/>
-<via x="98" y="15" extent="1-16" drill="0.3"/>
-<wire x1="98" y1="15" x2="97.7" y2="15.3" width="0.254" layer="16"/>
-<wire x1="97.7" y1="15.3" x2="97.7" y2="20.195" width="0.254" layer="16"/>
+<via x="98" y="15.8" extent="1-16" drill="0.3"/>
+<wire x1="98" y1="15.8" x2="97.7" y2="16.1" width="0.254" layer="16"/>
+<wire x1="97.7" y1="16.1" x2="97.7" y2="20.195" width="0.254" layer="16"/>
 <wire x1="97.7" y1="20.195" x2="98.485" y2="20.98" width="0.254" layer="16"/>
-<wire x1="102.105" y1="15.79" x2="98.41" y2="16.19" width="0" layer="19" extent="1-16"/>
-<wire x1="98.41" y1="16.19" x2="98.4" y2="16.2" width="0" layer="19" extent="1-16"/>
-<wire x1="98.4" y1="16.2" x2="98.1" y2="16.2" width="0" layer="19" extent="1-16"/>
-<wire x1="98.1" y1="16.2" x2="98" y2="15" width="0" layer="19" extent="1-16"/>
+<wire x1="102.105" y1="15.79" x2="98" y2="15.79" width="0.254" layer="1"/>
+<wire x1="98" y1="15.79" x2="98" y2="15.8" width="0.254" layer="1"/>
 </signal>
 <signal name="SD_CLK">
 <contactref element="ST2" pad="5"/>

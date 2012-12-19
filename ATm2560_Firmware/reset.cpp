@@ -92,6 +92,7 @@ void speedo_reset::restore(){
 }
 
 void speedo_reset::toggle(){
+	wdt_reset();
 	if(reset_enabled){
 		if(millis()-last_time>rst_blink_freq){
 			if(toggle_high) {

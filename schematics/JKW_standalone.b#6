@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.2">
+<eagle version="6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -1952,11 +1952,11 @@ min. Width 0,18mm</description>
 <attribute name="NAME" x="135.7575" y="13.7113" size="0.6096" layer="26" rot="MR270"/>
 <attribute name="VALUE" x="135.8575" y="16.7113" size="0.6096" layer="28" rot="MR270"/>
 </element>
-<element name="RX_L" library="resistor" package="M0805" value="2k7" x="107.955" y="16.19" smashed="yes" rot="R180">
-<attribute name="NAME" x="106.879" y="14.076" size="0.8128" layer="25"/>
+<element name="RX_L" library="resistor" package="M0805" value="2k7" x="107.955" y="15.79" smashed="yes" rot="R180">
+<attribute name="NAME" x="106.879" y="13.676" size="0.8128" layer="25"/>
 </element>
-<element name="RX_H" library="resistor" package="M0805" value="1k2" x="103.055" y="16.19" smashed="yes">
-<attribute name="NAME" x="101.839" y="14.156" size="0.8128" layer="25"/>
+<element name="RX_H" library="resistor" package="M0805" value="1k2" x="103.055" y="15.79" smashed="yes">
+<attribute name="NAME" x="101.839" y="13.756" size="0.8128" layer="25"/>
 </element>
 <element name="D6" library="diode" package="SOT23" value="20V-Zdiode" x="6" y="26.31" smashed="yes" rot="R270">
 <attribute name="NAME" x="5.893" y="30.016" size="0.6096" layer="26" rot="MR90"/>
@@ -4350,14 +4350,14 @@ min. Width 0,18mm</description>
 <wire x1="105.5" y1="16.5" x2="104.3" y2="16.5" width="0" layer="19" extent="1-16"/>
 <wire x1="104.3" y1="16.5" x2="104" y2="16.2" width="0.254" layer="1"/>
 <wire x1="105.5" y1="16.5" x2="106.695" y2="16.5" width="0" layer="19" extent="1-16"/>
-<wire x1="106.695" y1="16.5" x2="107.005" y2="16.19" width="0.254" layer="1"/>
-<wire x1="104.005" y1="16.19" x2="104" y2="16.19" width="0.4064" layer="1"/>
+<wire x1="106.695" y1="16.5" x2="107.005" y2="15.79" width="0.254" layer="1"/>
+<wire x1="104.005" y1="15.79" x2="104" y2="16.19" width="0.4064" layer="1"/>
 <wire x1="104" y1="16.19" x2="104" y2="16.2" width="0.4064" layer="1"/>
 <wire x1="117.8" y1="14.7" x2="117.6" y2="14.5" width="0.254" layer="1"/>
 <wire x1="117.6" y1="14.5" x2="105.7" y2="14.5" width="0.254" layer="1"/>
 <wire x1="105.7" y1="14.5" x2="105.5" y2="14.7" width="0.254" layer="1"/>
 <wire x1="105.5" y1="14.7" x2="105.5" y2="15.3" width="0.254" layer="1"/>
-<wire x1="105.5" y1="15.3" x2="104.005" y2="16.19" width="0" layer="19" extent="1-16"/>
+<wire x1="105.5" y1="15.3" x2="104.005" y2="15.79" width="0" layer="19" extent="1-16"/>
 </signal>
 <signal name="12V">
 <contactref element="D_VERPOL" pad="A"/>
@@ -4598,7 +4598,7 @@ min. Width 0,18mm</description>
 <wire x1="98" y1="15" x2="97.7" y2="15.3" width="0.254" layer="16"/>
 <wire x1="97.7" y1="15.3" x2="97.7" y2="20.195" width="0.254" layer="16"/>
 <wire x1="97.7" y1="20.195" x2="98.485" y2="20.98" width="0.254" layer="16"/>
-<wire x1="102.105" y1="16.19" x2="98.41" y2="16.19" width="0" layer="19" extent="1-16"/>
+<wire x1="102.105" y1="15.79" x2="98.41" y2="16.19" width="0" layer="19" extent="1-16"/>
 <wire x1="98.41" y1="16.19" x2="98.4" y2="16.2" width="0" layer="19" extent="1-16"/>
 <wire x1="98.4" y1="16.2" x2="98.1" y2="16.2" width="0" layer="19" extent="1-16"/>
 <wire x1="98.1" y1="16.2" x2="98" y2="15" width="0" layer="19" extent="1-16"/>

@@ -605,8 +605,21 @@ void speedo_filemanager_v2::parse_command(){
 					filename[i]=msgBuffer[i+2];
 				}
 				filename[length_of_filename]='\0';
-				int return_value=pOLED->sd2ssd(filename,0);
-				if(return_value==0){
+				// we don't know if this is a animation or just an ordinary file... so try to loop
+				// a animation. if the seeker could not reach the suggested frame, sd2ssd returns 3
+				// frame_counter starts with =0, if the sd2ssd returns a value > 0, the while loop
+				// ends after one interation. so frame_counter will be =1, so: >1 => ok, at least 1 frame
+				// shown, ==1 => failed, no frame shown
+				int return_value=0;
+				int frame_counter=0;
+				while(return_value==0){
+					return_value=pOLED->sd2ssd(filename,frame_counter);
+					_delay_ms(20);
+					frame_counter++;
+					pSensors->m_reset->toggle();
+				}
+				// end animation
+				if(frame_counter>1){ // see comment above
 					pMenu->state=9999999;
 					msgLength=2; // cmd + status ok
 					msgBuffer[0]=CMD_SHOW_GFX;
