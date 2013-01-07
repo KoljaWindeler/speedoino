@@ -24,28 +24,25 @@ Speedo_aktors::~Speedo_aktors(){
 };
 
 
-void Speedo_aktors::run_reset(){
+void Speedo_aktors::run_reset_on_ATm328(){
+	Serial3.end();
+	Serial3.begin(115200);
 	pOLED->clear_screen();
 	pOLED->string_P(pSpeedo->default_font,PSTR("Running Update"),3,3);
 	pOLED->string_P(pSpeedo->default_font,PSTR("on AT328P"),5,4);
 	// pin as output
-	//DDRD |= (1<<ATM328RESETPIN);
-	DDRL |= (1<<ATM328RESETPIN);
+	DDRD |= (1<<ATM328RESETPIN);
 	// set low -> low active
-	//PORTD &= ~(1<<ATM328RESETPIN);
-	PORTL &= ~(1<<ATM328RESETPIN);
+	PORTD &= ~(1<<ATM328RESETPIN);
 	_delay_ms(50);
-	//PORTD |= (1<<ATM328RESETPIN);
-	PORTL |= (1<<ATM328RESETPIN);
+	PORTD |= (1<<ATM328RESETPIN);
 	// set high, as pull up
-	//DDRD |= (1<<ATM328RESETPIN);
-	DDRL |= (1<<ATM328RESETPIN);
-	//PORTD |= (1<<ATM328RESETPIN);
-	PORTL |= (1<<ATM328RESETPIN);
+	DDRD |= (1<<ATM328RESETPIN);
+	PORTD |= (1<<ATM328RESETPIN);
 
 	// tunnel mode
 	unsigned long timeout=millis();
-	while(millis()-timeout>5000){
+	while(millis()-timeout<60000){
 		while(Serial.available()>0){
 			Serial3.print(Serial.read(),BYTE);
 			timeout=millis();
@@ -56,6 +53,9 @@ void Speedo_aktors::run_reset(){
 		}
 		pSensors->m_reset->toggle();
 	}
+	Serial3.end();
+	Serial3.begin(19200);
+	pMenu->display();
 }
 
 void Speedo_aktors::clear_vars(){
@@ -152,12 +152,12 @@ void Speedo_aktors::init(){
 	led_area_controll=0x00;
 
 	// innen
-	//pinMode(RGB_IN_W,OUTPUT);
+	pinMode(RGB_IN_W,OUTPUT);
 
 	// see if its a clock startup or a regular startup
 	if(pSpeedo->regular_startup || true){
 		// beleuchtung
-//		analogWrite(RGB_IN_W,255);
+		analogWrite(RGB_IN_W,255);
 		// beleuchtung
 	}
 
@@ -523,11 +523,13 @@ int Speedo_aktors::ask_bt(char *command){
 }
 
 int Speedo_aktors::set_expander(){
-	Serial.print("Feuer:");
-	Serial.println((int)control_lights);
-
-	I2c.write(PORT_REP_ADDR,PORT_REP_ADDR_GPIO_A,(int)control_lights);
-	I2c.write(PORT_REP_ADDR,PORT_REP_ADDR_GPIO_B,led_area_controll);
+	uint8_t data[2];
+	data[0]=(uint8_t)control_lights;
+	data[1]=(uint8_t)led_area_controll;
+//	char data2[20];
+//	Sprint(data2,"Setze auf %i:%i",data[0],data[1]);
+//	Serial.println(data2);
+	I2c.write(PORT_REP_ADDR,PORT_REP_ADDR_GPIO_A,data,2);
 	return 0;
 }
 

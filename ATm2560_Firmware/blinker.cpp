@@ -64,7 +64,6 @@ bool moped_blinker::warn(unsigned long dist){
 }
 
 void moped_blinker::init(){
-  pinMode(BLINKER_PIN, INPUT);
   pDebug->sprintlnp(PSTR("Blinker init done"));
 };
 

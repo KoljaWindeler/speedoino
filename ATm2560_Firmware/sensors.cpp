@@ -96,6 +96,8 @@ void Speedo_sensors::single_read(){
 	char temp[6];
 	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/10)),int(m_voltage->get()%10));
 	Serial.print(temp);
+	pDebug->sprintp(PSTR("Done\r\nReading: Control lights ... "));
+	check_inputs();
 	pDebug->sprintlnp(PSTR(" Done\r\nSensor single read ... Done"));
 };
 
@@ -112,6 +114,29 @@ void Speedo_sensors::init(){
 	m_gear->init();
 	m_oiler->init();
 	m_voltage->init();
+
+	cli(); // TODO ... unschön, warum reagiert er überhaupt schon auf interrupts?
+	// Blinker LINKS Interrupt
+	EIMSK |= (1<<INT6); // Enable Interrupt
+	EICRB |= (1<<ISC60) | (1<<ISC61); // rising edge on INT5
+
+	// Blinker RECHTS Interrupt
+	EIMSK |= (1<<INT7); // Enable Interrupt
+	EICRB |= (1<<ISC70) | (1<<ISC71); // rising edge on INT5
+
+	// Neutral Gear Interrupt
+	DDRK  &=~(1<<PK1); // ensure its an input
+	PORTK |=(1<<PK1); // activate Pull UP
+
+	// Oil Pressure Interrupt
+	DDRK  &=~(1<<PK0); // ensure its an input
+	PORTK |=(1<<PK0); // activate Pull UP
+	sei();
+	// High Beam
+	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16);
+	PCICR |=(1<<PCIE2); // general interrupt PC aktivieren für SK2
+
+
 	pDebug->sprintlnp(PSTR("Sensors init done"));
 }
 /************* IIR Tiefpass ***********************
@@ -203,4 +228,46 @@ void Speedo_sensors::loop(){
 };
 
 
+// interrupt to update sensors
+ISR(INT6_vect ){
+	pSensors->check_inputs();
+}
+// interrupt to update sensors
+ISR(INT7_vect ){
+	pSensors->check_inputs();
+}
+// interrupt to update sensors
+ISR(PCINT2_vect ){
+	pSensors->check_inputs();
+}
+
+void Speedo_sensors::check_inputs(){
+	unsigned char high_beam=0x00;
+	unsigned char flasher_left=0x00;
+	unsigned char flasher_right=0x00;
+	unsigned char oil_pressure=0x01; // low active
+	unsigned char neutral_gear=0x01; // low active
+
+	if(PINK&(1<<HIGH_BEAM_PIN)){
+		high_beam=0x01;
+	}
+
+	if(PINK&(1<<OIL_PRESSURE_PIN)){	 // if the pin is still high, the pulldown is active, signal is not active
+		oil_pressure=0x00;
+	}
+
+	if(PINK&(1<<NEUTRAL_GEAR_PIN)){	 // if the pin is still high, the pulldown is active, signal is not active
+		neutral_gear=0x00;
+	}
+
+	if(PINE&(1<<FLASHER_LEFT_PIN)){
+		flasher_left=0x01;
+	}
+
+	if(PINE&(1<<FLASHER_RIGHT_PIN)){
+		flasher_right=0x01;
+	}
+
+	pAktors->set_controll_lights(oil_pressure,flasher_left,neutral_gear,flasher_right,high_beam);
+}
 

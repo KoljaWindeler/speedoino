@@ -103,5 +103,6 @@ void speedo_voltage::init(){
 	} else {
 		start_time=9999;
 	}
+	pDebug->sprintlnp(PSTR("Voltage init done"));
 };
 

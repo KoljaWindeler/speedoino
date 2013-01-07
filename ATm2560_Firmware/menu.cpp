@@ -1499,9 +1499,6 @@ bool speedo_menu::go_down(bool update_twice){
 
 ///// zyklisches abfragen der buttons ////////////
 bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
-	// also entweder ist der letzte button_down schon länger als der menu_button_timeout her
-	// oder zumindest länger als fast_timeout UND der first push ist ausreichend lang her
-	// oder per serielle konsole
 	unsigned char n=0; // count loop of "display()" max = 5
 	while(update_display && n<5 && !hw_keys_en){
 		update_display=false;
@@ -1511,7 +1508,6 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	if(n>0){
 		return true;
 	}
-
 
 	if(bt_keys_en){
 		if(Serial.available()>100){ // wenns zuviele sind flushen
@@ -1523,6 +1519,26 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 		};
 	};
 
+	/* get hardware keys IF :
+	 *  OVERALL: Only if we have a reagular startup!!
+	 *   ====================================================
+	 *  AND
+	 *  1.) HW_KEYS_EN = true
+	 *  OR
+	 *  2.) HW_KEYS were true in the past and at that time any key was pressed
+	 *  Because:
+	 *  If a key is pressed AND at the last check no button was pushed: Button_first_push is set to the actual timestamp
+	 *  by using this way, we always know since how long the button is pushed
+	 *
+	 *  In addition on every push the var button_time is set to the actual time stamp, so we know when we "did" something (like go_left)
+	 *
+	 *  So rerun this loop SLOW after MENU_BUTTON_TIMEOUT by check (button_time+menu_button_timeout)<millis()
+	 *  OR
+	 *  FASTER (after menu_button_fast_delay) if:
+	 *  1. the first button push is longer than menu_button_fast_delay ( millis()>(button_first_push+menu_button_fast_delay ) (1.2sec)
+	 *  and
+	 *  2. the shorter delay is passed (millis()>(menu_button_fast_timeout+button_time)) (0.1sec)
+	 */
 
 	if((hw_keys_en || button_first_push!=0) && pSpeedo->regular_startup){		// hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedrückt ist
 		if((millis()>(button_time+menu_button_timeout)) ||

@@ -636,7 +636,7 @@ void speedo_filemanager_v2::parse_command(){
 				msgLength=2; // cmd + status ok
 				msgBuffer[0]=CMD_RESET_SMALL_AVR;
 				msgBuffer[1]=STATUS_CMD_OK;
-				pAktors->run_reset();
+				pAktors->run_reset_on_ATm328(); // !! BUG using this, the answere to the Bluetooth will time out!! set a fag or do whatever, but dont do this!
 				pMenu->display();
 				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
 				///////////////////////////// EMERGENCY /////////////////////////////////
