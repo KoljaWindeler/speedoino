@@ -269,7 +269,7 @@ public class BluetoothSerialService {
 				Log.i(TAG_LOGIN,"sign_on sendet");
 				Log.i("SEND","connected()");
 				try {
-					send(send, 1,1000);
+					send(send, 1,1000); // 1000msec timeout
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					semaphore.release();
@@ -1540,15 +1540,24 @@ public class BluetoothSerialService {
 
 			BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 			BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(flashingDevice);
-			connect(device, true);
+
+			// connect bluetooth!
+			if(highest_pos<=32768){ // will den kleinen flashen, 
+				connect(device, false); // false => dont go to bootloader
+			} else {
+				connect(device, true); // true => goto bootloader
+			}
 
 			Thread.sleep(50); // to make sure, the connection has at least 50 msec do realize it is not yet connected
 			int wait_time=0; // maximal 5 sekunden darauf warten das sich der state von connecting auf connected dreht
+			// wait as long as the state is STATE_NONE or STATE_CONNECTING, max 5 sec
 			while( getState()!=STATE_CONNECTED_AND_SEARCHING && wait_time<5000){
 				Thread.sleep(1);
 				wait_time++;
-			}	
-			if(getState()!=STATE_CONNECTED_AND_SEARCHING){
+			}
+			// now the state is STATE_CONNECTED_AND_SEARCHING or STATE_CONNECTED or STATE_NONE or STATE..?
+			// it MUST be STATE_CONNECTED_AND_SEARCHING or STATE_CONNECTED to continue normal
+			if(getState()!=STATE_CONNECTED_AND_SEARCHING && getState()!=STATE_CONNECTED){
 				error=4;
 
 				Message msg4 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -1569,10 +1578,10 @@ public class BluetoothSerialService {
 				msg4.setData(bundle4);
 				mHandlerUpdate.sendMessage(msg4);
 
-				/*/// jetzt m�ssen wir uns �berlegen:
-				 * ist das File maximal 32k gro� ? 
+				/* jetzt muessen wir uns ueberlegen:
+				 * ist das File maximal 32k gross ? 
 				 * -> wenn ja: ATm2560
-				 * --> Dann m�ssen wir in den Bootloader
+				 * --> Dann muessen wir in den Bootloader
 				 * --> Connection abbauen und neu aufbauen
 				 * --> dann STK500v2 
 				 * -> wenn nein: ATm328
@@ -1586,26 +1595,37 @@ public class BluetoothSerialService {
 					// fortschritt schreiben
 					Message msg5 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 					Bundle bundle5 = new Bundle();
-					bundle5.putString("msg", "Connected, sending reset to AT328 in 10sec");
+
+					// wartezeit für den tacho, schlauer wäre sicherlich hier einen befehl zu senden und dann
+					// zu gucken ob der durch kommt
+//					for(int i=0; i<10; i++){
+//						bundle5.putString("msg", "Connected, sending reset to AT328 in "+String.valueOf(10-i)+" sec");
+//						bundle5.putInt("state", 4);
+//						msg5.setData(bundle5);
+//						mHandlerUpdate.sendMessage(msg5);
+//						Thread.sleep(1000); // 10 sek um den bootvorgang abzuwarten
+//					}
+					bundle5.putString("msg", "Connected, sending reset to AT328 in "+String.valueOf(10)+" sec");
 					bundle5.putInt("state", 4);
 					msg5.setData(bundle5);
 					mHandlerUpdate.sendMessage(msg5);
-					// fortschritt schreiben
-
 					Thread.sleep(10000); // 10 sek um den bootvorgang abzuwarten
+
+					reset_seq(); // speedoino starts new, so we have to reset our seq as well
 					byte send2[] = new byte[300];
 					send2[0] = CMD_RESET_SMALL_AVR;
 					Log.i("connect","sign_on sendet");
 					Log.i("SEND","upload_fileware0()");
 					if(send_save(send2, 1, 750, 15)==0){ // 750ms timeout, 15 retries, das hier wartet nochmal bis zu ~10sec
-						if(msgBuffer[1]!=STATUS_CMD_OK){
+						if(msgBuffer[1]!=STATUS_CMD_OK && false){ //!! BUG !! der Tacho geht zuerst in den Reset und würde danach erst anworten, daher wird hier nix zurück kommen :(
 							error=401;
 
 							// fortschritt schreiben
 							Bundle bundle9 = new Bundle();
 							Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 							bundle9.putString("msg", "Invalid response, quitting");
-							bundle9.putInt("state", 55);
+							bundle9.putInt("state",
+									55);
 							msg9.setData(bundle9);
 							mHandlerUpdate.sendMessage(msg9);
 							Thread.sleep(3000);
@@ -1791,7 +1811,7 @@ public class BluetoothSerialService {
 					}
 				}
 			}
-			if((prozessor_id==0x1E9801 && flash2560==1)||(prozessor_id==0x1E9514 && flash2560==0)){ // ATm2560 Signature 2004993, oder ATm328 Signature 2004244
+			if((prozessor_id==0x1E9801 && flash2560==1)||(prozessor_id==0x1E950F && flash2560==0)){ // ATm2560 Signature 2004993, oder ATm328 Signature 2004244
 
 				correct_id_found=true;
 
