@@ -151,7 +151,7 @@ ISR(USART_RX_vect){
 	unsigned char data;
 	// Read the received data.
 	data = UDR0;
-//	uart_SendByte(data);
+	//uart_SendByte(data);
 	// Put the data into RxBuf
 	if(status.cmd == FALSE || 1 ){
 		if(data=='$'){
