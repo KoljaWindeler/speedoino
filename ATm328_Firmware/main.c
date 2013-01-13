@@ -50,6 +50,7 @@
 #include "sm_driver.h"
 #include "speed_cntr.h"
 #include "reset.h"
+#include <avr/wdt.h>
 
 speedRampData srd;
 
@@ -64,6 +65,7 @@ unsigned int accel=80;
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 void Init(void)
 {
+	wdt_enable(WDTO_8S);
 
 	emergency_shutdown=false;
 	emergency_extra_pos_offset_set=false;
@@ -102,6 +104,7 @@ void Init(void)
 int main(){
 	Init();
 	while(1) {
+		wdt_reset();
 		//check_power_state();
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
@@ -112,6 +115,7 @@ int main(){
 				int i=2;
 				int pos0_accel1_speed2=0;
 				while(UART_RxBuffer[i]!=0x00){
+					wdt_reset();
 					if(UART_RxBuffer[i]>='0' && UART_RxBuffer[i]<='9'){
 						if(pos0_accel1_speed2==0){
 							set_pos=set_pos*10+UART_RxBuffer[i]-'0';
