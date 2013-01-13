@@ -107,7 +107,7 @@ Address of section .text set to 0x7800
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000007800      0x5e0
+.text           0x0000000000007800      0x608
  *(.vectors)
  *(.vectors)
  *(.progmem.gcc*)
@@ -153,11 +153,11 @@ Address of section .text set to 0x7800
                 0x0000000000007800                __jumpMain
  *(.init9)
  *(.text)
- .text          0x000000000000780e      0x5d2 stk500boot.o
+ .text          0x000000000000780e      0x5fa stk500boot.o
                 0x0000000000007826                main
-                0x0000000000007de0                . = ALIGN (0x2)
+                0x0000000000007e08                . = ALIGN (0x2)
  *(.text.*)
-                0x0000000000007de0                . = ALIGN (0x2)
+                0x0000000000007e08                . = ALIGN (0x2)
  *(.fini9)
  *(.fini9)
  *(.fini8)
@@ -178,9 +178,9 @@ Address of section .text set to 0x7800
  *(.fini1)
  *(.fini0)
  *(.fini0)
-                0x0000000000007de0                _etext = .
+                0x0000000000007e08                _etext = .
 
-.data           0x0000000000800100       0x14 load address 0x0000000000007de0
+.data           0x0000000000800100       0x14 load address 0x0000000000007e08
                 0x0000000000800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800100       0x13 stk500boot.o
@@ -200,8 +200,8 @@ Address of section .text set to 0x7800
  *(.bss*)
  *(COMMON)
                 0x0000000000800114                PROVIDE (__bss_end, .)
-                0x0000000000007de0                __data_load_start = LOADADDR (.data)
-                0x0000000000007df4                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0000000000007e08                __data_load_start = LOADADDR (.data)
+                0x0000000000007e1c                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0000000000800114        0x0
                 0x0000000000800114                PROVIDE (__noinit_start, .)
@@ -279,22 +279,22 @@ Address of section .text set to 0x7800
  *(.debug_abbrev)
  .debug_abbrev  0x0000000000000000      0x1c9 stk500boot.o
 
-.debug_line     0x0000000000000000      0x891
+.debug_line     0x0000000000000000      0x8c3
  *(.debug_line)
- .debug_line    0x0000000000000000      0x891 stk500boot.o
+ .debug_line    0x0000000000000000      0x8c3 stk500boot.o
 
 .debug_frame    0x0000000000000000       0x40
  *(.debug_frame)
  .debug_frame   0x0000000000000000       0x40 stk500boot.o
 
-.debug_str      0x0000000000000000      0x209
+.debug_str      0x0000000000000000      0x20e
  *(.debug_str)
- .debug_str     0x0000000000000000      0x209 stk500boot.o
-                                        0x24a (size before relaxing)
+ .debug_str     0x0000000000000000      0x20e stk500boot.o
+                                        0x24f (size before relaxing)
 
-.debug_loc      0x0000000000000000      0x9e7
+.debug_loc      0x0000000000000000      0x9ec
  *(.debug_loc)
- .debug_loc     0x0000000000000000      0x9e7 stk500boot.o
+ .debug_loc     0x0000000000000000      0x9ec stk500boot.o
 
 .debug_macinfo
  *(.debug_macinfo)

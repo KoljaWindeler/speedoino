@@ -332,10 +332,13 @@ static unsigned char recchar_timeout(void)
 int main(void) __attribute__ ((OS_main));
 int main(void)
 {
+	wdt_enable(WDTO_500MS);
+
+
 	address_t       address = 0;
 	address_t       eraseAddress = 0;	
 	unsigned char   msgParseState;
-	unsigned int	ii				=	0;
+	unsigned int	 ii	=	0;
 	unsigned char   checksum = 0;
 	unsigned char   seqNum = 1;
 	unsigned int    msgLength = 0;
@@ -400,6 +403,7 @@ int main(void)
 	}
 	sendchar(checksum);
 	seqNum++;
+
 	while (boot_state==0)
 	{
 		while ((!(Serial_Available())) && (boot_state == 0))		// wait for data
@@ -411,6 +415,8 @@ int main(void)
 			{
 				boot_state	=	1; // (after ++ -> boot_state=2 bootloader timeout, jump to main 0x00000 )
 			}
+
+			wdt_reset();
 		}
 		boot_state++; // ( if boot_state=1 bootloader received byte from UART, enter bootloader mode)
 	}
@@ -421,12 +427,14 @@ int main(void)
 		//*	main loop
 		while (!isLeave)
 		{
+			wdt_reset();
 			/*
 			 * Collect received bytes to a complete message
 			 */
 			msgParseState	=	ST_START;
 			while ( msgParseState != ST_PROCESS )
 			{
+				wdt_reset();
 				if (boot_state==1)
 				{
 					boot_state	=	0;
@@ -702,6 +710,7 @@ int main(void)
 				{
 					/* write EEPROM */
 					do {
+						wdt_reset();
 						EEARL = address;			// Setup EEPROM address
 						EEARH = (address >> 8);
 						address++;					// Select next EEPROM byte
@@ -733,6 +742,7 @@ int main(void)
 
 					// Read FLASH
 					do {
+						wdt_reset();
 						data = pgm_read_word_near(address);
 						*p++ = (unsigned char)data;         //LSB
 						*p++ = (unsigned char)(data >> 8);	//MSB
@@ -788,7 +798,8 @@ int main(void)
 				c = *p++;
 				sendchar(c);
 				checksum ^=c;
-				msgLength--;               
+				msgLength--;
+				wdt_reset();
 			}                   
 			sendchar(checksum);	        
 			seqNum++;
