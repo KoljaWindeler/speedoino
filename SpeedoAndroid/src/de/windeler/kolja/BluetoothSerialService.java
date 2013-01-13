@@ -1851,7 +1851,7 @@ public class BluetoothSerialService {
 		};
 
 		send2[0]=CMD_LOAD_ADDRESS;
-		send2[1]=(byte) 0x80;
+		send2[1]=(byte) 0x80; //warum denn 0x80 ? ist wahrscheinlich egal oder?
 		send2[2]=0x00;
 		send2[3]=0x00;
 		send2[4]=0x00;
@@ -1865,9 +1865,12 @@ public class BluetoothSerialService {
 		};
 
 		send2[0]=CMD_PROGRAM_FLASH_ISP;
-		for(int send_position=0;send_position<=highest_pos;send_position+=256){
+		int page_size=256;
+		if(flash2560==0) page_size=128; //ATm328 has a smaller page size!!
+		
+		for(int send_position=0;send_position<=highest_pos;send_position+=page_size){
 			int max_size_to_send=(int) (highest_pos-send_position+1); // bei 100byte im hex file -> highes pos=99 -> wenn send_position=99, dann m?ssen wir sehr wohl das 99te Byte noch senden
-			if(max_size_to_send>256) max_size_to_send=256; // send 256 byte bursts, due to the limited size of input buffer in the atmega (285=256+overhead)
+			if(max_size_to_send>page_size) max_size_to_send=page_size; // send page_size byte bursts, due to the limited size of input buffer in the atmega (285=256+overhead)
 			// store length in telegramm
 			send2[1]=(byte) ((max_size_to_send&0x0000ff00)>>8);// high byte
 			send2[2]=(byte)((max_size_to_send)&0x000000ff);// low byte
