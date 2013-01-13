@@ -1,0 +1,30 @@
+01. Warum geht die LED in der mitte nicht an? --> kein Kontakt, lässt sich aber auch nich hinlöten :(
+02. Dreht der Zeiger?
+03. Ist der Timer beim Zeiger richtig eingestellt auf 16Mhz?
+04. Warum geht der Reset Taster so schlecht?
+05. Eingänge Testen: Blinker Links, geht @done
+06. Eingänge Testen: Blinker Rechts, geht @done
+07. Eingänge Testen: Blinker Öl, geht @done
+08. Eingänge Testen: Blinker Leerlauf --> R_HB5 fehlt
+09. Eingänge Testen: Blinker HighBeam, geht @done
+10. DZ Signal testen
+11. KMH Signal testen -> geht nicht, R_REED_UP fehlt (was mich angeht, die anderen nicht)
+12. Warum geht die SD Karte nicht mehr? --> Defekt wegen überspannung
+13. Alle Displays mit Buchsenleisten ausstatten
+14. Alle Platinen mit Displaybuchsen ausstatten
+15. Alle Platinen mit Quarzen ausstatten
+16. Alle Platinen mit ATm328 ausstatten
+17. Auf alle Platinen den Reset Pullup von 1k auf 10k umlöten
+18. Taster auflöten, sobald sie da sind
+19. Gewölbten Glassscheiben schleifen bis sie ins Gehäuse passen
+20. Gewinde zum Verschrauben in alle Gehäuse schneiden
+21. Kabelzugangsloch in alle Gehäuse schneiden
+22. Gehäuse Eloxieren
+23. Plexiglas scheiben bestellen (~200€)
+24. DZM Trägerscheiben besorgen
+25. DZM get pos hängt... serielle schnittstelle zu schnell?
+26. Flashen des großes über BT -> geht @done 
+26. Flashen des kleinen über BT
+
+
+ 

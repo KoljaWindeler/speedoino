@@ -109,6 +109,7 @@ void init_speedo(void){
 
 
 int main(void) {
+	// watchdog einschalten um ihn dann zu deaktivieren ... strange aber muss wohl so
 	wdt_enable(WDTO_8S);
 	MCUSR &= ~(1<<WDRF);
 	WDTCSR |= (1<<WDCE) | (1<<WDE);
@@ -126,22 +127,22 @@ int main(void) {
 	/* main loop, this will be repeated on and on */
 	for (;;) {
 		//////////////////////////////////////////////////
-		//		pSensors->m_reset->set_deactive(false,false);
-		//		Serial3.end();
-		//		Serial3.begin(115200);
-		//		while(true){
-		//			while(Serial3.available()>0){
-		//				Serial.print(Serial3.read(),BYTE);
-		//			}
-		//			while(Serial.available()>0){
-		//				Serial3.print(Serial.read(),BYTE);
-		//			}
-		//		}
+//		pSensors->m_reset->set_deactive(false,false);
+//		Serial3.end();
+//		Serial3.begin(115200);
+//		while(true){
+//			while(Serial3.available()>0){
+//				Serial.print(Serial3.read(),BYTE);
+//			}
+//			while(Serial.available()>0){
+//				Serial3.print(Serial.read(),BYTE);
+//			}
+//		}
 		//////////////////////////////////////////////////
 
-		//		while(Serial3.available()>0){
-		//			Serial.print(Serial3.read(),BYTE);
-		//		}
+//		while(Serial3.available()>0){
+//			Serial.print(Serial3.read(),BYTE);
+//		}
 
 		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
 		pDebug->speedo_loop(21,1,0," "); 	// intensive debug= EVERY loop access reports the Menustate

@@ -73,6 +73,7 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss,i
 			lost_data=false;
 		}
 	}*/
+	// TODO: Hier einbringen der Berechnung obs Winterzeit ist..
 };
 
 /**

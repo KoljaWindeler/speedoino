@@ -25,6 +25,7 @@ Speedo_aktors::~Speedo_aktors(){
 
 
 void Speedo_aktors::run_reset_on_ATm328(){
+	pSensors->m_reset->set_deactive(false,false);
 	Serial3.end();
 	Serial3.begin(115200);
 	pOLED->clear_screen();
@@ -43,15 +44,15 @@ void Speedo_aktors::run_reset_on_ATm328(){
 	// tunnel mode
 	unsigned long timeout=millis();
 	while(millis()-timeout<60000){
-		while(Serial.available()>0){
-			Serial3.print(Serial.read(),BYTE);
-			timeout=millis();
+
+		while(true){
+			while(Serial3.available()>0){
+				Serial.print(Serial3.read(),BYTE);
+			}
+			while(Serial.available()>0){
+				Serial3.print(Serial.read(),BYTE);
+			}
 		}
-		while(Serial3.available()>0){
-			Serial.print(Serial3.read(),BYTE);
-			timeout=millis();
-		}
-		pSensors->m_reset->toggle();
 	}
 	Serial3.end();
 	Serial3.begin(19200);
@@ -526,9 +527,9 @@ int Speedo_aktors::set_expander(){
 	uint8_t data[2];
 	data[0]=(uint8_t)control_lights;
 	data[1]=(uint8_t)led_area_controll;
-//	char data2[20];
-//	Sprint(data2,"Setze auf %i:%i",data[0],data[1]);
-//	Serial.println(data2);
+	//	char data2[20];
+	//	Sprint(data2,"Setze auf %i:%i",data[0],data[1]);
+	//	Serial.println(data2);
 	I2c.write(PORT_REP_ADDR,PORT_REP_ADDR_GPIO_A,data,2);
 	return 0;
 }
