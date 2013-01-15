@@ -52,7 +52,7 @@ typedef struct {
  * the timer1 frequency is the clock frequency divided by 8.
  */
 // Timer/Counter 1 running on 8mhz
-#define T1_FREQ 921500 // ? häh ?
+#define T1_FREQ 160000 // ? häh ?
 
 //! Number of (full)steps per round on stepper motor in use.
 #define FSPR 781
@@ -73,13 +73,13 @@ typedef struct {
 
 // Maths constants. To simplify maths when calculating in speed_cntr_Move().
 #define ALPHA (2*3.14159/SPR)                    // 2*pi/spr || 2*3.1459/(781*2)=0,004028041
-#define A_T_x100 ((long)(ALPHA*T1_FREQ*100))     // (ALPHA / T1_FREQ)*100 || 0,004028041*8000000*100  = 3222432,8
+#define A_T_x100 ((long)(ALPHA*T1_FREQ*100))     // (ALPHA / T1_FREQ)*100 || 0,004028041*16000000*100  = 6444865,6
 #define T1_FREQ_148 ((int)((T1_FREQ*0.676)/100)) // divided by 100 and scaled by 0.676
 #define A_SQ (long)(ALPHA*2*10000000000)         // ALPHA*2*10000000000
 #define A_x20000 (int)(ALPHA*20000)              // ALPHA*20000
 #define MAX_POS 20000/11.73
 #define T1_STOP ~(1<<CS10 | 1<<CS11 | 1<<CS12)	  // 000
-#define T1_RUN ((0<<CS12)|(1<<CS11)|(0<<CS10))	  // 010
+#define T1_RUN ((0<<CS12)|(1<<CS11)|(1<<CS10))	  // 010
 
 // Speed ramp states
 #define STOP  0
