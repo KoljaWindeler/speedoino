@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
@@ -1510,7 +1510,7 @@
 <pin name="GND" x="-7.62" y="25.4" length="middle" direction="pwr"/>
 <pin name="WATER_TEMP" x="-7.62" y="-30.48" length="middle" direction="in"/>
 <pin name="EX_IN_OUT_D1" x="-7.62" y="-40.64" length="middle"/>
-<pin name="EX_IN_OUT_D2" x="-7.62" y="-45.72" length="middle"/>
+<pin name="DAUER_12V" x="-7.62" y="-45.72" length="middle"/>
 <pin name="VIN" x="-7.62" y="30.48" length="middle" direction="pwr"/>
 <wire x1="-2.54" y1="-50.8" x2="-2.54" y2="35.56" width="0.254" layer="94"/>
 <wire x1="-2.54" y1="35.56" x2="20.32" y2="35.56" width="0.254" layer="94"/>
@@ -2314,10 +2314,10 @@ Herst.Bez.:
 <devices>
 <device name="" package="SPEEDOSTECKER">
 <connects>
+<connect gate="G$1" pin="DAUER_12V" pad="P$14"/>
 <connect gate="G$1" pin="DZ" pad="P$6"/>
 <connect gate="G$1" pin="EX_IN_OUT_A2" pad="P$16"/>
 <connect gate="G$1" pin="EX_IN_OUT_D1" pad="P$13"/>
-<connect gate="G$1" pin="EX_IN_OUT_D2" pad="P$14"/>
 <connect gate="G$1" pin="FLASH_L" pad="P$10"/>
 <connect gate="G$1" pin="FLASH_R" pad="P$4"/>
 <connect gate="G$1" pin="GND" pad="P$11"/>
@@ -2717,6 +2717,25 @@ Mouser 81-LXDC2HL33A-055, 2.55€, 3.3V out | 300mA</description>
 </gates>
 <devices>
 <device name="" package="SOT723">
+<connects>
+<connect gate="G$1" pin="D" pad="3"/>
+<connect gate="G$1" pin="G" pad="1"/>
+<connect gate="G$1" pin="S" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="PMV160UP215">
+<description>PMV160UP215, - 1.2 A, 210mOhm Rds on, 
+0,061€</description>
+<gates>
+<gate name="G$1" symbol="MOSFET_P-KANAL" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="SOT23">
 <connects>
 <connect gate="G$1" pin="D" pad="3"/>
 <connect gate="G$1" pin="G" pad="1"/>
