@@ -11,7 +11,14 @@
 ////////////// DCF 77 / RTC_DS1307 ///////////////////////
 class speedo_clock  // shell class for the clock
 {
-#define DS1307_I2C_ADDRESS 0x68  // This is the I2C address of the rtc
+#define GMT_TIME_CORRECTION 1
+#define SECS_PER_MIN  (60UL)
+#define SECS_PER_HOUR (3600UL)
+#define SECS_PER_DAY  (SECS_PER_HOUR * 24UL)
+#define LEAP_YEAR(Y)  (((1970+Y)>0) && !((1970+Y)%4) && ( ((1970+Y)%100) || !((1970+Y)%400) ))
+
+#define CLOCKMODE_COL 3
+#define CLOCKMODE_ROW 2
 
 private:
 	char decToBcd(char val);
@@ -23,8 +30,6 @@ private:
 	volatile unsigned int m_mon;
 	volatile unsigned int m_year;
 	volatile unsigned int m_dayOfWeek;
-	short int m_dayls;                                        // winterzeit oder nicht
-	bool lost_data;
 public:
 	speedo_clock(void);
 	~speedo_clock();
@@ -37,8 +42,8 @@ public:
 	//void store();
 	int getdate();
 	unsigned long get_long_date();
-	void set_date_time(int year,int mon,int day,int hh,int mm,int ss,int dayOfWeek,int dayls);
-	short int get_dayls();
+	void set_date_time(int year,int mon,int day,int hh,int mm,int ss);
+	unsigned int is_winter_time(unsigned int year,unsigned int month,unsigned int day,unsigned int hour,unsigned int minute,unsigned int second);
 	short int get_ss();
 	void inc();
 };

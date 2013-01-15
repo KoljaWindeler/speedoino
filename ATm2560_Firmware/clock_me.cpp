@@ -46,7 +46,7 @@ char speedo_clock::bcdToDec(char val)
 	return ( (val/16*10) + (val%16) );
 }
 
-void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss,int dayOfWeek,int dayls){
+void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss){
 	if(CLOCK_DEBUG && false){ // das schon brutal nervige 1hz meldung
 		Serial.println("Setting Clock:");
 		char *char_buffer;
@@ -54,27 +54,101 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss,i
 		if (char_buffer==NULL) Serial.println("Malloc failed");
 		else memset(char_buffer,'\0',60);
 
-		sprintf(char_buffer,"%i,%i,%i,%i,%i,%i,%i,%i",year%100,mon%100,day%100,hh%100,mm%100,ss%100,dayOfWeek%100,dayls%10);
+		sprintf(char_buffer,"%i,%i,%i,%i,%i,%i",year%100,mon%100,day%100,hh%100,mm%100,ss%100);
 		Serial.println(char_buffer);
 		free(char_buffer);
 	}
-	if(year>-1){ m_year=year; };
-	if(mon>-1){ m_mon=mon; };
-	if(dayls>-1 && dayls<4){ m_dayls=dayls; };
-	if(hh>-1){ m_hh=(hh+m_dayls)%24; };
-	if(mm>-1){ m_mm=mm; };
-	if(( (signed(m_ss)-ss)>10 || (signed(m_ss)-ss)<-10) && ss>-1){ m_ss=unsigned(ss); }; // min 10 sec differenz
-	if(dayOfWeek>-1){ m_dayOfWeek=dayOfWeek; };
-	if(day>-1){ m_day=day+floor(m_hh/24); }; // eventuell is ja schon morgen
 
-	/*if(lost_data){ // wenn im i2c mist rausgekommen ist, bat gewechselt, kurzschluss, erster aufbau .. watt weiß ich
-		if(day>-1 && year>-1 && mon>-1){ // und wir valide gps daten bekommen
-			store(); // speichern!!
-			lost_data=false;
+	// gehen wir erstmal von Winterzeit mit GMT offset aus
+	if(( (signed(m_ss)-ss)>10 || (signed(m_ss)-ss)<-10) && ss>-1){ m_ss=unsigned(ss); }; // min 10 sec differenz
+	if(mm>-1){ m_mm=mm; };
+	if(hh>-1){ m_hh=(hh+GMT_TIME_CORRECTION)%24; }; // Überlauf checken
+	if(day>-1){ m_day=day+floor(m_hh/24); }; // eventuell is ja schon morgen
+	if(mon>-1){ m_mon=mon; };
+	if(year>-1){ m_year=year; };
+
+	// berechnung der Winterzeit mit Rohdaten
+	if(is_winter_time(m_year,m_mon,m_day,m_hh,m_mm,m_ss)){ // ist winterzeit?
+		static  const uint8_t monthDays[]={31,28,31,30,31,30,31,31,30,31,30,31}; // API starts months from 1, this array starts from 0
+		// nachziehen
+		m_hh++;
+		if(m_hh>23){
+			m_day++;
+			m_hh=m_hh%24;
+			if(m_day>monthDays[m_mon-1]){
+				m_day=m_day%monthDays[m_mon-1];
+				m_mon++;
+				if(m_mon>12){
+					// wer fährt denn bitte an sylvester?
+					m_year++;
+					m_mon=m_mon%12;
+				};
+			};
 		}
-	}*/
-	// TODO: Hier einbringen der Berechnung obs Winterzeit ist..
+	};
 };
+
+unsigned int speedo_clock::is_winter_time(unsigned int year,unsigned int month,unsigned int day,unsigned int hour,unsigned int minute,unsigned int second){
+	// note year argument is offset from 1970 (see macros in time.h to convert to other formats)
+	// previous version used full four digit year (or digits since 2000),i.e. 2009 was 2009 or 9
+
+	int i,DST;
+	unsigned long seconds;
+	// leap year calulator expects year argument as years offset from 1970
+
+	static  const uint8_t monthDays[]={31,28,31,30,31,30,31,31,30,31,30,31}; // API starts months from 1, this array starts from 0
+
+	// seconds from 1970 till 1 jan 00:00:00 of the given year
+	year+=30; // GPS commits 13 for 2013, lear year expects offset 1970 => for 2013: 13+30 = 43
+	if(year>1970) year-=1970;
+
+
+	seconds= year*(SECS_PER_DAY * 365);
+	for (i = 0; i < year; i++) {
+
+		if (LEAP_YEAR(i)) {
+			seconds +=  SECS_PER_DAY;   // add extra days for leap years
+		}
+	}
+
+	// add days for this year, months start from 1
+	for (i = 1; i < month; i++) {
+		if ( (i == 2) && LEAP_YEAR(year)) {
+			seconds += SECS_PER_DAY * 29;
+		} else {
+			seconds += SECS_PER_DAY * monthDays[i-1];  //monthDay array starts from 0
+		}
+	}
+	seconds+= (day-1) * SECS_PER_DAY;
+	//seconds+= hour * SECS_PER_HOUR;
+	//seconds+= minute * SECS_PER_MIN;
+	//seconds+= second;
+	hour+=GMT_TIME_CORRECTION;
+	unsigned int weekday= (seconds / SECS_PER_DAY + 4) % 7;
+
+
+	// Sommerzeit berechnen
+	if (month < 3 || month > 10) {// 11, 12, 1 und 2 haben keine Sommerzeit
+		DST = 0;
+	} else {
+		DST = 1; // gehen wir mal davon aus das sommerzeit ist
+		if (month == 3) {
+			if ((day - weekday >= 25) && (weekday || hour >= 2)) {
+				DST = 1; // Sommerzeit
+			} else {
+				DST = 0;
+			}
+		} else if (month == 10) {
+			if ((day - weekday >= 25) && (weekday || hour >= 3)) {
+				DST = 0;
+			} else {
+				DST = 1;
+			}
+		}
+	}
+	return DST;					// add DST
+}
+
 
 /**
  * Initialize the DCF77 routines: initialize the variables,
@@ -92,7 +166,6 @@ void speedo_clock::clear_vars(){
 	m_hh=0;
 	m_mm=0;
 	m_ss=0;
-	m_dayls=0;
 }
 
 bool speedo_clock::check_vars(){
@@ -117,9 +190,6 @@ unsigned long speedo_clock::get_long_date(){
 	return date;
 }
 
-short int speedo_clock::get_dayls(){
-	return m_dayls;
-}
 
 short int speedo_clock::get_ss(){
 	return m_ss;
@@ -145,8 +215,6 @@ void speedo_clock::copy(char* buffer){
 };
 
 void speedo_clock::loop(){
-#define CLOCKMODE_COL 3
-#define CLOCKMODE_ROW 2
 
 	if(pSpeedo->disp_zeile_bak[0]!=1){
 		pSpeedo->disp_zeile_bak[0]=1;
@@ -181,4 +249,5 @@ void speedo_clock::loop(){
 	};
 
 };
+
 

@@ -44,7 +44,7 @@ prog_char setup_m_0[] PROGMEM = "1. Gear calib.";   // "String 0" etc are string
 prog_char setup_m_1[] PROGMEM = "2. Speed calib.";   // "String 0" etc are strings to store - change to suit.
 prog_char setup_m_2[] PROGMEM = "3. Display setup";
 prog_char setup_m_3[] PROGMEM = "4. Reset memory";
-prog_char setup_m_4[] PROGMEM = "5. Daylight saving";
+prog_char setup_m_4[] PROGMEM = "5. -";
 prog_char setup_m_5[] PROGMEM = "6. BT Reset state";
 prog_char setup_m_6[] PROGMEM = "7. Water temp warn.";
 prog_char setup_m_7[] PROGMEM = "8. Oil temp warn.";
@@ -972,32 +972,6 @@ void speedo_menu::display(){ // z.B. state = 26
 
 		popup(PSTR("The memory"),PSTR("has been reset"));
 		state=11;
-	}
-	/////////// daylightsaving  //////////
-	else if(floor(state/10)==75) { // 00075X - hier jetzt winterzeit an aus
-		set_buttons(button_state,button_state,button_state,!button_state); // sackgasse
-		if(state%10==9){           pSensors->m_clock->set_date_time(-1,-1,-1,-1,-1,-1,-1,1); /* nur noch gmt+2 -1 */  }
-		else if(state%10==2){      pSensors->m_clock->set_date_time(-1,-1,-1,-1,-1,-1,-1,2); /* gmt+2 */              };
-
-		if(state%10==9 || state%10==2 ) { // has changed, save it
-			byte tempByte = (pSensors->m_clock->get_dayls() & 0xFF);
-			eeprom_write_byte((uint8_t *)148,tempByte);
-		};
-
-		state=751; // resume state
-		pOLED->clear_screen();
-		if(pSensors->m_clock->get_dayls()==1){
-			sprintf(char_buffer," active");
-		} else if(pSensors->m_clock->get_dayls()==2) {
-			sprintf(char_buffer,"inactive");
-		} else {
-			sprintf(char_buffer,"error");
-		};
-		pOLED->string_P(pSpeedo->default_font,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
-		pOLED->highlight_bar(0,8*3-1,128,17); // mit hintergrundfarbe nen kasten malen
-		pOLED->string_P(pSpeedo->default_font,PSTR("Daylight saving"),3,3,15,0,0);
-		pOLED->string(pSpeedo->default_font,char_buffer,5,4,15,0,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
 	}
 	/////////// bt reset state  //////////
 	else if(floor(state/10)==76) { // 00089X

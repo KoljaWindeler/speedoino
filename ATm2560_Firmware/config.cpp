@@ -1222,10 +1222,6 @@ void configuration::EEPROM_init(){
 	pSpeedo->max_speed[1]=0;
 	pSpeedo->avg_timebase[1]=0;
 
-
-	// load winterzeit
-	pSensors->m_clock->set_date_time(-1,-1,-1,-1,-1,-1,-1,eeprom_read_byte((const uint8_t *)148));
-
 	// load naviposition
 	pSensors->m_gps->navi_point=eeprom_read_byte((const uint8_t *)147);
 

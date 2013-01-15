@@ -8,8 +8,9 @@
 #ifndef DZ_H_
 #define DZ_H_
 
-#define FAST_SPEED 600
-#define FAST_ACCEL 1000
+#define FAST_SPEED 500
+#define FAST_ACCEL 900
+
 
 /**************** DZ *******************/
 void helper();

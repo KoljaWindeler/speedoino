@@ -289,9 +289,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 					temp_day,
 					int(floor(temp_gps_time/10000))%24,
 					int(floor(temp_gps_time/100))%100,
-					temp_gps_time%100,
-					-1,
-					-1
+					temp_gps_time%100
 			);
 			if(first_dataset){
 				pConfig->day_trip_check();
