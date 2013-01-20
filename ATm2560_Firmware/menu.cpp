@@ -55,8 +55,8 @@ PROGMEM const char *menu_setup[9] = { setup_m_0,setup_m_1,setup_m_2,setup_m_3,se
 prog_char custom_m_0[] PROGMEM = "1. Load Skin";
 prog_char custom_m_1[] PROGMEM = "2. Shown trip";
 prog_char custom_m_2[] PROGMEM = "3. Shift-Light";
-prog_char custom_m_3[] PROGMEM = "4. -";
-prog_char custom_m_4[] PROGMEM = "5. Speedo-Color";
+prog_char custom_m_3[] PROGMEM = "4. Speedo-Color";
+prog_char custom_m_4[] PROGMEM = "5. -";
 prog_char custom_m_5[] PROGMEM = "6. -";
 prog_char custom_m_6[] PROGMEM = "7. Set BT PIN";
 prog_char custom_m_7[] PROGMEM = "8. -";
@@ -714,31 +714,31 @@ void speedo_menu::display(){ // z.B. state = 26
 	 * 								and the max, plus the color above the top speed. between these limits, the color will be faded
 	 *
 	 */
-	else if(floor(state/10)==65){
+	else if(floor(state/10)==64){
 		// Menu vorbereiten
 		draw(&menu_fade[0],sizeof(menu_fade)/sizeof(menu_fade[0]));
 		menu_preload=true;
 		pSpeedo->reset_bak();
 
 		////////////////////////// static /////////////////
-	} else if(floor(state/10)==651 || floor(state/100)==651 ||floor(state/1000)==651){
-		color_select_menu(651,&pAktors->static_color,0,0,0,0,button_state, PSTR("Static color"),PSTR(""),0,true);
+	} else if(floor(state/10)==641 || floor(state/100)==641 ||floor(state/1000)==641){
+		color_select_menu(641,&pAktors->static_color,0,0,0,0,button_state, PSTR("Static color"),PSTR(""),0,true);
 
 		/////////////////////// speed based color fade ///////////////////
-	} else if(floor(state/10)==652 || floor(state/100)==652 ||floor(state/1000)==652){
-		color_select_menu(652,&pAktors->kmh_start_color,&pAktors->kmh_end_color,&pAktors->kmh_min_value,&pAktors->kmh_max_value,300,button_state, PSTR("Speed"),PSTR("km\h"),1,false);
+	} else if(floor(state/10)==642 || floor(state/100)==642 ||floor(state/1000)==642){
+		color_select_menu(642,&pAktors->kmh_start_color,&pAktors->kmh_end_color,&pAktors->kmh_min_value,&pAktors->kmh_max_value,300,button_state, PSTR("Speed"),PSTR("km\h"),1,false);
 
 		/////////////////////// rpm based color fade ///////////////////
-	} else if(floor(state/10)==653 || floor(state/100)==653 || floor(state/1000)==653){
-		color_select_menu(653,&pAktors->dz_start_color,&pAktors->dz_end_color,&pAktors->dz_min_value,&pAktors->dz_max_value,150,button_state,PSTR("RPM*100"), PSTR("RPM"),2,false);
+	} else if(floor(state/10)==643 || floor(state/100)==643 || floor(state/1000)==643){
+		color_select_menu(643,&pAktors->dz_start_color,&pAktors->dz_end_color,&pAktors->dz_min_value,&pAktors->dz_max_value,150,button_state,PSTR("RPM*100"), PSTR("RPM"),2,false);
 
 		/////////////////////// oil based color fade ///////////////////
-	} else if(floor(state/10)==654 || floor(state/100)==654 || floor(state/1000)==654){
-		color_select_menu(654,&pAktors->oil_start_color,&pAktors->oil_end_color,&pAktors->oil_min_value,&pAktors->oil_max_value,150,button_state, PSTR("Oil"),PSTR("TMP"),3,false);
+	} else if(floor(state/10)==644 || floor(state/100)==644 || floor(state/1000)==644){
+		color_select_menu(644,&pAktors->oil_start_color,&pAktors->oil_end_color,&pAktors->oil_min_value,&pAktors->oil_max_value,150,button_state, PSTR("Oil"),PSTR("TMP"),3,false);
 
 		/////////////////////// water based color fade ///////////////////
-	} else if(floor(state/10)==655 || floor(state/100)==655 || floor(state/1000)==655){
-		color_select_menu(655,&pAktors->water_start_color,&pAktors->water_end_color,&pAktors->water_min_value,&pAktors->water_max_value,150,button_state, PSTR("Water"),PSTR("TMP"),4,false);
+	} else if(floor(state/10)==645 || floor(state/100)==645 || floor(state/1000)==645){
+		color_select_menu(645,&pAktors->water_start_color,&pAktors->water_end_color,&pAktors->water_min_value,&pAktors->water_max_value,150,button_state, PSTR("Water"),PSTR("TMP"),4,false);
 
 		///////////////////////// set bt pin ///////////////////////////
 	} else if(floor(state/10)==67){
@@ -1285,10 +1285,17 @@ void speedo_menu::popup(const char *first,const char *second){
 
 ///// ein text menü zeichnen ////////////
 void speedo_menu::draw(const char** menu, int entries){
-	int   level_1=(state/10)%10;
-	if(floor(state/10)==62){
-		level_1=(state/100)%10;
+	//show "main menu" in mainmenu (state < 10 )
+	//otherwise, show caption of the particular menu
+	int level_1=state;
+	if(level_1>10){
+		while(level_1>=10){
+			level_1/=10;
+		};
+	} else {
+		level_1=0;
 	}
+
 
 	if(MENU_DEBUG){
 		Serial.print("Bin im menue, menu_marker:");

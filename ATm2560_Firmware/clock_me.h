@@ -42,7 +42,7 @@ public:
 	//void store();
 	int getdate();
 	unsigned long get_long_date();
-	void set_date_time(int year,int mon,int day,int hh,int mm,int ss);
+	void set_date_time(int year,int mon,int day,int hh,int mm,int ss, bool check_winter);
 	unsigned int is_winter_time(unsigned int year,unsigned int month,unsigned int day,unsigned int hour,unsigned int minute,unsigned int second);
 	short int get_ss();
 	void inc();

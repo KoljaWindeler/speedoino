@@ -46,7 +46,7 @@ char speedo_clock::bcdToDec(char val)
 	return ( (val/16*10) + (val%16) );
 }
 
-void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss){
+void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss, bool check_winter){
 	if(CLOCK_DEBUG && false){ // das schon brutal nervige 1hz meldung
 		Serial.println("Setting Clock:");
 		char *char_buffer;
@@ -68,23 +68,25 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss){
 	if(year>-1){ m_year=year; };
 
 	// berechnung der Winterzeit mit Rohdaten
-	if(is_winter_time(m_year,m_mon,m_day,m_hh,m_mm,m_ss)){ // ist winterzeit?
-		static  const uint8_t monthDays[]={31,28,31,30,31,30,31,31,30,31,30,31}; // API starts months from 1, this array starts from 0
-		// nachziehen
-		m_hh++;
-		if(m_hh>23){
-			m_day++;
-			m_hh=m_hh%24;
-			if(m_day>monthDays[m_mon-1]){
-				m_day=m_day%monthDays[m_mon-1];
-				m_mon++;
-				if(m_mon>12){
-					// wer fährt denn bitte an sylvester?
-					m_year++;
-					m_mon=m_mon%12;
+	if(check_winter){
+		if(is_winter_time(m_year,m_mon,m_day,m_hh,m_mm,m_ss)){ // ist winterzeit?
+			static  const uint8_t monthDays[]={31,28,31,30,31,30,31,31,30,31,30,31}; // API starts months from 1, this array starts from 0
+			// nachziehen
+			m_hh++;
+			if(m_hh>23){
+				m_day++;
+				m_hh=m_hh%24;
+				if(m_day>monthDays[m_mon-1]){
+					m_day=m_day%monthDays[m_mon-1];
+					m_mon++;
+					if(m_mon>12){
+						// wer fährt denn bitte an sylvester?
+						m_year++;
+						m_mon=m_mon%12;
+					};
 				};
-			};
-		}
+			}
+		};
 	};
 };
 
@@ -92,7 +94,7 @@ unsigned int speedo_clock::is_winter_time(unsigned int year,unsigned int month,u
 	// note year argument is offset from 1970 (see macros in time.h to convert to other formats)
 	// previous version used full four digit year (or digits since 2000),i.e. 2009 was 2009 or 9
 
-	int i,DST;
+	unsigned int i,DST;
 	unsigned long seconds;
 	// leap year calulator expects year argument as years offset from 1970
 
@@ -125,7 +127,6 @@ unsigned int speedo_clock::is_winter_time(unsigned int year,unsigned int month,u
 	//seconds+= second;
 	hour+=GMT_TIME_CORRECTION;
 	unsigned int weekday= (seconds / SECS_PER_DAY + 4) % 7;
-
 
 	// Sommerzeit berechnen
 	if (month < 3 || month > 10) {// 11, 12, 1 und 2 haben keine Sommerzeit

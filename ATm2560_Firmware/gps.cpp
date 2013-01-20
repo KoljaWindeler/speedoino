@@ -281,7 +281,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		// Uhr stellen
 		int temp_mon=int(floor(temp_gps_date/100))%100;
 		int temp_day=floor(temp_gps_date/10000);
-		if(first_dataset || status=='A'){
+		if(first_dataset || status=='A'){ // wenn die daten gültig sind oder es der erste datensatz ist
 
 			pSensors->m_clock->set_date_time(
 					int(temp_gps_date-temp_mon*100-temp_day*10000)%100,
@@ -289,7 +289,8 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 					temp_day,
 					int(floor(temp_gps_time/10000))%24,
 					int(floor(temp_gps_time/100))%100,
-					temp_gps_time%100
+					temp_gps_time%100,
+					first_dataset
 			);
 			if(first_dataset){
 				pConfig->day_trip_check();
@@ -711,12 +712,18 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 	byte tempByte = (navi_point & 0xFF);
 	eeprom_write_byte((uint8_t *)147,tempByte);
 
-	if(NAVI_DEBUG){ pDebug->sprintlnp(PSTR("Versuche NAVI.SMF zu oeffnen")); };
+	//////////// DEBUG /////////////////
+	if(NAVI_DEBUG){
+		pDebug->sprintlnp(PSTR("Versuche NAVI.SMF zu oeffnen"));
+		pConfig->ram_info();
+	};
+	//////////// DEBUG /////////////////
 
 	SdFile root;
 	SdFile file;
 	SdFile subdir;
 	root.openRoot(&pSD->volume);
+
 	if(!subdir.open(&root, NAVI_FOLDER, O_READ)) {
 		pSD->sd_failed=true;
 		pDebug->sprintlnp(PSTR("open subdir /config failed"));
@@ -727,6 +734,14 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 	else memset(navi_filename,'\0',13);
 
 	sprintf(navi_filename,"NAVI%i.SMF",active_file%100);
+
+	//////////// DEBUG /////////////////
+	if(NAVI_DEBUG){
+		Serial.println(navi_filename);
+		pDebug->sprintp(PSTR("Punkt:"));
+		Serial.println(navi_point);
+	};
+	//////////// DEBUG /////////////////
 
 	if(file.open(&subdir, navi_filename, O_READ)) {
 		int16_t n,i;
@@ -762,7 +777,9 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 		subdir.close();
 		root.close();
 
+		//////////// DEBUG /////////////////
 		if(NAVI_DEBUG){ Serial.print(zeile); pDebug->sprintlnp(PSTR(" Datensaetze durchsucht.")); };
+		//////////// DEBUG /////////////////
 
 		if (found) { 							// is set to true in previous
 			navi_ziel_lati=0;
@@ -783,23 +800,33 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 
 			// r oder l oder g
 			navi_ziel_rl=int(buf[20])-48;
+
+			//////////// DEBUG /////////////////
 			if(NAVI_DEBUG){
 				pDebug->sprintp(PSTR("Long: ")); Serial.print(navi_ziel_long); pDebug->sprintp(PSTR(" lati: ")); Serial.print(navi_ziel_lati);
 				pDebug->sprintp(PSTR(" name: ")); Serial.print(navi_ziel_name);
 				pDebug->sprintp(PSTR(" rlg: ")); Serial.println(navi_ziel_rl);
 			};
+			//////////// DEBUG /////////////////
 		} else {			// cool file handle
+
+			//////////// DEBUG /////////////////
 			if(NAVI_DEBUG){ pDebug->sprintlnp(PSTR("soviele punkte gibbet nicht")); };
-			navi_point--;
+			//////////// DEBUG /////////////////
+
+			navi_point=zeile-2; // set to max
 			if(navi_point<0) navi_point=0;
 			generate_new_order(); // das hier ist das zurücksetzen, wenn man über den letzten Punkt hinweg klickt
 		};
 
 	} else { // sd datei nicht gefunden
 		sprintf(navi_ziel_name,"SD failed!");
+
+		//////////// DEBUG /////////////////
 		if(SD_DEBUG){
 			pDebug->sprintlnp(PSTR("Konnte Navigations Daten nicht laden"));
 		};
+		//////////// DEBUG /////////////////
 	};
 };
 
