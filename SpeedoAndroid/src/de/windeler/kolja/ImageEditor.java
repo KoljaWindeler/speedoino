@@ -3,18 +3,25 @@ package de.windeler.kolja;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 
 import android.R.string;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
@@ -61,7 +68,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 		image_filename = (EditText)findViewById(R.id.image_filename);
 		String cleaned_filename = filename.substring(filename.lastIndexOf('/')+1).replaceAll("(?:[^a-z0-9A-Z]|(?<=['\"])s)","");
-		
+
 		int length_of_substring=cleaned_filename.length()-3; // "IAVjpg"
 		if(length_of_substring>8){
 			length_of_substring=8;
@@ -109,18 +116,37 @@ public class ImageEditor extends Activity implements OnClickListener{
 		}); // add text change listener
 
 	}
-	
+
 	public void show_preview(String filename) throws IOException{
-		FileInputStream in;
-		BufferedInputStream buf;	
-		
+		FileInputStream in,in_size;
+		BufferedInputStream buf,buf_size;	
+
+		in_size = new FileInputStream(filename);
 		in = new FileInputStream(filename);
+		buf_size = new BufferedInputStream(in_size);
 		buf = new BufferedInputStream(in);
-		Bitmap bMap = BitmapFactory.decodeStream(buf);
+
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeStream(buf_size,null,options);
+		int imageHeight = options.outHeight;
+		int imageWidth = options.outWidth;
+
+
+		Bitmap bMap;
+		if(imageHeight > 256 && imageWidth> 512){
+			BitmapFactory.Options opts= new BitmapFactory.Options();
+			opts.inSampleSize=4;
+			bMap = BitmapFactory.decodeStream(buf,null,opts);
+		}	else {
+			bMap = BitmapFactory.decodeStream(buf);
+		}
+
 		ImageView image = (ImageView) findViewById(R.id.imageSpeedoPreview);
-		
+
 		if(bMap!=null){			 
 			Bitmap bMapScaled = Bitmap.createScaledBitmap(bMap, 128, 64, true);
+			bMapScaled=convertToMutable(bMapScaled);
 			int gs=0;
 
 			for(int y=0; y<bMapScaled.getHeight(); y++){
@@ -168,16 +194,16 @@ public class ImageEditor extends Activity implements OnClickListener{
 			buf.close();
 		}
 	}
-	
+
 	public void convert_image(String filename_in, String filename_out, Integer warning, boolean append) throws IOException{
 		FileInputStream in;
 		BufferedInputStream buf;
-		
+
 		in = new FileInputStream(filename_in);
 		FileOutputStream out = null;
 		buf = new BufferedInputStream(in);
 		Bitmap bMap = BitmapFactory.decodeStream(buf);
-		
+
 		if(bMap!=null){			 
 			Bitmap bMapScaled = Bitmap.createScaledBitmap(bMap, 128, 64, true);
 			int gs=0;
@@ -205,11 +231,11 @@ public class ImageEditor extends Activity implements OnClickListener{
 					}
 				};
 			};
-			
+
 			out = new FileOutputStream(filename_out,append);	
 			out.write(converted_image_buffer,0,converted_image_buffer.length);
 			out.close();
-			
+
 		} else if (warning==1) { // image konnte nicht geöffnet werden
 			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 			alertDialog.setTitle("Warning");
@@ -241,7 +267,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 			// open File
 			String result_filename = basedir+image_filename.getText().toString()+".sgf";				// 
 			String input_filename = getIntent().getStringExtra(INPUT_FILE_NAME);
-			
+
 			// check if there are more images with the same name
 			int animation_frames=0;
 			String filename_wihtout_ext=input_filename.substring(0, input_filename.lastIndexOf("."));
@@ -249,8 +275,8 @@ public class ImageEditor extends Activity implements OnClickListener{
 			Log.i("JKW","Check filename:"+filename_wihtout_ext);
 			boolean upload_animation=false;
 			if(filename_wihtout_ext.endsWith("0")){
-				
-				
+
+
 				//File file = getContext().getFileStreamPath(filename.substring(0, filename.length()-2));
 				File file = new File(filename_wihtout_ext.substring(0,filename_wihtout_ext.length()-1)+String.valueOf(animation_frames)+ext);
 
@@ -259,23 +285,23 @@ public class ImageEditor extends Activity implements OnClickListener{
 					file = new File(filename_wihtout_ext.substring(0,filename_wihtout_ext.length()-1)+String.valueOf(animation_frames)+ext);
 				}
 				animation_frames--; // einmal zurück, letzten gabs nicht mehr
-				
+
 				// show dialog
-//				AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-//				alertDialog.setTitle("Warning");
-//				alertDialog.setMessage("found an animation, upload full animation?");
-//				alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
-//					@Override
-//					public void onClick(DialogInterface arg0, int arg1) {	
-//						//upload_animation=true;	
-//						finish();
-//						}});
-//				alertDialog.show();
+				//				AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+				//				alertDialog.setTitle("Warning");
+				//				alertDialog.setMessage("found an animation, upload full animation?");
+				//				alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
+				//					@Override
+				//					public void onClick(DialogInterface arg0, int arg1) {	
+				//						//upload_animation=true;	
+				//						finish();
+				//						}});
+				//				alertDialog.show();
 				show_toast("Animation found, converting and uploading complete animation");
 				upload_animation=true;
 				// show dialog
 			} 
-			
+
 			if(upload_animation){
 				for(int i=0;i<=animation_frames;i++){
 					String input_filename_convert=filename_wihtout_ext.substring(0,filename_wihtout_ext.length()-1)+String.valueOf(i)+ext;
@@ -286,7 +312,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 				try {						convert_image(input_filename, result_filename, 1,false);	} 
 				catch (IOException e) {		e.printStackTrace();								};
 			};
- 
+
 
 			Log.i("JKW","Aus dem ImageEditor gebe ich den Dateinamen "+result_filename+" zurück");
 			getIntent().putExtra(OUTPUT_FILE_PATH,result_filename);
@@ -299,4 +325,52 @@ public class ImageEditor extends Activity implements OnClickListener{
 			break;
 		};
 	};
+
+
+
+	public static Bitmap convertToMutable(Bitmap imgIn) {
+		try {
+			//this is the file going to use temporally to save the bytes. 
+			// This file will not be a image, it will store the raw image data.
+			File file = new File(Environment.getExternalStorageDirectory() + File.separator + "temp.tmp");
+
+			//Open an RandomAccessFile
+			//Make sure you have added uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+			//into AndroidManifest.xml file
+			RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+
+			// get the width and height of the source bitmap.
+			int width = imgIn.getWidth();
+			int height = imgIn.getHeight();
+			Config type = imgIn.getConfig();
+
+			//Copy the byte to the file
+			//Assume source bitmap loaded using options.inPreferredConfig = Config.ARGB_8888;
+			FileChannel channel = randomAccessFile.getChannel();
+			MappedByteBuffer map = channel.map(MapMode.READ_WRITE, 0, imgIn.getRowBytes()*height);
+			imgIn.copyPixelsToBuffer(map);
+			//recycle the source bitmap, this will be no longer used.
+			imgIn.recycle();
+			System.gc();// try to force the bytes from the imgIn to be released
+
+			//Create a new bitmap to load the bitmap again. Probably the memory will be available. 
+			imgIn = Bitmap.createBitmap(width, height, type);
+			map.position(0);
+			//load it back from temporary 
+			imgIn.copyPixelsFromBuffer(map);
+			//close the temporary file and channel , then delete that also
+			channel.close();
+			randomAccessFile.close();
+
+			// delete the temp file
+			file.delete();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+
+		return imgIn;
+	}
 }
