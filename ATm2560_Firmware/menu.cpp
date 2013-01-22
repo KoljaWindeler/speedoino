@@ -1293,7 +1293,7 @@ void speedo_menu::draw(const char** menu, int entries){
 			level_1/=10;
 		};
 	} else {
-		level_1=0;
+		level_1=0; // main
 	}
 
 
