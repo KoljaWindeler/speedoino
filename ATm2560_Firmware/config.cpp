@@ -40,9 +40,8 @@ int configuration::get_hw_version(){
 	// PORTC |= (1<<PC7);    /* internen Pull-Up an PC7 aktivieren */
 	PORTG |= ((1<<PG1) | (1<<PG0));
 	PORTC |= ((1<<PC0));
-
 	// read inputs
-	return_value=6 + (int)(not( 0x00 | ((PINC & (1<<PC0))<<2) | ((PING & (1<<PG1))<<1) | ((PING & (1<<PG0))<<0)));
+	return_value=6 + (unsigned char)(not(PING & (1<<PG0))<<0 | not(PING & (1<<PG1))<<1 | not(PINC & (1<<PC0))<<2);
 
 	// disable all PULLUPS
 	PORTG &= ~((1<<PG1) | (1<<PG0));
