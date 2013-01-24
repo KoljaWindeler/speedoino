@@ -43,7 +43,7 @@ void Speedo_aktors::run_reset_on_ATm328(){
 
 	// tunnel mode
 	unsigned long timeout=millis();
-	while(millis()-timeout<60000){
+	while(millis()-timeout<5000){ // time out
 
 		while(true){
 			while(Serial3.available()>0){
@@ -156,7 +156,7 @@ void Speedo_aktors::init(){
 	pinMode(RGB_IN_W,OUTPUT);
 
 	// see if its a clock startup or a regular startup
-	if(pSpeedo->regular_startup || true){
+	if(pSpeedo->regular_startup){
 		// beleuchtung
 		analogWrite(RGB_IN_W,255);
 		// beleuchtung
@@ -171,6 +171,7 @@ void Speedo_aktors::init(){
 
 	// see if its a clock startup or a regular startup
 	if(pSpeedo->regular_startup){
+		set_rbg_active((int)0x0000);
 		update_outer_leds(true,true);
 	};
 
