@@ -30,7 +30,13 @@ void speedo_dz::counter(){
 	peak_count++; // läuft bis 65.536 dann auf 0
 };
 
-
+unsigned int speedo_dz::get_dz(bool exact_dz){
+	if(exact_dz){
+		return exact;
+	} else {
+		return rounded;
+	}
+}
 
 void speedo_dz::calc() {
 	///// DZ BERECHNUNG ////////
@@ -84,10 +90,10 @@ void speedo_dz::calc() {
 				rounded=exact_disp;
 			} else if(demo_mode==2){
 				if(int(floor(millis()/1000))%10<=5){
-				int dz=random(15000);
-				exact=pSensors->flatIt(dz,&dz_faktor_counter,30,exact);
-				exact_disp=exact;
-				rounded=exact_disp;
+					int dz=random(15000);
+					exact=pSensors->flatIt(dz,&dz_faktor_counter,30,exact);
+					exact_disp=exact;
+					rounded=exact_disp;
 				};
 			} else if(demo_mode==3){
 				int speed_me_up=50; // gut mit 50
