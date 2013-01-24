@@ -23,6 +23,7 @@
 
 #define TRUE 1
 #define FALSE 0
+#define DEBUG_LEDS 0
 
 /*! \brief Status flags
  */

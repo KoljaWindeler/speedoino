@@ -61,7 +61,9 @@ void reset(int spezial_down){
 		}
 
 		// 4. LED an
-		PORTD |= (1 << RST_LED);// led an
+		if(DEBUG_LEDS){
+			PORTD |= (1 << RST_LED);// led an
+		}
 
 		// 5. Warten
 		_delay_ms(200);
@@ -78,7 +80,9 @@ void reset(int spezial_down){
 		}
 
 		// 8. LED aus
-		PORTD &= ~(1 << RST_LED); // led aus
+		if(DEBUG_LEDS){
+			PORTD &= ~(1 << RST_LED); // led aus
+		}
 
 		sei(); // aktiviere interrupts
 	}
@@ -90,9 +94,9 @@ void reset(int spezial_down){
 
 void config_timer0(){
 	// Timer/Counter 0 prescaler 64 => 8Mhz 127khz
-	 TIMSK0 = (1<<TOIE0);   //Enable a timer overflow interrupt
-	 TCCR0A = 0;         //just a normal overflow
-	 TCCR0B = (1<<CS01) | (1<<CS00);   //count
+	TIMSK0 = (1<<TOIE0);   //Enable a timer overflow interrupt
+	TCCR0A = 0;         //just a normal overflow
+	TCCR0B = (1<<CS01) | (1<<CS00);   //count
 }
 
 /* overflow vom timer 0 ..
@@ -127,22 +131,26 @@ ISR(TIMER0_OVF_vect){
 
 	};
 };
-	
+
 
 // interrupt handle fuer pin-pd2, hier huengt der BT empfuenger dran
 // reagiert auf jede Flanke
 ISR(INT0_vect){
 	if(counter_bt_init<=10) counter_bt_init++;
 	if(bit_is_clear(PIND,2) && last_bt_state){ //wenn der pin low und die var high
-		// hier kuennte man die Zeit ausgebena
-		PORTD &= ~(1 << BT_LED); // led aus
+		// hier kuennte man die Zeit ausgebena#
+		if(DEBUG_LEDS){
+			PORTD &= ~(1 << BT_LED); // led aus
+		}
 		last_bt_state=0;
 		counter_bt=0;
 		if(reset_bt_running==1){ // if there was an reset, it is done by now
 			reset_bt_running=0;
 		}
 	} else if(bit_is_set(PIND,2) && !last_bt_state) { // wenn der pin high und wir vorher low waren
-		PORTD |= (1 << BT_LED);// led an
+		if(DEBUG_LEDS){
+			PORTD |= (1 << BT_LED);// led an
+		}
 		last_bt_state=1;
 		counter_bt=0;
 		if(reset_bt_running==1){ // if there was an reset, it is done by now
@@ -163,10 +171,14 @@ ISR(INT1_vect){
 	 * langsam startendes device bleibt nicht in einer resetschleife huengen, TOP ;)
 	 */
 	if(bit_is_clear(PIND,3) && last_avr_state){ // fallende flanke, sollte also low sein
-		PORTD |= (1 << AVR_LED);// led an
+		if(DEBUG_LEDS){
+			PORTD |= (1 << AVR_LED);// led an
+		}
 		last_avr_state=0;
 	} else if(bit_is_set(PIND,3) && !last_avr_state) { // wenn der pin high und wir vorher low waren
-		PORTD &= ~(1 << AVR_LED); // led aus
+		if(DEBUG_LEDS){
+			PORTD &= ~(1 << AVR_LED); // led aus
+		}
 		last_avr_state=1;
 	}
 	counter_avr=0;
