@@ -411,14 +411,15 @@ void speedo_disp::init_speedo(){
 
 	// if hardware version is above 6, there is an emergency V_BACKUP_driver for the GPS
 	// if bat is empty, inform user
-	if(pConfig->get_hw_version()>6 && pSensors->m_voltage->bat_empty){
-		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("GPS Bat empty"),3,2,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("cold fixing now"),2,3,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("this will take a min"),0,4,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
-		_delay_ms(10000);
-	}
+	// DUE TO BAT MEASUREMENT BUG IN HARDWARE NOT AVAILABLE
+//	if(pConfig->get_hw_version()>7 && pSensors->m_voltage->bat_empty && false){
+//		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
+//		pOLED->string_P(pSpeedo->default_font,PSTR("GPS Bat empty"),3,2,0,DISP_BRIGHTNESS,0);
+//		pOLED->string_P(pSpeedo->default_font,PSTR("cold fixing now"),2,3,0,DISP_BRIGHTNESS,0);
+//		pOLED->string_P(pSpeedo->default_font,PSTR("this will take a min"),0,4,0,DISP_BRIGHTNESS,0);
+//		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
+//		_delay_ms(10000);
+//	}
 
 	// if storage init failed notify as well
 	if(pSD->sd_failed){
