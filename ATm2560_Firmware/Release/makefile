@@ -103,7 +103,7 @@ clean:
 
 pre-build:
 	-@echo 'Adding Version to version.h'
-	-/home/jkw/links/Speedmaster/Firmware/version.sh /home/jkw/links/Speedmaster/Firmware/
+	-/home/jkw/links/Speedmaster/ATm2560_Firmware/version.sh /home/jkw/links/Speedmaster/ATm2560_Firmware/
 	-@echo ' '
 
 secondary-outputs: $(LSS) $(FLASH_IMAGE) $(EEPROM_IMAGE) $(SIZEDUMMY)

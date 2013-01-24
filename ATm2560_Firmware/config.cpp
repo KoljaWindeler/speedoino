@@ -1130,7 +1130,7 @@ void configuration::km_save(){
 	// debug
 	if(STORAGE_DEBUG){   pDebug->sprintp(PSTR("calling km_save"));  };
 	// debug
-	if(speed_value>0){
+	if(pSensors->m_dz->get_dz(true)>0){ // if motor is running
 		// debug
 		if(STORAGE_DEBUG){     pDebug->sprintlnp(PSTR("speed>0 => storage outdated"));    };
 		// debug

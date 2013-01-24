@@ -23,6 +23,7 @@ public:
 	void init();
 	void clear_vars();
 	bool check_vars();
+	unsigned int get_dz(bool exact_dz);
 
 	unsigned int rounded;                 // to show on display, rounded by 50
 	unsigned int exact;                 // real rotation speed
