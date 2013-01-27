@@ -1,7 +1,7 @@
-#This is an auto-generated file from (MonDay) 805
+#This is an auto-generated file from (MonDay) 126
 max_1=255;
-avg_time_1=1556560;
-trip_1=34476406;
+avg_time_1=1603602;
+trip_1=35374618;
 
 max_2=0;
 avg_time_2=0;
@@ -12,26 +12,26 @@ avg_time_3=0;
 trip_3=0;
 
 max_4=255;
-avg_time_4=112883;
-trip_4=2326624;
+avg_time_4=159925;
+trip_4=3224836;
 
-max_5=255;
-avg_time_5=11468;
-trip_5=101456;
+max_5=0;
+avg_time_5=0;
+trip_5=0;
 
-max_6=255;
-avg_time_6=11468;
-trip_6=101456;
+max_6=252;
+avg_time_6=5149;
+trip_6=129663;
 
-max_7=98;
-avg_time_7=320;
-trip_7=3864;
+max_7=64;
+avg_time_7=96;
+trip_7=1182;
 
 max_8=255;
-avg_time_8=257559;
-trip_8=8871422;
+avg_time_8=304601;
+trip_8=9769634;
 
 max_9=255;
-avg_time_9=138644;
-trip_9=4671764;
+avg_time_9=185686;
+trip_9=5569976;
 
