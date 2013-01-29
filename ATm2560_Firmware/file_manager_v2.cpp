@@ -249,8 +249,7 @@ void speedo_filemanager_v2::parse_command(){
 
 			/////////////////////////// SIGN ON ///////////////////////////////////////
 
-			if(msgBuffer[0]==CMD_SIGN_ON){
-				msgBuffer[0]	= 	CMD_SIGN_ON;
+			if(msgBuffer[0]==CMD_SIGN_ON || msgBuffer[0]==CMD_SIGN_ON_FIRMWARE){
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 				// hier irgendwie GIT_REV reinbringen, nur wie ?! darauf kann man nicht mit GIT_REV[0] zugreifen
 				char buffer[21];
