@@ -11,9 +11,12 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 
+import de.windeler.kolja.SpeedoAndroidActivity.firmwareBurnDialog;
+
 import android.R.string;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -22,8 +25,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
@@ -49,6 +55,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 	private Button mcancel;
 	private EditText image_filename;
 	private byte[] converted_image_buffer = new byte[64*64];
+	private convertImageDialog _convertImageDialog;
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +65,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 		// idea: start show_preview,
 		// if the file is an ordinary image, the preview will be shown
-		// if its no openable the exeption will be catched
+		// if its not openable the exeption will be catched
 		// and if its a gif, the gif class will split it in temp images, show the first and
 		// redirect the input filename to the temp_files
 		try {		
@@ -149,7 +156,8 @@ public class ImageEditor extends Activity implements OnClickListener{
 		if(ext.toLowerCase().equals(".gif")){
 			String filename_without_ext=filename.substring(0, filename.lastIndexOf("."));					
 			FileInputStream stream=new FileInputStream(filename);
-					
+
+			// cut it!
 			GifDecoderView status=new GifDecoderView(this, stream,filename_without_ext,outputDir.getAbsolutePath());
 			// status checken .. sollte 0 sein
 			getIntent().putExtra(INPUT_FILE_NAME,outputDir.getAbsolutePath()+filename_without_ext.substring(filename_without_ext.lastIndexOf("/")+1)+"_0.PNG");
@@ -301,22 +309,29 @@ public class ImageEditor extends Activity implements OnClickListener{
 				// show dialog
 			} 
 
+			// prepare filename
+			String convert_filename;
 			if(upload_animation){
-				for(int i=0;i<=animation_frames;i++){
-					String input_filename_convert=filename_without_ext.substring(0,filename_without_ext.length()-1)+String.valueOf(i)+ext;
-					try {						convert_image(input_filename_convert, result_filename, 1,true);	} 
-					catch (IOException e) {		e.printStackTrace();								};
-				};				
+				convert_filename=filename_without_ext.substring(0,filename_without_ext.length()-1);
+
+
+				//				for(int i=0;i<=animation_frames;i++){
+				//					input_filename_convert=filename_without_ext.substring(0,filename_without_ext.length()-1)+String.valueOf(i)+ext;
+				//					try {						convert_image(input_filename_convert, result_filename, 1,true);	} 
+				//					catch (IOException e) {		e.printStackTrace();								};
+				//				};				
 			} else {
-				try {						convert_image(input_filename, result_filename, 1,false);	} 
-				catch (IOException e) {		e.printStackTrace();								};
+				convert_filename=input_filename;
+				ext="";
+				//				try {						convert_image(input_filename, result_filename, 1,false);	} 
+				//				catch (IOException e) {		e.printStackTrace();								};
 			};
 
+			_convertImageDialog = new convertImageDialog(this);
+			_convertImageDialog.execute(convert_filename,ext,String.valueOf(animation_frames),result_filename); // warum müssen das alles strings sein?
 
-			Log.i("JKW","Aus dem ImageEditor gebe ich den Dateinamen "+result_filename+" zurück");
-			getIntent().putExtra(OUTPUT_FILE_PATH,result_filename);
-			setResult(RESULT_OK, getIntent());
-			finish();
+
+			
 			break;
 		case R.id.DiscardImageConverter:
 			setResult(RESULT_CANCELED, getIntent());
@@ -324,8 +339,6 @@ public class ImageEditor extends Activity implements OnClickListener{
 			break;
 		};
 	};
-
-
 
 	public static Bitmap convertToMutable(Bitmap imgIn) {
 		try {
@@ -373,5 +386,85 @@ public class ImageEditor extends Activity implements OnClickListener{
 		return imgIn;
 	}
 
+	
+	// This class should convert the images for us
+	// calling paramter:
+	// params[0] is the filename
+	// params[1] indicates if its a animation or a single image. IF its a animation, it holds the extension. Otherwise its empty 
+	// params[2] String casted number of frames, if animation
+	// params[3] resulting filename
+	protected class convertImageDialog extends AsyncTask<String, Integer, String> {
+		private Context context;
+		ProgressDialog dialog;
+
+		// just grap the content and prepare the dialog which will be updated
+		public convertImageDialog(Context cxt) {
+			context = cxt;
+			dialog = new ProgressDialog(context);
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			Log.i("JKW","starte convertierung");
+			try {
+				Message msg;
+				Bundle bundle;
+				String filename=params[0];
+				String extension=params[1];
+				int frames=Integer.parseInt(params[2]);
+				String result_filename=params[3];
+ 
+				// wenn er nicht leer ist, ists eine animation
+				if(!extension.equals("")){  
+					for(int i=0;i<frames;i++){
+						String input_filename_convert=filename+String.valueOf(i)+extension;
+
+						msg=mHandlerUpdate.obtainMessage();
+						bundle = new Bundle();
+						bundle.putInt("current", i);
+						bundle.putInt("total", frames);
+						msg.setData(bundle);
+						mHandlerUpdate.sendMessage(msg);
+
+						convert_image(input_filename_convert, result_filename, 1,true);
+					};
+				// a simple single image
+				} else {
+					convert_image(filename, result_filename, 1,false); 
+				}
+				
+				// close the hole app, because we are done
+				Log.i("JKW","Aus dem ImageEditor gebe ich den Dateinamen "+result_filename+" zurück");
+				getIntent().putExtra(OUTPUT_FILE_PATH,result_filename);
+				setResult(RESULT_OK, getIntent());
+				finish();
+			}
+			catch (IOException e) {		
+				e.printStackTrace();								
+			};
+
+			return "japp";
+		}
+
+		@Override
+		protected void onPreExecute() {
+			dialog.setMessage("converting image ...");
+			dialog.show();
+		};
+
+		@Override
+		protected void onPostExecute(String result) {
+			dialog.dismiss();
+		}
+
+		// the dialog updater
+		private final Handler mHandlerUpdate = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				dialog.setMessage("Converting image "+msg.getData().getInt("current")+" of "+msg.getData().getInt("total"));
+				dialog.setProgress(100*msg.getData().getInt("current")/msg.getData().getInt("total"));
+			};
+		};
+	}
 
 }
