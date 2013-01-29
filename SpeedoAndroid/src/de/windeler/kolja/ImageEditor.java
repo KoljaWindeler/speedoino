@@ -264,7 +264,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 			String basedir = getIntent().getStringExtra(INPUT_DIR_PATH);
 			// open File
-			String result_filename = basedir+image_filename.getText().toString()+".sgf";				// 
+			String result_filename = basedir+image_filename.getText().toString()+".sgf";
 			String input_filename = getIntent().getStringExtra(INPUT_FILE_NAME);
 
 			// check if there are more images with the same name

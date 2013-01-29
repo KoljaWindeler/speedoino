@@ -521,6 +521,7 @@ public class BluetoothSerialService {
 				e.printStackTrace();
 			}
 			if(return_value>0){
+				Log.i(TAG_SEM,"Kolja 11: Break");
 				break;
 			}
 
@@ -537,7 +538,7 @@ public class BluetoothSerialService {
 			semaphore.release();
 
 			if(status==ST_EMERGENCY_RELEASE){
-				Log.i(TAG_LOGIN,"send_save notfall release");
+				Log.i(TAG_LOGIN,"Kolja 11:send_save notfall release");
 				// hier sowas wie: 
 				failCounter++;
 				if(failCounter>=retries){
@@ -545,7 +546,7 @@ public class BluetoothSerialService {
 					break;
 				}
 			} else { 	
-				Log.i(TAG_LOGIN,"answere received");
+				Log.i(TAG_LOGIN,"Kolja 11:answere received");
 				return_value=0;
 				break;
 			}
@@ -573,14 +574,15 @@ public class BluetoothSerialService {
 			return 1;
 		}
 
-		Log.i(TAG_SEM,"BT Telegramm will starten, warte auf den semaphore");
+		Log.i(TAG_SEM,"Kolja 11: BT Telegramm will starten, warte auf den semaphore");
 		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
 		semaphore.acquire(1);
-		Log.i(TAG_SEM,"send hat den semaphore");
+		Log.i(TAG_SEM,"Kolja 11: send hat den semaphore");
 
 		// da der Tacho, nach 2sek den fast response mode verlaesst, muessen wir die seq neu zaehlen
-		if(System.currentTimeMillis()-lastSend>time || data[0]==CMD_SIGN_ON || data[0]==CMD_RESET_SMALL_AVR){
+		if(System.currentTimeMillis()-lastSend>time || data[0]==CMD_SIGN_ON || data[0]==CMD_SIGN_ON_FIRMWARE || data[0]==CMD_RESET_SMALL_AVR){
 			reset_seq();
+			Log.i(TAG_SEM,"Kolja 11: reset seq nr");
 		}
 
 		seqNum=(seqNum+1)%256; // wir starten mit 0 und setzten im notfall auch zu 0 zurueck, daher immer VOR dem senden inkrementieren
@@ -628,7 +630,7 @@ public class BluetoothSerialService {
 			return 0;
 
 		} else {
-			Log.i(TAG,"State nicht IDLE");
+			Log.i(TAG,"Kolja 11:State nicht IDLE");
 			return 2;
 		}
 	};
@@ -638,12 +640,11 @@ public class BluetoothSerialService {
 			if(rx_tx_state!=ST_IDLE){
 				rx_tx_state=ST_IDLE;
 				reset_seq();
-				Log.i(TAG,"timer notfall, gebe semaphore zurueck");
+				Log.i(TAG,"Kolja 11:timer notfall, gebe semaphore zurueck");
 				Log.i(TAG_RECV,"timer notfall, gebe semaphore zurueck");
-				semaphore.release();
-				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei durch notfall");
-				Log.i(TAG_SEM,"Notfall timer hat den semaphore zurueck gegeben");
 				status=ST_EMERGENCY_RELEASE;
+				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei durch notfall");
+				Log.i(TAG_SEM,"Kolja 11:Notfall timer hat den semaphore zurueck gegeben");
 				Log.i(TAG,"schreibe status:"+String.valueOf(status));
 
 				if(!silent){
@@ -653,6 +654,7 @@ public class BluetoothSerialService {
 					msg.setData(bundle);
 					mHandler.sendMessage(msg);
 				}
+				semaphore.release(); // als letztes !!
 			};
 		}
 	};
@@ -742,6 +744,7 @@ public class BluetoothSerialService {
 
 				switch((msgBuffer[0])){
 				case CMD_SIGN_ON:
+				case CMD_SIGN_ON_FIRMWARE:
 					// hier jetzt in unsere oberflche die id eintragen
 					if((msgBuffer[1] & 0xff)==STATUS_CMD_OK){
 						String str = new String(msgBuffer);
