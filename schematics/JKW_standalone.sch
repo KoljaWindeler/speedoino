@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -6766,9 +6766,9 @@ Various common sizes : AA, AAA, 20mm coin cell and 12mm coin cell.</description>
 <text x="-3" y="3.6" size="1.27" layer="25">&gt;Name</text>
 </package>
 <package name="SMD_DRUCKTASTER">
-<smd name="OUT1" x="-4.4017375" y="-1.21975625" dx="1.55" dy="1.3" layer="1" rot="R45"/>
+<smd name="IN2" x="-4.4017375" y="-1.21975625" dx="1.55" dy="1.3" layer="1" rot="R45"/>
 <smd name="IN" x="1.21975625" y="4.4017375" dx="1.55" dy="1.3" layer="1" rot="R45"/>
-<smd name="OUT2" x="-1.21975625" y="-4.4017375" dx="1.55" dy="1.3" layer="1" rot="R45"/>
+<smd name="OUT" x="-1.21975625" y="-4.4017375" dx="1.55" dy="1.3" layer="1" rot="R45"/>
 <wire x1="-4.384059375" y1="0" x2="0" y2="4.384059375" width="0.127" layer="21"/>
 <wire x1="0" y1="4.384059375" x2="4.384059375" y2="0" width="0.127" layer="21"/>
 <wire x1="4.384059375" y1="0" x2="0" y2="-4.384059375" width="0.127" layer="21"/>
@@ -7700,7 +7700,7 @@ Mentor SMD Drucktaster 12 V/DC 50 mA Serie 1254 1254.1307  5.2N
 </devices>
 </deviceset>
 <deviceset name="C_SMD_SMP">
-<description>Mouser:140-VEJ221M1CTR0607</description>
+<description>Mouser:667-EEE-1CA331UP</description>
 <gates>
 <gate name="G$1" symbol="C_SMT_SMD" x="0" y="0"/>
 </gates>
@@ -7723,8 +7723,8 @@ Mentor SMD Drucktaster 12 V/DC 50 mA Serie 1254 1254.1307  5.2N
 <devices>
 <device name="" package="SMD_DRUCKTASTER">
 <connects>
-<connect gate="G$1" pin="IN" pad="IN"/>
-<connect gate="G$1" pin="OUT" pad="OUT1"/>
+<connect gate="G$1" pin="IN" pad="IN IN2"/>
+<connect gate="G$1" pin="OUT" pad="OUT"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -23213,7 +23213,7 @@ www.irf.com&lt;p&gt;
 <part name="R_HB5" library="RCLDT" deviceset="R" device="0805" value="600R"/>
 <part name="R_OIL_OV1" library="RCLDT" deviceset="R" device="0805" value="1k"/>
 <part name="U$22" library="Kolja" deviceset="CLM4B-RKW-CWAXBAA3" device=""/>
-<part name="R_L3" library="RCLDT" deviceset="R" device="0805" value="1k"/>
+<part name="R_L3" library="RCLDT" deviceset="R" device="0805" value="10k"/>
 <part name="SUPPLY22" library="supply2" deviceset="VDD" device=""/>
 <part name="U$1" library="Kolja" deviceset="ATMEGA328P-AU" device=""/>
 <part name="16MHZ1" library="XT" deviceset="XT" device="-HC49-SMD" value="16Mhz"/>
@@ -23427,6 +23427,7 @@ www.irf.com&lt;p&gt;
 <text x="-137.16" y="-15.24" size="1.778" layer="91">Bluetooth toggle</text>
 <text x="-144.78" y="-20.32" size="1.778" layer="91">V meas</text>
 <text x="76.2" y="71.12" size="1.778" layer="91">there is a Diode at the Port to protect it against the 12V</text>
+<text x="259.08" y="99.06" size="5.08" layer="91" rot="R90">TODO</text>
 </plain>
 <instances>
 <instance part="IC1" gate="A" x="58.42" y="180.34" rot="R180"/>
@@ -23915,7 +23916,7 @@ www.irf.com&lt;p&gt;
 <instance part="R_OIL_OV1" gate="G$1" x="58.42" y="139.7" rot="R180"/>
 <instance part="U$22" gate="G$1" x="35.56" y="-76.2"/>
 <instance part="R_L3" gate="G$1" x="-142.24" y="53.34" smashed="yes">
-<attribute name="VALUE" x="-132.08" y="53.975" size="1.778" layer="96" rot="R180"/>
+<attribute name="VALUE" x="-139.7" y="56.515" size="1.778" layer="96" rot="R180"/>
 </instance>
 <instance part="SUPPLY22" gate="G$1" x="-149.86" y="60.96"/>
 <instance part="U$1" gate="G$1" x="-193.04" y="-7.62"/>
@@ -25341,23 +25342,8 @@ www.irf.com&lt;p&gt;
 <label x="350.52" y="233.68" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="GPS" gate="G$1" pin="VBACKUP"/>
-<wire x1="251.46" y1="162.56" x2="292.1" y2="162.56" width="0.1524" layer="91"/>
-<pinref part="GPS_D2" gate="G$1" pin="C"/>
-<wire x1="241.3" y1="104.14" x2="241.3" y2="96.52" width="0.1524" layer="91"/>
-<wire x1="251.46" y1="104.14" x2="241.3" y2="104.14" width="0.1524" layer="91"/>
-<junction x="251.46" y="104.14"/>
-<pinref part="D15" gate="G$1" pin="C"/>
-<wire x1="251.46" y1="96.52" x2="251.46" y2="104.14" width="0.1524" layer="91"/>
-<wire x1="251.46" y1="104.14" x2="259.08" y2="104.14" width="0.1524" layer="91"/>
 <wire x1="259.08" y1="104.14" x2="259.08" y2="68.58" width="0.1524" layer="91"/>
 <label x="259.08" y="73.66" size="1.778" layer="95" rot="R90"/>
-<wire x1="251.46" y1="162.56" x2="251.46" y2="114.3" width="0.1524" layer="91"/>
-<wire x1="251.46" y1="114.3" x2="251.46" y2="104.14" width="0.1524" layer="91"/>
-<wire x1="251.46" y1="114.3" x2="231.14" y2="114.3" width="0.1524" layer="91"/>
-<pinref part="GPS_C2" gate="C" pin="1"/>
-<wire x1="231.14" y1="114.3" x2="231.14" y2="109.22" width="0.1524" layer="91"/>
-<junction x="251.46" y="114.3"/>
 </segment>
 </net>
 <net name="D6" class="0">
@@ -27632,6 +27618,24 @@ www.irf.com&lt;p&gt;
 <pinref part="T_P_BRIDGE" gate="G$1" pin="G"/>
 <pinref part="R_DEAKT_DAUER_P2" gate="G$1" pin="2"/>
 <wire x1="58.42" y1="86.36" x2="58.42" y2="81.28" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="V_BAT" class="0">
+<segment>
+<pinref part="GPS" gate="G$1" pin="VBACKUP"/>
+<wire x1="251.46" y1="162.56" x2="292.1" y2="162.56" width="0.1524" layer="91"/>
+<pinref part="GPS_D2" gate="G$1" pin="C"/>
+<wire x1="241.3" y1="104.14" x2="241.3" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="251.46" y1="104.14" x2="241.3" y2="104.14" width="0.1524" layer="91"/>
+<junction x="251.46" y="104.14"/>
+<pinref part="D15" gate="G$1" pin="C"/>
+<wire x1="251.46" y1="96.52" x2="251.46" y2="104.14" width="0.1524" layer="91"/>
+<wire x1="251.46" y1="162.56" x2="251.46" y2="114.3" width="0.1524" layer="91"/>
+<wire x1="251.46" y1="114.3" x2="251.46" y2="104.14" width="0.1524" layer="91"/>
+<wire x1="251.46" y1="114.3" x2="231.14" y2="114.3" width="0.1524" layer="91"/>
+<pinref part="GPS_C2" gate="C" pin="1"/>
+<wire x1="231.14" y1="114.3" x2="231.14" y2="109.22" width="0.1524" layer="91"/>
+<junction x="251.46" y="114.3"/>
 </segment>
 </net>
 </nets>
