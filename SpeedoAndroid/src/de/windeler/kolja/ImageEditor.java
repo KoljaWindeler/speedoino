@@ -14,10 +14,12 @@ import java.nio.channels.FileChannel.MapMode;
 import android.R.string;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Bundle;
@@ -54,11 +56,30 @@ public class ImageEditor extends Activity implements OnClickListener{
 		setContentView(R.layout.image_editor_main);		
 		String filename = getIntent().getStringExtra(INPUT_FILE_NAME);
 
+		// idea: start show_preview,
+		// if the file is an ordinary image, the preview will be shown
+		// if its no openable the exeption will be catched
+		// and if its a gif, the gif class will split it in temp images, show the first and
+		// redirect the input filename to the temp_files
 		try {		
 			Log.i("JKW","kolja dein file ist:"+filename);
 			show_preview(filename);
 		} catch (Exception e) {
 			Log.e("Error reading file", e.toString());
+			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+			alertDialog.setTitle("Warning");
+			alertDialog.setMessage("Could not open file as image! Upload anyway?");
+			alertDialog.setButton("Yes",new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {	 
+					getIntent().putExtra(OUTPUT_FILE_PATH,getIntent().getStringExtra(INPUT_FILE_NAME));
+					setResult(RESULT_OK, getIntent());
+					finish();
+				}});
+			alertDialog.setButton2("No",new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {	finish();	}});
+			alertDialog.show();
 		}
 
 		mSave = (Button) findViewById(R.id.SaveImageConverter);
@@ -118,81 +139,59 @@ public class ImageEditor extends Activity implements OnClickListener{
 	}
 
 	public void show_preview(String filename) throws IOException{
-		FileInputStream in,in_size;
-		BufferedInputStream buf,buf_size;	
+		//Create temp file
+		File outputDir =  getBaseContext().getCacheDir(); // context being the Activity pointer
+		File outputFile = File.createTempFile("Speedoino", "stf", outputDir); // speedoino temp file
 
-		in_size = new FileInputStream(filename);
-		in = new FileInputStream(filename);
-		buf_size = new BufferedInputStream(in_size);
-		buf = new BufferedInputStream(in);
-
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inJustDecodeBounds = true;
-		BitmapFactory.decodeStream(buf_size,null,options);
-		int imageHeight = options.outHeight;
-		int imageWidth = options.outWidth;
-
-
-		Bitmap bMap;
-		if(imageHeight > 256 && imageWidth> 512){
-			BitmapFactory.Options opts= new BitmapFactory.Options();
-			opts.inSampleSize=4;
-			bMap = BitmapFactory.decodeStream(buf,null,opts);
-		}	else {
-			bMap = BitmapFactory.decodeStream(buf);
+		// first check if its a gif animation!
+		// if so, let the Gif Decoder cut it and redirect fileinput to the temp files
+		String ext=filename.substring(filename.lastIndexOf("."));
+		if(ext.toLowerCase().equals(".gif")){
+			String filename_without_ext=filename.substring(0, filename.lastIndexOf("."));					
+			FileInputStream stream=new FileInputStream(filename);
+					
+			GifDecoderView status=new GifDecoderView(this, stream,filename_without_ext,outputDir.getAbsolutePath());
+			// status checken .. sollte 0 sein
+			getIntent().putExtra(INPUT_FILE_NAME,outputDir.getAbsolutePath()+filename_without_ext.substring(filename_without_ext.lastIndexOf("/")+1)+"_0.PNG");
 		}
 
+
+		// let convert_image to the work and create our image
+		convert_image(filename,outputFile.getAbsolutePath(),0,false);
+
+		// open it to read the result
+		FileInputStream in=new FileInputStream(outputFile.getAbsolutePath());
+		Bitmap bMap = Bitmap.createBitmap(128, 64, Bitmap.Config.RGB_565);
 		ImageView image = (ImageView) findViewById(R.id.imageSpeedoPreview);
+		// read datablock
+		in.read(converted_image_buffer, 0, (int)(64*128*0.5)); // 64 lines, 128 cols, but just a half byte per px
+		in.close();
 
-		if(bMap!=null){			 
-			Bitmap bMapScaled = Bitmap.createScaledBitmap(bMap, 128, 64, true);
-			bMapScaled=convertToMutable(bMapScaled);
-			int gs=0;
-
-			for(int y=0; y<bMapScaled.getHeight(); y++){
-				for(int x=0;x<bMapScaled.getWidth();x++){
-					gs=((bMapScaled.getPixel(x,y)>> 16) & 0xFF)*30; // R
-					gs+=((bMapScaled.getPixel(x,y)>> 8) & 0xFF)*59; // G
-					gs+=(bMapScaled.getPixel(x,y) & 0xFF)*11; // B
-					gs/=(30+59+11);
-					gs=(int) (Math.floor(gs/16)*16);	// Reduzierung auf 16 Graustufen
-					bMapScaled.setPixel(x,y,Color.rgb(gs,gs,0)); // yellow = green+red, no blue
-				};
-			};
-
-			DisplayMetrics metrics = new DisplayMetrics();
-			Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-			display.getMetrics(metrics);
-
-
-			Matrix mat = new Matrix();
-			mat.postRotate(90);
-			Bitmap bMapRotate = Bitmap.createBitmap(bMapScaled, 0, 0, bMapScaled.getWidth(), bMapScaled.getHeight(), mat, true);
-			bMapScaled = Bitmap.createScaledBitmap(bMapRotate,(int)(display.getHeight()*0.25), (int) (display.getHeight()*0.5), true);
-
-			image.setImageBitmap(bMapScaled);
-		} else { // image konnte nicht geöffnet werden
-			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-			alertDialog.setTitle("Warning");
-			alertDialog.setMessage("Could not open file as image! Upload anyway?");
-			alertDialog.setButton("Yes",new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface arg0, int arg1) {	 
-					getIntent().putExtra(OUTPUT_FILE_PATH,getIntent().getStringExtra(INPUT_FILE_NAME));
-					setResult(RESULT_OK, getIntent());
-					finish();
-				}});
-			alertDialog.setButton2("No",new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface arg0, int arg1) {	finish();	}});
-			alertDialog.show();
+		// copy values to image
+		int x=0,y=0;
+		for(int byte_read_counter=0;byte_read_counter<64*128*0.5;byte_read_counter++){
+			int gs=(converted_image_buffer[byte_read_counter] & 0xf0);
+			bMap.setPixel(x,y,Color.rgb(gs,gs,0)); // yellow = green+red, no blue
+			gs=(converted_image_buffer[byte_read_counter] & 0xf) << 4;
+			bMap.setPixel(x+1,y,Color.rgb(gs,gs,0)); // yellow = green+red, no blue
+			x+=2;
+			if(x>127){
+				y++;
+				x=0;
+			}
 		}
-		if (in != null) {
-			in.close();
-		}
-		if (buf != null) {
-			buf.close();
-		}
+
+		// rotate image and shrink it
+		DisplayMetrics metrics = new DisplayMetrics();
+		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+		display.getMetrics(metrics);
+		Matrix mat = new Matrix();
+		mat.postRotate(90);
+		Bitmap bMapRotate = Bitmap.createBitmap(bMap, 0, 0, bMap.getWidth(), bMap.getHeight(), mat, true);
+		bMap = Bitmap.createScaledBitmap(bMapRotate,(int)(display.getHeight()*0.25), (int) (display.getHeight()*0.5), true);
+
+		// show it
+		image.setImageBitmap(bMap);
 	}
 
 	public void convert_image(String filename_in, String filename_out, Integer warning, boolean append) throws IOException{
@@ -270,19 +269,19 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 			// check if there are more images with the same name
 			int animation_frames=0;
-			String filename_wihtout_ext=input_filename.substring(0, input_filename.lastIndexOf("."));
+			String filename_without_ext=input_filename.substring(0, input_filename.lastIndexOf("."));
 			String ext=input_filename.substring(input_filename.lastIndexOf("."));
-			Log.i("JKW","Check filename:"+filename_wihtout_ext);
+			Log.i("JKW","Check filename:"+filename_without_ext);
 			boolean upload_animation=false;
-			if(filename_wihtout_ext.endsWith("0")){
+			if(filename_without_ext.endsWith("0")){
 
 
 				//File file = getContext().getFileStreamPath(filename.substring(0, filename.length()-2));
-				File file = new File(filename_wihtout_ext.substring(0,filename_wihtout_ext.length()-1)+String.valueOf(animation_frames)+ext);
+				File file = new File(filename_without_ext.substring(0,filename_without_ext.length()-1)+String.valueOf(animation_frames)+ext);
 
 				while(file.exists()){
 					animation_frames++;
-					file = new File(filename_wihtout_ext.substring(0,filename_wihtout_ext.length()-1)+String.valueOf(animation_frames)+ext);
+					file = new File(filename_without_ext.substring(0,filename_without_ext.length()-1)+String.valueOf(animation_frames)+ext);
 				}
 				animation_frames--; // einmal zurück, letzten gabs nicht mehr
 
@@ -304,7 +303,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 			if(upload_animation){
 				for(int i=0;i<=animation_frames;i++){
-					String input_filename_convert=filename_wihtout_ext.substring(0,filename_wihtout_ext.length()-1)+String.valueOf(i)+ext;
+					String input_filename_convert=filename_without_ext.substring(0,filename_without_ext.length()-1)+String.valueOf(i)+ext;
 					try {						convert_image(input_filename_convert, result_filename, 1,true);	} 
 					catch (IOException e) {		e.printStackTrace();								};
 				};				
@@ -373,4 +372,6 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 		return imgIn;
 	}
+
+
 }

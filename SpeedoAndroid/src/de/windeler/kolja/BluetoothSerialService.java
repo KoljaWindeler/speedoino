@@ -123,6 +123,7 @@ public class BluetoothSerialService {
 	public static final byte CMD_SHOW_GFX				=  0x35;
 	public static final byte CMD_FILE_RECEIVE			=  0x39;
 	public static final byte CMD_RESET_SMALL_AVR		=  0x40;
+	public static final byte CMD_SIGN_ON_FIRMWARE		=  0x41;
 
 
 	public static final char STATUS_CMD_OK      =  0x00;
@@ -248,59 +249,27 @@ public class BluetoothSerialService {
 
 		setState(STATE_CONNECTED_AND_SEARCHING);
 
+		// if we don't need the bootloader, lets connect right here to the 
+		// firmware and set the State to connected 
 		if(!goto_bootloader){
 			//wait 5 sec to prevent goint to bootloader
 			try {
-				Thread.sleep(6000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-
-			int failCounter=0;
-			final String TAG_LOGIN = "LOGIN";
-
-			//setState(STATE_CONNECTED);
-
-			while(!preamble_found){
-				byte send[] = new byte[1];
-				send[0] = CMD_SIGN_ON;
-				Log.i(TAG_LOGIN,"sign_on sendet");
-				Log.i("SEND","connected()");
-				try {
-					send(send, 1,1000); // 1000msec timeout
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					semaphore.release();
-					e.printStackTrace();
-				}
-
-				// dadurch das wir nur einen semaphor token haben, und den schon send hat m?ssen wir hier warten
-				// bis a) receive den frei gibt oder b) der timer, dann bekommen wir den und k?nnen den gleich zur?ck
-				// geben, wir wollen ja nur solange gebremst werden.
-				Log.i(TAG_SEM,"connected thread wartet");
-				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
-				silent=true; // kein popup, da wir durchaus mal 1...2... timeouts abwarten müssen für den bootloader
-				semaphore.acquire();
-				semaphore.release();
-				silent=false; // popups, da normalerweise alle befehle ausgeführt werden sollten
-
-				if(status==ST_EMERGENCY_RELEASE){
-					Log.i(TAG_LOGIN,"sign_on notfall release");
-					// hier sowas wie: 
-					failCounter++;
-					if(failCounter>30){
-						Log.i(TAG_LOGIN,"sign_on mehr als 30 versuche");
-						setState(STATE_NONE);
-						break;
-					}
-				} else { 
-					setState(STATE_CONNECTED);
-					Log.i(TAG_LOGIN,"sign_on done");
-					break;
-				}
+			// check if connected
+			silent=true; // kein popup, da wir durchaus mal 1...2... timeouts abwarten müssen für den bootloader
+			byte send[] = new byte[1];
+			send[0] = CMD_SIGN_ON_FIRMWARE;
+			if(send_save(send,1,400,30)==0){
+				setState(STATE_CONNECTED);
+			} else {
+				setState(STATE_NONE);
 			}
+			silent=false;
 		}
 	}
 
@@ -593,7 +562,7 @@ public class BluetoothSerialService {
 		byte 	c[] = {0};
 		byte 	p[] = {0};
 		// nur senden, wenn wir nicht gerade was empfangen
-		if(getState()!=STATE_CONNECTED && data[0]!=CMD_SIGN_ON && data[0]!=CMD_RESET_SMALL_AVR){
+		if(getState()!=STATE_CONNECTED && data[0]!=CMD_SIGN_ON && data[0]!=CMD_SIGN_ON_FIRMWARE && data[0]!=CMD_RESET_SMALL_AVR){
 			Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_TOAST);
 			Bundle bundle = new Bundle();
 			bundle.putString(SpeedoAndroidActivity.TOAST, "You are not connected to a Speedoino");
@@ -1523,7 +1492,7 @@ public class BluetoothSerialService {
 				msg3.setData(bundle);
 				mHandlerUpdate.sendMessage(msg3);
 
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 			};
 			////// hier beginnt teil 2, die verbindung abbauen //////
 
@@ -1555,7 +1524,7 @@ public class BluetoothSerialService {
 				Thread.sleep(1);
 				wait_time++;
 			}
-			// now the state is STATE_CONNECTED_AND_SEARCHING or STATE_CONNECTED or STATE_NONE or STATE..?
+			// now the state is STATE_CONNECTED_AND_SEARCHING or STATE_CONNECTED or STATE_NONE
 			// it MUST be STATE_CONNECTED_AND_SEARCHING or STATE_CONNECTED to continue normal
 			if(getState()!=STATE_CONNECTED_AND_SEARCHING && getState()!=STATE_CONNECTED){
 				error=4;
@@ -1596,20 +1565,26 @@ public class BluetoothSerialService {
 					Message msg5 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 					Bundle bundle5 = new Bundle();
 
-					// wartezeit für den tacho, schlauer wäre sicherlich hier einen befehl zu senden und dann
-					// zu gucken ob der durch kommt
-//					for(int i=0; i<10; i++){
-//						bundle5.putString("msg", "Connected, sending reset to AT328 in "+String.valueOf(10-i)+" sec");
-//						bundle5.putInt("state", 4);
-//						msg5.setData(bundle5);
-//						mHandlerUpdate.sendMessage(msg5);
-//						Thread.sleep(1000); // 10 sek um den bootvorgang abzuwarten
-//					}
-					bundle5.putString("msg", "Connected, sending reset to AT328 in "+String.valueOf(10)+" sec");
+					bundle5.putString("msg", "Sending reset to AT328");
 					bundle5.putInt("state", 4);
 					msg5.setData(bundle5);
 					mHandlerUpdate.sendMessage(msg5);
-					Thread.sleep(10000); // 10 sek um den bootvorgang abzuwarten
+					
+					// wait till connection is there
+					wait_time=0; // maximal 5 sekunden darauf warten das sich der state von searching auf connected dreht
+					while( getState()!=STATE_CONNECTED && wait_time<5000){
+						Thread.sleep(1);
+						wait_time++;
+					} 
+					if(getState()!=STATE_CONNECTED){
+						error=4;
+						msg4 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+						bundle4 = new Bundle();
+						bundle4.putString("msg", "Connection not established");
+						bundle4.putInt("state", 102);
+						msg4.setData(bundle4);
+						mHandlerUpdate.sendMessage(msg4);
+					}
 
 					reset_seq(); // speedoino starts new, so we have to reset our seq as well
 					byte send2[] = new byte[300];
@@ -1617,23 +1592,23 @@ public class BluetoothSerialService {
 					Log.i("connect","sign_on sendet");
 					Log.i("SEND","upload_fileware0()");
 					if(send_save(send2, 1, 750, 15)==0){ // 750ms timeout, 15 retries, das hier wartet nochmal bis zu ~10sec
-						if(msgBuffer[1]!=STATUS_CMD_OK && false){ //!! BUG !! der Tacho geht zuerst in den Reset und würde danach erst anworten, daher wird hier nix zurück kommen :(
-							error=401;
-
-							// fortschritt schreiben
-							Bundle bundle9 = new Bundle();
-							Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-							bundle9.putString("msg", "Invalid response, quitting");
-							bundle9.putInt("state",
-									55);
-							msg9.setData(bundle9);
-							mHandlerUpdate.sendMessage(msg9);
-							Thread.sleep(3000);
-							// fortschritt schreiben
-
-							return error;
-						};
-						setState(STATE_CONNECTED);
+//						if(msgBuffer[1]!=STATUS_CMD_OK && false){ //!! BUG !! der Tacho geht zuerst in den Reset und würde danach erst anworten, daher wird hier nix zurück kommen :(
+//							error=401;
+//
+//							// fortschritt schreiben
+//							Bundle bundle9 = new Bundle();
+//							Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+//							bundle9.putString("msg", "Invalid response, quitting");
+//							bundle9.putInt("state",
+//									55);
+//							msg9.setData(bundle9);
+//							mHandlerUpdate.sendMessage(msg9);
+//							Thread.sleep(3000);
+//							// fortschritt schreiben
+//
+//							return error;
+//						};
+						//setState(STATE_CONNECTED);
 						Thread.sleep(10); // wait 10 ms
 						Log.i(TAG_LOGIN,"reset done");
 					} else {
@@ -1698,7 +1673,7 @@ public class BluetoothSerialService {
 
 				return error;
 			};
-			setState(STATE_CONNECTED);
+			setState(STATE_CONNECTED); // jep, we went to bootloader, so we need to ask on our own if there is a connection, if so, switch state here
 			Thread.sleep(10); // wait 10 ms
 			Log.i(TAG_LOGIN,"sign_on done");
 			// fortschritt schreiben
@@ -1917,7 +1892,7 @@ public class BluetoothSerialService {
 			// fortschritt schreiben
 			Bundle bundle = new Bundle();
 			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-			bundle.putString("msg", "Speedoino at "+String.valueOf(Math.floor(send_position/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/1000))+" KB");
+			bundle.putString("msg", "Speedoino at "+String.valueOf(Math.floor(send_position/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10)+" KB");
 			bundle.putInt("state", 7);
 			msg.setData(bundle);
 			mHandlerUpdate.sendMessage(msg);
