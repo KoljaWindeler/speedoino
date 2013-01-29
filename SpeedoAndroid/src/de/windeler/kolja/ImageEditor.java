@@ -416,6 +416,14 @@ public class ImageEditor extends Activity implements OnClickListener{
  
 				// wenn er nicht leer ist, ists eine animation
 				if(!extension.equals("")){  
+					
+					// check if file exists and delete it if so
+					File target_file = new File(result_filename);
+					if(target_file.exists()){
+						target_file.delete();
+					}
+					
+					// convert all files, one by one and append it
 					for(int i=0;i<frames;i++){
 						String input_filename_convert=filename+String.valueOf(i)+extension;
 
