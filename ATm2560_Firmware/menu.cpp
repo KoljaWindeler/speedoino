@@ -53,7 +53,7 @@ PROGMEM const char *menu_setup[9] = { setup_m_0,setup_m_1,setup_m_2,setup_m_3,se
 
 ///////////////////// Customize /////////////////////
 prog_char custom_m_0[] PROGMEM = "1. Load Skin";
-prog_char custom_m_1[] PROGMEM = "2. Shown trip";
+prog_char custom_m_1[] PROGMEM = "2. Add info area";
 prog_char custom_m_2[] PROGMEM = "3. Shift-Light";
 prog_char custom_m_3[] PROGMEM = "4. Speedo-Color";
 prog_char custom_m_4[] PROGMEM = "5. -";
@@ -62,6 +62,18 @@ prog_char custom_m_6[] PROGMEM = "7. Set BT PIN";
 prog_char custom_m_7[] PROGMEM = "8. -";
 prog_char custom_m_8[] PROGMEM = "9. -";
 PROGMEM const char *menu_custom[9] = { custom_m_0,custom_m_1,custom_m_2,custom_m_3,custom_m_4,custom_m_5,custom_m_6,custom_m_7,custom_m_8 };
+
+///////////////////// Customize /////////////////////
+prog_char add_info_m_0[] PROGMEM = "1. Distance";
+prog_char add_info_m_1[] PROGMEM = "2. Time";
+prog_char add_info_m_2[] PROGMEM = "3. Avg Speed";
+prog_char add_info_m_3[] PROGMEM = "4. Max Speed";
+prog_char add_info_m_4[] PROGMEM = "5. Distance & Time";
+prog_char add_info_m_5[] PROGMEM = "6. Distance & Avg";
+prog_char add_info_m_6[] PROGMEM = "7. Distance & Max";
+prog_char add_info_m_7[] PROGMEM = "8. Time & Avg";
+prog_char add_info_m_8[] PROGMEM = "9. Time & Max";
+PROGMEM const char *menu_add_info[9] = { add_info_m_0,add_info_m_1,add_info_m_2,add_info_m_3,add_info_m_4,add_info_m_5,add_info_m_6,add_info_m_7,add_info_m_8 };
 
 ///////////////////// Customize /////////////////////
 prog_char fade_m_0[] PROGMEM = "1. Static color";
@@ -579,9 +591,37 @@ void speedo_menu::display(){ // z.B. state = 26
 		update_display=true;
 	}
 	///////////////////// trip show setup //////////////////////////
+	// first the sneaky storage helper by /10
+	// first select to type of mode by /100
+	// then select the storage by /1000
 	else if(floor(state/10)==62) {
-		if(menu_preload){ // wird im Menü davor auf true gesetzt, erlaubt vorpositionieren des menüs.
-			menu_preload=false; // damit beim ändern der preload nicht ausgeführt wird.
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
+		if(	old_state==62 ){
+			state=state*10+1;
+			pSpeedo->disp_zeile_bak[2]=999; // setze auf beiden wegen den speicher zurück
+			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
+		} else {
+			back();
+			// store to SD
+			if(pConfig->storage_outdated){
+				if(pConfig->write("BASE.TXT")==0){
+					pOLED->clear_screen();
+
+					strcpy_P(char_buffer,PSTR("Save to SD card"));
+					center_me(char_buffer,21);
+					pOLED->string(pSpeedo->default_font,char_buffer,0,5);
+					strcpy_P(char_buffer,PSTR("OK"));
+					center_me(char_buffer,21);
+					pOLED->string(pSpeedo->default_font,char_buffer,0,6);
+				};
+				_delay_ms(2000);
+			};
+		};
+		update_display=true;
+	}
+	// now the "mode" selector
+	else if(floor(state/100)==62) {
+		if(floor(old_state)==62 || floor(old_state/1000)==62){ // wenn wir von unten kommen, waren wir vorher auf 62. wenn wir von oben kommen waren wir auf 62[1][Y][Z] = y ist mode, z ist storage
 			state=10*floor(state/10)+(pSpeedo->m_trip_mode%10); // state muss angepasst werden.
 			if(pSpeedo->m_trip_mode>menu_lines){  // positionierung des Markers
 				menu_marker=menu_lines-1;
@@ -595,12 +635,31 @@ void speedo_menu::display(){ // z.B. state = 26
 			};
 		}
 		else { // speichern des neuen Werts
+			pConfig->storage_outdated=true;
 			pSpeedo->m_trip_mode=state%10;
-			byte tempByte = (pSpeedo->m_trip_mode & 0xFF);
-			eeprom_write_byte((uint8_t *)2,tempByte);
+		};
+		draw(&menu_add_info[0],sizeof(menu_add_info)/sizeof(menu_add_info[0]));
+	}
+	// and now select the storage
+	else if(floor(state/1000)==62) {
+		if(floor(old_state/100)==62){ // wenn wir von unten kommen, waren wir vorher auf 62[1][y]. y ist mode
+			state=10*floor(state/10)+(pSpeedo->m_trip_storage%10); // state muss angepasst werden.
+			if(pSpeedo->m_trip_storage>menu_lines){  // positionierung des Markers
+				menu_marker=menu_lines-1;
+				menu_start=pSpeedo->m_trip_storage-menu_lines;
+				menu_ende=pSpeedo->m_trip_storage-1;
+			}
+			else {
+				menu_marker=pSpeedo->m_trip_storage-1;
+				menu_start=0;
+				menu_ende=menu_lines-1;
+			};
+		}
+		else { // speichern des neuen Werts
+			pSpeedo->m_trip_storage=state%10;
+			pConfig->storage_outdated=true;
 		};
 		draw(&menu_trip_setup[0],sizeof(menu_trip_setup)/sizeof(menu_trip_setup[0]));
-		// hier noch 2do
 	}
 	///////////////////////////// dz flasher /////////////////////////////
 	else if(floor(state/10)==63 || floor(state/100)==63) {
@@ -1287,7 +1346,7 @@ void speedo_menu::popup(const char *first,const char *second){
 void speedo_menu::draw(const char** menu, int entries){
 	//show "main menu" in mainmenu (state < 10 )
 	//otherwise, show caption of the particular menu
-	int level_1=state;
+	unsigned long level_1=state;
 	if(level_1>10){
 		while(level_1>=10){
 			level_1/=10;
@@ -1924,3 +1983,8 @@ void speedo_menu::color_select_menu(int base_state,led_simple *led_from, led_sim
 		update_display=true;
 	};
 };
+
+// just copy the name to a given array
+void speedo_menu::copy_storagename_to_chararray(int id,char* array){
+	strcpy_P(array, (char*)pgm_read_word(&(menu_trip_setup[id])));
+}
