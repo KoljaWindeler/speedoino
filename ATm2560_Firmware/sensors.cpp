@@ -96,7 +96,7 @@ void Speedo_sensors::single_read(){
 	char temp[6];
 	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/10)),int(m_voltage->get()%10));
 	Serial.print(temp);
-	pDebug->sprintp(PSTR("Done\r\nReading: Control lights ... "));
+	pDebug->sprintp(PSTR(" Done\r\nReading: Control lights ... "));
 	check_inputs();
 	pDebug->sprintlnp(PSTR(" Done\r\nSensor single read ... Done"));
 };
