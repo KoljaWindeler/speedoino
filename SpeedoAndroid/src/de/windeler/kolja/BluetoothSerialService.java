@@ -264,7 +264,7 @@ public class BluetoothSerialService {
 			silent=true; // kein popup, da wir durchaus mal 1...2... timeouts abwarten müssen für den bootloader
 			byte send[] = new byte[1];
 			send[0] = CMD_SIGN_ON_FIRMWARE;
-			if(send_save(send,1,400,30)==0){
+			if(send_save(send,1,400,60)==0){ // 24 sec versuchen
 				setState(STATE_CONNECTED);
 			} else {
 				setState(STATE_NONE);
