@@ -249,6 +249,16 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",pSensors->m_gps->active_file%10); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("mode_trip="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pSpeedo->m_trip_mode%10); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("storage_trip="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pSpeedo->m_trip_storage%10); // 12 chars max: max_=1=300\n\0
+					pSD->writeString(file, buffer);
+
 					strcpy_P(buffer, PSTR("skin_file="));
 					pSD->writeString(file, buffer);
 					sprintf(buffer,"%i\n",pConfig->skin_file%10); // 12 chars max: max_=1=300\n\0
@@ -514,7 +524,7 @@ int configuration::clear_vars(){
 	last_speed_value=0;
 	storage_outdated=false;
 	skin_file=0;
-	Serial.println("Wert initialisiert");
+	pDebug->sprintlnp(PSTR("Wert initialisiert"));
 	return 0;
 };
 
@@ -723,6 +733,10 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&pSensors->m_speed->gps_takeover);
 	} else if(strcmp_P(name,PSTR("refresh_cyle"))==0){
 		parse_int(buffer,seperator,&pSpeedo->refresh_cycle);
+	} else if(strcmp_P(name,PSTR("mode_trip"))==0){
+		parse_int(buffer,seperator,&pSpeedo->m_trip_mode);
+	} else if(strcmp_P(name,PSTR("storage_trip"))==0){
+		parse_int(buffer,seperator,&pSpeedo->m_trip_storage);
 	} else if(strcmp_P(name,PSTR("oil_widget.x"))==0){
 		parse_short(buffer,seperator,&pSpeedo->oil_widget.x);
 	} else if(strcmp_P(name,PSTR("oil_widget.y"))==0){
@@ -1212,9 +1226,6 @@ void configuration::day_trip_check(){
 
 void configuration::EEPROM_init(){
 	pDebug->sprintp(PSTR("Lade EEPROM... "));
-	//Serial.println("-> Lade KM von SD Karte");
-	pSpeedo->m_trip_mode=eeprom_read_byte((const uint8_t *)2);
-	if(pSpeedo->m_trip_mode>9 || pSpeedo->m_trip_mode<0) {    pSpeedo->m_trip_mode=1;       };
 
 	// immer reseten -> non permanent
 	pSpeedo->trip_dist[1]=0;
