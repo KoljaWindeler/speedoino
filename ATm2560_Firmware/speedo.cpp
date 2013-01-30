@@ -196,30 +196,42 @@ void speedo_speedo::loop(unsigned long previousMillis){
 
 	// see on top comment, number (3)
 	if(!(addinfo_widget.x==-1 && addinfo_widget.y==-1)){ // only show it if pos != -1/-1
-		if(unsigned(disp_zeile_bak[ADD_INFO])!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)){ // immer wenn sich trip_dist ändert den string ausgeben der direkt drüber steht, auf 0.1 km genau
+		if(unsigned(disp_zeile_bak[ADD_INFO])!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)+pSensors->m_gps->mod(floor(avg_timebase[8]/100),100)){ // immer wenn sich trip_dist ändert den string ausgeben der direkt drüber steht, auf 0.1 km genau
 			// trip[8] => gesamt/100 => 100er Meter, 27.342,8 => 28
-			disp_zeile_bak[ADD_INFO]=int(pSensors->m_gps->mod(floor(trip_dist[8]/100),100));
+			disp_zeile_bak[ADD_INFO]=int(pSensors->m_gps->mod(floor(trip_dist[8]/100),100)+pSensors->m_gps->mod(floor(avg_timebase[8]/100),100));
 
-			if(m_trip_mode==1)
-				sprintf(char_buffer,"   Total %5i.%01ikm   ",(int)floor(trip_dist[0]/1000),(int)floor((trip_dist[0]%1000)/100));
-			else if(m_trip_mode==2)
-				sprintf(char_buffer,"NonPermanent  %3i.%01ikm",(int)floor(trip_dist[1]/1000),(int)floor((trip_dist[1]%1000)/100));
-			else if(m_trip_mode==3)
-				sprintf(char_buffer,"     Day %3i.%01ikm",(int)floor(trip_dist[2]/1000),(int)floor((trip_dist[2]%1000)/100));
-			else if(m_trip_mode==4)
-				sprintf(char_buffer,"    Tour  %3i.%01ikm",(int)floor(trip_dist[3]/1000),(int)floor((trip_dist[3]%1000)/100));
-			else if(m_trip_mode==5)
-				sprintf(char_buffer,"   Quick   %3i.%01ikm",(int)floor(trip_dist[4]/1000),(int)floor((trip_dist[4]%1000)/100));
-			else if(m_trip_mode==6)
-				sprintf(char_buffer,"   Fuel     %3i.%01ikm",(int)floor(trip_dist[5]/1000),(int)floor((trip_dist[5]%1000)/100));
-			else if(m_trip_mode==7)
-				sprintf(char_buffer,"   Oiler    %3i.%01ikm",(int)floor(trip_dist[6]/1000),(int)floor((trip_dist[6]%1000)/100));
-			else if(m_trip_mode==8)
-				sprintf(char_buffer,"  Saison   %5i.%01ikm",(int)floor(trip_dist[7]/1000),(int)floor((trip_dist[7]%1000)/100));
-			else if(m_trip_mode==9)
-				sprintf(char_buffer,"   Board %5i.%01ikm",(int)floor(trip_dist[8]/1000),(int)floor((trip_dist[8]%1000)/100));
+			// temp buffer
+			unsigned long temp_trip_dist=trip_dist[m_trip_storage-1];
+			unsigned long temp_avg_timebase=avg_timebase[m_trip_storage-1];
+			int temp_max_speed=max_speed[m_trip_storage-1];
+
+
+			// copy text to char buffer
+			if(m_trip_mode<5){
+				char temp_char_array[22];
+				pMenu->copy_storagename_to_chararray(m_trip_storage-1,temp_char_array);
+				if(m_trip_mode==1){
+					sprintf(char_buffer,"%s %i.%i km",temp_char_array,(int)floor(temp_trip_dist/1000),(int)floor((temp_trip_dist%1000)/100));
+				} else if(m_trip_mode==2){
+					sprintf(char_buffer,"%s %i:%i",temp_char_array,(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60));
+				} else if(m_trip_mode==3){
+					sprintf(char_buffer,"%s %i km/h",temp_char_array,(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
+				} else if(m_trip_mode==4){
+					sprintf(char_buffer,"%s %i km/h",temp_char_array,(int)temp_max_speed);
+				}
+			} else if(m_trip_mode==5){
+
+			} else if(m_trip_mode==6){
+			} else if(m_trip_mode==7){
+			} else if(m_trip_mode==8){
+			} else if(m_trip_mode==9){
+			}
+
+
+			pMenu->center_me(char_buffer,21);
 			pDebug->speedo_loop(16,0,previousMillis,(char *)" ");
-			pOLED->string(addinfo_widget.font,char_buffer,addinfo_widget.x,addinfo_widget.y,0,DISP_BRIGHTNESS,0);
+			//pOLED->string(addinfo_widget.font,char_buffer,addinfo_widget.x,addinfo_widget.y,0,DISP_BRIGHTNESS,0);
+			pOLED->string(addinfo_widget.font,char_buffer,0,addinfo_widget.y,0,DISP_BRIGHTNESS,0);
 		};
 	};
 	if(!(addinfo2_widget.x==-1 && addinfo2_widget.y==-1)){ // only show it if pos != -1/-1
@@ -262,6 +274,16 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				pDebug->speedo_loop(11,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
 				pOLED->string_P(addinfo2_widget.font,PSTR("Blinker vergessen"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+			};
+
+		}
+		///// Voltage ////
+		else if(pSensors->m_voltage->get()<110){ // less than 11.0 Volts
+			if(disp_zeile_bak[ADD_INFO2]!=111){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=111;
+				pDebug->speedo_loop(11,0,previousMillis," ");
+				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
+				pOLED->string_P(addinfo2_widget.font,PSTR("Voltage below 11V"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
 			};
 
 		}
@@ -406,6 +428,8 @@ void speedo_speedo::loop(unsigned long previousMillis){
 
 void speedo_speedo::clear_vars(){
 	refresh_cycle=-1; // anzahl an ms nachdem der haupttacho gecleared wird
+	m_trip_mode=-1;
+	m_trip_storage=-1;
 	// Startup sequenz im Tacho
 	memset(pOLED->startup,'\0',200);
 	sprintf(pOLED->startup,"ERROR,0,0,0;");
@@ -474,4 +498,12 @@ void speedo_speedo::check_vars(){
 		// skinning
 	}
 
+	// fix trip vars if needed
+	if(m_trip_mode<0){
+		m_trip_mode=1;
+	}
+
+	if(m_trip_storage<0){
+		m_trip_storage=1;
+	}
 };

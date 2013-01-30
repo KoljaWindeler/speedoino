@@ -43,7 +43,8 @@ public:
 	void reset_bak();
 	void clear_vars();
 	void check_vars();
-	short int 	  m_trip_mode; // welcher wert angezeigt wird, 1= day 2=bla 3=blabla etc
+	int 	  	  m_trip_mode; // welcher mode .. ob zeit, avg oder was auch immer
+	int	  		  m_trip_storage; // welcher wert angezeigt wird, 1= day 2=bla 3=blabla etc
 	int 		  disp_zeile_bak[12];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
 	int           max_speed[9];      // array of the max speed values sollte dem speedo_speedo gehören
 	unsigned long avg_timebase[9];
