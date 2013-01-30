@@ -268,7 +268,7 @@ void speedo_disp::show_storry(char storry[],unsigned int storry_length,char titl
 
 
 void speedo_disp::show_animation(const char command[]){
-	pSensors->m_reset->set_deactive(false,false); // just deaktivate ist by now, dont save it, nowhere. this makes it possible to restore the IO state by var
+	//pSensors->m_reset->set_deactive(false,false); // just deaktivate ist by now, dont save it, nowhere. this makes it possible to restore the IO state by var
 	int spacer[4];
 	int pointer_to_spacer=0;
 	// alles nach den kommata durchsuchen
@@ -332,20 +332,38 @@ void speedo_disp::show_animation(const char command[]){
 		int state_before=pMenu->state%100;
 
 		// animation starten
+		unsigned long timestamp=millis();
 		for(int i=start; i<=ende; i++){
+			// try to show the image, and print every error
 			if(sd2ssd(filename,i)>0){
 				i=ende;
 				clear_screen();
 				string(pSpeedo->default_font,"Open file failed",3,2,0,DISP_BRIGHTNESS,0);
 			}
-			for(int ii=0; ii<warte; ii++){
-				_delay_ms(1); // check ob das hier viel aendert
-			};
-			if((pMenu->state%100)!=state_before)  { i=ende;  } // muss man dann nicht vorher den state hochsetzen?!
-		};
 
-	}
-	pSensors->m_reset->restore();
+			// wait, the better way: First remember actual timestamp, then check connection and reset, than check button,
+			// if everything is fine, check if there is additional time to wait
+
+			// timestamp
+			timestamp=millis();
+			// serial
+			if(Serial.available()>0){ // an sonsten gern
+				if(Serial.read()==MESSAGE_START){
+					pFilemanager_v2->parse_command();
+				};
+			};
+			// hardware buttons
+			if((pMenu->state%100)!=state_before) { i=ende; } // indicates that a hardware key was pressed
+
+			// pReset toggle
+			pSensors->m_reset->toggle();
+
+			// additional wait?
+			while(timestamp+warte>millis()){
+				_delay_ms(1); // check ob das hier viel aendert
+			}; //wait
+		}; // for frames
+	}; // enough spacer (',')
 };
 
 
@@ -412,14 +430,14 @@ void speedo_disp::init_speedo(){
 	// if hardware version is above 6, there is an emergency V_BACKUP_driver for the GPS
 	// if bat is empty, inform user
 	// DUE TO BAT MEASUREMENT BUG IN HARDWARE NOT AVAILABLE
-//	if(pConfig->get_hw_version()>7 && pSensors->m_voltage->bat_empty && false){
-//		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("GPS Bat empty"),3,2,0,DISP_BRIGHTNESS,0);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("cold fixing now"),2,3,0,DISP_BRIGHTNESS,0);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("this will take a min"),0,4,0,DISP_BRIGHTNESS,0);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
-//		_delay_ms(10000);
-//	}
+	//	if(pConfig->get_hw_version()>7 && pSensors->m_voltage->bat_empty && false){
+	//		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,0,0,DISP_BRIGHTNESS,0);
+	//		pOLED->string_P(pSpeedo->default_font,PSTR("GPS Bat empty"),3,2,0,DISP_BRIGHTNESS,0);
+	//		pOLED->string_P(pSpeedo->default_font,PSTR("cold fixing now"),2,3,0,DISP_BRIGHTNESS,0);
+	//		pOLED->string_P(pSpeedo->default_font,PSTR("this will take a min"),0,4,0,DISP_BRIGHTNESS,0);
+	//		pOLED->string_P(pSpeedo->default_font,PSTR("!! WARNING !!"),4,7,0,DISP_BRIGHTNESS,0);
+	//		_delay_ms(10000);
+	//	}
 
 	// if storage init failed notify as well
 	if(pSD->sd_failed){
