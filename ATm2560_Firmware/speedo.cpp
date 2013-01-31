@@ -207,19 +207,26 @@ void speedo_speedo::loop(unsigned long previousMillis){
 
 
 			// copy text to char buffer
-			if(m_trip_mode<3){
+			if(m_trip_mode<5){
 				char temp_char_array[22];
 				pMenu->copy_storagename_to_chararray(m_trip_storage-1,temp_char_array);
+				// cut it
+				if(m_trip_mode>2){
+					temp_char_array[6]='.';
+					temp_char_array[7]=0x00;
+				}
+
 				if(m_trip_mode==1){
 					sprintf(char_buffer,"%s %i.%i km",temp_char_array,(int)floor(temp_trip_dist/1000),(int)floor((temp_trip_dist%1000)/100));
 				} else if(m_trip_mode==2){
 					sprintf(char_buffer,"%s %i:%i",temp_char_array,(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60));
+				} else if(m_trip_mode==3){
+					sprintf(char_buffer,"%s AVG %i km/h",temp_char_array,(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
+				} else if(m_trip_mode==4){
+					sprintf(char_buffer,"%s MAX %i km/h",temp_char_array,(int)temp_max_speed);
 				}
-			} else if(m_trip_mode==3){
-				sprintf(char_buffer,"AVG %i km/h",(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
-			} else if(m_trip_mode==4){
-				sprintf(char_buffer,"MAX %i km/h",(int)temp_max_speed);
 			} else if(m_trip_mode==5){
+
 
 			} else if(m_trip_mode==6){
 			} else if(m_trip_mode==7){
