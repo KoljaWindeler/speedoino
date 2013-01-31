@@ -193,7 +193,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			disp_zeile_bak[GPS_VALUE]=int(1+sats);
 		};
 	};
-
+	//////////////////////////////////////// ADD INFO WIDGET ////////////////////////////////////////////////////////
 	// see on top comment, number (3)
 	if(!(addinfo_widget.x==-1 && addinfo_widget.y==-1)){ // only show it if pos != -1/-1
 		if(unsigned(disp_zeile_bak[ADD_INFO])!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)+pSensors->m_gps->mod(floor(avg_timebase[8]/100),100)){ // immer wenn sich trip_dist ändert den string ausgeben der direkt drüber steht, auf 0.1 km genau
@@ -206,32 +206,93 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			int temp_max_speed=max_speed[m_trip_storage-1];
 
 
-			// copy text to char buffer
+			// Possible values: e.g. with the longes Name "NonPermanent" (others "Day", "Board", "Tour" ...)
+			// Mode 1 (Distance):         "NonPermanent 7234.3km" or "NonPermanent 41234km_"         | Full Text
+			// Mode 2 (Time):             "_NonPermanent 03:32__"                                    | Full Text
+			// Mode 3 (Avg Speed):        "NonPerma AVG 111km/h_"                                    | Short (7 char) Text
+			// Mode 4 (Max Speed):        "NonPerma MAX 232km/h_"                                    | Short (7 char) Text
+			// Mode 5 (Distance & Time):  "___34543km | 682h____" or "__4543.1km | 68:22___"         | no Text
+			// Mode 6 (Distance & Avg):   "_32799.3km | 111km/h_"                                    | no Text
+			// Mode 7 (Distance & Max):   "_32799.3km | 232km/h_"                                    | no Text
+			// Mode 8 (Time & Avg):       "___345h | 111km/h____" or "___45:04 | 111km/h___"         | no Text
+			// Mode 9 (Time & Max):       "___45:04 | 232km/h___" or "___45:04 | 232km/h___"         | no Text
+			// just one signle value
 			if(m_trip_mode<5){
+				// copy text to char buffer
 				char temp_char_array[22];
 				pMenu->copy_storagename_to_chararray(m_trip_storage-1,temp_char_array);
-				// cut it
+				// cut it for longer menu Points
 				if(m_trip_mode>2){
-					temp_char_array[6]='.';
 					temp_char_array[7]=0x00;
 				}
 
 				if(m_trip_mode==1){
-					sprintf(char_buffer,"%s %i.%i km",temp_char_array,(int)floor(temp_trip_dist/1000),(int)floor((temp_trip_dist%1000)/100));
+					if(temp_trip_dist>999999){
+						// "NonPermanent 32878km"  20 Chars
+						sprintf(char_buffer,"%s %ikm",temp_char_array,(int)floor(temp_trip_dist/1000));
+					}
+					// less then 10000 km
+					else {
+						// "NonPermanent 3288.1km"  21 Chars
+						sprintf(char_buffer,"%s %i.%ikm",temp_char_array,(int)floor(temp_trip_dist/1000),(int)floor((temp_trip_dist%1000)/100));
+					}
 				} else if(m_trip_mode==2){
-					sprintf(char_buffer,"%s %i:%i",temp_char_array,(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60));
+					// "NonPermanent 345:34" 19 Chars
+					sprintf(char_buffer,"%s %02i:%02i",temp_char_array,(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60));
 				} else if(m_trip_mode==3){
-					sprintf(char_buffer,"%s AVG %i km/h",temp_char_array,(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
+					// "NonPerma AVG 111km/h" 20 Chars
+					sprintf(char_buffer,"%s AVG %ikm/h",temp_char_array,(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
 				} else if(m_trip_mode==4){
-					sprintf(char_buffer,"%s MAX %i km/h",temp_char_array,(int)temp_max_speed);
+					// "NonPerma MAX 323km/h" 20 Chars
+					sprintf(char_buffer,"%s MAX %ikm/h",temp_char_array,(int)temp_max_speed);
 				}
-			} else if(m_trip_mode==5){
-
-
-			} else if(m_trip_mode==6){
-			} else if(m_trip_mode==7){
-			} else if(m_trip_mode==8){
-			} else if(m_trip_mode==9){
+			}
+			// Distance & Time
+			else if(m_trip_mode==5){
+				// more that 10.000 km or more than 100 hours ==>34543km | 682h<=== 14 chars
+				if(temp_trip_dist>999999 || temp_avg_timebase>=360000L){
+					sprintf(char_buffer,"%lukm | %02ih",(unsigned long)floor(temp_trip_dist/1000),(int)floor(temp_avg_timebase/3600));
+				}
+				// less that 10.000 km and less than 100 hours ==>4543.1km | 68:22h<=== 17 chars
+				else {
+					sprintf(char_buffer,"%i.%ikm | %02i:%02i",(int)floor(temp_trip_dist/1000),(int)floor((temp_trip_dist%1000)/100),(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60));
+				};
+			}
+			// Distance & Avg
+			else if(m_trip_mode==6){
+				// ==>32799.3km | 111km/h<== 19 chars
+				sprintf(char_buffer,"%i.%ikm | %ikm/h",(int)floor(temp_trip_dist/1000),(int)floor((temp_trip_dist%1000)/100),(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
+			}
+			// Distance & Max
+			else if(m_trip_mode==7){
+				// ==>32799.3km | 232km/h<== 19 chars
+				sprintf(char_buffer,"%i.%ikm | %ikm/h",(int)floor(temp_trip_dist/1000),(int)floor((temp_trip_dist%1000)/100),(int)temp_max_speed);
+			}
+			// Time & Avg
+			else if(m_trip_mode==8){
+				// more than 100h
+				if(temp_avg_timebase>=360000L){
+					// ==>345h | 111km/h<== 14 chars
+					sprintf(char_buffer,"%3ih | %ikm/h",(int)floor(temp_avg_timebase/3600),(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
+				}
+				// less than 100h
+				else {
+					// ==>45:04 | 111km/h<== 15 chars
+					sprintf(char_buffer,"%02i:%02i | %ikm/h",(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60),(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
+				}
+			}
+			// Time & Max
+			else if(m_trip_mode==9){
+				// more than 100h
+				if(temp_avg_timebase>=360000L){
+					// ==>345h | 232km/h<== 14 chars
+					sprintf(char_buffer,"%3ih | %ikm/h",(int)floor(temp_avg_timebase/3600),(int)temp_max_speed);
+				}
+				// less than 100h
+				else {
+					// ==>45:04 | 232km/h<== 15 chars
+					sprintf(char_buffer,"%02i:%02i | %ikm/h",(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60),(int)temp_max_speed);
+				}
 			}
 
 
@@ -241,6 +302,8 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			pOLED->string(addinfo_widget.font,char_buffer,0,addinfo_widget.y,0,DISP_BRIGHTNESS,0);
 		};
 	};
+	//////////////////////////////////////// ADD INFO WIDGET ////////////////////////////////////////////////////////
+
 	if(!(addinfo2_widget.x==-1 && addinfo2_widget.y==-1)){ // only show it if pos != -1/-1
 		// now, print variable messages, additional infos, see top comment (4)
 		/// warnung wegen zu hoher Drehzahl, erstmal checken ob wir von der drehzahl her in betrachtkommen

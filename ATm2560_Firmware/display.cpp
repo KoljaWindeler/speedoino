@@ -353,7 +353,7 @@ void speedo_disp::show_animation(const char command[]){
 				};
 			};
 			// hardware buttons
-			if((pMenu->state%100)!=state_before) { i=ende; } // indicates that a hardware key was pressed
+			if((pMenu->state%100)!=state_before) { i=ende; } // indicates that a hardware key was pressed // TODO not(!) working
 
 			// pReset toggle
 			pSensors->m_reset->toggle();
