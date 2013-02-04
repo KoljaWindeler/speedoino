@@ -588,7 +588,6 @@ OnClickListener {
 			if (resultCode == RESULT_OK) {
 				intent = new Intent(getBaseContext(), ImageEditor.class);
 				intent.putExtra(ImageEditor.INPUT_FILE_NAME, filePath);
-				intent.putExtra(ImageEditor.INPUT_DIR_PATH, dl_basedir);
 				startActivityForResult(intent, REQUEST_CONVERT_GFX);
 			};
 			break;

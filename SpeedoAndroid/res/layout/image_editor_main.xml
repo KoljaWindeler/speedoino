@@ -4,11 +4,37 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <ImageView
-        android:id="@+id/imageSpeedoPreview"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/alert_dark_frame" />
+        android:orientation="horizontal" >
+        
+        <Button
+            android:id="@+id/LeftImageConverter"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0.1"
+            android:layout_gravity="center_vertical"
+            android:text="" />
+
+        <ImageView
+            android:id="@+id/imageSpeedoPreview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:src="@android:drawable/alert_dark_frame" />
+        
+        <Button
+            android:id="@+id/RightImageConverter"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.1"
+            android:layout_gravity="center_vertical"
+            android:text="" />
+    </LinearLayout>
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -27,6 +53,7 @@
         android:id="@+id/image_filename"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
+
         <requestFocus />
     </EditText>
 
@@ -37,18 +64,23 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/SaveImageConverter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.45"
-            android:text="@string/SaveImageConverter" />
-
-        <Button
             android:id="@+id/DiscardImageConverter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.45"
+            android:layout_weight="0.30"
             android:text="@string/DiscardImageConverter" />
+
+        <Spinner
+            android:id="@+id/ScaleModeSpinner"
+            android:layout_width="140dp"
+            android:layout_height="50dp" />
+
+        <Button
+            android:id="@+id/SaveImageConverter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.30"
+            android:text="@string/SaveImageConverter" />
     </LinearLayout>
 
 </LinearLayout>

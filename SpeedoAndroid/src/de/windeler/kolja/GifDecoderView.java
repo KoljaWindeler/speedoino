@@ -10,7 +10,7 @@ import de.windeler.kolja.GifDecoder;
 
 public class GifDecoderView extends ImageView {
 
-	private GifDecoder mGifDecoder;
+	public GifDecoder mGifDecoder;
 	private Bitmap mTmpBitmap;
 	private int status;
 

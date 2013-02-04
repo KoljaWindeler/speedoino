@@ -5,7 +5,6 @@
     <string name="uploadmapfile">Click to select\nNavigation-File</string>
     <string name="uploadconfigfile">Click to select\nConfig-File</string>
     <string name="uploadgfxfile">Click to select\nGFX-File</string>
-    
     <string name="hello">Hello World, SpeedoAndroidActivity!</string>
     <string name="app_name">SpeedoAndroid</string>
     <string name="checkVersion">Check Version</string>
@@ -64,5 +63,11 @@
     <string name="interprete_this">help me interprete this</string>
     <string name="MapView">MapView</string>
     <string name="RouteMap">Show captured\nSpeedoino Map</string>
+
+    <string-array name="scale_values">
+        <item>Scale</item>
+        <item>Scale with aspect ratio</item>
+        <item>Crop center</item>
+    </string-array>
 
 </resources>
