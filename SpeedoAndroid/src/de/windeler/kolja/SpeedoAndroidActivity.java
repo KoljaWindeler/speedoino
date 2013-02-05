@@ -777,6 +777,10 @@ OnClickListener {
 				// 3) and if it is a GFX File, show it
 				if (params[1].substring(0, 3).contentEquals("GFX")) {
 					mSerialService.showgfx(params[1].substring(params[1].lastIndexOf('/') + 1));
+					// delete source file, if its a GFX file 
+					File deleteSource = new File(params[0]);
+					if(deleteSource.exists())
+						deleteSource.delete();
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
