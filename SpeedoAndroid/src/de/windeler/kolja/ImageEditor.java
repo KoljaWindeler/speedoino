@@ -10,12 +10,16 @@ import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -98,15 +102,20 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 	private Button mButten;
 	private EditText image_filename;
 
-	ArrayAdapter<CharSequence> mSpinnerValues;
-	private Spinner ScaleValues; 
-
 	private int scale_mode=0;
+	private int invert_color_mode=0;
 	private int show_frame=0;
 	private int max_frame=0;
 	private byte[] converted_image_buffer = new byte[64*64];
 	private convertImageDialog _convertImageDialog;
 	private boolean changing_text = false;
+	private List<String> garbageList = new ArrayList<String>();
+
+	SharedPreferences settings;
+	public static final int REQUEST_SETTINGS=1;
+	public static final String PREFS_NAME = "SpeedoAndroidImageEditorSettings";
+	public static final String PREFS_SCALE = "scale";
+	public static final String PREFS_INVERT = "invert";
 
 
 
@@ -117,17 +126,17 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 
 		// prepare layout
 		setContentView(R.layout.image_editor_main);
-
-		ScaleValues=(Spinner) findViewById(R.id.ScaleModeSpinner);
-		ScaleValues.setAdapter(ArrayAdapter.createFromResource(this, R.array.scale_values, android.R.layout.simple_spinner_item));
-		ScaleValues.setOnItemSelectedListener(this);
+		settings = getSharedPreferences(PREFS_NAME, 0);
 
 		mButten = (Button) findViewById(R.id.SaveImageConverter);
 		mButten.setOnClickListener(this);
 
 		mButten = (Button) findViewById(R.id.DiscardImageConverter);
 		mButten.setOnClickListener(this);
-		
+
+		mButten = (Button) findViewById(R.id.SettingsImageConverter);
+		mButten.setOnClickListener(this);
+
 		mButten = (Button) findViewById(R.id.LeftImageConverter);
 		mButten.setOnClickListener(this);
 		mButten.setEnabled(false);
@@ -180,9 +189,9 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 			} // on text change
 		}); // add text change listener
 		///////////////////////////////////////////////////////// TEXT FIELD PROCESS /////////////////////////////////////
-
-		scale_mode=0;
 		show_frame=0;
+		scale_mode=settings.getInt(PREFS_SCALE, 0);
+		invert_color_mode=settings.getInt(PREFS_INVERT, 0);
 		// idea: start show_preview,
 		// if the file is an ordinary image, the preview will be shown
 		// if its not openable the exeption will be catched
@@ -219,12 +228,16 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {	 
 					getIntent().putExtra(OUTPUT_FILE_PATH,getIntent().getStringExtra(INPUT_FILE_NAME));
+					cleanUp(getIntent().getStringExtra(INPUT_FILE_NAME));
 					setResult(RESULT_OK, getIntent());
 					finish();
 				}});
 			alertDialog.setButton2("No",new DialogInterface.OnClickListener() {
 				@Override
-				public void onClick(DialogInterface arg0, int arg1) {	finish();	}});
+				public void onClick(DialogInterface arg0, int arg1) {	
+					cleanUp(""); 
+					finish();	
+				}});
 			alertDialog.show();
 		}
 
@@ -249,6 +262,11 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 			// cut it! this will generate a lot of files, filename => foo.gif --> foo_0.gif, foo_1.gif, ... in the same dir
 			GifDecoderView status=new GifDecoderView(this, stream,filename_without_ext,outputDir.getAbsolutePath());
 			max_frame=status.mGifDecoder.getFrameCount();
+			String filename=outputDir.getAbsolutePath()+filename_without_ext.substring(filename_without_ext.lastIndexOf("/")+1)+"_";
+			for(int i=0; i<max_frame;i++){
+				garbageList.add(filename+String.valueOf(i)+".PNG");
+			}
+
 			// status checken .. sollte 0 sein, handle path to intent
 			if(max_frame>1){
 				mButten = (Button) findViewById(R.id.RightImageConverter);
@@ -313,14 +331,8 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 	// the boolean value append, switches the file write option. set true for animations, but delete it in advance
 	// int scale_mode: 0) scale it without keeping aspect 1) scale and keep aspect 2) crop it
 	public void convert_image(String filename_in, String filename_out, Integer warning, boolean append) throws IOException{
-		convert_image(filename_in, filename_out, warning, append,false);
-	}
-
-	public void convert_image(String filename_in, String filename_out, Integer warning, boolean append,boolean delete_source_image) throws IOException{
 		FileInputStream in,in_size;
 		BufferedInputStream buf,buf_size;
-		
-		boolean invert=false;
 
 		// open it twice, once to get the size
 		in_size = new FileInputStream(filename_in);
@@ -342,6 +354,11 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 		Bitmap bMap;
 		if(imageHeight > 256 && imageWidth> 512){
 			BitmapFactory.Options opts= new BitmapFactory.Options();
+			if(imageHeight>imageWidth*2){
+				opts.inSampleSize=imageWidth*4/128; // 4 fach zu groß
+			} else {
+				opts.inSampleSize=imageHeight*4/6; // 4 fach zu groß
+			}
 			opts.inSampleSize=4;
 			bMap = BitmapFactory.decodeStream(buf,null,opts);
 		}    else {
@@ -491,7 +508,7 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 					gs+=(bMapScaled.getPixel(x,y) & 0xFF)*11; // B
 					gs/=(30+59+11);
 					gs=(int) (Math.floor(gs/16)*16);	// Reduzierung auf 16 Graustufen
-					if(invert){
+					if(invert_color_mode==1){
 						gs=255-gs;
 					}
 
@@ -511,7 +528,8 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 			};
 
 			// write to file
-			FileOutputStream out = new FileOutputStream(filename_out,append);	
+			FileOutputStream out = new FileOutputStream(filename_out,append);
+			garbageList.add(filename_out);
 			out.write(converted_image_buffer,0,converted_image_buffer.length);
 			out.close();
 
@@ -521,7 +539,10 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 			alertDialog.setMessage("Could not open file as image!");
 			alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
 				@Override
-				public void onClick(DialogInterface arg0, int arg1) {	finish();	}});
+				public void onClick(DialogInterface arg0, int arg1) {	
+					cleanUp(""); 
+					finish();	
+				}});
 			alertDialog.show();
 		}
 		if (buf != null) {
@@ -529,11 +550,6 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 		}
 		if (in != null) {
 			in.close();
-			// delete image if delete_source_image was true
-			if(delete_source_image){
-				File source=new File(filename_in);
-				source.delete();
-			}
 		}
 	}
 
@@ -559,7 +575,7 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 				Log.i("JKW","Check filename:"+filename_without_ext);
 				// prepare filename
 				String convert_filename;
-				
+
 				// animation
 				if(max_frame>1){
 					show_toast("Animation found, converting and uploading complete animation");
@@ -578,6 +594,7 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 				_convertImageDialog.execute(convert_filename,ext,String.valueOf(max_frame),output_filename); // warum müssen das alles strings sein?
 			} else {
 				// it was already converted .. tell it to the upload
+				cleanUp(output_filename);
 				getIntent().putExtra(OUTPUT_FILE_PATH,output_filename);
 				setResult(RESULT_OK, getIntent());
 				finish();
@@ -586,6 +603,7 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 
 		} else if(arg0.getId()==R.id.DiscardImageConverter){
 			setResult(RESULT_CANCELED, getIntent());
+			cleanUp("");
 			finish();
 
 		} else if(arg0.getId()==R.id.RightImageConverter){
@@ -635,8 +653,32 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 				mButten.setEnabled(true);
 				mButten.setBackgroundResource(R.drawable.arrow_right);
 			}
+		} else if(arg0.getId()==R.id.SettingsImageConverter){
+			Intent intent = new Intent(getBaseContext(), ImageEditorSettings.class);
+			startActivityForResult(intent, REQUEST_SETTINGS);
 		};
 	};
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d(TAG, "onActivityResult " + resultCode + " " + requestCode);
+		switch (requestCode) {
+		case REQUEST_SETTINGS:
+			scale_mode=settings.getInt(PREFS_SCALE, 0);
+			invert_color_mode=settings.getInt(PREFS_INVERT, 0);
+			String output_filename=filename_of_file_ready_to_convert.substring(0,filename_of_file_ready_to_convert.lastIndexOf("."))+".sgf";
+			try {
+				convert_image(filename_of_file_ready_to_convert, output_filename, 0, false);
+				show_preview(output_filename);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		default:
+			Log.i(TAG, "nicht gut, keine ActivityResultHandle gefunden");
+			break;
+		}
+	}
 
 	public static Bitmap convertToMutable(Bitmap imgIn) {
 		try {
@@ -732,13 +774,15 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 						msg.setData(bundle);
 						mHandlerUpdate.sendMessage(msg);
 
-						convert_image(input_filename_convert, result_filename, 1,true,true);
+						convert_image(input_filename_convert, result_filename, 1,true);
 					};
 					// a simple single image
 				} else {
-					convert_image(filename, result_filename, 1,false,true); 
+					convert_image(filename, result_filename, 1,false); 
 				}
-
+				// clean all temp files
+				cleanUp(result_filename);
+				
 				// close the hole app, because we are done
 				Log.i("JKW","Aus dem ImageEditor gebe ich den Dateinamen "+result_filename+" zurück");
 
@@ -746,8 +790,7 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 			catch (IOException e) {		
 				e.printStackTrace();								
 			};
-
-
+			
 			// now its converted .. tell it to upload
 			setResult(RESULT_OK, getIntent());
 			return "japp";
@@ -802,5 +845,17 @@ public class ImageEditor extends Activity implements OnClickListener, OnItemSele
 
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {	}
+
+	public void cleanUp(String preventThisFileFromBeingDeleted){
+		File tempFile=null;
+		for(int i=0; i<garbageList.size(); i++){
+			if(!garbageList.get(i).equals(preventThisFileFromBeingDeleted)){
+				tempFile=new File(garbageList.get(i));
+				if(tempFile.exists()){
+					tempFile.delete();
+				};
+			}
+		}
+	}
 
 }

@@ -55,6 +55,11 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/MapEditor"
             android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".ImageEditorSettings"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/Settings"
+            android:theme="@android:style/Theme.Dialog" />
         <uses-library android:name="com.google.android.maps" />
         <activity android:name="TermPreferences" />
     </application>
