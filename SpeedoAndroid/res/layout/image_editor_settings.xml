@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="260dp"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <Spinner
+        android:id="@+id/image_editor_settings_scale_spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <Spinner
+        android:id="@+id/image_editor_settings_color_invert_spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    
+    <Spinner
+        android:id="@+id/image_editor_settings_background_color"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    
+    <Button
+        android:id="@+id/image_editor_settings_close"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Close" />
+
+</LinearLayout>

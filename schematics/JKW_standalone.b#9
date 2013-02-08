@@ -224,6 +224,7 @@
 <text x="154.5" y="20.5" size="1.778" layer="16" font="vector" ratio="20" rot="MR0">BOT</text>
 <circle x="5.4" y="16.7" radius="2.5" width="0.4064" layer="39"/>
 <circle x="5.9" y="61.8" radius="2.5" width="0.4064" layer="39"/>
+<text x="101.2" y="19.5" size="1.778" layer="16" font="vector" rot="MR0">1</text>
 </plain>
 <libraries>
 <library name="40xx">

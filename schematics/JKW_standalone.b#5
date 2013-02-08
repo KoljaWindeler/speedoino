@@ -2881,6 +2881,7 @@ min. Width 0,18mm</description>
 <contactref element="B_UP" pad="IN2"/>
 <contactref element="B_DOWN" pad="IN2"/>
 <contactref element="B_LEFT" pad="IN2"/>
+<wire x1="31.68024375" y1="12.6517375" x2="26.9" y2="12.516" width="0" layer="19" extent="1-16"/>
 </signal>
 <signal name="DZ">
 <contactref element="R_DZ" pad="2"/>
