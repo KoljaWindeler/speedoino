@@ -9,14 +9,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
-        
+
         <Button
             android:id="@+id/LeftImageConverter"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"
             android:layout_weight="0.1"
-            android:layout_gravity="center_vertical"
             android:text="" />
 
         <ImageView
@@ -25,14 +25,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
             android:src="@android:drawable/alert_dark_frame" />
-        
+
         <Button
             android:id="@+id/RightImageConverter"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
             android:layout_marginRight="10dp"
             android:layout_weight="0.1"
-            android:layout_gravity="center_vertical"
             android:text="" />
     </LinearLayout>
 
@@ -53,9 +53,37 @@
         android:id="@+id/image_filename"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
-
-        <requestFocus />
     </EditText>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/StopAnimationImageConverter"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_weight="0.30"
+            android:text="@string/StopAnimation" />
+
+        <Button
+            android:id="@+id/SettingsImageConverter"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_weight="0.30"
+            android:text="@string/Settings" />
+
+        <Button
+            android:id="@+id/RunAnimationImageConverter"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_weight="0.30"
+            android:text="@string/RunAnimation" >
+            <requestFocus />
+        </Button>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -66,22 +94,15 @@
         <Button
             android:id="@+id/DiscardImageConverter"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.30"
+            android:layout_height="40dp"
+            android:layout_weight="0.45"
             android:text="@string/DiscardImageConverter" />
-
-        <Button
-            android:id="@+id/SettingsImageConverter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.30"
-            android:text="@string/Settings" />
 
         <Button
             android:id="@+id/SaveImageConverter"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.30"
+            android:layout_height="40dp"
+            android:layout_weight="0.45"
             android:text="@string/SaveImageConverter" />
     </LinearLayout>
 

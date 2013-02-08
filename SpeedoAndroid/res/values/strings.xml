@@ -55,9 +55,10 @@
     <string name="cancel">Cancel</string>
     <string name="create">Save</string>
     <string name="no_data">No Data</string>
-
+	<string name="StopAnimation">Stop</string>
+	<string name="RunAnimation">Play</string>
     <color name="gray">#ffff0000</color>
-
+	
     <string name="RemoveMapConverter">Remove</string>
     <string name="noresponse">No response from target</string>
     <string name="straight_on">↑</string>
@@ -74,6 +75,12 @@
     <string-array name="color_invert_values">
         <item>Regular colors</item>
         <item>Inverted colors</item>
+    </string-array>
+    
+    <string-array name="background_color_values">
+        <item>Auto</item>
+        <item>Black</item>
+        <item>White</item>
     </string-array>
 
 </resources>
