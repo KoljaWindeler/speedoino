@@ -111,11 +111,10 @@ public class ImageEditor extends Activity implements OnClickListener{
 	private int interframe_time=40;
 	private byte[] converted_image_buffer = new byte[64*64];
 	private convertImageDialog _convertImageDialog;
-	private cutGifDialog _cutGifDialog;
+	private prepareImageDialog _prepareImageDialog;
 	private boolean changing_text = false;
 	private List<String> garbageList = new ArrayList<String>();
 	private Handler mTimerHandle = new Handler();
-	private final Semaphore semaphore = new Semaphore(1, true);
 
 	SharedPreferences settings;
 	public static final int REQUEST_SETTINGS=1;
@@ -146,24 +145,26 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 		mButten = (Button) findViewById(R.id.RunAnimationImageConverter);
 		mButten.setOnClickListener(this);
-		mButten.setEnabled(false);
-		
+		mButten.setEnabled(false); // assuming its NOT a animation
+
 		mButten = (Button) findViewById(R.id.StopAnimationImageConverter);
 		mButten.setOnClickListener(this);
-		mButten.setEnabled(false);
+		mButten.setEnabled(false); // assuming its NOT a animation
 
 		mButten = (Button) findViewById(R.id.LeftImageConverter);
 		mButten.setOnClickListener(this);
-		mButten.setEnabled(false);
+		mButten.setEnabled(false); // assuming its NOT a animation
 		mButten.setBackgroundResource(R.drawable.arrow_left_gray);
 
 		mButten = (Button) findViewById(R.id.RightImageConverter);
 		mButten.setOnClickListener(this);
-		mButten.setEnabled(false);
+		mButten.setEnabled(false); // assuming its NOT a animation
 		mButten.setBackgroundResource(R.drawable.arrow_right_gray);
 
 		image_filename = (EditText)findViewById(R.id.image_filename);
-		String cleaned_filename = getIntent().getStringExtra(INPUT_FILE_NAME).substring(getIntent().getStringExtra(INPUT_FILE_NAME).lastIndexOf('/')+1).replaceAll("(?:[^a-z0-9A-Z]|(?<=['\"])s)","");
+		// save info to member file
+		filename_of_input_file = getIntent().getStringExtra(INPUT_FILE_NAME);
+		String cleaned_filename = filename_of_input_file.substring(filename_of_input_file.lastIndexOf('/')+1).replaceAll("(?:[^a-z0-9A-Z]|(?<=['\"])s)","");
 
 		int length_of_substring=cleaned_filename.length()-3; // "IAVjpg"
 		if(length_of_substring>8){
@@ -181,7 +182,6 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 			@Override
 			public void onTextChanged(CharSequence arg0, int start,int befor, int count) {
-				Log.i(TAG,"los gehts");
 				if(!changing_text){
 					String dirty=arg0.toString();
 					String clean=dirty.replaceAll("(?:[^a-z0-9A-Z]|(?<=['\"])s)","");
@@ -204,41 +204,21 @@ public class ImageEditor extends Activity implements OnClickListener{
 			} // on text change
 		}); // add text change listener
 		///////////////////////////////////////////////////////// TEXT FIELD PROCESS /////////////////////////////////////
+		// set vars to default values
 		show_frame=0;
 		scale_mode=settings.getInt(PREFS_SCALE, 0);
 		invert_color_mode=settings.getInt(PREFS_INVERT, 0);
 		background_color_mode=settings.getInt(PREFS_BACK_COLOR, 0);
-		// idea: start show_preview,
+
+		////////////////////////////////////////////////////// allright, now convert it ////////////////////////////
+		// idea: start prepareImage,
 		// if the file is an ordinary image, the preview will be shown
 		// if its not openable the exeption will be catched
 		// and if its a gif, the gif class will split it in temp images, show the first and
 		// redirect the input filename to the temp_files
 		try {		
-			// Than do the following on start of application:
-			// temp_filename=prepare_image(input_filename);
-			// temp_filename_converted=temp_filename.SGF
-			// if(ext!=SGF)
-			// convert_file(temp_filename,temp_filename_converted,false)
-			// show_preview(temp_filename_converted)
-			filename_of_input_file = getIntent().getStringExtra(INPUT_FILE_NAME);
-			// prepare -> cut it if its a gif and return filename of first image
-			show_toast("cutting frames");
-			filename_of_file_ready_to_convert=prepare_image(filename_of_input_file);
-
-			// if the file is NOT a SGF file, convert it
-			if(!filename_of_input_file.substring(filename_of_input_file.lastIndexOf(".")).toLowerCase().equals(".sgf")){
-				String output_filename=filename_of_input_file.substring(0,filename_of_input_file.lastIndexOf("."))+".sgf";
-				convert_image(filename_of_file_ready_to_convert, output_filename, 0, false);
-				show_preview(output_filename);
-			} 
-			// was already a SGF file
-			else {
-				// we dont have to copy it, since its already a sgf file 
-				show_preview(filename_of_file_ready_to_convert);
-			}
-
-			
-
+			_prepareImageDialog = new prepareImageDialog(this);
+			_prepareImageDialog.execute(); // warum müssen das alles strings sein?
 		} catch (Exception e) {
 			Log.e("Error reading file", e.toString());
 			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
@@ -260,59 +240,147 @@ public class ImageEditor extends Activity implements OnClickListener{
 				}});
 			alertDialog.show();
 		}
+		//////////////// conversion and preview done
 	}
 
-	// if sgf or graphic file just copy, otherwise extract gif file. Function returns filename
-	public String prepare_image(final String input_filename) throws IOException, InterruptedException{
-		//get Temp dir, create the string of the resulting_inputfile
-		//String resulting_inputfilename="";
+	////////////////////////// prepareImageDialog ////////////////////////
+	// prepareImageDialog will cut gif files  
+	// convert the first frame OR the image (if its a static image)
+	// and shows the preview of it
+	protected class prepareImageDialog extends AsyncTask<String, Integer, String> {
+		private Context context;
+		ProgressDialog dialog;
+		private String ext="";
 
-		// first check if its a gif animation!
-		// if so, let the Gif Decoder cut it and redirect fileinput to the temp files
-		String ext=input_filename.substring(input_filename.lastIndexOf("."));
-
-		// its a animation, return the string to the first image
-		if(ext.toLowerCase().equals(".gif")){
-			final File outputDir =  getBaseContext().getCacheDir(); // context being the Activity pointer
-			final String filename_without_ext=input_filename.substring(0, input_filename.lastIndexOf("."));					
-
-			// cut it! this will generate a lot of files, filename => foo.gif --> foo_0.gif, foo_1.gif, ... in the same dir
-			semaphore.release(99);
-			semaphore.acquire(semaphore.availablePermits());
-			Log.i("JKW","start vom gif hacker");
-			
-			_cutGifDialog = new cutGifDialog(this);
-			_cutGifDialog.execute(input_filename,filename_without_ext,outputDir.getAbsolutePath()); // warum müssen das alles strings sein?
-			
-			// it seamss as if its not possible to "wait" here AND to show the progressDialog on the same time ...
-			semaphore.acquire();
-			semaphore.release();
-			///////////////////// THREAD ////////////
-			Log.i("JKW","ende vom gif hacker");
-			// this is the filename of the first frame
-			return outputDir.getAbsolutePath()+filename_without_ext.substring(filename_without_ext.lastIndexOf("/")+1)+"_0.PNG";
-
-		} else if(ext.toLowerCase().equals(".sgf")){
-			return input_filename;
-
-		} else {
-			// let convert_image to the work and create our image
-			return input_filename;
+		// just grap the content and prepare the dialog which will be updated
+		public prepareImageDialog(Context cxt) {
+			context = cxt;
+			dialog = new ProgressDialog(context);
 		}
+
+		@Override
+		protected void onPreExecute() {
+			dialog.setMessage("Opening image...");
+			dialog.show();
+		};
+
+		@Override
+		protected String doInBackground(String... params) {
+			//get the suffix of the filename
+			ext=filename_of_input_file.substring(filename_of_input_file.lastIndexOf(".")).toLowerCase();
+			// its a animation, return the string to the first image
+			if(ext.equals(".gif")){
+				// gif decoder vars 
+				GifDecoder mGifDecoder;
+				Bitmap mTmpBitmap;
+				int status;
+
+				// get the place where we store the temp files (frames) 
+				String outputDir = getBaseContext().getCacheDir().getAbsolutePath(); // context being the Activity pointer
+				String filename_without_ext=filename_of_input_file.substring(0, filename_of_input_file.lastIndexOf("."));				
+
+				try {
+					mGifDecoder = new GifDecoder();
+					// read the gif file to the decoder... might take some time
+					status=mGifDecoder.read(new FileInputStream(filename_of_input_file));
+					if(status==0){
+						for (int i = 0; i < mGifDecoder.getFrameCount(); i++) {
+							// send message
+							Message msg = mHandlerUpdate.obtainMessage();
+							Bundle bundle = new Bundle();
+							bundle.putInt("current", i+1);
+							bundle.putInt("total", mGifDecoder.getFrameCount());
+							msg.setData(bundle);
+							mHandlerUpdate.sendMessage(msg);
+
+							// write image to file
+							mTmpBitmap = mGifDecoder.getFrame(i);
+							String filename=outputDir+filename_without_ext.substring(filename_without_ext.lastIndexOf("/")+1)+"_"+String.valueOf(i)+".PNG";
+							FileOutputStream out = new FileOutputStream(filename);
+							mTmpBitmap.compress(Bitmap.CompressFormat.PNG, 96, out); // 4% compression
+							garbageList.add(filename);
+
+							// copy the filename of the first frame
+							if(i==0){
+								filename_of_file_ready_to_convert=filename;
+							}
+						}
+					}
+					// save the time if its slower than expected, and remember the frame count
+					max_frame=mGifDecoder.getFrameCount();
+					interframe_time=mGifDecoder.delay;
+
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// save the filename of the first frame, because thats the one we want to show in show_preview()
+				// its already saved in the loop
+			} else {
+				// just copy the filename, it could be a already converted file or a simple image. Post execute should handle that
+				filename_of_file_ready_to_convert=filename_of_input_file;
+			}
+			return "";
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// if the file is NOT a SGF file, convert it
+			if(!ext.equals(".sgf")){
+				String output_filename=filename_of_input_file.substring(0,filename_of_input_file.lastIndexOf("."))+".sgf";
+				try {
+					convert_image(filename_of_file_ready_to_convert, output_filename, 0, false);
+					show_preview(output_filename);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} 
+			// was already a SGF file
+			else {
+				show_preview(filename_of_file_ready_to_convert);
+			}
+			// remove the dialog, to show the original layout
+			dialog.dismiss();
+			// activate buttons if neccesary
+			if(max_frame>1){
+				((Button) findViewById(R.id.RunAnimationImageConverter)).setEnabled(true);
+				((Button) findViewById(R.id.StopAnimationImageConverter)).setEnabled(true);
+			}
+		}
+
+		// the dialog updater
+		private final Handler mHandlerUpdate = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				dialog.setMessage("Cutting image from animation\n"+msg.getData().getInt("current")+" of "+msg.getData().getInt("total")+" images cutted");
+				dialog.setProgress(100*msg.getData().getInt("current")/msg.getData().getInt("total"));				
+			};
+		};
 	}
+
 
 	// this just shows a already converted image
-	public void show_preview(String filename_of_converted_file) throws IOException{
+	public void show_preview(String filename_of_converted_file){
 		// it doesn't matter if the input was a gif, a regular image, or a speedoino file .. the 
 		// resulting_inputfilename holds the Path to a converted image, ready to display it now
-
-		// open it to read the result
-		FileInputStream in=new FileInputStream(filename_of_converted_file);
-		Bitmap bMap = Bitmap.createBitmap(128, 64, Bitmap.Config.RGB_565);
 		ImageView image = (ImageView) findViewById(R.id.imageSpeedoPreview);
-		// read datablock
-		in.read(converted_image_buffer, 0, (int)(64*128*0.5)); // 64 lines, 128 cols, but just a half byte per px
-		in.close();
+		// open it to read the result
+		FileInputStream in;
+		Bitmap bMap=null;
+		try {
+			in = new FileInputStream(filename_of_converted_file);
+			bMap = Bitmap.createBitmap(128, 64, Bitmap.Config.RGB_565);
+			// read datablock
+			in.read(converted_image_buffer, 0, (int)(64*128*0.5)); // 64 lines, 128 cols, but just a half byte per px
+			in.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// copy converted raw values to bitmap
 		int x=0,y=0;
@@ -419,9 +487,8 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 				// fill result image with color
 				int fill_color=0;
-				if(background_color_mode==0){
+				if(background_color_mode==0){ // as settings told ya, autocalc the background color
 					long avg_color=0;
-
 					for(int y=0; y<bMapScaledTemp.getHeight(); y++){
 						for(int x=0;x<2;x++){
 							avg_color+=bMapScaledTemp.getPixel(x,y)& 0xFF; // blue channel, but in grayscale just grayscale
@@ -432,19 +499,17 @@ public class ImageEditor extends Activity implements OnClickListener{
 					if(avg_color>128){
 						fill_color=255;
 					}
-				} else if(background_color_mode==1){
+				} else if(background_color_mode==1){ // as settings told ya, overwrite it with BLACK
 					fill_color=0;
-				} else {
+				} else { // as settings told ya, overwrite it with WHITE
 					fill_color=255;
 				}
-				// draw rect TODO
-				for(int x=0; x<bMapScaled.getWidth(); x++){
-					for(int y=0; y<bMapScaled.getHeight(); y++){
-						bMapScaled.setPixel(x,y,Color.rgb(fill_color,fill_color,fill_color));
-					}
-				}
+
+				// color background 
+				bMapScaled.eraseColor(Color.rgb(fill_color,fill_color,fill_color));
 
 				// copy source image to this bitmap now
+				// is there a better way to copy images into another image in a centered position?
 				int dest_x=0,dest_y=0;
 				int offset_x=0,offset_y=0;
 				offset_x=(128-bMapScaledTemp.getWidth())/2;
@@ -494,12 +559,8 @@ public class ImageEditor extends Activity implements OnClickListener{
 					if(avg_color>128){
 						fill_color=255;
 					}
-					// draw rect TODO 128x64
-					for(int x=0; x<bMapScaled.getWidth(); x++){
-						for(int y=0; y<bMapScaled.getHeight(); y++){
-							bMapScaled.setPixel(x,y,Color.rgb(fill_color,fill_color,fill_color));
-						}
-					}
+					// color background  
+					bMapScaled.eraseColor(Color.rgb(fill_color,fill_color,fill_color));
 
 					// copy source image to this bitmap now
 					int dest_x=0,dest_y=0;
@@ -580,6 +641,9 @@ public class ImageEditor extends Activity implements OnClickListener{
 		toaster.show();
 	}
 
+	// possible buttons: left,right, play, stop for the animation
+	// cancle (discard) and upload for ending the dialog
+	// settings to open up the dialog
 	@Override
 	public void onClick(View arg0) {
 		if(arg0.getId()==R.id.SaveImageConverter){
@@ -594,14 +658,12 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 			// not jet converted .. do it
 			if(!ext.toLowerCase().equals(".sgf")){
-				Log.i("JKW","Check filename:"+filename_without_ext);
+				Log.i(TAG,"Check filename:"+filename_without_ext);
 				// prepare filename
 				String convert_filename;
 
 				// animation
 				if(max_frame>1){
-					show_toast("Animation found, converting and uploading complete animation");
-					// show dialog
 					convert_filename=filename_without_ext.substring(0,filename_without_ext.length()-1); // -1 to remove the "0"
 				} 
 				// single image
@@ -625,7 +687,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 		} else if(arg0.getId()==R.id.DiscardImageConverter){
 			setResult(RESULT_CANCELED, getIntent());
-			cleanUp("");
+			cleanUp(""); // empty argument means dont prevent any file from beeing deleted
 			finish();
 
 		} else if(arg0.getId()==R.id.RightImageConverter){
@@ -633,13 +695,14 @@ public class ImageEditor extends Activity implements OnClickListener{
 			String filename_of_frame=filename_of_file_ready_to_convert.substring(0,filename_of_file_ready_to_convert.lastIndexOf("_")+1);
 
 			try {
-				convert_image(filename_of_frame+String.valueOf(show_frame)+".PNG", filename_of_frame+String.valueOf(show_frame)+".sgf", 0, false);
+				convert_image(filename_of_frame+String.valueOf(show_frame)+".png", filename_of_frame+String.valueOf(show_frame)+".sgf", 0, false);
 				show_preview(filename_of_frame+String.valueOf(show_frame)+".sgf");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
+			// take a look if we should deactivate the buttons or even activate one
 			if(show_frame>=max_frame){
 				mButten = (Button) findViewById(R.id.RightImageConverter);
 				mButten.setEnabled(false);
@@ -658,13 +721,15 @@ public class ImageEditor extends Activity implements OnClickListener{
 			String filename_of_frame=filename_of_file_ready_to_convert.substring(0,filename_of_file_ready_to_convert.lastIndexOf("_")+1);
 
 			try {
-				convert_image(filename_of_frame+String.valueOf(show_frame)+".PNG", filename_of_frame+String.valueOf(show_frame)+".sgf", 0, false);
+				// copy from png to sgf, and than show it
+				convert_image(filename_of_frame+String.valueOf(show_frame)+".png", filename_of_frame+String.valueOf(show_frame)+".sgf", 0, false);
 				show_preview(filename_of_frame+String.valueOf(show_frame)+".sgf");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
+			// take a look if we should deactivate the buttons or even activate one
 			if(show_frame<=0){
 				mButten = (Button) findViewById(R.id.LeftImageConverter);
 				mButten.setEnabled(false);
@@ -689,6 +754,9 @@ public class ImageEditor extends Activity implements OnClickListener{
 		}
 	};
 
+	// return from the settings dialog .. 
+	// recall settings and save it to the members
+	// and after that, redraw it, so the users see's the change
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult " + resultCode + " " + requestCode);
 		switch (requestCode) {
@@ -767,8 +835,8 @@ public class ImageEditor extends Activity implements OnClickListener{
 	protected class convertImageDialog extends AsyncTask<String, Integer, String> {
 		private Context context;
 		ProgressDialog dialog;
-		String stage_1=null;
-		String stage_2=null;
+		String stage_1="";
+		String stage_2="";
 
 		// just grap the content and prepare the dialog which will be updated
 		public convertImageDialog(Context cxt) {
@@ -778,7 +846,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 		@Override
 		protected String doInBackground(String... params) {
-			Log.i("JKW","starte convertierung");
+			Log.i(TAG,"starte convertierung");
 			try {
 				Message msg;
 				Bundle bundle;
@@ -823,7 +891,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 				cleanUp(result_filename);
 
 				// close the hole app, because we are done
-				Log.i("JKW","Aus dem ImageEditor gebe ich den Dateinamen "+result_filename+" zurück");
+				Log.i(TAG,"Aus dem ImageEditor gebe ich den Dateinamen "+result_filename+" zurück");
 
 			}
 			catch (IOException e) {		
@@ -862,105 +930,16 @@ public class ImageEditor extends Activity implements OnClickListener{
 					dialog.setProgress(100*msg.getData().getInt("current")/msg.getData().getInt("total"));				
 				} else {
 					stage_2="Deleting temp files...";
-					dialog.setMessage(stage_1+"\n"+stage_2);
-				}
-			};
-		};
-	}
-
-
-	// This class should convert the images for us
-	// calling paramter:
-	// params[0] 
-	// params[1]  
-	// params[2] 
-	// params[3] 
-	protected class cutGifDialog extends AsyncTask<String, Integer, String> {
-		private Context context;
-		ProgressDialog dialog;
-
-		// just grap the content and prepare the dialog which will be updated
-		public cutGifDialog(Context cxt) {
-			context = cxt;
-			dialog = new ProgressDialog(context);
-		}
-
-		@Override
-		protected String doInBackground(String... params) {
-			String input_filename=params[0];
-			String filename_without_ext=params[1];
-			String outputDir = params[2]; // context being the Activity pointer
-
-			// gif decoder vars 
-			GifDecoder mGifDecoder;
-			Bitmap mTmpBitmap;
-			int status;
-			FileInputStream stream;
-
-			try {
-				stream = new FileInputStream(input_filename);
-				mGifDecoder = new GifDecoder();
-				status=mGifDecoder.read(stream);
-				if(status==0){
-					for (int i = 0; i < mGifDecoder.getFrameCount(); i++) {
-						// send message
-						Message msg = mHandlerUpdate.obtainMessage();
-						Bundle bundle = new Bundle();
-						bundle.putInt("current", i+1);
-						bundle.putInt("total", mGifDecoder.getFrameCount());
-						msg.setData(bundle);
-						mHandlerUpdate.sendMessage(msg);
-
-						// write image to file
-						mTmpBitmap = mGifDecoder.getFrame(i);
-						String filename=outputDir+filename_without_ext.substring(filename_without_ext.lastIndexOf("/")+1)+"_"+String.valueOf(i)+".PNG";
-						FileOutputStream out = new FileOutputStream(filename);
-						mTmpBitmap.compress(Bitmap.CompressFormat.PNG, 96, out); // 4% compression
-						garbageList.add(filename);
+					if(!stage_1.equals("")){
+						stage_2=stage_1+"\n"+stage_2;
 					}
+					dialog.setMessage(stage_2);
 				}
-				max_frame=mGifDecoder.getFrameCount();
-				// activate buttons if neccesary
-				if(max_frame>1){
-					((Button) findViewById(R.id.RunAnimationImageConverter)).setEnabled(true);
-					((Button) findViewById(R.id.StopAnimationImageConverter)).setEnabled(true);
-				}
-				// save the time if its slower than expected
-				if(mGifDecoder.delay>interframe_time){
-					interframe_time=mGifDecoder.delay;
-				}
-				// now its converted .. tell it to upload
-
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Log.i("JKW","gif hacker returns semapgore");
-			semaphore.release();
-			return "japp";
-		}
-
-		@Override
-		protected void onPreExecute() {
-			dialog.setMessage("Cutting gif image into frames ...");
-			dialog.show();
-		};
-
-		@Override
-		protected void onPostExecute(String result) {
-			dialog.dismiss();
-		}
-
-		// the dialog updater
-		private final Handler mHandlerUpdate = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				dialog.setMessage("Cutting frame "+msg.getData().getInt("current")+" of "+msg.getData().getInt("total"));
-				dialog.setProgress(100*msg.getData().getInt("current")/msg.getData().getInt("total"));				
 			};
 		};
 	}
 
+	// delete all files we have just generated ..
 	public void cleanUp(String preventThisFileFromBeingDeleted){
 		File tempFile=null;
 		for(int i=0; i<garbageList.size(); i++){
@@ -973,6 +952,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 		}
 	}
 
+	// thread to run the animation
 	private Runnable mShowAnimationTimeTask = new Runnable() {
 		public void run() {
 			boolean show_another_frame=false;
@@ -988,6 +968,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 			// convert and show it
 			String filename_of_frame=filename_of_file_ready_to_convert.substring(0,filename_of_file_ready_to_convert.lastIndexOf("_")+1);
 
+			// show the next frame
 			try {
 				convert_image(filename_of_frame+String.valueOf(show_frame)+".PNG", filename_of_frame+String.valueOf(show_frame)+".sgf", 0, false);
 				show_preview(filename_of_frame+String.valueOf(show_frame)+".sgf");
