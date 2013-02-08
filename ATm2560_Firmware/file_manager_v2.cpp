@@ -638,6 +638,26 @@ void speedo_filemanager_v2::parse_command(){
 				pAktors->run_reset_on_ATm328(); // !! BUG using this, the answere to the Bluetooth will time out!! set a fag or do whatever, but dont do this!
 				pMenu->display();
 				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
+				////////////////////////// USE THIS AS STARTUP ANIMATION /////////////////
+			} else if(msgBuffer[0]==CMD_SET_STARTUP){
+				// incoming:
+				// [0]CMD_SET_STARTUP
+				// [1..(msgLength-1)]CMD_SET_STARTUP
+				// outgoing
+				// [0]CMD_SET_STARTUP
+				// [1]STATUS
+				for(int i=1;i<msgLength && i<200;i++){
+					pOLED->startup[i-1]=msgBuffer[i];
+				}
+				pOLED->startup[msgLength]=0x00; // set stopper
+
+				msgLength=2;
+				msgBuffer[1]=STATUS_CMD_FAILED;
+				pConfig->storage_outdated=true;
+				if(pConfig->write("BASE.TXT")==0){
+					msgBuffer[1]=STATUS_CMD_OK;
+				}
+				////////////////////////// USE THIS AS STARTUP ANIMATION /////////////////
 				///////////////////////////// EMERGENCY /////////////////////////////////
 
 			} else {

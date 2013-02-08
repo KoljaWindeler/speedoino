@@ -47,6 +47,7 @@ class speedo_filemanager_v2{
 	#define CMD_FILE_RECEIVE		0x39
 	#define CMD_RESET_SMALL_AVR		0x40
 	#define CMD_SIGN_ON_FIRMWARE	0x41
+	#define CMD_SET_STARTUP 		0x42
 
 
 	#define WAIT_MS_FOR_DATA		2000
