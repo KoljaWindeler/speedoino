@@ -40,10 +40,11 @@ void speedo_filemanager_v2::parse_command(){
 	unsigned int	msgStartCounter	=	0;
 	unsigned int	timeout			=	0;
 	unsigned char	msgBuffer[285];
-	unsigned char	c, *p;
+	unsigned char	c;
 	unsigned char   isLeave = 0;
 	unsigned char 	last_file[22];
 	unsigned long last_file_seek=-1; // max
+	bool 			answere_transmitted=false;
 	pSensors->m_reset->set_deactive(false,true);
 
 	//*	main loop
@@ -229,6 +230,7 @@ void speedo_filemanager_v2::parse_command(){
 			 * Now process the STK500 commands, see Atmel Appnote AVR068
 			 */
 			bool change_disp=false; 
+			answere_transmitted=false;
 
 			if(DEBUG_TRANSFER){
 				char buffer[10];
@@ -609,6 +611,17 @@ void speedo_filemanager_v2::parse_command(){
 				// frame_counter starts with =0, if the sd2ssd returns a value > 0, the while loop
 				// ends after one interation. so frame_counter will be =1, so: >1 => ok, at least 1 frame
 				// shown, ==1 => failed, no frame shown
+
+				//assume that its alright
+				pMenu->state=9999999;
+				unsigned char fast_reply_buffer[3];
+				msgLength=2; // cmd + status ok
+				fast_reply_buffer[0]=CMD_SHOW_GFX;
+				fast_reply_buffer[1]=STATUS_CMD_OK;
+				send_answere(msgBuffer,msgLength,&seqNum,&msgParseState);
+				answere_transmitted=true;
+
+				// show gif/jpg
 				int return_value=0;
 				int frame_counter=0;
 				while(return_value==0){
@@ -618,24 +631,18 @@ void speedo_filemanager_v2::parse_command(){
 					pSensors->m_reset->toggle();
 				}
 				// end animation
-				if(frame_counter>1){ // see comment above
-					pMenu->state=9999999;
-					msgLength=2; // cmd + status ok
-					msgBuffer[0]=CMD_SHOW_GFX;
-					msgBuffer[1]=STATUS_CMD_OK;
-				} else {
-					msgLength=3; // cmd + status ok
-					msgBuffer[0]=CMD_SHOW_GFX;
-					msgBuffer[1]=STATUS_CMD_FAILED;
-					msgBuffer[2]=return_value & 0xFF;
-				}
+
 				////////////////////////////// SHOW GFX /////////////////////////////////
 				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
 			} else if(msgBuffer[0]==CMD_RESET_SMALL_AVR){
+				unsigned char fast_reply_buffer[3];
 				msgLength=2; // cmd + status ok
-				msgBuffer[0]=CMD_RESET_SMALL_AVR;
-				msgBuffer[1]=STATUS_CMD_OK;
-				pAktors->run_reset_on_ATm328(); // !! BUG using this, the answere to the Bluetooth will time out!! set a fag or do whatever, but dont do this!
+				fast_reply_buffer[0]=CMD_RESET_SMALL_AVR;
+				fast_reply_buffer[1]=STATUS_CMD_OK;
+				send_answere(msgBuffer,msgLength,&seqNum,&msgParseState);
+				answere_transmitted=true;
+
+				pAktors->run_reset_on_ATm328(); //
 				pMenu->display();
 				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
 				////////////////////////// USE THIS AS STARTUP ANIMATION /////////////////
@@ -646,7 +653,7 @@ void speedo_filemanager_v2::parse_command(){
 				// outgoing
 				// [0]CMD_SET_STARTUP
 				// [1]STATUS
-				for(int i=1;i<msgLength && i<200;i++){
+				for(unsigned int i=1;i<msgLength && i<200;i++){
 					pOLED->startup[i-1]=msgBuffer[i];
 				}
 				pOLED->startup[msgLength]=0x00; // set stopper
@@ -669,33 +676,9 @@ void speedo_filemanager_v2::parse_command(){
 
 
 			//////////////////////////// SEND BACK //////////////////////////////////
-			Serial.print((char)MESSAGE_START);
-			checksum	=	MESSAGE_START^0;
-
-			Serial.print((char)seqNum);
-			checksum	^=	seqNum;
-
-			//c			=	msgLength&0x00FF;
-			Serial.print((char)(msgLength>>8));
-			checksum ^= (msgLength>>8);
-
-			Serial.print((char)(msgLength&0xff));
-			checksum ^= (msgLength&0xff);
-
-			Serial.print((char)TOKEN);
-			checksum ^= TOKEN;
-
-			p	=	msgBuffer;
-			while(msgLength){
-				c	=	*p++;
-				Serial.print((char)c);
-				checksum ^=c;
-				msgLength--;
+			if(!answere_transmitted){
+				send_answere(msgBuffer,msgLength,&seqNum,&msgParseState);
 			}
-			Serial.print((char)checksum);
-
-			seqNum++;
-			msgParseState = ST_START;
 			//////////////////////////// SEND BACK //////////////////////////////////
 
 		}; // if isleave!=1
@@ -707,6 +690,39 @@ void speedo_filemanager_v2::parse_command(){
 	pSensors->m_reset->set_active(false,true);
 }; // fkt ende
 
+
+// fkt to reply on incoming messages
+int speedo_filemanager_v2::send_answere(unsigned char *msgBuffer,unsigned int msgLength,unsigned char *seqNum, unsigned char *msgParseState){
+	Serial.print((char)MESSAGE_START);
+	unsigned char	checksum	=	MESSAGE_START^0;
+	unsigned char	c, *p;
+
+	Serial.print((char)*seqNum);
+	checksum	^=	*seqNum;
+
+	//c			=	msgLength&0x00FF;
+	Serial.print((char)(msgLength>>8));
+	checksum ^= (msgLength>>8);
+
+	Serial.print((char)(msgLength&0xff));
+	checksum ^= (msgLength&0xff);
+
+	Serial.print((char)TOKEN);
+	checksum ^= TOKEN;
+
+	p	=	msgBuffer;
+	while(msgLength){
+		c	=	*p++;
+		Serial.print((char)c);
+		checksum ^=c;
+		msgLength--;
+	}
+	Serial.print((char)checksum);
+
+	*seqNum=*seqNum+1;
+	*msgParseState = ST_START;
+	return 0;
+}
 
 
 int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,SdFile *fm_file,SdFile *fm_handle,uint8_t flags){

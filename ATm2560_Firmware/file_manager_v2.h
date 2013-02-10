@@ -67,6 +67,7 @@ public:
 	void parse_command();
 private:
 	int get_file_handle(unsigned char *msgBuffer,unsigned char *last_file, SdFile *fm_file, SdFile *fm_handle,uint8_t flags);
+	int send_answere(unsigned char *msgBuffer,unsigned int msgLength,unsigned char *seqNum, unsigned char *msgParseState);
 	bool cd(char dir[20]);
 	bool recv_file(char filename[13]);
 	bool send_file(char filename[13]);
