@@ -124,6 +124,7 @@ public class BluetoothSerialService {
 	public static final byte CMD_FILE_RECEIVE			=  0x39;
 	public static final byte CMD_RESET_SMALL_AVR		=  0x40;
 	public static final byte CMD_SIGN_ON_FIRMWARE		=  0x41;
+	public static final byte CMD_SET_STARTUP			=  0x42;
 
 
 	public static final char STATUS_CMD_OK      =  0x00;
@@ -812,6 +813,7 @@ public class BluetoothSerialService {
 				case CMD_SHOW_GFX:
 				case CMD_FILE_RECEIVE:
 				case CMD_RESET_SMALL_AVR:
+				case CMD_SET_STARTUP:
 					break;
 
 				default:
@@ -1088,6 +1090,10 @@ public class BluetoothSerialService {
 		int bytesToSend=999;
 		item = 0; // cluster nr
 		byte send[] = new byte[250]; // 250 auf Vorbehalt, da die tatsaechliche laenge auch davon abhoengt wieviel noch da ist in der Datei
+		// check filename
+		if((dest.lastIndexOf('.')-dest.lastIndexOf('/'))>9){
+			dest=dest.substring(0, dest.lastIndexOf('/')+1+8)+dest.substring(dest.lastIndexOf('.'));
+		}
 		// prepare static part
 		send[0]=CMD_PUT_FILE;
 		send[1]=(byte) (dest.length() & 0x000000FF);
@@ -1275,7 +1281,7 @@ public class BluetoothSerialService {
 		return 0;
 	}
 
-	public int showgfx(String filename) throws InterruptedException {
+	public int showgfx(String filename) {
 		/* hinweg:
 		 * msgBuffer[0]=CMD_SHOW_GFX
 		 * msgBuffer[1]=length of filename
@@ -1296,7 +1302,13 @@ public class BluetoothSerialService {
 		};
 		Log.i(TAG, "sendet");
 		Log.i("SEND","showgfx()");
-		int send_value=send(send, 2+filename.length(),10000); // 10 sec für die animation
+		int send_value=0;
+		try {
+			send_value = send(send, 2+filename.length(),1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} // 10 sec für die animation
 
 		if(send_value>0){
 			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
@@ -1309,7 +1321,10 @@ public class BluetoothSerialService {
 		// im schlimmsten fall hier ein while auf ne globale variable
 		Log.i(TAG_SEM, "show gfx wartet");
 		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
-		semaphore.acquire();
+		try {
+			semaphore.acquire();
+		} catch (InterruptedException e) {	e.printStackTrace();	} 
+		// TODO, warum kommt der Timer hier nicht her?
 		Log.i(TAG_SEM,"showgfx hat sich einen semaphore gekrallt");
 		semaphore.release();
 		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
@@ -1324,6 +1339,74 @@ public class BluetoothSerialService {
 			Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
 			Bundle bundle = new Bundle();
 			bundle.putString(SpeedoAndroidActivity.TOAST, "Show image failed");
+			msg.setData(bundle);
+			mHandler.sendMessage(msg);
+			Log.i(TAG, "return -1");
+			return -1;
+
+		}
+		Log.i(TAG, "return 0");
+		return 0;
+
+	}
+
+	public int setStartup(String filename, int interFrameTime, int StartFrame, int EndFrame) {
+		/* hinweg:
+		 * msgBuffer[0]=CMD_SET_STARTUP
+		 * msgBuffer[1..X]=Filename,startframe,endframe,interframeTime
+		 * 		 * 
+		 * rueckweg:
+		 * msgBuffer[0]=CMD_SET_STARTUP
+		 * msgBuffer[1]=COMMAND_OK
+		 */
+		filename=filename.toUpperCase();
+		if(filename.lastIndexOf('/')>=0){
+			filename=filename.substring(filename.lastIndexOf('/')+1); // remove the "path" from filename
+		}
+		String construction_string=filename+","+String.valueOf(StartFrame)+","+String.valueOf(EndFrame)+","+String.valueOf(interFrameTime);
+		
+		byte send[] = new byte[construction_string.length()+2]; // +2 because one is command and one to be save
+		// prepare static part
+		send[0]=CMD_SET_STARTUP;
+		for(int i=0;i<construction_string.length();i++){
+			send[i+1]=(byte)construction_string.charAt(i);
+		};
+		
+
+
+		Log.i(TAG, "sendet");
+		Log.i("SEND","showgfx()");
+		int send_value=0;
+		try {
+			send_value = send(send, construction_string.length(),1000); // 1 sec for saving (writing to SD Card might take some ms)
+		} catch (InterruptedException e) {	e.printStackTrace();	} 
+
+		if(send_value>0){
+			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
+			semaphore.release();
+			Log.i(TAG_SEM,"set STARTUP send failed hat den semaphore zurueck gegeben");
+			return send_value;
+		}
+
+		// wait here until we can get the semaphore
+		// im schlimmsten fall hier ein while auf ne globale variable
+		Log.i(TAG_SEM, "set STARTUP wartet");
+		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+		try {	semaphore.acquire();	} catch (InterruptedException e) {	e.printStackTrace();	}
+		Log.i(TAG_SEM,"set STARTUP hat sich einen semaphore gekrallt");
+		semaphore.release();
+		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
+		Log.i(TAG_SEM,"set STARTUP hat den semaphore zurueck gegeben");
+		// hier koennen wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
+		if(status==ST_EMERGENCY_RELEASE){
+			Log.i(TAG_RECV,"EMERGENCY TOKEN RETURN");
+			// hier sowas wie: 
+
+			status=STATUS_EOF;
+			msgLength=0;
+			Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
+			Bundle bundle = new Bundle();
+			bundle.putString(SpeedoAndroidActivity.TOAST, "Set startup failed");
 			msg.setData(bundle);
 			mHandler.sendMessage(msg);
 			Log.i(TAG, "return -1");
@@ -1572,7 +1655,7 @@ public class BluetoothSerialService {
 					bundle5.putInt("state", 4);
 					msg5.setData(bundle5);
 					mHandlerUpdate.sendMessage(msg5);
-					
+
 					// wait till connection is there
 					wait_time=0; // maximal 5 sekunden darauf warten das sich der state von searching auf connected dreht
 					while( getState()!=STATE_CONNECTED && wait_time<5000){
@@ -1595,23 +1678,25 @@ public class BluetoothSerialService {
 					Log.i("connect","sign_on sendet");
 					Log.i("SEND","upload_fileware0()");
 					if(send_save(send2, 1, 750, 15)==0){ // 750ms timeout, 15 retries, das hier wartet nochmal bis zu ~10sec
-//						if(msgBuffer[1]!=STATUS_CMD_OK && false){ //!! BUG !! der Tacho geht zuerst in den Reset und würde danach erst anworten, daher wird hier nix zurück kommen :(
-//							error=401;
-//
-//							// fortschritt schreiben
-//							Bundle bundle9 = new Bundle();
-//							Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-//							bundle9.putString("msg", "Invalid response, quitting");
-//							bundle9.putInt("state",
-//									55);
-//							msg9.setData(bundle9);
-//							mHandlerUpdate.sendMessage(msg9);
-//							Thread.sleep(3000);
-//							// fortschritt schreiben
-//
-//							return error;
-//						};
-						//setState(STATE_CONNECTED);
+												// testing!!
+												if(msgBuffer[1]!=STATUS_CMD_OK){ //!! BUG !! der Tacho geht zuerst in den Reset und würde danach erst anworten, daher wird hier nix zurück kommen :(
+													error=401;
+						
+													// fortschritt schreiben
+													Bundle bundle9 = new Bundle();
+													Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+													bundle9.putString("msg", "Invalid response, quitting");
+													bundle9.putInt("state",
+															55);
+													msg9.setData(bundle9);
+													mHandlerUpdate.sendMessage(msg9);
+													Thread.sleep(3000);
+													// fortschritt schreiben
+						
+													return error;
+												};
+												setState(STATE_CONNECTED);
+												// testing!!
 						Thread.sleep(10); // wait 10 ms
 						Log.i(TAG_LOGIN,"reset done");
 					} else {
@@ -1845,7 +1930,7 @@ public class BluetoothSerialService {
 		send2[0]=CMD_PROGRAM_FLASH_ISP;
 		int page_size=256;
 		if(flash2560==0) page_size=128; //ATm328 has a smaller page size!!
-		
+
 		for(int send_position=0;send_position<=highest_pos;send_position+=page_size){
 			int max_size_to_send=(int) (highest_pos-send_position+1); // bei 100byte im hex file -> highes pos=99 -> wenn send_position=99, dann m?ssen wir sehr wohl das 99te Byte noch senden
 			if(max_size_to_send>page_size) max_size_to_send=page_size; // send page_size byte bursts, due to the limited size of input buffer in the atmega (285=256+overhead)

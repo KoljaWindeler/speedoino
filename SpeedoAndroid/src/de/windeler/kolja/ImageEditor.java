@@ -115,6 +115,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 	private boolean changing_text = false;
 	private List<String> garbageList = new ArrayList<String>();
 	private Handler mTimerHandle = new Handler();
+	Toast toaster;
 
 	SharedPreferences settings;
 	public static final int REQUEST_SETTINGS=1;
@@ -161,7 +162,6 @@ public class ImageEditor extends Activity implements OnClickListener{
 		mButten.setEnabled(false); // assuming its NOT a animation
 		mButten.setBackgroundResource(R.drawable.arrow_right_gray);
 
-		image_filename = (EditText)findViewById(R.id.image_filename);
 		// save info to member file
 		filename_of_input_file = getIntent().getStringExtra(INPUT_FILE_NAME);
 		String cleaned_filename = filename_of_input_file.substring(filename_of_input_file.lastIndexOf('/')+1).replaceAll("(?:[^a-z0-9A-Z]|(?<=['\"])s)","");
@@ -172,6 +172,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 		}
 
 		///////////////////////////////////////////////////////// TEXT FIELD PROCESS /////////////////////////////////////
+		image_filename = (EditText)findViewById(R.id.image_filename);
 		image_filename.setText(cleaned_filename.substring(0,length_of_substring));
 		image_filename.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -311,7 +312,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 					interframe_time=mGifDecoder.delay;
 
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
+					show_toast("Sorry, the app crashed,please report this!");
 					e.printStackTrace();
 				}
 				// save the filename of the first frame, because thats the one we want to show in show_preview()
@@ -332,7 +333,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 					convert_image(filename_of_file_ready_to_convert, output_filename, 0, false);
 					show_preview(output_filename);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					show_toast("Sorry, the app crashed,please report this!");
 					e.printStackTrace();
 				}
 			} 
@@ -346,6 +347,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 			if(max_frame>1){
 				((Button) findViewById(R.id.RunAnimationImageConverter)).setEnabled(true);
 				((Button) findViewById(R.id.StopAnimationImageConverter)).setEnabled(true);
+				((Button) findViewById(R.id.RightImageConverter)).setEnabled(true);
 			}
 		}
 
@@ -375,10 +377,10 @@ public class ImageEditor extends Activity implements OnClickListener{
 			in.read(converted_image_buffer, 0, (int)(64*128*0.5)); // 64 lines, 128 cols, but just a half byte per px
 			in.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			show_toast("Sorry, the app crashed,please report this!");
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			show_toast("Sorry, the app crashed,please report this!");
 			e.printStackTrace();
 		}
 
@@ -636,8 +638,9 @@ public class ImageEditor extends Activity implements OnClickListener{
 		}
 	}
 
+	// just to have only one toast
 	public void show_toast(String msg){
-		Toast toaster=Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+		toaster=Toast.makeText(this, msg, Toast.LENGTH_SHORT);
 		toaster.show();
 	}
 
@@ -650,7 +653,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 			// open File
 			//String result_filename = basedir+image_filename.getText().toString()+".sgf";
 			String input_filename = filename_of_file_ready_to_convert;
-			String output_filename=filename_of_input_file.substring(0,filename_of_input_file.lastIndexOf("."))+".sgf";
+			String output_filename=filename_of_input_file.substring(0,filename_of_input_file.lastIndexOf("/")+1)+((EditText)findViewById(R.id.image_filename)).getText()+".sgf";
 
 			// check if there are more images with the same name
 			String filename_without_ext=input_filename.substring(0, input_filename.lastIndexOf("."));
@@ -729,8 +732,8 @@ public class ImageEditor extends Activity implements OnClickListener{
 				e.printStackTrace();
 			}
 
-			// take a look if we should deactivate the buttons or even activate one
-			if(show_frame<=0){
+			// take a look if we should deactivate the buttons or even activate one, || if we are one 0 -> no left || if we are on max -> no right ||
+			if(show_frame<1){
 				mButten = (Button) findViewById(R.id.LeftImageConverter);
 				mButten.setEnabled(false);
 				mButten.setBackgroundResource(R.drawable.arrow_left_gray);

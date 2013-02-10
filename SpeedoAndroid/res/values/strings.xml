@@ -82,5 +82,13 @@
         <item>Black</item>
         <item>White</item>
     </string-array>
+    
+    
+    <string-array name="upload_context_menu">
+        <item>Play</item>
+        <item>Play with custom speed</item>
+        <item>Set as Startup</item>
+        <item>Set as Startup with custom speed</item>
+    </string-array>
 
 </resources>

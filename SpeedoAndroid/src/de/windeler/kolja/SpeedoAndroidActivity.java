@@ -7,8 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.concurrent.Semaphore;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.bluetooth.BluetoothAdapter;
@@ -23,6 +26,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,6 +68,7 @@ OnClickListener {
 	private long t2a_size = 0;
 	private int back_pushed = 0;
 	private int statusLastCommand = 0;
+	private final Semaphore semaphore = new Semaphore(1, true);
 
 	/**
 	 * Our main view. Displays the emulated terminal screen.
@@ -187,12 +193,12 @@ OnClickListener {
 						res.getDrawable(R.drawable.ic_tab_download))
 						.setContent(R.id.downloadLayout);
 		tabHost.addTab(spec);
-		
+
 		// add strategies tab // remember to include in the main.xml
 		spec = tabHost.newTabSpec("strategies2")
-					  .setIndicator("Tools",
-							  res.getDrawable(R.drawable.ic_tab_tool))
-							  .setContent(R.id.tool_Layout);
+				.setIndicator("Tools",
+						res.getDrawable(R.drawable.ic_tab_tool))
+						.setContent(R.id.tool_Layout);
 		tabHost.addTab(spec);
 		// layout ende
 
@@ -892,12 +898,7 @@ OnClickListener {
 	protected class showGFX extends AsyncTask<String, Integer, String> {
 		@Override
 		protected String doInBackground(String... params) {
-			try {
-				mSerialService.showgfx(params[0]);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			;
+			mSerialService.showgfx(params[0]);
 			return "japp";
 		}
 	};
@@ -1093,7 +1094,7 @@ OnClickListener {
 						}
 					}
 					mDLListView.setAdapter(fileList);
-
+					registerForContextMenu(mDLListView);
 					mDLListView
 					.setOnItemClickListener(new OnItemClickListener() {
 						public void onItemClick(AdapterView<?> arg0,
@@ -1158,8 +1159,87 @@ OnClickListener {
 		}
 	};
 
+	// TODO ... create menu here
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		if (v.getId()==R.id.dlList) {
+			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+			HashMap<String, Object> item = new HashMap<String, Object>(); // to get the right key
+			item = mList.get(info.position);
+			String name = (String) item.get(ITEM_KEY);
+			int type = typeMap.get(name);
+			long size = sizeMap.get(name);
+
+			if (type == 1) {
+				t2a_dest = "";
+				if (dir_path != "/") // z.B. CONFIG
+					t2a_dest = dir_path + "/"; // CONFIG/
+				t2a_dest = t2a_dest + name; // CONFIG/BASE.TXT
+				t2a_size = size;
 
 
+				//info.position
+				menu.setHeaderTitle("Additional Actions");
+				// select menu depending on type TODO
+				if(t2a_dest.substring(t2a_dest.lastIndexOf('.')).toLowerCase().equals(".sgf")){
+					String[] menuItems = getResources().getStringArray(R.array.upload_context_menu);
+					for (int i = 0; i<menuItems.length; i++) {
+						menu.add(Menu.NONE, i, i, menuItems[i]);
+					}
+				} else {
+					menu.add(Menu.NONE, 0, 0, "-");
+				}
+			}
+		}
+	}
+	// add all posibile menu_items here ...
+	// TODO: Depending on the loaded menu on Top ... (global var?)
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+		int menuItemIndex = item.getItemId();
+		// get delay if needed
+		if(menuItemIndex==1 || menuItemIndex==3){
+			SingleChoiceWithRadioButton(menuItemIndex);
+		}
+		
+		// go on
+		if(menuItemIndex==0){
+			mSerialService.showgfx(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1));
+		} else if(menuItemIndex==2){
+			mSerialService.setStartup(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1),25,0,(int) (t2a_size/4096));
+		}
+		return true;
+	}
+
+	// menu helper, just showing a small list of possible wait values to speed or slow the animation
+	private void SingleChoiceWithRadioButton(final int menuItemIndex) {  
+		Builder builder = new AlertDialog.Builder(this);  
+		builder.setTitle("Select your delay");
+
+		String [] delays = new String [30];
+		for(int i=0; i<30; i++){
+			delays[i] =String.valueOf(i*5)+" ms";
+		};
+		
+		builder.setItems(delays, new DialogInterface.OnClickListener() {  
+			@Override  
+			public void onClick(DialogInterface dialog, int which) {  
+				int InterFramedelay=(which+1)*5;
+				if(menuItemIndex==1){
+					mSerialService.showgfx(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1)); // TODO Add speed
+				} else if(menuItemIndex==3){
+					mSerialService.setStartup(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1),InterFramedelay,0,(int) (t2a_size/4096));
+				}
+				dialog.dismiss();
+			}  
+		});  
+		builder.setNegativeButton("cancel",	new DialogInterface.OnClickListener() {  
+			@Override  
+			public void onClick(DialogInterface dialog, int which) {	semaphore.release();	dialog.dismiss();	}});  
+		AlertDialog alert = builder.create();  
+		alert.show();  
+	}  
 
 	/* prozedure zum updaten der firmware
 	 * wir ben�tigen zum updaten zwei dinge: den dateinamen des hex files und 
