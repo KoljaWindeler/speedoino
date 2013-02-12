@@ -105,7 +105,7 @@ int main(){
 	Init();
 	while(1) {
 		wdt_reset();
-		//check_power_state();
+		check_power_state();
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
 			/////////////////////////// MOVE /////////////////////////////////////
