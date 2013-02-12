@@ -407,7 +407,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->draw_air(20,24);
 		pOLED->draw_oil(10,32);
 	}
-	//////////////////////// extend voltage info ////////////////////////////
+	//////////////////////// stepper info ////////////////////////////
 	else if(floor(state/10)==54) {
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 		// Menu vorbereiten
@@ -415,6 +415,9 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->clear_screen();
 		pOLED->highlight_bar(0,0,128,8);
 		pOLED->string_P(pSpeedo->default_font,PSTR("Additional info"),2,0,15,0,0);
+		// this is just the caption,
+		// the loop will fill the screen
+		//		 pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS);
 	}
 	//////////////////////// TEST des watchdogs durch absitzen ////////////////////////
 	else if(floor(state/10)==56){ // 56[X]
