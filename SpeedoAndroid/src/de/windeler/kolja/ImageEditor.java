@@ -49,7 +49,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-public class ImageEditor extends Activity implements OnClickListener{
+public class ImageEditor extends Activity implements OnClickListener{ 
 
 	/* image converter
 	 * we need to have the following functions
@@ -62,7 +62,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 	 * temp_filename=prepare_image(input_filename);
 	 * temp_filename_converted=temp_filename.SGF
 	 * if(ext!=SGF)
-	 * 	convert_file(temp_filename,temp_filename_converted,false)
+	 * 	convert_file(temp_filename,temp_filename_converted,false) 
 	 * show_preview(temp_filename_converted)
 	 * 
 	 * 
@@ -261,7 +261,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 		@Override
 		protected void onPreExecute() {
-			dialog.setMessage("Opening image...");
+			dialog.setMessage("Loading image...");
 			dialog.show();
 		};
 
@@ -296,7 +296,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 							// write image to file
 							mTmpBitmap = mGifDecoder.getFrame(i);
-							String filename=outputDir+filename_without_ext.substring(filename_without_ext.lastIndexOf("/")+1)+"_"+String.valueOf(i)+".PNG";
+							String filename=outputDir+filename_without_ext.substring(filename_without_ext.lastIndexOf("/")+1)+"_"+String.valueOf(i)+".png";
 							FileOutputStream out = new FileOutputStream(filename);
 							mTmpBitmap.compress(Bitmap.CompressFormat.PNG, 96, out); // 4% compression
 							garbageList.add(filename);
@@ -348,6 +348,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 				((Button) findViewById(R.id.RunAnimationImageConverter)).setEnabled(true);
 				((Button) findViewById(R.id.StopAnimationImageConverter)).setEnabled(true);
 				((Button) findViewById(R.id.RightImageConverter)).setEnabled(true);
+				((Button) findViewById(R.id.RightImageConverter)).setBackgroundResource(R.drawable.arrow_right);
 			}
 		}
 
