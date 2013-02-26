@@ -1998,6 +1998,7 @@ public class BluetoothSerialService {
 		bundle37.putString("msg", "Thanks for using");
 		bundle37.putInt("state", 97);
 		msg37.setData(bundle37);
+		stop();
 		mHandlerUpdate.sendMessage(msg37);
 		Thread.sleep(10000);
 
