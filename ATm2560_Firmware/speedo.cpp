@@ -503,6 +503,7 @@ void speedo_speedo::clear_vars(){
 	// Startup sequenz im Tacho
 	memset(pOLED->startup,'\0',200);
 	sprintf(pOLED->startup,"ERROR,0,0,0;");
+	pDebug->sprintlnp(PSTR("Speedo values clear"));
 }
 
 void speedo_speedo::check_vars(){

@@ -1,4 +1,4 @@
-inc/SdVolume.d inc/SdVolume.o: ../inc/SdVolume.cpp \
+inc/SdVolume.d: ../inc/SdVolume.cpp \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdFat.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdStream.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdFile.h \

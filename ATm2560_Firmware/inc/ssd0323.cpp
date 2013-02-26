@@ -147,7 +147,7 @@ void ssd0323::line(unsigned char x,unsigned char y,unsigned char x2,unsigned cha
 	}
 }
 
-void ssd0323::zeichen_big_1x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset){
+void ssd0323::zeichen_big_1x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset){
 	unsigned char a,b;
 	unsigned int stelle;
 
@@ -209,7 +209,7 @@ void ssd0323::zeichen_big_1x(uint8_t *font,unsigned char z, int spalte, int zeil
 
 
 /////////////////////////////// string to display 5x8 ///////////////////////////////
-void ssd0323::zeichen_small_1x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset){
+void ssd0323::zeichen_small_1x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset){
 	unsigned char a ,b ,c;
 	unsigned int stelle;
 
@@ -246,7 +246,7 @@ void ssd0323::zeichen_small_1x(uint8_t *font,unsigned char z, int spalte, int ze
 }
 
 /////////////////////////////// string to display 5x8 ///////////////////////////////
-void ssd0323::zeichen_small_2x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset){
+void ssd0323::zeichen_small_2x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset){
 	unsigned char a ,b ,c,d, ba,co;
 	unsigned int stelle;
 
@@ -291,7 +291,7 @@ void ssd0323::zeichen_small_2x(uint8_t *font,unsigned char z, int spalte, int ze
 }
 
 /////////////////////////////// string to display 5x8 ///////////////////////////////
-void ssd0323::zeichen_small_3x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset){
+void ssd0323::zeichen_small_3x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset){
 	unsigned char a ,b ,c,d, ba,co;
 	unsigned int stelle;
 
@@ -356,7 +356,7 @@ void ssd0323::zeichen_small_3x(uint8_t *font,unsigned char z, int spalte, int ze
 	}
 }
 /////////////////////////////// string to display 5x8 ///////////////////////////////
-void ssd0323::zeichen_small_4x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset){
+void ssd0323::zeichen_small_4x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset){
 	unsigned char a ,b ,c,d, ba,co;
 	unsigned int stelle;
 

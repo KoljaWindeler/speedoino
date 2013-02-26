@@ -26,7 +26,7 @@ public:
 	void display();
 	bool button_test(bool bt_keys_en, bool hw_keys_en);
 	void back();
-	void draw(const char** menu, int entries);
+	void draw(const char* const* menu, int entries);
 	void yesno(const char first[30],const char second[30],const char third[30]);
 	void copy_storagename_to_chararray(int id,char* array);
 	void popup(const char *first,const char *second);

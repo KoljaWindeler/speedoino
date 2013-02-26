@@ -47,6 +47,7 @@ void Speedo_sensors::clear_vars(){
 	m_gear->clear_vars();
 	m_oiler->clear_vars();
 	m_voltage->clear_vars();
+	pDebug->sprintlnp(PSTR("Sensors values clear"));
 };
 
 void Speedo_sensors::check_vars(){

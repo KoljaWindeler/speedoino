@@ -75,6 +75,7 @@ void Speedo_aktors::clear_vars(){
 	led_mode=1;
 
 	bt_pin=1234;
+	pDebug->sprintlnp(PSTR("Aktor values clear"));
 };
 
 bool Speedo_aktors::check_vars(){

@@ -4,7 +4,7 @@
 #ifndef z_code_H
 #define z_code_H
 
-static uint8_t sans_big[] PROGMEM = {
+const static uint8_t sans_big[] PROGMEM = {
 // @96 '0' (23 pixels wide)
 0x00, 0x7E, 0x00, //          ######
 0x03, 0xFF, 0xC0, //       ############
@@ -347,7 +347,7 @@ static uint8_t sans_big[] PROGMEM = {
 };
 
 
-static uint8_t visitor_code[] PROGMEM = {
+const static uint8_t visitor_code[] PROGMEM = {
 		// @0 ' ' (5 pixels wide)
 		0x00, //
 		0x00, //
@@ -1309,7 +1309,7 @@ static uint8_t visitor_code[] PROGMEM = {
 		0x00  //
 };
 
-static uint8_t z_code[] PROGMEM = {
+const static uint8_t z_code[] PROGMEM = {
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, // space
 0x04,0x04,0x04,0x04,0x00,0x00,0x04,0x00, // hex 21 = !
 0x0a,0x0a,0x0a,0x00,0x00,0x00,0x00,0x00, // hex 22 = "
@@ -1411,7 +1411,7 @@ static uint8_t z_code[] PROGMEM = {
 // Character bitmaps for DejaVu Sans 5pt
 // real char size: 7 pixels high, 5 pixels wide | left-aligned
 // row 8 filled with 0x00 due to better font placing
-static uint8_t dejaVuSans5ptBitmaps[] PROGMEM = {
+const static uint8_t dejaVuSans5ptBitmaps[] PROGMEM = {
 		// @0 ' ' (5 pixels wide)
 		0x00, //
 		0x00, //
@@ -2374,7 +2374,7 @@ static uint8_t dejaVuSans5ptBitmaps[] PROGMEM = {
 		0x00  //
 };
 
-static uint8_t std_small[] PROGMEM = {
+const static uint8_t std_small[] PROGMEM = {
 		// @0 ' ' (5 pixels wide)
 		0x00, //
 		0x00, //

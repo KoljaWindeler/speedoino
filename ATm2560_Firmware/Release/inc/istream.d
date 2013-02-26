@@ -1,4 +1,4 @@
-inc/istream.d inc/istream.o: ../inc/istream.cpp \
+inc/istream.d: ../inc/istream.cpp \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/istream.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/ios.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdFile.h \

@@ -28,113 +28,113 @@ speedo_menu::~speedo_menu(){
 
 /////////////////////////////// Menus PROGMEM ///////////////////////////////
 ///////////////////// Main Menu /////////////////////
-prog_char main_m_0[] PROGMEM = "1. Speedoino";   // "String 0" etc are strings to store - change to suit.
-prog_char main_m_1[] PROGMEM = "2. Sprint clock";
-prog_char main_m_2[] PROGMEM = "3. Tour-Assistent";
-prog_char main_m_3[] PROGMEM = "4. -";
-prog_char main_m_4[] PROGMEM = "5. Extended info";
-prog_char main_m_5[] PROGMEM = "6. Customize";
-prog_char main_m_6[] PROGMEM = "7. Basic Setup";
-prog_char main_m_7[] PROGMEM = "8. Trip Avg Max";
-prog_char main_m_8[] PROGMEM = "9. Refueling";
-PROGMEM const char *menu_main[9] = { main_m_0,main_m_1,main_m_2,main_m_3,main_m_4,main_m_5,main_m_6,main_m_7,main_m_8 }; 	   // change "string_table" name to suit
+const char main_m_0[] PROGMEM = "1. Speedoino";   // "String 0" etc are strings to store - change to suit.
+const char main_m_1[] PROGMEM = "2. Sprint clock";
+const char main_m_2[] PROGMEM = "3. Tour-Assistent";
+const char main_m_3[] PROGMEM = "4. -";
+const char main_m_4[] PROGMEM = "5. Extended info";
+const char main_m_5[] PROGMEM = "6. Customize";
+const char main_m_6[] PROGMEM = "7. Basic Setup";
+const char main_m_7[] PROGMEM = "8. Trip Avg Max";
+const char main_m_8[] PROGMEM = "9. Refueling";
+const char * const menu_main[9] PROGMEM= { main_m_0,main_m_1,main_m_2,main_m_3,main_m_4,main_m_5,main_m_6,main_m_7,main_m_8 }; 	   // change "string_table" name to suit
 
 ///////////////////// Setup /////////////////////
-prog_char setup_m_0[] PROGMEM = "1. Gear calib.";   // "String 0" etc are strings to store - change to suit.
-prog_char setup_m_1[] PROGMEM = "2. Speed calib.";   // "String 0" etc are strings to store - change to suit.
-prog_char setup_m_2[] PROGMEM = "3. Display setup";
-prog_char setup_m_3[] PROGMEM = "4. Reset memory";
-prog_char setup_m_4[] PROGMEM = "5. -";
-prog_char setup_m_5[] PROGMEM = "6. BT Reset state";
-prog_char setup_m_6[] PROGMEM = "7. Water temp warn.";
-prog_char setup_m_7[] PROGMEM = "8. Oil temp warn.";
-prog_char setup_m_8[] PROGMEM = "9. -";
-PROGMEM const char *menu_setup[9] = { setup_m_0,setup_m_1,setup_m_2,setup_m_3,setup_m_4,setup_m_5,setup_m_6,setup_m_7,setup_m_8 };
+const char setup_m_0[] PROGMEM = "1. Gear calib.";   // "String 0" etc are strings to store - change to suit.
+const char setup_m_1[] PROGMEM = "2. Speed calib.";   // "String 0" etc are strings to store - change to suit.
+const char setup_m_2[] PROGMEM = "3. Display setup";
+const char setup_m_3[] PROGMEM = "4. Reset memory";
+const char setup_m_4[] PROGMEM = "5. -";
+const char setup_m_5[] PROGMEM = "6. BT Reset state";
+const char setup_m_6[] PROGMEM = "7. Water temp warn.";
+const char setup_m_7[] PROGMEM = "8. Oil temp warn.";
+const char setup_m_8[] PROGMEM = "9. -";
+const char  * const menu_setup[9] PROGMEM= { setup_m_0,setup_m_1,setup_m_2,setup_m_3,setup_m_4,setup_m_5,setup_m_6,setup_m_7,setup_m_8 };
 
 ///////////////////// Customize /////////////////////
-prog_char custom_m_0[] PROGMEM = "1. Load Skin";
-prog_char custom_m_1[] PROGMEM = "2. Add info area";
-prog_char custom_m_2[] PROGMEM = "3. Shift-Light";
-prog_char custom_m_3[] PROGMEM = "4. Speedo-Color";
-prog_char custom_m_4[] PROGMEM = "5. -";
-prog_char custom_m_5[] PROGMEM = "6. -";
-prog_char custom_m_6[] PROGMEM = "7. Set BT PIN";
-prog_char custom_m_7[] PROGMEM = "8. -";
-prog_char custom_m_8[] PROGMEM = "9. -";
-PROGMEM const char *menu_custom[9] = { custom_m_0,custom_m_1,custom_m_2,custom_m_3,custom_m_4,custom_m_5,custom_m_6,custom_m_7,custom_m_8 };
+const char custom_m_0[] PROGMEM = "1. Load Skin";
+const char custom_m_1[] PROGMEM = "2. Add info area";
+const char custom_m_2[] PROGMEM = "3. Shift-Light";
+const char custom_m_3[] PROGMEM = "4. Speedo-Color";
+const char custom_m_4[] PROGMEM = "5. -";
+const char custom_m_5[] PROGMEM = "6. -";
+const char custom_m_6[] PROGMEM = "7. Set BT PIN";
+const char custom_m_7[] PROGMEM = "8. -";
+const char custom_m_8[] PROGMEM = "9. -";
+const char  * const menu_custom[9] PROGMEM= { custom_m_0,custom_m_1,custom_m_2,custom_m_3,custom_m_4,custom_m_5,custom_m_6,custom_m_7,custom_m_8 };
 
 ///////////////////// Customize /////////////////////
-prog_char add_info_m_0[] PROGMEM = "1. Distance";
-prog_char add_info_m_1[] PROGMEM = "2. Time";
-prog_char add_info_m_2[] PROGMEM = "3. Avg Speed";
-prog_char add_info_m_3[] PROGMEM = "4. Max Speed";
-prog_char add_info_m_4[] PROGMEM = "5. Distance & Time";
-prog_char add_info_m_5[] PROGMEM = "6. Distance & Avg";
-prog_char add_info_m_6[] PROGMEM = "7. Distance & Max";
-prog_char add_info_m_7[] PROGMEM = "8. Time & Avg";
-prog_char add_info_m_8[] PROGMEM = "9. Time & Max";
-PROGMEM const char *menu_add_info[9] = { add_info_m_0,add_info_m_1,add_info_m_2,add_info_m_3,add_info_m_4,add_info_m_5,add_info_m_6,add_info_m_7,add_info_m_8 };
+const char add_info_m_0[] PROGMEM = "1. Distance";
+const char add_info_m_1[] PROGMEM = "2. Time";
+const char add_info_m_2[] PROGMEM = "3. Avg Speed";
+const char add_info_m_3[] PROGMEM = "4. Max Speed";
+const char add_info_m_4[] PROGMEM = "5. Distance & Time";
+const char add_info_m_5[] PROGMEM = "6. Distance & Avg";
+const char add_info_m_6[] PROGMEM = "7. Distance & Max";
+const char add_info_m_7[] PROGMEM = "8. Time & Avg";
+const char add_info_m_8[] PROGMEM = "9. Time & Max";
+const char  * const menu_add_info[9] PROGMEM= { add_info_m_0,add_info_m_1,add_info_m_2,add_info_m_3,add_info_m_4,add_info_m_5,add_info_m_6,add_info_m_7,add_info_m_8 };
 
 ///////////////////// Customize /////////////////////
-prog_char fade_m_0[] PROGMEM = "1. Static color";
-prog_char fade_m_1[] PROGMEM = "2. Speed based";
-prog_char fade_m_2[] PROGMEM = "3. RPM based";
-prog_char fade_m_3[] PROGMEM = "4. Oil temp based";
-prog_char fade_m_4[] PROGMEM = "5. Water temp based";
-prog_char fade_m_5[] PROGMEM = "6. -";
-prog_char fade_m_6[] PROGMEM = "7. -";
-prog_char fade_m_7[] PROGMEM = "8. -";
-prog_char fade_m_8[] PROGMEM = "9. -";
-PROGMEM const char *menu_fade[9] = { fade_m_0,fade_m_1,fade_m_2,fade_m_3,fade_m_4,fade_m_5,fade_m_6,fade_m_7,fade_m_8 };
+const char fade_m_0[] PROGMEM = "1. Static color";
+const char fade_m_1[] PROGMEM = "2. Speed based";
+const char fade_m_2[] PROGMEM = "3. RPM based";
+const char fade_m_3[] PROGMEM = "4. Oil temp based";
+const char fade_m_4[] PROGMEM = "5. Water temp based";
+const char fade_m_5[] PROGMEM = "6. -";
+const char fade_m_6[] PROGMEM = "7. -";
+const char fade_m_7[] PROGMEM = "8. -";
+const char fade_m_8[] PROGMEM = "9. -";
+const char  * const menu_fade[9] PROGMEM= { fade_m_0,fade_m_1,fade_m_2,fade_m_3,fade_m_4,fade_m_5,fade_m_6,fade_m_7,fade_m_8 };
 
 ///////////////////// Extend info /////////////////////
-prog_char einfo_m_0[] PROGMEM = "1. GPS infos 1/2";
-prog_char einfo_m_1[] PROGMEM = "2. GPS infos 2/2";
-prog_char einfo_m_2[] PROGMEM = "3. Sensors";
-prog_char einfo_m_3[] PROGMEM = "4. Stepper";
-prog_char einfo_m_4[] PROGMEM = "5. -";
-prog_char einfo_m_5[] PROGMEM = "6. Test Watchdog";
-prog_char einfo_m_6[] PROGMEM = "7. Show Animation";
-prog_char einfo_m_7[] PROGMEM = "8. About";
-prog_char einfo_m_8[] PROGMEM = "9. Tetris";
-PROGMEM const char *menu_einfo[9] = { einfo_m_0,einfo_m_1,einfo_m_2,einfo_m_3,einfo_m_4,einfo_m_5,einfo_m_6,einfo_m_7,einfo_m_8 };
+const char einfo_m_0[] PROGMEM = "1. GPS infos 1/2";
+const char einfo_m_1[] PROGMEM = "2. GPS infos 2/2";
+const char einfo_m_2[] PROGMEM = "3. Sensors";
+const char einfo_m_3[] PROGMEM = "4. Stepper";
+const char einfo_m_4[] PROGMEM = "5. -";
+const char einfo_m_5[] PROGMEM = "6. Test Watchdog";
+const char einfo_m_6[] PROGMEM = "7. Show Animation";
+const char einfo_m_7[] PROGMEM = "8. About";
+const char einfo_m_8[] PROGMEM = "9. Tetris";
+const char * const menu_einfo[9] PROGMEM= { einfo_m_0,einfo_m_1,einfo_m_2,einfo_m_3,einfo_m_4,einfo_m_5,einfo_m_6,einfo_m_7,einfo_m_8 };
 
 ///////////////////// Navigation /////////////////////
-prog_char navi_m_0[] PROGMEM = "1. Show in Speedo";   // "String 0" etc are strings to store - change to suit.
-prog_char navi_m_1[] PROGMEM = "2. Set pointer";   // "String 0" etc are strings to store - change to suit.
-prog_char navi_m_2[] PROGMEM = "3. Set file";   // "String 0" etc are strings to store - change to suit.
-prog_char navi_m_3[] PROGMEM = "4. Check writes"; // hier vielleicht ein: way to ziel: koordinaten aktuell im vergleich zum ziel, aktuellen course
-prog_char navi_m_4[] PROGMEM = "5. -";
-prog_char navi_m_5[] PROGMEM = "6. -";
-prog_char navi_m_6[] PROGMEM = "7. -";
-prog_char navi_m_7[] PROGMEM = "8. -";
-prog_char navi_m_8[] PROGMEM = "9. -";
-PROGMEM const char *menu_navi[9] = {navi_m_0,navi_m_1,navi_m_2,navi_m_3,navi_m_4,navi_m_5,navi_m_6,navi_m_7,navi_m_8};
+const char navi_m_0[] PROGMEM = "1. Show in Speedo";   // "String 0" etc are strings to store - change to suit.
+const char navi_m_1[] PROGMEM = "2. Set pointer";   // "String 0" etc are strings to store - change to suit.
+const char navi_m_2[] PROGMEM = "3. Set file";   // "String 0" etc are strings to store - change to suit.
+const char navi_m_3[] PROGMEM = "4. Check writes"; // hier vielleicht ein: way to ziel: koordinaten aktuell im vergleich zum ziel, aktuellen course
+const char navi_m_4[] PROGMEM = "5. -";
+const char navi_m_5[] PROGMEM = "6. -";
+const char navi_m_6[] PROGMEM = "7. -";
+const char navi_m_7[] PROGMEM = "8. -";
+const char navi_m_8[] PROGMEM = "9. -";
+const char  * const menu_navi[9] PROGMEM= {navi_m_0,navi_m_1,navi_m_2,navi_m_3,navi_m_4,navi_m_5,navi_m_6,navi_m_7,navi_m_8};
 
 ///////////////////// Menu title /////////////////////
-prog_char titel_0[] PROGMEM = "= Main menu =";   // "String 0" etc are strings to store - change to suit.
-prog_char titel_1[] PROGMEM = ""; // tacho hat keine caption
-prog_char titel_2[] PROGMEM = ""; // sprint hat keine caption
-prog_char titel_3[] PROGMEM = "= Navigation ="; // GPS hat keine caption
-prog_char titel_4[] PROGMEM = "";
-prog_char titel_5[] PROGMEM = "= Information =";
-prog_char titel_6[] PROGMEM = "= Customize =";
-prog_char titel_7[] PROGMEM = "= Setup =";
-prog_char titel_8[] PROGMEM = "= Storage = ";
-prog_char titel_9[] PROGMEM = "";
-PROGMEM const char *menu_titel[10] = { titel_0,titel_1,titel_2,titel_3,titel_4,titel_5,titel_6,titel_7,titel_8,titel_9};
+const char titel_0[] PROGMEM = "= Main menu =";   // "String 0" etc are strings to store - change to suit.
+const char titel_1[] PROGMEM = ""; // tacho hat keine caption
+const char titel_2[] PROGMEM = ""; // sprint hat keine caption
+const char titel_3[] PROGMEM = "= Navigation ="; // GPS hat keine caption
+const char titel_4[] PROGMEM = "";
+const char titel_5[] PROGMEM = "= Information =";
+const char titel_6[] PROGMEM = "= Customize =";
+const char titel_7[] PROGMEM = "= Setup =";
+const char titel_8[] PROGMEM = "= Storage = ";
+const char titel_9[] PROGMEM = "";
+const char * const menu_titel[10] PROGMEM = { titel_0,titel_1,titel_2,titel_3,titel_4,titel_5,titel_6,titel_7,titel_8,titel_9};
 
 /////
-prog_char trip_setup_m_0[] PROGMEM = "Total";   // "String 0" etc are strings to store - change to suit.
-prog_char trip_setup_m_1[] PROGMEM = "NonPermanent";
-prog_char trip_setup_m_2[] PROGMEM = "Day";
-prog_char trip_setup_m_3[] PROGMEM = "Tour";
-prog_char trip_setup_m_4[] PROGMEM = "Chain/Tire";
-prog_char trip_setup_m_5[] PROGMEM = "Fuel";
-prog_char trip_setup_m_6[] PROGMEM = "Oiler";
-prog_char trip_setup_m_7[] PROGMEM = "Saison";
-prog_char trip_setup_m_8[] PROGMEM = "Board";
-PROGMEM const char *menu_trip_setup[9] = {trip_setup_m_0,trip_setup_m_1,trip_setup_m_2,trip_setup_m_3,trip_setup_m_4,trip_setup_m_5,trip_setup_m_6,trip_setup_m_7,trip_setup_m_8};
+const char trip_setup_m_0[] PROGMEM = "Total";   // "String 0" etc are strings to store - change to suit.
+const char trip_setup_m_1[] PROGMEM = "NonPermanent";
+const char trip_setup_m_2[] PROGMEM = "Day";
+const char trip_setup_m_3[] PROGMEM = "Tour";
+const char trip_setup_m_4[] PROGMEM = "Chain/Tire";
+const char trip_setup_m_5[] PROGMEM = "Fuel";
+const char trip_setup_m_6[] PROGMEM = "Oiler";
+const char trip_setup_m_7[] PROGMEM = "Saison";
+const char trip_setup_m_8[] PROGMEM = "Board";
+const char * const menu_trip_setup[9] PROGMEM = {trip_setup_m_0,trip_setup_m_1,trip_setup_m_2,trip_setup_m_3,trip_setup_m_4,trip_setup_m_5,trip_setup_m_6,trip_setup_m_7,trip_setup_m_8};
 
 
 /////////////////////////////// Menus PROGMEM ///////////////////////////////
@@ -1346,7 +1346,7 @@ void speedo_menu::popup(const char *first,const char *second){
 /// bestätigen eines löschens ///
 
 ///// ein text menü zeichnen ////////////
-void speedo_menu::draw(const char** menu, int entries){
+void speedo_menu::draw(const char* const* menu, int entries){
 	//show "main menu" in mainmenu (state < 10 )
 	//otherwise, show caption of the particular menu
 	unsigned long level_1=state;

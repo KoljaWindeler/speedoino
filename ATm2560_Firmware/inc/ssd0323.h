@@ -79,13 +79,13 @@ typedef uint8_t byte;
 		void string_P(short font,const char *p_string,unsigned char spalte, unsigned char zeile, unsigned char back, unsigned char color,unsigned char offset);
 
 
-		void zeichen_small_1x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset); // fertig
-		void zeichen_small_2x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset); // fertig
-		void zeichen_small_3x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset); // fertig
-		void zeichen_small_4x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset); // fertig
-		void zeichen_medium_1x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset);  // warte auf schrift
-		void zeichen_medium_2x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset);  // warte auf schrift
-		void zeichen_big_1x(uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset);  // fertig
+		void zeichen_small_1x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset); // fertig
+		void zeichen_small_2x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset); // fertig
+		void zeichen_small_3x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset); // fertig
+		void zeichen_small_4x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset); // fertig
+		void zeichen_medium_1x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset);  // warte auf schrift
+		void zeichen_medium_2x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset);  // warte auf schrift
+		void zeichen_big_1x(const uint8_t *font,unsigned char z, int spalte, int zeile, int back, int color, unsigned char offset);  // fertig
 	};
 
 //	extern ssd0323 OLED;

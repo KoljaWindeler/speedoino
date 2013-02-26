@@ -32,6 +32,8 @@ void speedo_temperature::clear_vars(){
 	water_temp_value=0;
 	water_temp_fail_status=0; // 0 = no failed read, 1-5 = Number of shorts read, 6-9 = Number of open read
 
+	air_temp_value=0;
+
 	water_warning_temp=0; // 95 C
 	oil_warning_temp=0; // 120 C
 	// values for
@@ -57,11 +59,12 @@ bool speedo_temperature::check_vars(){
 		};
 
 		// Water
-		r_werte={354,323,241,198,157,135,111,93,80,64,52,43,37,30,23,18,15,10,9}; // widerstandswerte
-		t_werte={  30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,116}; // passender Temperaturwert
+		//TODO
+		int r_werte2[19]={354,323,241,198,157,135,111,93,80,64,52,43,37,30,23,18,15,10,9}; // widerstandswerte
+		int t_werte2[19]={  30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,116}; // passender Temperaturwert
 		for(unsigned int j=0; j<sizeof(water_r_werte)/sizeof(water_r_werte[0]); j++){
-			water_r_werte[j]=r_werte[j];
-			water_t_werte[j]=t_werte[j];
+			water_r_werte[j]=r_werte2[j];
+			water_t_werte[j]=t_werte2[j];
 		};
 
 		water_warning_temp=950; // 95 C

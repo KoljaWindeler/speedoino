@@ -1,4 +1,4 @@
-inc/SdFat.d inc/SdFat.o: ../inc/SdFat.cpp \
+inc/SdFat.d: ../inc/SdFat.cpp \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdFat.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdStream.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdFile.h \

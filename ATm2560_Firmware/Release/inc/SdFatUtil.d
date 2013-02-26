@@ -1,4 +1,4 @@
-inc/SdFatUtil.d inc/SdFatUtil.o: ../inc/SdFatUtil.cpp \
+inc/SdFatUtil.d: ../inc/SdFatUtil.cpp \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdFatUtil.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdFile.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdFatConfig.h \

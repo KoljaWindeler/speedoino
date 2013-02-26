@@ -1,7 +1,6 @@
-file_manager_v2.d file_manager_v2.o: ../file_manager_v2.cpp ../global.h \
- ../clock_me.h ../dz.h ../gps.h ../blinker.h ../temperature.h ../fuel.h \
- ../gear.h ../speed.h ../reset.h ../oiler.h ../voltage.h ../stepper.h \
- ../display.h \
+file_manager_v2.d: ../file_manager_v2.cpp ../global.h ../clock_me.h \
+ ../dz.h ../gps.h ../blinker.h ../temperature.h ../fuel.h ../gear.h \
+ ../speed.h ../reset.h ../oiler.h ../voltage.h ../stepper.h ../display.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/ssd0323.h \
  ../sd.h /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdFat.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdStream.h \

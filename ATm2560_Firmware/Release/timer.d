@@ -1,4 +1,4 @@
-timer.d timer.o: ../timer.cpp ../global.h ../clock_me.h ../dz.h ../gps.h \
+timer.d: ../timer.cpp ../global.h ../clock_me.h ../dz.h ../gps.h \
  ../blinker.h ../temperature.h ../fuel.h ../gear.h ../speed.h ../reset.h \
  ../oiler.h ../voltage.h ../stepper.h ../display.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/ssd0323.h \
