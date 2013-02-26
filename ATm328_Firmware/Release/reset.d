@@ -1,4 +1,4 @@
-reset.d reset.o: ../reset.c ../global.h ../reset.h
+reset.d: ../reset.c ../global.h ../reset.h
 
 ../global.h:
 
