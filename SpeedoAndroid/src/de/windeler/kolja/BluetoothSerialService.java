@@ -23,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
@@ -1364,14 +1366,14 @@ public class BluetoothSerialService {
 			filename=filename.substring(filename.lastIndexOf('/')+1); // remove the "path" from filename
 		}
 		String construction_string=filename+","+String.valueOf(StartFrame)+","+String.valueOf(EndFrame)+","+String.valueOf(interFrameTime);
-		
+
 		byte send[] = new byte[construction_string.length()+2]; // +2 because one is command and one to be save
 		// prepare static part
 		send[0]=CMD_SET_STARTUP;
 		for(int i=0;i<construction_string.length();i++){
 			send[i+1]=(byte)construction_string.charAt(i);
 		};
-		
+
 
 
 		Log.i(TAG, "sendet");
@@ -1678,25 +1680,25 @@ public class BluetoothSerialService {
 					Log.i("connect","sign_on sendet");
 					Log.i("SEND","upload_fileware0()");
 					if(send_save(send2, 1, 750, 15)==0){ // 750ms timeout, 15 retries, das hier wartet nochmal bis zu ~10sec
-												// testing!!
-												if(msgBuffer[1]!=STATUS_CMD_OK){ //!! BUG !! der Tacho geht zuerst in den Reset und würde danach erst anworten, daher wird hier nix zurück kommen :(
-													error=401;
-						
-													// fortschritt schreiben
-													Bundle bundle9 = new Bundle();
-													Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-													bundle9.putString("msg", "Invalid response, quitting");
-													bundle9.putInt("state",
-															55);
-													msg9.setData(bundle9);
-													mHandlerUpdate.sendMessage(msg9);
-													Thread.sleep(3000);
-													// fortschritt schreiben
-						
-													return error;
-												};
-												setState(STATE_CONNECTED);
-												// testing!!
+						// testing!!
+						if(msgBuffer[1]!=STATUS_CMD_OK){ //!! BUG !! der Tacho geht zuerst in den Reset und würde danach erst anworten, daher wird hier nix zurück kommen :(
+							error=401;
+
+							// fortschritt schreiben
+							Bundle bundle9 = new Bundle();
+							Message msg9 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+							bundle9.putString("msg", "Invalid response, quitting");
+							bundle9.putInt("state",
+									55);
+							msg9.setData(bundle9);
+							mHandlerUpdate.sendMessage(msg9);
+							Thread.sleep(3000);
+							// fortschritt schreiben
+
+							return error;
+						};
+						setState(STATE_CONNECTED);
+						// testing!!
 						Thread.sleep(10); // wait 10 ms
 						Log.i(TAG_LOGIN,"reset done");
 					} else {
@@ -1931,6 +1933,9 @@ public class BluetoothSerialService {
 		int page_size=256;
 		if(flash2560==0) page_size=128; //ATm328 has a smaller page size!!
 
+		//get current date
+		int time = (int) (System.currentTimeMillis());
+		float speed_flat=1600;
 		for(int send_position=0;send_position<=highest_pos;send_position+=page_size){
 			int max_size_to_send=(int) (highest_pos-send_position+1); // bei 100byte im hex file -> highes pos=99 -> wenn send_position=99, dann m?ssen wir sehr wohl das 99te Byte noch senden
 			if(max_size_to_send>page_size) max_size_to_send=page_size; // send page_size byte bursts, due to the limited size of input buffer in the atmega (285=256+overhead)
@@ -1978,9 +1983,37 @@ public class BluetoothSerialService {
 			};
 
 			// fortschritt schreiben
+			// calculate speed
+			int time_diff= ((int)System.currentTimeMillis()-time)/1000;
+			if(time_diff==0) time_diff=1;
+			int speed=send_position/time_diff;
+			speed_flat=(19*speed_flat+speed)/20;
+			String speed_filled=String.valueOf(Math.floor(speed_flat/10)/100);
+			while(speed_filled.substring(speed_filled.lastIndexOf('.')+1).length()<2){
+				speed_filled+="0";
+			}
+			// calculate remaining time
+			if(speed_flat==0) speed_flat=1600;
+			int time_left=(int) ((highest_pos-send_position)/speed_flat);
+			String std_left=String.valueOf((int)Math.floor(time_left/3600));
+			if(std_left.length()<2) std_left="0"+std_left;
+			String min_left=String.valueOf((int)Math.floor(time_left/60));
+			if(min_left.length()<2) min_left="0"+min_left;
+			String sec_left=String.valueOf(time_left%60);
+			if(sec_left.length()<2) sec_left="0"+sec_left;
+			// calculate amount
+			String amount=String.valueOf(Math.floor(send_position/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10);
+			String prozent=String.valueOf((int)(send_position*100)/highest_pos);
+			
+			// build message
+			String full_message="Speedoino at "+prozent+"%\n";
+			full_message+="    Total "+amount+" KB\n";
+			full_message+="    Upload @ "+speed_filled+" KB/sec\n";
+			full_message+="    Remaining "+std_left+":"+min_left+":"+sec_left;
+			
 			Bundle bundle = new Bundle();
 			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-			bundle.putString("msg", "Speedoino at "+String.valueOf(Math.floor(send_position/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10)+" KB");
+			bundle.putString("msg", full_message);
 			bundle.putInt("state", 7);
 			msg.setData(bundle);
 			mHandlerUpdate.sendMessage(msg);

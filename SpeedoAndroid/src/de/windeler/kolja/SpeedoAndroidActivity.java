@@ -50,7 +50,7 @@ OnClickListener {
 	private MenuItem mMenuItemConnect;
 	public BluetoothAdapter mBluetoothAdapter = null;
 	private String firmware_flash_filename=null;
-	private String firmware_flash_bluetooth_device=null;
+	public String firmware_flash_bluetooth_device=null;
 	public static final String DEVICE_NAME = "device_name";
 	public static final String TOAST = "toast";
 	public static final String result = "result";
@@ -829,6 +829,8 @@ OnClickListener {
 		public firmwareBurnDialog(Context cxt) {
 			context = cxt;
 			dialog = new ProgressDialog(context);
+			dialog.setCancelable(false);
+			dialog.setCanceledOnTouchOutside(false);
 		}
 
 		@Override
@@ -859,6 +861,7 @@ OnClickListener {
 		@Override
 		protected void onPostExecute(String result) {
 			dialog.dismiss();
+			firmware_flash_bluetooth_device=null;
 		}
 
 		private final Handler mHandlerUpdate = new Handler() {
