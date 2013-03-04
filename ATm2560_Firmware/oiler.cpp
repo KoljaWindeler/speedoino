@@ -18,6 +18,7 @@
 #include "global.h"
 
 speedo_oiler::speedo_oiler(void){
+	grenze=0;
 }
 
 speedo_oiler::~speedo_oiler(){
@@ -38,12 +39,10 @@ bool speedo_oiler::check_vars(){
 	return false;
 };
 
-void speedo_oiler::clear_vars(){
-	grenze=0;
-};
+
 
 int speedo_oiler::send_impulse(){
-	if(pSensors->m_speed->getSpeed()>30){ // nur ölen wenn wir über 30 kmh sind
+	if(pSensors->get_speed(false)>30){ // nur ölen wenn wir über 30 kmh sind
 		digitalWrite(OILER_PIN,HIGH); // 150ms high
 		_delay_ms(150);
 		digitalWrite(OILER_PIN,LOW);

@@ -134,7 +134,7 @@ void speedo_disp::draw_arrow(int arrow, int spalte, int zeile){
 	pOLED->string(pSpeedo->default_font,"   ",spalte,zeile,0,0,0); // 3x3 Buchstaben, 6x8
 	pOLED->string(pSpeedo->default_font,"   ",spalte,zeile+1,0,0,0); // 18x24
 	pOLED->string(pSpeedo->default_font,"   ",spalte,zeile+2,0,0,0);
-	if((pSensors->m_speed->getSpeed()>=3) && (arrow>-1)){ // nur den Winkel "goto" einzeichnen wenn die Geschwindigkeit >=3 kmh ist
+	if((pSensors->get_speed(false)>=3) && (arrow>-1)){ // nur den Winkel "goto" einzeichnen wenn die Geschwindigkeit >=3 kmh ist
 		// TODO: hier einen schickeren Winkel zeichnen...
 		// ein Strich im winkel pSensors->m_gps->winkel mit der länge l nach oben und unten
 		int m_x=(spalte+1)*6+3,m_y=(zeile+1)*8+4,l=8; // m_x=spalte*8+2, m_y=zeile*8+4 // spalte=1, zeile=2

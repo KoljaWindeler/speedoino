@@ -19,6 +19,23 @@
 Speedo_aktors::Speedo_aktors(){
 	m_stepper=new speedo_stepper();
 	m_oiler=new speedo_oiler();
+
+	kmh_min_value=0;
+	kmh_max_value=0;
+
+	dz_min_value=0;
+	dz_max_value=0;
+
+	oil_min_value=0;
+	oil_max_value=0;
+
+	water_min_value=0;
+	water_max_value=0;
+
+	led_mode=1;
+
+	bt_pin=1234;
+	dimm_state=999; //???
 };
 
 Speedo_aktors::~Speedo_aktors(){
@@ -60,26 +77,6 @@ void Speedo_aktors::run_reset_on_ATm328(){
 	pMenu->display();
 }
 
-void Speedo_aktors::clear_vars(){
-	kmh_min_value=0;
-	kmh_max_value=0;
-
-	dz_min_value=0;
-	dz_max_value=0;
-
-	oil_min_value=0;
-	oil_max_value=0;
-
-	water_min_value=0;
-	water_max_value=0;
-
-	led_mode=1;
-
-	bt_pin=1234;
-	m_oiler->clear_vars();
-
-	pDebug->sprintlnp(PSTR("Aktor values clear"));
-};
 
 bool Speedo_aktors::check_vars(){
 	if(kmh_min_value+kmh_max_value+dz_min_value+dz_max_value+oil_min_value+oil_max_value+water_min_value+water_max_value==0){
@@ -147,7 +144,6 @@ bool Speedo_aktors::check_vars(){
 };
 
 void Speedo_aktors::init(){
-	pDebug->sprintp(PSTR("Aktoren init ..."));
 	/* vier werte paare:
 	 * 1. Außen -> ändert sich öfters mal, wird mit std werten geladen
 	 * 2. Innen -> ändert sich eigentlich nie
@@ -196,7 +192,7 @@ void Speedo_aktors::init(){
 	I2c.write(PORT_REP_ADDR,0x00,0x00);
 	I2c.write(PORT_REP_ADDR,0x01,0x00);
 
-	pDebug->sprintlnp(PSTR(" Done"));
+	pDebug->sprintlnp(PSTR("Aktoren init ... Done"));
 };
 
 void Speedo_aktors::set_rgb_out(int r,int g,int b){
@@ -298,18 +294,6 @@ bool Speedo_aktors::dimm_available(){
 };
 
 
-
-/* defines:
- *
- */
-#define FLASH_COLOR_REACHED 0
-#define DIMM_TO_FLASH_COLOR 1
-#define STATIC_COLOR_REACHED 2
-#define DIMM_TO_STATIC_COLOR 3
-#define DIMM_TO_DARK 4
-#define MIN_REACHED 5
-#define MAX_REACHED 6
-
 void Speedo_aktors::set_active_dimmer(bool state){
 	colorfade_active=state;
 }
@@ -319,7 +303,7 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){
 	if(overwrite) dimm_state=999;
 
 	////////// SHIFT FLASH ////////////////
-	if(pSensors->m_dz->exact>unsigned(pSensors->m_dz->blitz_dz) && pSensors->m_dz->blitz_en){
+	if(pSensors->get_RPM(true)>unsigned(pSensors->m_dz->blitz_dz) && pSensors->m_dz->blitz_en){
 		if(dimm_state==FLASH_COLOR_REACHED){
 			return 0;
 		} else if(dimm_state==DIMM_TO_FLASH_COLOR){
@@ -362,28 +346,28 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){
 		case 1:
 			max_value=kmh_max_value;
 			min_value=kmh_min_value;
-			actual_value=pSensors->m_speed->getSpeed();
+			actual_value=pSensors->get_speed(false);
 			from_color=kmh_start_color;
 			to_color=kmh_end_color;
 			break;
 		case 2:
 			max_value=dz_max_value*100;
 			min_value=dz_min_value*100;
-			actual_value=pSensors->m_dz->exact;
+			actual_value=pSensors->get_RPM(true);
 			from_color=dz_start_color;
 			to_color=dz_end_color;
 			break;
 		case 3:
 			max_value=oil_max_value*10;
 			min_value=oil_min_value*10;
-			actual_value=pSensors->m_temperature->get_oil_temp();
+			actual_value=pSensors->get_oil_temperature();
 			from_color=oil_start_color;
 			to_color=oil_end_color;
 			break;
 		case 4:
 			max_value=water_max_value*10;
 			min_value=water_min_value*10;
-			actual_value=pSensors->m_temperature->get_water_temp();
+			actual_value=pSensors->get_water_temperature();
 			from_color=water_start_color;
 			to_color=water_end_color;
 			break;
@@ -579,4 +563,4 @@ int Speedo_aktors::set_rbg_active(int status){
 	return set_expander();
 }
 
- // at on day the mStepper should be part of the aktor class
+// at on day the mStepper should be part of the aktor class

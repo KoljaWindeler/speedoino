@@ -8,6 +8,9 @@
 #include "global.h"
 
 speedo_voltage::speedo_voltage(){
+	value_counter=0;
+	value=0;
+	bat_empty=false;
 };
 
 speedo_voltage::~speedo_voltage(){
@@ -67,10 +70,6 @@ bool speedo_voltage::check_vars(){
 	return false;
 };
 
-void speedo_voltage::clear_vars(){
-	value_counter=0;
-	value=0;
-}
 
 void speedo_voltage::init(){
 	//	pinMode(VOLTAGE_PIN,INPUT);

@@ -23,6 +23,14 @@
 #define FLASHER_LEFT 6 // bit in register
 #define OIL 7 // bit in register
 
+#define FLASH_COLOR_REACHED 0	// dimm states
+#define DIMM_TO_FLASH_COLOR 1
+#define STATIC_COLOR_REACHED 2
+#define DIMM_TO_STATIC_COLOR 3
+#define DIMM_TO_DARK 4
+#define MIN_REACHED 5
+#define MAX_REACHED 6
+
 
 
 typedef struct{
@@ -50,7 +58,6 @@ public:
 	Speedo_aktors(void);
 	~Speedo_aktors();
 	void init();
-	void clear_vars();
 	bool check_vars();
 	void set_rgb_in(int r,int g,int b);
 	void set_rgb_in(int r,int g,int b,int save);

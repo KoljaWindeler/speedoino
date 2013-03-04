@@ -17,7 +17,13 @@
 
 #include "global.h"
 
-speedo_reset::speedo_reset(){};
+speedo_reset::speedo_reset(){
+	toggle_high=true; // beliebig, einfach mal als startwert
+	last_time=millis();
+
+	// get reset reason
+	last_reset=-1; // denn wenn wir wegen strom neustarten ist der avr noch nicht soweit weil er 3 sek wartet damit wir soweit sind ;)
+};
 
 speedo_reset::~speedo_reset(){};
 
@@ -25,16 +31,6 @@ bool speedo_reset::check_vars(){
 	return false;
 };
 
-void speedo_reset::clear_vars(){
-	toggle_high=true; // beliebig, einfach mal als startwert
-	last_time=millis();
-
-	// get reset reason
-	last_reset=-1; // denn wenn wir wegen strom neustarten ist der avr noch nicht soweit weil er 3 sek wartet damit wir soweit sind ;)
-	Serial.print("->");
-	ask_reset();
-	Serial.print("<-");
-};
 
 void speedo_reset::init(){
 	Serial3.begin(19200);
@@ -45,8 +41,8 @@ void speedo_reset::init(){
 	} else {
 		set_deactive(false,true); // eeprom is set,set var
 	}
-
 	pDebug->sprintp(PSTR("Reset init done. Status "));
+	ask_reset();
 	Serial.println(last_reset);
 };
 
@@ -116,16 +112,13 @@ void speedo_reset::ask_reset(){
 		char recv[5];
 		unsigned int recv_counter=0;
 
-		Serial.print("..");
 		while(recv_counter<4 && (millis()-time)<1000){ // max 1 sec auf ein zeichen warten
-			Serial.println(millis()-time);
 			if(Serial3.available()>0){
-				Serial.println("drin");
 				recv[recv_counter]=Serial3.read();
 				recv_counter++;
 			}
 		};
-		Serial.print("..");
+
 
 		if(recv_counter>0 && recv[0]=='$' && recv[1]=='y' && recv[3]=='*'){
 			//char to int

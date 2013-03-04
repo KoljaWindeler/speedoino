@@ -17,6 +17,12 @@
 #include "global.h"
 
 speedo_gear::speedo_gear(){
+	faktor_counter=0;
+	gang=-1;
+
+	for(unsigned int j=0;j<sizeof(n_gang)/sizeof(n_gang[0]);j++){ // 0..6
+		n_gang[j]=0;
+	};
 };
 
 speedo_gear::~speedo_gear(){
@@ -41,14 +47,6 @@ bool speedo_gear::check_vars(){
 	return false;
 };
 
-void speedo_gear::clear_vars(){
-	faktor_counter=0;
-	gang=-1;
-
-	for(unsigned int j=0;j<sizeof(n_gang)/sizeof(n_gang[0]);j++){ // 0..6
-		n_gang[j]=0;
-	};
-};
 
 
 /* prozedure wird alle 250 ms aufgerufen und ermittelt den gang, packt ihn in ein tiefpass und stellt das ergebniss zur verfügung */
@@ -57,11 +55,11 @@ void speedo_gear::calc(){
 		last_time_executed=millis();
 
 		// faktor berechnen
-		if(pSensors->m_speed->get_mag_speed()>0){ // ich fahre also mit min 4 km/h .. dadurch wird der faktor max 15000/4=3500 .. das mal 16 ist noch im INT bereich
+		if(pSensors->get_speed(true)>0){ // ich fahre also mit min 4 km/h .. dadurch wird der faktor max 15000/4=3500 .. das mal 16 ist noch im INT bereich
 			if(!digitalRead(kupplungs_pin) && faktor_counter!=0){//Kupplung gezogen, einmalig laut geben was seit dem letzten mal so an min und max und flat ausgekommen ist
 				faktor_counter=0; // damit nach dem kuppeln die alten werte verworfen werden
 			} else if(digitalRead(kupplungs_pin)) { // Kupplung nicht gezogen, also gang berechnen
-				int faktor=pSensors->m_dz->exact/pSensors->m_speed->get_mag_speed(); // wie ist denn wohl der faktor
+				int faktor=pSensors->get_RPM(true)/pSensors->get_speed(true); // wie ist denn wohl der faktor
 				// changed from 8 to 4, to reduce delay while calculation //1.8.2012
 				faktor_flat=pSensors->flatIt(faktor*10,&faktor_counter,4,faktor_flat); // mal sehen ob man so eine art tiefpass faktor sinnvoll nutzen kann
 
@@ -124,7 +122,7 @@ void speedo_gear::calibrate(){
 
 	_delay_ms(150);
 	pSensors->m_dz->calc(); // erst berechnen dann damit weiter rechnen
-	faktor_flat=pSensors->flatIt(int((unsigned long)(10*pSensors->m_dz->exact)/pSensors->m_speed->get_mag_speed()),&faktor_counter,127,faktor_flat);
+	faktor_flat=pSensors->flatIt(int((unsigned long)(10*pSensors->get_RPM(true))/pSensors->get_speed(true)),&faktor_counter,127,faktor_flat);
 	if(faktor_flat!=pSpeedo->disp_zeile_bak[1]){
 		pSpeedo->disp_zeile_bak[1]=faktor_flat;
 

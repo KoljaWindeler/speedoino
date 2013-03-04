@@ -32,7 +32,7 @@ void speedo_sprint::init(){
 }
 
 void speedo_sprint::loop(){
-	int speed=pSensors->m_speed->get_mag_speed();
+	int speed=pSensors->get_speed(true);
 	if(!lock){ // ich bin der Meinung das es noch gar nicht losging
 		start=millis();
 		done=false;
@@ -74,13 +74,13 @@ void speedo_sprint::loop(){
 		// drehzahl
 		pSensors->m_dz->calc();
 		if(pSpeedo->disp_zeile_bak[2]==-99){ // wenn es gerade reseted wurde -> alles hinmalen
-			sprintf(char_buffer,"%5u U/min",pSensors->m_dz->rounded);
+			sprintf(char_buffer,"%5u U/min",pSensors->get_RPM(false));
 			pOLED->string(pSpeedo->default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
-		} else if (pSpeedo->disp_zeile_bak[2]!=signed(pSensors->m_dz->rounded+1)){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
-			sprintf(char_buffer,"%5u",pSensors->m_dz->rounded);
+		} else if (pSpeedo->disp_zeile_bak[2]!=signed(pSensors->get_RPM(false)+1)){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
+			sprintf(char_buffer,"%5u",pSensors->get_RPM(false));
 			pOLED->string(pSpeedo->default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
 		};
-		pSpeedo->disp_zeile_bak[2]=int(pSensors->m_dz->rounded+1); // zustand sichern
+		pSpeedo->disp_zeile_bak[2]=int(pSensors->get_RPM(false)+1); // zustand sichern
 
 
 		// zeit

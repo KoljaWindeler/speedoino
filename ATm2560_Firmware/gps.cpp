@@ -19,6 +19,39 @@
 
 // init & clean buffer
 speedo_gps::speedo_gps(){
+	// parsen
+	memset(gps_buffer1,'*',SERIAL_BUFFER_SIZE); // leere internen buffer
+	memset(gps_buffer2,'*',SERIAL_BUFFER_SIZE); // '*' ist endchar fuer gps signale, super "filler"
+
+	ringbuf_counter=0;
+	first_dataset=true;
+	gps_ready1=false;
+	gps_ready2=false;
+	gps_state=0;
+	written_gps_points=0;
+	// parsen
+
+	// navigation
+	valid=99;
+	entf=0;
+	winkel=0; // 0-359
+	inner_circle=false; // navigation
+	navi_active=false; // navigation
+	note_this_place=0;
+	// navigation
+
+	// speichern
+	gps_count=-1;
+	gps_count_up[0]=false;
+	gps_count_up[1]=false;
+	// speichern
+
+	// Debug
+	gps_write_status=0;
+	speed=0;
+
+	motion_start=-1;
+	active_file=0; //default datei navi0.smf
 };
 
 speedo_gps::~speedo_gps(){
@@ -59,41 +92,6 @@ void speedo_gps::init(){
 	pDebug->sprintlnp(PSTR("GPS init done"));
 };
 
-void speedo_gps::clear_vars(){
-	// parsen
-	memset(gps_buffer1,'*',SERIAL_BUFFER_SIZE); // leere internen buffer
-	memset(gps_buffer2,'*',SERIAL_BUFFER_SIZE); // '*' ist endchar fuer gps signale, super "filler"
-
-	ringbuf_counter=0;
-	first_dataset=true;
-	gps_ready1=false;
-	gps_ready2=false;
-	gps_state=0;
-	written_gps_points=0;
-	// parsen
-
-	// navigation
-	valid=99;
-	entf=0;
-	winkel=0; // 0-359
-	inner_circle=false; // navigation
-	navi_active=false; // navigation
-	note_this_place=0;
-	// navigation
-
-	// speichern
-	gps_count=-1;
-	gps_count_up[0]=false;
-	gps_count_up[1]=false;
-	// speichern
-
-	// Debug
-	gps_write_status=0;
-	speed=0;
-
-	motion_start=-1;
-	active_file=0; //default datei navi0.smf
-}
 
 bool speedo_gps::check_vars(){
 	return false;

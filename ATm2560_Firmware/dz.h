@@ -21,20 +21,20 @@ public:
 	void counter();
 	void calc();
 	void init();
-	void clear_vars();
 	bool check_vars();
 	unsigned int get_dz(bool exact_dz);
 	void shutdown();
 
-	unsigned int rounded;                 // to show on display, rounded by 50
-	unsigned int exact;                 // real rotation speed
-	unsigned int exact_disp;
+
 	unsigned int dz_flat;
 	unsigned char dz_faktor_counter;
 	unsigned char dz_disp_faktor_counter;
 	int blitz_dz;
 	bool blitz_en;
 private:
+	unsigned int rounded;                 // to show on display, rounded by 50
+	unsigned int exact;                 // real rotation speed
+	unsigned int exact_disp;
 	volatile unsigned int peak_count; // max 64k => bei 15krpm sind das 256 sek ... sollte reichen
 	unsigned long previous_time;
 	unsigned int previous_peaks;		// z�hlerstand vom peak

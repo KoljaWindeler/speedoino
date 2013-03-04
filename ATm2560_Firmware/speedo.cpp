@@ -29,8 +29,7 @@ void speedo_speedo::reset_bak(){
  ************* speedo main loop *************/
 void speedo_speedo::loop(unsigned long previousMillis){
 	char *char_buffer;
-	char_buffer = (char*) malloc (22);
-	if (char_buffer==NULL) pDebug->sprintlnp(PSTR("Malloc failed"));
+	char_buffer = (char*) malloc(22);
 
 	previousMillis=millis(); // get time for this loop
 	pDebug->speedo_loop(0,1,previousMillis,(char *)" "); // debug
@@ -41,16 +40,16 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * We prevent the screen from flickering by saving a coresponding
 	 * value in disp_zeile_bak[OIL_TEMP] and check that value before redraw
 	 ************************* oil temperature *********************/
-	if(disp_zeile_bak[OIL_TEMP]!=pSensors->m_temperature->get_oil_temp()+pSensors->m_temperature->oil_temp_fail_status){
+	if(disp_zeile_bak[OIL_TEMP]!=pSensors->get_oil_temperature()+pSensors->m_temperature->oil_temp_fail_status){
 		if(!(oil_widget.x==-1 && oil_widget.y==-1)){ // only show it if pos != -1/-1
-			disp_zeile_bak[OIL_TEMP]=int(pSensors->m_temperature->get_oil_temp()+pSensors->m_temperature->oil_temp_fail_status);
+			disp_zeile_bak[OIL_TEMP]=int(pSensors->get_oil_temperature()+pSensors->m_temperature->oil_temp_fail_status);
 			// below 20 degree the PTC is very antiliear so we won't show it
 			if(pSensors->m_temperature->oil_temp_fail_status==9){
 				sprintf(char_buffer," -     "); // error occored -> no sensor
 			} else if(pSensors->m_temperature->oil_temp_fail_status==5){
 				sprintf(char_buffer," --    "); // error occored -> short to gnd
-			} else 	if(pSensors->m_temperature->get_oil_temp()>200){
-				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_oil_temp()/10))%1000,pSensors->m_temperature->get_oil_temp()%10); // _32.3°C  7 stellen
+			} else 	if(pSensors->get_oil_temperature()>200){
+				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_oil_temperature()/10))%1000,pSensors->get_oil_temperature()%10); // _32.3°C  7 stellen
 			} else {
 				sprintf(char_buffer,"<20{C  "); // below 20°C add a space to have 5 chars
 			};
@@ -67,18 +66,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * We prevent the screen from flickering by saving a coresponding
 	 * value in disp_zeile_bak[OIL_TEMP] and check that value before redraw
 	 ************************* water temperature *********************/
-	if(disp_zeile_bak[WATER_TEMP]!=pSensors->m_temperature->get_water_temp()+pSensors->m_temperature->water_temp_fail_status){
+	if(disp_zeile_bak[WATER_TEMP]!=pSensors->get_water_temperature()+pSensors->m_temperature->water_temp_fail_status){
 		if(!(water_widget.x==-1 && water_widget.y==-1)){ // only show it if pos != -1/-1
-			disp_zeile_bak[WATER_TEMP]=int(pSensors->m_temperature->get_water_temp()+pSensors->m_temperature->water_temp_fail_status);
+			disp_zeile_bak[WATER_TEMP]=int(pSensors->get_water_temperature()+pSensors->m_temperature->water_temp_fail_status);
 			// below 20 degree the PTC is very antiliear so we won't show it
 			if(pSensors->m_temperature->water_temp_fail_status==9){
 				sprintf(char_buffer," -     "); // error occored -> no sensor
 			} else if(pSensors->m_temperature->water_temp_fail_status==5){	// could of fail reads
 				sprintf(char_buffer," --    "); // error occored -> short to gnd
-			} else 	if(pSensors->m_temperature->get_water_temp()>1100){
+			} else 	if(pSensors->get_water_temperature()>1100){
 				sprintf(char_buffer,">110{C  "); // more then 110°C add a space to have 5 chars
-			} else 	if(pSensors->m_temperature->get_water_temp()>300){
-				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->m_temperature->get_water_temp()/10))%1000,pSensors->m_temperature->get_oil_temp()%10); // _32.3°C  7 stellen
+			} else 	if(pSensors->get_water_temperature()>300){
+				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_water_temperature()/10))%1000,pSensors->get_oil_temperature()%10); // _32.3°C  7 stellen
 			} else {
 				sprintf(char_buffer,"<30{C  "); // below 20°C add a space to have 5 chars
 			};
@@ -96,10 +95,10 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * We prevent the screen from flickering by saving a corresponding
 	 * value in disp_zeile_bak[OIL_TEMP] and check that value before redraw
 	 ************************* air temperature *********************/
-	if(disp_zeile_bak[AIR_TEMP]!=pSensors->m_temperature->get_air_temp()){
+	if(disp_zeile_bak[AIR_TEMP]!=pSensors->get_air_temperature()){
 		if(!(air_widget.x==-1 && air_widget.y==-1)){ // only show it if pos != -1/-1
-			disp_zeile_bak[AIR_TEMP]=int(pSensors->m_temperature->get_air_temp());
-			sprintf(char_buffer,"%2i.%i{C",int(floor(pSensors->m_temperature->get_air_temp()/10))%100,pSensors->m_temperature->get_air_temp()%10);
+			disp_zeile_bak[AIR_TEMP]=int(pSensors->get_air_temperature());
+			sprintf(char_buffer,"%2i.%i{C",int(floor(pSensors->get_air_temperature()/10))%100,pSensors->get_air_temperature()%10);
 			pDebug->speedo_loop(2,0,previousMillis," ");
 			// depend on skinsettings
 			pOLED->string(air_widget.font,char_buffer,air_widget.x+1,air_widget.y,0,DISP_BRIGHTNESS,2);
@@ -127,8 +126,8 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * first if checks if the value equals -99, in this case the full display has to be rewritten, draw "km/h"
 	 * else just draw the number of km/h, but only refresh it if the difference is higher than 2 or we are very slow (below 10)
 	 ************************* geschwindigkeit *********************/
-	int temp_speed=pSensors->m_speed->getSpeed();
-	int temp_gps_speed=pSensors->m_speed->get_mag_speed();
+	int temp_speed=pSensors->get_speed(false);
+	int temp_gps_speed=pSensors->get_speed(true); // warum heisst der denn gps, wenns doch der mag ist?
 	if(!(kmh_widget.x==-1 && kmh_widget.y==-1)){ // only show it if pos != -1/-1
 		if(disp_zeile_bak[SPEED_VALUE]==-99){ // storage has been resetet, draw everything
 			sprintf(char_buffer,"%3i",temp_speed);
@@ -163,18 +162,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	// see comment on top, number (1)
 	//pSensors->m_dz->calc(); // calc in main loop to run the stepper in every menu
 	if(!(dz_widget.x==-1 && dz_widget.y==-1)){ // only show it if pos != -1/-1
-		if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->m_dz->rounded+1)){
+		if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->get_RPM(false)+1)){
 			if(disp_zeile_bak[DZ_VALUE]==-99){ //schreib alles neu, auch die buchstaben
-				sprintf(char_buffer,"%5i U/min",pSensors->m_dz->rounded); // auf glatte 250er
+				sprintf(char_buffer,"%5i U/min",pSensors->get_RPM(false)); // auf glatte 250er
 				pDebug->speedo_loop(5,0,previousMillis," ");
 				// depend on skinsettings
 				pOLED->string(dz_widget.font,char_buffer,dz_widget.x,dz_widget.y,0,DISP_BRIGHTNESS,0);
 			} else { // nur eine änderung im wert
-				sprintf(char_buffer,"%5i",pSensors->m_dz->rounded);
+				sprintf(char_buffer,"%5i",pSensors->get_RPM(false));
 				pDebug->speedo_loop(6,0,previousMillis," ");
 				pOLED->string(dz_widget.font,char_buffer,dz_widget.x,dz_widget.y,0,DISP_BRIGHTNESS,0);
 			};
-			disp_zeile_bak[DZ_VALUE]=int(pSensors->m_dz->rounded+1);
+			disp_zeile_bak[DZ_VALUE]=int(pSensors->get_RPM(false)+1);
 		};
 	};
 
@@ -307,9 +306,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	if(!(addinfo2_widget.x==-1 && addinfo2_widget.y==-1)){ // only show it if pos != -1/-1
 		// now, print variable messages, additional infos, see top comment (4)
 		/// warnung wegen zu hoher Drehzahl, erstmal checken ob wir von der drehzahl her in betrachtkommen
-		if(pSensors->m_dz->rounded>7000){
-			if((pSensors->m_temperature->get_oil_temp()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || 		// temperatur < 60°
-					(pSensors->m_temperature->get_water_temp()<600 && pSensors->m_temperature->water_temp_fail_status==0)){ // und keine Fehler beim lesen
+		if(pSensors->get_RPM(false)>7000){
+			if((pSensors->get_oil_temperature()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || 		// temperatur < 60°
+					(pSensors->get_water_temperature()<600 && pSensors->m_temperature->water_temp_fail_status==0)){ // und keine Fehler beim lesen
 				if(disp_zeile_bak[ADD_INFO2]!=101){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 					disp_zeile_bak[ADD_INFO2]=101;
 					pDebug->speedo_loop(10,0,previousMillis," ");
@@ -319,7 +318,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			}
 		}
 		///// Temp to high /////
-		else if(pSensors->m_temperature->get_oil_temp()>=pSensors->m_temperature->oil_warning_temp && pSensors->m_temperature->get_oil_temp()<8888){
+		else if(pSensors->get_oil_temperature()>=pSensors->m_temperature->oil_warning_temp && pSensors->get_oil_temperature()<8888){
 			if(disp_zeile_bak[ADD_INFO2]!=108){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=108;
 				pDebug->speedo_loop(14,0,previousMillis," ");
@@ -328,7 +327,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			};
 
 		}
-		else if(pSensors->m_temperature->get_water_temp()>=pSensors->m_temperature->water_warning_temp && pSensors->m_temperature->get_water_temp()<8888){
+		else if(pSensors->get_water_temperature()>=pSensors->m_temperature->water_warning_temp && pSensors->get_water_temperature()<8888){
 			if(disp_zeile_bak[ADD_INFO2]!=109){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=109;
 				pDebug->speedo_loop(14,0,previousMillis," ");
@@ -374,7 +373,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			};
 		}
 		///// Sensor in use but not found ///
-		else if(oil_widget.x!=-1 && oil_widget.y!=-1 && (pSensors->m_temperature->get_oil_temp()==8888 || pSensors->m_temperature->get_oil_temp()==9999)){
+		else if(oil_widget.x!=-1 && oil_widget.y!=-1 && (pSensors->get_oil_temperature()==8888 || pSensors->get_oil_temperature()==9999)){
 			if(disp_zeile_bak[ADD_INFO2]!=106){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=106;
 				pDebug->speedo_loop(14,0,previousMillis," ");
@@ -383,7 +382,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			};
 
 		}
-		else if(water_widget.x!=-1 && water_widget.y!=-1 && (pSensors->m_temperature->get_water_temp()==8888 || pSensors->m_temperature->get_water_temp()==9999)){
+		else if(water_widget.x!=-1 && water_widget.y!=-1 && (pSensors->get_water_temperature()==8888 || pSensors->get_water_temperature()==9999)){
 			if(disp_zeile_bak[ADD_INFO2]!=107){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=107;
 				pDebug->speedo_loop(14,0,previousMillis," ");

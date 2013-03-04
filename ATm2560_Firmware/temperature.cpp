@@ -18,12 +18,6 @@
 #include "global.h"
 
 speedo_temperature::speedo_temperature(){
-};
-
-speedo_temperature::~speedo_temperature(){
-};
-
-void speedo_temperature::clear_vars(){
 	oil_temp_value_counter=0;
 	oil_temp_value=0;
 	oil_temp_fail_status=0; // 0 = no failed read, 1-5 = Number of shorts read, 6-9 = Number of open read
@@ -44,7 +38,10 @@ void speedo_temperature::clear_vars(){
 		water_r_werte[j]=0;
 		water_t_werte[0]=0;
 	};
-}
+};
+
+speedo_temperature::~speedo_temperature(){
+};
 
 bool speedo_temperature::check_vars(){
 	if(water_r_werte[0]==0 || water_t_werte[0]==0 || oil_t_werte[0]==0 || oil_r_werte[0]==0){

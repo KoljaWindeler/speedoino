@@ -229,7 +229,7 @@ void speedo_filemanager_v2::parse_command(){
 			/*
 			 * Now process the STK500 commands, see Atmel Appnote AVR068
 			 */
-			bool change_disp=false; 
+			//bool change_disp=false;
 			answere_transmitted=false;
 
 			if(DEBUG_TRANSFER){

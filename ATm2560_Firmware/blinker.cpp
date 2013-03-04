@@ -17,6 +17,9 @@
 #include "global.h"
 
 moped_blinker::moped_blinker(){
+	guard_start=0;
+	high_speed_add=0;
+	dist_to_warn=0;
 }
 
 moped_blinker::~moped_blinker(){
@@ -24,28 +27,28 @@ moped_blinker::~moped_blinker(){
 };
 
 void moped_blinker::check(){
-  short int blinker_state=digitalRead(BLINKER_PIN);
-  bool blinker_on;
+	short int blinker_state=digitalRead(BLINKER_PIN);
+	bool blinker_on;
 
-  if(blinker_state==1){ // quasi high active
-    guard_start=millis(); // hier nichts ändern
-    blinker_on=true;
-    if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist wirklich an")); };
-  } else if (blinker_state==0 && guard_start+1000>millis()){
-    blinker_on=true; // wenn innerhalb der letzten sec der blinker an war
-    if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist aus aber guard intervall")); };
-  } else {
-    blinker_on=false;
-    if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist aus")); };
-  };
+	if(blinker_state==1){ // quasi high active
+		guard_start=millis(); // hier nichts ändern
+		blinker_on=true;
+		if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist wirklich an")); };
+	} else if (blinker_state==0 && guard_start+1000>millis()){
+		blinker_on=true; // wenn innerhalb der letzten sec der blinker an war
+		if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist aus aber guard intervall")); };
+	} else {
+		blinker_on=false;
+		if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist aus")); };
+	};
 
-  if(blinker_on && !lock){
-    lock=true;
-    set_start(pSpeedo->trip_dist[8],pSensors->m_speed->getSpeed()>80);
-  } else if(!blinker_on && lock){
-    lock=false;
-    start=0;
-  };
+	if(blinker_on && !lock){
+		lock=true;
+		set_start(pSpeedo->trip_dist[8],pSensors->get_speed(false)>80);
+	} else if(!blinker_on && lock){
+		lock=false;
+		start=0;
+	};
 };
 
 void moped_blinker::set_start(unsigned long dist,int kmh){
@@ -64,14 +67,9 @@ bool moped_blinker::warn(unsigned long dist){
 }
 
 void moped_blinker::init(){
-  pDebug->sprintlnp(PSTR("Blinker init done"));
+	pDebug->sprintlnp(PSTR("Blinker init done"));
 };
 
-void moped_blinker::clear_vars(){
-	guard_start=0;
-	high_speed_add=0;
-	dist_to_warn=0;
-};
 
 bool moped_blinker::check_vars(){
 	if(dist_to_warn==0){

@@ -14,14 +14,13 @@ public:
 	speedo_speed();
 	~speedo_speed();
 	void calc();
-	int get_mag_speed();
 	int getSpeed();
 	void init();
 	void shutdown();
-	void clear_vars();
 	bool check_vars();
 	void check_umfang();
 	int get_sat_speed();
+	int get_mag_speed();
 	int 		  gps_takeover;
 	unsigned char status;
 	float 		  reifen_umfang;

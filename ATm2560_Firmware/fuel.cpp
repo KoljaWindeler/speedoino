@@ -22,7 +22,11 @@
 //int fuel_max; // max
 /////////////// vars ///////////////////
 speedo_fuel::speedo_fuel(){
+	last_time=0;
+	blink_freq=0;	 // default value, überschreibt config
+	blink_start=0; // default value, überschreibt config
 };
+
 speedo_fuel::~speedo_fuel(){
 };
 
@@ -51,11 +55,6 @@ void speedo_fuel::init(){
 
 }
 
-void speedo_fuel::clear_vars(){
-	last_time=0;
-	blink_freq=0;	 // default value, überschreibt config
-	blink_start=0; // default value, überschreibt config
-}
 
 bool speedo_fuel::check_vars(){
 	if(blink_freq==0 || blink_start==0){

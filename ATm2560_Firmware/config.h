@@ -21,7 +21,6 @@ public:
 	configuration(void);
 	~configuration();
 	int write(const char filename[]);
-	int clear_vars();
 	int read(const char filename[]);
 	int get_hw_version();
 	int read_skin();

@@ -17,7 +17,13 @@
 
 #include "global.h"
 
-speedo_clock::speedo_clock(void){
+speedo_clock::speedo_clock(){
+	m_year=0;
+	m_mon=0;
+	m_day=0;
+	m_hh=0;
+	m_mm=0;
+	m_ss=0;
 };
 
 speedo_clock::~speedo_clock(){
@@ -51,7 +57,7 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss, 
 		Serial.println("Setting Clock:");
 		char *char_buffer;
 		char_buffer = (char*) malloc (60);
-		if (char_buffer==NULL) Serial.println("Malloc failed");
+		if (!char_buffer) Serial.println("Malloc failed");
 		else memset(char_buffer,'\0',60);
 
 		sprintf(char_buffer,"%i,%i,%i,%i,%i,%i",year%100,mon%100,day%100,hh%100,mm%100,ss%100);
@@ -160,14 +166,7 @@ void speedo_clock::init() {
 	// hier vom lustigen modul lesen ende
 }
 
-void speedo_clock::clear_vars(){
-	m_year=0;
-	m_mon=0;
-	m_day=0;
-	m_hh=0;
-	m_mm=0;
-	m_ss=0;
-}
+
 
 bool speedo_clock::check_vars(){
 	return false;

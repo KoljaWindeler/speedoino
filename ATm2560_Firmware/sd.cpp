@@ -68,8 +68,8 @@ void speedo_sd::power_up(unsigned char tries){
 		Serial.print("SD try:");
 		Serial.print(3-tries);
 		allright=true;
-		if (!card.init(SPI_HALF_SPEED))	{	allright=false; };
-		if (!volume.init(&card))		{ 	allright=false; }; // initialize a FAT volume
+		if (card.init((unsigned char)SPI_HALF_SPEED)==0){	allright=false; };
+		if (!volume.init(&card))						{ 	allright=false; }; // initialize a FAT volume
 		if(allright){
 			break;
 		} else {

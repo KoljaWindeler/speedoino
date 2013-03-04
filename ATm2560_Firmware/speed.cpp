@@ -18,6 +18,18 @@
 #include "global.h"
 
 speedo_speed::speedo_speed(){
+	last_time=millis();
+	reed_speed=0;
+	speed_peaks=1;
+	reifen_umfang=0; // Reifenumfang in metern
+	gps_takeover=0; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
+
+	// erstmal alle zwischenspeicher loeschen
+	for(unsigned int i=0; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
+		pSpeedo->trip_dist[i]=0;
+		pSpeedo->avg_timebase[i]=0;
+		pSpeedo->max_speed[i]=-99;
+	};
 };
 speedo_speed::~speedo_speed(){
 };
@@ -67,20 +79,6 @@ void speedo_speed::shutdown(){
 	EICRB &= ~((1<<ISC50) | (1<<ISC51)); // no edge on INT5
 }
 
-void speedo_speed::clear_vars(){
-	last_time=millis();
-	reed_speed=0;
-	speed_peaks=1;
-	reifen_umfang=0; // Reifenumfang in metern
-	gps_takeover=0; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
-
-	// erstmal alle zwischenspeicher loeschen
-	for(unsigned int i=0; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
-		pSpeedo->trip_dist[i]=0;
-		pSpeedo->avg_timebase[i]=0;
-		pSpeedo->max_speed[i]=-99;
-	};
-};
 
 bool speedo_speed::check_vars(){
 	/********** check values ********************
@@ -147,7 +145,7 @@ int speedo_speed::get_mag_speed(){
 
 void speedo_speed::check_umfang(){
 	int gps_speed=get_sat_speed();
-	int mag_speed=get_mag_speed();
+	int mag_speed=pSensors->get_speed(true);
 	if(pSensors->m_gps->get_info(6)<3 && pSpeedo->disp_zeile_bak[0]!=2){
 		pSpeedo->disp_zeile_bak[0]=2;
 		pOLED->highlight_bar(0,0,128,8);

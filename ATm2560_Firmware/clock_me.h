@@ -35,7 +35,6 @@ public:
 	~speedo_clock();
 	void init();
 	void loop();
-	void clear_vars();
 	bool check_vars();
 	void copy(char* buffer);
 	bool changed(int* storage);

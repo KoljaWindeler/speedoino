@@ -16,7 +16,11 @@
  */
 
 #include "global.h"
-configuration::configuration(){};
+configuration::configuration(){
+	last_speed_value=0;
+	storage_outdated=false;
+	skin_file=0;
+};
 configuration::~configuration(){};
 
 
@@ -81,6 +85,7 @@ int configuration::write(const char *filename){
 			 * Write those fast changing things like 
 			 * avg, dist, time for each of the 10 storages
 			 ****************************************************/
+			//if(strncmp_P(filename, PSTR("speedo.txt"),10) && storage_outdated){
 			if(strncmp("speedo.txt",filename,10)==0 && storage_outdated){
 				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
@@ -515,19 +520,6 @@ int configuration::write(const char *filename){
 };
 
 
-/********** load backup values ********************
- * Backup mig schon mal wert hineinschreiben
- * falls die SD Karte nicht geladen werden kann
- * Notberiebsmig
- **************************************************/
-int configuration::clear_vars(){
-	last_speed_value=0;
-	storage_outdated=false;
-	skin_file=0;
-	pDebug->sprintlnp(PSTR("Wert initialisiert"));
-	return 0;
-};
-
 /********** prozedure zum lesen des skinfiles **************
  * mit der absicherung das nur files im richtigen bereich
  * oder notfalls das defaultfile geladen wird
@@ -653,7 +645,7 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&pConfig->skin_file);
 	} else if(strcmp_P(name,PSTR("oil_dist"))==0){ // distanz in meter nachder ge...lt wird
 		parse_int(buffer,seperator,&pAktors->m_oiler->grenze);
-	} else if(strncmp("oil_temp_r_",name,11)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
+	} else if(strncmp_P(PSTR("oil_temp_r_"),name,11)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
 		char var_name[14]; // watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
 			sprintf(var_name,"oil_temp_r_%i",j);
@@ -1140,11 +1132,11 @@ int configuration::parse_ul(char* buffer,int i,unsigned long* wert){
 
 // in diese routine werden die km hochgezaehlt und eventuell das auf die karte/eeprom speichern veranlasst
 void configuration::km_save(){
-	int speed_value=pSensors->m_speed->getSpeed();
+	int speed_value=pSensors->get_speed(false);
 	// debug
 	if(STORAGE_DEBUG){   pDebug->sprintp(PSTR("calling km_save"));  };
 	// debug
-	if(pSensors->m_dz->get_dz(true)>0){ // if motor is running
+	if(pSensors->get_RPM(true)>0){ // if motor is running
 		// debug
 		if(STORAGE_DEBUG){     pDebug->sprintlnp(PSTR("speed>0 => storage outdated"));    };
 		// debug
@@ -1178,7 +1170,7 @@ void configuration::km_save(){
 		last_speed_value=speed_value;
 	} else { // laufender motor => sprit verbrauch => speichern
 		pSensors->m_dz->calc();
-		if(pSensors->m_dz->exact>0){
+		if(pSensors->get_RPM(true)>0){
 			storage_outdated=true;
 		};
 	};

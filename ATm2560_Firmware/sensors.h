@@ -11,6 +11,7 @@
 #define HIGH_BEAM_PIN PK2
 #define NEUTRAL_GEAR_PIN PK1
 #define OIL_PRESSURE_PIN PK0
+#define CAN_INTERRUPT_PIN PK4
 #define FLASHER_LEFT_PIN PE6
 #define FLASHER_RIGHT_PIN PE7
 
@@ -28,7 +29,7 @@ public:
 	void pull_values();
 
 	unsigned int get_RPM(bool exact_dz_needed);
-	unsigned int get_speed();
+	unsigned int get_speed(bool mag_if_possible);
 	int get_water_temperature();
 	int get_air_temperature();
 	int get_oil_temperature();

@@ -81,9 +81,7 @@ void init_speedo(void){
 	pSensors->init(); 			// start every init sequence of each sensor
 
 	pSensors->clear_vars();		// clear all sensor values;
-	pAktors->clear_vars();		// clear outer LED
 	pSpeedo->clear_vars();		// refresh cycle
-	pConfig->clear_vars(); 		// clear config based vars
 	// read configuration file from sd card
 	pConfig->read("BASE.TXT"); 	// load base config
 	pConfig->read("SPEEDO.TXT");// speedovalues, avg,max,time

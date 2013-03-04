@@ -17,7 +17,16 @@
 
 #include "global.h"
 
-speedo_dz::speedo_dz(void){
+speedo_dz::speedo_dz(){
+	previous_time=millis();
+	rounded=0;                 // to show on display, rounded by 50
+	exact=0;                 // real rotation speed
+	peak_count=0;
+	blitz_dz=0;
+	blitz_en=false;
+	dz_faktor_counter=0;
+	dz_disp_faktor_counter=0;
+	previous_peaks=0;
 }
 
 void speedo_dz::counter(){
@@ -177,17 +186,6 @@ void speedo_dz::shutdown(){
 	EICRB &= ~(1<<ISC40) | (1<<ISC41); // no edge on INT4
 };
 
-
-void speedo_dz::clear_vars(){
-	previous_time=millis();
-	rounded=0;                 // to show on display, rounded by 50
-	exact=0;                 // real rotation speed
-	peak_count=0;
-	blitz_dz=0;
-	blitz_en=false;
-	dz_faktor_counter=0;
-	dz_disp_faktor_counter=0;
-}
 
 bool speedo_dz::check_vars(){
 	if(blitz_dz==0){
