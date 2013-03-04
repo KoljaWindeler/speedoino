@@ -17,7 +17,7 @@
 
 #include "global.h"
 
-
+// SENSOR Class holds a member of each Sensor needed
 Speedo_sensors::Speedo_sensors(){
 	m_blinker=new moped_blinker;
 	m_clock=new speedo_clock;
@@ -28,82 +28,20 @@ Speedo_sensors::Speedo_sensors(){
 	m_speed=new speedo_speed();
 	m_reset=new speedo_reset();
 	m_gear=new speedo_gear();
-	m_oiler=new speedo_oiler();
 	m_voltage=new speedo_voltage();
+	m_CAN=new Speedo_CAN();
 };
 
+// destructor just for nuts
 Speedo_sensors::~Speedo_sensors(){
 };
 
-void Speedo_sensors::clear_vars(){
-	m_blinker->clear_vars();
-	m_clock->clear_vars();
-	m_dz->clear_vars();
-	m_gps->clear_vars();
-	m_temperature->clear_vars();
-	m_fuel->clear_vars();
-	m_speed->clear_vars();
-	m_reset->clear_vars();
-	m_gear->clear_vars();
-	m_oiler->clear_vars();
-	m_voltage->clear_vars();
-	pDebug->sprintlnp(PSTR("Sensors values clear"));
-};
-
-void Speedo_sensors::check_vars(){
-	bool any_failed=false;
-	// wenn ein test einen fehler meldet wird der return wert "true"
-
-	any_failed|=m_blinker->check_vars();
-	any_failed|=m_clock->check_vars();
-	any_failed|=m_dz->check_vars();
-	any_failed|=m_gps->check_vars();
-	any_failed|=m_temperature->check_vars();
-	any_failed|=m_fuel->check_vars();
-	any_failed|=m_speed->check_vars();
-	any_failed|=m_reset->check_vars();
-	any_failed|=m_gear->check_vars();
-	any_failed|=m_oiler->check_vars();
-	any_failed|=m_voltage->check_vars();
-
-	if(any_failed){
-
-		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
-		pDebug->sprintp(PSTR("SD access strange"));
-		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
-
-		pSD->sd_failed=true;
-		//_delay_ms(5000);
-		//pOLED->clear_screen();
-	}
-};
-
-void Speedo_sensors::single_read(){
-	pDebug->sprintlnp(PSTR("Sensor single read ... "));
-	pDebug->sprintp(PSTR("Reading: clock ... "));
-	pSensors->m_clock->inc();  // sekunden hochzählen
-	pDebug->sprintp(PSTR("Done\r\nReading: GPS ... "));
-	pSensors->m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
-	pDebug->sprintp(PSTR("Done\r\nReading: Air temp ... "));
-	pSensors->m_temperature->read_air_temp();  // temperaturen aktualisieren
-	pDebug->sprintp(PSTR("Done\r\nReading: Oil temp ... "));
-	pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
-	pDebug->sprintp(PSTR("Done\r\nReading: Water temp ... "));
-	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren
-	pDebug->sprintp(PSTR("Done\r\nReading: Oiler ... "));
-	pSensors->m_oiler->check_value(); // gucken ob wir ölen müssten
-	pDebug->sprintp(PSTR("Done\r\nReading: Voltages ... "));
-	pSensors->m_voltage->calc(); // spannungscheck
-	char temp[6];
-	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/10)),int(m_voltage->get()%10));
-	Serial.print(temp);
-	pDebug->sprintp(PSTR(" Done\r\nReading: Control lights ... "));
-	check_inputs();
-	pDebug->sprintlnp(PSTR(" Done\r\nSensor single read ... Done"));
-};
-
-
+// initialize the sensor class, by using the build in init
+// seqence of each sensor
 void Speedo_sensors::init(){
+	ten_Hz_counter=0;
+	ten_Hz_timer=millis();
+
 	m_blinker->init();
 	m_clock->init();
 	m_dz->init();
@@ -113,8 +51,8 @@ void Speedo_sensors::init(){
 	m_speed->init();
 	m_reset->init();
 	m_gear->init();
-	m_oiler->init();
 	m_voltage->init();
+	m_CAN->init();
 
 	cli(); // TODO ... unschön, warum reagiert er überhaupt schon auf interrupts?
 	// Blinker LINKS Interrupt
@@ -137,9 +75,208 @@ void Speedo_sensors::init(){
 	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16);
 	PCICR |=(1<<PCIE2); // general interrupt PC aktivieren für SK2
 
-
+	CAN_active=false;
 	pDebug->sprintlnp(PSTR("Sensors init done"));
 }
+
+
+// initialize every var, and write clean blank value to it (base config)
+void Speedo_sensors::clear_vars(){
+	m_blinker->clear_vars();
+	m_clock->clear_vars();
+	m_dz->clear_vars();
+	m_gps->clear_vars();
+	m_temperature->clear_vars();
+	m_fuel->clear_vars();
+	m_speed->clear_vars();
+	m_reset->clear_vars();
+	m_gear->clear_vars();
+	m_voltage->clear_vars();
+	m_CAN->clear_vars();
+	pDebug->sprintlnp(PSTR("Sensors values clear"));
+};
+
+// check each and every sensor end return result
+void Speedo_sensors::check_vars(){
+	bool any_failed=false;
+	// wenn ein test einen fehler meldet wird der return wert "true"
+
+	// a good place to use destructors, or "deactivators"
+	if(CAN_active){
+		any_failed|=m_CAN->check_vars();
+		m_speed->shutdown();
+		m_dz->shutdown();
+	} else {
+		any_failed|=m_dz->check_vars();
+		any_failed|=m_speed->check_vars();
+		m_CAN->shutdown();
+	}
+
+	any_failed|=m_blinker->check_vars();
+	any_failed|=m_clock->check_vars();
+	any_failed|=m_gps->check_vars();
+	any_failed|=m_temperature->check_vars(); // needed for oiltemp
+	any_failed|=m_fuel->check_vars();
+	any_failed|=m_reset->check_vars();
+	any_failed|=m_gear->check_vars();
+	any_failed|=m_voltage->check_vars();
+
+	if(any_failed){
+
+		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
+		pDebug->sprintp(PSTR("SD access strange"));
+		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
+
+		pSD->sd_failed=true;
+		//_delay_ms(5000);
+		//pOLED->clear_screen();
+	}
+};
+
+/********************************** GET section *************************************
+* Since the Infomation could be provided by CAN or by
+* convertional sensors, we have to build a wrapper for
+* the request. These wrapper are handling the function calls.
+* we need wrappers for all infos, available on the CAN Bus:
+* - Engine RPM
+* - Verhicle Speed
+* - Air intake Temperature
+* - Coolant Temparture
+********************************** GET section *************************************/
+unsigned int Speedo_sensors::get_RPM(bool exact_dz_needed){
+	if(CAN_active && !m_CAN->failed){
+		return m_CAN->get_RPM();
+	} else {
+		return m_dz->get_dz(exact_dz_needed);
+	}
+};
+
+unsigned int Speedo_sensors::get_speed(){
+	if(CAN_active && !m_CAN->failed){
+		return m_CAN->get_Speed();
+	} else {
+		return (unsigned)m_speed->getSpeed();
+	}
+};
+
+int Speedo_sensors::get_water_temperature(){
+	if(CAN_active && !m_CAN->failed){
+		return m_CAN->get_water_temp();
+	} else {
+		return m_temperature->get_water_temp();
+	}
+};
+
+int Speedo_sensors::get_air_temperature(){
+	if(CAN_active && !m_CAN->failed){
+		return m_CAN->get_air_temp();
+	} else {
+		return m_temperature->get_air_temp();
+	}
+};
+
+int Speedo_sensors::get_oil_temperature(){
+	if(CAN_active && !m_CAN->failed){
+		return m_CAN->get_oil_temp();
+	} else {
+		return m_temperature->get_oil_temp();
+	}
+};
+/********************************** GET section *************************************/
+
+/********************************** READ section *************************************
+* The values must be read from the sensors, eighter by reading the analog sensors
+* or by sending a CAN Bus request
+* Single_read() should only provide startup Values for the inital screen.
+* after that, the pull_values() does the work for us
+********************************** READ section *************************************/
+
+void Speedo_sensors::single_read(){
+	pDebug->sprintlnp(PSTR("Sensor single read ... "));
+	pDebug->sprintp(PSTR("Reading: clock ... "));
+	pSensors->m_clock->inc();  // sekunden hochzählen
+	pDebug->sprintp(PSTR("Done\r\nReading: GPS ... "));
+	pSensors->m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
+	pDebug->sprintp(PSTR("Done\r\nReading: Air temp ... "));
+	pSensors->m_temperature->read_air_temp();  // temperaturen aktualisieren
+	pDebug->sprintp(PSTR("Done\r\nReading: Oil temp ... "));
+	pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
+	pDebug->sprintp(PSTR("Done\r\nReading: Water temp ... "));
+	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren
+	pDebug->sprintp(PSTR("Done\r\nReading: Voltages ... "));
+	pSensors->m_voltage->calc(); // spannungscheck
+	char temp[6];
+	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/10)),int(m_voltage->get()%10));
+	Serial.print(temp);
+	pDebug->sprintp(PSTR(" Done\r\nReading: Control lights ... "));
+	check_inputs();
+	pDebug->sprintlnp(PSTR(" Done\r\nSensor single read ... Done"));
+};
+
+
+void Speedo_sensors::pull_values(){
+	// is an update required?
+	boolean update_required=false;
+	if((millis()-ten_Hz_timer)>=99){ // 100ms
+		ten_Hz_timer=millis();
+		ten_Hz_counter=(ten_Hz_counter+1)%10;
+		update_required=true;
+
+		if(ten_Hz_counter==0){
+			//pConfig->ram_info(); // nur zum testen 19.12. 2900 free
+			m_clock->inc();  // sekunden hochzählen
+			m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
+			m_voltage->calc(); // spannungscheck
+			m_temperature->read_oil_temp();  // temperaturen aktualisieren
+		} else if(update_required && ten_Hz_counter%2==0){ // do this, every 5Hz, 200ms
+			m_blinker->check();    // blinken wir?
+		}
+	}
+
+	/********************* CAN **************************
+	* we have to deciede from where we receive our infomation,
+	* from CAN or from converntianal sensors
+	* infos from CAN-Bus, could be:
+	* - Engine RPM
+	* - Verhicle Speed
+	* - Air intake Temperature
+	* - Coolant Temparture
+	*********************** CAN *************************/
+	// CAN is present and should be used
+	if(CAN_active && !m_CAN->failed){
+		if(update_required){ // 10Hz
+			if(ten_Hz_counter==0 || ten_Hz_counter==2 || ten_Hz_counter==4 || ten_Hz_counter==6 || ten_Hz_counter==8){
+				m_CAN->request(CAN_RPM);
+			} else if(ten_Hz_counter==1 || ten_Hz_counter==5){
+				m_CAN->request(CAN_SPEED);
+			} else if(ten_Hz_counter==3){
+				m_CAN->request(CAN_AIR_TEMP);
+			} else if(ten_Hz_counter==7){
+				m_CAN->request(CAN_WATER_TEMP);
+			} else if(ten_Hz_counter==9){ // one free slot
+				//m_CAN->request(?);
+			};
+		}
+	}
+
+	// no can available,
+	else {
+		if(update_required){ // 100ms spacing
+			// do this, with 200ms spacing
+			if(ten_Hz_counter%2==0){
+			m_dz->calc();
+			};
+
+			// do this, once a second
+			if(ten_Hz_counter==0){
+				m_temperature->read_air_temp();  // temperaturen aktualisieren
+				m_temperature->read_water_temp();  // temperaturen aktualisieren
+			}
+		}
+	}
+}
+/********************************** READ section *************************************/
+
 /************* IIR Tiefpass ***********************
  * WARNING: max_counter is signed char! max 127
  * This is used to flat values,
@@ -168,9 +305,9 @@ float Speedo_sensors::flatIt(int actual, unsigned char *counter, char max_counte
 	// bei 20 Werten also nur 3276,8
 }
 
-void Speedo_sensors::loop(){
+void Speedo_sensors::addinfo_show_loop(){
 	char *char_buffer;
-	char_buffer = (char*) malloc (22);
+	char_buffer = (char*) malloc(22);
 	////////////////////// water //////////////
 	if(pSensors->m_temperature->get_water_temp()!=pSpeedo->disp_zeile_bak[2]){
 		pSpeedo->disp_zeile_bak[2]=pSensors->m_temperature->get_water_temp();
@@ -228,7 +365,9 @@ void Speedo_sensors::loop(){
 	free(char_buffer);
 };
 
-
+/********************************** WARN light section *************************************
+* all light depeding infos are processed here
+********************************** WARN light section *************************************/
 // interrupt to update sensors
 ISR(INT6_vect ){
 	pSensors->check_inputs();
@@ -271,4 +410,4 @@ void Speedo_sensors::check_inputs(){
 
 	pAktors->set_controll_lights(oil_pressure,flasher_left,neutral_gear,flasher_right,high_beam);
 }
-
+/********************************** WARN light section *************************************/

@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../CAN.cpp \
 ../aktors.cpp \
 ../blinker.cpp \
 ../clock_me.cpp \
@@ -32,6 +33,7 @@ CPP_SRCS += \
 ../voltage.cpp 
 
 OBJS += \
+./CAN.o \
 ./aktors.o \
 ./blinker.o \
 ./clock_me.o \
@@ -60,6 +62,7 @@ OBJS += \
 ./voltage.o 
 
 CPP_DEPS += \
+./CAN.d \
 ./aktors.d \
 ./blinker.d \
 ./clock_me.d \

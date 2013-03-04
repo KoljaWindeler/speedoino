@@ -172,6 +172,12 @@ void speedo_dz::init() {
 	Serial3.flush();
 };
 
+void speedo_dz::shutdown(){
+	EIMSK &= ~(1<<INT4); // DISABLE Interrupt
+	EICRB &= ~(1<<ISC40) | (1<<ISC41); // no edge on INT4
+};
+
+
 void speedo_dz::clear_vars(){
 	previous_time=millis();
 	rounded=0;                 // to show on display, rounded by 50

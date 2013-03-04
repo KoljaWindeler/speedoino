@@ -18,6 +18,7 @@
 
 Speedo_aktors::Speedo_aktors(){
 	m_stepper=new speedo_stepper();
+	m_oiler=new speedo_oiler();
 };
 
 Speedo_aktors::~Speedo_aktors(){
@@ -75,6 +76,8 @@ void Speedo_aktors::clear_vars(){
 	led_mode=1;
 
 	bt_pin=1234;
+	m_oiler->clear_vars();
+
 	pDebug->sprintlnp(PSTR("Aktor values clear"));
 };
 
@@ -134,6 +137,11 @@ bool Speedo_aktors::check_vars(){
 		pDebug->sprintlnp(PSTR("Var check failed"));
 		return true;
 	}
+
+	if(m_oiler->check_vars()){
+		return true;
+	};
+
 	pDebug->sprintlnp(PSTR("Checking Var: Passed"));
 	return false;
 };
@@ -178,7 +186,7 @@ void Speedo_aktors::init(){
 
 	// stepper drehen
 	m_stepper->init();
-
+	m_oiler->init();
 
 	// init port rep
 	//	  Wire.beginTransmission(0x20);

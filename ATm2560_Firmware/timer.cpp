@@ -45,13 +45,7 @@ void speedo_timer::every_sec(configuration* pConfig) {
 	if((millis()-every_second_timer)>=998){
 		every_second_timer=millis();
 		//pConfig->ram_info(); // nur zum testen 19.12. 2900 free
-		pSensors->m_clock->inc();  // sekunden hochzählen
-		pSensors->m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
-		pSensors->m_temperature->read_air_temp();  // temperaturen aktualisieren
-		pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
-		pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren
-		pSensors->m_oiler->check_value(); // gucken ob wir ölen müssten
-		pSensors->m_voltage->calc(); // spannungscheck
+		pAktors->m_oiler->check_value(); // gucken ob wir ölen müssten
 		pConfig->km_save();    // avg,max,trips hochzählen, immer wenn ss==59 ist store to sd card
 
 		if(pSD->sd_failed && (millis()/1000)%30==0){
@@ -72,9 +66,8 @@ void speedo_timer::every_sec(configuration* pConfig) {
 void speedo_timer::every_qsec() {
 	if((millis()-every_qsecond_timer)>=250){
 		every_qsecond_timer=millis();
-		pSensors->m_blinker->check();    // blinken wir?
 		// see if its a clock startup or a regular startup
-		if(pSpeedo->regular_startup){
+		if(pSpeedo->regular_startup){ // TODO: warum so häufig?
 			pAktors->update_outer_leds(false,false);
 		}
 	};

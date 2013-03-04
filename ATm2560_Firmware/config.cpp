@@ -266,7 +266,7 @@ int configuration::write(const char *filename){
 
 					strcpy_P(buffer, PSTR("oil_dist="));
 					pSD->writeString(file, buffer);
-					sprintf(buffer,"%i\n",pSensors->m_oiler->grenze%10000); // 12 chars max: max_=1=300\n\0
+					sprintf(buffer,"%i\n",pAktors->m_oiler->grenze%10000); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
 					strcpy_P(buffer, PSTR("dz_flash="));
@@ -652,7 +652,7 @@ int configuration::parse(char* buffer){
 	} else if(strcmp_P(name,PSTR("skin_file"))==0){ // welche datei ist der aktive skin
 		parse_int(buffer,seperator,&pConfig->skin_file);
 	} else if(strcmp_P(name,PSTR("oil_dist"))==0){ // distanz in meter nachder ge...lt wird
-		parse_int(buffer,seperator,&pSensors->m_oiler->grenze);
+		parse_int(buffer,seperator,&pAktors->m_oiler->grenze);
 	} else if(strncmp("oil_temp_r_",name,11)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
 		char var_name[14]; // watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen

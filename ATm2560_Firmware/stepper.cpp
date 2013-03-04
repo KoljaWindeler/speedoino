@@ -8,6 +8,7 @@
 #include "global.h"
 
 speedo_stepper::speedo_stepper(void){
+	init_steps_to_go=0;
 }
 
 speedo_stepper::~speedo_stepper(){

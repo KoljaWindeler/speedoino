@@ -62,6 +62,11 @@ void speedo_speed::init (){
 	pDebug->sprintlnp(PSTR("Speed init done"));
 };
 
+void speedo_speed::shutdown(){
+	EIMSK &= ~(1<<INT5); // DISABLE Interrupt
+	EICRB &= ~((1<<ISC50) | (1<<ISC51)); // no edge on INT5
+}
+
 void speedo_speed::clear_vars(){
 	last_time=millis();
 	reed_speed=0;

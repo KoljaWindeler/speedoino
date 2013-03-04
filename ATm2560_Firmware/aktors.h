@@ -69,6 +69,7 @@ public:
 	int set_controll_lights(unsigned char oil,unsigned char flasher_left,unsigned char n_gear,unsigned char flasher_right,unsigned char high_beam);
 	int set_rbg_active(int status);
 	speedo_stepper* m_stepper;
+	speedo_oiler* m_oiler;
 	led RGB;
 	led_simple dz_flasher,oil_start_color,oil_end_color,water_start_color,water_end_color,kmh_start_color,kmh_end_color,dz_start_color,dz_end_color,static_color;
 	short int led_mode;

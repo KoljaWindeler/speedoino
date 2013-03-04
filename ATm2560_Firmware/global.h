@@ -13,6 +13,7 @@
 #include "reset.h"
 #include "oiler.h"
 #include "voltage.h"
+#include "CAN.h"
 
 // aktoren
 #include "stepper.h"
