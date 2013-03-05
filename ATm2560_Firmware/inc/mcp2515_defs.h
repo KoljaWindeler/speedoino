@@ -31,25 +31,6 @@
 #ifndef	MCP2515_DEFS_H
 #define	MCP2515_DEFS_H
 
-// CAN Bitrate 125 kbps
-#define R_CNF1  (1<<BRP2)|(1<<BRP1)|(1<<BRP0)
-#define R_CNF2  (1<<BTLMODE)|(1<<PHSEG11)
-#define R_CNF3  (1<<PHSEG21)
-
-// CAN Bitrate 250 kbps
-#define R_CNF1  (1<<BRP1)|(1<<BRP0)
-#define R_CNF2  (1<<BTLMODE)|(1<<PHSEG11)
-#define R_CNF3  (1<<PHSEG21)
-
-// CAN Bitrate 500 kbps
-#define CNF1  (1<<BRP0)
-#define CNF2  (1<<BTLMODE)|(1<<PHSEG11)
-#define CNF3  (1<<PHSEG21)
-
-// CAN Bitrate 1 Mbps
-#define R_CNF1  0
-#define R_CNF2  (1<<BTLMODE)|(1<<PHSEG11)
-#define R_CNF3  (1<<PHSEG21)
 
 /** \name	SPI Kommandos */
 /*@{*/
