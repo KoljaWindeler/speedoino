@@ -20,6 +20,20 @@
 #include <ssd0323.h>
 
 speedo_menu::speedo_menu(void){
+	button_time=millis();
+	button_first_push=millis();
+	update_display=false;
+	just_marker_update=false;
+
+	button_links_valid=true;
+	button_rechts_valid=true;
+	button_oben_valid=true;
+	button_unten_valid=true;
+
+	old_state=0; // will be overridden in init()
+	state=0;	 // will be overridden in init()
+	state_helper=0; // only  used in color_select_menu
+
 }
 
 

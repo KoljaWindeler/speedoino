@@ -19,6 +19,10 @@
 #include <ssd0323.h>
 
 speedo_disp::speedo_disp(void){
+	disp_invert=false;
+	disp_last_invert=0;
+	phase=0;
+	ref=0;
 }
 
 speedo_disp::~speedo_disp(){
@@ -329,7 +333,7 @@ void speedo_disp::show_animation(const char command[]){
 		pMenu->button_links_valid=true;
 		pMenu->button_rechts_valid=true;
 		pMenu->button_unten_valid=true;
-		int state_before=pMenu->state%100;
+		unsigned int state_before=pMenu->state%100;
 
 		// animation starten
 		unsigned long timestamp=millis();

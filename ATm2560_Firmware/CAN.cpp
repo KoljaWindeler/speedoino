@@ -19,6 +19,10 @@
 Speedo_CAN::Speedo_CAN(){
 	failed=false;
 	message_available=false;
+	last_received=0;
+	can_speed=0;
+	can_rpm=0;
+	can_water_temp=0;
 };
 
 Speedo_CAN::~Speedo_CAN(){

@@ -30,6 +30,10 @@ Speedo_sensors::Speedo_sensors(){
 	m_gear=new speedo_gear();
 	m_voltage=new speedo_voltage();
 	m_CAN=new Speedo_CAN();
+
+	ten_Hz_counter=0;
+	ten_Hz_timer=millis();
+	CAN_active=false;
 };
 
 // destructor just for nuts
@@ -39,9 +43,6 @@ Speedo_sensors::~Speedo_sensors(){
 // initialize the sensor class, by using the build in init
 // seqence of each sensor
 void Speedo_sensors::init(){
-	ten_Hz_counter=0;
-	ten_Hz_timer=millis();
-
 	m_blinker->init();
 	m_clock->init();
 	m_dz->init();
@@ -75,7 +76,6 @@ void Speedo_sensors::init(){
 	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16);
 	PCICR |=(1<<PCIE2); // general interrupt PC aktivieren für SK2
 
-	CAN_active=false;
 	pDebug->sprintlnp(PSTR("Sensors init done"));
 }
 
@@ -302,7 +302,7 @@ float Speedo_sensors::flatIt(int actual, unsigned char *counter, char max_counte
 
 void Speedo_sensors::addinfo_show_loop(){
 	char *char_buffer;
-	char_buffer = (char*) malloc(22);
+	char_buffer = (char*)malloc(22);
 	////////////////////// water //////////////
 	if(pSensors->get_water_temperature()!=pSpeedo->disp_zeile_bak[2]){
 		pSpeedo->disp_zeile_bak[2]=pSensors->get_water_temperature();
