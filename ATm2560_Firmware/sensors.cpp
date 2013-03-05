@@ -73,7 +73,7 @@ void Speedo_sensors::init(){
 	PORTK |=(1<<PK0); // activate Pull UP
 	sei();
 	// High Beam
-	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16);
+	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16) | (1<<PCINT20);
 	PCICR |=(1<<PCIE2); // general interrupt PC aktivieren für SK2
 
 	pDebug->sprintlnp(PSTR("Sensors init done"));
@@ -374,7 +374,7 @@ ISR(INT7_vect ){
 // interrupt to update sensors
 ISR(PCINT2_vect ){
 	pSensors->check_inputs();
-	if(PINK&(1<<CAN_INTERRUPT_PIN)){	 // if the CAN pin is high
+	if(!PINK&(1<<CAN_INTERRUPT_PIN)){	 // if the CAN pin is low, low active interrupt
 		if(pSensors->CAN_active){		 // is the CAN mode active
 			pSensors->m_CAN->message_available=true;
 		};

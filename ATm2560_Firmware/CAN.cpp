@@ -38,6 +38,7 @@ void Speedo_CAN::init(){
 	//TODO
 	// interrupt auf pk4, pcint20
 	DDRK &= ~(1<<PK4); // input
+	PORTK |= (1<<PK4); //  active low => pull up
 
 	/********************************************* MCP2515 SETUP ***********************************/
 	// MCP2515 per Software Reset zuruecksetzten,
