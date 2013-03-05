@@ -43,6 +43,7 @@
 								<option id="de.innot.avreclipse.compiler.option.def.1909163390" name="Define Syms (-D)" superClass="de.innot.avreclipse.compiler.option.def"/>
 								<option id="de.innot.avreclipse.compiler.option.omitfcpu.1662143336" name="Omit F_CPU" superClass="de.innot.avreclipse.compiler.option.omitfcpu" value="false" valueType="boolean"/>
 								<option id="de.innot.avreclipse.compiler.option.allwarn.143403403" name="All Warnings (-Wall)" superClass="de.innot.avreclipse.compiler.option.allwarn" value="true" valueType="boolean"/>
+								<option id="de.innot.avreclipse.compiler.option.std.1935343373" name="Language Standard" superClass="de.innot.avreclipse.compiler.option.std" value="de.innot.avreclipse.compiler.option.std.gnu99" valueType="enumerated"/>
 								<inputType id="de.innot.avreclipse.compiler.winavr.input.105493567" name="C Source Files" superClass="de.innot.avreclipse.compiler.winavr.input"/>
 							</tool>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="de.innot.avreclipse.tool.cppcompiler.app.release.789711530" name="AVR C++ Compiler" superClass="de.innot.avreclipse.tool.cppcompiler.app.release">

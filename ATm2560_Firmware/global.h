@@ -44,6 +44,7 @@
 #include "wiring.h"
 #include <avr/eeprom.h>
 #include <avr/wdt.h>
+#include <avr/pgmspace.h>
 #include <util/delay.h> // timing
 #include <stdlib.h>
 #include <stdint.h>

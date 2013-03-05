@@ -116,7 +116,7 @@ void HardwareSerial::begin(long baud)
   bool use_u2x;
 
   // U2X mode is needed for baud rates higher than (CPU Hz / 16)
-  if (baud > F_CPU / 16) {
+  if (baud > (signed)F_CPU / 16) {
     use_u2x = true;
   } else {
     // figure out if U2X mode would allow for a better connection
