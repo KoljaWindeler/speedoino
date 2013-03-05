@@ -87,6 +87,18 @@
 #define CANSTAT		0x0E
 #define CANCTRL		0x0F
 
+#define SID10 7
+#define SID9  6
+#define SID8  5
+#define SID7  4
+#define SID6  3
+#define SID5  2
+#define SID4  1
+#define SID3  0
+#define SID2  7
+#define SID1  6
+#define SID0  5
+
 #define RXF3SIDH	0x10
 #define RXF3SIDL	0x11
 #define RXF3EID8	0x12
