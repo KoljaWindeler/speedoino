@@ -163,11 +163,11 @@ int Speedo_sensors::get_water_temperature(){
 };
 
 int Speedo_sensors::get_air_temperature(){
-	if(CAN_active && !m_CAN->failed){
-		return m_CAN->get_air_temp();
-	} else {
+//	if(CAN_active && !m_CAN->failed){ // CAN airintake is much to warm
+//		return m_CAN->get_air_temp();
+//	} else {
 		return m_temperature->get_air_temp();
-	}
+//	}
 };
 
 int Speedo_sensors::get_oil_temperature(){
@@ -242,13 +242,13 @@ void Speedo_sensors::pull_values(){
 		if(update_required){ // 10Hz
 			if(ten_Hz_counter==0 || ten_Hz_counter==2 || ten_Hz_counter==4 || ten_Hz_counter==6 || ten_Hz_counter==8){ // 200ms
 				m_CAN->request(CAN_RPM);
-			} else if(ten_Hz_counter==1 || ten_Hz_counter==5){ // 500ms
+			} else if(ten_Hz_counter==1 || ten_Hz_counter==5 ){ // 500ms
 				m_CAN->request(CAN_SPEED);
-			} else if(ten_Hz_counter==3){ // 1000ms
-				m_CAN->request(CAN_AIR_TEMP);
+//			} else if(ten_Hz_counter==3){ // 1000ms
+//				m_CAN->request(CAN_AIR_TEMP);
 			} else if(ten_Hz_counter==7){ // 1000ms
 				m_CAN->request(CAN_WATER_TEMP);
-			} else if(ten_Hz_counter==9){  // 1000ms one free slot
+			} else if(ten_Hz_counter==9 ){  // 1000ms one free slot
 				//m_CAN->request(?);
 			};
 		}

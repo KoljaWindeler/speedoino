@@ -45,13 +45,11 @@ void Speedo_CAN::init(){
 
 	// etwas warten bis sich der MCP2515 zurueckgesetzt hat
 	_delay_ms(10);
-
-	/*
+	/******************** BAUD Rate ************************************************
 	 *  Einstellen des Bit Timings
 	 *
 	 *  Fosc       = 16MHz
-	 *  BRP        = 7                (teilen durch 8)
-	 *  TQ = 2 * (BRP + 1) / Fosc  (=> 1 uS)
+	 *  Bus Speed  = 500 kHz
 	 *
 	 *  Sync Seg   = 1TQ
 	 *  Prop Seg   = (PRSEG + 1) * TQ  = 1 TQ
@@ -59,38 +57,61 @@ void Speedo_CAN::init(){
 	 *  Phase Seg2 = (PHSEG2 + 1) * TQ = 3 TQ
 	 *
 	 *  Bus speed  = 1 / (Total # of TQ) * TQ
-	 *             = 1 / 8 * TQ = 125 kHz TODO das Hier sollte 500kHz sein!!
-	 */
+	 *  500kHz= 1 / (8 * TQ)
+	 * 	TQ = 1/(500kHz*8)
+	 *  TQ = 2 * (BRP + 1) / Fosc
+	 *  1/(500kHz*8) = 2 * (BRP + 1) / Fosc
+	 *  1/(500kHz*8) = 2 * (BRP + 1) / 16000kHz
+	 *  16000kHz/(500kHz*8*2) - 1 = BRP
+	 *
+	 *  BRP        = 1
+	 ******************** BAUD Rate ************************************************/
 
-	// BRP = 7
-	mcp2515_write_register( CNF1, (1<<BRP0)|(1<<BRP1)|(1<<BRP2) );
-
+	// BRP = 1
+	mcp2515_write_register( CNF1, (1<<BRP0));
 	// Prop Seg und Phase Seg1 einstellen
 	mcp2515_write_register( CNF2, (1<<BTLMODE)|(1<<PHSEG11) );
-
 	// Wake-up Filter deaktivieren, Phase Seg2 einstellen
 	mcp2515_write_register( CNF3, (1<<PHSEG21) );
-
 	// Aktivieren der Rx Buffer Interrupts
 	mcp2515_write_register( CANINTE, (1<<RX1IE)|(1<<RX0IE) );
 
-	/*
-	 *  Einstellen der Filter
-	 */
+	/******************** FILTER ************************************************
+	 * There are two input buffer: RXB0/1
+	 * RXB0 has two Filters RXF0 / REF1
+	 * RXB1 has four Filters RXF2 / REF3 / REF4 / REF5
+	 *
+	 * BUKT
+	 * Additionally, the RXB0CTRL register can be configured
+	 * such that, if RXB0 contains a valid message and
+	 * another valid message is received, an overflow error
+	 * will not occur and the new message will be moved into
+	 * RXB1, regardless of the acceptance criteria of RXB1.
+	 *
+	 * RXBnCTRL.FILHITm determines if the Filter m is in use for buffer n
+	 *
+	 ******************** FILTER ************************************************/
 
-	// Buffer 0 : Empfangen aller Nachrichten TODO: Filter reduzieren auf id 7e?
-	mcp2515_write_register( RXB0CTRL, (1<<RXM1)|(1<<RXM0) );
+	// old version to accept all MSG
+	// mcp2515_write_register( RXB0CTRL, (1<<RXM1)|(1<<RXM0) );
 
-	// Buffer 1 : Empfangen aller Nachrichten TODO: Filter reduzieren auf id 7e?
-	mcp2515_write_register( RXB1CTRL, (1<<RXM1)|(1<<RXM0) );
+	// BUKT: RXB0 message will rollover and be written to RXB1 if RXB0 is full
+	// RXM0: Only accept messages with standard identifiers that meet filter criteria
+	// FILHITx: RXF0 is active by deleting FILHIT
+	// activate filter for buffer 0 and 1
+	mcp2515_write_register( RXB0CTRL, (1<<BUKT)|(1<<RXM0)|(0<<FILHIT0));
+	mcp2515_write_register( RXB1CTRL, (1<<RXM0));
+	// TODO: build one filter for "wakeup" communication to buffer1, but for which ID ??
 
-	// Alle Bits der Empfangsmaske loeschen,
-	// damit werden alle Nachrichten empfangen
-	mcp2515_write_register( RXM0SIDH, 0 );
-	mcp2515_write_register( RXM0SIDL, 0 );
+	// define filter RXF0 and mask RXM0 to receive only frames with ID: 7Ex
+	mcp2515_write_register( RXF0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(1<<SID6)|(1<<SID5));
+	mcp2515_write_register( RXF0SIDL, 0x00);
+	mcp2515_write_register( RXM0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(1<<SID6)|(1<<SID5)|(1<<SID4));
+	mcp2515_write_register( RXM0SIDL, 0x00);
+	// extend addr filter leeren, nötig? wir verarbeiten ohnehin nur std adressen
 	mcp2515_write_register( RXM0EID8, 0 );
 	mcp2515_write_register( RXM0EID0, 0 );
-
+	// extend mask leeren , nötig? wir verarbeiten ohnehin nur std adressen
 	mcp2515_write_register( RXM1SIDH, 0 );
 	mcp2515_write_register( RXM1SIDL, 0 );
 	mcp2515_write_register( RXM1EID8, 0 );
@@ -99,13 +120,10 @@ void Speedo_CAN::init(){
 	/*
 	 *  Einstellen der Pin Funktionen
 	 */
-
 	// Deaktivieren der Pins RXnBF Pins (High Impedance State)
 	mcp2515_write_register( BFPCTRL, 0 );
-
 	// TXnRTS Bits als Inputs schalten
 	mcp2515_write_register( TXRTSCTRL, 0 );
-
 	// Device zurueck in den normalen Modus versetzten
 	mcp2515_bit_modify( CANCTRL, 0xE0, 0);
 	/********************************************* MCP2515 SETUP ***********************************/
@@ -123,9 +141,6 @@ bool Speedo_CAN::check_vars(){
 
 /********************************************* CAN VALUE GETTER ***********************************/
 int Speedo_CAN::get_air_temp(){
-	if(millis()-last_received<1000){
-		return can_air_temp;
-	}
 	return 0;
 };
 
@@ -184,8 +199,8 @@ void Speedo_CAN::process_incoming_messages(){
 						can_rpm=(message.data[3]<<6)|(message.data[4]>>2);
 					} else if(message.data[2]==CAN_SPEED){
 						can_speed=message.data[3];
-					} else if(message.data[2]==CAN_AIR_TEMP){
-						can_air_temp=message.data[3]-40;
+//					} else if(message.data[2]==CAN_AIR_TEMP){
+//						can_air_temp=message.data[3]-40;
 					} else if(message.data[2]==CAN_WATER_TEMP){
 						can_water_temp=message.data[3]-40;
 					}

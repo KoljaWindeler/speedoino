@@ -57,7 +57,6 @@ private:
 	void mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data);
 
 	CANMessage message;
-	int can_air_temp;
 	int can_water_temp;
 	unsigned int can_rpm;
 	unsigned int can_speed;

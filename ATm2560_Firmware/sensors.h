@@ -45,9 +45,9 @@ public:
 	speedo_gear* m_gear;
 	speedo_voltage* m_voltage;
 	Speedo_CAN* m_CAN;
+	bool CAN_active;
 
 private:
-	bool CAN_active;
 	unsigned long ten_Hz_timer;
 	short ten_Hz_counter;
 
