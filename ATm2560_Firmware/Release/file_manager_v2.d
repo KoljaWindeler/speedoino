@@ -1,8 +1,7 @@
 file_manager_v2.d: ../file_manager_v2.cpp ../global.h ../clock_me.h \
  ../dz.h ../gps.h ../blinker.h ../temperature.h ../fuel.h ../gear.h \
- ../speed.h ../reset.h ../oiler.h ../voltage.h ../CAN.h \
- /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/mcp2515_defs.h \
- ../stepper.h ../display.h \
+ ../speed.h ../reset.h ../oiler.h ../voltage.h ../CAN.h ../stepper.h \
+ ../display.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/ssd0323.h \
  ../sd.h /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdFat.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/SdStream.h \
@@ -28,7 +27,8 @@ file_manager_v2.d: ../file_manager_v2.cpp ../global.h ../clock_me.h \
  ../config.h ../timer.h ../sprint.h ../speedo.h ../menu.h ../aktors.h \
  ../sensors.h ../debug.h ../file_manager_v2.h ../version.h ../tetris.h \
  /home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/wiring.h \
- ../inc/wiring.h ../inc/I2C.h ../inc/HardwareSerial.h
+ ../inc/wiring.h ../inc/I2C.h ../inc/HardwareSerial.h \
+ ../inc/mcp2515_defs.h
 
 ../global.h:
 
@@ -55,8 +55,6 @@ file_manager_v2.d: ../file_manager_v2.cpp ../global.h ../clock_me.h \
 ../voltage.h:
 
 ../CAN.h:
-
-/home/jkw/Store/17\ -\ Speedmaster/ATm2560_Firmware/inc/mcp2515_defs.h:
 
 ../stepper.h:
 
@@ -137,3 +135,5 @@ file_manager_v2.d: ../file_manager_v2.cpp ../global.h ../clock_me.h \
 ../inc/I2C.h:
 
 ../inc/HardwareSerial.h:
+
+../inc/mcp2515_defs.h:

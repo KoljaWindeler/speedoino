@@ -357,7 +357,7 @@ LOAD /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000000000    0x24d90
+.text           0x0000000000000000    0x24f66
  *(.vectors)
  .vectors       0x0000000000000000       0xe4 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/crtm2560.o
                 0x0000000000000000                __vectors
@@ -760,841 +760,842 @@ LOAD /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a
  .text          0x000000000000b28e       0xda ./inc/wiring_shift.o
                 0x000000000000b28e                shiftIn
                 0x000000000000b2f0                shiftOut
- .text          0x000000000000b368      0x3ae ./CAN.o
+ .text          0x000000000000b368      0x57a ./CAN.o
                 0x000000000000b368                _ZN10Speedo_CANC1Ev
                 0x000000000000b368                _ZN10Speedo_CANC2Ev
-                0x000000000000b36e                _ZN10Speedo_CAND2Ev
-                0x000000000000b36e                _ZN10Speedo_CAND1Ev
-                0x000000000000b370                _ZN10Speedo_CAN8shutdownEv
-                0x000000000000b372                _ZN10Speedo_CAN10check_varsEv
-                0x000000000000b376                _ZN10Speedo_CAN12get_air_tempEv
-                0x000000000000b37c                _ZN10Speedo_CAN12get_oil_tempEv
-                0x000000000000b382                _ZN10Speedo_CAN14get_water_tempEv
-                0x000000000000b388                _ZN10Speedo_CAN9get_SpeedEv
-                0x000000000000b38e                _ZN10Speedo_CAN7get_RPMEv
-                0x000000000000b394                _ZN10Speedo_CAN7requestEc
-                0x000000000000b396                _ZN10Speedo_CAN8spi_putcEh
-                0x000000000000b3a2                _ZN10Speedo_CAN22mcp2515_write_registerEhh
-                0x000000000000b3dc                _ZN10Speedo_CAN21mcp2515_read_registerEh
-                0x000000000000b402                _ZN10Speedo_CAN18mcp2515_bit_modifyEhhh
-                0x000000000000b44a                _ZN10Speedo_CAN4initEv
-                0x000000000000b4fe                _ZN10Speedo_CAN16can_send_messageEP10CANMessage
-                0x000000000000b600                _ZN10Speedo_CAN22mcp2515_read_rx_statusEv
-                0x000000000000b628                _ZN10Speedo_CAN15can_get_messageEP10CANMessage
- .text          0x000000000000b716     0x14be ./aktors.o
-                0x000000000000b716                _ZN13Speedo_aktorsC2Ev
-                0x000000000000b716                _ZN13Speedo_aktorsC1Ev
-                0x000000000000b78a                _ZN13Speedo_aktorsD2Ev
-                0x000000000000b78a                _ZN13Speedo_aktorsD1Ev
-                0x000000000000b78c                _ZN13Speedo_aktors19run_reset_on_ATm328Ev
-                0x000000000000b8c8                _ZN13Speedo_aktors10check_varsEv
-                0x000000000000b9b8                _ZN13Speedo_aktors11set_rgb_outEiiii
-                0x000000000000ba50                _ZN13Speedo_aktors11set_rgb_outEiii
-                0x000000000000ba60                _ZN13Speedo_aktors11dimm_rgb_toEiiii
-                0x000000000000bae8                _ZN13Speedo_aktors14timer_overflowEv
-                0x000000000000bd16                __vector_35
-                0x000000000000bd6e                _ZN13Speedo_aktors11stop_dimmerEv
-                0x000000000000bd7a                _ZN13Speedo_aktors14dimm_availableEv
-                0x000000000000bd98                _ZN13Speedo_aktors17set_active_dimmerEb
-                0x000000000000bda2                _ZN13Speedo_aktors17update_outer_ledsEbb
-                0x000000000000c30e                _ZN13Speedo_aktors6ask_btEPc
-                0x000000000000c384                _ZN13Speedo_aktors10set_bt_pinEv
-                0x000000000000c902                _ZN13Speedo_aktors12set_expanderEv
-                0x000000000000c948                _ZN13Speedo_aktors19set_controll_lightsEhhhhh
-                0x000000000000c9c6                _ZN13Speedo_aktors14set_rbg_activeEi
-                0x000000000000cae6                _ZN13Speedo_aktors4initEv
- .text          0x000000000000cbd4      0x19e ./blinker.o
-                0x000000000000cbd4                _ZN13moped_blinkerC1Ev
-                0x000000000000cbd4                _ZN13moped_blinkerC2Ev
-                0x000000000000cbe8                _ZN13moped_blinkerD2Ev
-                0x000000000000cbe8                _ZN13moped_blinkerD1Ev
-                0x000000000000cbea                _ZN13moped_blinker9set_startEmi
-                0x000000000000cc28                _ZN13moped_blinker5checkEv
-                0x000000000000cce4                _ZN13moped_blinker4warnEm
-                0x000000000000cd2c                _ZN13moped_blinker4initEv
-                0x000000000000cd3c                _ZN13moped_blinker10check_varsEv
- .text          0x000000000000cd72      0x782 ./clock_me.o
-                0x000000000000cd72                _ZN12speedo_clockC2Ev
-                0x000000000000cd72                _ZN12speedo_clockC1Ev
-                0x000000000000cd8e                _ZN12speedo_clockD1Ev
-                0x000000000000cd8e                _ZN12speedo_clockD2Ev
-                0x000000000000cd90                _ZN12speedo_clock7changedEPi
-                0x000000000000cdb6                _ZN12speedo_clock8decToBcdEc
-                0x000000000000cdca                _ZN12speedo_clock8bcdToDecEc
-                0x000000000000cdde                _ZN12speedo_clock14is_winter_timeEjjjjjj
-                0x000000000000cf96                _ZN12speedo_clock13set_date_timeEiiiiiib
-                0x000000000000d18e                _ZN12speedo_clock4initEv
-                0x000000000000d19e                _ZN12speedo_clock10check_varsEv
-                0x000000000000d1a2                _ZN12speedo_clock7getdateEv
-                0x000000000000d1c0                _ZN12speedo_clock13get_long_dateEv
-                0x000000000000d236                _ZN12speedo_clock6get_ssEv
-                0x000000000000d240                _ZN12speedo_clock3incEv
-                0x000000000000d286                _ZN12speedo_clock4copyEPc
-                0x000000000000d2ee                _ZN12speedo_clock4loopEv
- .text          0x000000000000d4f4     0x3a66 ./config.o
-                0x000000000000d4f4                _ZN13configurationC2Ev
-                0x000000000000d4f4                _ZN13configurationC1Ev
-                0x000000000000d502                _ZN13configurationD1Ev
-                0x000000000000d502                _ZN13configurationD2Ev
-                0x000000000000d504                _ZN13configuration14get_hw_versionEv
-                0x000000000000d54a                _ZN13configuration8ram_infoEv
-                0x000000000000d584                _ZN13configuration5writeEPKc
-                0x000000000000ee52                _ZN13configuration11parse_floatEPciPf
-                0x000000000000f088                _ZN13configuration10parse_boolEPciPb
-                0x000000000000f0c4                _ZN13configuration9parse_intEPciPi
-                0x000000000000f11a                _ZN13configuration11parse_shortEPciPs
-                0x000000000000f164                _ZN13configuration7parse_aEPciS0_i
-                0x000000000000f1d4                _ZN13configuration8parse_ulEPciPm
-                0x000000000000f26c                _ZN13configuration5parseEPc
-                0x00000000000108c4                _ZN13configuration4readEPKc
-                0x0000000000010b2e                _ZN13configuration9read_skinEv
-                0x0000000000010bac                _ZN13configuration7km_saveEv
-                0x0000000000010da0                _ZN13configuration14day_trip_checkEv
-                0x0000000000010eac                _ZN13configuration11EEPROM_initEv
- .text          0x0000000000010f5a       0x6c ./debug.o
-                0x0000000000010f5a                _ZN9debuggingC1Ev
-                0x0000000000010f5a                _ZN9debuggingC2Ev
-                0x0000000000010f5c                _ZN9debuggingD1Ev
-                0x0000000000010f5c                _ZN9debuggingD2Ev
-                0x0000000000010f5e                _ZN9debugging7sprintpEPKc
-                0x0000000000010f88                _ZN9debugging9sprintlnpEPKc
-                0x0000000000010fb8                _ZN9debugging11parse_floatEiPciii
-                0x0000000000010fba                _ZN9debugging9parse_intEv
-                0x0000000000010fbc                _ZN9debugging5parseEiPc
-                0x0000000000010fbe                _ZN9debugging7parse_aEiPc
-                0x0000000000010fc0                _ZN9debugging8parse_ulEim
-                0x0000000000010fc2                _ZN9debugging11speedo_loopEiimPKc
-                0x0000000000010fc4                _ZN9debugging4loopEv
- .text          0x0000000000010fc6     0x1b20 ./display.o
-                0x0000000000010fc6                _ZN11speedo_dispC1Ev
-                0x0000000000010fc6                _ZN11speedo_dispC2Ev
-                0x0000000000010fca                _ZN11speedo_dispD2Ev
-                0x0000000000010fca                _ZN11speedo_dispD1Ev
-                0x0000000000010fcc                _ZN11speedo_disp8draw_oilEhh
-                0x0000000000011294                _ZN11speedo_disp10draw_waterEhh
-                0x000000000001155c                _ZN11speedo_disp8draw_airEhh
-                0x0000000000011664                _ZN11speedo_disp9draw_fuelEhh
-                0x000000000001178c                _ZN11speedo_disp10draw_clockEhh
-                0x00000000000118b4                _ZN11speedo_disp12draw_blitzerEhh
-                0x0000000000011b2c                _ZN11speedo_disp10draw_arrowEiii
-                0x00000000000120a8                _ZN11speedo_disp6sd2ssdEPci
-                0x0000000000012278                _ZN11speedo_disp11show_storryEPcjS0_j
-                0x000000000001253a                _ZN11speedo_disp14show_animationEPKc
-                0x000000000001286e                _ZN11speedo_disp12disp_waitingEihh
-                0x000000000001292e                _ZN11speedo_disp9animationEi
-                0x00000000000129b6                _ZN11speedo_disp11init_speedoEv
- .text          0x0000000000012ae6      0x3ec ./dz.o
-                0x0000000000012ae6                _ZN9speedo_dzC2Ev
-                0x0000000000012ae6                _ZN9speedo_dzC1Ev
-                0x0000000000012b18                _ZN9speedo_dz7counterEv
-                0x0000000000012b28                _ZN9speedo_dz6get_dzEb
-                0x0000000000012b3a                _ZN9speedo_dz4calcEv
-                0x0000000000012e1e                __vector_5
-                0x0000000000012e64                _ZN9speedo_dz4initEv
-                0x0000000000012e90                _ZN9speedo_dz8shutdownEv
-                0x0000000000012e9e                _ZN9speedo_dz10check_varsEv
- .text          0x0000000000012ed2      0xcb4 ./file_manager_v2.o
-                0x0000000000012ed2                _ZN21speedo_filemanager_v2C1Ev
-                0x0000000000012ed2                _ZN21speedo_filemanager_v2C2Ev
-                0x0000000000012eea                _ZN21speedo_filemanager_v2D1Ev
-                0x0000000000012eea                _ZN21speedo_filemanager_v2D2Ev
-                0x0000000000012f00                _ZN21speedo_filemanager_v212send_answereEPhjS0_S0_
-                0x0000000000012fce                _ZN21speedo_filemanager_v215get_file_handleEPhS0_P6SdFileS2_h
-                0x0000000000013162                _ZN21speedo_filemanager_v213parse_commandEv
- .text          0x0000000000013b86      0x23a ./fuel.o
-                0x0000000000013b86                _ZN11speedo_fuelC1Ev
-                0x0000000000013b86                _ZN11speedo_fuelC2Ev
-                0x0000000000013b9a                _ZN11speedo_fuelD2Ev
-                0x0000000000013b9a                _ZN11speedo_fuelD1Ev
-                0x0000000000013b9c                _ZN11speedo_fuel8get_fuelEPc
-                0x0000000000013d84                _ZN11speedo_fuel4initEv
-                0x0000000000013d86                _ZN11speedo_fuel10check_varsEv
- .text          0x0000000000013dc0      0x6ea ./gear.o
-                0x0000000000013dc0                _ZN11speedo_gearC2Ev
-                0x0000000000013dc0                _ZN11speedo_gearC1Ev
-                0x0000000000013dea                _ZN11speedo_gearD1Ev
-                0x0000000000013dea                _ZN11speedo_gearD2Ev
-                0x0000000000013dec                _ZN11speedo_gear4initEv
-                0x0000000000013e14                _ZN11speedo_gear10check_varsEv
-                0x0000000000013e8c                _ZN11speedo_gear4calcEv
-                0x00000000000140fc                _ZN11speedo_gear3getEv
-                0x0000000000014112                _ZN11speedo_gear9calibrateEv
- .text          0x00000000000144aa     0x20aa ./gps.o
-                0x00000000000144aa                _ZN10speedo_gpsC1Ev
-                0x00000000000144aa                _ZN10speedo_gpsC2Ev
-                0x0000000000014598                _ZN10speedo_gpsD1Ev
-                0x0000000000014598                _ZN10speedo_gpsD2Ev
-                0x000000000001459a                _ZN10speedo_gps10check_varsEv
-                0x000000000001459e                _ZN10speedo_gps9recv_dataEv
-                0x00000000000146e8                __vector_36
-                0x0000000000014744                _ZN10speedo_gps8get_infoEh
-                0x000000000001488e                _ZN10speedo_gps11store_to_sdEv
-                0x000000000001492a                _ZN10speedo_gps3modEmm
-                0x00000000000149b8                _ZN10speedo_gps11nmea_to_decEm
-                0x0000000000014a80                _ZN10speedo_gps9calc_distEmm
-                0x0000000000014cec                _ZN10speedo_gps9get_orderEPc
-                0x0000000000014f0c                _ZN10speedo_gps18generate_new_orderEv
-                0x00000000000152b8                _ZN10speedo_gps9calc_naviEv
-                0x0000000000015772                _ZN10speedo_gps4loopEv
-                0x0000000000015952                _ZN10speedo_gps17get_logged_pointsEPci
-                0x0000000000015c04                _ZN10speedo_gps8SendByteEh
-                0x0000000000015c12                _ZN10speedo_gps10SendStringEPKc
-                0x0000000000015c42                _ZN10speedo_gps4initEv
-                0x0000000000015c6e                _ZN10speedo_gps16get_drive_statusEv
-                0x0000000000015ca2                _ZN10speedo_gps16set_drive_statusEiiic
-                0x0000000000015cf6                _ZN10speedo_gps5parseEPci
-                0x0000000000016500                _ZN10speedo_gps10check_flagEv
- .text          0x0000000000016554       0x38 ./helper.o
-                0x0000000000016554                __cxa_pure_virtual
-                0x0000000000016558                _Znwj
-                0x000000000001655c                _ZdlPv
-                0x0000000000016560                _Znaj
-                0x0000000000016564                _ZdaPv
-                0x000000000001656e                _Z19__cxa_guard_acquirePx
-                0x0000000000016582                _Z19__cxa_guard_releasePx
-                0x000000000001658a                _Z17__cxa_guard_abortPx
- .text          0x000000000001658c      0x170 ./main.o
-                0x000000000001658c                _Z11init_speedov
- .text          0x00000000000166fc     0x672c ./menu.o
-                0x00000000000166fc                _ZN11speedo_menuC2Ev
-                0x00000000000166fc                _ZN11speedo_menuC1Ev
-                0x00000000000166fe                _ZN11speedo_menuD2Ev
-                0x00000000000166fe                _ZN11speedo_menuD1Ev
-                0x0000000000016700                _ZN11speedo_menu4backEv
-                0x00000000000167f8                _ZN11speedo_menu5yesnoEPKcS1_S1_
-                0x0000000000016942                _ZN11speedo_menu4drawEPKPKci
-                0x0000000000016d0a                _ZN11speedo_menu7go_leftEb
-                0x0000000000016ddc                _ZN11speedo_menu8go_rightEb
-                0x0000000000016e50                _ZN11speedo_menu5go_upEb
-                0x0000000000016f68                _ZN11speedo_menu7go_downEb
-                0x0000000000017082                _ZN11speedo_menu4initEv
-                0x0000000000017118                _ZN11speedo_menu11set_buttonsEbbbb
-                0x0000000000017128                _ZN11speedo_menu9center_meEPci
-                0x0000000000017250                _ZN11speedo_menu17color_select_menuEiP10led_simpleS1_PiS2_ibPKcS4_cb
-                0x0000000000017e44                _ZN11speedo_menu7displayEv
-                0x000000000001ca58                _ZN11speedo_menu11button_testEbb
-                0x000000000001cd12                __vector_10
-                0x000000000001cd6e                _ZN11speedo_menu5popupEPKcS1_
-                0x000000000001ce12                _ZN11speedo_menu29copy_storagename_to_chararrayEiPc
- .text          0x000000000001ce28      0x104 ./oiler.o
-                0x000000000001ce28                _ZN12speedo_oilerC2Ev
-                0x000000000001ce28                _ZN12speedo_oilerC1Ev
-                0x000000000001ce30                _ZN12speedo_oilerD2Ev
-                0x000000000001ce30                _ZN12speedo_oilerD1Ev
-                0x000000000001ce32                _ZN12speedo_oiler4initEv
-                0x000000000001ce52                _ZN12speedo_oiler10check_varsEv
-                0x000000000001ce7c                _ZN12speedo_oiler12send_impulseEv
-                0x000000000001cecc                _ZN12speedo_oiler11check_valueEv
- .text          0x000000000001cf2c      0x2c2 ./reset.o
-                0x000000000001cf2c                _ZN12speedo_resetC1Ev
-                0x000000000001cf2c                _ZN12speedo_resetC2Ev
-                0x000000000001cf50                _ZN12speedo_resetD2Ev
-                0x000000000001cf50                _ZN12speedo_resetD1Ev
-                0x000000000001cf52                _ZN12speedo_reset10check_varsEv
-                0x000000000001cf56                _ZN12speedo_reset10set_activeEbb
-                0x000000000001cfac                _ZN12speedo_reset12set_deactiveEbb
-                0x000000000001d000                _ZN12speedo_reset7restoreEv
-                0x000000000001d01a                _ZN12speedo_reset6toggleEv
-                0x000000000001d07a                _ZN12speedo_reset9ask_resetEv
-                0x000000000001d178                _ZN12speedo_reset4initEv
- .text          0x000000000001d1ee      0x18c ./sd.o
-                0x000000000001d1ee                _ZN9speedo_sdC1Ev
-                0x000000000001d1ee                _ZN9speedo_sdC2Ev
-                0x000000000001d20c                _ZN9speedo_sdD1Ev
-                0x000000000001d20c                _ZN9speedo_sdD2Ev
-                0x000000000001d20e                _ZN9speedo_sd7error_PEPKc
-                0x000000000001d26c                _ZN9speedo_sd9writeCRLFER6SdFile
-                0x000000000001d27a                _ZN9speedo_sd11writeStringER6SdFilePc
-                0x000000000001d29a                _ZN9speedo_sd10power_downEv
-                0x000000000001d2aa                _ZN9speedo_sd8power_upEh
-                0x000000000001d36a                _ZN9speedo_sd4initEv
- .text          0x000000000001d37a      0xc3c ./sensors.o
-                0x000000000001d37a                _ZN14Speedo_sensorsC1Ev
-                0x000000000001d37a                _ZN14Speedo_sensorsC2Ev
-                0x000000000001d450                _ZN14Speedo_sensorsD2Ev
-                0x000000000001d450                _ZN14Speedo_sensorsD1Ev
-                0x000000000001d452                _ZN14Speedo_sensors4initEv
-                0x000000000001d51e                _ZN14Speedo_sensors10clear_varsEv
-                0x000000000001d52e                _ZN14Speedo_sensors10check_varsEv
-                0x000000000001d608                _ZN14Speedo_sensors7get_RPMEb
-                0x000000000001d628                _ZN14Speedo_sensors9get_speedEb
-                0x000000000001d64a                _ZN14Speedo_sensors21get_water_temperatureEv
-                0x000000000001d66a                _ZN14Speedo_sensors19get_air_temperatureEv
-                0x000000000001d68a                _ZN14Speedo_sensors19get_oil_temperatureEv
-                0x000000000001d6aa                _ZN14Speedo_sensors11pull_valuesEv
-                0x000000000001d7dc                _ZN14Speedo_sensors6flatItEiPhcf
-                0x000000000001d89e                _ZN14Speedo_sensors17addinfo_show_loopEv
-                0x000000000001dcb4                _ZN14Speedo_sensors12check_inputsEv
-                0x000000000001dcf6                __vector_11
-                0x000000000001dd4e                __vector_8
-                0x000000000001dda6                __vector_7
-                0x000000000001ddfe                _ZN14Speedo_sensors11single_readEv
- .text          0x000000000001dfb6      0x966 ./speed.o
-                0x000000000001dfb6                _ZN12speedo_speedC2Ev
-                0x000000000001dfb6                _ZN12speedo_speedC1Ev
-                0x000000000001e028                _ZN12speedo_speedD2Ev
-                0x000000000001e028                _ZN12speedo_speedD1Ev
-                0x000000000001e02a                _ZN12speedo_speed4calcEv
-                0x000000000001e220                __vector_6
-                0x000000000001e27c                _ZN12speedo_speed4initEv
-                0x000000000001e29c                _ZN12speedo_speed8shutdownEv
-                0x000000000001e2aa                _ZN12speedo_speed10check_varsEv
-                0x000000000001e32a                _ZN12speedo_speed8getSpeedEv
-                0x000000000001e3e6                _ZN12speedo_speed13get_sat_speedEv
-                0x000000000001e41e                _ZN12speedo_speed13get_mag_speedEv
-                0x000000000001e426                _ZN12speedo_speed12check_umfangEv
- .text          0x000000000001e91c     0x2026 ./speedo.o
-                0x000000000001e91c                _ZN13speedo_speedo9reset_bakEv
-                0x000000000001e93a                _ZN13speedo_speedo4loopEm
-                0x00000000000206ba                _ZN13speedo_speedo10clear_varsEv
-                0x0000000000020710                _ZN13speedo_speedo10check_varsEv
- .text          0x0000000000020942      0x48a ./sprint.o
-                0x0000000000020942                _ZN13speedo_sprintD2Ev
-                0x0000000000020942                _ZN13speedo_sprintD1Ev
-                0x0000000000020944                _ZN13speedo_sprint4initEv
-                0x0000000000020962                _ZN13speedo_sprintC2Ev
-                0x0000000000020962                _ZN13speedo_sprintC1Ev
-                0x0000000000020964                _ZN13speedo_sprint4loopEv
- .text          0x0000000000020dcc      0x54e ./stepper.o
-                0x0000000000020dcc                _ZN14speedo_stepperC2Ev
-                0x0000000000020dcc                _ZN14speedo_stepperC1Ev
-                0x0000000000020dd4                _ZN14speedo_stepperD2Ev
-                0x0000000000020dd4                _ZN14speedo_stepperD1Ev
-                0x0000000000020dd6                _ZN14speedo_stepper13overwrite_posEi
-                0x0000000000020e0e                _ZN14speedo_stepper5go_toEiii
-                0x0000000000020e8a                _ZN14speedo_stepper5go_toEi
-                0x0000000000020ebe                _ZN14speedo_stepper4initEv
-                0x0000000000020f10                _ZN14speedo_stepper7get_posEv
-                0x0000000000020fdc                _ZN14speedo_stepper16get_motor_statusEPiS0_S0_
-                0x0000000000021134                _ZN14speedo_stepper4loopEv
- .text          0x000000000002131a      0x882 ./temperature.o
-                0x000000000002131a                _ZN18speedo_temperatureC1Ev
-                0x000000000002131a                _ZN18speedo_temperatureC2Ev
-                0x000000000002139e                _ZN18speedo_temperatureD1Ev
-                0x000000000002139e                _ZN18speedo_temperatureD2Ev
-                0x00000000000213a0                _ZN18speedo_temperature10check_varsEv
-                0x0000000000021508                _ZN18speedo_temperature4initEv
-                0x0000000000021528                _ZN18speedo_temperature13read_oil_tempEv
-                0x00000000000216b4                _ZN18speedo_temperature15read_water_tempEv
-                0x00000000000218c6                _ZN18speedo_temperature13read_air_tempEv
-                0x0000000000021996                _ZN18speedo_temperature12get_air_tempEv
-                0x00000000000219b0                _ZN18speedo_temperature12get_oil_tempEv
-                0x0000000000021aa6                _ZN18speedo_temperature14get_water_tempEv
- .text          0x0000000000021b9c     0x1384 ./tetris.o
-                0x0000000000021b9c                _ZN6tetrisC1Ev
-                0x0000000000021b9c                _ZN6tetrisC2Ev
-                0x0000000000021b9e                _ZN6tetrisD2Ev
-                0x0000000000021b9e                _ZN6tetrisD1Ev
-                0x0000000000021ba0                _ZN6tetris22copy_element_to_bufferEi
-                0x0000000000021c34                _ZN6tetris11new_elementEv
-                0x0000000000021d10                _ZN6tetris4initEv
-                0x0000000000021d56                _ZN6tetris13initDrawFieldEv
-                0x0000000000022032                _ZN6tetris11updateFieldEv
-                0x0000000000022162                _ZN6tetris11check_stackEv
-                0x0000000000022574                _ZN6tetris4loopEv
-                0x0000000000022e46                _ZN6tetris3runEv
-                0x0000000000022e7a                _ZN6tetris19show_grid_on_serialEv
- .text          0x0000000000022f20      0x2e8 ./timer.o
-                0x0000000000022f20                _ZN12speedo_timerC2Ev
-                0x0000000000022f20                _ZN12speedo_timerC1Ev
-                0x0000000000022f58                _ZN12speedo_timerD2Ev
-                0x0000000000022f58                _ZN12speedo_timerD1Ev
-                0x0000000000022f5a                _Z8ram_infov
-                0x0000000000022f80                _ZN12speedo_timer9every_secEP13configuration
-                0x000000000002307a                _ZN12speedo_timer10every_qsecEv
-                0x00000000000230e2                _ZN12speedo_timer12every_customEv
- .text          0x0000000000023208      0x2ba ./voltage.o
-                0x0000000000023208                _ZN14speedo_voltageC2Ev
-                0x0000000000023208                _ZN14speedo_voltageC1Ev
-                0x0000000000023214                _ZN14speedo_voltageD2Ev
-                0x0000000000023214                _ZN14speedo_voltageD1Ev
-                0x0000000000023216                _ZN14speedo_voltage4calcEv
-                0x0000000000023438                _ZN14speedo_voltage3getEv
-                0x000000000002344c                _ZN14speedo_voltage10check_varsEv
-                0x0000000000023450                _ZN14speedo_voltage4initEv
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(malloc.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(exit.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(isalpha.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(isspace.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcmp_P.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcpy_P.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strlen_P.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strncmp_P.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memcmp.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memcpy.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memset.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strchr.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcmp.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcpy.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strncmp.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sprintf.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(addsf3.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(addsf3x.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(asin.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cmpsf2.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cos.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(divsf3.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(divsf3x.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fixsfsi.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(floatsisf.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(floor.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_arccos.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_cmp.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_inf.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_mintl.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_mpack.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_nan.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_powser.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_pscA.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_pscB.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_round.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_sinus.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_split3.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_trunc.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_zero.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(gesf2.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(mulsf3.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(mulsf3x.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(pow.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sin.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sqrt.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strnlen_P.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strnlen.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fputc.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(exp.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_norm2.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(inverse.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(ldexp.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(log.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(modf.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
- .text          0x00000000000234c2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
-                0x00000000000234c2                . = ALIGN (0x2)
+                0x000000000000b370                _ZN10Speedo_CAND2Ev
+                0x000000000000b370                _ZN10Speedo_CAND1Ev
+                0x000000000000b372                _ZN10Speedo_CAN8shutdownEv
+                0x000000000000b374                _ZN10Speedo_CAN10check_varsEv
+                0x000000000000b378                _ZN10Speedo_CAN12get_air_tempEv
+                0x000000000000b3b4                _ZN10Speedo_CAN12get_oil_tempEv
+                0x000000000000b3ba                _ZN10Speedo_CAN14get_water_tempEv
+                0x000000000000b3f6                _ZN10Speedo_CAN9get_SpeedEv
+                0x000000000000b432                _ZN10Speedo_CAN7get_RPMEv
+                0x000000000000b46e                _ZN10Speedo_CAN8spi_putcEh
+                0x000000000000b47a                _ZN10Speedo_CAN22mcp2515_write_registerEhh
+                0x000000000000b4b4                _ZN10Speedo_CAN21mcp2515_read_registerEh
+                0x000000000000b4da                _ZN10Speedo_CAN18mcp2515_bit_modifyEhhh
+                0x000000000000b522                _ZN10Speedo_CAN4initEv
+                0x000000000000b5fe                _ZN10Speedo_CAN16can_send_messageEP10CANMessage
+                0x000000000000b700                _ZN10Speedo_CAN7requestEc
+                0x000000000000b736                _ZN10Speedo_CAN22mcp2515_read_rx_statusEv
+                0x000000000000b75e                _ZN10Speedo_CAN15can_get_messageEP10CANMessage
+                0x000000000000b84c                _ZN10Speedo_CAN25process_incoming_messagesEv
+ .text          0x000000000000b8e2     0x14be ./aktors.o
+                0x000000000000b8e2                _ZN13Speedo_aktorsC2Ev
+                0x000000000000b8e2                _ZN13Speedo_aktorsC1Ev
+                0x000000000000b956                _ZN13Speedo_aktorsD2Ev
+                0x000000000000b956                _ZN13Speedo_aktorsD1Ev
+                0x000000000000b958                _ZN13Speedo_aktors19run_reset_on_ATm328Ev
+                0x000000000000ba94                _ZN13Speedo_aktors10check_varsEv
+                0x000000000000bb84                _ZN13Speedo_aktors11set_rgb_outEiiii
+                0x000000000000bc1c                _ZN13Speedo_aktors11set_rgb_outEiii
+                0x000000000000bc2c                _ZN13Speedo_aktors11dimm_rgb_toEiiii
+                0x000000000000bcb4                _ZN13Speedo_aktors14timer_overflowEv
+                0x000000000000bee2                __vector_35
+                0x000000000000bf3a                _ZN13Speedo_aktors11stop_dimmerEv
+                0x000000000000bf46                _ZN13Speedo_aktors14dimm_availableEv
+                0x000000000000bf64                _ZN13Speedo_aktors17set_active_dimmerEb
+                0x000000000000bf6e                _ZN13Speedo_aktors17update_outer_ledsEbb
+                0x000000000000c4da                _ZN13Speedo_aktors6ask_btEPc
+                0x000000000000c550                _ZN13Speedo_aktors10set_bt_pinEv
+                0x000000000000cace                _ZN13Speedo_aktors12set_expanderEv
+                0x000000000000cb14                _ZN13Speedo_aktors19set_controll_lightsEhhhhh
+                0x000000000000cb92                _ZN13Speedo_aktors14set_rbg_activeEi
+                0x000000000000ccb2                _ZN13Speedo_aktors4initEv
+ .text          0x000000000000cda0      0x19e ./blinker.o
+                0x000000000000cda0                _ZN13moped_blinkerC1Ev
+                0x000000000000cda0                _ZN13moped_blinkerC2Ev
+                0x000000000000cdb4                _ZN13moped_blinkerD2Ev
+                0x000000000000cdb4                _ZN13moped_blinkerD1Ev
+                0x000000000000cdb6                _ZN13moped_blinker9set_startEmi
+                0x000000000000cdf4                _ZN13moped_blinker5checkEv
+                0x000000000000ceb0                _ZN13moped_blinker4warnEm
+                0x000000000000cef8                _ZN13moped_blinker4initEv
+                0x000000000000cf08                _ZN13moped_blinker10check_varsEv
+ .text          0x000000000000cf3e      0x782 ./clock_me.o
+                0x000000000000cf3e                _ZN12speedo_clockC2Ev
+                0x000000000000cf3e                _ZN12speedo_clockC1Ev
+                0x000000000000cf5a                _ZN12speedo_clockD1Ev
+                0x000000000000cf5a                _ZN12speedo_clockD2Ev
+                0x000000000000cf5c                _ZN12speedo_clock7changedEPi
+                0x000000000000cf82                _ZN12speedo_clock8decToBcdEc
+                0x000000000000cf96                _ZN12speedo_clock8bcdToDecEc
+                0x000000000000cfaa                _ZN12speedo_clock14is_winter_timeEjjjjjj
+                0x000000000000d162                _ZN12speedo_clock13set_date_timeEiiiiiib
+                0x000000000000d35a                _ZN12speedo_clock4initEv
+                0x000000000000d36a                _ZN12speedo_clock10check_varsEv
+                0x000000000000d36e                _ZN12speedo_clock7getdateEv
+                0x000000000000d38c                _ZN12speedo_clock13get_long_dateEv
+                0x000000000000d402                _ZN12speedo_clock6get_ssEv
+                0x000000000000d40c                _ZN12speedo_clock3incEv
+                0x000000000000d452                _ZN12speedo_clock4copyEPc
+                0x000000000000d4ba                _ZN12speedo_clock4loopEv
+ .text          0x000000000000d6c0     0x3a66 ./config.o
+                0x000000000000d6c0                _ZN13configurationC2Ev
+                0x000000000000d6c0                _ZN13configurationC1Ev
+                0x000000000000d6ce                _ZN13configurationD1Ev
+                0x000000000000d6ce                _ZN13configurationD2Ev
+                0x000000000000d6d0                _ZN13configuration14get_hw_versionEv
+                0x000000000000d716                _ZN13configuration8ram_infoEv
+                0x000000000000d750                _ZN13configuration5writeEPKc
+                0x000000000000f01e                _ZN13configuration11parse_floatEPciPf
+                0x000000000000f254                _ZN13configuration10parse_boolEPciPb
+                0x000000000000f290                _ZN13configuration9parse_intEPciPi
+                0x000000000000f2e6                _ZN13configuration11parse_shortEPciPs
+                0x000000000000f330                _ZN13configuration7parse_aEPciS0_i
+                0x000000000000f3a0                _ZN13configuration8parse_ulEPciPm
+                0x000000000000f438                _ZN13configuration5parseEPc
+                0x0000000000010a90                _ZN13configuration4readEPKc
+                0x0000000000010cfa                _ZN13configuration9read_skinEv
+                0x0000000000010d78                _ZN13configuration7km_saveEv
+                0x0000000000010f6c                _ZN13configuration14day_trip_checkEv
+                0x0000000000011078                _ZN13configuration11EEPROM_initEv
+ .text          0x0000000000011126       0x6c ./debug.o
+                0x0000000000011126                _ZN9debuggingC1Ev
+                0x0000000000011126                _ZN9debuggingC2Ev
+                0x0000000000011128                _ZN9debuggingD1Ev
+                0x0000000000011128                _ZN9debuggingD2Ev
+                0x000000000001112a                _ZN9debugging7sprintpEPKc
+                0x0000000000011154                _ZN9debugging9sprintlnpEPKc
+                0x0000000000011184                _ZN9debugging11parse_floatEiPciii
+                0x0000000000011186                _ZN9debugging9parse_intEv
+                0x0000000000011188                _ZN9debugging5parseEiPc
+                0x000000000001118a                _ZN9debugging7parse_aEiPc
+                0x000000000001118c                _ZN9debugging8parse_ulEim
+                0x000000000001118e                _ZN9debugging11speedo_loopEiimPKc
+                0x0000000000011190                _ZN9debugging4loopEv
+ .text          0x0000000000011192     0x1b20 ./display.o
+                0x0000000000011192                _ZN11speedo_dispC1Ev
+                0x0000000000011192                _ZN11speedo_dispC2Ev
+                0x0000000000011196                _ZN11speedo_dispD2Ev
+                0x0000000000011196                _ZN11speedo_dispD1Ev
+                0x0000000000011198                _ZN11speedo_disp8draw_oilEhh
+                0x0000000000011460                _ZN11speedo_disp10draw_waterEhh
+                0x0000000000011728                _ZN11speedo_disp8draw_airEhh
+                0x0000000000011830                _ZN11speedo_disp9draw_fuelEhh
+                0x0000000000011958                _ZN11speedo_disp10draw_clockEhh
+                0x0000000000011a80                _ZN11speedo_disp12draw_blitzerEhh
+                0x0000000000011cf8                _ZN11speedo_disp10draw_arrowEiii
+                0x0000000000012274                _ZN11speedo_disp6sd2ssdEPci
+                0x0000000000012444                _ZN11speedo_disp11show_storryEPcjS0_j
+                0x0000000000012706                _ZN11speedo_disp14show_animationEPKc
+                0x0000000000012a3a                _ZN11speedo_disp12disp_waitingEihh
+                0x0000000000012afa                _ZN11speedo_disp9animationEi
+                0x0000000000012b82                _ZN11speedo_disp11init_speedoEv
+ .text          0x0000000000012cb2      0x3ec ./dz.o
+                0x0000000000012cb2                _ZN9speedo_dzC2Ev
+                0x0000000000012cb2                _ZN9speedo_dzC1Ev
+                0x0000000000012ce4                _ZN9speedo_dz7counterEv
+                0x0000000000012cf4                _ZN9speedo_dz6get_dzEb
+                0x0000000000012d06                _ZN9speedo_dz4calcEv
+                0x0000000000012fea                __vector_5
+                0x0000000000013030                _ZN9speedo_dz4initEv
+                0x000000000001305c                _ZN9speedo_dz8shutdownEv
+                0x000000000001306a                _ZN9speedo_dz10check_varsEv
+ .text          0x000000000001309e      0xcb4 ./file_manager_v2.o
+                0x000000000001309e                _ZN21speedo_filemanager_v2C1Ev
+                0x000000000001309e                _ZN21speedo_filemanager_v2C2Ev
+                0x00000000000130b6                _ZN21speedo_filemanager_v2D1Ev
+                0x00000000000130b6                _ZN21speedo_filemanager_v2D2Ev
+                0x00000000000130cc                _ZN21speedo_filemanager_v212send_answereEPhjS0_S0_
+                0x000000000001319a                _ZN21speedo_filemanager_v215get_file_handleEPhS0_P6SdFileS2_h
+                0x000000000001332e                _ZN21speedo_filemanager_v213parse_commandEv
+ .text          0x0000000000013d52      0x23a ./fuel.o
+                0x0000000000013d52                _ZN11speedo_fuelC1Ev
+                0x0000000000013d52                _ZN11speedo_fuelC2Ev
+                0x0000000000013d66                _ZN11speedo_fuelD2Ev
+                0x0000000000013d66                _ZN11speedo_fuelD1Ev
+                0x0000000000013d68                _ZN11speedo_fuel8get_fuelEPc
+                0x0000000000013f50                _ZN11speedo_fuel4initEv
+                0x0000000000013f52                _ZN11speedo_fuel10check_varsEv
+ .text          0x0000000000013f8c      0x6ea ./gear.o
+                0x0000000000013f8c                _ZN11speedo_gearC2Ev
+                0x0000000000013f8c                _ZN11speedo_gearC1Ev
+                0x0000000000013fb6                _ZN11speedo_gearD1Ev
+                0x0000000000013fb6                _ZN11speedo_gearD2Ev
+                0x0000000000013fb8                _ZN11speedo_gear4initEv
+                0x0000000000013fe0                _ZN11speedo_gear10check_varsEv
+                0x0000000000014058                _ZN11speedo_gear4calcEv
+                0x00000000000142c8                _ZN11speedo_gear3getEv
+                0x00000000000142de                _ZN11speedo_gear9calibrateEv
+ .text          0x0000000000014676     0x20aa ./gps.o
+                0x0000000000014676                _ZN10speedo_gpsC1Ev
+                0x0000000000014676                _ZN10speedo_gpsC2Ev
+                0x0000000000014764                _ZN10speedo_gpsD1Ev
+                0x0000000000014764                _ZN10speedo_gpsD2Ev
+                0x0000000000014766                _ZN10speedo_gps10check_varsEv
+                0x000000000001476a                _ZN10speedo_gps9recv_dataEv
+                0x00000000000148b4                __vector_36
+                0x0000000000014910                _ZN10speedo_gps8get_infoEh
+                0x0000000000014a5a                _ZN10speedo_gps11store_to_sdEv
+                0x0000000000014af6                _ZN10speedo_gps3modEmm
+                0x0000000000014b84                _ZN10speedo_gps11nmea_to_decEm
+                0x0000000000014c4c                _ZN10speedo_gps9calc_distEmm
+                0x0000000000014eb8                _ZN10speedo_gps9get_orderEPc
+                0x00000000000150d8                _ZN10speedo_gps18generate_new_orderEv
+                0x0000000000015484                _ZN10speedo_gps9calc_naviEv
+                0x000000000001593e                _ZN10speedo_gps4loopEv
+                0x0000000000015b1e                _ZN10speedo_gps17get_logged_pointsEPci
+                0x0000000000015dd0                _ZN10speedo_gps8SendByteEh
+                0x0000000000015dde                _ZN10speedo_gps10SendStringEPKc
+                0x0000000000015e0e                _ZN10speedo_gps4initEv
+                0x0000000000015e3a                _ZN10speedo_gps16get_drive_statusEv
+                0x0000000000015e6e                _ZN10speedo_gps16set_drive_statusEiiic
+                0x0000000000015ec2                _ZN10speedo_gps5parseEPci
+                0x00000000000166cc                _ZN10speedo_gps10check_flagEv
+ .text          0x0000000000016720       0x38 ./helper.o
+                0x0000000000016720                __cxa_pure_virtual
+                0x0000000000016724                _Znwj
+                0x0000000000016728                _ZdlPv
+                0x000000000001672c                _Znaj
+                0x0000000000016730                _ZdaPv
+                0x000000000001673a                _Z19__cxa_guard_acquirePx
+                0x000000000001674e                _Z19__cxa_guard_releasePx
+                0x0000000000016756                _Z17__cxa_guard_abortPx
+ .text          0x0000000000016758      0x170 ./main.o
+                0x0000000000016758                _Z11init_speedov
+ .text          0x00000000000168c8     0x672c ./menu.o
+                0x00000000000168c8                _ZN11speedo_menuC2Ev
+                0x00000000000168c8                _ZN11speedo_menuC1Ev
+                0x00000000000168ca                _ZN11speedo_menuD2Ev
+                0x00000000000168ca                _ZN11speedo_menuD1Ev
+                0x00000000000168cc                _ZN11speedo_menu4backEv
+                0x00000000000169c4                _ZN11speedo_menu5yesnoEPKcS1_S1_
+                0x0000000000016b0e                _ZN11speedo_menu4drawEPKPKci
+                0x0000000000016ed6                _ZN11speedo_menu7go_leftEb
+                0x0000000000016fa8                _ZN11speedo_menu8go_rightEb
+                0x000000000001701c                _ZN11speedo_menu5go_upEb
+                0x0000000000017134                _ZN11speedo_menu7go_downEb
+                0x000000000001724e                _ZN11speedo_menu4initEv
+                0x00000000000172e4                _ZN11speedo_menu11set_buttonsEbbbb
+                0x00000000000172f4                _ZN11speedo_menu9center_meEPci
+                0x000000000001741c                _ZN11speedo_menu17color_select_menuEiP10led_simpleS1_PiS2_ibPKcS4_cb
+                0x0000000000018010                _ZN11speedo_menu7displayEv
+                0x000000000001cc24                _ZN11speedo_menu11button_testEbb
+                0x000000000001cede                __vector_10
+                0x000000000001cf3a                _ZN11speedo_menu5popupEPKcS1_
+                0x000000000001cfde                _ZN11speedo_menu29copy_storagename_to_chararrayEiPc
+ .text          0x000000000001cff4      0x104 ./oiler.o
+                0x000000000001cff4                _ZN12speedo_oilerC2Ev
+                0x000000000001cff4                _ZN12speedo_oilerC1Ev
+                0x000000000001cffc                _ZN12speedo_oilerD2Ev
+                0x000000000001cffc                _ZN12speedo_oilerD1Ev
+                0x000000000001cffe                _ZN12speedo_oiler4initEv
+                0x000000000001d01e                _ZN12speedo_oiler10check_varsEv
+                0x000000000001d048                _ZN12speedo_oiler12send_impulseEv
+                0x000000000001d098                _ZN12speedo_oiler11check_valueEv
+ .text          0x000000000001d0f8      0x2c2 ./reset.o
+                0x000000000001d0f8                _ZN12speedo_resetC1Ev
+                0x000000000001d0f8                _ZN12speedo_resetC2Ev
+                0x000000000001d11c                _ZN12speedo_resetD2Ev
+                0x000000000001d11c                _ZN12speedo_resetD1Ev
+                0x000000000001d11e                _ZN12speedo_reset10check_varsEv
+                0x000000000001d122                _ZN12speedo_reset10set_activeEbb
+                0x000000000001d178                _ZN12speedo_reset12set_deactiveEbb
+                0x000000000001d1cc                _ZN12speedo_reset7restoreEv
+                0x000000000001d1e6                _ZN12speedo_reset6toggleEv
+                0x000000000001d246                _ZN12speedo_reset9ask_resetEv
+                0x000000000001d344                _ZN12speedo_reset4initEv
+ .text          0x000000000001d3ba      0x18c ./sd.o
+                0x000000000001d3ba                _ZN9speedo_sdC1Ev
+                0x000000000001d3ba                _ZN9speedo_sdC2Ev
+                0x000000000001d3d8                _ZN9speedo_sdD1Ev
+                0x000000000001d3d8                _ZN9speedo_sdD2Ev
+                0x000000000001d3da                _ZN9speedo_sd7error_PEPKc
+                0x000000000001d438                _ZN9speedo_sd9writeCRLFER6SdFile
+                0x000000000001d446                _ZN9speedo_sd11writeStringER6SdFilePc
+                0x000000000001d466                _ZN9speedo_sd10power_downEv
+                0x000000000001d476                _ZN9speedo_sd8power_upEh
+                0x000000000001d536                _ZN9speedo_sd4initEv
+ .text          0x000000000001d546      0xc46 ./sensors.o
+                0x000000000001d546                _ZN14Speedo_sensorsC1Ev
+                0x000000000001d546                _ZN14Speedo_sensorsC2Ev
+                0x000000000001d61c                _ZN14Speedo_sensorsD2Ev
+                0x000000000001d61c                _ZN14Speedo_sensorsD1Ev
+                0x000000000001d61e                _ZN14Speedo_sensors4initEv
+                0x000000000001d6ea                _ZN14Speedo_sensors10clear_varsEv
+                0x000000000001d6fa                _ZN14Speedo_sensors10check_varsEv
+                0x000000000001d7d4                _ZN14Speedo_sensors7get_RPMEb
+                0x000000000001d7f4                _ZN14Speedo_sensors9get_speedEb
+                0x000000000001d816                _ZN14Speedo_sensors21get_water_temperatureEv
+                0x000000000001d836                _ZN14Speedo_sensors19get_air_temperatureEv
+                0x000000000001d856                _ZN14Speedo_sensors19get_oil_temperatureEv
+                0x000000000001d860                _ZN14Speedo_sensors11pull_valuesEv
+                0x000000000001d992                _ZN14Speedo_sensors6flatItEiPhcf
+                0x000000000001da54                _ZN14Speedo_sensors17addinfo_show_loopEv
+                0x000000000001de6a                _ZN14Speedo_sensors12check_inputsEv
+                0x000000000001deac                __vector_11
+                0x000000000001df24                __vector_8
+                0x000000000001df7c                __vector_7
+                0x000000000001dfd4                _ZN14Speedo_sensors11single_readEv
+ .text          0x000000000001e18c      0x966 ./speed.o
+                0x000000000001e18c                _ZN12speedo_speedC2Ev
+                0x000000000001e18c                _ZN12speedo_speedC1Ev
+                0x000000000001e1fe                _ZN12speedo_speedD2Ev
+                0x000000000001e1fe                _ZN12speedo_speedD1Ev
+                0x000000000001e200                _ZN12speedo_speed4calcEv
+                0x000000000001e3f6                __vector_6
+                0x000000000001e452                _ZN12speedo_speed4initEv
+                0x000000000001e472                _ZN12speedo_speed8shutdownEv
+                0x000000000001e480                _ZN12speedo_speed10check_varsEv
+                0x000000000001e500                _ZN12speedo_speed8getSpeedEv
+                0x000000000001e5bc                _ZN12speedo_speed13get_sat_speedEv
+                0x000000000001e5f4                _ZN12speedo_speed13get_mag_speedEv
+                0x000000000001e5fc                _ZN12speedo_speed12check_umfangEv
+ .text          0x000000000001eaf2     0x2026 ./speedo.o
+                0x000000000001eaf2                _ZN13speedo_speedo9reset_bakEv
+                0x000000000001eb10                _ZN13speedo_speedo4loopEm
+                0x0000000000020890                _ZN13speedo_speedo10clear_varsEv
+                0x00000000000208e6                _ZN13speedo_speedo10check_varsEv
+ .text          0x0000000000020b18      0x48a ./sprint.o
+                0x0000000000020b18                _ZN13speedo_sprintD2Ev
+                0x0000000000020b18                _ZN13speedo_sprintD1Ev
+                0x0000000000020b1a                _ZN13speedo_sprint4initEv
+                0x0000000000020b38                _ZN13speedo_sprintC2Ev
+                0x0000000000020b38                _ZN13speedo_sprintC1Ev
+                0x0000000000020b3a                _ZN13speedo_sprint4loopEv
+ .text          0x0000000000020fa2      0x54e ./stepper.o
+                0x0000000000020fa2                _ZN14speedo_stepperC2Ev
+                0x0000000000020fa2                _ZN14speedo_stepperC1Ev
+                0x0000000000020faa                _ZN14speedo_stepperD2Ev
+                0x0000000000020faa                _ZN14speedo_stepperD1Ev
+                0x0000000000020fac                _ZN14speedo_stepper13overwrite_posEi
+                0x0000000000020fe4                _ZN14speedo_stepper5go_toEiii
+                0x0000000000021060                _ZN14speedo_stepper5go_toEi
+                0x0000000000021094                _ZN14speedo_stepper4initEv
+                0x00000000000210e6                _ZN14speedo_stepper7get_posEv
+                0x00000000000211b2                _ZN14speedo_stepper16get_motor_statusEPiS0_S0_
+                0x000000000002130a                _ZN14speedo_stepper4loopEv
+ .text          0x00000000000214f0      0x882 ./temperature.o
+                0x00000000000214f0                _ZN18speedo_temperatureC1Ev
+                0x00000000000214f0                _ZN18speedo_temperatureC2Ev
+                0x0000000000021574                _ZN18speedo_temperatureD1Ev
+                0x0000000000021574                _ZN18speedo_temperatureD2Ev
+                0x0000000000021576                _ZN18speedo_temperature10check_varsEv
+                0x00000000000216de                _ZN18speedo_temperature4initEv
+                0x00000000000216fe                _ZN18speedo_temperature13read_oil_tempEv
+                0x000000000002188a                _ZN18speedo_temperature15read_water_tempEv
+                0x0000000000021a9c                _ZN18speedo_temperature13read_air_tempEv
+                0x0000000000021b6c                _ZN18speedo_temperature12get_air_tempEv
+                0x0000000000021b86                _ZN18speedo_temperature12get_oil_tempEv
+                0x0000000000021c7c                _ZN18speedo_temperature14get_water_tempEv
+ .text          0x0000000000021d72     0x1384 ./tetris.o
+                0x0000000000021d72                _ZN6tetrisC1Ev
+                0x0000000000021d72                _ZN6tetrisC2Ev
+                0x0000000000021d74                _ZN6tetrisD2Ev
+                0x0000000000021d74                _ZN6tetrisD1Ev
+                0x0000000000021d76                _ZN6tetris22copy_element_to_bufferEi
+                0x0000000000021e0a                _ZN6tetris11new_elementEv
+                0x0000000000021ee6                _ZN6tetris4initEv
+                0x0000000000021f2c                _ZN6tetris13initDrawFieldEv
+                0x0000000000022208                _ZN6tetris11updateFieldEv
+                0x0000000000022338                _ZN6tetris11check_stackEv
+                0x000000000002274a                _ZN6tetris4loopEv
+                0x000000000002301c                _ZN6tetris3runEv
+                0x0000000000023050                _ZN6tetris19show_grid_on_serialEv
+ .text          0x00000000000230f6      0x2e8 ./timer.o
+                0x00000000000230f6                _ZN12speedo_timerC2Ev
+                0x00000000000230f6                _ZN12speedo_timerC1Ev
+                0x000000000002312e                _ZN12speedo_timerD2Ev
+                0x000000000002312e                _ZN12speedo_timerD1Ev
+                0x0000000000023130                _Z8ram_infov
+                0x0000000000023156                _ZN12speedo_timer9every_secEP13configuration
+                0x0000000000023250                _ZN12speedo_timer10every_qsecEv
+                0x00000000000232b8                _ZN12speedo_timer12every_customEv
+ .text          0x00000000000233de      0x2ba ./voltage.o
+                0x00000000000233de                _ZN14speedo_voltageC2Ev
+                0x00000000000233de                _ZN14speedo_voltageC1Ev
+                0x00000000000233ea                _ZN14speedo_voltageD2Ev
+                0x00000000000233ea                _ZN14speedo_voltageD1Ev
+                0x00000000000233ec                _ZN14speedo_voltage4calcEv
+                0x000000000002360e                _ZN14speedo_voltage3getEv
+                0x0000000000023622                _ZN14speedo_voltage10check_varsEv
+                0x0000000000023626                _ZN14speedo_voltage4initEv
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(malloc.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(exit.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(isalpha.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(isspace.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcmp_P.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcpy_P.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strlen_P.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strncmp_P.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memcmp.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memcpy.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memset.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strchr.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcmp.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcpy.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strncmp.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sprintf.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(addsf3.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(addsf3x.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(asin.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cmpsf2.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cos.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(divsf3.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(divsf3x.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fixsfsi.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(floatsisf.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(floor.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_arccos.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_cmp.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_inf.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_mintl.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_mpack.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_nan.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_powser.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_pscA.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_pscB.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_round.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_sinus.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_split3.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_trunc.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_zero.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(gesf2.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(mulsf3.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(mulsf3x.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(pow.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sin.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sqrt.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strnlen_P.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strnlen.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fputc.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(exp.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_norm2.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(inverse.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(ldexp.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(log.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(modf.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
+ .text          0x0000000000023698        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
+                0x0000000000023698                . = ALIGN (0x2)
  *(.text.*)
  .text._ZN14HardwareSerialD2Ev
-                0x00000000000234c2        0xc ./inc/HardwareSerial.o
-                0x00000000000234c2                _ZN14HardwareSerialD2Ev
-                0x00000000000234c2                _ZN14HardwareSerialD1Ev
+                0x0000000000023698        0xc ./inc/HardwareSerial.o
+                0x0000000000023698                _ZN14HardwareSerialD2Ev
+                0x0000000000023698                _ZN14HardwareSerialD1Ev
  .text._ZN14HardwareSerialD0Ev
-                0x00000000000234ce        0xe ./inc/HardwareSerial.o
-                0x00000000000234ce                _ZN14HardwareSerialD0Ev
- .text.startup  0x00000000000234dc      0x13c ./inc/HardwareSerial.o
- .text.exit     0x0000000000023618       0x1e ./inc/HardwareSerial.o
+                0x00000000000236a4        0xe ./inc/HardwareSerial.o
+                0x00000000000236a4                _ZN14HardwareSerialD0Ev
+ .text.startup  0x00000000000236b2      0x13c ./inc/HardwareSerial.o
+ .text.exit     0x00000000000237ee       0x1e ./inc/HardwareSerial.o
  .text._ZN6SdFileD2Ev
-                0x0000000000023636       0x14 ./inc/SdFat.o
-                0x0000000000023636                _ZN6SdFileD1Ev
-                0x0000000000023636                _ZN6SdFileD2Ev
+                0x000000000002380c       0x14 ./inc/SdFat.o
+                0x000000000002380c                _ZN6SdFileD1Ev
+                0x000000000002380c                _ZN6SdFileD2Ev
  .text._ZN7istream5getchEP6fpos_t
-                0x000000000002364a       0x24 ./inc/istream.o
-                0x000000000002364a                _ZN7istream5getchEP6fpos_t
+                0x0000000000023820       0x24 ./inc/istream.o
+                0x0000000000023820                _ZN7istream5getchEP6fpos_t
  .text._ZN6SdFileaSERKS_
-                0x000000000002366e       0xa0 ./file_manager_v2.o
-                0x000000000002366e                _ZN6SdFileaSERKS_
- .text.startup  0x000000000002370e      0x2d0 ./main.o
-                0x000000000002370e                main
+                0x0000000000023844       0xa0 ./file_manager_v2.o
+                0x0000000000023844                _ZN6SdFileaSERKS_
+ .text.startup  0x00000000000238e4      0x2d0 ./main.o
+                0x00000000000238e4                main
  .text.avr-libc
-                0x00000000000239de      0x272 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(malloc.o)
-                0x00000000000239de                malloc
-                0x0000000000023b14                free
+                0x0000000000023bb4      0x272 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(malloc.o)
+                0x0000000000023bb4                malloc
+                0x0000000000023cea                free
  .text.avr-libc
-                0x0000000000023c50        0x6 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(exit.o)
-                0x0000000000023c50                exit
+                0x0000000000023e26        0x6 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(exit.o)
+                0x0000000000023e26                exit
  .text.avr-libc
-                0x0000000000023c56       0x12 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(isalpha.o)
-                0x0000000000023c56                isupper
-                0x0000000000023c5a                isalpha
-                0x0000000000023c5c                islower
+                0x0000000000023e2c       0x12 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(isalpha.o)
+                0x0000000000023e2c                isupper
+                0x0000000000023e30                isalpha
+                0x0000000000023e32                islower
  .text.avr-libc
-                0x0000000000023c68       0x10 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(isspace.o)
-                0x0000000000023c68                isspace
+                0x0000000000023e3e       0x10 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(isspace.o)
+                0x0000000000023e3e                isspace
  .text.avr-libc
-                0x0000000000023c78       0x12 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcmp_P.o)
-                0x0000000000023c78                strcmp_P
+                0x0000000000023e4e       0x12 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcmp_P.o)
+                0x0000000000023e4e                strcmp_P
  .text.avr-libc
-                0x0000000000023c8a        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcpy_P.o)
-                0x0000000000023c8a                strcpy_P
+                0x0000000000023e60        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcpy_P.o)
+                0x0000000000023e60                strcpy_P
  .text.avr-libc
-                0x0000000000023c98       0x12 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strlen_P.o)
-                0x0000000000023c98                __strlen_P
+                0x0000000000023e6e       0x12 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strlen_P.o)
+                0x0000000000023e6e                __strlen_P
  .text.avr-libc
-                0x0000000000023caa       0x1c /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strncmp_P.o)
-                0x0000000000023caa                strncmp_P
+                0x0000000000023e80       0x1c /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strncmp_P.o)
+                0x0000000000023e80                strncmp_P
  .text.avr-libc
-                0x0000000000023cc6       0x1a /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memcmp.o)
-                0x0000000000023cc6                memcmp
+                0x0000000000023e9c       0x1a /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memcmp.o)
+                0x0000000000023e9c                memcmp
  .text.avr-libc
-                0x0000000000023ce0       0x12 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memcpy.o)
-                0x0000000000023ce0                memcpy
+                0x0000000000023eb6       0x12 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memcpy.o)
+                0x0000000000023eb6                memcpy
  .text.avr-libc
-                0x0000000000023cf2        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memset.o)
-                0x0000000000023cf2                memset
+                0x0000000000023ec8        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(memset.o)
+                0x0000000000023ec8                memset
  .text.avr-libc
-                0x0000000000023d00       0x16 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strchr.o)
-                0x0000000000023d00                strchr
+                0x0000000000023ed6       0x16 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strchr.o)
+                0x0000000000023ed6                strchr
  .text.avr-libc
-                0x0000000000023d16       0x12 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcmp.o)
-                0x0000000000023d16                strcmp
+                0x0000000000023eec       0x12 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcmp.o)
+                0x0000000000023eec                strcmp
  .text.avr-libc
-                0x0000000000023d28        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcpy.o)
-                0x0000000000023d28                strcpy
+                0x0000000000023efe        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strcpy.o)
+                0x0000000000023efe                strcpy
  .text.avr-libc
-                0x0000000000023d36       0x1c /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strncmp.o)
-                0x0000000000023d36                strncmp
+                0x0000000000023f0c       0x1c /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strncmp.o)
+                0x0000000000023f0c                strncmp
  .text.avr-libc
-                0x0000000000023d52       0x60 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sprintf.o)
-                0x0000000000023d52                sprintf
+                0x0000000000023f28       0x60 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sprintf.o)
+                0x0000000000023f28                sprintf
  .text.avr-libc.fplib
-                0x0000000000023db2        0xa /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(addsf3.o)
-                0x0000000000023db2                __subsf3
-                0x0000000000023db4                __addsf3
+                0x0000000000023f88        0xa /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(addsf3.o)
+                0x0000000000023f88                __subsf3
+                0x0000000000023f8a                __addsf3
  .text.avr-libc.fplib
-                0x0000000000023dbc       0xc0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(addsf3x.o)
-                0x0000000000023dd6                __addsf3x
+                0x0000000000023f92       0xc0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(addsf3x.o)
+                0x0000000000023fac                __addsf3x
  .text.avr-libc.fplib
-                0x0000000000023e7c       0x2e /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(asin.o)
-                0x0000000000023e7c                asin
+                0x0000000000024052       0x2e /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(asin.o)
+                0x0000000000024052                asin
  .text.avr-libc.fplib
-                0x0000000000023eaa        0x8 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cmpsf2.o)
-                0x0000000000023eaa                __lesf2
-                0x0000000000023eaa                __nesf2
-                0x0000000000023eaa                __eqsf2
-                0x0000000000023eaa                __cmpsf2
-                0x0000000000023eaa                __ltsf2
+                0x0000000000024080        0x8 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cmpsf2.o)
+                0x0000000000024080                __lesf2
+                0x0000000000024080                __nesf2
+                0x0000000000024080                __eqsf2
+                0x0000000000024080                __cmpsf2
+                0x0000000000024080                __ltsf2
  .text.avr-libc.fplib
-                0x0000000000023eb2        0x6 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cos.o)
-                0x0000000000023eb2                cos
+                0x0000000000024088        0x6 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cos.o)
+                0x0000000000024088                cos
  .text.avr-libc.fplib
-                0x0000000000023eb8        0x4 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(divsf3.o)
-                0x0000000000023eb8                __divsf3
+                0x000000000002408e        0x4 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(divsf3.o)
+                0x000000000002408e                __divsf3
  .text.avr-libc.fplib
-                0x0000000000023ebc       0xcc /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(divsf3x.o)
-                0x0000000000023ed2                __divsf3x
-                0x0000000000023ed6                __divsf3_pse
+                0x0000000000024092       0xcc /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(divsf3x.o)
+                0x00000000000240a8                __divsf3x
+                0x00000000000240ac                __divsf3_pse
  .text.avr-libc.fplib
-                0x0000000000023f88        0xa /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fixsfsi.o)
-                0x0000000000023f88                __fixsfsi
+                0x000000000002415e        0xa /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fixsfsi.o)
+                0x000000000002415e                __fixsfsi
  .text.avr-libc.fplib
-                0x0000000000023f92       0x58 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
-                0x0000000000023f92                __fixunssfsi
+                0x0000000000024168       0x58 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fixunssfsi.o)
+                0x0000000000024168                __fixunssfsi
  .text.avr-libc.fplib
-                0x0000000000023fea       0x7a /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(floatsisf.o)
-                0x0000000000023fea                __floatunsisf
-                0x0000000000023fee                __floatsisf
+                0x00000000000241c0       0x7a /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(floatsisf.o)
+                0x00000000000241c0                __floatunsisf
+                0x00000000000241c4                __floatsisf
  .text.avr-libc.fplib
-                0x0000000000024064       0x26 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(floor.o)
-                0x0000000000024064                floor
+                0x000000000002423a       0x26 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(floor.o)
+                0x000000000002423a                floor
  .text.avr-libc.fplib
-                0x000000000002408a       0x36 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_arccos.o)
-                0x000000000002408a                __fp_arccos
+                0x0000000000024260       0x36 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_arccos.o)
+                0x0000000000024260                __fp_arccos
  .text.avr-libc.fplib
-                0x00000000000240c0       0x48 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_cmp.o)
-                0x00000000000240c0                __fp_cmp
+                0x0000000000024296       0x48 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_cmp.o)
+                0x0000000000024296                __fp_cmp
  .text.avr-libc.fplib
-                0x0000000000024108        0xc /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_inf.o)
-                0x0000000000024108                __fp_inf
+                0x00000000000242de        0xc /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_inf.o)
+                0x00000000000242de                __fp_inf
  .text.avr-libc.fplib
-                0x0000000000024114       0x36 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_mintl.o)
-                0x0000000000024114                __fp_mintl
+                0x00000000000242ea       0x36 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_mintl.o)
+                0x00000000000242ea                __fp_mintl
  .text.avr-libc.fplib
-                0x000000000002414a       0x1c /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_mpack.o)
-                0x000000000002414a                __fp_mpack
-                0x000000000002414e                __fp_mpack_finite
+                0x0000000000024320       0x1c /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_mpack.o)
+                0x0000000000024320                __fp_mpack
+                0x0000000000024324                __fp_mpack_finite
  .text.avr-libc.fplib
-                0x0000000000024166        0x6 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_nan.o)
-                0x0000000000024166                __fp_nan
+                0x000000000002433c        0x6 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_nan.o)
+                0x000000000002433c                __fp_nan
  .text.avr-libc.fplib
-                0x000000000002416c       0x4a /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_powser.o)
-                0x000000000002416c                __fp_powser
+                0x0000000000024342       0x4a /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_powser.o)
+                0x0000000000024342                __fp_powser
  .text.avr-libc.fplib
-                0x00000000000241b6       0x22 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
-                0x00000000000241b6                __fp_powsodd
+                0x000000000002438c       0x22 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_powsodd.o)
+                0x000000000002438c                __fp_powsodd
  .text.avr-libc.fplib
-                0x00000000000241d8        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_pscA.o)
-                0x00000000000241d8                __fp_pscA
+                0x00000000000243ae        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_pscA.o)
+                0x00000000000243ae                __fp_pscA
  .text.avr-libc.fplib
-                0x00000000000241e6        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_pscB.o)
-                0x00000000000241e6                __fp_pscB
+                0x00000000000243bc        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_pscB.o)
+                0x00000000000243bc                __fp_pscB
  .text.avr-libc.fplib
-                0x00000000000241f4       0x50 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
-                0x00000000000241f6                __fp_rempio2
+                0x00000000000243ca       0x50 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_rempio2.o)
+                0x00000000000243cc                __fp_rempio2
  .text.avr-libc.fplib
-                0x0000000000024244       0x22 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_round.o)
-                0x0000000000024244                __fp_round
+                0x000000000002441a       0x22 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_round.o)
+                0x000000000002441a                __fp_round
  .text.avr-libc.fplib
-                0x0000000000024266       0x22 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_sinus.o)
-                0x0000000000024266                __fp_sinus
+                0x000000000002443c       0x22 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_sinus.o)
+                0x000000000002443c                __fp_sinus
  .text.avr-libc.fplib
-                0x0000000000024288       0x44 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_split3.o)
-                0x0000000000024288                __fp_split3
-                0x0000000000024298                __fp_splitA
+                0x000000000002445e       0x44 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_split3.o)
+                0x000000000002445e                __fp_split3
+                0x000000000002446e                __fp_splitA
  .text.avr-libc.fplib
-                0x00000000000242cc       0x2e /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_trunc.o)
-                0x00000000000242cc                __fp_trunc
+                0x00000000000244a2       0x2e /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_trunc.o)
+                0x00000000000244a2                __fp_trunc
  .text.avr-libc.fplib
-                0x00000000000242fa        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_zero.o)
-                0x00000000000242fa                __fp_zero
-                0x00000000000242fc                __fp_szero
+                0x00000000000244d0        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_zero.o)
+                0x00000000000244d0                __fp_zero
+                0x00000000000244d2                __fp_szero
  .text.avr-libc.fplib
-                0x0000000000024308        0x8 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(gesf2.o)
-                0x0000000000024308                __gtsf2
-                0x0000000000024308                __gesf2
+                0x00000000000244de        0x8 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(gesf2.o)
+                0x00000000000244de                __gtsf2
+                0x00000000000244de                __gesf2
  .text.avr-libc.fplib
-                0x0000000000024310        0x4 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(mulsf3.o)
-                0x0000000000024310                __mulsf3
+                0x00000000000244e6        0x4 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(mulsf3.o)
+                0x00000000000244e6                __mulsf3
  .text.avr-libc.fplib
-                0x0000000000024314       0xc2 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(mulsf3x.o)
-                0x0000000000024328                __mulsf3x
-                0x000000000002432c                __mulsf3_pse
+                0x00000000000244ea       0xc2 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(mulsf3x.o)
+                0x00000000000244fe                __mulsf3x
+                0x0000000000024502                __mulsf3_pse
  .text.avr-libc.fplib
-                0x00000000000243d6       0x98 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(pow.o)
-                0x00000000000243d6                pow
+                0x00000000000245ac       0x98 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(pow.o)
+                0x00000000000245ac                pow
  .text.avr-libc.fplib
-                0x000000000002446e        0xc /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sin.o)
-                0x000000000002446e                sin
+                0x0000000000024644        0xc /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sin.o)
+                0x0000000000024644                sin
  .text.avr-libc.fplib
-                0x000000000002447a       0x84 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sqrt.o)
-                0x0000000000024482                sqrt
+                0x0000000000024650       0x84 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(sqrt.o)
+                0x0000000000024658                sqrt
  .text.avr-libc
-                0x00000000000244fe      0x3f2 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
-                0x00000000000244fe                vfprintf
+                0x00000000000246d4      0x3f2 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(vfprintf_std.o)
+                0x00000000000246d4                vfprintf
  .text.avr-libc
-                0x00000000000248f0       0x10 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
-                0x00000000000248f0                __eerd_byte_m2560
+                0x0000000000024ac6       0x10 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(eerd_byte_atmega2560.o)
+                0x0000000000024ac6                __eerd_byte_m2560
  .text.avr-libc
-                0x0000000000024900       0x1c /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
-                0x0000000000024900                __eewr_byte_m2560
-                0x0000000000024902                __eewr_r18_m2560
+                0x0000000000024ad6       0x1c /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(eewr_byte_atmega2560.o)
+                0x0000000000024ad6                __eewr_byte_m2560
+                0x0000000000024ad8                __eewr_r18_m2560
  .text.avr-libc
-                0x000000000002491c        0x6 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
-                0x000000000002491c                __ctype_isfalse
-                0x0000000000024920                __ctype_istrue
+                0x0000000000024af2        0x6 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(cty_isfalse.o)
+                0x0000000000024af2                __ctype_isfalse
+                0x0000000000024af6                __ctype_istrue
  .text.avr-libc
-                0x0000000000024922       0x16 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strnlen_P.o)
-                0x0000000000024922                strnlen_P
+                0x0000000000024af8       0x16 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strnlen_P.o)
+                0x0000000000024af8                strnlen_P
  .text.avr-libc
-                0x0000000000024938       0x16 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strnlen.o)
-                0x0000000000024938                strnlen
+                0x0000000000024b0e       0x16 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(strnlen.o)
+                0x0000000000024b0e                strnlen
  .text.avr-libc
-                0x000000000002494e       0x58 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fputc.o)
-                0x000000000002494e                fputc
+                0x0000000000024b24       0x58 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fputc.o)
+                0x0000000000024b24                fputc
  .text.avr-libc
-                0x00000000000249a6       0xbc /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
-                0x00000000000249a6                __ultoa_invert
+                0x0000000000024b7c       0xbc /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(ultoa_invert.o)
+                0x0000000000024b7c                __ultoa_invert
  .text.avr-libc.fplib
-                0x0000000000024a62       0x62 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(exp.o)
-                0x0000000000024a6c                exp
+                0x0000000000024c38       0x62 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(exp.o)
+                0x0000000000024c42                exp
  .text.avr-libc.fplib
-                0x0000000000024ac4        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_norm2.o)
-                0x0000000000024ac4                __fp_norm2
+                0x0000000000024c9a        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(fp_norm2.o)
+                0x0000000000024c9a                __fp_norm2
  .text.avr-libc.fplib
-                0x0000000000024ad2        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(inverse.o)
-                0x0000000000024ad2                inverse
+                0x0000000000024ca8        0xe /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(inverse.o)
+                0x0000000000024ca8                inverse
  .text.avr-libc.fplib
-                0x0000000000024ae0       0x6c /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(ldexp.o)
-                0x0000000000024ae4                ldexp
+                0x0000000000024cb6       0x6c /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(ldexp.o)
+                0x0000000000024cba                ldexp
  .text.avr-libc.fplib
-                0x0000000000024b4c       0x8a /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(log.o)
-                0x0000000000024b56                log
+                0x0000000000024d22       0x8a /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(log.o)
+                0x0000000000024d2c                log
  .text.avr-libc.fplib
-                0x0000000000024bd6       0x66 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(modf.o)
-                0x0000000000024bd6                modff
-                0x0000000000024bd6                modf
+                0x0000000000024dac       0x66 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(modf.o)
+                0x0000000000024dac                modff
+                0x0000000000024dac                modf
  .text.libgcc.mul
-                0x0000000000024c3c       0x18 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
-                0x0000000000024c3c                __umulhisi3
+                0x0000000000024e12       0x18 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
+                0x0000000000024e12                __umulhisi3
  .text.libgcc.div
-                0x0000000000024c54        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
- .text.libgcc   0x0000000000024c54        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
+                0x0000000000024e2a        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
+ .text.libgcc   0x0000000000024e2a        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
  .text.libgcc.prologue
-                0x0000000000024c54        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
+                0x0000000000024e2a        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
  .text.libgcc.builtins
-                0x0000000000024c54        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
+                0x0000000000024e2a        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
  .text.libgcc.fmul
-                0x0000000000024c54        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
+                0x0000000000024e2a        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_umulhisi3.o)
  .text.libgcc.mul
-                0x0000000000024c54       0x14 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
-                0x0000000000024c54                __muluhisi3
+                0x0000000000024e2a       0x14 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
+                0x0000000000024e2a                __muluhisi3
  .text.libgcc.div
-                0x0000000000024c68        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
- .text.libgcc   0x0000000000024c68        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
+                0x0000000000024e3e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
+ .text.libgcc   0x0000000000024e3e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
  .text.libgcc.prologue
-                0x0000000000024c68        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
+                0x0000000000024e3e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
  .text.libgcc.builtins
-                0x0000000000024c68        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
+                0x0000000000024e3e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
  .text.libgcc.fmul
-                0x0000000000024c68        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
+                0x0000000000024e3e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_muluhisi3.o)
  .text.libgcc.mul
-                0x0000000000024c68       0x1e /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
-                0x0000000000024c68                __mulsi3
+                0x0000000000024e3e       0x1e /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
+                0x0000000000024e3e                __mulsi3
  .text.libgcc.div
-                0x0000000000024c86        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
- .text.libgcc   0x0000000000024c86        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
+                0x0000000000024e5c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
+ .text.libgcc   0x0000000000024e5c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
  .text.libgcc.prologue
-                0x0000000000024c86        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
+                0x0000000000024e5c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
  .text.libgcc.builtins
-                0x0000000000024c86        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
+                0x0000000000024e5c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
  .text.libgcc.fmul
-                0x0000000000024c86        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
+                0x0000000000024e5c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_mulsi3.o)
  .text.libgcc.mul
-                0x0000000000024c86        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
+                0x0000000000024e5c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
  .text.libgcc.div
-                0x0000000000024c86       0x18 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
-                0x0000000000024c86                __udivmodqi4
- .text.libgcc   0x0000000000024c9e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
+                0x0000000000024e5c       0x18 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
+                0x0000000000024e5c                __udivmodqi4
+ .text.libgcc   0x0000000000024e74        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
  .text.libgcc.prologue
-                0x0000000000024c9e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
+                0x0000000000024e74        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
  .text.libgcc.builtins
-                0x0000000000024c9e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
+                0x0000000000024e74        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
  .text.libgcc.fmul
-                0x0000000000024c9e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
+                0x0000000000024e74        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodqi4.o)
  .text.libgcc.mul
-                0x0000000000024c9e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
+                0x0000000000024e74        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
  .text.libgcc.div
-                0x0000000000024c9e       0x28 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
-                0x0000000000024c9e                __udivmodhi4
- .text.libgcc   0x0000000000024cc6        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
+                0x0000000000024e74       0x28 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
+                0x0000000000024e74                __udivmodhi4
+ .text.libgcc   0x0000000000024e9c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
  .text.libgcc.prologue
-                0x0000000000024cc6        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
+                0x0000000000024e9c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
  .text.libgcc.builtins
-                0x0000000000024cc6        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
+                0x0000000000024e9c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
  .text.libgcc.fmul
-                0x0000000000024cc6        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
+                0x0000000000024e9c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodhi4.o)
  .text.libgcc.mul
-                0x0000000000024cc6        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
+                0x0000000000024e9c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
  .text.libgcc.div
-                0x0000000000024cc6       0x26 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
-                0x0000000000024cc6                __divmodhi4
-                0x0000000000024cc6                _div
- .text.libgcc   0x0000000000024cec        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
+                0x0000000000024e9c       0x26 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
+                0x0000000000024e9c                __divmodhi4
+                0x0000000000024e9c                _div
+ .text.libgcc   0x0000000000024ec2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
  .text.libgcc.prologue
-                0x0000000000024cec        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
+                0x0000000000024ec2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
  .text.libgcc.builtins
-                0x0000000000024cec        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
+                0x0000000000024ec2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
  .text.libgcc.fmul
-                0x0000000000024cec        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
+                0x0000000000024ec2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodhi4.o)
  .text.libgcc.mul
-                0x0000000000024cec        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
+                0x0000000000024ec2        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
  .text.libgcc.div
-                0x0000000000024cec       0x44 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
-                0x0000000000024cec                __udivmodsi4
- .text.libgcc   0x0000000000024d30        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
+                0x0000000000024ec2       0x44 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
+                0x0000000000024ec2                __udivmodsi4
+ .text.libgcc   0x0000000000024f06        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
  .text.libgcc.prologue
-                0x0000000000024d30        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
+                0x0000000000024f06        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
  .text.libgcc.builtins
-                0x0000000000024d30        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
+                0x0000000000024f06        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
  .text.libgcc.fmul
-                0x0000000000024d30        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
+                0x0000000000024f06        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_udivmodsi4.o)
  .text.libgcc.mul
-                0x0000000000024d30        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
+                0x0000000000024f06        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
  .text.libgcc.div
-                0x0000000000024d30       0x36 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
-                0x0000000000024d30                __divmodsi4
- .text.libgcc   0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
+                0x0000000000024f06       0x36 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
+                0x0000000000024f06                __divmodsi4
+ .text.libgcc   0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
  .text.libgcc.prologue
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
  .text.libgcc.builtins
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
  .text.libgcc.fmul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_divmodsi4.o)
  .text.libgcc.mul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
  .text.libgcc.div
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
- .text.libgcc   0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
+ .text.libgcc   0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
  .text.libgcc.prologue
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
  .text.libgcc.builtins
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
  .text.libgcc.fmul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
  .text.libgcc.mul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
  .text.libgcc.div
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
- .text.libgcc   0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
+ .text.libgcc   0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
  .text.libgcc.prologue
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
  .text.libgcc.builtins
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
  .text.libgcc.fmul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_copy_data.o)
  .text.libgcc.mul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
  .text.libgcc.div
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
- .text.libgcc   0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
+ .text.libgcc   0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
  .text.libgcc.prologue
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
  .text.libgcc.builtins
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
  .text.libgcc.fmul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_clear_bss.o)
  .text.libgcc.mul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
  .text.libgcc.div
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
- .text.libgcc   0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
+ .text.libgcc   0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
  .text.libgcc.prologue
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
  .text.libgcc.builtins
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
  .text.libgcc.fmul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_ctors.o)
  .text.libgcc.mul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
  .text.libgcc.div
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
- .text.libgcc   0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
+ .text.libgcc   0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
  .text.libgcc.prologue
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
  .text.libgcc.builtins
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
  .text.libgcc.fmul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
  .text.libgcc.mul
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
  .text.libgcc.div
-                0x0000000000024d66        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
- .text.libgcc   0x0000000000024d66        0x8 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
-                0x0000000000024d66                __tablejump_elpm__
+                0x0000000000024f3c        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
+ .text.libgcc   0x0000000000024f3c        0x8 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
+                0x0000000000024f3c                __tablejump_elpm__
  .text.libgcc.prologue
-                0x0000000000024d6e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
+                0x0000000000024f44        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
  .text.libgcc.builtins
-                0x0000000000024d6e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
+                0x0000000000024f44        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
  .text.libgcc.fmul
-                0x0000000000024d6e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
-                0x0000000000024d6e                . = ALIGN (0x2)
+                0x0000000000024f44        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_tablejump_elpm.o)
+                0x0000000000024f44                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000000000024d6e        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
-                0x0000000000024d6e                _exit
+ .fini9         0x0000000000024f44        0x0 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
+                0x0000000000024f44                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
  *(.fini7)
  *(.fini7)
  *(.fini6)
- .fini6         0x0000000000024d6e       0x1e /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
-                0x0000000000024d6e                __do_global_dtors
+ .fini6         0x0000000000024f44       0x1e /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_dtors.o)
+                0x0000000000024f44                __do_global_dtors
  *(.fini6)
  *(.fini5)
  *(.fini5)
@@ -1607,11 +1608,11 @@ LOAD /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000000000024d8c        0x4 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
+ .fini0         0x0000000000024f62        0x4 /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a(_exit.o)
  *(.fini0)
-                0x0000000000024d90                _etext = .
+                0x0000000000024f66                _etext = .
 
-.data           0x0000000000800200      0x908 load address 0x0000000000024d90
+.data           0x0000000000800200      0x908 load address 0x0000000000024f66
                 0x0000000000800200                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800200        0x0 /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/crtm2560.o
@@ -2006,8 +2007,8 @@ LOAD /usr/lib/gcc/avr/4.7.0/avr6/libgcc.a
                 0x0000000000800fab                __brkval
                 0x0000000000800fad                __flp
                 0x0000000000800faf                PROVIDE (__bss_end, .)
-                0x0000000000024d90                __data_load_start = LOADADDR (.data)
-                0x0000000000025698                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0000000000024f66                __data_load_start = LOADADDR (.data)
+                0x000000000002586e                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0000000000800faf        0x0
                 0x0000000000800faf                PROVIDE (__noinit_start, .)
@@ -2667,7 +2668,6 @@ Speedo_CAN::get_Speed()                           ./CAN.o
 Speedo_CAN::get_air_temp()                        ./CAN.o
                                                   ./sensors.o
 Speedo_CAN::get_oil_temp()                        ./CAN.o
-                                                  ./sensors.o
 Speedo_CAN::get_water_temp()                      ./CAN.o
                                                   ./sensors.o
 Speedo_CAN::init()                                ./CAN.o
@@ -2676,6 +2676,7 @@ Speedo_CAN::mcp2515_bit_modify(unsigned char, unsigned char, unsigned char) ./CA
 Speedo_CAN::mcp2515_read_register(unsigned char)  ./CAN.o
 Speedo_CAN::mcp2515_read_rx_status()              ./CAN.o
 Speedo_CAN::mcp2515_write_register(unsigned char, unsigned char) ./CAN.o
+Speedo_CAN::process_incoming_messages()           ./CAN.o
 Speedo_CAN::request(char)                         ./CAN.o
                                                   ./sensors.o
 Speedo_CAN::shutdown()                            ./CAN.o
@@ -3477,6 +3478,7 @@ millis                                            ./inc/wiring.o
                                                   ./display.o
                                                   ./blinker.o
                                                   ./aktors.o
+                                                  ./CAN.o
                                                   ./inc/Sd2Card.o
                                                   ./inc/I2C.o
 modf                                              /usr/lib/gcc/avr/4.7.0/../../../avr/lib/avr6/libc.a(modf.o)
