@@ -86,7 +86,7 @@ int configuration::write(const char *filename){
 			 * avg, dist, time for each of the 10 storages
 			 ****************************************************/
 			//if(strncmp_P(filename, PSTR("speedo.txt"),10) && storage_outdated){
-			if(strncmp_P(PSTR("speedo.txt"),filename,10)==0 && storage_outdated){
+			if(strncmp("speedo.txt",filename,10)==0 && storage_outdated){
 				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
 					Serial.print("platzhalter1");
@@ -117,7 +117,7 @@ int configuration::write(const char *filename){
 				/*************** GANG.TXT **************************
 				 * as soon as the user has calibrated at least one gear
 				 ****************************************************/
-			} else if(strncmp_P(PSTR("GANG.TXT"),filename,8)==0){
+			} else if(strncmp("GANG.TXT",filename,8)==0){
 				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
 					Serial.print("platzhalter2");
@@ -190,7 +190,7 @@ int configuration::write(const char *filename){
 				 * save the basic stuff like tire outline aka meters
 				 * per tick, flasher warning distance and so on
 				 ****************************************************/
-			} else if(strncmp_P(PSTR("BASE.TXT"),filename,8)==0){
+			} else if(strncmp("BASE.TXT",filename,8)==0){
 				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {
 					pDebug->sprintlnp(PSTR("open subdir /config failed"));
 					return -1;
@@ -645,7 +645,7 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&pConfig->skin_file);
 	} else if(strcmp_P(name,PSTR("oil_dist"))==0){ // distanz in meter nachder ge...lt wird
 		parse_int(buffer,seperator,&pAktors->m_oiler->grenze);
-	} else if(strncmp_P(PSTR("oil_temp_r_"),name,11)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
+	} else if(strncmp("oil_temp_r_",name,11)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
 		char var_name[14]; // watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
 			sprintf(var_name,"oil_temp_r_%i",j);
@@ -653,7 +653,7 @@ int configuration::parse(char* buffer){
 				parse_short(buffer,seperator,&pSensors->m_temperature->oil_r_werte[j]);
 			};
 		};
-	} else if(strncmp_P(PSTR("oil_temp_t_"),name,11)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
+	} else if(strncmp("oil_temp_t_",name,11)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
 		char var_name[14];// watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings erzeugen
 			sprintf(var_name,"oil_temp_t_%i",j);
@@ -661,7 +661,7 @@ int configuration::parse(char* buffer){
 				parse_short(buffer,seperator,&pSensors->m_temperature->oil_t_werte[j]);
 			};
 		};
-	} else if(strncmp_P(PSTR("water_temp_r_"),name,13)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
+	} else if(strncmp("water_temp_r_",name,13)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
 		char var_name[16];// watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
 			sprintf(var_name,"water_temp_r_%i",j);
@@ -669,7 +669,7 @@ int configuration::parse(char* buffer){
 				parse_short(buffer,seperator,&pSensors->m_temperature->water_r_werte[j]);
 			};
 		};
-	} else if(strncmp_P(PSTR("water_temp_t_"),name,13)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
+	} else if(strncmp("water_temp_t_",name,13)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
 		char var_name[16];// watch me i am IMPORTANT
 		for(int j=0;j<19;j++){ // alle mglichen strings erzeugen
 			sprintf(var_name,"water_temp_t_%i",j);
@@ -677,7 +677,7 @@ int configuration::parse(char* buffer){
 				parse_short(buffer,seperator,&pSensors->m_temperature->water_t_werte[j]);
 			};
 		};
-	} else if(strncmp_P(PSTR("n_gang_"),name,7)==0){// ganzen Block auslesen, alle n_gangXXX gehen hier rein
+	} else if(strncmp("n_gang_",name,7)==0){// ganzen Block auslesen, alle n_gangXXX gehen hier rein
 		char var_name[9];
 		for(int j=1;j<=6;j++){ // alle mglichen strings erzeugen
 			sprintf(var_name,"n_gang_%i",j);
@@ -1136,7 +1136,7 @@ void configuration::km_save(){
 	// debug
 	if(STORAGE_DEBUG){   pDebug->sprintp(PSTR("calling km_save"));  };
 	// debug
-	if(pSensors->get_RPM(true)>0){ // if motor is running
+	if(pSensors->get_RPM(0)>0){ // if motor is running
 		// debug
 		if(STORAGE_DEBUG){     pDebug->sprintlnp(PSTR("speed>0 => storage outdated"));    };
 		// debug
@@ -1169,8 +1169,7 @@ void configuration::km_save(){
 		// save as backup
 		last_speed_value=speed_value;
 	} else { // laufender motor => sprit verbrauch => speichern
-		pSensors->m_dz->calc();
-		if(pSensors->get_RPM(true)>0){
+		if(pSensors->get_RPM(0)>0){
 			storage_outdated=true;
 		};
 	};
