@@ -18,7 +18,7 @@
 
 Speedo_CAN::Speedo_CAN(){
 	failed=false;
-	message_available=false;
+	message_available=false; // init with true, may be its one there
 	last_received=0;
 	can_speed=0;
 	can_rpm=0;
@@ -34,12 +34,15 @@ Speedo_CAN::~Speedo_CAN(){
 //}
 
 void Speedo_CAN::init(){
-	// Interrupt for CAN Interface active
-	//TODO
-	// interrupt auf pk4, pcint20
+	// Interrupt for CAN Interface active, auf pk4, pcint20
 	DDRK &= ~(1<<PK4); // input
 	PORTK |= (1<<PK4); //  active low => pull up
-	DDR_CS |= (1<<P_CS); // Chipselect as output
+	if(!PINK&(1<<CAN_INTERRUPT_PIN)){	 // if the CAN pin is low, low active interrupt
+		message_available=true; // init with true, may be its one there
+	};
+
+	// Chipselect as output
+	DDR_CS |= (1<<P_CS);
 
 
 	/********************************************* MCP2515 SETUP ***********************************/
@@ -142,8 +145,8 @@ void Speedo_CAN::shutdown(){
 
 };
 
-bool Speedo_CAN::check_vars(){
-	return true; // returns true if a failure occures
+int Speedo_CAN::check_vars(){
+	return 0; // return error code .. 1=failed, 0=ok
 };
 
 /********************************************* CAN VALUE GETTER ***********************************/
@@ -193,19 +196,28 @@ void Speedo_CAN::request(char MSG){
 	message.data[2] = MSG;
 
 	// Nachricht verschicken
+	//	unsigned long before=millis();
 	can_send_message(&message);
+	//	int differ=millis()-before;
+	//	Serial.print("Request took:");
+	//	Serial.println(differ);
 };
 
 void Speedo_CAN::process_incoming_messages(){
 	while(can_get_message(&message)!=0xff){ //0xff=no more frames available
+//		Serial.println("New CAN Message found");
 		if(message.id==0x07E8){ // TODO: is this fix?
 			if(message.length>2){ // must be at least 2 chars to check [1]
 				if(message.data[1]==0x41){ // Rainer said it must be 0x41!!
 					last_received=millis();
 					if(message.data[2]==CAN_RPM){
 						can_rpm=(message.data[3]<<6)|(message.data[4]>>2);
+						Serial.print("New RPM:");
+						Serial.println(can_rpm);
 					} else if(message.data[2]==CAN_SPEED){
 						can_speed=message.data[3];
+						Serial.print("New speed:");
+						Serial.println(can_speed);
 //					} else if(message.data[2]==CAN_AIR_TEMP){
 //						can_air_temp=message.data[3]-40;
 					} else if(message.data[2]==CAN_WATER_TEMP){
@@ -220,10 +232,9 @@ void Speedo_CAN::process_incoming_messages(){
 uint8_t Speedo_CAN::spi_putc( uint8_t data ){
 	// Sendet ein Byte
 	SPDR = data;
-	Serial.print("SPI send...");
 	// Wartet bis Byte gesendet wurde
 	while( !( SPSR & (1<<SPIF) ) ){};
-	Serial.println("ok");
+
 	return SPDR;
 }
 
@@ -273,7 +284,6 @@ void Speedo_CAN::mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data){
 uint8_t Speedo_CAN::can_send_message(CANMessage *p_message){
 	uint8_t status, address;
 
-	Serial.println("Senden start");
 	// Status des MCP2515 auslesen
 	PORT_CS &= ~(1<<P_CS);
 	spi_putc(SPI_CMD_READ_STATUS);
@@ -355,7 +365,6 @@ uint8_t Speedo_CAN::can_send_message(CANMessage *p_message){
 	}
 	PORT_CS |= (1<<P_CS);      // CS auf High
 
-	Serial.println("Senden finish");
 	return 1;
 }
 
@@ -431,7 +440,6 @@ uint8_t Speedo_CAN::can_get_message(CANMessage *p_message){
 	} else {
 		mcp2515_bit_modify(CANINTF, (1<<RX1IF), 0);
 	}
-
 	return (status & 0x07);
 }
 /********************************************* CAN FUNCTIONS ***********************************/

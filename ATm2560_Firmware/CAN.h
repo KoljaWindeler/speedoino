@@ -34,7 +34,7 @@ public:
 	Speedo_CAN(void);
 	~Speedo_CAN();
 	void init();
-	bool check_vars();
+	int check_vars();
 	int get_air_temp();
 	int get_oil_temp();
 	int get_water_temp();
