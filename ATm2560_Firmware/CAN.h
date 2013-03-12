@@ -15,9 +15,9 @@
 #define CAN_AIR_TEMP 0x0F
 #define CAN_WATER_TEMP 0x05
 
-#define DDR_CS      DDRB // TODO!!!
-#define PORT_CS     PORTB// TODO!!!
-#define P_CS        2// TODO!!!
+#define DDR_CS      DDRK
+#define PORT_CS     PORTK
+#define P_CS        5
 
 
 
@@ -45,8 +45,10 @@ public:
 	bool failed;
 	bool message_available;
 	void process_incoming_messages();
+	uint8_t can_get_message(CANMessage *p_message);// move me back to private
+
 private:
-	uint8_t can_get_message(CANMessage *p_message);
+
 	uint8_t can_send_message(CANMessage *p_message);
 
 	uint8_t spi_putc( uint8_t data );

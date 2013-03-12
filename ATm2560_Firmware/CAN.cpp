@@ -39,6 +39,8 @@ void Speedo_CAN::init(){
 	// interrupt auf pk4, pcint20
 	DDRK &= ~(1<<PK4); // input
 	PORTK |= (1<<PK4); //  active low => pull up
+	DDR_CS |= (1<<P_CS); // Chipselect as output
+
 
 	/********************************************* MCP2515 SETUP ***********************************/
 	// MCP2515 per Software Reset zuruecksetzten,
@@ -218,10 +220,10 @@ void Speedo_CAN::process_incoming_messages(){
 uint8_t Speedo_CAN::spi_putc( uint8_t data ){
 	// Sendet ein Byte
 	SPDR = data;
-
+	Serial.print("SPI send...");
 	// Wartet bis Byte gesendet wurde
 	while( !( SPSR & (1<<SPIF) ) ){};
-
+	Serial.println("ok");
 	return SPDR;
 }
 
@@ -271,6 +273,7 @@ void Speedo_CAN::mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data){
 uint8_t Speedo_CAN::can_send_message(CANMessage *p_message){
 	uint8_t status, address;
 
+	Serial.println("Senden start");
 	// Status des MCP2515 auslesen
 	PORT_CS &= ~(1<<P_CS);
 	spi_putc(SPI_CMD_READ_STATUS);
@@ -352,6 +355,7 @@ uint8_t Speedo_CAN::can_send_message(CANMessage *p_message){
 	}
 	PORT_CS |= (1<<P_CS);      // CS auf High
 
+	Serial.println("Senden finish");
 	return 1;
 }
 
