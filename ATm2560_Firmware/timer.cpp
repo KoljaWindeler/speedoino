@@ -48,12 +48,14 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		pAktors->m_oiler->check_value(); // gucken ob wir ölen müssten
 		pConfig->km_save();    // avg,max,trips hochzählen, immer wenn ss==59 ist store to sd card
 
-		if(pSD->sd_failed && (millis()/1000)%30==0){
+		if(pSD->sd_failed && (millis()/1000)%30==0 && pSensors->m_reset->reboots_caused_by_sd_problems<2){ // just two ties .. after that: die SD!
 			Serial.print(millis());
 			Serial.print("-");
 			pSD->power_up(1);
 			Serial.println(millis());
 			if(!pSD->sd_failed){
+				pSensors->m_reset->reboots_caused_by_sd_problems++;
+				pDebug->sprintlnp(PSTR("SD reboot successful, rebooting speedo!"));
 				init_speedo();
 			}
 		}
