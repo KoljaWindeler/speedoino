@@ -168,8 +168,8 @@ void speedo_clock::init() {
 
 
 
-bool speedo_clock::check_vars(){
-	return false;
+int speedo_clock::check_vars(){
+	return 0;
 };
 
 
