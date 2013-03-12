@@ -162,18 +162,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	// see comment on top, number (1)
 	//pSensors->m_dz->calc(); // calc in main loop to run the stepper in every menu
 	if(!(dz_widget.x==-1 && dz_widget.y==-1)){ // only show it if pos != -1/-1
-		if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->get_RPM(false)+1)){
+		if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->get_RPM(2)+1)){
 			if(disp_zeile_bak[DZ_VALUE]==-99){ //schreib alles neu, auch die buchstaben
-				sprintf(char_buffer,"%5i U/min",pSensors->get_RPM(false)); // auf glatte 250er
+				sprintf(char_buffer,"%5i U/min",pSensors->get_RPM(2)); // auf glatte 50er
 				pDebug->speedo_loop(5,0,previousMillis," ");
 				// depend on skinsettings
 				pOLED->string(dz_widget.font,char_buffer,dz_widget.x,dz_widget.y,0,DISP_BRIGHTNESS,0);
 			} else { // nur eine änderung im wert
-				sprintf(char_buffer,"%5i",pSensors->get_RPM(false));
+				sprintf(char_buffer,"%5i",pSensors->get_RPM(2));
 				pDebug->speedo_loop(6,0,previousMillis," ");
 				pOLED->string(dz_widget.font,char_buffer,dz_widget.x,dz_widget.y,0,DISP_BRIGHTNESS,0);
 			};
-			disp_zeile_bak[DZ_VALUE]=int(pSensors->get_RPM(false)+1);
+			disp_zeile_bak[DZ_VALUE]=int(pSensors->get_RPM(2)+1);
 		};
 	};
 
