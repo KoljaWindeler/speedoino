@@ -303,7 +303,7 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){
 	if(overwrite) dimm_state=999;
 
 	////////// SHIFT FLASH ////////////////
-	if(pSensors->get_RPM(true)>unsigned(pSensors->m_dz->blitz_dz) && pSensors->m_dz->blitz_en){
+	if(pSensors->get_RPM(0)>unsigned(pSensors->m_dz->blitz_dz) && pSensors->m_dz->blitz_en){
 		if(dimm_state==FLASH_COLOR_REACHED){
 			return 0;
 		} else if(dimm_state==DIMM_TO_FLASH_COLOR){
@@ -353,7 +353,7 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){
 		case 2:
 			max_value=dz_max_value*100;
 			min_value=dz_min_value*100;
-			actual_value=pSensors->get_RPM(true);
+			actual_value=pSensors->get_RPM(0);
 			from_color=dz_start_color;
 			to_color=dz_end_color;
 			break;
