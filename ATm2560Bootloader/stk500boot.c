@@ -486,6 +486,8 @@ int main(void)
 	DDRH  &= ~(1<<PH3); // one input
 	PORTH =  0x00 | (1<<PH3); // with pullup
 
+	/* enabled pull up on CAN CS connection, to deactivate can bus interface (interface is low active)*/
+	PORTK |= (1<<PK4);
 	/////////Kolja bis hier/////////
 
 
