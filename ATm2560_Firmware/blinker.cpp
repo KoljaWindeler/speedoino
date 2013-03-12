@@ -71,13 +71,13 @@ void moped_blinker::init(){
 };
 
 
-bool moped_blinker::check_vars(){
+int moped_blinker::check_vars(){
 	if(dist_to_warn==0){
 		pDebug->sprintp(PSTR("Blinker failed"));
 		high_speed_add=200;
 		dist_to_warn=200;
-		return true;
+		return 1;
 	}
-	return false;
+	return 0;
 };
 

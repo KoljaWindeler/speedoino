@@ -15,7 +15,7 @@ public:
 	moped_blinker(void);
 	~moped_blinker();
 	void init();
-	bool check_vars();
+	int check_vars();
 	void check();
 	void set_start(unsigned long dist,int kmh);
 	bool warn(unsigned long dist);

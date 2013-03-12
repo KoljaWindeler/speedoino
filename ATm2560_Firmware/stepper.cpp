@@ -28,6 +28,42 @@ void speedo_stepper::init(){
 	go_to(0);
 };
 
+void speedo_stepper::startup(){
+	if(init_steps_to_go!=0){
+		if(init_steps_to_go>=5){
+			if(get_pos()!=0){		//
+				go_to(0,FAST_ACCEL,FAST_SPEED);			// 240*8 = 1920
+			} else {
+				init_steps_to_go=4; 					// nächsten schritt vorbereiten
+			}
+		} else if(init_steps_to_go==4){
+			if(get_pos()!=MOTOR_OVERWRITE_END_POS){		// motor noch nicht am ende angekommen
+				go_to(MOTOR_OVERWRITE_END_POS,FAST_ACCEL,FAST_SPEED);// weiter dorthin scheuchen
+			} else { 														// motor angekommen
+				init_steps_to_go=3; 					// nächsten schritt vorbereiten
+			}
+		} else if(init_steps_to_go==3){
+			if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
+				go_to(0,FAST_ACCEL,FAST_SPEED);			// weiter dorthin scheuchen
+			} else { 														// motor angekommen
+				init_steps_to_go=2; 					// fertig
+			}
+		} else if(init_steps_to_go==2){
+			if(get_pos()!=80){   						// motor noch nicht am anfang angekommen
+				overwrite_pos(80);
+			} else { 														// motor angekommen
+				init_steps_to_go=1; 					// fertig
+			}
+		} else if(init_steps_to_go==1){
+			if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
+				go_to(0,80,200);
+			} else { 														// motor angekommen
+				init_steps_to_go=0; 					// fertig
+			}
+		}
+	}
+}
+
 void speedo_stepper::overwrite_pos(int new_pos){
 	Serial3.flush();
 	Serial3.print("$o");
@@ -45,13 +81,13 @@ bool speedo_stepper::go_to(int winkel,int accel,int speed){
 	Serial3.print("*");
 
 	// debug
-//	Serial.print("$m");
-//	Serial.print(winkel);
-//	Serial.print(",");
-//	Serial.print(accel);
-//	Serial.print(",");
-//	Serial.print(speed);
-//	Serial.print("*");
+	//	Serial.print("$m");
+	//	Serial.print(winkel);
+	//	Serial.print(",");
+	//	Serial.print(accel);
+	//	Serial.print(",");
+	//	Serial.print(speed);
+	//	Serial.print("*");
 
 	return true;
 };
@@ -62,9 +98,9 @@ bool speedo_stepper::go_to(int winkel){
 	Serial3.print("*");
 
 	//
-//	Serial.print(millis());
-//	Serial.print(",");
-//	Serial.println(winkel);
+	//	Serial.print(millis());
+	//	Serial.print(",");
+	//	Serial.println(winkel);
 
 	return true;
 };

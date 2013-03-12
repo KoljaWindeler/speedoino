@@ -23,12 +23,13 @@ speedo_reset::speedo_reset(){
 
 	// get reset reason
 	last_reset=-1; // denn wenn wir wegen strom neustarten ist der avr noch nicht soweit weil er 3 sek wartet damit wir soweit sind ;)
+	reboots_caused_by_sd_problems=0;
 };
 
 speedo_reset::~speedo_reset(){};
 
-bool speedo_reset::check_vars(){
-	return false;
+int speedo_reset::check_vars(){
+	return 0;
 };
 
 
@@ -44,6 +45,12 @@ void speedo_reset::init(){
 	pDebug->sprintp(PSTR("Reset init done. Status "));
 	ask_reset();
 	Serial.println(last_reset);
+
+	// watchdog einschalten um ihn dann zu deaktivieren ... strange aber muss wohl so
+	wdt_enable(WDTO_8S);
+	MCUSR &= ~(1<<WDRF);
+	WDTCSR |= (1<<WDCE) | (1<<WDE);
+	WDTCSR = 0x00;
 };
 
 void speedo_reset::set_active(bool save_to_eeprom,bool save_to_var){
@@ -123,8 +130,8 @@ void speedo_reset::ask_reset(){
 		if(recv_counter>0 && recv[0]=='$' && recv[1]=='y' && recv[3]=='*'){
 			//char to int
 			if(recv[2]=='0') last_reset=0;
-			else if(recv[2]=='1') last_reset=1;
-			else if(recv[2]=='2') last_reset=2;
+			else if(recv[2]=='1') last_reset=1; // avr
+			else if(recv[2]=='2') last_reset=2; // bluetooth
 		}
 	}
 }

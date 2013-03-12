@@ -43,7 +43,7 @@ speedo_temperature::speedo_temperature(){
 speedo_temperature::~speedo_temperature(){
 };
 
-bool speedo_temperature::check_vars(){
+int speedo_temperature::check_vars(){
 	if(water_r_werte[0]==0 || water_t_werte[0]==0 || oil_t_werte[0]==0 || oil_r_werte[0]==0){
 		// Temperatur und Widerstands LookUp
 		// OIL
@@ -67,10 +67,10 @@ bool speedo_temperature::check_vars(){
 		water_warning_temp=950; // 95 C
 		oil_warning_temp=1200; // 120 C
 		pDebug->sprintp(PSTR("temp failed"));
-		return true;
+		return 1;
 	};
 
-	return false;
+	return 0;
 }
 
 void speedo_temperature::init(){

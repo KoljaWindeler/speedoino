@@ -21,7 +21,7 @@ public:
 	speedo_gps();
 	~speedo_gps();
 	void init();
-	bool check_vars();
+	int check_vars();
 	void recv_data();
 	long get_info(unsigned char select);
 	void loop();

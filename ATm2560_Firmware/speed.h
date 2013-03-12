@@ -17,7 +17,7 @@ public:
 	int getSpeed();
 	void init();
 	void shutdown();
-	bool check_vars();
+	int check_vars();
 	void check_umfang();
 	int get_sat_speed();
 	int get_mag_speed();

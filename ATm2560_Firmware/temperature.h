@@ -21,7 +21,7 @@ public:
 	void read_oil_temp();
 	void read_water_temp();
 	void read_air_temp();
-	bool check_vars();
+	int check_vars();
 	void init();
 	short oil_r_werte[19];
 	short oil_t_werte[19];

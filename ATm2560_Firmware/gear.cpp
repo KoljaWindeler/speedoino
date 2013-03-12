@@ -34,7 +34,7 @@ void speedo_gear::init(){
 	last_time_executed=millis();
 }
 
-bool speedo_gear::check_vars(){
+int speedo_gear::check_vars(){
 	if(n_gang[1]+n_gang[2]==0){
 		// gaenge einlesen
 		int temp[7]={160,120,90,73,60,53,45};
@@ -42,9 +42,9 @@ bool speedo_gear::check_vars(){
 			n_gang[j]=temp[j];
 		};
 		pDebug->sprintp(PSTR("gear failed"));
-		return true;
+		return 1;
 	}
-	return false;
+	return 0;
 };
 
 
@@ -59,7 +59,7 @@ void speedo_gear::calc(){
 			if(!digitalRead(kupplungs_pin) && faktor_counter!=0){//Kupplung gezogen, einmalig laut geben was seit dem letzten mal so an min und max und flat ausgekommen ist
 				faktor_counter=0; // damit nach dem kuppeln die alten werte verworfen werden
 			} else if(digitalRead(kupplungs_pin)) { // Kupplung nicht gezogen, also gang berechnen
-				int faktor=pSensors->get_RPM(true)/pSensors->get_speed(true); // wie ist denn wohl der faktor
+				int faktor=pSensors->get_RPM(0)/pSensors->get_speed(true); // wie ist denn wohl der faktor
 				// changed from 8 to 4, to reduce delay while calculation //1.8.2012
 				faktor_flat=pSensors->flatIt(faktor*10,&faktor_counter,4,faktor_flat); // mal sehen ob man so eine art tiefpass faktor sinnvoll nutzen kann
 
@@ -122,7 +122,7 @@ void speedo_gear::calibrate(){
 
 	_delay_ms(150);
 	pSensors->m_dz->calc(); // erst berechnen dann damit weiter rechnen
-	faktor_flat=pSensors->flatIt(int((unsigned long)(10*pSensors->get_RPM(true))/pSensors->get_speed(true)),&faktor_counter,127,faktor_flat);
+	faktor_flat=pSensors->flatIt(int((unsigned long)(10*pSensors->get_RPM(0))/pSensors->get_speed(true)),&faktor_counter,127,faktor_flat);
 	if(faktor_flat!=pSpeedo->disp_zeile_bak[1]){
 		pSpeedo->disp_zeile_bak[1]=faktor_flat;
 

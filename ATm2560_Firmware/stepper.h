@@ -22,7 +22,7 @@ public:
 	void overwrite_pos(int new_pos);
 	void get_motor_status(int* ist_pos, int* delay, int* status);
 	int init_steps_to_go;
-
+	void startup();
 private:
 
 };

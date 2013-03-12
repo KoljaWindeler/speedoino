@@ -56,12 +56,12 @@ void speedo_fuel::init(){
 }
 
 
-bool speedo_fuel::check_vars(){
+int speedo_fuel::check_vars(){
 	if(blink_freq==0 || blink_start==0){
 		blink_freq=500; // blinkt mit 500ms Periodenlaenge
 		blink_start=140; // bei mehr als 140 km auf der Tankuhr fngt die an zu blinken
 		pDebug->sprintp(PSTR("fuel failed"));
-		return true;
+		return 1;
 	}
-	return false;
+	return 0;
 };

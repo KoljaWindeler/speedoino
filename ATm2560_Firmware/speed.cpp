@@ -80,7 +80,7 @@ void speedo_speed::shutdown(){
 }
 
 
-bool speedo_speed::check_vars(){
+int speedo_speed::check_vars(){
 	/********** check values ********************
 	 * zumindest in den trip, max und avg nachsehen ob werte
 	 * drinstehen. Falls die sd karte nicht gelesen werden konnte
@@ -100,10 +100,10 @@ bool speedo_speed::check_vars(){
 		reifen_umfang=1.99; // Reifenumfang in metern
 		gps_takeover=120; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
 		pDebug->sprintp(PSTR("speedo failed"));
-		return true;
+		return 1;
 	};
 
-	return false;
+	return 0;
 };
 
 int speedo_speed::getSpeed(){

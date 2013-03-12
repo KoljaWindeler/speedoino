@@ -66,8 +66,8 @@ int speedo_voltage::get(){
 	return 0;
 }
 
-bool speedo_voltage::check_vars(){
-	return false;
+int speedo_voltage::check_vars(){
+	return 0;
 };
 
 

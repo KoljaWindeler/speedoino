@@ -14,7 +14,7 @@ public:
 	speedo_reset(void);
 	~speedo_reset();
 	void init();
-	bool check_vars();
+	int check_vars();
 	void set_active(bool save_to_eeprom,bool save_to_var);
 	void set_deactive(bool save_to_eeprom,bool save_to_var);
 	void restore();
@@ -25,6 +25,7 @@ public:
 	unsigned long last_time;
 	bool toggle_high;
 	bool reset_enabled;
+	int reboots_caused_by_sd_problems;
 };
 
 #endif /* RESET_H_ */

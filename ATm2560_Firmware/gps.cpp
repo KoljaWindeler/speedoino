@@ -93,8 +93,8 @@ void speedo_gps::init(){
 };
 
 
-bool speedo_gps::check_vars(){
-	return false;
+int speedo_gps::check_vars(){
+	return 0;
 };
 
 // wird als interrupt aufgerufen
