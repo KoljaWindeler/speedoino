@@ -22998,11 +22998,11 @@ www.irf.com&lt;p&gt;
 <part name="GND24" library="supply1" deviceset="GND" device=""/>
 <part name="GND25" library="supply1" deviceset="GND" device=""/>
 <part name="GND26" library="supply1" deviceset="GND" device=""/>
-<part name="CP1" library="Kolja" deviceset="C_SMD_SMP" device="" value="220µF/16V"/>
-<part name="CP2" library="Kolja" deviceset="C_SMD_SMP" device="" value="220µF/16V"/>
+<part name="CP1" library="Kolja" deviceset="C_SMD_SMP" device="" value="330µF/16V"/>
+<part name="CP2" library="Kolja" deviceset="C_SMD_SMP" device="" value="330µF/16V"/>
 <part name="U$15" library="SUPPLY" deviceset="GND" device=""/>
-<part name="CP3" library="Kolja" deviceset="C_SMD_SMP" device="" value="220µF/16V"/>
-<part name="CP4" library="Kolja" deviceset="C_SMD_SMP" device="" value="220µF/16V"/>
+<part name="CP3" library="Kolja" deviceset="C_SMD_SMP" device="" value="330µF/16V"/>
+<part name="CP4" library="Kolja" deviceset="C_SMD_SMP" device="" value="330µF/16V"/>
 <part name="D3" library="diode" deviceset="ZENER-DIODE" device="SOT23" value="5.5V"/>
 <part name="GND27" library="supply1" deviceset="GND" device=""/>
 <part name="D10" library="diode" deviceset="ZENER-DIODE" device="SOT23" value="5.5V"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.2">
+<eagle version="6.4">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -1695,7 +1695,7 @@ www.irf.com&lt;p&gt;
 <clearance class="0" value="0.15"/>
 </class>
 </classes>
-<designrules>
+<designrules name="default">
 <description language="de">DRC von Lutz
 Via´s bis 0.6mm mit Lötstoplack überzogen
 Alle Abstände  0,18mm
@@ -1992,7 +1992,7 @@ min. Width 0,18mm</description>
 <element name="R_HIGHB" library="RCLDT" package="0805" value="46R" x="133.35" y="48.8" smashed="yes" rot="MR90">
 <attribute name="NAME" x="133.1325" y="50.9975" size="0.6096" layer="26" rot="MR90"/>
 </element>
-<element name="R_REED_DOWN" library="RCLDT" package="0805" value="5k / n.b. (Reed / 5V Honda Signal)" x="38.6" y="17.525" smashed="yes" rot="R90">
+<element name="R_REED_DOWN" library="RCLDT" package="0805" value="5k / n.b. (12V Signal / 5V Signal)" x="38.6" y="17.525" smashed="yes" rot="R90">
 <attribute name="NAME" x="38.5325" y="15.7275" size="0.6096" layer="25" rot="R270"/>
 </element>
 <element name="R_REED" library="RCLDT" package="0805" value="7k " x="23.1" y="14.2" smashed="yes">
@@ -2179,7 +2179,7 @@ min. Width 0,18mm</description>
 <attribute name="VALUE" x="2.825" y="24.505" size="1.27" layer="27" rot="R270"/>
 </element>
 <element name="D8" library="diode" package="SOT23" value="5.5V" x="13.8" y="37.3"/>
-<element name="R_REED_UP" library="RCLDT" package="0805" value="n.b.(Honda Signal) / 5k (Reed)" x="35.8" y="17.5" smashed="yes" rot="R270">
+<element name="R_REED_UP" library="RCLDT" package="0805" value="n.b.(Honda Signal) / 15k (Reed)" x="35.8" y="17.5" smashed="yes" rot="R270">
 <attribute name="NAME" x="35.6825" y="15.7525" size="0.6096" layer="25" rot="R270"/>
 <attribute name="VALUE" x="34.1825" y="20.1525" size="0.6096" layer="27" rot="R270"/>
 </element>

@@ -23168,7 +23168,7 @@ www.irf.com&lt;p&gt;
 <part name="GPS_C4" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
 <part name="U$18" library="SUPPLY" deviceset="GND" device=""/>
 <part name="C4" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
-<part name="PWR" library="pinhead" deviceset="PINHD-1X2" device=""/>
+<part name="PWR" library="pinhead" deviceset="PINHD-1X3" device=""/>
 <part name="PWR1" library="pinhead" deviceset="PINHD-1X2" device=""/>
 <part name="R_HB1" library="RCLDT" deviceset="R" device="0805" value="600R"/>
 <part name="R_HB3" library="RCLDT" deviceset="R" device="0805" value="600R"/>
@@ -23847,7 +23847,7 @@ www.irf.com&lt;p&gt;
 </instance>
 <instance part="U$18" gate="G$1" x="-119.38" y="-2.54"/>
 <instance part="C4" gate="C" x="-93.98" y="218.44" rot="R180"/>
-<instance part="PWR" gate="G$1" x="259.08" y="55.88" rot="R180"/>
+<instance part="PWR" gate="A" x="254" y="53.34" rot="R180"/>
 <instance part="PWR1" gate="G$1" x="281.94" y="55.88" rot="R180"/>
 <instance part="R_HB1" gate="G$1" x="91.44" y="203.2" rot="R180"/>
 <instance part="R_HB3" gate="G$1" x="167.64" y="142.24" rot="R270"/>
@@ -24614,9 +24614,9 @@ www.irf.com&lt;p&gt;
 <wire x1="-119.38" y1="2.54" x2="-119.38" y2="0" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="PWR" gate="G$1" pin="1"/>
-<wire x1="261.62" y1="53.34" x2="274.32" y2="53.34" width="0.1524" layer="91"/>
-<label x="266.7" y="53.34" size="1.778" layer="95"/>
+<pinref part="PWR" gate="A" pin="1"/>
+<wire x1="256.54" y1="50.8" x2="269.24" y2="50.8" width="0.1524" layer="91"/>
+<label x="261.62" y="50.8" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="PWR1" gate="G$1" pin="1"/>
@@ -24924,9 +24924,9 @@ www.irf.com&lt;p&gt;
 <pinref part="D9" gate="G$1" pin="A"/>
 </segment>
 <segment>
-<pinref part="PWR" gate="G$1" pin="2"/>
-<wire x1="261.62" y1="55.88" x2="274.32" y2="55.88" width="0.1524" layer="91"/>
-<label x="266.7" y="55.88" size="1.778" layer="95"/>
+<pinref part="PWR" gate="A" pin="2"/>
+<wire x1="256.54" y1="53.34" x2="269.24" y2="53.34" width="0.1524" layer="91"/>
+<label x="261.62" y="53.34" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="PWR1" gate="G$1" pin="2"/>
@@ -25127,6 +25127,11 @@ www.irf.com&lt;p&gt;
 <label x="-317.5" y="144.78" size="1.778" layer="95" rot="R90"/>
 <pinref part="TX2" gate="A" pin="3"/>
 <wire x1="-309.88" y1="142.24" x2="-317.5" y2="142.24" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="PWR" gate="A" pin="3"/>
+<wire x1="256.54" y1="55.88" x2="269.24" y2="55.88" width="0.1524" layer="91"/>
+<label x="261.62" y="55.88" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="ARD_RES_OUT" class="0">

@@ -2318,7 +2318,7 @@ min. Width 0,18mm</description>
 <element name="R_HB5" library="RCLDT" package="0805" value="600R" x="31.6" y="24.1"/>
 <element name="R_OIL_OV1" library="RCLDT" package="0805" value="1k" x="28.8" y="30.7" rot="MR90"/>
 <element name="U$22" library="Kolja" package="PLCC-4" value="CLM4B-RKW-CWAXBAA3" x="123.4" y="35.6" rot="R180"/>
-<element name="R_L3" library="RCLDT" package="0805" value="1k" x="125" y="43.1" rot="MR270"/>
+<element name="R_L3" library="RCLDT" package="0805" value="10k" x="125" y="43.1" rot="MR270"/>
 <element name="U$1" library="Kolja" package="TQFP8" value="ATMEGA328P-AU" x="145.5" y="38.8" rot="MR270"/>
 <element name="16MHZ1" library="XT" package="XT-HC49S-SMD" value="16Mhz" x="146.9" y="37.3"/>
 <element name="C_QUA_4" library="rcl" package="C0805" value="22pF" x="149.3" y="41.3" rot="R180"/>

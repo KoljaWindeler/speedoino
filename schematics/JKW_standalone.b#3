@@ -6400,7 +6400,7 @@ min. Width 0,18mm</description>
 <wire x1="87.3" y1="39.1" x2="87.3" y2="33.1" width="0.254" layer="16"/>
 <wire x1="119.7" y1="31.2" x2="122" y2="28.9" width="0.254" layer="16"/>
 <wire x1="122.05" y1="28.9" x2="122" y2="28.9" width="0.254" layer="16"/>
-<wire x1="50.2" y1="25" x2="53.7" y2="25" width="0.254" layer="1"/>
+<wire x1="50.2" y1="25" x2="53.7" y2="25" width="0" layer="19" extent="1-16"/>
 <via x="62.4" y="25" extent="1-16" drill="0.3"/>
 <wire x1="53.7" y1="25" x2="62.4" y2="25" width="0.254" layer="1"/>
 <wire x1="62.4" y1="25" x2="62.4" y2="32" width="0.254" layer="16"/>

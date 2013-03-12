@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.2">
+<eagle version="6.4">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -22989,7 +22989,7 @@ www.irf.com&lt;p&gt;
 <part name="R_BL_R" library="RCLDT" deviceset="R" device="0805" value="33R"/>
 <part name="R_OIL" library="RCLDT" deviceset="R" device="0805" value="52R"/>
 <part name="R_HIGHB" library="RCLDT" deviceset="R" device="0805" value="46R"/>
-<part name="R_REED_DOWN" library="RCLDT" deviceset="R" device="0805" value="5k / n.b. (Reed / 5V Honda Signal)"/>
+<part name="R_REED_DOWN" library="RCLDT" deviceset="R" device="0805" value="5k / n.b. (12V Signal / 5V Signal)"/>
 <part name="U$12" library="SUPPLY" deviceset="GND" device=""/>
 <part name="R_REED" library="RCLDT" deviceset="R" device="0805" value="7k "/>
 <part name="RGB_7" library="Kolja" deviceset="RGB_LED" device=""/>
@@ -23064,7 +23064,7 @@ www.irf.com&lt;p&gt;
 <part name="D2" library="diode" deviceset="ZENER-DIODE" device="SOT23" value="5.5V"/>
 <part name="D8" library="diode" deviceset="ZENER-DIODE" device="SOT23" value="5.5V"/>
 <part name="SUPPLY11" library="supply2" deviceset="VDD" device=""/>
-<part name="R_REED_UP" library="RCLDT" deviceset="R" device="0805" value="n.b.(Honda Signal) / 5k (Reed)"/>
+<part name="R_REED_UP" library="RCLDT" deviceset="R" device="0805" value="n.b.(Honda Signal) / 15k (Reed)"/>
 <part name="SPEEDOSTECKER" library="Kolja" deviceset="SPEEDOSTECKER" device=""/>
 <part name="GND18" library="supply1" deviceset="GND" device=""/>
 <part name="GND19" library="supply1" deviceset="GND" device=""/>

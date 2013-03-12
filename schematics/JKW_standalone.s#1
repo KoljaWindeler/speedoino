@@ -23427,6 +23427,7 @@ www.irf.com&lt;p&gt;
 <text x="-137.16" y="-15.24" size="1.778" layer="91">Bluetooth toggle</text>
 <text x="-144.78" y="-20.32" size="1.778" layer="91">V meas</text>
 <text x="76.2" y="71.12" size="1.778" layer="91">there is a Diode at the Port to protect it against the 12V</text>
+<text x="259.08" y="99.06" size="5.08" layer="91" rot="R90">TODO</text>
 </plain>
 <instances>
 <instance part="IC1" gate="A" x="58.42" y="180.34" rot="R180"/>

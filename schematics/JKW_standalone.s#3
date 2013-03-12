@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.1">
+<eagle version="6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="mm" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="mm"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -23213,7 +23213,7 @@ www.irf.com&lt;p&gt;
 <part name="R_HB5" library="RCLDT" deviceset="R" device="0805" value="600R"/>
 <part name="R_OIL_OV1" library="RCLDT" deviceset="R" device="0805" value="1k"/>
 <part name="U$22" library="Kolja" deviceset="CLM4B-RKW-CWAXBAA3" device=""/>
-<part name="R_L3" library="RCLDT" deviceset="R" device="0805" value="1k"/>
+<part name="R_L3" library="RCLDT" deviceset="R" device="0805" value="10k"/>
 <part name="SUPPLY22" library="supply2" deviceset="VDD" device=""/>
 <part name="U$1" library="Kolja" deviceset="ATMEGA328P-AU" device=""/>
 <part name="16MHZ1" library="XT" deviceset="XT" device="-HC49-SMD" value="16Mhz"/>
@@ -23915,7 +23915,7 @@ www.irf.com&lt;p&gt;
 <instance part="R_OIL_OV1" gate="G$1" x="58.42" y="139.7" rot="R180"/>
 <instance part="U$22" gate="G$1" x="35.56" y="-76.2"/>
 <instance part="R_L3" gate="G$1" x="-142.24" y="53.34" smashed="yes">
-<attribute name="VALUE" x="-132.08" y="53.975" size="1.778" layer="96" rot="R180"/>
+<attribute name="VALUE" x="-139.7" y="56.515" size="1.778" layer="96" rot="R180"/>
 </instance>
 <instance part="SUPPLY22" gate="G$1" x="-149.86" y="60.96"/>
 <instance part="U$1" gate="G$1" x="-193.04" y="-7.62"/>
