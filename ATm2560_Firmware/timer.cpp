@@ -69,8 +69,12 @@ void speedo_timer::every_qsec() {
 	if((millis()-every_qsecond_timer)>=250){
 		every_qsecond_timer=millis();
 		// see if its a clock startup or a regular startup
-		if(pSpeedo->regular_startup){ // TODO: warum so häufig?
+		if(pSpeedo->regular_startup){
+			// TODO: warum so häufig?
 			pAktors->update_outer_leds(false,false);
+
+			// könntem mit 250ms update rate fast etwas lahm sein
+			pAktors->m_stepper->startup();
 		}
 	};
 };
