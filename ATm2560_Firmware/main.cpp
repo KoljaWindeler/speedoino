@@ -107,11 +107,6 @@ void init_speedo(void){
 
 
 int main(void) {
-	// watchdog einschalten um ihn dann zu deaktivieren ... strange aber muss wohl so
-	wdt_enable(WDTO_8S);
-	MCUSR &= ~(1<<WDRF);
-	WDTCSR |= (1<<WDCE) | (1<<WDE);
-	WDTCSR = 0x00;
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop
 	 ******************** setup procedure ********************************************/
