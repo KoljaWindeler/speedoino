@@ -28,7 +28,7 @@ public:
 	float flatIt(int actual,unsigned char *counter, char max_counter, float old_flat);
 	void pull_values();
 
-	unsigned int get_RPM(bool exact_dz_needed);
+	unsigned int get_RPM(int mode); // 0=exact, 1=flated, 2=flatted_display_ready
 	unsigned int get_speed(bool mag_if_possible);
 	int get_water_temperature();
 	int get_air_temperature();
@@ -51,6 +51,8 @@ private:
 	unsigned long ten_Hz_timer;
 	short ten_Hz_counter;
 
+	unsigned int rpm_flatted;
+	unsigned char rpm_flatted_counter;
 };
 extern Speedo_sensors* pSensors;
 

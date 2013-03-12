@@ -30,7 +30,7 @@ speedo_dz::speedo_dz(){
 }
 
 void speedo_dz::counter(){
-	if(DZ_DEBUG){
+	if(DZ_DEBUG ){
 		Serial.print("DZ peak@");
 		Serial.print(millis());
 		Serial.print(" ");
@@ -40,11 +40,7 @@ void speedo_dz::counter(){
 };
 
 unsigned int speedo_dz::get_dz(bool exact_dz){
-	if(exact_dz){
-		return exact;
-	} else {
-		return rounded;
-	}
+	return exact;
 }
 
 void speedo_dz::calc() {
@@ -52,39 +48,7 @@ void speedo_dz::calc() {
 	unsigned long now=millis(); 											// aktuelle zeit
 	unsigned long differ=now-previous_time; 								// zeit seit dem letzte mal abholen der daten
 	unsigned int  now_peaks=peak_count; 									// aktueller dz zähler stand, separate var damit der peakcount weiter verndert werden koennte
-	if(pAktors->m_stepper->init_steps_to_go!=0){
-		if(pAktors->m_stepper->init_steps_to_go>=5){
-			if(pAktors->m_stepper->get_pos()!=0){		//
-				pAktors->m_stepper->go_to(0,FAST_ACCEL,FAST_SPEED);			// 240*8 = 1920
-			} else {
-				pAktors->m_stepper->init_steps_to_go=4; 					// nächsten schritt vorbereiten
-			}
-		} else if(pAktors->m_stepper->init_steps_to_go==4){
-			if(pAktors->m_stepper->get_pos()!=MOTOR_OVERWRITE_END_POS){		// motor noch nicht am ende angekommen
-				pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS,FAST_ACCEL,FAST_SPEED);// weiter dorthin scheuchen
-			} else { 														// motor angekommen
-				pAktors->m_stepper->init_steps_to_go=3; 					// nächsten schritt vorbereiten
-			}
-		} else if(pAktors->m_stepper->init_steps_to_go==3){
-			if(pAktors->m_stepper->get_pos()!=0){   						// motor noch nicht am anfang angekommen
-				pAktors->m_stepper->go_to(0,FAST_ACCEL,FAST_SPEED);			// weiter dorthin scheuchen
-			} else { 														// motor angekommen
-				pAktors->m_stepper->init_steps_to_go=2; 					// fertig
-			}
-		} else if(pAktors->m_stepper->init_steps_to_go==2){
-			if(pAktors->m_stepper->get_pos()!=80){   						// motor noch nicht am anfang angekommen
-				pAktors->m_stepper->overwrite_pos(80);
-			} else { 														// motor angekommen
-				pAktors->m_stepper->init_steps_to_go=1; 					// fertig
-			}
-		} else if(pAktors->m_stepper->init_steps_to_go==1){
-			if(pAktors->m_stepper->get_pos()!=0){   						// motor noch nicht am anfang angekommen
-				pAktors->m_stepper->go_to(0,80,200);
-			} else { 														// motor angekommen
-				pAktors->m_stepper->init_steps_to_go=0; 					// fertig
-			}
-		}
-	} else if(DEMO_MODE){
+	if(DEMO_MODE){
 		if(differ>112){
 			previous_time=now;
 
@@ -146,22 +110,12 @@ void speedo_dz::calc() {
 		/* values */
 		//exact=dz;
 		exact=pSensors->flatIt(dz,&dz_faktor_counter,4,exact);						// IIR mit Rückführungsfaktor 1 für DZmotor
-		exact_disp=pSensors->flatIt(dz,&dz_disp_faktor_counter,10,exact_disp);		// IIR mit Rückführungsfaktor 9 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
-		rounded=50*round(exact_disp/50); 											// auf 250er Runden
 		/* values */
 
-		/* gear */
-		pSensors->m_gear->calc();// blockt intern alle aufrufe die vor ablauf von 250 ms kommen
-		/* gear */
-
-		/*stepper*/
-		pAktors->m_stepper->go_to(exact/11.73); // einfach mal probieren, sonst flatit
-		/*stepper*/
+		// Stop
 	} else if(now-previous_time>500){
 		rounded=0;
 		exact=0;
-		// zeiger
-		pAktors->m_stepper->go_to(0);
 		previous_time=now;
 	};
 };
@@ -187,13 +141,13 @@ void speedo_dz::shutdown(){
 };
 
 
-bool speedo_dz::check_vars(){
+int speedo_dz::check_vars(){
 	if(blitz_dz==0){
 		pDebug->sprintp(PSTR("DZ failed"));
 		blitz_dz=12500; // hornet maessig
 		blitz_en=true; // gehen wir mal von "an" aus
-		return true;
+		return 1;
 	}
-	return false;
+	return 0;
 };
 

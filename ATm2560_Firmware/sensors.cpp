@@ -33,7 +33,7 @@ Speedo_sensors::Speedo_sensors(){
 
 	ten_Hz_counter=0;
 	ten_Hz_timer=millis();
-	CAN_active=false;
+	CAN_active=true;
 };
 
 // destructor just for nuts
@@ -58,11 +58,11 @@ void Speedo_sensors::init(){
 	cli(); // TODO ... unschön, warum reagiert er überhaupt schon auf interrupts?
 	// Blinker LINKS Interrupt
 	EIMSK |= (1<<INT6); // Enable Interrupt
-	EICRB |= (1<<ISC60) | (1<<ISC61); // rising edge on INT5
+	EICRB |= (1<<ISC60); // any change on INT5
 
 	// Blinker RECHTS Interrupt
 	EIMSK |= (1<<INT7); // Enable Interrupt
-	EICRB |= (1<<ISC70) | (1<<ISC71); // rising edge on INT5
+	EICRB |= (1<<ISC70); // any change on INT5
 
 	// Neutral Gear Interrupt
 	DDRK  &=~(1<<PK1); // ensure its an input
@@ -76,68 +76,87 @@ void Speedo_sensors::init(){
 	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16) | (1<<PCINT20);
 	PCICR |=(1<<PCIE2); // general interrupt PC aktivieren für SK2
 
+	rpm_flatted_counter=0;
 	pDebug->sprintlnp(PSTR("Sensors init done"));
 }
 
 
-// initialize every var, and write clean blank value to it (base config)
+// initialize every var, and write clean blank value to it (base config) ... moved to constructor
 void Speedo_sensors::clear_vars(){
 	pDebug->sprintlnp(PSTR("Sensors values clear"));
 };
 
 // check each and every sensor end return result
 void Speedo_sensors::check_vars(){
-	bool any_failed=false;
+	int any_failed=0;
 	// wenn ein test einen fehler meldet wird der return wert "true"
 
 	// a good place to use destructors, or "deactivators"
 	if(CAN_active){
-		any_failed|=m_CAN->check_vars();
+		any_failed+=m_CAN->check_vars();
 		m_speed->shutdown();
 		m_dz->shutdown();
 	} else {
-		any_failed|=m_dz->check_vars();
-		any_failed|=m_speed->check_vars();
+		any_failed+=m_dz->check_vars();
+		any_failed+=m_speed->check_vars();
 		m_CAN->shutdown();
 	}
 
-	any_failed|=m_blinker->check_vars();
-	any_failed|=m_clock->check_vars();
-	any_failed|=m_gps->check_vars();
-	any_failed|=m_temperature->check_vars(); // needed for oiltemp
-	any_failed|=m_fuel->check_vars();
-	any_failed|=m_reset->check_vars();
-	any_failed|=m_gear->check_vars();
-	any_failed|=m_voltage->check_vars();
+	/* CHECK ALL SENSORS */
+
+	any_failed+=m_blinker->check_vars();
+	any_failed+=m_clock->check_vars();
+	any_failed+=m_gps->check_vars();
+	any_failed+=m_temperature->check_vars(); // needed for oiltemp
+	any_failed+=m_fuel->check_vars();
+	any_failed+=m_reset->check_vars();
+	any_failed+=m_gear->check_vars();
+	any_failed+=m_voltage->check_vars();
 
 	if(any_failed){
 
 		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
 		pDebug->sprintp(PSTR("SD access strange"));
-		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
+		pDebug->sprintlnp(PSTR("!!!! WARNING !!!!"));
+
+		Serial.println(any_failed);
+		pDebug->sprintlnp(PSTR(" failures"));
 
 		pSD->sd_failed=true;
 		//_delay_ms(5000);
 		//pOLED->clear_screen();
 	}
+	/* CHECK ALL SENSORS */
 };
 
 /********************************** GET section *************************************
  * Since the Infomation could be provided by CAN or by
- * convertional sensors, we have to build a wrapper for
- * the request. These wrapper are handling the function calls.
+ * convertional sensors, we have to build wrappers for
+ * the requests. These wrappers are handling the function calls.
  * we need wrappers for all infos, available on the CAN Bus:
  * - Engine RPM
  * - Verhicle Speed
  * - Air intake Temperature
  * - Coolant Temparture
  ********************************** GET section *************************************/
-unsigned int Speedo_sensors::get_RPM(bool exact_dz_needed){
+unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
+	unsigned int exact_value=0;
+
+	// get exact value
 	if(CAN_active && !m_CAN->failed){
-		return m_CAN->get_RPM();
+		exact_value=m_CAN->get_RPM(); // just get the number, no calculation
 	} else {
-		return m_dz->get_dz(exact_dz_needed);
+		exact_value=m_dz->get_dz(true); // just get the number, no calculation
 	}
+
+	// return value based on mode
+	if(mode==1){
+		return rpm_flatted;
+	} else if(mode==2){
+		return 50*round(rpm_flatted/50); // TODO exact verwenden? oder höher teilen?
+	};
+
+	return exact_value;
 };
 
 unsigned int Speedo_sensors::get_speed(bool mag_if_possible){
@@ -163,19 +182,19 @@ int Speedo_sensors::get_water_temperature(){
 };
 
 int Speedo_sensors::get_air_temperature(){
-//	if(CAN_active && !m_CAN->failed){ // CAN airintake is much to warm
-//		return m_CAN->get_air_temp();
-//	} else {
-		return m_temperature->get_air_temp();
-//	}
+	//	if(CAN_active && !m_CAN->failed){ // CAN airintake is much to warm
+	//		return m_CAN->get_air_temp();
+	//	} else {
+	return m_temperature->get_air_temp();
+	//	}
 };
 
 int Speedo_sensors::get_oil_temperature(){
-//	if(CAN_active && !m_CAN->failed){ // no can sensor available
-//		return m_CAN->get_oil_temp();
-//	} else {
-		return m_temperature->get_oil_temp();
-//	}
+	//	if(CAN_active && !m_CAN->failed){ // no can sensor available
+	//		return m_CAN->get_oil_temp();
+	//	} else {
+	return m_temperature->get_oil_temp();
+	//	}
 };
 /********************************** GET section *************************************/
 
@@ -209,6 +228,54 @@ void Speedo_sensors::single_read(){
 };
 
 
+/***************************************************** PULL values ********************************************************
+ * Pull values is a process, called within every main loop cycle, so we have to decide, based on our own timer ten_Hz_timer
+ *
+ * the bool vars "update_required" becomes true every 100ms. In addition a counter "ten_Hz_counter" tells you if its the
+ * first, second, ..., tenth call within this second
+ *
+ * ============== INDEPENDENT ON CAN MODE ========================
+ *
+ * 1000ms: Sensors independent on CAN or no CAN, called every second just once: (by update_required && ten_Hz_counter==0)
+ * 		m_clock->inc(); // just counts seconds
+ * 		m_gps->valid++; // counts second from last valid data
+ * 		m_voltage->calc(); // update voltage value, maybe startup (if we started in clock_mode)
+ * 		m_temperature->read_oil_temp(); // update analog oil temperature sensor
+ *
+ * 200ms: Sensors independent on CAN or no CAN, called every 200 ms: (by update_required && ten_Hz_counter%2==0)
+ * 		m_blinker->check(); // check if the flashers are working
+ * 		pSensors->m_gear->calc(); // calculate gear based on speed and rpm
+ * 		pAktors->m_stepper->go_to(get_RPM(0)/11.73); // update position
+ *
+ * 100ms:
+ * 		rpm_flatted=pSensors->flatIt(get_RPM(0),&rpm_flatted_counter,10,rpm_flatted); // deep pass RPM data with this fixed rate // is that wise?
+ *
+ *
+ * ============== ONLY IN NON CAN MODE ========================
+ * 	1000ms:
+ *		m_temperature->read_air_temp();  // temperaturen aktualisieren
+ *		m_temperature->read_water_temp();  // temperaturen aktualisieren
+ *
+ * 	200ms:
+ * 		m_dz->calc(); // calc rpms from non CAN sensors
+ *
+ *
+ *
+ * ============== ONLY IN CAN MODE ========================
+ * 	1000ms:
+ * 		m_CAN->request(CAN_WATER_TEMP); // generate a CAN message to ask for speed
+ *
+ * 	500ms:
+ * 		m_CAN->request(CAN_SPEED); // generate a CAN message to ask for speed
+ *
+ * 	200ms:
+ * 		m_CAN->request(CAN_RPM); // generate a CAN message to ask for RPM
+ *
+ * 	0ms:
+ * 		m_CAN->process_incoming_messages(); // call if the interrupt has set our flag
+ *
+ ***************************************************** PULL values *******************************************************/
+
 void Speedo_sensors::pull_values(){
 	// is an update required?
 	boolean update_required=false;
@@ -224,7 +291,20 @@ void Speedo_sensors::pull_values(){
 			m_temperature->read_oil_temp();  // temperaturen aktualisieren
 		} else if(update_required && ten_Hz_counter%2==0){ // do this, every 5Hz, 200ms
 			m_blinker->check();    // blinken wir?
+
+			/* gear */
+			pSensors->m_gear->calc();// blockt intern alle aufrufe die vor ablauf von 250 ms kommen
+			/* gear */
+
+			/*stepper*/
+			if(pAktors->m_stepper->init_steps_to_go==0){
+				pAktors->m_stepper->go_to(get_RPM(1)/11.73); // einfach mal flatit probieren, sonst
+			};
+			/*stepper*/
 		}
+
+		// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
+		rpm_flatted=pSensors->flatIt(get_RPM(0),&rpm_flatted_counter,4,get_RPM(1));
 	}
 
 
@@ -239,13 +319,17 @@ void Speedo_sensors::pull_values(){
 	 *********************** CAN *************************/
 	// CAN is present and should be used
 	if(CAN_active && !m_CAN->failed){
+		// fetch new message first
+		if(m_CAN->message_available){ // muss hier die pin abfrage rein? dafür gibts doch den interrupt
+			m_CAN->process_incoming_messages();
+		}
 		if(update_required){ // 10Hz
 			if(ten_Hz_counter==0 || ten_Hz_counter==2 || ten_Hz_counter==4 || ten_Hz_counter==6 || ten_Hz_counter==8){ // 200ms
 				m_CAN->request(CAN_RPM);
 			} else if(ten_Hz_counter==1 || ten_Hz_counter==5 ){ // 500ms
 				m_CAN->request(CAN_SPEED);
-//			} else if(ten_Hz_counter==3){ // 1000ms
-//				m_CAN->request(CAN_AIR_TEMP);
+				//			} else if(ten_Hz_counter==3){ // 1000ms
+				//				m_CAN->request(CAN_AIR_TEMP);
 			} else if(ten_Hz_counter==7){ // 1000ms
 				m_CAN->request(CAN_WATER_TEMP);
 			} else if(ten_Hz_counter==9 ){  // 1000ms one free slot
@@ -254,19 +338,19 @@ void Speedo_sensors::pull_values(){
 		}
 	}
 
-	// no can available,
+	/***************** no can available, *********************
+	 * ask analog sensors
+	 ***************** no can available, *********************/
 	else {
 		if(update_required){ // 100ms spacing
-			// do this, with 200ms spacing
-			if(ten_Hz_counter%2==0){
-				m_dz->calc();
-			};
-
 			// do this, once a second
 			if(ten_Hz_counter==0){
 				m_temperature->read_air_temp();  // temperaturen aktualisieren
 				m_temperature->read_water_temp();  // temperaturen aktualisieren
 			}
+			if(ten_Hz_counter%2==0){ // do this, every 5Hz, 200ms
+				m_dz->calc(); // calc rpms from non CAN sensors
+			};
 		}
 	}
 }
@@ -374,7 +458,7 @@ ISR(INT7_vect ){
 // interrupt to update sensors
 ISR(PCINT2_vect ){
 	pSensors->check_inputs();
-	if(!PINK&(1<<CAN_INTERRUPT_PIN)){	 // if the CAN pin is low, low active interrupt
+	if(!(PINK&(1<<CAN_INTERRUPT_PIN))){	 // if the CAN pin is low, low active interrupt
 		if(pSensors->CAN_active){		 // is the CAN mode active
 			pSensors->m_CAN->message_available=true;
 		};

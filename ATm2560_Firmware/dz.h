@@ -21,7 +21,7 @@ public:
 	void counter();
 	void calc();
 	void init();
-	bool check_vars();
+	int check_vars();
 	unsigned int get_dz(bool exact_dz);
 	void shutdown();
 
