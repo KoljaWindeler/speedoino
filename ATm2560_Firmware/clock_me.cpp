@@ -140,7 +140,7 @@ unsigned int speedo_clock::is_winter_time(unsigned int year,unsigned int month,u
 	} else {
 		DST = 1; // gehen wir mal davon aus das sommerzeit ist
 		if (month == 3) {
-			if ((day - weekday >= 25) && (weekday || hour >= 2)) {
+			if ((((signed)day - (signed)weekday) >= 25) && (weekday || hour >= 2)) {
 				DST = 1; // Sommerzeit
 			} else {
 				DST = 0;
