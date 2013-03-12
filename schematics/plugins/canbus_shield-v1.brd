@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.2">
+<eagle version="6.4">
 <drawing>
 <settings>
 <setting alwaysvectorfont="yes"/>
@@ -351,7 +351,7 @@
 <clearance class="0" value="0.15"/>
 </class>
 </classes>
-<designrules>
+<designrules name="default">
 <description language="de">&lt;b&gt;EAGLE Design Rules&lt;/b&gt;
 &lt;p&gt;
 Die Standard-Design-Rules sind so gewählt, dass sie für 
@@ -661,7 +661,11 @@ design rules under a new name.</description>
 <wire x1="18.23" y1="37.8" x2="18.17" y2="37.74" width="0.254" layer="1"/>
 <wire x1="19.7" y1="20.4" x2="19.7" y2="18.95" width="0.254" layer="1"/>
 <wire x1="18.03" y1="37.83" x2="18.17" y2="37.74" width="0" layer="19" extent="1-1"/>
-<wire x1="23.865" y1="15.93" x2="19.7" y2="18.95" width="0" layer="19" extent="1-1"/>
+<wire x1="23.865" y1="15.93" x2="23.865" y2="18.335" width="0.254" layer="1"/>
+<wire x1="23.865" y1="18.335" x2="22.7" y2="19.5" width="0.254" layer="1"/>
+<wire x1="22.7" y1="19.5" x2="20.3" y2="19.5" width="0.254" layer="1"/>
+<wire x1="20.3" y1="19.5" x2="19.7" y2="18.9" width="0.254" layer="1"/>
+<wire x1="19.7" y1="18.9" x2="19.7" y2="18.95" width="0.254" layer="1"/>
 </signal>
 <signal name="MISO">
 <contactref element="U4" pad="15"/>
@@ -808,28 +812,6 @@ design rules under a new name.</description>
 <wire x1="9.97" y1="43.97" x2="11.66" y2="43.97" width="0.254" layer="16"/>
 </signal>
 </signals>
-<errors>
-<approved hash="18,29,137c55285b061d4e"/>
-<approved hash="18,29,ad7c39283705ab45"/>
-<approved hash="18,29,5be41b301b025bca"/>
-<approved hash="18,29,59e417301f0659c6"/>
-<approved hash="18,29,203ede6bda5c6807"/>
-<approved hash="18,29,683c5a675e5c2009"/>
-<approved hash="18,29,d76668b288b03764"/>
-<approved hash="18,29,5701e8edc8ef7703"/>
-<approved hash="18,29,e8f81d2cfd2a08fe"/>
-<approved hash="18,29,689f9d73bd754899"/>
-<approved hash="18,29,bc72c1a621a45c70"/>
-<approved hash="18,29,3c1541f961fb1c17"/>
-<approved hash="18,29,f193727f5282d16e"/>
-<approved hash="18,29,71f4f22012dd9109"/>
-<approved hash="18,29,e81eca4bce40501b"/>
-<approved hash="18,29,50444e1f4a00e855"/>
-<approved hash="18,29,56ac1968170a577a"/>
-<approved hash="18,29,1da448e047361dc6"/>
-<approved hash="18,29,70464e1d4a02e857"/>
-<approved hash="18,29,e81cca49ce427019"/>
-</errors>
 </board>
 </drawing>
 </eagle>
