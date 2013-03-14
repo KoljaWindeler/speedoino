@@ -113,17 +113,45 @@ void Speedo_CAN::init(){
 	mcp2515_write_register( RXB1CTRL, (1<<RXM0));
 	// TODO: build one filter for "wakeup" communication to buffer1, but for which ID ??
 
-	// define filter RXF0 and mask RXM0 to receive only frames with ID: 7Ex
-	mcp2515_write_register( RXF0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(1<<SID6)|(1<<SID5));
-	mcp2515_write_register( RXF0SIDL, 0x00);
-	mcp2515_write_register( RXM0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(1<<SID6)|(1<<SID5)|(1<<SID4));
+	// define filter RXF0/RXF1 and mask RXM0 to receive only frames with ID: 780-7FF
+	// Filter: 111 1000 0000
+	// Mask:   111 1000 0000
+	// Accept: 111 1xxx xxxx <=> 780 - 7FF
+	mcp2515_write_register( RXM0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5)|(0<<SID4)|(0<<SID3));
 	mcp2515_write_register( RXM0SIDL, 0x00);
+
+	mcp2515_write_register( RXF0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
+	mcp2515_write_register( RXF0SIDL, 0x00);
+
+	// thus i dont understand how to active just one filter, I'll simply copy them
+	mcp2515_write_register( RXF1SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
+	mcp2515_write_register( RXF1SIDL, 0x00);
+
 	// extend addr filter leeren, nötig? wir verarbeiten ohnehin nur std adressen
 	mcp2515_write_register( RXM0EID8, 0 );
 	mcp2515_write_register( RXM0EID0, 0 );
-	// extend mask leeren , nötig? wir verarbeiten ohnehin nur std adressen
-	mcp2515_write_register( RXM1SIDH, 0 );
-	mcp2515_write_register( RXM1SIDL, 0 );
+
+	// TODO: build one filter for "wakeup" communication to buffer1, but for which ID ??
+	// define filter RXF2/RXF3/RXF4/RXF5 and mask RXM1 to receive only frames with ID: 7Ex
+	// Filter: 111 1000 0000
+	// Mask:   111 1000 0000
+	// Accept: 111 1xxx xxxx <=> 780 - 7FF
+	mcp2515_write_register( RXM1SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5)|(0<<SID4)|(0<<SID3));
+	mcp2515_write_register( RXM1SIDL, 0x00);
+
+	mcp2515_write_register( RXF2SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
+	mcp2515_write_register( RXF2SIDL, 0x00);
+
+	mcp2515_write_register( RXF3SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
+	mcp2515_write_register( RXF3SIDL, 0x00);
+
+	mcp2515_write_register( RXF4SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
+	mcp2515_write_register( RXF4SIDL, 0x00);
+
+	mcp2515_write_register( RXF5SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
+	mcp2515_write_register( RXF5SIDL, 0x00);
+
+	// extend addr filter leeren, nötig? wir verarbeiten ohnehin nur std adressen
 	mcp2515_write_register( RXM1EID8, 0 );
 	mcp2515_write_register( RXM1EID0, 0 );
 
@@ -190,10 +218,15 @@ void Speedo_CAN::request(char MSG){
 	message.id = 0x07DF; // motor steuergerät .. TODO: Ist die fix?
 	message.rtr = 0;
 
-	message.length = 3;
+	message.length = 8;
 	message.data[0] = 0x02; //frame im Datenstrom
 	message.data[1] = 0x01; //mode 01
 	message.data[2] = MSG;
+	message.data[3] = 0x00; // fill up thus 8 byte are needed
+	message.data[4] = 0x00;
+	message.data[5] = 0x00;
+	message.data[6] = 0x00;
+	message.data[7] = 0x00;
 
 	// Nachricht verschicken
 	//	unsigned long before=millis();
@@ -205,8 +238,8 @@ void Speedo_CAN::request(char MSG){
 
 void Speedo_CAN::process_incoming_messages(){
 	while(can_get_message(&message)!=0xff){ //0xff=no more frames available
-//		Serial.println("New CAN Message found");
-		if(message.id==0x07E8){ // TODO: is this fix?
+		Serial.println("New CAN Message found");
+//		if(message.id==0x07E8){ // TODO: is this fix?
 			if(message.length>2){ // must be at least 2 chars to check [1]
 				if(message.data[1]==0x41){ // Rainer said it must be 0x41!!
 					last_received=millis();
@@ -224,7 +257,7 @@ void Speedo_CAN::process_incoming_messages(){
 						can_water_temp=message.data[3]-40;
 					}
 				}
-			}
+//			}
 		}
 	}
 }
