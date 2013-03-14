@@ -19480,8 +19480,8 @@ Disassembly of section .text:
     b44a:	71 0b       	sbc	r23, r17
     b44c:	82 0b       	sbc	r24, r18
     b44e:	93 0b       	sbc	r25, r19
-    b450:	68 3e       	cpi	r22, 0xE8	; 232
-    b452:	73 40       	sbci	r23, 0x03	; 3
+    b450:	64 3f       	cpi	r22, 0xF4	; 244
+    b452:	71 40       	sbci	r23, 0x01	; 1
     b454:	81 05       	cpc	r24, r1
     b456:	91 05       	cpc	r25, r1
     b458:	18 f4       	brcc	.+6      	; 0xb460 <_ZN10Speedo_CAN7get_RPMEv+0x2c>
@@ -52550,7 +52550,7 @@ Disassembly of section .text:
    1da5c:	91 81       	ldd	r25, Z+1	; 0x01
    1da5e:	89 2b       	or	r24, r25
    1da60:	c9 f4       	brne	.+50     	; 0x1da94 <_ZN14Speedo_sensors11pull_valuesEv+0xe4>
-   1da62:	61 e0       	ldi	r22, 0x01	; 1
+   1da62:	60 e0       	ldi	r22, 0x00	; 0
    1da64:	70 e0       	ldi	r23, 0x00	; 0
    1da66:	ce 01       	movw	r24, r28
    1da68:	d8 de       	rcall	.-592    	; 0x1d81a <_ZN14Speedo_sensors7get_RPMEi>

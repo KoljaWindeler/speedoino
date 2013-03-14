@@ -201,7 +201,7 @@ unsigned int Speedo_CAN::get_Speed(){
 };
 
 unsigned int Speedo_CAN::get_RPM(){
-	if(millis()-last_received<1000){
+	if(millis()-last_received<500){
 		return can_rpm;
 	}
 	return 0;
