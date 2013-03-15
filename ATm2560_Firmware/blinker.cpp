@@ -17,51 +17,44 @@
 #include "global.h"
 
 moped_blinker::moped_blinker(){
-	guard_start=0;
+	flasher_active=false;
+	last_toggle_time=0;
+
 	high_speed_add=0;
 	dist_to_warn=0;
 }
 
-moped_blinker::~moped_blinker(){
+moped_blinker::~moped_blinker(){};
 
+
+void moped_blinker::pin_toogled(){
+	last_toggle_time=millis();
+	if(!flasher_active){ // first time called, note actual trip
+		set_start(pSpeedo->trip_dist[8],pSensors->get_speed(false));
+	}
+	flasher_active=true;
 };
 
+
 void moped_blinker::check(){
-	short int blinker_state=digitalRead(BLINKER_PIN);
-	bool blinker_on;
-
-	if(blinker_state==1){ // quasi high active
-		guard_start=millis(); // hier nichts ändern
-		blinker_on=true;
-		if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist wirklich an")); };
-	} else if (blinker_state==0 && guard_start+1000>millis()){
-		blinker_on=true; // wenn innerhalb der letzten sec der blinker an war
-		if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist aus aber guard intervall")); };
-	} else {
-		blinker_on=false;
-		if(BLINKER_DEBUG){ pDebug->sprintlnp(PSTR("Blinker ist aus")); };
-	};
-
-	if(blinker_on && !lock){
-		lock=true;
-		set_start(pSpeedo->trip_dist[8],pSensors->get_speed(false)>80);
-	} else if(!blinker_on && lock){
-		lock=false;
-		start=0;
+	if((millis()-last_toggle_time)>1000){ // 1 sec no change on pin => flasher off, could be down to 500ms?
+		flasher_active=false;
 	};
 };
 
 void moped_blinker::set_start(unsigned long dist,int kmh){
 	start=dist;
-	if(kmh>80){ // wenn man bei über 80 km/h den Blinker anmacht
+	if(kmh>80){ // wenn man bei Ã¼ber 80 km/h den Blinker anmacht
 		start+=high_speed_add-80+kmh; // bekommt man 200 meter mehr, bevor die Warnung kommt
 		// + etwas mehr durch den speed
 	};
 }
 
 bool moped_blinker::warn(unsigned long dist){
-	if(dist>(start+dist_to_warn) && lock && BLINKER_ENABLED){ // mal nachfragen wenn nach 200 metern der Blinker noch an ist
-		return true;
+	if(flasher_active && BLINKER_ENABLED){
+		if(dist>(start+dist_to_warn)){ // mal nachfragen wenn nach 200 metern der Blinker noch an ist
+			return true;
+		};
 	};
 	return false;
 }

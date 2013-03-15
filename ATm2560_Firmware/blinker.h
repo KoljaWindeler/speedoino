@@ -16,15 +16,16 @@ public:
 	~moped_blinker();
 	void init();
 	int check_vars();
+	void pin_toogled();
 	void check();
-	void set_start(unsigned long dist,int kmh);
 	bool warn(unsigned long dist);
 	int dist_to_warn;
 	int high_speed_add;
 private:
-	bool      		lock;  // wir sind der meinung der blinker ist an/aus
+	void set_start(unsigned long dist,int kmh);
+	bool      		flasher_active;  // wir sind der meinung der blinker ist an/aus
 	unsigned long 	start; // bei welchem meter stand wurde der blinker angeschmissen
-	unsigned long 	guard_start;
+	unsigned long 	last_toggle_time;
 };
 //////////////// blinker //////////////////////////////
 
