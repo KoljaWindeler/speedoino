@@ -9,11 +9,13 @@
 #define CAN_H_
 #include "stdint.h"
 
+#define CAN_CURRENT_INFO 0x02
+#define CAN_DTC 0x03
 
 #define CAN_RPM 0x0C
 #define CAN_SPEED 0x0D
 #define CAN_AIR_TEMP 0x0F
-#define CAN_WATER_TEMP 0x05
+#define CAN_WATER_TEMPERATURE 0x05
 
 #define DDR_CS      DDRK
 #define PORT_CS     PORTK
@@ -41,7 +43,7 @@ public:
 	unsigned int get_RPM();
 	unsigned int get_Speed();
 	void shutdown();
-	void request(char MSG);
+	void request(char mode,char PID);
 	bool failed;
 	bool message_available;
 	void process_incoming_messages();

@@ -209,9 +209,12 @@ unsigned int Speedo_CAN::get_RPM(){
 /********************************************* CAN VALUE GETTER ***********************************/
 
 /********************************************* CAN FUNCTIONS ***********************************/
-void Speedo_CAN::request(char MSG){
+void Speedo_CAN::request(char mode,char PID){
 	//check valid msg
-	if(MSG!=CAN_AIR_TEMP && MSG!=CAN_WATER_TEMP && MSG!=CAN_RPM && MSG!=CAN_SPEED){
+	if(PID!=CAN_AIR_TEMP && PID!=CAN_WATER_TEMPERATURE && PID!=CAN_RPM && PID!=CAN_SPEED){
+		return;
+	}
+	if(mode!=CAN_CURRENT_INFO && mode!=CAN_DTC){
 		return;
 	}
 
@@ -220,8 +223,8 @@ void Speedo_CAN::request(char MSG){
 
 	message.length = 8;
 	message.data[0] = 0x02; //frame im Datenstrom
-	message.data[1] = 0x01; //mode 01
-	message.data[2] = MSG;
+	message.data[1] = mode; //mode 01==data, 03=dtc
+	message.data[2] = PID;
 	message.data[3] = 0x00; // fill up thus 8 byte are needed
 	message.data[4] = 0x00;
 	message.data[5] = 0x00;
@@ -239,25 +242,27 @@ void Speedo_CAN::request(char MSG){
 void Speedo_CAN::process_incoming_messages(){
 	while(can_get_message(&message)!=0xff){ //0xff=no more frames available
 		Serial.println("New CAN Message found");
-//		if(message.id==0x07E8){ // TODO: is this fix?
-			if(message.length>2){ // must be at least 2 chars to check [1]
-				if(message.data[1]==0x41){ // Rainer said it must be 0x41!!
-					last_received=millis();
-					if(message.data[2]==CAN_RPM){
-						can_rpm=(message.data[3]<<6)|(message.data[4]>>2);
-						Serial.print("New RPM:");
-						Serial.println(can_rpm);
-					} else if(message.data[2]==CAN_SPEED){
-						can_speed=message.data[3];
-						Serial.print("New speed:");
-						Serial.println(can_speed);
-//					} else if(message.data[2]==CAN_AIR_TEMP){
-//						can_air_temp=message.data[3]-40;
-					} else if(message.data[2]==CAN_WATER_TEMP){
-						can_water_temp=message.data[3]-40;
-					}
+		if(message.length>2){ // must be at least 3 chars to check [2]
+			if(message.data[1]==0x41){ // its 0x41 on a 0x01 question (current info)!!
+				last_received=millis();
+				if(message.data[2]==CAN_RPM){
+					can_rpm=(message.data[3]<<6)|(message.data[4]>>2);
+					Serial.print("New RPM:");
+					Serial.println(can_rpm);
+				} else if(message.data[2]==CAN_SPEED){
+					can_speed=message.data[3];
+					Serial.print("New speed:");
+					Serial.println(can_speed);
+				} else if(message.data[2]==CAN_WATER_TEMPERATURE){
+					can_water_temp=message.data[3]-40;
+					Serial.print("New watertemp:");
+					Serial.println(can_water_temp);
 				}
-//			}
+			} else if(message.data[1]==0x43){ // its 0x43 on a 0x03 question (current info)!!
+				char buffer[40];
+				sprintf(buffer,"New DTC: %i%i%i%i%i%i",message.data[2],message.data[3],message.data[4],message.data[5],message.data[6],message.data[7]);
+				Serial.println(buffer);
+			}
 		}
 	}
 }
