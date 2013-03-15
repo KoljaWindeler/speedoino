@@ -22,7 +22,8 @@ void speedo_voltage::calc(){
 	/* value/1023*5*(3.2k)/1k  */
 
 	int aktueller_wert=round(analogRead(VOLTAGE_PIN)/6.4);
-	value=pSensors->flatIt(aktueller_wert,&value_counter,3,value);
+	// hier können wir ruhig heftig tiefpassen, beim startup gibts ohnehin nur einen wert und der ist der aktuelle
+	value=pSensors->flatIt(aktueller_wert,&value_counter,20,value);
 
 	/////////////////////// clock mode stuff ///////////////////////////
 	//check mode
