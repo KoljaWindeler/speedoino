@@ -325,15 +325,14 @@ void Speedo_sensors::pull_values(){
 		}
 		if(update_required){ // 10Hz
 			if(ten_Hz_counter==0 || ten_Hz_counter==2 || ten_Hz_counter==4 || ten_Hz_counter==6 || ten_Hz_counter==8){ // 200ms
-				m_CAN->request(CAN_RPM);
+				m_CAN->request(CAN_CURRENT_INFO,CAN_RPM);
 			} else if(ten_Hz_counter==1 || ten_Hz_counter==5 ){ // 500ms
-				m_CAN->request(CAN_SPEED);
-				//			} else if(ten_Hz_counter==3){ // 1000ms
-				//				m_CAN->request(CAN_AIR_TEMP);
+				m_CAN->request(CAN_CURRENT_INFO,CAN_SPEED);
 			} else if(ten_Hz_counter==7){ // 1000ms
-				m_CAN->request(CAN_WATER_TEMP);
+				m_CAN->request(CAN_CURRENT_INFO,CAN_WATER_TEMPERATURE);
 			} else if(ten_Hz_counter==9 ){  // 1000ms one free slot
 				//m_CAN->request(?);
+				m_CAN->request(CAN_DTC,0x00); // way to often, just trying it once
 			};
 		}
 	}

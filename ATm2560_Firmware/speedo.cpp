@@ -74,13 +74,24 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				sprintf(char_buffer," -     "); // error occored -> no sensor
 			} else if(pSensors->m_temperature->water_temp_fail_status==5){	// could of fail reads
 				sprintf(char_buffer," --    "); // error occored -> short to gnd
-			} else 	if(pSensors->get_water_temperature()>1100){
-				sprintf(char_buffer,">110{C  "); // more then 110°C add a space to have 5 chars
-			} else 	if(pSensors->get_water_temperature()>300){
-				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_water_temperature()/10))%1000,pSensors->get_oil_temperature()%10); // _32.3°C  7 stellen
-			} else {
-				sprintf(char_buffer,"<30{C  "); // below 20°C add a space to have 5 chars
+			} else { // if no short
+				// check if its a CAN value or a measured value
+				if(pSensors->CAN_active){
+					// CAN temperature is save, display it
+					sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_water_temperature()/10))%1000,pSensors->get_water_temperature()%10); // _32.3°C  7 stellen
+				} else {
+					// Sensor temperature is save, within a certain range ...
+					if(pSensors->get_water_temperature()>1100){
+						sprintf(char_buffer,">110{C  "); // more then 110°C add a space to have 5 chars
+					} else 	if(pSensors->get_water_temperature()>300){
+						sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_water_temperature()/10))%1000,pSensors->get_water_temperature()%10); // _32.3°C  7 stellen
+					} else {
+						sprintf(char_buffer,"<30{C  "); // below 20°C add a space to have 5 chars
+					};
+				}
+
 			};
+
 			pDebug->speedo_loop(1,0,previousMillis," "); // debug
 			// depend on skinsettings
 			pOLED->string(water_widget.font,char_buffer,water_widget.x+4,water_widget.y,0,DISP_BRIGHTNESS,-4);
@@ -348,7 +359,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		}
 		///// Voltage ////
 		else if(pSensors->m_voltage->get()<110){ // less than 11.0 Volts
-			if(disp_zeile_bak[ADD_INFO2]!=111){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+			if(disp_zeile_bak[ADD_INFO2]!=111 && millis()>20000){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=111;
 				pDebug->speedo_loop(11,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
