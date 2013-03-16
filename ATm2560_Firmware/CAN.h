@@ -9,9 +9,10 @@
 #define CAN_H_
 #include "stdint.h"
 
-#define CAN_CURRENT_INFO 0x02
+#define CAN_CURRENT_INFO 0x01
 #define CAN_DTC 0x03
 
+#define CAN_MIL_STATUS 0x01
 #define CAN_RPM 0x0C
 #define CAN_SPEED 0x0D
 #define CAN_AIR_TEMP 0x0F
@@ -21,6 +22,7 @@
 #define PORT_CS     PORTK
 #define P_CS        5
 
+#define SPEED_TRIPPLE 0
 
 
 typedef struct
@@ -40,6 +42,8 @@ public:
 	int get_air_temp();
 	int get_oil_temp();
 	int get_water_temp();
+	int get_dtc_error_count();
+	int get_dtc_error(int nr);
 	unsigned int get_RPM();
 	unsigned int get_Speed();
 	void shutdown();
@@ -48,6 +52,7 @@ public:
 	bool message_available;
 	void process_incoming_messages();
 	uint8_t can_get_message(CANMessage *p_message);// move me back to private
+	bool decode_dtc(char* char_buffer,char ECU_type, int dtc);
 
 private:
 
@@ -64,7 +69,13 @@ private:
 	int can_water_temp;
 	unsigned int can_rpm;
 	unsigned int can_speed;
+
 	unsigned long last_received;
+	unsigned int can_dtc_errors_processed;
+	char can_dtc_nr;
+	char can_dtc_value;
+	char can_dtc_error_count;
+	bool can_mil_active;
 };
 extern Speedo_CAN* pCAN;
 
