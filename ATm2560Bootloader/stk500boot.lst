@@ -3952,23 +3952,23 @@
  2712               		.file 4 "logo.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 stk500boot.c
-     /tmp/ccvXRCwj.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccvXRCwj.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccvXRCwj.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccvXRCwj.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccvXRCwj.s:6      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccvXRCwj.s:7      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccvXRCwj.s:11     .text:0000000000000000 sendchar
-     /tmp/ccvXRCwj.s:36     .text:0000000000000018 senden_spi
-     /tmp/ccvXRCwj.s:80     .text:000000000000003a send_command
-     /tmp/ccvXRCwj.s:99     .text:0000000000000044 send_char
-     /tmp/ccvXRCwj.s:116    .text.unlikely:0000000000000000 draw_line.constprop.0
-     /tmp/ccvXRCwj.s:176    .init9:0000000000000000 __jumpMain
-     /tmp/ccvXRCwj.s:186    *ABS*:00000000000021ff __stack
-     /tmp/ccvXRCwj.s:267    .text.startup:0000000000000000 main
-     /tmp/ccvXRCwj.s:224    .text:000000000000004a delay_ms
-     /tmp/ccvXRCwj.s:2553   .rodata:0000000000000003 speedoino_data
-     /tmp/ccvXRCwj.s:2547   .rodata:0000000000000000 CSWTCH.21
+     /tmp/cc1FqHL9.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc1FqHL9.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc1FqHL9.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc1FqHL9.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc1FqHL9.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc1FqHL9.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc1FqHL9.s:11     .text:0000000000000000 sendchar
+     /tmp/cc1FqHL9.s:36     .text:0000000000000018 senden_spi
+     /tmp/cc1FqHL9.s:80     .text:000000000000003a send_command
+     /tmp/cc1FqHL9.s:99     .text:0000000000000044 send_char
+     /tmp/cc1FqHL9.s:116    .text.unlikely:0000000000000000 draw_line.constprop.0
+     /tmp/cc1FqHL9.s:176    .init9:0000000000000000 __jumpMain
+     /tmp/cc1FqHL9.s:186    *ABS*:00000000000021ff __stack
+     /tmp/cc1FqHL9.s:267    .text.startup:0000000000000000 main
+     /tmp/cc1FqHL9.s:224    .text:000000000000004a delay_ms
+     /tmp/cc1FqHL9.s:2553   .rodata:0000000000000003 speedoino_data
+     /tmp/cc1FqHL9.s:2547   .rodata:0000000000000000 CSWTCH.21
 
 UNDEFINED SYMBOLS
 __muluhisi3
