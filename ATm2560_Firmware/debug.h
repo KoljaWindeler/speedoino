@@ -26,6 +26,7 @@ class debugging{
 #define       GPS_DEBUG       false   // ausgabe wenn sich was ergibt, also vollständige pakete empfangen werden
 #define       IGPS_DEBUG      false   // alle NMEA zeilen ansehen
 #define       NAVI_DEBUG      false   // berechnung der distanz checken
+#define		  CAN_DEBUG		  false
 
 
 public:

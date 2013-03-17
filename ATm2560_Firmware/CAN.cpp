@@ -26,8 +26,9 @@ Speedo_CAN::Speedo_CAN(){
 	can_dtc_errors_processed=0;
 	can_mil_active=false;
 	can_dtc_value=0x00;
-	can_dtc_nr=0x00;
+	can_dtc_nr=0xff;
 	can_dtc_error_count=0x00;
+	can_water_temp_fail_status=0;
 };
 
 Speedo_CAN::~Speedo_CAN(){
@@ -194,9 +195,15 @@ int Speedo_CAN::get_oil_temp(){
 int Speedo_CAN::get_water_temp(){
 	if(millis()-last_received<1000){
 		return can_water_temp;
+	} else {
+		can_water_temp_fail_status=9;
 	}
 	return 0;
 };
+
+int Speedo_CAN::get_water_temp_fail_status(){
+	return can_water_temp_fail_status;
+}
 
 unsigned int Speedo_CAN::get_Speed(){
 	if(millis()-last_received<1000){
@@ -212,23 +219,42 @@ unsigned int Speedo_CAN::get_RPM(){
 	return 0;
 };
 
+
+bool Speedo_CAN::get_mil_active(){
+	return can_mil_active;
+}
+
 int Speedo_CAN::get_dtc_error_count(){
 	return can_dtc_error_count;
 }
 
 int Speedo_CAN::get_dtc_error(int nr){
+	if(CAN_DEBUG){ /////////////// DEBUG //////////
+		Serial.print("gimme error nr");
+		Serial.println(nr);
+	}
+
 	request(CAN_DTC,nr&0xff);
 	unsigned long now=millis();
-	while(millis()-now<1000){
+	while(millis()-now<1000 && can_dtc_errors_processed<=(unsigned)nr){ // if i processed more than I'm searching for
 		if(message_available){
 			process_incoming_messages();
-			if(can_dtc_value!=0x00){
+			if(can_dtc_value>0){
+
+				if(CAN_DEBUG){ /////////////// DEBUG //////////
+					Serial.print("returning from get error");
+					Serial.println(can_dtc_value);
+				}/////////////// DEBUG //////////
+
 				return can_dtc_value;
 			} else {
 				now=millis(); // solange immerhin was zurück gekommen ist, geben wir ihm wieder zeit
 			}
 		}
 	}
+	if(CAN_DEBUG){ /////////////// DEBUG //////////
+		Serial.println("returning from get error -1");
+	}/////////////// DEBUG //////////
 	return -1;
 }
 /********************************************* CAN VALUE GETTER ***********************************/
@@ -267,136 +293,168 @@ void Speedo_CAN::request(char mode,char PID){
 	message.data[7] = 0x00;
 
 	// Nachricht verschicken
-	//		unsigned long before=millis();
 	can_send_message(&message);
-	//		int differ=millis()-before;
-	//		Serial.print("Request took:");
-	//		Serial.println(differ);
 };
 
 void Speedo_CAN::process_incoming_messages(){
 	while(can_get_message(&message)!=0xff){ //0xff=no more frames available
-		Serial.println("New CAN Message found");
+		//		Serial.println("New CAN Message found");
 		if(message.length>2){ // must be at least 3 chars to check [2]
-			if(message.data[1]==0x41){ // its 0x41 on a 0x01 question (current info)!!
+			if(message.data[1]==CAN_CURRENT_INFO+0x40){ // its 0x41 on a 0x01 question (current info)!!
 				last_received=millis();
 				if(message.data[2]==CAN_RPM){
 					can_rpm=(message.data[3]<<6)|(message.data[4]>>2);
-					Serial.print("New RPM:");
-					Serial.println(can_rpm);
+					if(CAN_DEBUG){ /////////////// DEBUG //////////
+						Serial.print("New RPM:");
+						Serial.println(can_rpm);
+					}/////////////// DEBUG //////////
 					return;
 				} else if(message.data[2]==CAN_SPEED){
 					can_speed=message.data[3];
-					Serial.print("New speed:");
-					Serial.println(can_speed);
+					if(CAN_DEBUG){ /////////////// DEBUG //////////
+						Serial.print("New speed:");
+						Serial.println(can_speed);
+					}/////////////// DEBUG //////////
 					return;
 				} else if(message.data[2]==CAN_WATER_TEMPERATURE){
 					can_water_temp=(message.data[3]-40)*10;
-					Serial.print("New watertemp:");
-					Serial.println(can_water_temp);
+					can_water_temp_fail_status=0;
+					if(CAN_DEBUG){ /////////////// DEBUG //////////
+						Serial.print("New watertemp:");
+						Serial.println(can_water_temp);
+					}/////////////// DEBUG //////////
 					return;
 				} else if(message.data[2]==CAN_MIL_STATUS){
-					can_mil_active=((message.data[5]&0x02)>>1);
-					can_dtc_error_count=((message.data[3]&0x01)<<3)|(message.data[4]>>1);
-					Serial.print("New MIL status:");
-					Serial.println(can_dtc_error_count);
+					can_mil_active=((message.data[3]&0x80)>>7); // bit 7 (im msb?)
+					can_dtc_error_count=message.data[3]&0x77;
+					if(CAN_DEBUG){ /////////////// DEBUG //////////
+						Serial.print("New MIL status:");
+						Serial.println(can_dtc_error_count);
+					}/////////////// DEBUG //////////
 					return;
 				}
-			} else if(message.data[1]==0x43){ // its 0x43 on a 0x03 question (current info)!!
-				char buffer[40];
-				sprintf(buffer,"New DTC: %i%i%i%i%i%i",message.data[2],message.data[3],message.data[4],message.data[5],message.data[6],message.data[7]);
-				Serial.println(buffer);
+			} else if(message.data[1]==CAN_DTC+0x40){ // its 0x43 on a 0x03 question (current info)!!
+				if(can_dtc_nr!=0xff){
+					if(CAN_DEBUG){ /////////////// DEBUG //////////
+						char buffer[30];
+						sprintf(buffer,"DTC %02x %02x %02x %02x %02x %02x %02x %02x",message.data[0],message.data[1],message.data[2],message.data[3],message.data[4],message.data[5],message.data[6],message.data[7]);
+						Serial.println(buffer);
+					}/////////////// DEBUG //////////
 
-				// angeblich sind es 2 Byte pro code .. vielleicht?
-				if(can_dtc_nr==can_dtc_errors_processed){
-					can_dtc_value=message.data[4]<<4 | message.data[5];
-				} else {
-					can_dtc_errors_processed++;
-					can_dtc_value=0;
+					// angeblich sind es 2 Byte pro code .. und 3 codes pro nachricht .. alle testen
+					for(int i=0;i<3;i++){
+						if(can_dtc_nr==can_dtc_errors_processed){
+							/**************************** DTC decoding ****************************
+							 * P,C,B,U and after that a four digit code
+							 * we store it as integer, but it will be a signed and should be different to -1
+							 *
+							 * dtc can be abcd where a=[0,1,2], b=[0..9], c=[0..9], d=[0..9]
+							 * so max is 2999 using just 12 bit leads to max 4095 .. remainig 4 bits is more then enough
+							 *
+							 */
+							unsigned int temp_value=message.data[i*2+2]<<8 | message.data[i*2+3]; // 23, 45, 67
+							//0x1202=0b 0001 0010 0000 0010
+							can_dtc_value=(temp_value>>12)&0x3;						//0b0001 & 0b011 = 0b0001
+							can_dtc_value=can_dtc_value*10+((temp_value>>8)&0x0f);	//0001 0010 & 0b1111 = 0010
+							can_dtc_value=can_dtc_value*10+((temp_value>>4)&0x0f); 	//0001 0010 0000 & 0b1111 = 0000
+							can_dtc_value=can_dtc_value*10+((temp_value>>0)&0x0f);	//0001 0010 0000 0010 & 0b000 = 0010
+
+							// right now the code is stored human readable in the can_dtc_value using bit 0..11
+							// shift character to bit 12,13
+							// thus it was stored in bit 14 and 15 and should now be stored in 12 and 13 we just
+							// shift it by 2. Mask the rest
+							can_dtc_value|=(temp_value>>2)&0x3000;
+							// Serial.print("Returing: ");
+							// Serial.println(can_dtc_value);
+							can_dtc_nr=0xff; // stop looking in this frames
+						}
+						can_dtc_errors_processed++;
+					}
+					return;
 				}
-				return;
 			}
 		}
-		char buffer[40];
-		sprintf(buffer,"%x %x %x %x %x %x %x",message.data[1],message.data[2],message.data[3],message.data[4],message.data[5],message.data[6],message.data[7]);
-		Serial.println(buffer);
-		Serial.println(message.data[1]);
+		if(CAN_DEBUG){ /////////////// DEBUG //////////
+			char buffer[30];
+			sprintf(buffer,"%02x %02x %02x %02x %02x %02x %02x %02x",message.data[0],message.data[1],message.data[2],message.data[3],message.data[4],message.data[5],message.data[6],message.data[7]);
+			Serial.println(buffer);
+		} /////////////// DEBUG //////////
 	}
 }
 
 bool Speedo_CAN::decode_dtc(char* char_buffer,char ECU_type, int dtc){
 	if(ECU_type==SPEED_TRIPPLE){
 		if((dtc==201) | (dtc==202) | (dtc==203) | (dtc==1201) | (dtc==1202) | (dtc==1203)){
-			strcpy_P(char_buffer, PSTR("injector"));
+			strcpy_P(char_buffer, PSTR("Injector"));
 			return true;
 		} else if((dtc==351) | (dtc==352) | (dtc==353)){
-			strcpy_P(char_buffer, PSTR("ignition coil"));
+			strcpy_P(char_buffer, PSTR("Ignition coil"));
 			return true;
 		} else if((dtc==335)){
-			strcpy_P(char_buffer, PSTR("crankshaft sensor"));
+			strcpy_P(char_buffer, PSTR("Crankshaft sensor"));
 			return true;
 		} else if((dtc==32) | (dtc==31) | (dtc==30) | (dtc==136)){
-			strcpy_P(char_buffer, PSTR("lambda probe"));
+			strcpy_P(char_buffer, PSTR("Lambda probe"));
 			return true;
 		} else if((dtc==122) | (dtc==123)){
-			strcpy_P(char_buffer, PSTR("throttle valve sensor"));
+			strcpy_P(char_buffer, PSTR("Throttle valve sensor"));
 			return true;
 		} else if((dtc==107) | (dtc==108) | (dtc==1105)){
-			strcpy_P(char_buffer, PSTR("inlet manifold"));
+			strcpy_P(char_buffer, PSTR("Inlet manifold"));
 			return true;
 		} else if((dtc==1107) | (dtc==1108)){
-			strcpy_P(char_buffer, PSTR("ambient air temp"));
+			strcpy_P(char_buffer, PSTR("Ambient air temp"));
 			return true;
 		} else if((dtc==112) | (dtc==113)){
-			strcpy_P(char_buffer, PSTR("air intake temp"));
+			strcpy_P(char_buffer, PSTR("Air intake temp"));
 			return true;
 		} else if((dtc==117) | (dtc==118)){
-			strcpy_P(char_buffer, PSTR("engine temp"));
+			strcpy_P(char_buffer, PSTR("Engine temp"));
 			return true;
 		} else if((dtc==500) | (dtc==1500)){
-			strcpy_P(char_buffer, PSTR("speed sensor"));
+			strcpy_P(char_buffer, PSTR("Speed sensor"));
 			return true;
 		} else if((dtc==654)){
 			strcpy_P(char_buffer, PSTR("RPM sensor"));
 			return true;
 		} else if((dtc==1552) | (dtc==1553)){
-			strcpy_P(char_buffer, PSTR("cooling fan"));
+			strcpy_P(char_buffer, PSTR("Cooling fan"));
 			return true;
 		} else if((dtc==1628) | (dtc==1629)){
-			strcpy_P(char_buffer, PSTR("fuel pump"));
+			strcpy_P(char_buffer, PSTR("Fuel pump"));
 			return true;
 		} else if((dtc==445) | (dtc==444)){
-			strcpy_P(char_buffer, PSTR("flush valve system"));
+			strcpy_P(char_buffer, PSTR("Flush valve system"));
 			return true;
 		} else if((dtc==617) | (dtc==616)){
-			strcpy_P(char_buffer, PSTR("starter relay"));
+			strcpy_P(char_buffer, PSTR("Starter relay"));
 			return true;
 		} else if((dtc==414) | (dtc==413)){
-			strcpy_P(char_buffer, PSTR("secondary air sys"));
+			strcpy_P(char_buffer, PSTR("Secondary air sys"));
 			return true;
 		} else if((dtc==505)){
-			strcpy_P(char_buffer, PSTR("idle rpm contr"));
+			strcpy_P(char_buffer, PSTR("Idle rpm contr"));
 			return true;
 		} else if((dtc==1631) | (dtc==1632)){
-			strcpy_P(char_buffer, PSTR("crash sensor"));
+			strcpy_P(char_buffer, PSTR("Crash sensor"));
 			return true;
 		} else if((dtc==1115)){
-			strcpy_P(char_buffer, PSTR("coolant sensor"));
+			strcpy_P(char_buffer, PSTR("Coolant sensor"));
 			return true;
 		} else if((dtc==460) | (dtc==1610)){
-			strcpy_P(char_buffer, PSTR("fuel sensor"));
+			strcpy_P(char_buffer, PSTR("Fuel sensor"));
 			return true;
 		} else if((dtc==705)){
-			strcpy_P(char_buffer, PSTR("gearbox sensor"));
+			strcpy_P(char_buffer, PSTR("Gearbox sensor"));
 			return true;
 		} else if((dtc==1690)){
-			strcpy_P(char_buffer, PSTR("CAN error"));
+			strcpy_P(char_buffer, PSTR("CAN error")); // was ziemlich witzig ist .. das über CAN abzufragen
 			return true;
 		} else if((dtc==1078) | (dtc==1079) | (dtc==1078) | (dtc==1080)){
-			strcpy_P(char_buffer, PSTR("exhaust control valve"));
+			strcpy_P(char_buffer, PSTR("Exhaust control valve"));
 			return true;
 		} else if((dtc==1078) | (dtc==1079) | (dtc==1078) | (dtc==1080)){
-			strcpy_P(char_buffer, PSTR("inlet flap valve"));
+			strcpy_P(char_buffer, PSTR("Inlet flap valve"));
 			return true;
 		}
 	}

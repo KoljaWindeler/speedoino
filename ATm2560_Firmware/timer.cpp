@@ -59,6 +59,11 @@ void speedo_timer::every_sec(configuration* pConfig) {
 				init_speedo();
 			}
 		}
+
+		// check if MIL should be active
+		if((millis()/1000)%30==0 && pSensors->CAN_active){
+			pSensors->m_CAN->request(CAN_CURRENT_INFO,CAN_MIL_STATUS);
+		}
 	}
 };
 

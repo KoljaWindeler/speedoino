@@ -103,7 +103,7 @@ const char  * const menu_fade[9] PROGMEM= { fade_m_0,fade_m_1,fade_m_2,fade_m_3,
 
 ///////////////////// Extend info /////////////////////
 const char einfo_m_0[] PROGMEM = "1. GPS info";
-const char einfo_m_1[] PROGMEM = "2. CAN info";
+const char einfo_m_1[] PROGMEM = "2. CAN-BUS DTC";
 const char einfo_m_2[] PROGMEM = "3. Sensors";
 const char einfo_m_3[] PROGMEM = "4. Stepper";
 const char einfo_m_4[] PROGMEM = "5. -";
@@ -411,26 +411,7 @@ void speedo_menu::display(){ // z.B. state = 26
 	}
 	//////////////////////// CAN info ////////////////////////////
 	else if(floor(state/10)==52) {
-		/* idea: as soon as we enter this menu, we reset the state_helper
-		 * after that: every "down" push will just increase the state_helper
-		 * the state should return to 521
-		 * "up" is viceversa until the helper reaches 0 again
-		 * Within processing we'll use the state_helper as a multiplier
-		 */
-		if(old_state==52){
-			state_helper=0;
-			set_buttons(button_state,!button_state,button_state,button_state); // no up
-		} else if(state%10==2){ // ein runter gedrückt
-			state--;
-			set_buttons(button_state,button_state,button_state,button_state); // all
-			state_helper++;
-		} else if(state%10==9){ // ein hoch gedrückt (519)
-			state+=2; // 519 + 2 = 521
-			state_helper--;
-			if(state_helper==0){
-				set_buttons(button_state,!button_state,button_state,button_state); // no up
-			}
-		}
+
 
 
 		// show info that CAN is offline
@@ -443,20 +424,69 @@ void speedo_menu::display(){ // z.B. state = 26
 			pSpeedo->reset_bak();
 			pOLED->clear_screen();
 			pOLED->highlight_bar(0,0,128,8);
-			pOLED->string_P(pSpeedo->default_font,PSTR("CAN DTS"),2,0,15,0,0);
+			pOLED->string_P(pSpeedo->default_font,PSTR("CAN DTS Codes"),2,0,15,0,0);
 
 			int dtc_error_count=pSensors->m_CAN->get_dtc_error_count();
+
+			if(CAN_DEBUG){
+				Serial.print(dtc_error_count);
+				Serial.println(" Fehler gefunden");
+			}
+
 			for(int i=0; i<dtc_error_count && i<3;i++){
 				int error_code=pSensors->m_CAN->get_dtc_error(i+3*state_helper);
 				if(error_code!=-1){
-					sprintf(char_buffer,"Error %i:%c%04i",i+3*state_helper,((error_code>>12)&0x0f),error_code&0x0fff); // so gehts nicht mit dem error_code, aber egal erstmal
-					pOLED->string(pSpeedo->default_font,char_buffer,2*i+1,0,15,0,0);
-					pSensors->m_CAN->decode_dtc(char_buffer,SPEED_TRIPPLE,error_code); // wird so nicht gehen .. die ID's sind irgendwie anders .. hmm
-					pOLED->string(pSpeedo->default_font,char_buffer,2*i+2,0,15,0,0);
+					// char P=00, C=01, 10=B, 11=U
+					char region=(error_code&0x3000)>>12;
+					if(region==0){
+						region='P';
+					} else if(region==1){
+						region='C';
+					} else if(region==2){
+						region='B';
+					} else if(region==3){
+						region='U';
+					}
+
+					sprintf(char_buffer,"Error %i/%i:%c%04i",i+3*state_helper+1,dtc_error_count,region,error_code&0x0fff);
+					Serial.println(char_buffer);
+					pOLED->string(pSpeedo->default_font,char_buffer,0,2*i+1,0,15,0);
+					pSensors->m_CAN->decode_dtc(char_buffer,SPEED_TRIPPLE,error_code&0x0fff);
+					center_me(char_buffer,21);
+					pOLED->string(pSpeedo->default_font,char_buffer,0,2*i+2,0,7,0);
 				} else {
 					pOLED->string_P(pSpeedo->default_font,PSTR("COMM FAILED"),2*i+2,0,15,0,0);
 				}
 			}
+
+			/* idea: as soon as we enter this menu, we reset the state_helper
+			 * after that: every "down" push will just increase the state_helper
+			 * the state should return to 521
+			 * "up" is viceversa until the helper reaches 0 again
+			 * Within processing we'll use the state_helper as a multiplier
+			 *
+			 * In addition, only activate "down" if there are more errors
+			 */
+			bool down=!button_state;
+			if((2+3*state_helper)<dtc_error_count){
+				down=button_state;
+				pOLED->string_P(pSpeedo->default_font,PSTR("Press down for more"),0,7,0,15,0);
+			}
+			if(old_state==52){
+				state_helper=0;
+				set_buttons(button_state,!button_state,down,button_state); // no up
+			} else if(state%10==2){ // ein runter gedrückt
+				state--;
+				set_buttons(button_state,button_state,down,button_state); // all
+				state_helper++;
+			} else if(state%10==9){ // ein hoch gedrückt (519)
+				state+=2; // 519 + 2 = 521
+				state_helper--;
+				if(state_helper==0){
+					set_buttons(button_state,!button_state,down,button_state); // no up
+				}
+			}
+
 			// was tun bei mehr
 
 
