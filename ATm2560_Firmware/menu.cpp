@@ -58,7 +58,7 @@ const char setup_m_0[] PROGMEM = "1. Gear calib.";   // "String 0" etc are strin
 const char setup_m_1[] PROGMEM = "2. Speed calib.";   // "String 0" etc are strings to store - change to suit.
 const char setup_m_2[] PROGMEM = "3. Display setup";
 const char setup_m_3[] PROGMEM = "4. Reset memory";
-const char setup_m_4[] PROGMEM = "5. -";
+const char setup_m_4[] PROGMEM = "5. Sensor source"; // can or no CAN
 const char setup_m_5[] PROGMEM = "6. BT Reset state";
 const char setup_m_6[] PROGMEM = "7. Water temp warn.";
 const char setup_m_7[] PROGMEM = "8. Oil temp warn.";
@@ -103,7 +103,7 @@ const char  * const menu_fade[9] PROGMEM= { fade_m_0,fade_m_1,fade_m_2,fade_m_3,
 
 ///////////////////// Extend info /////////////////////
 const char einfo_m_0[] PROGMEM = "1. GPS info";
-const char einfo_m_1[] PROGMEM = "2. CAN-BUS DTC";
+const char einfo_m_1[] PROGMEM = "2. CAN-BUS DTCs";
 const char einfo_m_2[] PROGMEM = "3. Sensors";
 const char einfo_m_3[] PROGMEM = "4. Stepper";
 const char einfo_m_4[] PROGMEM = "5. -";
@@ -427,37 +427,41 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->string_P(pSpeedo->default_font,PSTR("CAN DTS Codes"),2,0,15,0,0);
 
 			int dtc_error_count=pSensors->m_CAN->get_dtc_error_count();
+			if(dtc_error_count==0){
+				pOLED->string_P(pSpeedo->default_font,PSTR("No errors :)"),6,4,0,15,0);
+			} else {
 
-			if(CAN_DEBUG){
-				Serial.print(dtc_error_count);
-				Serial.println(" Fehler gefunden");
-			}
-
-			for(int i=0; i<dtc_error_count && i<3;i++){
-				int error_code=pSensors->m_CAN->get_dtc_error(i+3*state_helper);
-				if(error_code!=-1){
-					// char P=00, C=01, 10=B, 11=U
-					char region=(error_code&0x3000)>>12;
-					if(region==0){
-						region='P';
-					} else if(region==1){
-						region='C';
-					} else if(region==2){
-						region='B';
-					} else if(region==3){
-						region='U';
-					}
-
-					sprintf(char_buffer,"Error %i/%i:%c%04i",i+3*state_helper+1,dtc_error_count,region,error_code&0x0fff);
-					Serial.println(char_buffer);
-					pOLED->string(pSpeedo->default_font,char_buffer,0,2*i+1,0,15,0);
-					pSensors->m_CAN->decode_dtc(char_buffer,SPEED_TRIPPLE,error_code&0x0fff);
-					center_me(char_buffer,21);
-					pOLED->string(pSpeedo->default_font,char_buffer,0,2*i+2,0,7,0);
-				} else {
-					pOLED->string_P(pSpeedo->default_font,PSTR("COMM FAILED"),2*i+2,0,15,0,0);
+				if(CAN_DEBUG){
+					Serial.print(dtc_error_count);
+					Serial.println(" Fehler gefunden");
 				}
-			}
+
+				for(int i=0; i<dtc_error_count && i<3;i++){
+					int error_code=pSensors->m_CAN->get_dtc_error(i+3*state_helper);
+					if(error_code!=-1){
+						// char P=00, C=01, 10=B, 11=U
+						char region=(error_code&0x3000)>>12;
+						if(region==0){
+							region='P';
+						} else if(region==1){
+							region='C';
+						} else if(region==2){
+							region='B';
+						} else if(region==3){
+							region='U';
+						}
+
+						sprintf(char_buffer,"Error %i/%i:%c%04i",i+3*state_helper+1,dtc_error_count,region,error_code&0x0fff);
+						Serial.println(char_buffer);
+						pOLED->string(pSpeedo->default_font,char_buffer,0,2*i+1,0,15,0);
+						pSensors->m_CAN->decode_dtc(char_buffer,SPEED_TRIPPLE,error_code&0x0fff);
+						center_me(char_buffer,21);
+						pOLED->string(pSpeedo->default_font,char_buffer,0,2*i+2,0,7,0);
+					} else {
+						pOLED->string_P(pSpeedo->default_font,PSTR("COMM FAILED"),2*i+2,0,15,0,0);
+					}
+				} // for
+			} // error count >0
 
 			/* idea: as soon as we enter this menu, we reset the state_helper
 			 * after that: every "down" push will just increase the state_helper
@@ -1134,6 +1138,45 @@ void speedo_menu::display(){ // z.B. state = 26
 		state=11;
 	}
 	/////////// bt reset state  //////////
+	else if(floor(state/10)==75) { // 00075X
+		set_buttons(button_state,button_state,button_state,!button_state); // sackgasse
+		if(state%10==9){
+			if(pSensors->sensor_source>0){
+				pSensors->sensor_source--;
+			}
+			if(pSensors->sensor_source<=0){
+				set_buttons(button_state,!button_state,button_state,!button_state); // sackgasse
+			}
+		} else if(state%10==2){
+			if(pSensors->sensor_source<2){
+				pSensors->sensor_source++;
+			}
+			if(pSensors->sensor_source>=2){
+				set_buttons(button_state,button_state,!button_state,!button_state); // sackgasse
+			}
+		};
+		state=751;
+		pOLED->clear_screen();
+
+		// here Coloring !!! todo!!
+		pOLED->string_P(pSpeedo->default_font,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
+		pOLED->highlight_bar(0,8*3-1,128,17); // mit hintergrundfarbe nen kasten malen
+		pOLED->string_P(pSpeedo->default_font,PSTR("BT-Reset"),5,3,15,0,0);
+		pOLED->string(pSpeedo->default_font,char_buffer,5,4,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
+
+		// show reason why last reset happend
+		pOLED->string(pSpeedo->default_font,"Last was ",4,1,0,DISP_BRIGHTNESS,0);
+		if(pSensors->m_reset->last_reset==0 || pSensors->m_reset->last_reset==-1){
+			pOLED->string_P(pSpeedo->default_font,PSTR("power"),13,1,0,DISP_BRIGHTNESS,0);
+		} else if(pSensors->m_reset->last_reset==1){
+			pOLED->string(pSpeedo->default_font,"avr",13,1,0,DISP_BRIGHTNESS,0);
+		} else if(pSensors->m_reset->last_reset==2){
+			pOLED->string(pSpeedo->default_font,"bt",13,1,0,DISP_BRIGHTNESS,0);
+		}
+		// show reason why last reset happend
+	}
+	/////////// bt reset state  //////////
 	else if(floor(state/10)==76) { // 00089X
 		set_buttons(button_state,button_state,button_state,!button_state); // sackgasse
 		if(state%10==9){
@@ -1261,10 +1304,10 @@ void speedo_menu::display(){ // z.B. state = 26
 		center_me(char_buffer,13);
 		pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
 		pOLED->string(pSpeedo->default_font,char_buffer,4,0,DISP_BRIGHTNESS,0,0);
-		sprintf(char_buffer,"Avg:      %3i km/h",(int)round(pSpeedo->trip_dist[speicher]*3.6/pSpeedo->avg_timebase[speicher]));
+		sprintf(char_buffer,"Avg:       %3i km/h",(int)round(pSpeedo->trip_dist[speicher]*3.6/pSpeedo->avg_timebase[speicher]));
 		pOLED->string(pSpeedo->default_font,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
 
-		sprintf(char_buffer,"Time:    %02i:%02i:%02i",(int)round(pSpeedo->avg_timebase[speicher]/3600),(int)round((pSpeedo->avg_timebase[speicher]%3600)/60),(int)round(pSpeedo->avg_timebase[speicher]%60));
+		sprintf(char_buffer,"Time: %02i:%02i:%02i",(int)round(pSpeedo->avg_timebase[speicher]/3600),(int)round((pSpeedo->avg_timebase[speicher]%3600)/60),(int)round(pSpeedo->avg_timebase[speicher]%60));
 		pOLED->string(pSpeedo->default_font,char_buffer,0,3,0,DISP_BRIGHTNESS,0);
 
 		sprintf(char_buffer,"Trip: %5lu,%02i km",(unsigned long)floor(pSpeedo->trip_dist[speicher]/1000),int(floor((pSpeedo->trip_dist[speicher]%1000)/10)));
