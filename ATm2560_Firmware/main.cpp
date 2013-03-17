@@ -133,11 +133,7 @@ int main(void) {
 		//		}
 		//////////////////////////////////////////////////
 
-		//		while(Serial3.available()>0){
-		//			Serial.print(Serial3.read(),BYTE);
-		//		}
-
-		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog
+		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog<
 		pDebug->speedo_loop(21,1,0," "); 	// intensive debug= EVERY loop access reports the Menustate
 		pSensors->m_gps->check_flag();    	// check if a GPS sentence is ready
 		pSensors->pull_values();			// very important, updates all the sensor values

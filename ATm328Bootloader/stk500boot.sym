@@ -1,7 +1,6 @@
          U __do_copy_data
 00000000 a __tmp_reg__
 00000001 a __zero_reg__
-00000034 a __CCP__
 0000003d a __SP_L__
 0000003e a __SP_H__
 0000003f a __SREG__
@@ -15,10 +14,10 @@
 00007800 T __trampolines_start
 0000780e t sendchar
 00007826 T main
-00007e08 A __data_load_start
-00007e08 T _etext
-00007e1c A __data_load_end
-00800100 d CSWTCH.6
-00800114 D _edata
-00800114 T _end
+00007de0 A __data_load_start
+00007de0 T _etext
+00007de4 A __data_load_end
+00800100 d CSWTCH.12
+00800104 D _edata
+00800104 T _end
 00810000 T __eeprom_end
