@@ -506,6 +506,10 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%04i\n",pAktors->bt_pin); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("sensor_source="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pSensors->sensor_source); // SENSOR_AUTO 0x01, SENSOR_FORCE_CAN 0x02, SENSOR_NO_CAN --- everything else
+					pSD->writeString(file, buffer);
 
 					file.close();
 					storage_outdated=false;
@@ -949,7 +953,10 @@ int configuration::parse(char* buffer){
 		/////// RGB LEDs /////////
 	} else if(strcmp_P(name,PSTR("bt_pin"))==0){
 		parse_int(buffer,seperator,&pAktors->bt_pin);
-	} else {
+	} else if(strcmp_P(name,PSTR("sensor_source"))==0){
+		parse_short(buffer,seperator,&pSensors->sensor_source);
+	}
+	else {
 		return_value=-2; // ungltiger identifier
 	}
 	free(name);

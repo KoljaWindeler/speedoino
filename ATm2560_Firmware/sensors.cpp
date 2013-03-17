@@ -33,7 +33,7 @@ Speedo_sensors::Speedo_sensors(){
 
 	ten_Hz_counter=0;
 	ten_Hz_timer=millis();
-	CAN_active=true;
+	CAN_active=false; // don't care, will change it in init
 };
 
 // destructor just for nuts
@@ -90,13 +90,19 @@ void Speedo_sensors::clear_vars(){
 void Speedo_sensors::check_vars(){
 	int any_failed=0;
 	// wenn ein test einen fehler meldet wird der return wert "true"
-
-	// a good place to use destructors, or "deactivators"
-	if(CAN_active){
+	if(sensor_source==SENSOR_AUTO || sensor_source==SENSOR_FORCE_CAN){
+		if(sensor_source==SENSOR_AUTO){
+			pDebug->sprintlnp(PSTR("CAN auto detect"));
+		} else {
+			pDebug->sprintlnp(PSTR("Force CAN mode"));
+		}
+		CAN_active=true;
 		any_failed+=m_CAN->check_vars();
 		m_speed->shutdown();
 		m_dz->shutdown();
 	} else {
+		pDebug->sprintlnp(PSTR("Analog sensor mode"));
+		CAN_active=false;
 		any_failed+=m_dz->check_vars();
 		any_failed+=m_speed->check_vars();
 		m_CAN->shutdown();
@@ -300,6 +306,16 @@ void Speedo_sensors::pull_values(){
 			m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
 			m_voltage->calc(); // spannungscheck
 			m_temperature->read_oil_temp();  // temperaturen aktualisieren
+
+			// auto CAN detection
+			if(sensor_source==SENSOR_AUTO){
+				if(!m_CAN->init_comm_possible(&CAN_active)){ // returns always true, exept the communcation was NOT possible even if it should
+					pDebug->sprintlnp(PSTR("CAN communication timed out, falling back to analog sensors"));
+					m_CAN->shutdown();
+					m_dz->init();
+					m_speed->init();
+				}
+			};
 		} else if(update_required && ten_Hz_counter%2==0){ // do this, every 5Hz, 200ms
 			m_blinker->check();    // blinken wir?
 

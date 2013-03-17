@@ -15,6 +15,9 @@
 #define FLASHER_LEFT_PIN PE6
 #define FLASHER_RIGHT_PIN PE7
 
+#define SENSOR_AUTO 1
+#define SENSOR_FORCE_CAN 2
+
 class Speedo_sensors{
 public:
 	Speedo_sensors(void);
@@ -46,6 +49,7 @@ public:
 	speedo_gear* m_gear;
 	speedo_voltage* m_voltage;
 	Speedo_CAN* m_CAN;
+	short sensor_source;
 	bool CAN_active;
 
 private:
