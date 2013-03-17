@@ -70,9 +70,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		if(!(water_widget.x==-1 && water_widget.y==-1)){ // only show it if pos != -1/-1
 			disp_zeile_bak[WATER_TEMP]=int(pSensors->get_water_temperature()+pSensors->m_temperature->water_temp_fail_status);
 			// below 20 degree the PTC is very antiliear so we won't show it
-			if(pSensors->m_temperature->water_temp_fail_status==9){
+			if(pSensors->get_water_temperature_fail_status()==9){
 				sprintf(char_buffer," -     "); // error occored -> no sensor
-			} else if(pSensors->m_temperature->water_temp_fail_status==5){	// could of fail reads
+			} else if(pSensors->get_water_temperature_fail_status()==5){	// could of fail reads
 				sprintf(char_buffer," --    "); // error occored -> short to gnd
 			} else { // if no short
 				// check if its a CAN value or a measured value
@@ -324,7 +324,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 					disp_zeile_bak[ADD_INFO2]=101;
 					pDebug->speedo_loop(10,0,previousMillis," ");
 					pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-					pOLED->string_P(addinfo2_widget.font,PSTR("Motor noch kalt"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+					pOLED->string_P(addinfo2_widget.font,PSTR("Engine cold"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 				};
 			}
 		}
@@ -353,7 +353,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=102;
 				pDebug->speedo_loop(11,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("Blinker vergessen"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+				pOLED->string_P(addinfo2_widget.font,PSTR("Flasher?"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
 			};
 
 		}
@@ -366,6 +366,15 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				pOLED->string_P(addinfo2_widget.font,PSTR("Voltage below 11V"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
 			};
 
+		}
+		////// CAN MIL ////////
+		else if(pSensors->CAN_active && pSensors->m_CAN->get_mil_active()){
+			if(disp_zeile_bak[ADD_INFO2]!=112){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=112;
+				pDebug->speedo_loop(11,0,previousMillis," ");
+				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
+				pOLED->string_P(addinfo2_widget.font,PSTR("Engine malfunction"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+			};
 		}
 		///// Navi ////
 		else if(pSensors->m_gps->navi_active){

@@ -31,6 +31,7 @@ public:
 	unsigned int get_RPM(int mode); // 0=exact, 1=flated, 2=flatted_display_ready
 	unsigned int get_speed(bool mag_if_possible);
 	int get_water_temperature();
+	int get_water_temperature_fail_status();
 	int get_air_temperature();
 	int get_oil_temperature();
 

@@ -181,6 +181,17 @@ int Speedo_sensors::get_water_temperature(){
 	}
 };
 
+// 0 if everything allright
+// return 5 on short to gnd
+// 9 on no sensor value (no responses on CAN)
+int Speedo_sensors::get_water_temperature_fail_status(){
+	if(CAN_active && !m_CAN->failed){
+		return m_CAN->get_water_temp_fail_status();
+	} else {
+		return m_temperature->water_temp_fail_status;
+	}
+};
+
 int Speedo_sensors::get_air_temperature(){
 	//	if(CAN_active && !m_CAN->failed){ // CAN airintake is much to warm
 	//		return m_CAN->get_air_temp();
@@ -332,7 +343,6 @@ void Speedo_sensors::pull_values(){
 				m_CAN->request(CAN_CURRENT_INFO,CAN_WATER_TEMPERATURE);
 			} else if(ten_Hz_counter==9 ){  // 1000ms one free slot
 				//m_CAN->request(?);
-				m_CAN->request(CAN_DTC,0x00); // way to often, just trying it once
 			};
 		}
 	}
