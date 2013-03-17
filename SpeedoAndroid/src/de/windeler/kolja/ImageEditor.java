@@ -12,6 +12,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
 import android.app.Activity;
@@ -661,7 +662,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 			String ext=input_filename.substring(input_filename.lastIndexOf("."));
 
 			// not jet converted .. do it
-			if(!ext.toLowerCase().equals(".sgf")){
+			if(!ext.toLowerCase(Locale.US).equals(".sgf")){
 				Log.i(TAG,"Check filename:"+filename_without_ext);
 				// prepare filename
 				String convert_filename;
@@ -974,7 +975,7 @@ public class ImageEditor extends Activity implements OnClickListener{
 
 			// show the next frame
 			try {
-				convert_image(filename_of_frame+String.valueOf(show_frame)+".PNG", filename_of_frame+String.valueOf(show_frame)+".sgf", 0, false);
+				convert_image(filename_of_frame+String.valueOf(show_frame)+".png", filename_of_frame+String.valueOf(show_frame)+".sgf", 0, false);
 				show_preview(filename_of_frame+String.valueOf(show_frame)+".sgf");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

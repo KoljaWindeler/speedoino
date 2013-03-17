@@ -31,7 +31,7 @@ public class GifDecoderView extends ImageView {
 				mHandlerUpdate.sendMessage(msg);
 								
 				mTmpBitmap = mGifDecoder.getFrame(i);
-				String filename=tempfolder+filename_without_ext.substring(filename_without_ext.lastIndexOf("/")+1)+"_"+String.valueOf(i)+".PNG";
+				String filename=tempfolder+filename_without_ext.substring(filename_without_ext.lastIndexOf("/")+1)+"_"+String.valueOf(i)+".png";
 				FileOutputStream out = new FileOutputStream(filename);
 				mTmpBitmap.compress(Bitmap.CompressFormat.PNG, 96, out);
 			}

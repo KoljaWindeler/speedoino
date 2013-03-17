@@ -1220,8 +1220,8 @@ OnClickListener {
 		Builder builder = new AlertDialog.Builder(this);  
 		builder.setTitle("Select your delay");
 
-		String [] delays = new String [30];
-		for(int i=0; i<30; i++){
+		String [] delays = new String [300];
+		for(int i=0; i<300; i++){
 			delays[i] =String.valueOf(i*5)+" ms";
 		};
 		
