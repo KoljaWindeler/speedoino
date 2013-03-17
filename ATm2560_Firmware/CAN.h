@@ -55,6 +55,7 @@ public:
 	void process_incoming_messages();
 	uint8_t can_get_message(CANMessage *p_message);// move me back to private
 	bool decode_dtc(char* char_buffer,char ECU_type, int dtc);
+	bool init_comm_possible(bool* CAN_active);
 
 private:
 
@@ -74,6 +75,7 @@ private:
 	unsigned int can_speed;
 
 	unsigned long last_received;
+	unsigned long last_request;
 	unsigned int can_dtc_errors_processed;
 	char can_dtc_nr;
 	unsigned int can_dtc_value;

@@ -19,6 +19,7 @@
 Speedo_CAN::Speedo_CAN(){
 	failed=false;
 	message_available=false; // init with true, may be its one there
+	last_request=0;
 	last_received=0;
 	can_speed=0;
 	can_rpm=0;
@@ -172,7 +173,7 @@ void Speedo_CAN::init(){
 	mcp2515_bit_modify( CANCTRL, 0xE0, 0);
 	/********************************************* MCP2515 SETUP ***********************************/
 
-	last_received=millis();
+	request(CAN_CURRENT_INFO,CAN_RPM); // to check if can is pressent
 };
 
 void Speedo_CAN::shutdown(){
@@ -182,6 +183,19 @@ void Speedo_CAN::shutdown(){
 int Speedo_CAN::check_vars(){
 	return 0; // return error code .. 1=failed, 0=ok
 };
+
+bool Speedo_CAN::init_comm_possible(bool* CAN_active){
+	if(last_received==0){
+		if(millis()-last_request>1000){
+			*CAN_active=false;
+			last_received=-1; // overrun, so it will never be possible to reactivate CAN.. wise?
+			return false;
+		} else {
+			*CAN_active=true;
+		}
+	}
+	return true;
+}
 
 /********************************************* CAN VALUE GETTER ***********************************/
 int Speedo_CAN::get_air_temp(){
@@ -293,6 +307,7 @@ void Speedo_CAN::request(char mode,char PID){
 	message.data[7] = 0x00;
 
 	// Nachricht verschicken
+	last_request=millis();
 	can_send_message(&message);
 };
 
