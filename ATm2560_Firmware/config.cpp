@@ -532,9 +532,9 @@ int configuration::read_skin(){
 	if(skin_file>-1 && skin_file<9){
 		char filename[10];
 		sprintf(filename,"SKIN%i.TXT",skin_file);
-		return read(filename);
+		return read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
 	} else {
-		return read("SKIN0.TXT"); // load default
+		return read(CONFIG_FOLDER,"SKIN0.TXT",READ_MODE_CONFIGFILE,""); // load default
 	}
 }
 
@@ -543,7 +543,7 @@ int configuration::read_skin(){
  * filename = Dateiname im config.fOLDER verzeichniss, kein Unterverzeichniss
  * Liest zeichenweise (max 200B) ein und ruft  mit jeder Zeile parse_config auf
  ***************************************************/
-int configuration::read(const char* filename){
+int configuration::read( const char* folder, const char* filename, int read_mode, char* search_string){
 	SdFile root;
 	SdFile file;
 	SdFile subdir;
@@ -552,7 +552,7 @@ int configuration::read(const char* filename){
 	pDebug->sprintp(PSTR(" ... "));
 
 	root.openRoot(&pSD->volume);
-	if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
+	if(!subdir.open(&root, folder, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
 	// datei im lese Modus oeffnen da config hier nicht geschrieben wird
 	if (file.open(&subdir, filename, O_READ)) {
 		int n,i=0;
@@ -573,12 +573,22 @@ int configuration::read(const char* filename){
 				buf[i]='\0'; // eigentlich unnoetig da das ganze array mit den dinger voll ist .. oder ?
 				if(i>0){
 					// wir haben mehr als kein zeichen gelesen, und einen Zeilenumbruch gefunden => attake
-					int return_value=parse(&buf[0]);
-					if(return_value<0) {
-						Serial.print("parse_config erzeugte Fehlercode ");
-						Serial.print(return_value);
-						Serial.print(". Eingabe war:");
-						Serial.println(buf);
+					if(read_mode==READ_MODE_CONFIGFILE){
+						int return_value=parse(&buf[0]);
+						if(return_value<0) {
+							Serial.print("parse_config erzeugte Fehlercode ");
+							Serial.print(return_value);
+							Serial.print(". Eingabe war:");
+							Serial.println(buf);
+						};
+					} else if(read_mode==READ_MODE_TEXTREPLACEMENT){
+						int return_value=parse_textreplacement(buf,search_string);
+						if(return_value<0) {
+							Serial.print("parse_textreplacement erzeugte Fehlercode ");
+							Serial.print(return_value);
+							Serial.print(". Eingabe war:");
+							Serial.println(buf);
+						};
 					};
 				};
 				i=0; // buffer leeren
@@ -1247,3 +1257,41 @@ void configuration::EEPROM_init(){
 	pDebug->sprintlnp(PSTR("Done"));
 
 };
+
+int configuration::parse_textreplacement(char* buffer, char* search_recopy_string){
+    int seperator=0;
+    while(1){ // der name soll maximal 50 zeichen lang sein
+        if(char(buffer[seperator])=='='){
+			if(seperator==0){ // if the "=" is on pos 0 [=bla] ond nothing left of it
+				return -2;
+			};
+            break;
+        } else {
+			seperator++;
+        };
+        if(seperator>49){ return -1; }; // programmabbruch
+    };
+
+    int return_value=0;
+
+    // hier wissen wir wie der name ist
+	int search_recopy_pointer=0;
+	int buffer_pointer=seperator+1; // skip "="
+    if(strncmp(buffer,search_recopy_string,seperator)==0){
+        while(1){
+			if(search_recopy_pointer>=22){
+				search_recopy_string[search_recopy_pointer]=0x00;
+				break;
+			} else if(buffer[buffer_pointer]=='\n' || buffer[buffer_pointer]==0x00 || buffer[buffer_pointer]>=0x7F || buffer[buffer_pointer]<=0x20 || buffer[buffer_pointer]==';' || buffer[buffer_pointer]=='#'){
+				search_recopy_string[search_recopy_pointer]=0x00;
+				break;
+			} else {
+				search_recopy_string[search_recopy_pointer]=buffer[buffer_pointer];
+			}
+			buffer_pointer++;
+			search_recopy_pointer++;
+		}
+		return_value=1; //found
+    }
+	return return_value;
+}

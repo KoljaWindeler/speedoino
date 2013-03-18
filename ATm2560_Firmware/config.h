@@ -14,6 +14,10 @@
  * 1. hier oben gucken obs i,a oder f ist, dann ne position finden (array erweitern ? )
  * 2. unten noch eine if zweig pro var einbauen und die parser methode whlen
  *********************************** config erzeugen *********************************/
+#define READ_MODE_CONFIGFILE 0
+#define READ_MODE_TEXTREPLACEMENT 1
+
+
 // config Container
 class configuration{
 /*********************************** config erzeugen *********************************/
@@ -21,7 +25,7 @@ public:
 	configuration(void);
 	~configuration();
 	int write(const char filename[]);
-	int read(const char filename[]);
+	int read( const char* folder, const char* filename, int read_mode, char* search_string);
 	int get_hw_version();
 	int read_skin();
 	int compare_substr( char *string1, char *string2, int amount );
@@ -40,6 +44,7 @@ private:
 	int parse_bool(char* buffer,int i,bool* wert);
 	int parse_a(char* buffer,int i,char* wert,int max_length);
 	int parse_ul(char buffer[],int i,unsigned long *wert);
+	int parse_textreplacement(char* buffer, char* search_recopy_string);
 	int last_speed_value;
 };
 extern configuration *pConfig;
