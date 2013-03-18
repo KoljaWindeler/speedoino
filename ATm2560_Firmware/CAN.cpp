@@ -29,7 +29,7 @@ Speedo_CAN::Speedo_CAN(){
 	can_dtc_value=0x00;
 	can_dtc_nr=0xff;
 	can_dtc_error_count=0x00;
-	can_water_temp_fail_status=0;
+	can_missed_count=0;
 };
 
 Speedo_CAN::~Speedo_CAN(){
@@ -185,8 +185,12 @@ int Speedo_CAN::check_vars(){
 };
 
 bool Speedo_CAN::init_comm_possible(bool* CAN_active){
+	Serial.print(last_request);
+	Serial.print("-");
+	Serial.println(last_received);
 	if(last_received==0){
-		if(millis()-last_request>1000){
+		if(millis()-last_received>1000){
+			Serial.println("return false");
 			*CAN_active=false;
 			last_received=-1; // overrun, so it will never be possible to reactivate CAN.. wise?
 			return false;
@@ -210,13 +214,13 @@ int Speedo_CAN::get_water_temp(){
 	if(millis()-last_received<1000){
 		return can_water_temp;
 	} else {
-		can_water_temp_fail_status=9;
+		can_missed_count=9;
 	}
 	return 0;
 };
 
-int Speedo_CAN::get_water_temp_fail_status(){
-	return can_water_temp_fail_status;
+int Speedo_CAN::get_CAN_missed_count(){
+	return can_missed_count;
 }
 
 unsigned int Speedo_CAN::get_Speed(){
@@ -313,6 +317,9 @@ void Speedo_CAN::request(char mode,char PID){
 
 void Speedo_CAN::process_incoming_messages(){
 	while(can_get_message(&message)!=0xff){ //0xff=no more frames available
+		if(can_missed_count>0){
+			can_missed_count--;
+		};
 		//		Serial.println("New CAN Message found");
 		if(message.length>2){ // must be at least 3 chars to check [2]
 			if(message.data[1]==CAN_CURRENT_INFO+0x40){ // its 0x41 on a 0x01 question (current info)!!
@@ -333,7 +340,7 @@ void Speedo_CAN::process_incoming_messages(){
 					return;
 				} else if(message.data[2]==CAN_WATER_TEMPERATURE){
 					can_water_temp=(message.data[3]-40)*10;
-					can_water_temp_fail_status=0;
+					can_missed_count=0;
 					if(CAN_DEBUG){ /////////////// DEBUG //////////
 						Serial.print("New watertemp:");
 						Serial.println(can_water_temp);
@@ -530,6 +537,9 @@ void Speedo_CAN::mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data){
 
 uint8_t Speedo_CAN::can_send_message(CANMessage *p_message){
 	uint8_t status, address;
+	if(can_missed_count<100){
+		can_missed_count++;
+	};
 
 	// Status des MCP2515 auslesen
 	PORT_CS &= ~(1<<P_CS);

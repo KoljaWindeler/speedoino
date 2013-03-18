@@ -42,7 +42,7 @@ public:
 	int get_air_temp();
 	int get_oil_temp();
 	int get_water_temp();
-	int get_water_temp_fail_status();
+	int get_CAN_missed_count();
 	bool get_mil_active();
 	int get_dtc_error_count();
 	int get_dtc_error(int nr);
@@ -70,7 +70,7 @@ private:
 
 	CANMessage message;
 	int can_water_temp;
-	unsigned int can_water_temp_fail_status;
+	unsigned int can_missed_count;
 	unsigned int can_rpm;
 	unsigned int can_speed;
 
