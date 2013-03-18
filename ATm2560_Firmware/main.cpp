@@ -83,10 +83,10 @@ void init_speedo(void){
 	pSensors->clear_vars();		// clear all sensor values;
 	pSpeedo->clear_vars();		// refresh cycle
 	// read configuration file from sd card
-	pConfig->read("BASE.TXT"); 	// load base config
-	pConfig->read("SPEEDO.TXT");// speedovalues, avg,max,time
-	pConfig->read("GANG.TXT");	// gang
-	pConfig->read("TEMPER.TXT");// Temperatur
+	pConfig->read(CONFIG_FOLDER,"BASE.TXT",READ_MODE_CONFIGFILE,""); 	// load base config
+	pConfig->read(CONFIG_FOLDER,"SPEEDO.TXT",READ_MODE_CONFIGFILE,"");	// speedovalues, avg,max,time
+	pConfig->read(CONFIG_FOLDER,"GANG.TXT",READ_MODE_CONFIGFILE,"");	// gang
+	pConfig->read(CONFIG_FOLDER,"TEMPER.TXT",READ_MODE_CONFIGFILE,"");// Temperatur
 	pConfig->read_skin();		// skinning
 	// check if read SD read was okay, if not: load your default backup values
 	pAktors->check_vars();		// check if color of outer LED are OK

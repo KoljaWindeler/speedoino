@@ -33,7 +33,8 @@ Speedo_sensors::Speedo_sensors(){
 
 	ten_Hz_counter=0;
 	ten_Hz_timer=millis();
-	CAN_active=false; // don't care, will change it in init
+	CAN_active=true; // don't care, will change it in init
+	sensor_source=0;
 };
 
 // destructor just for nuts
@@ -192,7 +193,7 @@ int Speedo_sensors::get_water_temperature(){
 // 9 on no sensor value (no responses on CAN)
 int Speedo_sensors::get_water_temperature_fail_status(){
 	if(CAN_active && !m_CAN->failed){
-		return m_CAN->get_water_temp_fail_status();
+		return m_CAN->get_CAN_missed_count();
 	} else {
 		return m_temperature->water_temp_fail_status;
 	}
@@ -307,10 +308,10 @@ void Speedo_sensors::pull_values(){
 			m_voltage->calc(); // spannungscheck
 			m_temperature->read_oil_temp();  // temperaturen aktualisieren
 
-			// auto CAN detection
+			// auto CAN detection ... geht nicht .. warum? TODO
 			if(sensor_source==SENSOR_AUTO){
 				if(!m_CAN->init_comm_possible(&CAN_active)){ // returns always true, exept the communcation was NOT possible even if it should
-					pDebug->sprintlnp(PSTR("CAN communication timed out, falling back to analog sensors"));
+					pDebug->sprintlnp(PSTR("CAN communication timed out,\n\rfalling back to analog sensors"));
 					m_CAN->shutdown();
 					m_dz->init();
 					m_speed->init();
@@ -486,6 +487,9 @@ ISR(PCINT2_vect ){
 	if(!(PINK&(1<<CAN_INTERRUPT_PIN))){	 // if the CAN pin is low, low active interrupt
 		if(pSensors->CAN_active){		 // is the CAN mode active
 			pSensors->m_CAN->message_available=true;
+			if(CAN_DEBUG){
+				Serial.println("Interrupt: Msg available");
+			}
 		};
 	};
 }

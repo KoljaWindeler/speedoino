@@ -452,7 +452,7 @@ int Speedo_aktors::set_bt_pin(){
 			}
 		} else {
 			pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,3);
-			pOLED->string_P(pSpeedo->default_font,PSTR("DAMN"),14,4);
+			pOLED->string_P(pSpeedo->default_font,PSTR("DAMN"),14,4); // add message to make sure no active bt connection disturbs TODO
 			_delay_ms(4000);
 			Serial.end();
 			Serial.begin(115200);

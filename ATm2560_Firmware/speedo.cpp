@@ -44,9 +44,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		if(!(oil_widget.x==-1 && oil_widget.y==-1)){ // only show it if pos != -1/-1
 			disp_zeile_bak[OIL_TEMP]=int(pSensors->get_oil_temperature()+pSensors->m_temperature->oil_temp_fail_status);
 			// below 20 degree the PTC is very antiliear so we won't show it
-			if(pSensors->m_temperature->oil_temp_fail_status==9){
+			if(pSensors->m_temperature->oil_temp_fail_status==SENSOR_OPEN){
 				sprintf(char_buffer," -     "); // error occored -> no sensor
-			} else if(pSensors->m_temperature->oil_temp_fail_status==5){
+			} else if(pSensors->m_temperature->oil_temp_fail_status==SENSOR_SHORT_TO_GND){
 				sprintf(char_buffer," --    "); // error occored -> short to gnd
 			} else 	if(pSensors->get_oil_temperature()>200){
 				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_oil_temperature()/10))%1000,pSensors->get_oil_temperature()%10); // _32.3°C  7 stellen
@@ -70,9 +70,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		if(!(water_widget.x==-1 && water_widget.y==-1)){ // only show it if pos != -1/-1
 			disp_zeile_bak[WATER_TEMP]=int(pSensors->get_water_temperature()+pSensors->m_temperature->water_temp_fail_status);
 			// below 20 degree the PTC is very antiliear so we won't show it
-			if(pSensors->get_water_temperature_fail_status()==9){
+			if(pSensors->get_water_temperature_fail_status()==SENSOR_OPEN){
 				sprintf(char_buffer," -     "); // error occored -> no sensor
-			} else if(pSensors->get_water_temperature_fail_status()==5){	// could of fail reads
+			} else if(pSensors->get_water_temperature_fail_status()==SENSOR_SHORT_TO_GND){	// could of fail reads
 				sprintf(char_buffer," --    "); // error occored -> short to gnd
 			} else { // if no short
 				// check if its a CAN value or a measured value
@@ -329,7 +329,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			}
 		}
 		///// Temp to high /////
-		else if(pSensors->get_oil_temperature()>=pSensors->m_temperature->oil_warning_temp && pSensors->get_oil_temperature()<8888){
+		else if(pSensors->get_oil_temperature()>=pSensors->m_temperature->oil_warning_temp && pSensors->get_oil_temperature()<8888 && (pSensors->m_temperature->oil_temp_fail_status!=SENSOR_OPEN || pSensors->m_temperature->oil_temp_fail_status!=SENSOR_SHORT_TO_GND)){
 			if(disp_zeile_bak[ADD_INFO2]!=108){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=108;
 				pDebug->speedo_loop(14,0,previousMillis," ");
@@ -338,7 +338,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			};
 
 		}
-		else if(pSensors->get_water_temperature()>=pSensors->m_temperature->water_warning_temp && pSensors->get_water_temperature()<8888){
+		else if(pSensors->get_water_temperature()>=pSensors->m_temperature->water_warning_temp && pSensors->get_water_temperature()<8888 && (pSensors->get_water_temperature_fail_status()!=SENSOR_OPEN || pSensors->get_water_temperature_fail_status()!=SENSOR_SHORT_TO_GND)){
 			if(disp_zeile_bak[ADD_INFO2]!=109){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=109;
 				pDebug->speedo_loop(14,0,previousMillis," ");

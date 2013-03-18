@@ -521,6 +521,9 @@ void ssd0323::filled_rect(unsigned char x,unsigned char y,unsigned char width,un
 
 ///////////////////////// bar zum highlighten //////////////////////////////////
 void ssd0323::highlight_bar(unsigned char x,unsigned char y,unsigned char width,unsigned char height){
+	x=floor(x/2)*2;
+	width=floor(width/2)*2;
+
 	send_command(0x15);
 	send_command(floor(x/2));
 	send_command(floor((width-1+x)/2));
@@ -535,12 +538,14 @@ void ssd0323::highlight_bar(unsigned char x,unsigned char y,unsigned char width,
 			b+=34;
 		}
 		b=0xff;
-		for(int a=0;a<(width/2)-12;a++){    send_char(b);    };
-				b=0xED;
-				for(int i=0;i<6;i++){
-					send_char(b);
-					b-=34;
-				}
+		for(int a=0;a<(width/2)-12;a++){
+			send_char(b);
+		};
+		b=0xED;
+		for(int i=0;i<6;i++){
+			send_char(b);
+			b-=34;
+		}
 	};
 };
 
@@ -574,7 +579,7 @@ void ssd0323::init(unsigned char phase,unsigned char ref) {
 	// Re-Map |  0x41   | 0x52 //
 	// Offset |  0x44   | 0x4C //
 	/////////////////////////////
-	
+
 	// Column Address
 	send_command(0x15);	send_command(0x00);	send_command(0x3F); 
 	// Row Address

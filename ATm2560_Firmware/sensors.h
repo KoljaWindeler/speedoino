@@ -18,6 +18,9 @@
 #define SENSOR_AUTO 1
 #define SENSOR_FORCE_CAN 2
 
+#define SENSOR_SHORT_TO_GND 5
+#define SENSOR_OPEN 9
+
 class Speedo_sensors{
 public:
 	Speedo_sensors(void);

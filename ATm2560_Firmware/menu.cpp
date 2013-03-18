@@ -172,7 +172,13 @@ unsigned int addr;
 ///// vars ////////////
 
 ////// bei veränderung des state => einmaliges zeichen des menüs ///////
-void speedo_menu::display(){ // z.B. state = 26
+
+/************************************************************ display menu ************************************************************
+ * Menu structure base! This function gets called as soon as the menu_state_machine var "state" gets changed.
+ * As long as this state has an "if" clause, the menu will show / do something. Sometimes just show a symbol, or a text but sometimes
+ * triggers other functions. So this is, were the beauty comes from :D
+ ************************************************************ display menu ************************************************************/
+void speedo_menu::display(){
 	if(MENU_DEBUG){
 		Serial.print("menu.display() called; at ");
 		Serial.println(millis());
@@ -187,34 +193,38 @@ void speedo_menu::display(){ // z.B. state = 26
 	};
 
 	// init hardware buttons
-	bool button_state=true;
-	if(BUTTONS_OFF){ button_state=false;}  // gundsätzlich sind alle an
-	set_buttons(button_state,button_state,button_state,button_state); // activate all
+	bool button_state=true; // activate all buttons
+	if(BUTTONS_OFF){ button_state=false;}  // but deactivate them if the define is active
+	set_buttons(button_state,button_state,button_state,button_state); // set initially. if necessary the if structs will override us
 
-	// init storage
+	// init a "one line" storage
 	char *char_buffer;
 	char_buffer = (char*) malloc (22);
 	if (char_buffer==NULL) pDebug->sprintlnp(PSTR("Malloc failed 3"));
 	else memset(char_buffer,'\0',22);
-	////////////////////////////////////////// im hauptmenü nach links => tacho //////////////////////////////////////////
+	/******************************** "left" in main menu. Redirect to Speedoino ********************************************/
 	if(state==0){
 		if(MENU_DEBUG){Serial.println("Menustate war 0, daher biege ich ihn auf SPEEDOINO um");};
 		state=11;
 		update_display=true;
 	}
-	////////////////////////////////////////////////////// Hauptmenu ////////////////////////////////////////////////////////
+	/********************************************* Show the Main menu *********************************************/
 	else if(state<10) {
 		if(MENU_DEBUG){Serial.println("Menustate war kleiner als 10, Hauptmenue");};
 		// Menu vorbereiten
 		draw(&menu_main[0],sizeof(menu_main)/sizeof(menu_main[0]));
 	}
-	////////////////////////////////////////// hier eine gps markierungs motivieren //////////////////////////////////////////
+	/********************************************* generate GPS marker *********************************************/
 	else if(state==111) {
 		if(MENU_DEBUG){Serial.println("Menustate war 111, daher biege ich ihn auf 11 um");};
 		pSensors->m_gps->note_this_place=SIMPLE_MARK;
 		state=11;
 	}
-	////////////////////////////////////////// Einmaliges Setup des Standart Tacho //////////////////////////////////////////
+	/********************************************* Menu 1 - SPEEDOINO *********************************************
+	 * Main Screen
+	 * Initially setup
+	 * Show all icons and prepare setup
+	 ********************************************* Menu 1 - SPEEDOINO *********************************************/
 	else if(floor(state/10)==1 || state==7311111){
 		pOLED->clear_screen();
 		if(MENU_DEBUG){Serial.println("Menustate 00001X, Bin jetzt im Tacho menu, zeichne icons");};
@@ -241,7 +251,11 @@ void speedo_menu::display(){ // z.B. state = 26
 			set_buttons(button_state,!button_state,!button_state,!button_state);
 		};
 	}
-	/////////////////////////////////////////////// Einmaliges Setup des Sprint Tacho ///////////////////////////////////////////
+	/********************************************* Menu 2 - Sprint Mode *********************************************
+	 * This section only prepares the Sprint mode.
+	 * Based on the main loop, pSprint->loop(); will be called
+	 * So here we just have to prepare the Vars from the Sprintmode
+	 ********************************************* Menu 2 - Sprint Mode *********************************************/
 	else if(floor(state/10)==2){
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 		if(MENU_DEBUG){Serial.println("Menustate=000002X, Bin jetzt im Sprint Tacho menu");};
@@ -250,11 +264,19 @@ void speedo_menu::display(){ // z.B. state = 26
 		pSprint->lock=false;
 		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
-	///////////////////////////////////////////////////// STANDUHR ///////////////////////////////////////////////////////////
-	else if(state==291){
+	/********************************************* Clock mode *********************************************/
+	else if(state==291){ // reused state!
 		pSensors->m_clock->loop();
 	}
-	//////////////////////////////////////////////////// Menü für die Navigation ////////////////////////////////////////////////////
+
+
+	/********************************************* Menu 3 - Start of Navigation Menu *********************************************
+	 * Submenus:
+	 *	31 Switch on and off navigation
+	 *	32 Set current pointer within file
+	 *	33 Select current file of navigation
+	 *	34 Get number of written GPS points
+	 ********************************************* Menu 3 -  of Navigation Menu *********************************************/
 	else if(floor(state/10)==3){ // 31/10 = 3
 		// Menu vorbereiten
 		draw(&menu_navi[0],sizeof(menu_navi)/sizeof(menu_navi[0]));
@@ -266,7 +288,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			pSensors->m_gps->navi_active=true;
 			pSensors->m_gps->generate_new_order();
 			byte tempByte = (1 & 0xFF);
-			eeprom_write_byte((uint8_t *)146,tempByte); // store navistate to eeprom
+			eeprom_write_byte((uint8_t *)146,tempByte); // store navistate to eeprom ... warum auch immer wir das noch tun ... TODO!!!!
 		} else if((state%10)==2){
 			pSensors->m_gps->navi_active=false;
 			byte tempByte = (0 & 0xFF);
@@ -287,15 +309,19 @@ void speedo_menu::display(){ // z.B. state = 26
 	}
 	/////////////////////////////////////////////////// Pointer für die Navigation ///////////////////////////////////////////////////
 	else if(floor(state/10)==32){ // 32[X]
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+	}
+	else if(floor(state/100)==32){ // 321[X] change values here
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		if((state%10)==2){ // runter gedrückt
 			pSensors->m_gps->navi_point++;
-			state=321;
+			pConfig->storage_outdated=true;
 		} else if((state%10)==9){ // hoch gedrückt
 			pSensors->m_gps->navi_point--;
 			if(pSensors->m_gps->navi_point<1) { pSensors->m_gps->navi_point=0; };
-			state=321;
+			pConfig->storage_outdated=true;
 		};
+		state=floor(state/10)*10+1; // zurückschuppsen
 
 		pOLED->clear_screen();
 		pOLED->string_P(pSpeedo->default_font,PSTR("Navi Track Pointer"),0,0,0,DISP_BRIGHTNESS,0);
@@ -310,14 +336,20 @@ void speedo_menu::display(){ // z.B. state = 26
 	}
 	/////////////////////////////////////////////////// Dateien listen und highlighten... irgendwie ///////////////////////////////////////////////////
 	else if(floor(state/10)==33){ // 33[X]
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+	} else if(floor(state/100)==33){ // 331[X]
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		// Umschalten
 		if(int(state%10)==9){ // schalter nach oben, abziehen
-			if(pSensors->m_gps->active_file>0)
+			if(pSensors->m_gps->active_file>0){
 				pSensors->m_gps->active_file--;
+				pConfig->storage_outdated=true;
+			}
 		} else  if(int(state%10)==2){
-			if(pSensors->m_gps->active_file < 9) // wir haben 0,1,2,3,4,5,6,7,8,9 ... max 10 Files
+			if(pSensors->m_gps->active_file < 9){ // wir haben 0,1,2,3,4,5,6,7,8,9 ... max 10 Files
 				pSensors->m_gps->active_file++;
+				pConfig->storage_outdated=true;
+			}
 		};
 		// immer wieder zurückschuppsen
 		state=floor(state/10)*10+1; // (41+2)*10+1
@@ -386,10 +418,26 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->string(pSpeedo->default_font,buffer,5,3,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(pSpeedo->default_font,PSTR("Points written"),3,4,0,DISP_BRIGHTNESS,0);
 	}
+	/********************************************* Menu 3 - End of Navigation Menu *********************************************/
 
-	////////// Menüpunkt 4 ist erstmal noch komplett leer // 4[XXXX]
 
-	// Menüpunkt 5 -> Extend Infos //
+	/********************************************* Menu 4, completly empty by now *********************************************
+	 ********************************************* Menu 4, completly empty by now *********************************************/
+
+
+
+	/********************************************* Menu 5 - Start of Extend Info Menu *********************************************
+	 * Submenus:
+	 *	51 Show GPS info
+	 *	52 Show CAN-BUS info
+	 *	53 Show extendend analog Sensor info
+	 *	54 Show current Stepper position and mode info
+	 *	55 -
+	 *	56 Test the Watchdog, simply by waiting 30 sec without toggling
+	 *	57 Show some old Animation ... obsolete?
+	 *	58 Show only my eMail Adress. Some kind of About
+	 *	59 Tetris :D
+	 ********************************************* Menu 5 - Start of Extend Info Menu *********************************************/
 	else if(floor(state/10)==5) { //5[X]
 		// Menu vorbereiten
 		draw(&menu_einfo[0],sizeof(menu_einfo)/sizeof(menu_einfo[0]));
@@ -411,9 +459,6 @@ void speedo_menu::display(){ // z.B. state = 26
 	}
 	//////////////////////// CAN info ////////////////////////////
 	else if(floor(state/10)==52) {
-
-
-
 		// show info that CAN is offline
 		if(!pSensors->CAN_active){
 			pOLED->clear_screen();
@@ -452,9 +497,9 @@ void speedo_menu::display(){ // z.B. state = 26
 						}
 
 						sprintf(char_buffer,"Error %i/%i:%c%04i",i+3*state_helper+1,dtc_error_count,region,error_code&0x0fff);
-						Serial.println(char_buffer);
 						pOLED->string(pSpeedo->default_font,char_buffer,0,2*i+1,0,15,0);
-						pSensors->m_CAN->decode_dtc(char_buffer,SPEED_TRIPPLE,error_code&0x0fff);
+						sprintf(char_buffer,"%c%04i",region,error_code&0x0fff);
+						pSensors->m_CAN->decode_dtc(char_buffer,SPEED_TRIPPLE);
 						center_me(char_buffer,21);
 						pOLED->string(pSpeedo->default_font,char_buffer,0,2*i+2,0,7,0);
 					} else {
@@ -490,14 +535,11 @@ void speedo_menu::display(){ // z.B. state = 26
 					set_buttons(button_state,!button_state,down,button_state); // no up
 				}
 			}
-
-			// was tun bei mehr
-
-
+			// testen für mehr als 3 codes!! TODO
 		};
 
 	}
-	//////////////////////// extend voltage info ////////////////////////////
+	//////////////////////// extend sensor info ////////////////////////////
 	else if(floor(state/10)==53) {
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 		// Menu vorbereiten
@@ -508,6 +550,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		pOLED->draw_water(10,16);
 		pOLED->draw_air(20,24);
 		pOLED->draw_oil(10,32);
+		// values will be added by "main" loop to have a online-monitoring
 	}
 	//////////////////////// stepper info ////////////////////////////
 	else if(floor(state/10)==54) {
@@ -580,7 +623,22 @@ void speedo_menu::display(){ // z.B. state = 26
 		back();
 		update_display=true;
 	}
-	// Menüpunkt 6 -> Customize //
+	/********************************************* End of Extend Info Menu *********************************************/
+
+
+
+	/********************************************* Menu 6 - Start of Customize Menu *********************************************
+	 * Submenus:
+	 *	61 Choose Skin
+	 *	62 Select the shown trip
+	 *	63 Adjust the DZ flasher value and color
+	 *	64 Adjust outer RGB LED's, Static, KMH related ...
+	 *	65 -
+	 *	66
+	 *	67 Set Bluetooth pin
+	 *	68 -
+	 *	69 -
+	 ********************************************* Menu 6 - Start of Customize Menu *********************************************/
 	else if(floor(state/10)==6) { //6[X]
 		// Menu vorbereiten
 		draw(&menu_custom[0],sizeof(menu_custom)/sizeof(menu_custom[0]));
@@ -588,7 +646,6 @@ void speedo_menu::display(){ // z.B. state = 26
 		pSpeedo->reset_bak();
 	}
 	///////////////////////// SKIN LADEN ///////////////////////
-	///////////////////// navi menu //////////////////////////
 	else if(floor(state/10)==61){ //61[X]
 		// open SD
 		SdFile root;
@@ -658,14 +715,14 @@ void speedo_menu::display(){ // z.B. state = 26
 
 		// keep loading current skinfile, because without changing
 		sprintf(filename,"SKIN%i.TXT",(pConfig->skin_file+10)%10);
-		pConfig->read(filename);
+		pConfig->read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
 	}
 	//////////////////////// skin laden ////////////////////////////
 	else if(floor(state/100)==61) { // 0061[X]1
 		// load this skinfile
 		char filename[10];
 		sprintf(filename,"SKIN%i.TXT",(int(floor(state/10))%10)-1);
-		pConfig->read(filename);
+		pConfig->read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
 		pOLED->clear_screen();
 		pOLED->string_P(pSpeedo->default_font,PSTR("Preview"),6,3);
 		_delay_ms(300);
@@ -701,28 +758,7 @@ void speedo_menu::display(){ // z.B. state = 26
 	// then select the storage by /1000
 	else if(floor(state/10)==62) {
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
-		if(	old_state==62 ){
-			state=state*10+1;
-			pSpeedo->disp_zeile_bak[2]=999; // setze auf beiden wegen den speicher zurück
-			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
-		} else {
-			back();
-			// store to SD
-			if(pConfig->storage_outdated){
-				if(pConfig->write("BASE.TXT")==0){
-					pOLED->clear_screen();
-
-					strcpy_P(char_buffer,PSTR("Save to SD card"));
-					center_me(char_buffer,21);
-					pOLED->string(pSpeedo->default_font,char_buffer,0,5);
-					strcpy_P(char_buffer,PSTR("OK"));
-					center_me(char_buffer,21);
-					pOLED->string(pSpeedo->default_font,char_buffer,0,6);
-				};
-				_delay_ms(2000);
-			};
-		};
-		update_display=true;
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==62) {
@@ -767,14 +803,17 @@ void speedo_menu::display(){ // z.B. state = 26
 		draw(&menu_trip_setup[0],sizeof(menu_trip_setup)/sizeof(menu_trip_setup[0]));
 	}
 	///////////////////////////// dz flasher /////////////////////////////
-	else if(floor(state/10)==63 || floor(state/100)==63) {
-		if(state!=old_state+1 && state!=old_state+8){ // 632 -> 631
+	else if(floor(state/10)==63) {
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+	}
+	else if(floor(state/100)==63 || floor(state/1000)==63){ // 631[X] or 6311[X]
+		if(state!=old_state+1 && state!=old_state+8){ // 632 -> 631, take this since its possible to come from 631 and from 631111
 			pOLED->clear_screen();
 			pOLED->highlight_bar(0,8*4-1,128,17); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
 			pOLED->string_P(pSpeedo->default_font,PSTR("DZ Flasher"),5,4,15,0,0);
 
 			// bedienelemente anzeigen
-			if(floor(state/100)==6){
+			if(floor(state/1000)==6){
 				pOLED->filled_rect(0,0,128,20,0x00);
 				pOLED->string_P(pSpeedo->default_font,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
 				pOLED->string_P(pSpeedo->default_font,PSTR("Down = inactive"),4,1,0,DISP_BRIGHTNESS,0);
@@ -786,7 +825,7 @@ void speedo_menu::display(){ // z.B. state = 26
 					pOLED->string(pSpeedo->default_font,temp,0,7);
 					pOLED->string_P(pSpeedo->default_font,PSTR("to adjust level"),2,7);
 				};
-			} else if(floor(state/1000)==6){
+			} else if(floor(state/10000)==6){
 				pOLED->filled_rect(0,0,128,20,0x00);
 				pOLED->string_P(pSpeedo->default_font,PSTR("Select the RPM"),4,0,0,DISP_BRIGHTNESS,0);
 				pOLED->string_P(pSpeedo->default_font,PSTR("for Shiftlight"),4,1,0,DISP_BRIGHTNESS,0);
@@ -799,33 +838,18 @@ void speedo_menu::display(){ // z.B. state = 26
 			}
 		};
 		// AN AUS schaltung
-		if(floor(state/10)==63){
-			// sneaky, wenn wir ins tiefere menü gehen ( 6311 ) und die dz grenze verändern
-			// setzen wir die dz auf +1, wenn wir von dort zurück kommen speichern wir es
-			// damit nur einmal auf die SD geschrieben wird.
-			if(pSensors->m_dz->blitz_dz%10==1){
-				pSensors->m_dz->blitz_dz--;
-				pConfig->storage_outdated=true;
-				pConfig->write("BASE.TXT");
-			};
-
+		if(floor(state/100)==63){ // 631[x]
 			if(state%10==9){
 				pSensors->m_dz->blitz_en=true;
 				pConfig->storage_outdated=true;
-				pConfig->write("BASE.TXT");
 				state-=8;
 			} else if(state%10==2){
 				pSensors->m_dz->blitz_en=false;
 				pConfig->storage_outdated=true;
-				pConfig->write("BASE.TXT");
 				state-=1;
 			};
 			// schaltdrehzahl einstellen
-		} else if(floor(state/100)==63){
-			// ganz großer trick! wir speichern hier eine +1 ein als zeichen das wir ein menü tiefer waren
-			if(pSensors->m_dz->blitz_dz%10!=1 && (state%10==9 || state%10==2)){
-				pSensors->m_dz->blitz_dz++;
-			};
+		} else if(floor(state/1000)==63){
 			// Wert anpassen
 			if(state%10==9){
 				pSensors->m_dz->blitz_dz+=100;
@@ -833,12 +857,14 @@ void speedo_menu::display(){ // z.B. state = 26
 					pSensors->m_dz->blitz_dz=20000;
 				}
 				state-=8;
+				pConfig->storage_outdated=true;
 			} else if(state%10==2){
 				pSensors->m_dz->blitz_dz-=100;
 				if(pSensors->m_dz->blitz_dz<100){
 					pSensors->m_dz->blitz_dz=100;
 				}
 				state-=1;
+				pConfig->storage_outdated=true;
 			};
 		}
 
@@ -849,7 +875,7 @@ void speedo_menu::display(){ // z.B. state = 26
 
 			sprintf(char_buffer,"%3i00",int(floor(pSensors->m_dz->blitz_dz/100)));// 12500
 			pOLED->highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
-			if(floor(state/10)==63){
+			if(floor(state/100)==63){
 				pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,5,0,15,0); // joa, unschön. Wird flackern, aber naja
 				pOLED->string(pSpeedo->default_font,char_buffer,11,5,15,0,0);
 			} else {
@@ -866,9 +892,8 @@ void speedo_menu::display(){ // z.B. state = 26
 		};
 
 		//////////////////////// adjust dz alert RGB LED ////////////////////////
-	} else if(floor(state/10)==6311 || floor(state/100)==6311 ||floor(state/1000)==6311){
-		color_select_menu(6311,&pAktors->dz_flasher,0,0,0,0,button_state, PSTR("Shift-Light"),PSTR(""),99,true);
-
+	} else if(floor(state/100)==6311 || floor(state/1000)==6311 ||floor(state/10000)==6311){
+		color_select_menu(631111,&pAktors->dz_flasher,0,0,0,0,button_state, PSTR("Shift-Light"),PSTR(""),99,true); // TODO check!! was 6311, but I think it should be 63111 ... never the less I had to add a "1", but 2 ?
 	}
 	//////////////////////// adjust outer RGB LED ////////////////////////
 	/* In this menu, we give the user the chance to choose his own color
@@ -907,25 +932,7 @@ void speedo_menu::display(){ // z.B. state = 26
 		///////////////////////// set bt pin ///////////////////////////
 	} else if(floor(state/10)==67){
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
-		if(	old_state==67 ){
-			state=state*10+1;
-			pSpeedo->disp_zeile_bak[2]=999; // setze auf beiden wegen den speicher zurück
-			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
-		} else {
-			back();
-			// store to SD
-			if(pConfig->storage_outdated){
-				if(pAktors->set_bt_pin()==0){
-					if(pConfig->write("BASE.TXT")==0){
-						pOLED->clear_screen();
-						pOLED->string_P(pSpeedo->default_font,PSTR("Save to SD card"),0,6);
-						pOLED->string_P(pSpeedo->default_font,PSTR("OK"),0,7);
-					};
-				};
-				_delay_ms(2000);
-			};
-		};
-		update_display=true;
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	else if((floor(state/100)==67) | (floor(state/1000)==67) | (floor(state/10000)==67) | (floor(state/100000)==67)){ //67[x][x][x][x][1]
 		if(floor(state/100000)==67){
@@ -983,6 +990,22 @@ void speedo_menu::display(){ // z.B. state = 26
 			pOLED->string(pSpeedo->default_font,char_buffer,11,2);
 		}
 	}
+	/********************************************* End of Customize Menu *********************************************/
+
+
+
+	/********************************************* Menu 7 - Start of Setup Menu *********************************************
+	 * Submenus:
+	 *	71 Gear Calibration
+	 *	72 Speed Calibration
+	 *	73 Display Settings
+	 *	74 Reset memory
+	 *	75 Sensor source
+	 *	76 Bluetooth reset
+	 *	77 Water Warning temperature
+	 *	78 Oil Warning temperature
+	 *	79 -
+	 ********************************************* Menu 7 - Start of Setup Menu *********************************************/
 	//////////////////////// Setup Menu ////////////////////////////
 	else if(floor(state/10)==7) { //00007[X]
 		// Menu vorbereiten
@@ -1061,7 +1084,7 @@ void speedo_menu::display(){ // z.B. state = 26
 			eeprom_write_byte((uint8_t *)145,tempByte);
 
 		} else if(state%10==2){
-			if(floor(state/10)==73) { pOLED->phase=pOLED->phase-16; }
+			if(floor(state/10)==73) { pOLED->phase=pOLED->phase-16; } // warum auch immer wie das machen im eeprom, warum nicht auf der SD ?? TODO
 			else if(floor(state/10)==731) {pOLED->phase--;}
 			else if(floor(state/10)==7311) {pOLED->ref=pOLED->ref-16;}
 			else if(floor(state/10)==73111) {pOLED->ref--;}
@@ -1114,7 +1137,6 @@ void speedo_menu::display(){ // z.B. state = 26
 
 		tempByte = ((int)15 & 0xFF);
 		eeprom_write_byte((uint8_t *)147, tempByte); // Navi_pos=0
-		eeprom_write_byte((uint8_t *)148, tempByte); // Winterzeit=0
 		eeprom_write_byte((uint8_t *)149, (int)1 & 0xFF); // reset_enable=>1
 		tempByte = ((int)92 & 0xFF);
 		eeprom_write_byte((uint8_t *)150, tempByte); // fuel_max=9.2 l
@@ -1137,45 +1159,79 @@ void speedo_menu::display(){ // z.B. state = 26
 		popup(PSTR("The memory"),PSTR("has been reset"));
 		state=11;
 	}
-	/////////// bt reset state  //////////
-	else if(floor(state/10)==75) { // 00075X
-		set_buttons(button_state,button_state,button_state,!button_state); // sackgasse
-		if(state%10==9){
-			if(pSensors->sensor_source>0){
-				pSensors->sensor_source--;
-			}
-			if(pSensors->sensor_source<=0){
-				set_buttons(button_state,!button_state,button_state,!button_state); // sackgasse
-			}
-		} else if(state%10==2){
-			if(pSensors->sensor_source<2){
-				pSensors->sensor_source++;
-			}
-			if(pSensors->sensor_source>=2){
-				set_buttons(button_state,button_state,!button_state,!button_state); // sackgasse
-			}
-		};
-		state=751;
-		pOLED->clear_screen();
-
-		// here Coloring !!! todo!!
-		pOLED->string_P(pSpeedo->default_font,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
-		pOLED->highlight_bar(0,8*3-1,128,17); // mit hintergrundfarbe nen kasten malen
-		pOLED->string_P(pSpeedo->default_font,PSTR("BT-Reset"),5,3,15,0,0);
-		pOLED->string(pSpeedo->default_font,char_buffer,5,4,15,0,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
-
-		// show reason why last reset happend
-		pOLED->string(pSpeedo->default_font,"Last was ",4,1,0,DISP_BRIGHTNESS,0);
-		if(pSensors->m_reset->last_reset==0 || pSensors->m_reset->last_reset==-1){
-			pOLED->string_P(pSpeedo->default_font,PSTR("power"),13,1,0,DISP_BRIGHTNESS,0);
-		} else if(pSensors->m_reset->last_reset==1){
-			pOLED->string(pSpeedo->default_font,"avr",13,1,0,DISP_BRIGHTNESS,0);
-		} else if(pSensors->m_reset->last_reset==2){
-			pOLED->string(pSpeedo->default_font,"bt",13,1,0,DISP_BRIGHTNESS,0);
-		}
-		// show reason why last reset happend
+		/////////// Sensor source  //////////
+	// this is our sneaky state in the middle, see if we have to store
+    else if(floor(state/10)==75) { // 00075X
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
+	// now the "mode" selector
+	else if(floor(state/100)==75) { // 00075X
+		//sensor_source 0=analog, 1=auto_detect, 2=CAN
+
+		// key settings and corresponding var state changing
+		bool up=button_state;
+		bool down=button_state;
+		if(state%10==9){ // "up" key
+            if(pSensors->sensor_source>0){
+                pSensors->sensor_source--;
+				pConfig->storage_outdated=true;
+            }
+        } else if(state%10==2){ // "down" key
+            if(pSensors->sensor_source<2){
+                pSensors->sensor_source++;
+				pConfig->storage_outdated=true;
+            }
+        };
+		if(pSensors->sensor_source<=0){
+			up=!button_state;
+		} else if(pSensors->sensor_source>=2){
+			down=!button_state;
+		}
+		set_buttons(button_state,up,down,!button_state); // button directions
+        state=7501;
+
+		// displaying values
+        pOLED->clear_screen();
+
+        pOLED->highlight_bar(0,0,128,8); // title
+		pOLED->string_P(pSpeedo->default_font,PSTR("Sensor source mode"),2,0,DISP_BRIGHTNESS,0,0);
+
+		unsigned char fg;
+		unsigned char bg;
+
+		/// Analog
+		if(pSensors->sensor_source!=SENSOR_AUTO && pSensors->sensor_source!=SENSOR_FORCE_CAN){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(8,8*2,110,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+        pOLED->string_P(pSpeedo->default_font,PSTR("Analog Sensors"),3,2,bg,fg,0);
+
+		/// Auto detect
+		if(pSensors->sensor_source==SENSOR_AUTO){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(8,8*3,110,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+        pOLED->string_P(pSpeedo->default_font,PSTR("Auto detect"),3,3,bg,fg,0);
+
+		/// Force Can
+		if(pSensors->sensor_source==SENSOR_FORCE_CAN){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(8,8*4,110,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+        pOLED->string_P(pSpeedo->default_font,PSTR("CAN Sensors"),3,4,bg,fg,0);
+    }
 	/////////// bt reset state  //////////
 	else if(floor(state/10)==76) { // 00089X
 		set_buttons(button_state,button_state,button_state,!button_state); // sackgasse
@@ -1210,21 +1266,7 @@ void speedo_menu::display(){ // z.B. state = 26
 	}
 	////////////////////////////////// water temp premenu //////////////////////////////////
 	else if(floor(state/10)==77) {
-		if(old_state==7711){
-			if(pConfig->storage_outdated){
-				pConfig->write("BASE.TXT");
-				pOLED->clear_screen();
-				pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
-				_delay_ms(300);
-				pOLED->clear_screen();
-			}
-			back();
-			update_display=true;
-		} else {
-			state=7711;
-			pSpeedo->reset_bak(); // reset damit die variablen wieder leer sind
-			update_display=true;
-		}
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 		////////////////////////////////// water temp setup //////////////////////////////////
 	} else if(floor(state/100)==77) {
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
@@ -1251,21 +1293,7 @@ void speedo_menu::display(){ // z.B. state = 26
 	}
 	////////////////////////////////// water temp premenu //////////////////////////////////
 	else if(floor(state/10)==78) {
-		if(old_state==7811){
-			if(pConfig->storage_outdated){
-				pConfig->write("BASE.TXT");
-				pOLED->clear_screen();
-				pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
-				_delay_ms(300);
-				pOLED->clear_screen();
-			}
-			back();
-			update_display=true;
-		} else {
-			state=7811;
-			pSpeedo->reset_bak(); // reset damit die variablen wieder leer sind
-			update_display=true;
-		}
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 		////////////////////////////////// oil temp setup //////////////////////////////////
 	} else if(floor(state/100)==78) {
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
@@ -1290,7 +1318,16 @@ void speedo_menu::display(){ // z.B. state = 26
 		center_me(char_buffer,21);
 		pOLED->string(pSpeedo->default_font,char_buffer,0,5);
 	}
-	//////////////////// quick start //////////////////////////
+	/********************************************* End of Setup Menu *********************************************/
+
+
+
+	/********************************************* Menu 8 - Start of Trip Menu *********************************************
+	 * 81 lists all possible trips
+	 * 81[X] shows the detailed info for trip [x]
+	 * 81[X][Y] asks to delete info from trip [x]
+	 * 81[X][Y][Z] delete info from trip [x]
+	 ********************************************* Menu 8 - Start of Trip Menu *********************************************/
 	else if(floor(state/10)==8) { // 8[X]
 		// Menu vorbereiten
 		draw(&menu_trip_setup[0],sizeof(menu_trip_setup)/sizeof(menu_trip_setup[0]));
@@ -1374,7 +1411,15 @@ void speedo_menu::display(){ // z.B. state = 26
 		state=floor(state/100);
 		update_display=true;
 	}
-	//////////////////////// fuel added /////////////////////////////
+	/********************************************* End of Trip Menu *********************************************/
+
+
+
+	/********************************************* Menu 9 - Start of fuel Menu *********************************************
+	 * Submenus:
+	 * 91 Shows "how many fuel have you added"
+	 * 911 Resets your fuel memory
+	 ********************************************* Menu 9 - Start of fuel Menu *********************************************/
 	else if(floor(state/10)==9){ // 00009x
 		// hoch runter schalten
 		if(state%10==2 || state%10==9){ // 9[2/9]
@@ -1418,7 +1463,13 @@ void speedo_menu::display(){ // z.B. state = 26
 		state=11; // damit kann man durch rechts/links drücken wieder zum tacho springen
 		update_display=true;
 	}
-	// jump here for filemanager
+	/********************************************* End of Trip Menu *********************************************/
+
+
+	/********************************************* Start of Backup *********************************************
+	 * This if clause catches you, if there is no corresponding menu to your action
+	 * it should never happen, but its better to have a guard than to end up in chaos
+	 ********************************************* Start of Backup *********************************************/
 	else if(floor(state/10)==999999) {
 		state=11;
 		update_display=true;
@@ -1428,7 +1479,8 @@ void speedo_menu::display(){ // z.B. state = 26
 		back();
 	};
 	free(char_buffer);
-	///////////////////// E N D E //////////////////////////
+	/*********************************************     End of Backup     *********************************************/
+	/********************************************* End of Menu_display() *********************************************/
 };
 ////// bei veränderung des state => einmaliges zeichen des menüs ///////
 
@@ -2132,3 +2184,37 @@ void speedo_menu::color_select_menu(int base_state,led_simple *led_from, led_sim
 void speedo_menu::copy_storagename_to_chararray(int id,char* array){
 	strcpy_P(array, (char*)pgm_read_word(&(menu_trip_setup[id])));
 }
+
+/********************************** storage_update_guard **********************************
+ * This is our sneaky "state in the middle"
+ * If you on a Menu point e.g. 75 and go right you would expect to end up in state 751 but
+ * storage_update_guard will redirect you to 7511. On your way back from 751X (by pushing
+ * the "right"-Button) storage_update_guard will check if you have set the storeage_outdated
+ * indicator to TRUE. If so storage_update_guard will call the save routine of the config
+ * class and show the user that his values are now saved on the SD card (or show an error)
+ ********************************** storage_update_guard **********************************/
+void speedo_menu::storage_update_guard(unsigned long* state, unsigned long old_state,bool storage_outdated, bool* updated_display){
+	if(old_state*10+1==*state){ // coming from menu -> shift us
+		*state=(*state)*10+1;
+	} else { // coming from selection, store value?
+		back();
+		// store to SD
+		if(storage_outdated){
+			pOLED->clear_screen();
+			char char_buffer[22];
+			strcpy_P(char_buffer,PSTR("Save to SD card"));
+			center_me(char_buffer,21);
+			pOLED->string(pSpeedo->default_font,char_buffer,0,5);
+			if(pConfig->write("BASE.TXT")==0){
+				strcpy_P(char_buffer,PSTR("OK"));
+			} else {
+				strcpy_P(char_buffer,PSTR("FAILED !!"));
+			}
+			center_me(char_buffer,21);
+			pOLED->string(pSpeedo->default_font,char_buffer,0,6);
+
+			_delay_ms(2000);
+		};
+	};
+	update_display=true;
+};
