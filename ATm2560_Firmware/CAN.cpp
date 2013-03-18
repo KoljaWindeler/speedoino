@@ -16,6 +16,19 @@
  */
 #include "global.h"
 
+/************************************************** Strategy: *******************************************************
+ * On sending CAN Frame increase counter "can_missed_count" by one, max 100.
+ * On receiving a CAN Frame, decrease it by two, so we accept up to 50% losses.
+ * The can_missed_count should therefor indicate our traffic losses. Highvalue = high number of losses
+ *
+ * init_comm_possible() should be called in the beginning IF the sensor_source is set to AUTO_DETECT
+ * init_comm_possible() can set the CAN_active to false, if the first 5 frames were send, but not even one came back
+ *
+ * get_CAN_missed_count() returns the CAN status. It will return 0 until we have more than 5 lost frames.
+ * get_CAN_missed_count() returns SENSOR_OPEN as soon as we have more than 5 frames lost.
+ *************************************************** Strategy *******************************************************/
+
+
 Speedo_CAN::Speedo_CAN(){
 	failed=false;
 	message_available=false; // init with true, may be its one there
@@ -44,9 +57,6 @@ void Speedo_CAN::init(){
 	// Interrupt for CAN Interface active, auf pk4, pcint20
 	DDRK &= ~(1<<PK4); // input
 	PORTK |= (1<<PK4); //  active low => pull up
-	if(!PINK&(1<<CAN_INTERRUPT_PIN)){	 // if the CAN pin is low, low active interrupt
-		message_available=true; // init with true, may be its one there
-	};
 
 	// Chipselect as output
 	DDR_CS |= (1<<P_CS);
@@ -139,7 +149,7 @@ void Speedo_CAN::init(){
 	mcp2515_write_register( RXM0EID0, 0 );
 
 	// TODO: build one filter for "wakeup" communication to buffer1, but for which ID ??
-	// define filter RXF2/RXF3/RXF4/RXF5 and mask RXM1 to receive only frames with ID: 7Ex
+	// define filter RXF2/RXF3/RXF4/RXF5 and mask RXM1 to receive only frames with ID: 780-7FF
 	// Filter: 111 1000 0000
 	// Mask:   111 1000 0000
 	// Accept: 111 1xxx xxxx <=> 780 - 7FF
@@ -172,7 +182,7 @@ void Speedo_CAN::init(){
 	// Device zurueck in den normalen Modus versetzten
 	mcp2515_bit_modify( CANCTRL, 0xE0, 0);
 	/********************************************* MCP2515 SETUP ***********************************/
-
+	_delay_ms(1);
 	request(CAN_CURRENT_INFO,CAN_RPM); // to check if can is pressent
 };
 
@@ -185,12 +195,12 @@ int Speedo_CAN::check_vars(){
 };
 
 bool Speedo_CAN::init_comm_possible(bool* CAN_active){
-	Serial.print(last_request);
-	Serial.print("-");
-	Serial.println(last_received);
-	if(last_received==0){
-		if(millis()-last_received>1000){
-			Serial.println("return false");
+	if(last_received==0){ // we have never ever received a pecket from CAN
+		// starthilfe
+		if(!PINK&(1<<CAN_INTERRUPT_PIN)){	 // if the CAN pin is low, low active interrupt
+			message_available=true; // init with true, may be its one there
+		}
+		if(can_missed_count>10){ // see "strategy", in auto 10 lost frames indicates CAN offline, TODO: increase nr?
 			*CAN_active=false;
 			last_received=-1; // overrun, so it will never be possible to reactivate CAN.. wise?
 			return false;
@@ -214,13 +224,16 @@ int Speedo_CAN::get_water_temp(){
 	if(millis()-last_received<1000){
 		return can_water_temp;
 	} else {
-		can_missed_count=9;
+		can_missed_count=999; // 1 sec no response ... CAN offline or not present
 	}
 	return 0;
 };
 
 int Speedo_CAN::get_CAN_missed_count(){
-	return can_missed_count;
+	if(can_missed_count>5){
+		return SENSOR_OPEN;
+	}
+	return 0;
 }
 
 unsigned int Speedo_CAN::get_Speed(){
@@ -317,13 +330,15 @@ void Speedo_CAN::request(char mode,char PID){
 
 void Speedo_CAN::process_incoming_messages(){
 	while(can_get_message(&message)!=0xff){ //0xff=no more frames available
-		if(can_missed_count>0){
-			can_missed_count--;
+		if(can_missed_count>1){
+			can_missed_count-=2;
+		} else if(can_missed_count>0){
+			can_missed_count-=1;
 		};
+		last_received=millis();
 		//		Serial.println("New CAN Message found");
 		if(message.length>2){ // must be at least 3 chars to check [2]
 			if(message.data[1]==CAN_CURRENT_INFO+0x40){ // its 0x41 on a 0x01 question (current info)!!
-				last_received=millis();
 				if(message.data[2]==CAN_RPM){
 					can_rpm=(message.data[3]<<6)|(message.data[4]>>2);
 					if(CAN_DEBUG){ /////////////// DEBUG //////////
@@ -404,84 +419,16 @@ void Speedo_CAN::process_incoming_messages(){
 	}
 }
 
-bool Speedo_CAN::decode_dtc(char* char_buffer,char ECU_type, int dtc){
-	if(ECU_type==SPEED_TRIPPLE){
-		if((dtc==201) | (dtc==202) | (dtc==203) | (dtc==1201) | (dtc==1202) | (dtc==1203)){
-			strcpy_P(char_buffer, PSTR("Injector"));
-			return true;
-		} else if((dtc==351) | (dtc==352) | (dtc==353)){
-			strcpy_P(char_buffer, PSTR("Ignition coil"));
-			return true;
-		} else if((dtc==335)){
-			strcpy_P(char_buffer, PSTR("Crankshaft sensor"));
-			return true;
-		} else if((dtc==32) | (dtc==31) | (dtc==30) | (dtc==136)){
-			strcpy_P(char_buffer, PSTR("Lambda probe"));
-			return true;
-		} else if((dtc==122) | (dtc==123)){
-			strcpy_P(char_buffer, PSTR("Throttle valve sensor"));
-			return true;
-		} else if((dtc==107) | (dtc==108) | (dtc==1105)){
-			strcpy_P(char_buffer, PSTR("Inlet manifold"));
-			return true;
-		} else if((dtc==1107) | (dtc==1108)){
-			strcpy_P(char_buffer, PSTR("Ambient air temp"));
-			return true;
-		} else if((dtc==112) | (dtc==113)){
-			strcpy_P(char_buffer, PSTR("Air intake temp"));
-			return true;
-		} else if((dtc==117) | (dtc==118)){
-			strcpy_P(char_buffer, PSTR("Engine temp"));
-			return true;
-		} else if((dtc==500) | (dtc==1500)){
-			strcpy_P(char_buffer, PSTR("Speed sensor"));
-			return true;
-		} else if((dtc==654)){
-			strcpy_P(char_buffer, PSTR("RPM sensor"));
-			return true;
-		} else if((dtc==1552) | (dtc==1553)){
-			strcpy_P(char_buffer, PSTR("Cooling fan"));
-			return true;
-		} else if((dtc==1628) | (dtc==1629)){
-			strcpy_P(char_buffer, PSTR("Fuel pump"));
-			return true;
-		} else if((dtc==445) | (dtc==444)){
-			strcpy_P(char_buffer, PSTR("Flush valve system"));
-			return true;
-		} else if((dtc==617) | (dtc==616)){
-			strcpy_P(char_buffer, PSTR("Starter relay"));
-			return true;
-		} else if((dtc==414) | (dtc==413)){
-			strcpy_P(char_buffer, PSTR("Secondary air sys"));
-			return true;
-		} else if((dtc==505)){
-			strcpy_P(char_buffer, PSTR("Idle rpm contr"));
-			return true;
-		} else if((dtc==1631) | (dtc==1632)){
-			strcpy_P(char_buffer, PSTR("Crash sensor"));
-			return true;
-		} else if((dtc==1115)){
-			strcpy_P(char_buffer, PSTR("Coolant sensor"));
-			return true;
-		} else if((dtc==460) | (dtc==1610)){
-			strcpy_P(char_buffer, PSTR("Fuel sensor"));
-			return true;
-		} else if((dtc==705)){
-			strcpy_P(char_buffer, PSTR("Gearbox sensor"));
-			return true;
-		} else if((dtc==1690)){
-			strcpy_P(char_buffer, PSTR("CAN error")); // was ziemlich witzig ist .. das über CAN abzufragen
-			return true;
-		} else if((dtc==1078) | (dtc==1079) | (dtc==1078) | (dtc==1080)){
-			strcpy_P(char_buffer, PSTR("Exhaust control valve"));
-			return true;
-		} else if((dtc==1078) | (dtc==1079) | (dtc==1078) | (dtc==1080)){
-			strcpy_P(char_buffer, PSTR("Inlet flap valve"));
-			return true;
-		}
-	}
-	return false;
+bool Speedo_CAN::decode_dtc(char* char_buffer,char ECU_type){
+    if(ECU_type==SPEED_TRIPPLE){
+		if(pConfig->read(CONFIG_FOLDER,"SPEED_T.TXT",READ_MODE_TEXTREPLACEMENT,char_buffer)!=0){ // char_buffer serves two ways, incoming is "error code i'm looking for", outgoing "cleartext of error"
+			sprintf(char_buffer,"Errortext not found");
+			return false;
+		};
+	};
+    return true;
 }
+
 
 uint8_t Speedo_CAN::spi_putc( uint8_t data ){
 	// Sendet ein Byte

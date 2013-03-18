@@ -54,7 +54,7 @@ public:
 	bool message_available;
 	void process_incoming_messages();
 	uint8_t can_get_message(CANMessage *p_message);// move me back to private
-	bool decode_dtc(char* char_buffer,char ECU_type, int dtc);
+	bool decode_dtc(char* char_buffer,char ECU_type);
 	bool init_comm_possible(bool* CAN_active);
 
 private:
