@@ -49,7 +49,7 @@ private:
 	unsigned long button_first_push;                // für "halten". Zeitpunkt des ersten Kontakt
 	bool just_marker_update;
 	void set_buttons(bool left,bool up,bool down,bool right);
-	void color_select_menu(int base_state,led_simple *led_from, led_simple *led_to, int *min, int *max, int upper_limit, bool button_state, const char *name, const char *unit, char set_led_mode, bool just_one_line_mode);
+	void color_select_menu(unsigned long base_state,led_simple *led_from, led_simple *led_to, int *min, int *max, int upper_limit, bool button_state, const char *name, const char *unit, char set_led_mode, bool just_one_line_mode);
 	void storage_update_guard(unsigned long* state, unsigned long old_state,bool storage_outdated, bool* updated_display);
 };
 extern speedo_menu* pMenu;

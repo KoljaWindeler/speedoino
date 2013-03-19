@@ -893,7 +893,7 @@ void speedo_menu::display(){
 
 		//////////////////////// adjust dz alert RGB LED ////////////////////////
 	} else if(floor(state/100)==6311 || floor(state/1000)==6311 ||floor(state/10000)==6311){
-		color_select_menu(631111,&pAktors->dz_flasher,0,0,0,0,button_state, PSTR("Shift-Light"),PSTR(""),99,true); // TODO check!! was 6311, but I think it should be 63111 ... never the less I had to add a "1", but 2 ?
+		color_select_menu(63111L,&pAktors->dz_flasher,0,0,0,0,button_state, PSTR("Shift-Light"),PSTR(""),99,true);
 	}
 	//////////////////////// adjust outer RGB LED ////////////////////////
 	/* In this menu, we give the user the chance to choose his own color
@@ -1486,7 +1486,7 @@ void speedo_menu::display(){
 
 //// ein rückschritt im menü machen ////////
 void speedo_menu::back(){
-	int return_value=floor(state/10);
+	unsigned long return_value=floor(state/10);
 	if((return_value%10)>menu_lines){
 		menu_marker=menu_lines-1;
 		menu_start=(return_value%10)-menu_lines;
@@ -1925,11 +1925,13 @@ int speedo_menu::center_me(char* input,int length){
  *
  */
 
-void speedo_menu::color_select_menu(int base_state,led_simple *led_from, led_simple *led_to, int *min, int *max, int upper_limit,bool button_state, const char *name, const char *unit, char set_led_mode, bool just_one_line_mode){
+void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_from, led_simple *led_to, int *min, int *max, int upper_limit,bool button_state, const char *name, const char *unit, char set_led_mode, bool just_one_line_mode){
 	if(floor(state/10)==base_state){
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
 		// wenn wir starten bei 652 und gehen rechts, sind wir in 6521, 652 ist base, old_state auch, daher ist dann der neue state 65211
-		if(	old_state==unsigned(base_state)){
+		if(	old_state==base_state){
+			Serial.print("bin drin und state ist ");
+			Serial.println(state);
 			state=state*10+1;
 			state_helper=0;
 			if(just_one_line_mode) state_helper=1;
@@ -1938,6 +1940,8 @@ void speedo_menu::color_select_menu(int base_state,led_simple *led_from, led_sim
 			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
 			// wir sind nach links, jetzt müssen wir checken: sind wir das weil wir zurück aus dem Menü wollten, oder
 			// wollten wir nur ein Feld weiter nach links. Die Felder sind numeriert in "state_helper"
+			Serial.print("bin draußen und state ist ");
+						Serial.println(state);
 		} else {
 			// wirklich zurück ins Hauptmenü
 			if(state_helper==0 || (state_helper==1 && just_one_line_mode)){
