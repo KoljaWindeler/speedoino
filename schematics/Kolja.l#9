@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
@@ -1236,6 +1236,75 @@
 <text x="1.1" y="0.6" size="1.27" layer="27">&gt;Value</text>
 <text x="1.2" y="-0.9" size="1.27" layer="25">&gt;Name</text>
 </package>
+<package name="AK100">
+<pad name="P5" x="0" y="0" drill="1.1" shape="octagon"/>
+<pad name="P4" x="0" y="5" drill="1.1" shape="octagon"/>
+<pad name="P3" x="0" y="10" drill="1.1" shape="octagon"/>
+<pad name="P2" x="0" y="15" drill="1.1" shape="octagon"/>
+<pad name="P6" x="0" y="-5" drill="1.1" shape="octagon"/>
+<pad name="P7" x="0" y="-10" drill="1.1" shape="octagon"/>
+<pad name="P8" x="0" y="-15" drill="1.1" shape="octagon"/>
+<pad name="P9" x="0" y="-20" drill="1.1" shape="octagon"/>
+<pad name="P10" x="0" y="-25" drill="1.1" shape="octagon"/>
+<pad name="P1" x="0" y="20" drill="1.1" shape="octagon"/>
+<wire x1="4" y1="23.5" x2="-5" y2="23.5" width="0.127" layer="21"/>
+<wire x1="-5" y1="23.5" x2="-5" y2="-28.5" width="0.127" layer="21"/>
+<wire x1="-5" y1="-28.5" x2="4" y2="-28.5" width="0.127" layer="21"/>
+<wire x1="4" y1="-28.5" x2="4" y2="-25" width="0.127" layer="21"/>
+<wire x1="4" y1="-25" x2="4" y2="-20" width="0.127" layer="21"/>
+<wire x1="4" y1="-20" x2="4" y2="-15" width="0.127" layer="21"/>
+<wire x1="4" y1="-15" x2="4" y2="-10" width="0.127" layer="21"/>
+<wire x1="4" y1="-10" x2="4" y2="-5" width="0.127" layer="21"/>
+<wire x1="4" y1="-5" x2="4" y2="0" width="0.127" layer="21"/>
+<wire x1="4" y1="0" x2="4" y2="5" width="0.127" layer="21"/>
+<wire x1="4" y1="5" x2="4" y2="10" width="0.127" layer="21"/>
+<wire x1="4" y1="10" x2="4" y2="15" width="0.127" layer="21"/>
+<wire x1="4" y1="15" x2="4" y2="20" width="0.127" layer="21"/>
+<wire x1="4" y1="20" x2="4" y2="23.5" width="0.127" layer="21"/>
+<wire x1="2" y1="0" x2="4" y2="0" width="0.127" layer="21"/>
+<wire x1="4" y1="5" x2="2" y2="5" width="0.127" layer="21"/>
+<wire x1="2" y1="10" x2="4" y2="10" width="0.127" layer="21"/>
+<wire x1="2" y1="15" x2="4" y2="15" width="0.127" layer="21"/>
+<wire x1="2" y1="20" x2="4" y2="20" width="0.127" layer="21"/>
+<wire x1="2" y1="-5" x2="4" y2="-5" width="0.127" layer="21"/>
+<wire x1="2" y1="-10" x2="4" y2="-10" width="0.127" layer="21"/>
+<wire x1="2" y1="-15" x2="4" y2="-15" width="0.127" layer="21"/>
+<wire x1="2" y1="-20" x2="4" y2="-20" width="0.127" layer="21"/>
+<wire x1="2" y1="-25" x2="4" y2="-25" width="0.127" layer="21"/>
+</package>
+<package name="SMD_TASTER">
+<smd name="OUT1" x="-4.4017375" y="-1.21975625" dx="1.55" dy="1.3" layer="1" rot="R45"/>
+<smd name="IN" x="1.21975625" y="4.4017375" dx="1.55" dy="1.3" layer="1" rot="R45"/>
+<smd name="OUT2" x="-1.21975625" y="-4.4017375" dx="1.55" dy="1.3" layer="1" rot="R45"/>
+<wire x1="-4.384059375" y1="0" x2="0" y2="4.384059375" width="0.127" layer="21"/>
+<wire x1="0" y1="4.384059375" x2="4.384059375" y2="0" width="0.127" layer="21"/>
+<wire x1="4.384059375" y1="0" x2="0" y2="-4.384059375" width="0.127" layer="21"/>
+<wire x1="0" y1="-4.384059375" x2="-4.384059375" y2="0" width="0.127" layer="21"/>
+<circle x="0" y="0" radius="2.308678125" width="0.127" layer="21"/>
+<wire x1="-2.12131875" y1="0" x2="0" y2="2.12131875" width="0.127" layer="21"/>
+<wire x1="0" y1="2.12131875" x2="2.12131875" y2="0" width="0.127" layer="21"/>
+<wire x1="2.12131875" y1="0" x2="0" y2="-2.12131875" width="0.127" layer="21"/>
+<wire x1="0" y1="-2.12131875" x2="-2.12131875" y2="0" width="0.127" layer="21"/>
+<circle x="-3.3941125" y="0" radius="0.4472125" width="0.127" layer="21"/>
+<circle x="0" y="-3.3941125" radius="0.4472125" width="0.127" layer="21"/>
+<circle x="0" y="3.3941125" radius="0.4472125" width="0.127" layer="21"/>
+<circle x="3.3941125" y="0" radius="0.4472125" width="0.127" layer="21"/>
+<circle x="-4.3" y="4.3" radius="1.5" width="0.127" layer="21"/>
+<circle x="4.3" y="4.3" radius="1.5" width="0.127" layer="21"/>
+<circle x="4.3" y="-4.3" radius="1.5" width="0.127" layer="21"/>
+<circle x="-4.3" y="-4.3" radius="1.5" width="0.127" layer="21"/>
+<wire x1="-6.9" y1="-7.4" x2="-7.5" y2="-6.8" width="0.127" layer="21"/>
+<wire x1="-7.5" y1="-6.8" x2="-7.5" y2="6.8" width="0.127" layer="21"/>
+<wire x1="-7.5" y1="6.8" x2="-6.8" y2="7.5" width="0.127" layer="21"/>
+<wire x1="-6.8" y1="7.5" x2="6.8" y2="7.5" width="0.127" layer="21"/>
+<wire x1="6.8" y1="7.5" x2="7.5" y2="6.8" width="0.127" layer="21"/>
+<wire x1="7.5" y1="6.8" x2="7.5" y2="-6.8" width="0.127" layer="21"/>
+<wire x1="7.5" y1="-6.8" x2="6.8" y2="-7.5" width="0.127" layer="21"/>
+<wire x1="6.8" y1="-7.5" x2="-6.8" y2="-7.5" width="0.127" layer="21"/>
+<wire x1="-6.8" y1="-7.5" x2="-6.9" y2="-7.4" width="0.127" layer="21"/>
+<text x="-2.54" y="-8.89" size="1.016" layer="25">&gt;Name</text>
+<text x="-2.54" y="-10.16" size="1.016" layer="27">&gt;Value</text>
+</package>
 </packages>
 <symbols>
 <symbol name="DROSSEL">
@@ -1928,6 +1997,22 @@
 <vertex x="1.524" y="0.762"/>
 <vertex x="1.524" y="-0.762"/>
 </polygon>
+</symbol>
+<symbol name="AK100">
+<pin name="P$1" x="-2.54" y="10.16" length="middle"/>
+<pin name="P$2" x="-2.54" y="7.62" length="middle"/>
+<pin name="P$3" x="-2.54" y="5.08" length="middle"/>
+<pin name="P$4" x="-2.54" y="2.54" length="middle"/>
+<pin name="P$5" x="-2.54" y="0" length="middle"/>
+<pin name="P$6" x="-2.54" y="-2.54" length="middle"/>
+<pin name="P$7" x="-2.54" y="-5.08" length="middle"/>
+<pin name="P$8" x="-2.54" y="-7.62" length="middle"/>
+<pin name="P$9" x="-2.54" y="-10.16" length="middle"/>
+<pin name="P$10" x="-2.54" y="-12.7" length="middle"/>
+<wire x1="2.54" y1="12.7" x2="2.54" y2="-15.24" width="0.254" layer="94"/>
+<wire x1="2.54" y1="-15.24" x2="10.16" y2="-15.24" width="0.254" layer="94"/>
+<wire x1="10.16" y1="-15.24" x2="10.16" y2="12.7" width="0.254" layer="94"/>
+<wire x1="10.16" y1="12.7" x2="2.54" y2="12.7" width="0.254" layer="94"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -2758,6 +2843,30 @@ Mouser 81-LXDC2HL33A-055, 2.55€, 3.3V out | 300mA</description>
 <connect gate="G$1" pin="D" pad="3"/>
 <connect gate="G$1" pin="G" pad="1"/>
 <connect gate="G$1" pin="S" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="AK100">
+<gates>
+<gate name="G$1" symbol="AK100" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="AK100">
+<connects>
+<connect gate="G$1" pin="P$1" pad="P1"/>
+<connect gate="G$1" pin="P$10" pad="P10"/>
+<connect gate="G$1" pin="P$2" pad="P2"/>
+<connect gate="G$1" pin="P$3" pad="P3"/>
+<connect gate="G$1" pin="P$4" pad="P4"/>
+<connect gate="G$1" pin="P$5" pad="P5"/>
+<connect gate="G$1" pin="P$6" pad="P6"/>
+<connect gate="G$1" pin="P$7" pad="P7"/>
+<connect gate="G$1" pin="P$8" pad="P8"/>
+<connect gate="G$1" pin="P$9" pad="P9"/>
 </connects>
 <technologies>
 <technology name=""/>
