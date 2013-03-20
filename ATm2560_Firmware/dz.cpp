@@ -19,23 +19,26 @@
 
 speedo_dz::speedo_dz(){
 	previous_time=millis();
+	previous_dz=0;
 	rounded=0;                 // to show on display, rounded by 50
 	exact=0;                 // real rotation speed
+	exact_disp=0;
 	peak_count=0;
 	blitz_dz=0;
 	blitz_en=false;
 	dz_faktor_counter=0;
 	dz_disp_faktor_counter=0;
 	previous_peaks=0;
+	dz_flat=0;
 }
 
 void speedo_dz::counter(){
-	if(DZ_DEBUG ){
-		Serial.print("DZ peak@");
-		Serial.print(millis());
-		Serial.print(" ");
-		Serial.println(peak_count);
-	};
+#ifdef DZ_DEBUG
+	Serial.print("DZ peak@");
+	Serial.print(millis());
+	Serial.print(" ");
+	Serial.println(peak_count);
+#endif
 	peak_count++; // läuft bis 65.536 dann auf 0
 };
 
@@ -128,7 +131,7 @@ ISR(INT4_vect){
 void speedo_dz::init() {
 	EIMSK |= (1<<INT4); // Enable Interrupt
 	EICRB |= (1<<ISC40) | (1<<ISC41); // rising edge on INT4
-
+	peak_count=0; // set to zero
 
 	Serial.println("DZ init done");
 	blitz_en=false;

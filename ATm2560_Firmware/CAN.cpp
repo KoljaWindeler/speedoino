@@ -260,10 +260,10 @@ int Speedo_CAN::get_dtc_error_count(){
 }
 
 int Speedo_CAN::get_dtc_error(int nr){
-	if(CAN_DEBUG){ /////////////// DEBUG //////////
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
 		Serial.print("gimme error nr");
 		Serial.println(nr);
-	}
+#endif/////////////// DEBUG //////////
 
 	request(CAN_DTC,nr&0xff);
 	unsigned long now=millis();
@@ -272,10 +272,10 @@ int Speedo_CAN::get_dtc_error(int nr){
 			process_incoming_messages();
 			if(can_dtc_value>0){
 
-				if(CAN_DEBUG){ /////////////// DEBUG //////////
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
 					Serial.print("returning from get error");
 					Serial.println(can_dtc_value);
-				}/////////////// DEBUG //////////
+#endif/////////////// DEBUG //////////
 
 				return can_dtc_value;
 			} else {
@@ -283,9 +283,9 @@ int Speedo_CAN::get_dtc_error(int nr){
 			}
 		}
 	}
-	if(CAN_DEBUG){ /////////////// DEBUG //////////
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
 		Serial.println("returning from get error -1");
-	}/////////////// DEBUG //////////
+#endif/////////////// DEBUG //////////
 	return -1;
 }
 /********************************************* CAN VALUE GETTER ***********************************/
@@ -341,42 +341,42 @@ void Speedo_CAN::process_incoming_messages(){
 			if(message.data[1]==CAN_CURRENT_INFO+0x40){ // its 0x41 on a 0x01 question (current info)!!
 				if(message.data[2]==CAN_RPM){
 					can_rpm=(message.data[3]<<6)|(message.data[4]>>2);
-					if(CAN_DEBUG){ /////////////// DEBUG //////////
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
 						Serial.print("New RPM:");
 						Serial.println(can_rpm);
-					}/////////////// DEBUG //////////
+#endif/////////////// DEBUG //////////
 					return;
 				} else if(message.data[2]==CAN_SPEED){
 					can_speed=message.data[3];
-					if(CAN_DEBUG){ /////////////// DEBUG //////////
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
 						Serial.print("New speed:");
 						Serial.println(can_speed);
-					}/////////////// DEBUG //////////
+#endif/////////////// DEBUG //////////
 					return;
 				} else if(message.data[2]==CAN_WATER_TEMPERATURE){
 					can_water_temp=(message.data[3]-40)*10;
 					can_missed_count=0;
-					if(CAN_DEBUG){ /////////////// DEBUG //////////
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
 						Serial.print("New watertemp:");
 						Serial.println(can_water_temp);
-					}/////////////// DEBUG //////////
+#endif/////////////// DEBUG //////////
 					return;
 				} else if(message.data[2]==CAN_MIL_STATUS){
 					can_mil_active=((message.data[3]&0x80)>>7); // bit 7 (im msb?)
 					can_dtc_error_count=message.data[3]&0x77;
-					if(CAN_DEBUG){ /////////////// DEBUG //////////
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
 						Serial.print("New MIL status:");
 						Serial.println(can_dtc_error_count);
-					}/////////////// DEBUG //////////
+#endif/////////////// DEBUG //////////
 					return;
 				}
 			} else if(message.data[1]==CAN_DTC+0x40){ // its 0x43 on a 0x03 question (current info)!!
 				if(can_dtc_nr!=0xff){
-					if(CAN_DEBUG){ /////////////// DEBUG //////////
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
 						char buffer[30];
 						sprintf(buffer,"DTC %02x %02x %02x %02x %02x %02x %02x %02x",message.data[0],message.data[1],message.data[2],message.data[3],message.data[4],message.data[5],message.data[6],message.data[7]);
 						Serial.println(buffer);
-					}/////////////// DEBUG //////////
+#endif/////////////// DEBUG //////////
 
 					// angeblich sind es 2 Byte pro code .. und 3 codes pro nachricht .. alle testen
 					for(int i=0;i<3;i++){
@@ -411,11 +411,11 @@ void Speedo_CAN::process_incoming_messages(){
 				}
 			}
 		}
-		if(CAN_DEBUG){ /////////////// DEBUG //////////
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
 			char buffer[30];
 			sprintf(buffer,"%02x %02x %02x %02x %02x %02x %02x %02x",message.data[0],message.data[1],message.data[2],message.data[3],message.data[4],message.data[5],message.data[6],message.data[7]);
 			Serial.println(buffer);
-		} /////////////// DEBUG //////////
+#endif /////////////// DEBUG //////////
 	}
 }
 

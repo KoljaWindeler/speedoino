@@ -53,7 +53,7 @@ char speedo_clock::bcdToDec(char val)
 }
 
 void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss, bool check_winter){
-	if(CLOCK_DEBUG && false){ // das schon brutal nervige 1hz meldung
+#ifdef CLOCK_DEBUG // das schon brutal nervige 1hz meldung
 		Serial.println("Setting Clock:");
 		char *char_buffer;
 		char_buffer = (char*) malloc (60);
@@ -63,7 +63,7 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss, 
 		sprintf(char_buffer,"%i,%i,%i,%i,%i,%i",year%100,mon%100,day%100,hh%100,mm%100,ss%100);
 		Serial.println(char_buffer);
 		free(char_buffer);
-	}
+#endif
 
 	// gehen wir erstmal von Winterzeit mit GMT offset aus
 	if(( (signed(m_ss)-ss)>10 || (signed(m_ss)-ss)<-10) && ss>-1){ m_ss=unsigned(ss); }; // min 10 sec differenz
@@ -249,5 +249,4 @@ void speedo_clock::loop(){
 	};
 
 };
-
 

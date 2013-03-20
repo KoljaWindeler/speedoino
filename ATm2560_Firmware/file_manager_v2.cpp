@@ -16,8 +16,7 @@
  */
 
 #include "global.h"
-#define 	DEBUG_TRANSFER 0
-#define	 	DEBUG_TRANSFER_INTENSIV 0
+
 
 speedo_filemanager_v2::speedo_filemanager_v2(){};
 
@@ -70,10 +69,10 @@ void speedo_filemanager_v2::parse_command(){
 
 			if(isLeave!=1){
 				//////////////////
-				if(DEBUG_TRANSFER){
+				#ifdef DEBUG_TRANSFER
 					pOLED->string(0,"-",0,1);
 					_delay_ms(500);
-				}
+				#endif
 				//////////////////
 				c = Serial.read();
 				timeout = 0;
@@ -85,13 +84,13 @@ void speedo_filemanager_v2::parse_command(){
 
 					if ( c == MESSAGE_START ){
 						//////////////////
-						if(DEBUG_TRANSFER){
+						#ifdef DEBUG_TRANSFER
 							pOLED->string(0,"1",0,1);
 							_delay_ms(500);
-						}
-						if(DEBUG_TRANSFER_INTENSIV){
+						#endif
+						#ifdef DEBUG_TRANSFER_INTENSIV
 							Serial.println("MSG gehalten");
-						}
+						#endif
 						//////////////////
 						msgParseState	=	ST_GET_SEQ_NUM;
 						checksum		=	MESSAGE_START;
@@ -109,15 +108,15 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_GET_SEQ_NUM:
 					if ((c == 1) || (c == seqNum)){
 						//////////////////
-						if(DEBUG_TRANSFER){
+						#ifdef DEBUG_TRANSFER
 							pOLED->string(0,"2",0,1);
 							_delay_ms(500);
-						}
-						if(DEBUG_TRANSFER_INTENSIV){
+						#endif
+						#ifdef DEBUG_TRANSFER_INTENSIV
 							Serial.print("seq nr: ");
 							Serial.print(c,DEC);
 							Serial.println(" erhalten");
-						}
+						#endif
 						//////////////////
 						seqNum			=	c;
 						msgParseState	=	ST_MSG_SIZE;
@@ -129,14 +128,14 @@ void speedo_filemanager_v2::parse_command(){
 
 				case ST_MSG_SIZE:
 					//////////////////
-					if(DEBUG_TRANSFER){
+					#ifdef DEBUG_TRANSFER
 						pOLED->string(0,"3",0,1);
 						_delay_ms(500);
-					}
-					if(DEBUG_TRANSFER_INTENSIV){
+					#endif
+					#ifdef DEBUG_TRANSFER_INTENSIV
 						Serial.print("MSG size:");
 						Serial.println(c,DEC);
-					}
+					#endif
 					//////////////////
 					msgLength		=	c<<8;
 					msgParseState	=	ST_MSG_SIZE_2;
@@ -145,14 +144,14 @@ void speedo_filemanager_v2::parse_command(){
 
 				case ST_MSG_SIZE_2:
 					//////////////////
-					if(DEBUG_TRANSFER){
+					#ifdef DEBUG_TRANSFER
 						pOLED->string(0,"4",0,1);
 						_delay_ms(500);
-					}
-					if(DEBUG_TRANSFER_INTENSIV){
+					#endif
+					#ifdef DEBUG_TRANSFER_INTENSIV
 						Serial.print("MSG size:");
 						Serial.println(c,DEC);
-					}
+					#endif
 					//////////////////
 					msgLength		|=	c;
 					msgParseState	=	ST_GET_TOKEN;
@@ -162,13 +161,13 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_GET_TOKEN:
 					if ( c == TOKEN ){
 						//////////////////
-						if(DEBUG_TRANSFER){
+						#ifdef DEBUG_TRANSFER
 							pOLED->string(0,"5",0,1);
 							_delay_ms(500);
-						}
-						if(DEBUG_TRANSFER_INTENSIV){
+						#endif
+						#ifdef DEBUG_TRANSFER_INTENSIV
 							Serial.println("Token erhalten");
-						}
+						#endif
 						//////////////////
 						msgParseState	=	ST_GET_DATA;
 						checksum		^=	c;
@@ -180,13 +179,13 @@ void speedo_filemanager_v2::parse_command(){
 
 				case ST_GET_DATA:
 					//////////////////
-					if(DEBUG_TRANSFER){
+					#ifdef DEBUG_TRANSFER
 						pOLED->string(0,"6",0,1);
 						_delay_ms(500);
-					}
-					if(DEBUG_TRANSFER_INTENSIV){
+					#endif
+					#ifdef DEBUG_TRANSFER_INTENSIV
 						Serial.println("Daten erhalten");
-					}
+					#endif
 					//////////////////
 					msgBuffer[ii++]	=	c;
 					checksum		^=	c;
@@ -203,13 +202,13 @@ void speedo_filemanager_v2::parse_command(){
 					//					pOLED->string(0,buffer,0,4);
 					if ( c == checksum){
 						//////////////////
-						if(DEBUG_TRANSFER){
+						#ifdef DEBUG_TRANSFER
 							pOLED->string(0,"7",0,1);
 							_delay_ms(500);
-						}
-						if(DEBUG_TRANSFER_INTENSIV){
+						#endif
+						#ifdef DEBUG_TRANSFER_INTENSIV
 							Serial.println("Checksum correct");
-						}
+						#endif
 						//////////////////
 						msgParseState	=	ST_PROCESS;
 					} else {
@@ -232,7 +231,7 @@ void speedo_filemanager_v2::parse_command(){
 			//bool change_disp=false;
 			answere_transmitted=false;
 
-			if(DEBUG_TRANSFER){
+			#ifdef DEBUG_TRANSFER
 				char buffer[10];
 				if(floor(msgBuffer[0]/16)>10){
 					buffer[0]='a'+(floor(msgBuffer[0]/16)-10);
@@ -247,7 +246,7 @@ void speedo_filemanager_v2::parse_command(){
 				}
 				buffer[2]='\0';
 				pOLED->string(0,buffer,0,1);
-			};
+			#endif
 
 			/////////////////////////// SIGN ON ///////////////////////////////////////
 

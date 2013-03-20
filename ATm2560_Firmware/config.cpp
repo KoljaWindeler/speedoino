@@ -168,16 +168,16 @@ int configuration::write(const char *filename){
 					memset(buffer,'\0',60);
 
 					// get the info from the gps class
-					if(SD_DEBUG){
+#ifdef SD_DEBUG
 						Serial.print("*** vor get_logged_points ist im puffer: ");
 						Serial.println(buffer);
-					}
+#endif
 					int i=0;
 					while(i<100 && pSensors->m_gps->get_logged_points(&buffer[0],i)>=0){
-						if(SD_DEBUG){
-							Serial.print("*** get_logged_points liefert: ");
-							Serial.println(buffer);
-						}
+#ifdef SD_DEBUG
+						Serial.print("*** get_logged_points liefert: ");
+						Serial.println(buffer);
+#endif
 						pSD->writeString(file, buffer);
 						i++;
 					}
@@ -642,10 +642,10 @@ int configuration::parse(char* buffer){
 		if(seperator>49){ free(name); return -1; }; // programmabbruch
 	};
 	pDebug->parse(0,name);
-	if(PARSE_SHORT){
-		Serial.print(name);
-		Serial.print("=");
-	};
+#ifdef PARSE_SHORT
+	Serial.print(name);
+	Serial.print("=");
+#endif
 
 	int temp=0;
 	int return_value=0;
@@ -1018,10 +1018,10 @@ int configuration::parse_float(char* buffer,int i,float* wert){
 	pDebug->parse_float(4,buffer,t_wert,decade_count,vz);
 
 	*wert=t_wert;
-	if(PARSE_SHORT){
-		Serial.print(*wert);
-		Serial.println("<<--");
-	}
+#ifdef PARSE_SHORT
+	Serial.print(*wert);
+	Serial.println("<<--");
+#endif
 	//debug
 	return 0;
 };
@@ -1053,10 +1053,10 @@ int configuration::parse_bool(char* buffer,int i,bool* wert){
 
 	*wert=t_wert; 
 	//debug
-	if(PARSE_SHORT){
-		Serial.print(*wert);
-		Serial.println("<<--");
-	}
+#ifdef PARSE_SHORT
+	Serial.print(*wert);
+	Serial.println("<<--");
+#endif
 	//debug
 	return 0;
 };
@@ -1139,10 +1139,10 @@ int configuration::parse_ul(char* buffer,int i,unsigned long* wert){
 	}
 	*wert=t_wert;
 
-	if(PARSE_SHORT){
-		Serial.print(*wert);
-		Serial.println("<<--");
-	}
+#ifdef PARSE_SHORT
+	Serial.print(*wert);
+	Serial.println("<<--");
+#endif
 	pDebug->parse_ul(0,*wert);
 	return 0;
 };
@@ -1151,17 +1151,23 @@ int configuration::parse_ul(char* buffer,int i,unsigned long* wert){
 void configuration::km_save(){
 	int speed_value=pSensors->get_speed(false);
 	// debug
-	if(STORAGE_DEBUG){   pDebug->sprintp(PSTR("calling km_save"));  };
+#ifdef STORAGE_DEBUG
+	pDebug->sprintp(PSTR("calling km_save"));
+#endif
 	// debug
 	if(pSensors->get_RPM(0)>0){ // if motor is running
 		// debug
-		if(STORAGE_DEBUG){     pDebug->sprintlnp(PSTR("speed>0 => storage outdated"));    };
+#ifdef STORAGE_DEBUG
+		pDebug->sprintlnp(PSTR("speed>0 => storage outdated"));
+#endif
 		// debug
 		storage_outdated=true;
 		unsigned int strecke_m=round(speed_value/3.6*1); // km/h => m/1sec
 		// debug
-		if(STORAGE_DEBUG){  Serial.print("Prozentualer Unterschied zum letzen mal (muss zwischen 95 und 105 liegen): "); Serial.println(round(last_speed_value*100/speed_value));  };
-		if(STORAGE_DEBUG){  Serial.print("Speed value: "); Serial.println(speed_value);  };
+#ifdef STORAGE_DEBUG
+		Serial.print("Prozentualer Unterschied zum letzen mal (muss zwischen 95 und 105 liegen): "); Serial.println(round(last_speed_value*100/speed_value));
+		Serial.print("Speed value: "); Serial.println(speed_value);
+#endif
 		// debug
 		for(unsigned int a=0;a<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]);a++){
 			// rescue after error
@@ -1178,7 +1184,11 @@ void configuration::km_save(){
 				if(speed_value>pSpeedo->max_speed[a] && speed_value<256){
 					pSpeedo->max_speed[a]=speed_value;
 					// debug
-					if(STORAGE_DEBUG){  Serial.print("====> Max updated: "); Serial.print(pSpeedo->max_speed[a]); Serial.println(" <==========");   };
+#ifdef STORAGE_DEBUG
+					Serial.print("====> Max updated: ");
+					Serial.print(pSpeedo->max_speed[a]);
+					Serial.println(" <==========");
+#endif
 					// debug
 				};
 			};
@@ -1207,12 +1217,12 @@ void configuration::day_trip_check(){
 	// wenn nun noch gps verbunden ist, dann wird ein richtiges datum
 	// abgespeichert und das hier bei jedem start durchlaufen.
 	// aber da clock_getdate()==0 ist, wird keine datei geloescht werden.
-	if(STORAGE_DEBUG){
-		Serial.print("Laut speicher war das Datum zuletzt der ");
-		Serial.print(date_of_today);
-		Serial.print(" und heute ist der ");
-		Serial.println(pSensors->m_clock->getdate());
-	};
+#ifdef STORAGE_DEBUG
+	Serial.print("Laut speicher war das Datum zuletzt der ");
+	Serial.print(date_of_today);
+	Serial.print(" und heute ist der ");
+	Serial.println(pSensors->m_clock->getdate());
+#endif
 	if(pSensors->m_clock->getdate()!=date_of_today){
 		pSpeedo->trip_dist[2]=0;
 		pSpeedo->max_speed[2]=0;
@@ -1259,26 +1269,26 @@ void configuration::EEPROM_init(){
 };
 
 int configuration::parse_textreplacement(char* buffer, char* search_recopy_string){
-    int seperator=0;
-    while(1){ // der name soll maximal 50 zeichen lang sein
-        if(char(buffer[seperator])=='='){
+	int seperator=0;
+	while(1){ // der name soll maximal 50 zeichen lang sein
+		if(char(buffer[seperator])=='='){
 			if(seperator==0){ // if the "=" is on pos 0 [=bla] ond nothing left of it
 				return -2;
 			};
-            break;
-        } else {
+			break;
+		} else {
 			seperator++;
-        };
-        if(seperator>49){ return -1; }; // programmabbruch
-    };
+		};
+		if(seperator>49){ return -1; }; // programmabbruch
+	};
 
-    int return_value=0;
+	int return_value=0;
 
-    // hier wissen wir wie der name ist
+	// hier wissen wir wie der name ist
 	int search_recopy_pointer=0;
 	int buffer_pointer=seperator+1; // skip "="
-    if(strncmp(buffer,search_recopy_string,seperator)==0){
-        while(1){
+	if(strncmp(buffer,search_recopy_string,seperator)==0){
+		while(1){
 			if(search_recopy_pointer>=22){
 				search_recopy_string[search_recopy_pointer]=0x00;
 				break;
@@ -1292,6 +1302,6 @@ int configuration::parse_textreplacement(char* buffer, char* search_recopy_strin
 			search_recopy_pointer++;
 		}
 		return_value=1; //found
-    }
+	}
 	return return_value;
 }

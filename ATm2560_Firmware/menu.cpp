@@ -179,18 +179,18 @@ unsigned int addr;
  * triggers other functions. So this is, were the beauty comes from :D
  ************************************************************ display menu ************************************************************/
 void speedo_menu::display(){
-	if(MENU_DEBUG){
-		Serial.print("menu.display() called; at ");
-		Serial.println(millis());
-		Serial.print("state: ");
-		Serial.println(state);
-		Serial.print("menu_marker,menu_end,menu_start:");
-		Serial.print(menu_marker);
-		Serial.print(",");
-		Serial.print(menu_ende);
-		Serial.print(",");
-		Serial.println(menu_start);
-	};
+#ifdef MENU_DEBUG
+	Serial.print("menu.display() called; at ");
+	Serial.println(millis());
+	Serial.print("state: ");
+	Serial.println(state);
+	Serial.print("menu_marker,menu_end,menu_start:");
+	Serial.print(menu_marker);
+	Serial.print(",");
+	Serial.print(menu_ende);
+	Serial.print(",");
+	Serial.println(menu_start);
+#endif
 
 	// init hardware buttons
 	bool button_state=true; // activate all buttons
@@ -204,19 +204,25 @@ void speedo_menu::display(){
 	else memset(char_buffer,'\0',22);
 	/******************************** "left" in main menu. Redirect to Speedoino ********************************************/
 	if(state==0){
-		if(MENU_DEBUG){Serial.println("Menustate war 0, daher biege ich ihn auf SPEEDOINO um");};
+#ifdef MENU_DEBUG
+		Serial.println("Menustate war 0, daher biege ich ihn auf SPEEDOINO um");
+#endif
 		state=11;
 		update_display=true;
 	}
 	/********************************************* Show the Main menu *********************************************/
 	else if(state<10) {
-		if(MENU_DEBUG){Serial.println("Menustate war kleiner als 10, Hauptmenue");};
+#ifdef MENU_DEBUG
+		Serial.println("Menustate war kleiner als 10, Hauptmenue");
+#endif
 		// Menu vorbereiten
 		draw(&menu_main[0],sizeof(menu_main)/sizeof(menu_main[0]));
 	}
 	/********************************************* generate GPS marker *********************************************/
 	else if(state==111) {
-		if(MENU_DEBUG){Serial.println("Menustate war 111, daher biege ich ihn auf 11 um");};
+#ifdef MENU_DEBUG
+		Serial.println("Menustate war 111, daher biege ich ihn auf 11 um");
+#endif
 		pSensors->m_gps->note_this_place=SIMPLE_MARK;
 		state=11;
 	}
@@ -227,7 +233,9 @@ void speedo_menu::display(){
 	 ********************************************* Menu 1 - SPEEDOINO *********************************************/
 	else if(floor(state/10)==1 || state==7311111){
 		pOLED->clear_screen();
-		if(MENU_DEBUG){Serial.println("Menustate 00001X, Bin jetzt im Tacho menu, zeichne icons");};
+#ifdef MENU_DEBUG
+		Serial.println("Menustate 00001X, Bin jetzt im Tacho menu, zeichne icons");
+#endif
 
 		if(pSpeedo->oil_widget.symbol && !(pSpeedo->oil_widget.x==-1 && pSpeedo->oil_widget.y==-1))
 			pOLED->draw_oil(pSpeedo->oil_widget.x*3,pSpeedo->oil_widget.y*8); //3=6/2 weil doppelpixxel
@@ -258,7 +266,9 @@ void speedo_menu::display(){
 	 ********************************************* Menu 2 - Sprint Mode *********************************************/
 	else if(floor(state/10)==2){
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
-		if(MENU_DEBUG){Serial.println("Menustate=000002X, Bin jetzt im Sprint Tacho menu");};
+#ifdef MENU_DEBUG
+		Serial.println("Menustate=000002X, Bin jetzt im Sprint Tacho menu");
+#endif
 		pOLED->clear_screen();
 		pSprint->done=false;
 		pSprint->lock=false;
@@ -476,10 +486,10 @@ void speedo_menu::display(){
 				pOLED->string_P(pSpeedo->default_font,PSTR("No errors :)"),6,4,0,15,0);
 			} else {
 
-				if(CAN_DEBUG){
-					Serial.print(dtc_error_count);
-					Serial.println(" Fehler gefunden");
-				}
+#ifdef CAN_DEBUG
+				Serial.print(dtc_error_count);
+				Serial.println(" Fehler gefunden");
+#endif
 
 				for(int i=0; i<dtc_error_count && i<3;i++){
 					int error_code=pSensors->m_CAN->get_dtc_error(i+3*state_helper);
@@ -1159,9 +1169,9 @@ void speedo_menu::display(){
 		popup(PSTR("The memory"),PSTR("has been reset"));
 		state=11;
 	}
-		/////////// Sensor source  //////////
+	/////////// Sensor source  //////////
 	// this is our sneaky state in the middle, see if we have to store
-    else if(floor(state/10)==75) { // 00075X
+	else if(floor(state/10)==75) { // 00075X
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
@@ -1172,28 +1182,28 @@ void speedo_menu::display(){
 		bool up=button_state;
 		bool down=button_state;
 		if(state%10==9){ // "up" key
-            if(pSensors->sensor_source>0){
-                pSensors->sensor_source--;
+			if(pSensors->sensor_source>0){
+				pSensors->sensor_source--;
 				pConfig->storage_outdated=true;
-            }
-        } else if(state%10==2){ // "down" key
-            if(pSensors->sensor_source<2){
-                pSensors->sensor_source++;
+			}
+		} else if(state%10==2){ // "down" key
+			if(pSensors->sensor_source<2){
+				pSensors->sensor_source++;
 				pConfig->storage_outdated=true;
-            }
-        };
+			}
+		};
 		if(pSensors->sensor_source<=0){
 			up=!button_state;
 		} else if(pSensors->sensor_source>=2){
 			down=!button_state;
 		}
 		set_buttons(button_state,up,down,!button_state); // button directions
-        state=7501;
+		state=7501;
 
 		// displaying values
-        pOLED->clear_screen();
+		pOLED->clear_screen();
 
-        pOLED->highlight_bar(0,0,128,8); // title
+		pOLED->highlight_bar(0,0,128,8); // title
 		pOLED->string_P(pSpeedo->default_font,PSTR("Sensor source mode"),2,0,DISP_BRIGHTNESS,0,0);
 
 		unsigned char fg;
@@ -1208,7 +1218,7 @@ void speedo_menu::display(){
 			fg=DISP_BRIGHTNESS;
 			bg=0x00;
 		}
-        pOLED->string_P(pSpeedo->default_font,PSTR("Analog Sensors"),3,2,bg,fg,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Analog Sensors"),3,2,bg,fg,0);
 
 		/// Auto detect
 		if(pSensors->sensor_source==SENSOR_AUTO){
@@ -1219,7 +1229,7 @@ void speedo_menu::display(){
 			fg=DISP_BRIGHTNESS;
 			bg=0x00;
 		}
-        pOLED->string_P(pSpeedo->default_font,PSTR("Auto detect"),3,3,bg,fg,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Auto detect"),3,3,bg,fg,0);
 
 		/// Force Can
 		if(pSensors->sensor_source==SENSOR_FORCE_CAN){
@@ -1230,8 +1240,8 @@ void speedo_menu::display(){
 			fg=DISP_BRIGHTNESS;
 			bg=0x00;
 		}
-        pOLED->string_P(pSpeedo->default_font,PSTR("CAN Sensors"),3,4,bg,fg,0);
-    }
+		pOLED->string_P(pSpeedo->default_font,PSTR("CAN Sensors"),3,4,bg,fg,0);
+	}
 	/////////// bt reset state  //////////
 	else if(floor(state/10)==76) { // 00089X
 		set_buttons(button_state,button_state,button_state,!button_state); // sackgasse
@@ -1552,14 +1562,14 @@ void speedo_menu::draw(const char* const* menu, int entries){
 	}
 
 
-	if(MENU_DEBUG){
-		Serial.print("Bin im menue, menu_marker:");
-		Serial.print(menu_marker);
-		Serial.print(", menu_ende:");
-		Serial.print(menu_ende);
-		Serial.print(", menu_start:");
-		Serial.println(menu_start);
-	};
+#ifdef MENU_DEBUG
+	Serial.print("Bin im menue, menu_marker:");
+	Serial.print(menu_marker);
+	Serial.print(", menu_ende:");
+	Serial.print(menu_ende);
+	Serial.print(", menu_start:");
+	Serial.println(menu_start);
+#endif
 	////////// Menu Caption /////////////
 	pOLED->filled_rect(0,0,128,8,0);
 	char char_buffer[22];
@@ -1784,7 +1794,9 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				if(button_first_push==0){
 					button_first_push=millis();
 				};
-				if(MENU_DEBUG){      Serial.println("menu_button_rechts");  };
+#ifdef MENU_DEBUG
+				Serial.println("menu_button_rechts");
+#endif
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				if((PINJ & (1<<menu_button_rechts))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
@@ -1800,7 +1812,9 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				if(button_first_push==0){
 					button_first_push=millis();
 				};
-				if(MENU_DEBUG){  Serial.println("menu_button_links");  };
+#ifdef MENU_DEBUG
+				Serial.println("menu_button_links");
+#endif
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				if((PINJ & (1<<menu_button_links))==menu_active){ // wenn nach der Wartezeit der button immernoch gedrückt ist
@@ -1817,7 +1831,9 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				if(button_first_push==0){
 					button_first_push=millis();
 				};
-				if(MENU_DEBUG){  Serial.println("menu_button_oben");  };
+#ifdef MENU_DEBUG
+				Serial.println("menu_button_oben");
+#endif
 				// move menu
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
@@ -1834,7 +1850,9 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				if(button_first_push==0){
 					button_first_push=millis();
 				};
-				if(MENU_DEBUG){  Serial.println("menu_button_unten");  };
+#ifdef MENU_DEBUG
+				Serial.println("menu_button_unten");
+#endif
 				// move menu
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdrücken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
@@ -1941,7 +1959,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			// wir sind nach links, jetzt müssen wir checken: sind wir das weil wir zurück aus dem Menü wollten, oder
 			// wollten wir nur ein Feld weiter nach links. Die Felder sind numeriert in "state_helper"
 			Serial.print("bin draußen und state ist ");
-						Serial.println(state);
+			Serial.println(state);
 		} else {
 			// wirklich zurück ins Hauptmenü
 			if(state_helper==0 || (state_helper==1 && just_one_line_mode)){

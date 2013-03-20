@@ -311,10 +311,12 @@ void Speedo_sensors::pull_values(){
 			// auto CAN detection ... geht nicht .. warum? TODO
 			if(sensor_source==SENSOR_AUTO){
 				if(!m_CAN->init_comm_possible(&CAN_active)){ // returns always true, exept the communcation was NOT possible even if it should
-					pDebug->sprintlnp(PSTR("CAN communication timed out,\n\rfalling back to analog sensors"));
+					pDebug->sprintlnp(PSTR("=== CAN timed out ==="));
+					pDebug->sprintlnp(PSTR("falling back to analog sensors"));
 					m_CAN->shutdown();
 					m_dz->init();
 					m_speed->init();
+					pDebug->sprintlnp(PSTR("=== CAN timed out ==="));
 				}
 			};
 		} else if(update_required && ten_Hz_counter%2==0){ // do this, every 5Hz, 200ms
@@ -487,9 +489,9 @@ ISR(PCINT2_vect ){
 	if(!(PINK&(1<<CAN_INTERRUPT_PIN))){	 // if the CAN pin is low, low active interrupt
 		if(pSensors->CAN_active){		 // is the CAN mode active
 			pSensors->m_CAN->message_available=true;
-			if(CAN_DEBUG){
-				Serial.println("Interrupt: Msg available");
-			}
+#ifdef CAN_DEBUG
+			Serial.println("Interrupt: Msg available");
+#endif
 		};
 	};
 }

@@ -44,62 +44,68 @@ void debugging::sprintlnp(const char *data){
 }
 
 void debugging::parse_float(int state,char buffer[],int i,int j,int k){
-	if(PARSE_DEBUG){
-		if(state==0){
-			Serial.print("parse float gestartet mit buffer: ");
-			Serial.println(buffer);
-		} else if(state==1){
-			Serial.print("aktuelles zeichen:");
-			Serial.println(buffer[i]);
-		} else if(state==2){
-			Serial.println("vorzeichen auf - gestellt");
-		} else if(state==3){
-			Serial.print("twert:");
-			Serial.print(i);
-			Serial.print(" decade_counter:");
-			Serial.print(j);
-			Serial.print(" vz:");
-			Serial.print(k);
-		} else if(state==4){
-			Serial.print("(float)");
-			Serial.print(i);
-		}
+#ifdef PARSE_DEBUG
+	if(state==0){
+		Serial.print("parse float gestartet mit buffer: ");
+		Serial.println(buffer);
+	} else if(state==1){
+		Serial.print("aktuelles zeichen:");
+		Serial.println(buffer[i]);
+	} else if(state==2){
+		Serial.println("vorzeichen auf - gestellt");
+	} else if(state==3){
+		Serial.print("twert:");
+		Serial.print(i);
+		Serial.print(" decade_counter:");
+		Serial.print(j);
+		Serial.print(" vz:");
+		Serial.print(k);
+	} else if(state==4){
+		Serial.print("(float)");
+		Serial.print(i);
 	}
+#endif
 }
 
 
 void debugging::parse_int(){
-	if(PARSE_DEBUG){
-		Serial.println("<--as int");
-	};
+#ifdef PARSE_DEBUG
+	Serial.println("<--as int");
+#endif
 };
 
 void debugging::parse(int state,char buffer[50]){
-	if(PARSE_DEBUG){
-		if(state==0){
-			Serial.print("config parse: "); Serial.println(buffer);
-		}
+#ifdef PARSE_DEBUG
+	if(state==0){
+		Serial.print("config parse: "); Serial.println(buffer);
 	}
+#endif
 }
 
 void debugging::parse_a(int state,char buffer[]){
-	if(PARSE_DEBUG){
-		if(state==0){
-			Serial.print("(char[])"); Serial.println(buffer);
-		}
+#ifdef PARSE_DEBUG
+	if(state==0){
+		Serial.print("(char[])"); Serial.println(buffer);
 	}
+#endif
 }
 
 void debugging::parse_ul(int state,unsigned long wert){
-	if(PARSE_DEBUG){
-		if(state==0){
-			Serial.print("(unsigned long)"); Serial.println(wert);
-		}
+#ifdef PARSE_DEBUG
+	if(state==0){
+		Serial.print("(unsigned long)"); Serial.println(wert);
 	}
+#endif
 }
 
 void debugging::speedo_loop(int state,int intensive,unsigned long previousMillis,const char char_buffer[]){
-	if((intensive==0 && TACHO_DEBUG) || (intensive==1 && TACHO_IDEBUG)){
+#ifdef TACHO_DEBUG
+	if(intensive==0){
+#elseif TACHO_IDEBUG
+	if(intensive==1){
+#else
+	if(false){
+#endif
 		int differ_show;
 		if(state==0){
 			sprintlnp(PSTR("Normaler Tacho Durchlauf"));
@@ -161,9 +167,9 @@ void debugging::speedo_loop(int state,int intensive,unsigned long previousMillis
 }
 
 void debugging::loop(){
-	if(TACHO_SDEBUG){
+#ifdef TACHO_SDEBUG
 		Serial.print("State changed:");
 		Serial.print(pMenu->state);
 		sprintlnp(PSTR(": Calling menu_disp();"));
-	};
+#endif
 };

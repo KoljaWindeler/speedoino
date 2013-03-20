@@ -42,9 +42,16 @@ void speedo_reset::init(){
 	} else {
 		set_deactive(false,true); // eeprom is set,set var
 	}
-	pDebug->sprintp(PSTR("Reset init done. Status "));
+	pDebug->sprintp(PSTR("Reset init done. Status: "));
 	ask_reset();
-	Serial.println(last_reset);
+	if(last_reset==0){
+		pDebug->sprintlnp(PSTR("Power down"));
+	} else if(last_reset==1){
+		pDebug->sprintlnp(PSTR("AVR watchdog"));
+	} else if(last_reset==2){
+		pDebug->sprintlnp(PSTR("BT connect"));
+	}
+
 
 	// watchdog einschalten um ihn dann zu deaktivieren ... strange aber muss wohl so
 	wdt_enable(WDTO_8S);
@@ -62,12 +69,12 @@ void speedo_reset::set_active(bool save_to_eeprom,bool save_to_var){
 		byte tempByte = (1 & 0xFF);
 		eeprom_write_byte((uint8_t *)149,tempByte);
 	}
-	if(RESET_DEBUG){
-		pDebug->sprintlnp(PSTR("Reset enabled"));
-		if(save_to_eeprom){
-			pDebug->sprintlnp(PSTR("written to storage"));
-		};
-	}
+#ifdef RESET_DEBUG
+	pDebug->sprintlnp(PSTR("Reset enabled"));
+	if(save_to_eeprom){
+		pDebug->sprintlnp(PSTR("written to storage"));
+	};
+#endif
 };
 
 void speedo_reset::set_deactive(bool save_to_eeprom,bool save_to_var){
@@ -80,12 +87,12 @@ void speedo_reset::set_deactive(bool save_to_eeprom,bool save_to_var){
 		eeprom_write_byte((uint8_t *)149,tempByte);
 	};
 
-	if(RESET_DEBUG){
-		pDebug->sprintlnp(PSTR("Reset disabled"));
-		if(save_to_eeprom){
-			pDebug->sprintlnp(PSTR("written to storage"));
-		};
+#ifdef RESET_DEBUG
+	pDebug->sprintlnp(PSTR("Reset disabled"));
+	if(save_to_eeprom){
+		pDebug->sprintlnp(PSTR("written to storage"));
 	};
+#endif
 };
 
 void speedo_reset::restore(){

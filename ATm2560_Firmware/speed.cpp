@@ -20,9 +20,11 @@
 speedo_speed::speedo_speed(){
 	last_time=millis();
 	reed_speed=0;
-	speed_peaks=1;
+	speed_peaks=1; // avoid speed at startup
 	reifen_umfang=0; // Reifenumfang in metern
 	gps_takeover=0; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
+	flat_counter_calibrate_umfang=0;
+	flat_value_calibrate_umfang=2.00;
 
 	// erstmal alle zwischenspeicher loeschen
 	for(unsigned int i=0; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
@@ -40,19 +42,21 @@ void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==
 	status=0;
 	if(differ>250){ // mit max 10 hz und nach peak anzahl neu berechnen
 		int temp_reed_speed=round(((reifen_umfang*1000*speed_peaks)/differ) * 3.6 ); // 1 Magnet // eventuell /360*280 => wenn 280° zwischen dem letzen und dem ersten flattern liegen, aber ich denke das werden eher 358° sein
-		if(SPEED_DEBUG){
-			pDebug->sprintp(PSTR("Differ > 250 : "));
-			Serial.print(differ);
-			pDebug->sprintp(PSTR(" speed_peaks: "));
-			Serial.print(speed_peaks);
-			pDebug->sprintp(PSTR(" reifen umfang: "));
-			Serial.print(reifen_umfang);
-			pDebug->sprintp(PSTR(" temp_reed_speed: "));
-			Serial.println(temp_reed_speed);
-		}
 
-		if(temp_reed_speed<299 && temp_reed_speed>=0)
+#ifdef SPEED_DEBUG
+		pDebug->sprintp(PSTR("Differ > 250 : "));
+		Serial.print(differ);
+		pDebug->sprintp(PSTR(" speed_peaks: "));
+		Serial.print(speed_peaks);
+		pDebug->sprintp(PSTR(" reifen umfang: "));
+		Serial.print(reifen_umfang);
+		pDebug->sprintp(PSTR(" temp_reed_speed: "));
+		Serial.println(temp_reed_speed);
+#endif
+
+		if(temp_reed_speed<350 && temp_reed_speed>=0){
 			reed_speed=temp_reed_speed;
+		}
 		last_time=jetzt;
 		prevent_double_count=jetzt; // wir bekommen immer 2 peaks zur gleichen millis(), daher diese prevent_double_count
 		speed_peaks=1;
@@ -67,8 +71,10 @@ ISR(INT5_vect){	pSensors->m_speed->calc(); } // der eingentliche
 
 void speedo_speed::init (){
 	//DDRE  &=~(1<<SPEED_PIN); // interrupt 5 eingang
+	last_time=millis(); //prevent calculation of rpm
 	EIMSK |= (1<<INT5); // Enable Interrupt
 	EICRB |= (1<<ISC50) | (1<<ISC51); // rising edge on INT5
+	speed_peaks=0; // clear
 
 	status=0; // alles gut
 	pDebug->sprintlnp(PSTR("Speed init done"));

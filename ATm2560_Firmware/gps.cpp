@@ -1,3 +1,4 @@
+
 /* Speedoino - This file is part of the firmware.
  * Copyright (C) 2011 Kolja Windeler
  *
@@ -182,10 +183,10 @@ void speedo_gps::check_flag(){
 
 	if(gps_ready1){
 		// debug
-		if(IGPS_DEBUG){
-			pDebug->sprintlnp(PSTR("calling get_gps buffer1:"));
-			Serial.println(gps_buffer1);
-		};
+#ifdef GPS_DEBUG
+		pDebug->sprintlnp(PSTR("calling get_gps buffer1:"));
+		Serial.println(gps_buffer1);
+#endif
 		// debug
 		parse(gps_buffer1,1);         // Daten übergeben
 		gps_ready1=false;
@@ -193,10 +194,10 @@ void speedo_gps::check_flag(){
 
 	if(gps_ready2){
 		// debug
-		if(IGPS_DEBUG){
-			pDebug->sprintlnp(PSTR("calling get_gps buffer2:"));
-			Serial.println(gps_buffer2);
-		};
+#ifdef GPS_DEBUG
+		pDebug->sprintlnp(PSTR("calling get_gps buffer2:"));
+		Serial.println(gps_buffer2);
+#endif
 		// debug
 		parse(gps_buffer2,2);         // Daten übergeben
 		gps_ready2=false;
@@ -216,13 +217,13 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 	int indices[13]; // positionsmarker für die kommata
 
 	//debug
-	if(GPS_DEBUG){
-		pDebug->sprintlnp(PSTR("get_gps hat bekommen: "));
-		for(int i=0;i<SERIAL_BUFFER_SIZE;i++){
-			Serial.print(linea[i]);
-		};
-		Serial.println("");
+#ifdef GPS_DEBUG
+	pDebug->sprintlnp(PSTR("get_gps hat bekommen: "));
+	for(int i=0;i<SERIAL_BUFFER_SIZE;i++){
+		Serial.print(linea[i]);
 	};
+	Serial.println("");
+#endif
 	//debug
 	// seperatorstellen suchen
 	for (int i=0;i<SERIAL_BUFFER_SIZE;i++){
@@ -352,33 +353,33 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 
 
 			// debug
-			if(GPS_DEBUG){
-				pDebug->sprintp(PSTR("Time in UTC (HhMmSs): "));
-				Serial.println(gps_time[gps_count]);
-				pDebug->sprintp(PSTR("Date UTC (DdMmAa) "));
-				Serial.println(gps_date[gps_count]);
-				pDebug->sprintp(PSTR("Heading in degrees:(*10)"));
-				Serial.println(gps_course[gps_count]);
-				pDebug->sprintp(PSTR("Latitude: "));
-				Serial.println(gps_lati[gps_count]);
-				pDebug->sprintp(PSTR("Longitude: "));
-				Serial.println(gps_long[gps_count]);
-				pDebug->sprintp(PSTR("Speed kmh: "));
-				Serial.println(gps_speed_arr[gps_count]);
-			}
+#ifdef GPS_DEBUG
+			pDebug->sprintp(PSTR("Time in UTC (HhMmSs): "));
+			Serial.println(gps_time[gps_count]);
+			pDebug->sprintp(PSTR("Date UTC (DdMmAa) "));
+			Serial.println(gps_date[gps_count]);
+			pDebug->sprintp(PSTR("Heading in degrees:(*10)"));
+			Serial.println(gps_course[gps_count]);
+			pDebug->sprintp(PSTR("Latitude: "));
+			Serial.println(gps_lati[gps_count]);
+			pDebug->sprintp(PSTR("Longitude: "));
+			Serial.println(gps_long[gps_count]);
+			pDebug->sprintp(PSTR("Speed kmh: "));
+			Serial.println(gps_speed_arr[gps_count]);
+#endif
 			//Debug
 			// uiuiuiuiuiuiui
-			if(NAVI_DEBUG){
-				pDebug->sprintp(PSTR("Zeit vorm gps_navi: "));
-				Serial.println(millis());
-			};
+#ifdef NAVI_DEBUG
+			pDebug->sprintp(PSTR("Zeit vorm gps_navi: "));
+			Serial.println(millis());
+#endif
 			if(navi_active){ // only calc if needed
 				calc_navi();
 			}
-			if(NAVI_DEBUG){
-				pDebug->sprintp(PSTR("Zeit nach gps_navi: "));
-				Serial.println(millis());
-			};
+#ifdef NAVI_DEBUG
+			pDebug->sprintp(PSTR("Zeit nach gps_navi: "));
+			Serial.println(millis());
+#endif
 			// uiuiuiuiuiuiui
 		}
 		set_drive_status(speed,temp_gps_time%100,gps_sats[gps_count],status);
@@ -437,34 +438,35 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		};
 
 		//debug
-		if(GPS_DEBUG){
-			pDebug->sprintp(PSTR("alt: "));
-			Serial.println(gps_alt[gps_count]);
-			pDebug->sprintp(PSTR("sats: "));
-			Serial.println(gps_sats[gps_count]);
-			pDebug->sprintp(PSTR("fix? 1==ja: "));
-			Serial.println(gps_fix[gps_count]);
-		};
+#ifdef GPS_DEBUG
+		pDebug->sprintp(PSTR("alt: "));
+		Serial.println(gps_alt[gps_count]);
+		pDebug->sprintp(PSTR("sats: "));
+		Serial.println(gps_sats[gps_count]);
+		pDebug->sprintp(PSTR("fix? 1==ja: "));
+		Serial.println(gps_fix[gps_count]);
+#endif
 		//debug
 	};
 	// klappt das ? eigentlich schon oder? wir dürfen nur keine Datensatz verpassen oder ?
 
 	if(gps_count>=29 && gps_count_up[0] && gps_count_up[1]){ // nur jede halbe minute speichern, burstmäßig auf die Karte schreiben
-		if(SD_DEBUG){
-			pDebug->sprintlnp(PSTR("Vor store_to_sd()"));
-			Serial.println(millis());
-		};
+#ifdef SD_DEBUG
+		pDebug->sprintlnp(PSTR("Vor store_to_sd()"));
+		Serial.println(millis());
+#endif
 		gps_write_status=1;
 		store_to_sd();
 		gps_count=0; // after writing the points to sd => erase them
 		gps_count_up[0]=false;
 		gps_count_up[1]=false;
 
-		if(SD_DEBUG){
-			pDebug->sprintlnp(PSTR("nach store_to_sd()"));
-			Serial.println(millis());
-		};
-	} else if(SD_DEBUG) {
+#ifdef SD_DEBUG
+		pDebug->sprintlnp(PSTR("nach store_to_sd()"));
+		Serial.println(millis());
+#endif
+	} else {
+#ifdef SD_DEBUG
 		pDebug->sprintp(PSTR("store_to_sd() not enough records "));
 		Serial.print(gps_count);
 		Serial.print(" written ");
@@ -473,6 +475,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		Serial.print(datensatz);
 		Serial.print(" ");
 		Serial.println(millis());
+#endif
 	}
 };
 
@@ -547,10 +550,10 @@ void speedo_gps::store_to_sd(){
 	// 20.3.2011 => 110320
 	sprintf(filename,"%06lu.GPS",pSensors->m_clock->get_long_date());
 
-	if(SD_DEBUG){
-		pDebug->sprintlnp(PSTR("filename is "));
-		Serial.println(filename);
-	};
+#ifdef SD_DEBUG
+	pDebug->sprintlnp(PSTR("filename is "));
+	Serial.println(filename);
+#endif
 	gps_write_status=2;
 	// das kann auch ruhig alle 30 sec gemacht werden
 	//pSensors->m_clock->store();
@@ -631,18 +634,18 @@ void speedo_gps::calc_navi(){
 
 
 	// debug
-	if(NAVI_DEBUG){
-		pDebug->sprintp(PSTR("Aktuelle lati: "));
-		Serial.print(nmea_to_dec(float(gps_lati[gps_count])));
-		pDebug->sprintp(PSTR(" Ziel Lati "));
-		Serial.println(navi_ziel_lati);
-		pDebug->sprintp(PSTR("Aktuelle long: "));
-		Serial.print(nmea_to_dec(float(gps_long[gps_count])));
-		pDebug->sprintp(PSTR(" Ziel long "));
-		Serial.println(navi_ziel_long);
-		pDebug->sprintp(PSTR("Entfernung in km: "));
-		Serial.println(entf);
-	};
+#ifdef NAVI_DEBUG
+	pDebug->sprintp(PSTR("Aktuelle lati: "));
+	Serial.print(nmea_to_dec(float(gps_lati[gps_count])));
+	pDebug->sprintp(PSTR(" Ziel Lati "));
+	Serial.println(navi_ziel_lati);
+	pDebug->sprintp(PSTR("Aktuelle long: "));
+	Serial.print(nmea_to_dec(float(gps_long[gps_count])));
+	pDebug->sprintp(PSTR(" Ziel long "));
+	Serial.println(navi_ziel_long);
+	pDebug->sprintp(PSTR("Entfernung in km: "));
+	Serial.println(entf);
+#endif
 	// debug
 	// die große Frage des Weiterschaltens
 	if(entf<15){ // verdammt nah dran, sofort weiterschalten
@@ -711,10 +714,10 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 	eeprom_write_byte((uint8_t *)147,tempByte);
 
 	//////////// DEBUG /////////////////
-	if(NAVI_DEBUG){
-		pDebug->sprintlnp(PSTR("Versuche NAVI.SMF zu oeffnen"));
-		pConfig->ram_info();
-	};
+#ifdef NAVI_DEBUG
+	pDebug->sprintlnp(PSTR("Versuche NAVI.SMF zu oeffnen"));
+	pConfig->ram_info();
+#endif
 	//////////// DEBUG /////////////////
 
 	SdFile root;
@@ -734,11 +737,11 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 	sprintf(navi_filename,"NAVI%i.SMF",active_file%100);
 
 	//////////// DEBUG /////////////////
-	if(NAVI_DEBUG){
-		Serial.println(navi_filename);
-		pDebug->sprintp(PSTR("Punkt:"));
-		Serial.println(navi_point);
-	};
+#ifdef NAVI_DEBUG
+	Serial.println(navi_filename);
+	pDebug->sprintp(PSTR("Punkt:"));
+	Serial.println(navi_point);
+#endif
 	//////////// DEBUG /////////////////
 
 	if(file.open(&subdir, navi_filename, O_READ)) {
@@ -776,7 +779,10 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 		root.close();
 
 		//////////// DEBUG /////////////////
-		if(NAVI_DEBUG){ Serial.print(zeile); pDebug->sprintlnp(PSTR(" Datensaetze durchsucht.")); };
+#ifdef NAVI_DEBUG
+		Serial.print(zeile);
+		pDebug->sprintlnp(PSTR(" Datensaetze durchsucht."));
+#endif
 		//////////// DEBUG /////////////////
 
 		if (found) { 							// is set to true in previous
@@ -800,16 +806,18 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 			navi_ziel_rl=int(buf[20])-48;
 
 			//////////// DEBUG /////////////////
-			if(NAVI_DEBUG){
-				pDebug->sprintp(PSTR("Long: ")); Serial.print(navi_ziel_long); pDebug->sprintp(PSTR(" lati: ")); Serial.print(navi_ziel_lati);
-				pDebug->sprintp(PSTR(" name: ")); Serial.print(navi_ziel_name);
-				pDebug->sprintp(PSTR(" rlg: ")); Serial.println(navi_ziel_rl);
-			};
+#ifdef NAVI_DEBUG
+			pDebug->sprintp(PSTR("Long: ")); Serial.print(navi_ziel_long); pDebug->sprintp(PSTR(" lati: ")); Serial.print(navi_ziel_lati);
+			pDebug->sprintp(PSTR(" name: ")); Serial.print(navi_ziel_name);
+			pDebug->sprintp(PSTR(" rlg: ")); Serial.println(navi_ziel_rl);
+#endif
 			//////////// DEBUG /////////////////
 		} else {			// cool file handle
 
 			//////////// DEBUG /////////////////
-			if(NAVI_DEBUG){ pDebug->sprintlnp(PSTR("soviele punkte gibbet nicht")); };
+#ifdef NAVI_DEBUG
+			pDebug->sprintlnp(PSTR("soviele punkte gibbet nicht"));
+#endif
 			//////////// DEBUG /////////////////
 
 			navi_point=zeile-2; // set to max
@@ -821,9 +829,9 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 		sprintf(navi_ziel_name,"SD failed!");
 
 		//////////// DEBUG /////////////////
-		if(SD_DEBUG){
-			pDebug->sprintlnp(PSTR("Konnte Navigations Daten nicht laden"));
-		};
+#ifdef SD_DEBUG
+		pDebug->sprintlnp(PSTR("Konnte Navigations Daten nicht laden"));
+#endif
 		//////////// DEBUG /////////////////
 	};
 };
