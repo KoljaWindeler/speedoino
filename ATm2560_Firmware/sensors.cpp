@@ -74,12 +74,14 @@ void Speedo_sensors::init(){
 	PORTK |=(1<<PK0); // activate Pull UP
 	sei();
 	// High Beam
-	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16) | (1<<PCINT20);
-	PCICR |=(1<<PCIE2); // general interrupt PC aktivieren für SK2
+	PCMSK0|=(1<<PCINT4); // 4 is the new can interface interrupt
+	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16) | (1<<PCINT20); // 20 still there even from v7
+	PCICR |=(1<<PCIE2)|(1<<PCIE0); // general interrupt PC aktivieren für SK2
 
 	rpm_flatted_counter=0;
 	pDebug->sprintlnp(PSTR("Sensors init done"));
 }
+
 
 
 // initialize every var, and write clean blank value to it (base config) ... moved to constructor
@@ -486,14 +488,32 @@ ISR(INT7_vect ){
 // interrupt to update sensors
 ISR(PCINT2_vect ){
 	pSensors->check_inputs();
-	if(!(PINK&(1<<CAN_INTERRUPT_PIN))){	 // if the CAN pin is low, low active interrupt
-		if(pSensors->CAN_active){		 // is the CAN mode active
-			pSensors->m_CAN->message_available=true;
+
+	// check if its the right version before test the pin
+	if(pConfig->get_hw_version()==7){
+		if(!(PINK&(1<<CAN_INTERRUPT_PIN_V7))){	 // if the CAN pin is low, low active interrupt
+			if(pSensors->CAN_active){		 // is the CAN mode active
+				pSensors->m_CAN->message_available=true;
 #ifdef CAN_DEBUG
-			Serial.println("Interrupt: Msg available");
+				Serial.println("Interrupt: Msg available");
 #endif
+			};
 		};
-	};
+	}
+}
+
+ISR(PCINT0_vect){
+	// check if its the right version before test the pin
+	if(pConfig->get_hw_version()>7){
+		if(!(PINB&(1<<CAN_INTERRUPT_PIN_FROM_V8))){	 // if the CAN pin is low, low active interrupt
+			if(pSensors->CAN_active){		 // is the CAN mode active
+				pSensors->m_CAN->message_available=true;
+#ifdef CAN_DEBUG
+				Serial.println("Interrupt: Msg available");
+#endif
+			};
+		};
+	}
 }
 
 void Speedo_sensors::check_inputs(){

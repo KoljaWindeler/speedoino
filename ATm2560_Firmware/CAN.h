@@ -18,9 +18,23 @@
 #define CAN_AIR_TEMP 0x0F
 #define CAN_WATER_TEMPERATURE 0x05
 
-#define DDR_CS      DDRK
-#define PORT_CS     PORTK
-#define P_CS        5
+// damn it, I had to move the connection from
+// CS PK5 to PB5
+// INT PK4 to PB4
+
+#define CAN_DDR_CS_TILL_V7      	DDRK
+#define CAN_PORT_CS_TILL_V7     	PORTK
+#define CAN_PIN_CS_TILL_V7      	5
+#define CAN_INTERRUPT_PIN_V7		PK4
+#define CAN_INTERRUPT_PIN_PORT_V7 	PINK
+
+
+
+#define CAN_DDR_CS_FROM_V8        DDRB
+#define CAN_PORT_CS_FROM_V8       PORTB
+#define CAN_PIN_CS_FROM_V8        5
+#define CAN_INTERRUPT_PIN_FROM_V8 PB4
+#define CAN_INTERRUPT_PIN_PORT_V8 PINB
 
 #define SPEED_TRIPPLE 0
 
@@ -67,6 +81,8 @@ private:
 	uint8_t mcp2515_read_register(uint8_t adress);
 	void mcp2515_write_register( uint8_t adress, uint8_t data );
 	void mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data);
+
+	void set_cs_high(bool high);
 
 	CANMessage message;
 	int can_water_temp;
