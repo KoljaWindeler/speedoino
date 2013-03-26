@@ -20,11 +20,15 @@ configuration::configuration(){
 	last_speed_value=0;
 	storage_outdated=false;
 	skin_file=0;
+	hw_version=0x00;
 };
 configuration::~configuration(){};
 
 
 int configuration::get_hw_version(){
+	if(hw_version!=0x00){
+		return (int)hw_version;
+	}
 	// HW: 6 + (int)(not( 0x00 | (PC0<<2) | (PG1<<1) | (PG0<<0)))
 	int return_value=0;
 
@@ -52,6 +56,7 @@ int configuration::get_hw_version(){
 	PORTC &= ~((1<<PC0));
 
 	// return that value
+	hw_version=(char)return_value;
 	return return_value;
 }
 

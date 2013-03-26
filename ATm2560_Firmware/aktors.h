@@ -83,6 +83,7 @@ public:
 	int oil_max_value,oil_min_value,water_max_value,water_min_value,kmh_max_value,kmh_min_value,dz_max_value,dz_min_value,bt_pin;
 
 private:
+	int current_sensor_value;
 	int dimm_steps,dimm_step,in_out;
 	short int dimm_state;
 	bool colorfade_active;

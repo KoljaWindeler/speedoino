@@ -46,6 +46,7 @@ private:
 	int parse_ul(char buffer[],int i,unsigned long *wert);
 	int parse_textreplacement(char* buffer, char* search_recopy_string);
 	int last_speed_value;
+	char hw_version;
 };
 extern configuration *pConfig;
 ///////////// CONFIG /////////////////////////

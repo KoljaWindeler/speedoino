@@ -270,8 +270,7 @@ void speedo_menu::display(){
 		Serial.println("Menustate=000002X, Bin jetzt im Sprint Tacho menu");
 #endif
 		pOLED->clear_screen();
-		pSprint->done=false;
-		pSprint->lock=false;
+		pSprint->prepare_startup();
 		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
 	/********************************************* Clock mode *********************************************/

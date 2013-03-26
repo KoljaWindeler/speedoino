@@ -18,44 +18,58 @@
 #include "global.h"
 
 speedo_sprint::speedo_sprint(void){
-	init();
+	status=SPRINT_WAIT_ON_STOP;
+	blink_show=false;                        // anzeigen oder nicht
+	previousMillis=millis();
 }
 
 speedo_sprint::~speedo_sprint(){
 }
 
-void speedo_sprint::init(){
-	done=false;                              // der sprint ist noch nicht fertig
-	lock=false;                              // ist der sprint am laufen
-	blink_show=false;                        // anzeigen oder nicht
-	previousMillis=millis();
+
+void speedo_sprint::prepare_startup(){
+	if(pSensors->get_speed(true)>0){ //mag speed if possible
+		status=SPRINT_WAIT_ON_STOP;
+	} else {
+		status=SPRINT_READY_TO_GO;
+	}
 }
 
 void speedo_sprint::loop(){
 	int speed=pSensors->get_speed(true);
-	if(!lock){ // ich bin der Meinung das es noch gar nicht losging
-		start=millis();
-		done=false;
+
+	// Change status
+	if(status==SPRINT_READY_TO_GO){
 		if(speed>0){ // aber jetzt sollte es losgehen
-			lock=true;
+			status=SPRINT_ACCEL;
+			start=millis();
 		};
-	}
-	else if(!done){ // ich bin unterwegs, aber noch nicht fertig
+	} else if(status==SPRINT_WAIT_ON_STOP){ // ich bin der Meinung das es noch gar nicht losging
+		start=millis();
+		if(speed==0){ // aber jetzt sollte es losgehen
+			status=SPRINT_READY_TO_GO;
+		};
+	} else if(status==SPRINT_ACCEL){ // ich bin unterwegs, aber noch nicht fertig
 		if(speed==0){ // reset
-			lock=false;
+			status=SPRINT_READY_TO_GO;
 		}
 		else if(speed>=100){ // geschafft
-			done=true;
+			status=SPRINT_DONE;
 			end=millis();
 		};
 	};
+
+	// calculate display refresh
 	boolean refresh=false;
-	if(!done && lock && (millis() - previousMillis > (refresh_interval/3)) ){ // wenn ich noch voll dabei bin alle 200 ms
+	if(status==SPRINT_ACCEL && (millis() - previousMillis > (REFRESH_INTERVAL/3)) ){ // wenn ich noch voll dabei bin alle 200 ms
 		refresh=true;
-	} else if((millis() - previousMillis > refresh_interval)){ // sonst alle 600 ms
+	} else if((millis() - previousMillis > REFRESH_INTERVAL)){ // sonst alle 600 ms
 		refresh=true;
 	};
+
+	// refresh display if needed
 	if(refresh){
+		Serial.println("Bin im refresh");
 		char *char_buffer;
 		char_buffer = (char*) malloc (22);
 		if (char_buffer==NULL) pDebug->sprintlnp(PSTR("Malloc failed"));
@@ -85,33 +99,38 @@ void speedo_sprint::loop(){
 
 		// zeit
 		unsigned long sprint_time;
-		if(done){ // bin fertig mit dem sprint
-			blink_show=!blink_show;
-			sprintf(char_buffer," ");
+		if(status==SPRINT_DONE){ // bin fertig mit dem sprint
+			blink_show=!blink_show; //toggle
 			sprint_time=end - start;
 		}
-		else if(lock){ // ich bin noch dabei
+		else if(status==SPRINT_ACCEL){ // ich bin noch dabei
 			sprint_time=millis()-start;
 			blink_show=true;
 		}
 		else { // ich steh noch sinnfrei rum
-			sprint_time = 0;
 			blink_show=true;
+			sprint_time=0;
 		};
 
-		if(pSpeedo->disp_zeile_bak[1]==-99){ // alles hinschreiben
-			pSpeedo->disp_zeile_bak[1]=1; // 1 ist nicht 0 und nicht sprint_time+1 => 2. schleife wird gestartet ...
-			sprintf(char_buffer,"%02i,%03i sec",(int)floor(sprint_time/1000),(int)floor((sprint_time%1000)));
-			pOLED->string(pSpeedo->default_font,char_buffer,6,6,0,DISP_BRIGHTNESS,0);
-		} else if(pSpeedo->disp_zeile_bak[1]!=signed(sprint_time+1)){
-			pSpeedo->disp_zeile_bak[1]=int(sprint_time+1);
-			sprintf(char_buffer,"%02i,%03i",(int)floor(sprint_time/1000),(int)floor((sprint_time%1000)));
+		if(pSpeedo->disp_zeile_bak[1]!=signed(sprint_time+1+status+int(blink_show))){
+			Serial.println("ungleich buak");
+			pSpeedo->disp_zeile_bak[1]=int(sprint_time+1+status+int(blink_show));
 			if(blink_show){
-				pOLED->string(pSpeedo->default_font,char_buffer,6,6,0,DISP_BRIGHTNESS,0);
+				if(status==SPRINT_WAIT_ON_STOP){
+					strcpy_P(char_buffer, PSTR("Wait on stop"));
+				} else if(status==SPRINT_READY_TO_GO){
+					strcpy_P(char_buffer, PSTR("READY"));
+				} else if(status==SPRINT_ACCEL || status==SPRINT_DONE){
+					sprintf(char_buffer,"%02i,%03i sec",(int)floor(sprint_time/1000),(int)floor((sprint_time%1000)));
+				}
 			} else {
-				pOLED->string(pSpeedo->default_font,"          ",6,6,0,DISP_BRIGHTNESS,0);
-				pSpeedo->disp_zeile_bak[1]=-99;
-			};
+				strcpy_P(char_buffer, PSTR("          "));
+			}
+			Serial.println(char_buffer);
+			pMenu->center_me(char_buffer,22);
+			Serial.println(char_buffer);
+			pOLED->string(pSpeedo->default_font,char_buffer,0,6,0,DISP_BRIGHTNESS,0);
+
 		};
 		// sichere zeitstempel
 
