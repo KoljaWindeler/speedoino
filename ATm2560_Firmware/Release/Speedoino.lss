@@ -65474,7 +65474,7 @@ Disassembly of section .text:
    24c0c:	0e 94 ab ef 	call	0x1df56	; 0x1df56 <_ZN9speedo_sdC1Ev>
    24c10:	d0 93 49 10 	sts	0x1049, r29
    24c14:	c0 93 48 10 	sts	0x1048, r28
-   24c18:	85 e0       	ldi	r24, 0x05	; 5
+   24c18:	86 e0       	ldi	r24, 0x06	; 6
    24c1a:	90 e0       	ldi	r25, 0x00	; 0
    24c1c:	0e 94 46 b6 	call	0x16c8c	; 0x16c8c <_Znwj>
    24c20:	ec 01       	movw	r28, r24

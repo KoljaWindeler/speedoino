@@ -40,20 +40,15 @@ typedef uint8_t byte;
 	#define STD_SMALL_2X_FONT		2
 	#define STD_SMALL_3X_FONT		3
 	#define STD_SMALL_4X_FONT		4
-	#define STD_MEDIUM_1X_FONT		5
-	#define STD_MEDIUM_2X_FONT		6
-	#define STD_BIG_1X_FONT			7
-	#define SANS_SMALL_1X_FONT		8
-	#define SANS_SMALL_2X_FONT		9
-	#define SANS_SMALL_3X_FONT		10
-	#define SANS_SMALL_4X_FONT		11
-	#define SANS_MEDIUM_1X_FONT		12
-	#define SANS_MEDIUM_2X_FONT		13
-	#define SANS_BIG_1X_FONT		14
-	#define VISITOR_SMALL_1X_FONT	15
-	#define VISITOR_SMALL_2X_FONT	16
-	#define VISITOR_SMALL_3X_FONT	17
-	#define VISITOR_SMALL_4X_FONT	18
+	#define SANS_SMALL_1X_FONT		5
+	#define SANS_SMALL_2X_FONT		6
+	#define SANS_SMALL_3X_FONT		7
+	#define SANS_SMALL_4X_FONT		8
+	#define SANS_BIG_1X_FONT		9
+	#define VISITOR_SMALL_1X_FONT	10
+	#define VISITOR_SMALL_2X_FONT	11
+	#define VISITOR_SMALL_3X_FONT	12
+	#define VISITOR_SMALL_4X_FONT	13
 
 
 	class ssd0323  // shell class for ssd0323 glcd code
