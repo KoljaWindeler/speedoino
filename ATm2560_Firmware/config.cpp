@@ -536,10 +536,10 @@ int configuration::write(const char *filename){
 int configuration::read_skin(){
 	if(skin_file>-1 && skin_file<9){
 		char filename[10];
-		sprintf(filename,"SKIN%i.TXT",skin_file);
+		sprintf(filename,"SKIN%i.SSF",skin_file);
 		return read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
 	} else {
-		return read(CONFIG_FOLDER,"SKIN0.TXT",READ_MODE_CONFIGFILE,""); // load default
+		return read(CONFIG_FOLDER,"SKIN0.SSF",READ_MODE_CONFIGFILE,""); // load default
 	}
 }
 
