@@ -43,6 +43,7 @@ public:
 	void reset_bak();
 	void clear_vars();
 	void check_vars();
+	void initial_draw_screen();
 	int 	  	  m_trip_mode; // welcher mode .. ob zeit, avg oder was auch immer
 	int	  		  m_trip_storage; // welcher wert angezeigt wird, 1= day 2=bla 3=blabla etc
 	int 		  disp_zeile_bak[12];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
@@ -58,7 +59,9 @@ public:
 	widget		kmhchar_widget,oil_widget,water_widget,air_widget,arrow_widget,kmh_widget,dz_widget;
 	widget		fuel_widget,gear_widget,addinfo_widget,addinfo2_widget,clock_widget,gps_widget;
 	short default_font;
-
+private:
+	bool check_no_collision_with_addinfo2(int current_widget_y);
+	bool addinfo2_currently_shown;
 
 };
 extern speedo_speedo* pSpeedo;
