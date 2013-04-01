@@ -55,40 +55,73 @@
     <string name="cancel">Cancel</string>
     <string name="create">Save</string>
     <string name="no_data">No Data</string>
-	<string name="StopAnimation">Stop</string>
-	<string name="RunAnimation">Play</string>
+    <string name="StopAnimation">Stop</string>
+    <string name="RunAnimation">Play</string>
+
     <color name="gray">#ffff0000</color>
-	
+
     <string name="RemoveMapConverter">Remove</string>
     <string name="noresponse">No response from target</string>
     <string name="straight_on">↑</string>
     <string name="interprete_this">help me interprete this</string>
     <string name="MapView">MapView</string>
     <string name="RouteMap">Show captured\nSpeedoino Map</string>
+    <string name="SkinEdit">Open SkinEditor</string>
+    <string name="SkinEditor_previewTitle">Preview | Tab to zoom</string>
 
     <string-array name="scale_values">
         <item>Scale</item>
         <item>Scale with aspect ratio</item>
         <item>Crop center</item>
     </string-array>
-    
     <string-array name="color_invert_values">
         <item>Regular colors</item>
         <item>Inverted colors</item>
     </string-array>
-    
     <string-array name="background_color_values">
         <item>Auto</item>
         <item>Black</item>
         <item>White</item>
     </string-array>
-    
-    
     <string-array name="upload_context_menu">
         <item>Play</item>
         <item>Play with custom speed</item>
         <item>Set as Startup</item>
         <item>Set as Startup with custom speed</item>
+    </string-array>
+    
+    
+    <string-array name="skin_sensor_array">
+        <item>KM/H</item>
+        <item>KM/H label</item>
+        <item>Oil</item>
+        <item>Water</item>
+        <item>Air</item>
+        <item>RPM</item>
+        <item>Arrow</item>
+        <item>Add Info</item>
+        <item>Add Info II</item>
+        <item>GPS</item>
+        <item>Fuel</item>
+        <item>Gear</item>
+        <item>Clock</item>
+    </string-array>
+    
+    
+    <string-array name="skin_font_array">
+        <item>STD_SMALL_1X_FONT</item>
+        <item>STD_SMALL_2X_FONT</item>
+        <item>STD_SMALL_3X_FONT</item>
+        <item>STD_SMALL_4X_FONT</item>
+        <item>SANS_SMALL_1X_FONT</item>
+        <item>SANS_SMALL_2X_FONT</item>
+        <item>SANS_SMALL_3X_FONT</item>
+        <item>SANS_SMALL_4X_FONT</item>
+        <item>SANS_BIG_1X_FONT</item>
+        <item>VISITOR_SMALL_1X_FONT</item>
+        <item>VISITOR_SMALL_2X_FONT</item>
+        <item>VISITOR_SMALL_3X_FONT</item>
+        <item>VISITOR_SMALL_4X_FONT</item>
     </string-array>
 
 </resources>

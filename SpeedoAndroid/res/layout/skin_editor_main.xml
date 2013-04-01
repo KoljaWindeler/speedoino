@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/road"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/SkinEditor_previewTitle" />
+
+    <ImageView
+        android:id="@+id/skinEditor_imageSmallPreview"
+        android:layout_width="300dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:contentDescription="small preview" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select sensor" />
+
+            <Spinner
+                android:id="@+id/sensor_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Font" />
+
+            <Spinner
+                android:id="@+id/font_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:orientation="vertical" >
+
+            <CheckBox
+                android:id="@+id/checkActive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Visible" />
+
+            <CheckBox
+                android:id="@+id/checkSymbol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Symbol" />
+
+            <CheckBox
+                android:id="@+id/checkBackground"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Black BG" />
+
+            <CheckBox
+                android:id="@+id/checkWarning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show Warning" />
+        </LinearLayout>
+
+        <!-- HIER die Pfeile -->
+        
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="50" >
+
+                <Button
+                    android:id="@+id/button_up"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true" />
+
+                <Button
+                    android:id="@+id/button_left"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@id/button_up"
+                    android:layout_toLeftOf="@id/button_up" />
+
+                <Button
+                    android:id="@+id/button_right"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@id/button_up"
+                    android:layout_toRightOf="@id/button_up" />
+
+                <Button
+                    android:id="@+id/button_down"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@id/button_right"
+                    android:layout_toLeftOf="@id/button_right" />
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/button_save"
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:text="Save file" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

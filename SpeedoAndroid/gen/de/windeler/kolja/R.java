@@ -12,6 +12,8 @@ public final class R {
         public static final int background_color_values=0x7f060002;
         public static final int color_invert_values=0x7f060001;
         public static final int scale_values=0x7f060000;
+        public static final int skin_font_array=0x7f060005;
+        public static final int skin_sensor_array=0x7f060004;
         public static final int upload_context_menu=0x7f060003;
     }
     public static final class attr {
@@ -75,16 +77,22 @@ public final class R {
         public static final int StopAnimationImageConverter=0x7f08002a;
         public static final int TextLayout=0x7f080001;
         public static final int TextLayoutasd=0x7f080006;
-        public static final int browseToRouteMap=0x7f080048;
-        public static final int browseToUploadConfig=0x7f08004c;
-        public static final int browseToUploadFirmware=0x7f08004d;
-        public static final int browseToUploadGfx=0x7f08004b;
-        public static final int browseToUploadMap=0x7f08004a;
+        public static final int browseToEditSkin=0x7f080054;
+        public static final int browseToRouteMap=0x7f080053;
+        public static final int browseToUploadConfig=0x7f080058;
+        public static final int browseToUploadFirmware=0x7f080059;
+        public static final int browseToUploadGfx=0x7f080057;
+        public static final int browseToUploadMap=0x7f080056;
         public static final int button_down=0x7f080005;
         public static final int button_left=0x7f080003;
         public static final int button_right=0x7f080004;
+        public static final int button_save=0x7f080051;
         public static final int button_scan=0x7f080011;
         public static final int button_up=0x7f080002;
+        public static final int checkActive=0x7f08004d;
+        public static final int checkBackground=0x7f08004f;
+        public static final int checkSymbol=0x7f08004e;
+        public static final int checkWarning=0x7f080050;
         public static final int connectLayout=0x7f080000;
         public static final int dlList=0x7f080015;
         public static final int dl_selected_file=0x7f080018;
@@ -97,6 +105,7 @@ public final class R {
         public static final int fdrowtext=0x7f08001d;
         public static final int fdrowtext_lower=0x7f080023;
         public static final int filter=0x7f080021;
+        public static final int font_spinner=0x7f08004c;
         public static final int imageSpeedoPreview=0x7f080025;
         public static final int image_editor_settings_background_color=0x7f080031;
         public static final int image_editor_settings_close=0x7f080032;
@@ -127,22 +136,27 @@ public final class R {
         public static final int mdrowimage=0x7f080036;
         public static final int mdrowtext=0x7f080037;
         public static final int mdrowtext_lower=0x7f080038;
-        public static final int menu_about=0x7f080050;
-        public static final int menu_connect=0x7f08004e;
-        public static final int menu_exit=0x7f080052;
-        public static final int menu_save_kml=0x7f080051;
-        public static final int menu_settings=0x7f08004f;
+        public static final int menu_about=0x7f08005c;
+        public static final int menu_connect=0x7f08005a;
+        public static final int menu_exit=0x7f08005e;
+        public static final int menu_save_kml=0x7f08005d;
+        public static final int menu_settings=0x7f08005b;
         public static final int new_devices=0x7f080010;
         public static final int paired_devices=0x7f08000e;
         public static final int path=0x7f080014;
         public static final int relativeLayout01=0x7f08001e;
+        public static final int sensor_spinner=0x7f08004a;
+        public static final int skinEditor_imageSmallPreview=0x7f080048;
         public static final int spacer=0x7f080027;
         public static final int status_cap=0x7f080007;
         public static final int status_value=0x7f080008;
+        public static final int textView1=0x7f080049;
+        public static final int textView11=0x7f08004b;
+        public static final int title=0x7f080047;
         public static final int title_new_devices=0x7f08000f;
         public static final int title_paired_devices=0x7f08000d;
-        public static final int tool_Layout=0x7f080047;
-        public static final int uploadLayout=0x7f080049;
+        public static final int tool_Layout=0x7f080052;
+        public static final int uploadLayout=0x7f080055;
         public static final int version_cap=0x7f080009;
         public static final int version_value=0x7f08000a;
         public static final int zoom=0x7f080035;
@@ -162,8 +176,9 @@ public final class R {
         public static final int map_dialog_row=0x7f03000b;
         public static final int map_editor_main=0x7f03000c;
         public static final int selector=0x7f03000d;
-        public static final int tool_layout=0x7f03000e;
-        public static final int upload=0x7f03000f;
+        public static final int skin_editor_main=0x7f03000e;
+        public static final int tool_layout=0x7f03000f;
+        public static final int upload=0x7f030010;
     }
     public static final class menu {
         public static final int menu=0x7f070000;
@@ -184,6 +199,8 @@ public final class R {
         public static final int SaveImageConverter=0x7f05001f;
         public static final int Select_file=0x7f05002c;
         public static final int Settings=0x7f050013;
+        public static final int SkinEdit=0x7f05003e;
+        public static final int SkinEditor_previewTitle=0x7f05003f;
         public static final int StopAnimation=0x7f050036;
         public static final int app_name=0x7f050005;
         public static final int bindestrich=0x7f05000e;

@@ -1,10 +1,12 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tool_Layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/road"
-    android:orientation="vertical" >
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tool_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/road"
+        android:layout_gravity="fill" >
+        
+        
     <Button
         android:id="@+id/browseToRouteMap"
         android:layout_width="150dp"
@@ -21,4 +23,21 @@
         android:textSize="15dp"
         android:textStyle="bold" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/browseToEditSkin"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/bt_config"
+        android:drawablePadding="10dp"
+        android:paddingTop="100dp"
+        android:shadowColor="#FFF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="8"
+        android:text="@string/SkinEdit"
+        android:textColor="#ff000000"
+        android:textSize="15dp"
+        android:layout_toRightOf="@id/browseToRouteMap"
+        android:textStyle="bold" />
+
+</RelativeLayout>

@@ -37,19 +37,22 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/Select_file"
             android:theme="@android:style/Theme.Dialog" />
-        <activity android:name="TermPreferences" />
         <activity
             android:name=".ImageEditor"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/ImageEditor"
             android:theme="@android:style/Theme.Dialog" />
-        <activity android:name="TermPreferences" />
+        <activity
+            android:name=".SkinEditor"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/ImageEditor"
+            android:theme="@android:style/Theme.NoTitleBar" />
+
         <activity
             android:name=".MapEditor"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/MapEditor"
             android:theme="@android:style/Theme.Dialog" />
-        <activity android:name="TermPreferences" />
         <activity
             android:name=".RouteMap"
             android:configChanges="orientation|keyboardHidden"
@@ -61,7 +64,6 @@
             android:label="@string/Settings"
             android:theme="@android:style/Theme.Dialog" />
         <uses-library android:name="com.google.android.maps" />
-        <activity android:name="TermPreferences" />
     </application>
 
 </manifest>

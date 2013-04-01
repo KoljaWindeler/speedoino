@@ -116,6 +116,8 @@ OnClickListener {
 	private static final int REQUEST_SHOW_MAP_DONE = 10; // open maps
 	private static final int REQUEST_UPLOAD_FIRMWARE = 11; // firmware
 	private static final int REQUEST_SELECTED_DEVICE = 12; // get selected bluetooth device
+	private static final int REQUEST_EDIT_SKIN=13;
+	private static final int REQUEST_EDIT_SKIN_DONE=14;
 
 
 	// transfer messages
@@ -233,6 +235,7 @@ OnClickListener {
 		DeleteButton = (Button) findViewById(R.id.DeleteButton);
 		DeleteButton.setOnClickListener(this);
 		mDLListView = (ListView) findViewById(R.id.dlList);
+		findViewById(R.id.browseToEditSkin).setOnClickListener(this);
 
 		update_visible_elements(false);
 
@@ -446,6 +449,13 @@ OnClickListener {
 			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 			startActivityForResult(intent, REQUEST_SHOW_MAP);
 			break;
+		case R.id.browseToEditSkin:
+			intent = new Intent(getBaseContext(), FileDialog.class);
+			intent.putExtra(FileDialog.START_PATH, dl_basedir);
+			intent.putExtra(FileDialog.EXT_FILTER, "SSF");
+			intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+			startActivityForResult(intent, REQUEST_EDIT_SKIN);
+			break;
 		case R.id.browseToUploadFirmware:
 			firmware_update(1,null,null);
 			break;
@@ -626,6 +636,16 @@ OnClickListener {
 				intent = new Intent(getBaseContext(), RouteMap.class);
 				intent.putExtra(RouteMap.INPUT_FILE_NAME, filePath);
 				startActivityForResult(intent, REQUEST_SHOW_MAP_DONE);
+			};
+			break;
+		case REQUEST_EDIT_SKIN:
+			Log.i(TAG, "Image converter hat was zurueckgegeben ");
+			if (resultCode == RESULT_OK) {
+				filePath = data.getStringExtra(FileDialog.RESULT_PATH);
+				Log.i(TAG, "Der Resultcode war OK, der Pfad:" + filePath);
+				intent = new Intent(getBaseContext(), SkinEditor.class);
+				intent.putExtra(SkinEditor.INPUT_FILE_NAME, filePath);
+				startActivityForResult(intent, REQUEST_EDIT_SKIN_DONE);
 			};
 			break;
 		case REQUEST_UPLOAD_FIRMWARE:
@@ -1205,7 +1225,7 @@ OnClickListener {
 		if(menuItemIndex==1 || menuItemIndex==3){
 			SingleChoiceWithRadioButton(menuItemIndex);
 		}
-		
+
 		// go on
 		if(menuItemIndex==0){
 			mSerialService.showgfx(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1));
@@ -1224,7 +1244,7 @@ OnClickListener {
 		for(int i=0; i<300; i++){
 			delays[i] =String.valueOf(i*5)+" ms";
 		};
-		
+
 		builder.setItems(delays, new DialogInterface.OnClickListener() {  
 			@Override  
 			public void onClick(DialogInterface dialog, int which) {  
