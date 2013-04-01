@@ -237,18 +237,7 @@ void speedo_menu::display(){
 		Serial.println("Menustate 00001X, Bin jetzt im Tacho menu, zeichne icons");
 #endif
 
-		if(pSpeedo->oil_widget.symbol && !(pSpeedo->oil_widget.x==-1 && pSpeedo->oil_widget.y==-1))
-			pOLED->draw_oil(pSpeedo->oil_widget.x*3,pSpeedo->oil_widget.y*8); //3=6/2 weil doppelpixxel
-		if(pSpeedo->water_widget.symbol && !(pSpeedo->water_widget.x==-1 && pSpeedo->water_widget.y==-1))
-			pOLED->draw_water(pSpeedo->water_widget.x*3,pSpeedo->water_widget.y*8); // bisher oil icon
-		if(pSpeedo->fuel_widget.symbol && !(pSpeedo->fuel_widget.x==-1 && pSpeedo->fuel_widget.y==-1))
-			pOLED->draw_fuel(pSpeedo->fuel_widget.x*3,pSpeedo->fuel_widget.y*8); // 7 => 56
-		if(pSpeedo->air_widget.symbol && !(pSpeedo->air_widget.x==-1 && pSpeedo->air_widget.y==-1))
-			pOLED->draw_air(pSpeedo->air_widget.x*3,pSpeedo->air_widget.y*8);
-		if(pSpeedo->clock_widget.symbol && !(pSpeedo->clock_widget.x==-1 && pSpeedo->clock_widget.y==-1))
-			pOLED->draw_clock(pSpeedo->clock_widget.x*3,pSpeedo->clock_widget.y*8);
-
-		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
+		pSpeedo->initial_draw_screen(); // draw symbols
 
 		// wenn wir nicht in der navigation sind, die tasten für hoch und runter deaktiveren
 		if(!pSensors->m_gps->navi_active){
@@ -664,7 +653,7 @@ void speedo_menu::display(){
 
 		// generate filename
 		char filename[10];
-		sprintf(filename,"SKIN%i.TXT",int((state%10)-1));
+		sprintf(filename,"SKIN%i.SSF",int((state%10)-1));
 
 		// check if file exists
 		SdFile file;
