@@ -500,7 +500,7 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 		output+="gps_widget.font="+String.valueOf(gps_font)+";\r\n";
 		
 		
-		output+="default_font=15;\r\n";
+		output+="default_font=10;\r\n";
 
 		FileOutputStream out = null;
 		try {
