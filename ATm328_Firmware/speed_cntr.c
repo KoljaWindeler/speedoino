@@ -146,17 +146,56 @@ void speed_cntr_Move(signed int soll_pos, unsigned int accel, unsigned int max_s
 			} else {
 				srd_next.run_state = ACCEL;
 			}
-//			uart_SendString("starte timer\n\r");
-			OCR1A = 10; 			// mach mal ein paar schritte (10)
-			// prescale 8
-			TCCR1B |= T1_RUN;
-			TCNT1=0;   //reset the counter
+//			uart_SendString("->STOP\r\n");
+//			uart_SendString("run_state:");
+//			uart_SendByte(srd_next.run_state+'0');
+//			uart_SendString("\r\n");
+//			uart_SendString("decel_steps_neg:");
+//			uart_SendInt(srd_next.decel_steps_neg);
+//			uart_SendString("\r\n");
+//			uart_SendString("position:");
+//			uart_SendInt(srd_next.position);
+//			uart_SendString("\r\n");
+//			uart_SendString("differ_steps:");
+//			uart_SendInt(differ_steps);
+//			uart_SendString("\r\n");
+
+			//			uart_SendString("starte timer\n\r");
+			//			OCR1A = 10; 			// mach mal ein paar schritte (10)
+			//			// prescale 8
+			//			TCCR1B |= T1_RUN;
+			//			TCNT1=0;   //reset the counter
 
 		} else if(srd_next.run_state==DECEL){
-			if((soll_pos+srd_next.decel_steps_neg>srd_next.decel_start && srd_next.dir==CW) || (soll_pos+srd_next.decel_steps_neg<srd_next.decel_start && srd_next.dir==CCW)){
+//			uart_SendString("if((");
+//			uart_SendInt(soll_pos);
+//			uart_SendString("+");
+//			uart_SendInt(srd_next.decel_steps_neg);
+//			uart_SendString(">");
+//			uart_SendInt(srd_next.decel_start);
+//			uart_SendString(" && ");
+//			uart_SendByte(srd_next.dir+'0');
+//			uart_SendString("\r\n");
+
+			// wenn die soll position zu der wir gerade fahren weiter im uhrzeigersinn liegt, als unsere aktuelle stop position + die bremsdauer und wir auch im uhrzeigersinn fahren
+			// dann sollten wir weiter fahren
+			// das gleiche gilt andersherum ebenfalls... sollte wir weiter zurück wollen als unser bremsstart + die schritte die wir bremsen ..
+			// dann sollten wir statt zu bremsen wieder gas geben
+
+			if(((signed)soll_pos>(signed)(srd_next.decel_start+(-srd_next.decel_steps_neg)) && srd_next.dir==CW) ||
+			   ((signed)soll_pos<(signed)(srd_next.decel_start+srd_next.decel_steps_neg) && srd_next.dir==CCW)){
 				srd_next.min_delay = A_T_x100 / speed;
 				//srd_step_delay = (T1_FREQ_148 * Sqr(A_SQ /accel)) / 100 DO NOT CHANGE IT
 				step_to_max_speed = speed * (speed / ((A_x20000 *accel) / 100));
+//				uart_SendString("AAA\r\n");
+//				uart_SendInt(soll_pos);
+//				uart_SendString("+");
+//				uart_SendInt(srd_next.decel_steps_neg);
+//				uart_SendString(">");
+//				uart_SendInt(srd_next.decel_start);
+//				uart_SendString(" && ");
+//				uart_SendByte(srd_next.dir+'0');
+//				uart_SendString("\r\n");
 
 				if(step_to_max_speed == 0){
 					step_to_max_speed = 1;
@@ -202,20 +241,20 @@ void speed_cntr_Move(signed int soll_pos, unsigned int accel, unsigned int max_s
 				step_to_max_speed = speed * (speed /((A_x20000 * accel) / 100));
 
 				/* this is danger! wir wissen ja nicht genau, sind wir vielleicht arsch langsam
-				* zu unserer jetzigen geschwindigkeit hingeschlichen. oder waren wir mit gleicher
-				* beschleunigung unterwegs? Schöner wäre es zu sagen:
-				* Wir haben differ_steps bis wir da sind wo wir hin wollen
-				* Schaffen wir das auf dem Weg dort hin auf max speed zu kommen ?
-				* Ja, wenn die Anzahl an schritten um von der jetzigen Geschwindigkeit auf max_speed zu kommen
-				* PLUS die anzahl an bremsschritten ... wenn das mehr ist als differ_steps
-				* Die Bremsschritte zu berechnen ist einfach, das ist "steps_to_max_speed" aber wieviele schritte
-				* brauchen wir von unserer aktuellen geschwindigkeit (implizit in srd_next.step_delay enthalten) auf max_speed ??
-				*
-				* Die Zeit zwischen den Steps wird ja erstmal im Startwert nur von ACCELL=240 abhängig "berechnet" (ist eigentlich fix)
-				* Und dann wird sie anhand der gefahrenen schritte kleiner gemacht .. hey cool das ist IMMER der gleiche verlauf
-				* die deckelung kommt dann über "min_delay" rein
-				*
-				*/
+				 * zu unserer jetzigen geschwindigkeit hingeschlichen. oder waren wir mit gleicher
+				 * beschleunigung unterwegs? Schöner wäre es zu sagen:
+				 * Wir haben differ_steps bis wir da sind wo wir hin wollen
+				 * Schaffen wir das auf dem Weg dort hin auf max speed zu kommen ?
+				 * Ja, wenn die Anzahl an schritten um von der jetzigen Geschwindigkeit auf max_speed zu kommen
+				 * PLUS die anzahl an bremsschritten ... wenn das mehr ist als differ_steps
+				 * Die Bremsschritte zu berechnen ist einfach, das ist "steps_to_max_speed" aber wieviele schritte
+				 * brauchen wir von unserer aktuellen geschwindigkeit (implizit in srd_next.step_delay enthalten) auf max_speed ??
+				 *
+				 * Die Zeit zwischen den Steps wird ja erstmal im Startwert nur von ACCELL=240 abhängig "berechnet" (ist eigentlich fix)
+				 * Und dann wird sie anhand der gefahrenen schritte kleiner gemacht .. hey cool das ist IMMER der gleiche verlauf
+				 * die deckelung kommt dann über "min_delay" rein
+				 *
+				 */
 				if((step_to_max_speed * 2) - srd_next.accel_steps>= differ_steps){ // wir sind ja schon ein teil der rampe gefahren, srd_accel_steps weit
 					// hier kommen wir rein wenn differ_steps nicht groß genug ist, also dreieck
 					// leider geil :D
@@ -261,11 +300,21 @@ void speed_cntr_Move(signed int soll_pos, unsigned int accel, unsigned int max_s
 		}
 	}
 	//uart_SendString(temp);
+	char start_timer=0x00;
+	if(srd.run_state==STOP){
+		start_timer=0x01;
+	}
 	// now copy all facts to the operation struct, but without getting interrupted
 	cli();
 	srd=srd_next;
 	sei();
+//	uart_SendString("set!\n\r");
 	// now copy all facts to the operation struct, but without getting interrupted
+	if(start_timer){
+		OCR1A = 10; 			// mach mal ein paar schritte (10) ... hä?
+		TCCR1B |= T1_RUN;
+		TCNT1=0;   //reset the counter
+	}
 }
 
 
@@ -300,8 +349,8 @@ void speed_cntr_Init_Timer1(void){
  *
  *  Timer1 läuft als 16-Bit Timer.
  *  Max 65535
- *  Speed: Prescale 8 => F_CPU=8Mhz/8 = 1000000Hz
- *  Timer max timeout = 0xffff/1000000=0,065535 sec
+ *  Speed: Prescale 8 => F_CPU=16Mhz/8 = 2000000Hz
+ *  Timer max timeout = 0xffff/2000000=0,0327675 sec
  */
 ISR(TIMER1_COMPA_vect){
 	// Holds next delay period.
@@ -314,12 +363,11 @@ ISR(TIMER1_COMPA_vect){
 	OCR1A = srd.step_delay;
 
 	switch(srd.run_state) {
-	case STOP:
+	case STOP: // for safety
 
 		//rest = 0;
 		// Stop Timer/Counter 1.
 		TCCR1B &= T1_STOP;
-
 		// Reset counter.
 		srd.accel_steps = 0;// Set Timer/Counter to divide clock by 1
 		break;
@@ -340,6 +388,7 @@ ISR(TIMER1_COMPA_vect){
 		if(srd.position == srd.decel_start) {
 			srd.accel_steps = -srd.accel_steps;
 			srd.run_state = DECEL;
+//			uart_SendString("D\r\n");
 		}
 		// Chech if we hitted max speed.
 		else if(new_step_delay <= srd.min_delay || srd.accel_steps>(-srd.decel_steps_neg)) { // geht das?
@@ -347,6 +396,7 @@ ISR(TIMER1_COMPA_vect){
 			new_step_delay = srd.min_delay;
 			//rest = 0;
 			srd.run_state = RUN;
+//			uart_SendString("R\r\n");
 		}
 		break;
 	case RUN:
@@ -365,6 +415,7 @@ ISR(TIMER1_COMPA_vect){
 			// Start decelration with same delay as accel ended with.
 			new_step_delay = last_accel_delay;
 			srd.run_state = DECEL;
+//			uart_SendString("D\r\n");
 		}
 		break;
 	case DECEL:
@@ -384,7 +435,11 @@ ISR(TIMER1_COMPA_vect){
 		// Check if we at last step
 		if(srd.accel_steps >= 0){
 			srd.run_state = STOP;
-			OCR1A=0x03ff;
+			// Stop Timer/Counter 1.
+			TCCR1B &= T1_STOP;
+//			uart_SendString("S\r\n");
+			// Reset counter.
+			srd.accel_steps = 0;// Set Timer/Counter to divide clock by 1
 		}
 		break;
 	}
