@@ -29,6 +29,7 @@ class debugging{
 #undef       CAN_DEBUG			// Show incoming and outgoing frames
 #undef       DEBUG_TRANSFER           // show traffic on filemanager
 #undef       DEBUG_TRANSFER_INTENSIV  // show every traffic on filemanager
+#define		 STEPPER_DEBUG
 
 public:
 	debugging(void);

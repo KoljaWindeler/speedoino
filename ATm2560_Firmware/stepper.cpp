@@ -81,13 +81,15 @@ bool speedo_stepper::go_to(int winkel,int accel,int speed){
 	Serial3.print("*");
 
 	// debug
-	//	Serial.print("$m");
-	//	Serial.print(winkel);
-	//	Serial.print(",");
-	//	Serial.print(accel);
-	//	Serial.print(",");
-	//	Serial.print(speed);
-	//	Serial.print("*");
+#ifdef STEPPER_DEBUG /// DEBUG
+		Serial.print("$m");
+		Serial.print(winkel);
+		Serial.print(",");
+		Serial.print(accel);
+		Serial.print(",");
+		Serial.print(speed);
+		Serial.print("*");
+#endif
 
 	return true;
 };
@@ -97,10 +99,11 @@ bool speedo_stepper::go_to(int winkel){
 	Serial3.print(winkel);
 	Serial3.print("*");
 
-	//
-	//	Serial.print(millis());
-	//	Serial.print(",");
-	//	Serial.println(winkel);
+#ifdef STEPPER_DEBUG /// DEBUG
+		Serial.print(millis());
+		Serial.print(",");
+		Serial.println(winkel);
+#endif
 
 	return true;
 };
