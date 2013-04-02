@@ -1795,7 +1795,7 @@ public class BluetoothSerialService {
 		////// hier beginnt teil 5, Die ID des Bootloaders abzufragen  //////	
 		boolean correct_id_found=false;
 		int retries=0;
-		while(retries<4 && !correct_id_found){
+		while(retries<3 && !correct_id_found){
 			retries++;
 
 			// fortschritt schreiben
