@@ -371,7 +371,6 @@ void Speedo_CAN::process_incoming_messages(){
 					return;
 				} else if(message.data[2]==CAN_WATER_TEMPERATURE){
 					can_water_temp=(message.data[3]-40)*10;
-					can_missed_count=0;
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
 					Serial.print("New watertemp:");
 					Serial.println(can_water_temp);
@@ -428,11 +427,13 @@ void Speedo_CAN::process_incoming_messages(){
 			}
 		}
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
+		Serial.println("Warning - unprocessed message detected");
 		char buffer[30];
 		sprintf(buffer,"%02x %02x %02x %02x %02x %02x %02x %02x",message.data[0],message.data[1],message.data[2],message.data[3],message.data[4],message.data[5],message.data[6],message.data[7]);
 		Serial.println(buffer);
 #endif /////////////// DEBUG //////////
 	}
+	message_available=false; // all messages processed
 }
 
 bool Speedo_CAN::decode_dtc(char* char_buffer,char ECU_type){
@@ -642,6 +643,7 @@ uint8_t Speedo_CAN::can_get_message(CANMessage *p_message){
 
 	// Laenge auslesen
 	uint8_t length = spi_putc(0xff) & 0x0f;
+	if(length>8) length=8; // to avoid buffer overrun
 	p_message->length = length;
 
 	// Daten auslesen

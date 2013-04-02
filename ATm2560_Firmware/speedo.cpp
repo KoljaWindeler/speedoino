@@ -182,12 +182,13 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		else{
 			addinfo2_currently_shown=false;
 			if(disp_zeile_bak[ADD_INFO2]!=105){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
-				disp_zeile_bak[ADD_INFO2]=105;
+
 				pDebug->speedo_loop(15,0,previousMillis," ");
 				pOLED->string_P(addinfo2_widget.font,PSTR("                      "),0,addinfo2_widget.y,0,0,1);
 				// if any widget is in the same line, reset the particular line, so the next loop will redraw the sensor
 				// inital draw screen will redraw all symbols and reset disp_zeile_bak
 				initial_draw_screen();
+				disp_zeile_bak[ADD_INFO2]=105;
 			};
 		};
 	};

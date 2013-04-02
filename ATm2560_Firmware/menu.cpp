@@ -719,7 +719,7 @@ void speedo_menu::display(){
 	else if(floor(state/100)==61) { // 0061[X]1
 		// load this skinfile
 		char filename[10];
-		sprintf(filename,"SKIN%i.TXT",(int(floor(state/10))%10)-1);
+		sprintf(filename,"SKIN%i.SSF",(int(floor(state/10))%10)-1);
 		pConfig->read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
 		pOLED->clear_screen();
 		pOLED->string_P(pSpeedo->default_font,PSTR("Preview"),6,3);
@@ -1936,8 +1936,6 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
 		// wenn wir starten bei 652 und gehen rechts, sind wir in 6521, 652 ist base, old_state auch, daher ist dann der neue state 65211
 		if(	old_state==base_state){
-			Serial.print("bin drin und state ist ");
-			Serial.println(state);
 			state=state*10+1;
 			state_helper=0;
 			if(just_one_line_mode) state_helper=1;
@@ -1946,8 +1944,6 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			// andernfalls wollen wir gerade vom Einstellungsmenü ins Hauptmenü
 			// wir sind nach links, jetzt müssen wir checken: sind wir das weil wir zurück aus dem Menü wollten, oder
 			// wollten wir nur ein Feld weiter nach links. Die Felder sind numeriert in "state_helper"
-			Serial.print("bin draußen und state ist ");
-			Serial.println(state);
 		} else {
 			// wirklich zurück ins Hauptmenü
 			if(state_helper==0 || (state_helper==1 && just_one_line_mode)){

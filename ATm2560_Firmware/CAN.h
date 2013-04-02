@@ -65,7 +65,7 @@ public:
 	void shutdown();
 	void request(char mode,char PID);
 	bool failed;
-	bool message_available;
+	volatile bool message_available;
 	void process_incoming_messages();
 	uint8_t can_get_message(CANMessage *p_message);// move me back to private
 	bool decode_dtc(char* char_buffer,char ECU_type);
