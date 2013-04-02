@@ -30,6 +30,8 @@ private:
 	volatile unsigned int m_mon;
 	volatile unsigned int m_year;
 	volatile unsigned int m_dayOfWeek;
+	volatile bool wintertime;
+	void inc_hours();
 public:
 	speedo_clock(void);
 	~speedo_clock();
@@ -42,7 +44,7 @@ public:
 	int getdate();
 	unsigned long get_long_date();
 	void set_date_time(int year,int mon,int day,int hh,int mm,int ss, bool check_winter);
-	unsigned int is_winter_time(unsigned int year,unsigned int month,unsigned int day,unsigned int hour,unsigned int minute,unsigned int second);
+	bool is_winter_time(unsigned int year,unsigned int month,unsigned int day,unsigned int hour,unsigned int minute,unsigned int second);
 	short int get_ss();
 	void inc();
 };
