@@ -1,0 +1,64 @@
+#Koljas Porsche Tacho, kein km
+# Die erste Zeile wird als Beschreibung genutzt wenn sie mit einem "#" anfängt, bitte umlaute vermeiden.
+# Kommentarzeilen grundsätzlich mit einem "#" beginnen lassen und nicht hinter einem zu parsenden string
+# also nicht: "fuel_widget.x<=14; #damit es passt"
+# symbol= 1 für an, alles andere für aus")
+#
+# Schriftarten:
+# STD_SMALL_1X_FONT	1
+# STD_SMALL_2X_FONT	2
+# STD_SMALL_3X_FONT	3
+# STD_SMALL_4X_FONT	4
+# SANS_SMALL_1X_FONT	5
+# SANS_SMALL_2X_FONT	6
+# SANS_SMALL_3X_FONT	7
+# SANS_SMALL_4X_FONT	8
+# SANS_BIG_1X_FONT		9
+# VISITOR_SMALL_1X_FONT	10
+# VISITOR_SMALL_2X_FONT	11
+# VISITOR_SMALL_3X_FONT	12
+# VISITOR_SMALL_4X_FONT	13
+fuel_widget.x=14;
+fuel_widget.y=7;
+fuel_widget.symbol=1;
+fuel_widget.font=10;
+oil_widget.x=0;
+oil_widget.y=0;
+oil_widget.symbol=1;
+oil_widget.font=10;
+water_widget.x=0;
+water_widget.y=0;
+water_widget.symbol=0;
+water_widget.font=0;
+air_widget.x=14;
+air_widget.y=0;
+air_widget.symbol=1;
+air_widget.font=10;
+clock_widget.x=0;
+clock_widget.y=7;
+clock_widget.symbol=1;
+clock_widget.font=10;
+arrow_widget.x=0;
+arrow_widget.y=1;
+kmh_widget.x=6;
+kmh_widget.y=2;
+kmh_widget.font=12;
+kmhchar_widget.x=10;
+kmhchar_widget.y=4;
+kmhchar_widget.font=10;
+gear_widget.x=11;
+gear_widget.y=7;
+gear_widget.font=10;
+dz_widget.x=-1;
+dz_widget.y=-1;
+dz_widget.font=13;
+addinfo_widget.x=0;
+addinfo_widget.y=6;
+addinfo_widget.font=10;
+addinfo2_widget.x=0;
+addinfo2_widget.y=6;
+addinfo2_widget.font=10;
+gps_widget.x=-1;
+gps_widget.y=-1;
+gps_widget.font=10;
+default_font=10;
