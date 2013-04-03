@@ -88,6 +88,8 @@ void speedo_clock::inc_hours(){
 	char inc=GMT_TIME_CORRECTION;
 	if(!wintertime){
 		inc++;
+		inc++;
+		inc--;
 	}
 	// nachziehen
 	m_hh+=inc;
