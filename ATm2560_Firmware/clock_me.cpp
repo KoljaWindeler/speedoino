@@ -76,7 +76,7 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss, 
 
 	// berechnung der Winterzeit mit Rohdaten
 	if(check_winter){
-		if(!is_winter_time(m_year,m_mon,m_day,m_hh,m_mm,m_ss)){ // ist winterzeit?
+		if(!is_winter_time(m_year,m_mon,m_day,m_hh,m_mm,m_ss)){ // ist wintertime?
 			wintertime=false;
 		};
 	};
