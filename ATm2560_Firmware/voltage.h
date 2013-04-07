@@ -23,6 +23,7 @@ private:
 	int value;
 	unsigned char value_counter;
 	unsigned int start_time;
+	void keep_me_alive(bool active);
 };
 
 

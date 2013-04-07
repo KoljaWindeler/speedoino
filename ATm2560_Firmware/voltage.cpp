@@ -33,7 +33,11 @@ void speedo_voltage::calc(){
 		pSpeedo->regular_startup=true;
 	}
 
-	if(!pSpeedo->regular_startup){ // i am in clock mode
+	if(pSpeedo->regular_startup){
+		if(value<45){ // shutdown ?
+			keep_me_alive(false); // shut down if low pass voltage under 4.5V
+		}
+	} else { // i am in clock mode
 		// check if we still hold the "left" button, to extend the time
 		if(!(PINJ & (1<<menu_button_links))){ // button still down
 			start_time=millis()/1000;
@@ -41,7 +45,7 @@ void speedo_voltage::calc(){
 
 		// check if we have to deactivate us self
 		if((start_time+CLOCK_UP_TIME)<(millis()/1000)){ // clock was visible for N sec
-			PORTL &= ~(1<<PINL0); // shut down
+			keep_me_alive(false); // shut down
 		} else if((start_time+CLOCK_UP_TIME-1)<(millis()/1000)){ // 1sek previous
 			pOLED->string_P(pSpeedo->default_font,PSTR("ByeBye "),7,7);
 		};
@@ -49,7 +53,7 @@ void speedo_voltage::calc(){
 
 	// main power turn up while in clock mode
 	if(!was_regular_startup_befor_mesurement && pSpeedo->regular_startup){
-		PORTL &= ~(1<<PINL0); // shut down
+		keep_me_alive(true); 		// true
 		pOLED->init_speedo();
 		pMenu->init(); // restart init process
 		pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
@@ -98,11 +102,20 @@ void speedo_voltage::init(){
 	calc();
 	if(!pSpeedo->regular_startup){
 		start_time=millis()/1000; // sec of start
-		DDRL |= (1<<PINL0); // define as output
-		PORTL |= (1<<PINL0); // set high
+		keep_me_alive(true);
 	} else {
 		start_time=9999;
 	}
 	pDebug->sprintlnp(PSTR("Voltage init done"));
 };
 
+
+// handle transistor to dauerplus
+void speedo_voltage::keep_me_alive(bool active){
+	if(active){
+		DDRL |= (1<<PINL0); // define as output
+		PORTL |= (1<<PINL0); // set high
+	} else {
+		PORTL &= ~(1<<PINL0); // shut down
+	}
+}
