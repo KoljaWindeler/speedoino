@@ -35,6 +35,8 @@ Speedo_sensors::Speedo_sensors(){
 	ten_Hz_timer=millis();
 	CAN_active=true; // don't care, will change it in init
 	sensor_source=0;
+	last_highbeam_on=0;
+	last_oil_off=0;
 };
 
 // destructor just for nuts
@@ -54,7 +56,7 @@ void Speedo_sensors::init(){
 	m_reset->init();
 	m_gear->init();
 	m_voltage->init();
-	m_CAN->init();
+	//	m_CAN->init();
 
 	cli(); // TODO ... unschön, warum reagiert er überhaupt schon auf interrupts?
 	// Blinker LINKS Interrupt
@@ -236,7 +238,7 @@ void Speedo_sensors::single_read(){
 	pDebug->sprintp(PSTR("Done\r\nReading: Oil temp ... "));
 	pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
 	pDebug->sprintp(PSTR("Done\r\nReading: Water temp ... "));
-	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren
+	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren TODO nur wenn kein CAN
 	pDebug->sprintp(PSTR("Done\r\nReading: Voltages ... "));
 	pSensors->m_voltage->calc(); // spannungscheck
 	char temp[6];
@@ -487,19 +489,19 @@ ISR(INT7_vect ){
 }
 // interrupt to update sensors
 ISR(PCINT2_vect ){
-	pSensors->check_inputs();
-
 	// check if its the right version before test the pin
 	if(pConfig->get_hw_version()==7){
 		if(!(PINK&(1<<CAN_INTERRUPT_PIN_V7))){	 // if the CAN pin is low, low active interrupt
 			if(pSensors->CAN_active){		 // is the CAN mode active
 				pSensors->m_CAN->message_available=true;
+
 #ifdef CAN_DEBUG
 				Serial.println("Interrupt: Msg available");
 #endif
 			};
 		};
 	}
+	pSensors->check_inputs();
 }
 
 ISR(PCINT0_vect){
@@ -520,16 +522,34 @@ void Speedo_sensors::check_inputs(){
 	unsigned char high_beam=0x00;
 	unsigned char flasher_left=0x00;
 	unsigned char flasher_right=0x00;
-	unsigned char oil_pressure=0x01; // low active
+	unsigned char oil_pressure=0x00; // low active
 	unsigned char neutral_gear=0x01; // low active
 
-	if(PINK&(1<<HIGH_BEAM_PIN)){
-		high_beam=0x01;
+	if(PINK&(1<<HIGH_BEAM_PIN)){  // pin is high
+		if(last_highbeam_on==0){
+			last_highbeam_on=millis();
+			high_beam=0x00; // not now
+		} else if(millis()-last_highbeam_on>500) { // last active >1sec
+			high_beam=0x01;
+		}
+	} else { // pin is low, High beam is off
+		last_highbeam_on=0;
+		high_beam=0x00; // switch off
 	}
 
-	if(PINK&(1<<OIL_PRESSURE_PIN)){	 // if the pin is still high, the pulldown is active, signal is not active
-		oil_pressure=0x00;
+	if(!(PINK&(1<<OIL_PRESSURE_PIN))){  // pin is low, (low active)
+		if(last_oil_off==0){
+			last_oil_off=millis();
+			oil_pressure=0x00; // not now
+		} else if(millis()-last_oil_off>500) { // last active >1sec
+			oil_pressure=0x01;
+		}
+	} else { // pin is high, oil is off
+		last_oil_off=0;
+		oil_pressure=0x00; // switch off
 	}
+
+
 
 	if(PINK&(1<<NEUTRAL_GEAR_PIN)){	 // if the pin is still high, the pulldown is active, signal is not active
 		neutral_gear=0x00;

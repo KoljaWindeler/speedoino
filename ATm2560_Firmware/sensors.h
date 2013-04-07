@@ -61,6 +61,9 @@ private:
 
 	unsigned int rpm_flatted;
 	unsigned char rpm_flatted_counter;
+
+	unsigned long last_highbeam_on;
+	unsigned long last_oil_off;
 };
 extern Speedo_sensors* pSensors;
 
