@@ -225,7 +225,11 @@ void Speedo_CAN::init(){
 	mcp2515_bit_modify( CANCTRL, 0xE0, 0);
 	/********************************************* MCP2515 SETUP ***********************************/
 	_delay_ms(1);
-	request(CAN_CURRENT_INFO,CAN_RPM); // to check if can is pressent
+
+	// to check if obd2 can is present
+	if(can_bus_type==CAN_TYPE_OBD2){
+		request(CAN_CURRENT_INFO,CAN_RPM);
+	};
 };
 
 void Speedo_CAN::shutdown(){
@@ -273,7 +277,6 @@ int Speedo_CAN::get_water_temp(){
 		return can_water_temp;
 	} else {
 		can_missed_count=999; // 1 sec no response ... CAN offline or not present
-		Serial.println("ich hör hier nix... scheisse!");
 	}
 	return 0;
 };
@@ -341,7 +344,6 @@ int Speedo_CAN::get_dtc_error(int nr){
 
 /********************************************* CAN FUNCTIONS ***********************************/
 void Speedo_CAN::request(char mode,char PID){
-	return;
 	byte can_first_byte=0x02; //frame im Datenstrom
 
 	//check valid msg

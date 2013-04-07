@@ -19,6 +19,7 @@
 #define CAN_WATER_TEMPERATURE 0x05
 
 #define CAN_TYPE_TRIUMPH 0x01
+#define CAN_TYPE_OBD2 0x02
 
 // damn it, I had to move the connection from
 // CS PK5 to PB5
@@ -75,6 +76,8 @@ public:
 	bool init_comm_possible(bool* CAN_active);
 	unsigned char get_active_can_type();
 
+	unsigned long last_received;
+
 private:
 
 	uint8_t spi_putc( uint8_t data );
@@ -91,7 +94,7 @@ private:
 	unsigned int can_rpm;
 	unsigned int can_speed;
 
-	unsigned long last_received;
+
 	unsigned long last_request;
 	unsigned int can_dtc_errors_processed;
 	char can_dtc_nr;
