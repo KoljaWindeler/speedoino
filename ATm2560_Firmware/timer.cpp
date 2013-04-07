@@ -47,6 +47,7 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		//pConfig->ram_info(); // nur zum testen 19.12. 2900 free
 		pAktors->m_oiler->check_value(); // gucken ob wir ölen müssten
 		pConfig->km_save();    // avg,max,trips hochzählen, immer wenn ss==59 ist store to sd card
+		pSensors->check_inputs();
 
 		if(pSD->sd_failed && (millis()/1000)%30==0 && pSensors->m_reset->reboots_caused_by_sd_problems<2){ // just two ties .. after that: die SD!
 			Serial.print(millis());
@@ -61,7 +62,8 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		}
 
 		// check if MIL should be active
-		if((millis()/1000)%30==0 && pSensors->CAN_active){
+		if((millis()/1000)%30==0 && pSensors->CAN_active && pSensors->m_CAN->get_active_can_type()!=CAN_TYPE_TRIUMPH){
+			Serial.println("MIL");
 			pSensors->m_CAN->request(CAN_CURRENT_INFO,CAN_MIL_STATUS);
 		}
 	}
