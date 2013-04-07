@@ -363,17 +363,22 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	if((!(gps_widget.x==-1 && gps_widget.y==-1)) && check_no_collision_with_addinfo2(gps_widget.y)){ // only show it if pos != -1/-1
 		int sats=pSensors->m_gps->get_info(6);
 		if(disp_zeile_bak[GPS_VALUE]!=int(sats+1)){
-			if(disp_zeile_bak[GPS_VALUE]==-99){ //schreib alles neu, auch die buchstaben
-				sprintf(char_buffer,"no GPS");
-				pDebug->speedo_loop(6,0,previousMillis," ");
-			} else { // nur eine änderung im wert
-				sprintf(char_buffer,"%2i",int(sats)%100);
-				pDebug->speedo_loop(6,0,previousMillis," ");
-			};
-			pOLED->string(gps_widget.font,char_buffer,gps_widget.x,gps_widget.y,0,DISP_BRIGHTNESS,0);
+			if(gps_widget.symbol){ // draw our gps symbol
+				pOLED->draw_gps(pSpeedo->gps_widget.x*3,pSpeedo->gps_widget.y*8,sats);
+			} else {
+				if(disp_zeile_bak[GPS_VALUE]==-99){ //schreib alles neu, auch die buchstaben
+					sprintf(char_buffer,"no GPS");
+					pDebug->speedo_loop(6,0,previousMillis," ");
+				} else { // nur eine änderung im wert
+					sprintf(char_buffer,"%2i",int(sats)%100);
+					pDebug->speedo_loop(6,0,previousMillis," ");
+				};
+				pOLED->string(gps_widget.font,char_buffer,gps_widget.x,gps_widget.y,0,DISP_BRIGHTNESS,0);
+			}
 			disp_zeile_bak[GPS_VALUE]=int(1+sats);
 		};
 	};
+
 	//////////////////////////////////////// ADD INFO WIDGET ////////////////////////////////////////////////////////
 	// see on top comment, number (3)
 	if((!(addinfo_widget.x==-1 && addinfo_widget.y==-1)) && check_no_collision_with_addinfo2(addinfo_widget.y)){ // only show it if pos != -1/-1
@@ -566,7 +571,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 }
 
 bool speedo_speedo::check_no_collision_with_addinfo2(int current_widget_y){
-	 return (current_widget_y!=addinfo2_widget.y || !addinfo2_currently_shown);
+	return (current_widget_y!=addinfo2_widget.y || !addinfo2_currently_shown);
 }
 
 
@@ -581,6 +586,8 @@ void speedo_speedo::initial_draw_screen(){
 		pOLED->draw_air(pSpeedo->air_widget.x*3,pSpeedo->air_widget.y*8);
 	if(pSpeedo->clock_widget.symbol && !(pSpeedo->clock_widget.x==-1 && pSpeedo->clock_widget.y==-1))
 		pOLED->draw_clock(pSpeedo->clock_widget.x*3,pSpeedo->clock_widget.y*8);
+	if(pSpeedo->gps_widget.symbol && !(pSpeedo->gps_widget.x==-1 && pSpeedo->gps_widget.y==-1))
+		pOLED->draw_gps(pSpeedo->gps_widget.x*3,pSpeedo->gps_widget.y*8,pSensors->m_gps->get_info(6));
 
 	pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
 }

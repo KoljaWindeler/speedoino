@@ -26,6 +26,7 @@ public:
 	void draw_air(unsigned char x,unsigned char y);
 	void draw_fuel(unsigned char x,unsigned char y);
 	void draw_clock(unsigned char x,unsigned char y);
+	void draw_gps(unsigned char x,unsigned char y, unsigned char sats);
 	void draw_blitzer(unsigned char x,unsigned char y);
 	void draw_arrow(int arrow, int spalte, int zeile);
 	int  sd2ssd(char filename[10],int frame);

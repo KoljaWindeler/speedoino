@@ -28,6 +28,69 @@ speedo_disp::speedo_disp(void){
 speedo_disp::~speedo_disp(){
 };
 
+void speedo_disp::draw_gps(unsigned char x,unsigned char y, unsigned char sats){
+	send_command(0x15);
+	send_command(x);
+	send_command(x+3);
+	send_command(0x75);
+	send_command(y);
+	send_command(y+7);
+	char xy[2][4];
+	xy[0][0]=0x00;
+	xy[1][0]=0x00;
+	xy[0][1]=0x00;
+	xy[1][1]=0x00;
+	xy[0][2]=0x00;
+	xy[1][2]=0x00;
+	xy[0][3]=0x00;
+	xy[1][3]=0x00;
+
+	// 4 symbols:
+	// 0 GPS => cross
+	// 3 GPS => empty (indicating minimal signal)
+	// 4 GPS => single bow (indicating poor signal)
+	// 5-X GPS => dual bow (indicating strong signal)
+
+	if(sats==0){
+		xy[0][0]=0x0F;		//	 X X
+		xy[1][0]=0x0F;		//	  X
+		//xy[0][1]=0x00;	//	 X X
+		xy[1][1]=0xF0;		//
+		xy[0][2]=0x0F;		//
+		xy[1][2]=0x0F;		//
+		//xy[0][3]=0x00;	//
+		//xy[1][3]=0x00;	//
+	} else if(sats==4){
+		//xy[0][0]=0x00;	//
+		//xy[1][0]=0x00;	//
+		//xy[0][1]=0x00;	//	X
+		//xy[1][1]=0x00;	//	 X
+		xy[0][2]=0xF0;		//
+		//xy[1][2]=0x00;	//
+		xy[0][3]=0x0F;		//
+		//xy[1][3]=0x00;	//
+	} else if(sats>4){
+		xy[0][0]=0xFF;		//	XX
+		//xy[1][0]=0x00;	//	  X
+		//xy[0][1]=0x00;	//	X  X
+		xy[1][1]=0xF0;		//	 X X
+		xy[0][2]=0xF0;		//
+		xy[1][2]=0x0F;		//
+		xy[0][3]=0x0F;		//
+		xy[1][3]=0x0F;		//
+	};
+
+
+	send_char(0x00);  send_char(0x00);  send_char(xy[0][0]);  send_char(xy[1][0]);	//
+	send_char(0x00);  send_char(0x00);  send_char(xy[0][1]);  send_char(xy[1][1]);	//
+	send_char(0x0F);  send_char(0x00);  send_char(xy[0][2]);  send_char(xy[1][2]);	// x
+	send_char(0xF0);  send_char(0xF0);  send_char(xy[0][3]);  send_char(xy[1][3]);	//x x
+	send_char(0xF0);  send_char(0x0F);  send_char(0x00);  	  send_char(0x00);		//x  x
+	send_char(0xF0);  send_char(0x00);  send_char(0xF0);	  send_char(0x00);		//x   x
+	send_char(0x0F);  send_char(0x00);  send_char(0x0F);	  send_char(0x00);		// x   x
+	send_char(0x00);  send_char(0xFF);  send_char(0xF0);	  send_char(0x00);		//  xxx
+};
+
 void speedo_disp::draw_oil(unsigned char x,unsigned char y){
 	send_command(0x15);
 	send_command(x);
