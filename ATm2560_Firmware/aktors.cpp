@@ -553,7 +553,6 @@ int Speedo_aktors::set_controll_lights(unsigned char oil,unsigned char flasher_l
 			control_lights|=(1<<i);
 		}
 	};
-
 	return set_expander();
 }
 
