@@ -99,6 +99,7 @@ void init_speedo(void){
 	pMenu->init(); 				// Start butons // adds the connection between pins and vars
 	pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
 	pSpeedo->reset_bak(); 		// reset all storages, to force the redraw of the speedo
+	pSensors->m_CAN->init();
 
 	pConfig->ram_info();
 	pDebug->sprintlnp(PSTR("=== Setup finished ==="));
@@ -117,8 +118,12 @@ int main(void) {
 	 * all initialisations must been made before the main loop, before THIS
 	 ******************** setup procedure ********************************************/
 	unsigned long   previousMillis = 0;
-	/* main loop, this will be repeated on and on */
+
+
 	for (;;) {
+		if(pSensors->CAN_active){
+			pSensors->m_CAN->process_incoming_messages();
+		};
 		//////////////////////////////////////////////////
 		//		pSensors->m_reset->set_deactive(false,false);
 		//		Serial3.end();
@@ -149,6 +154,10 @@ int main(void) {
 		/************************ every deamon activity is clear, now draw speedo ********************
 		 * we are round about 0000[1]1 - 0000[1]9
 		 ************************ every deamon activity is clear, now draw speedo ********************/
+		if(pSensors->CAN_active){
+			pSensors->m_CAN->process_incoming_messages();
+		};
+
 		if((pMenu->state/10)==1 || pMenu->state==7311111)  {
 			pSpeedo->loop(previousMillis);
 		}
