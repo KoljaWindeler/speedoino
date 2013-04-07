@@ -456,7 +456,9 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		Serial.println(millis());
 #endif
 		gps_write_status=1;
-		store_to_sd();
+		if(pSensors->get_RPM(0)>0){
+			store_to_sd();
+		};
 		gps_count=0; // after writing the points to sd => erase them
 		gps_count_up[0]=false;
 		gps_count_up[1]=false;
