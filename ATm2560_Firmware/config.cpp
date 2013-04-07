@@ -77,10 +77,17 @@ void configuration::ram_info() {
  * wird. vorher checken ob sd_failed nicht true ist
  *********** write config ******************/
 int configuration::write(const char *filename){
+#ifdef SD_DEBUG
+	Serial.print("Writing:");
+	Serial.println(filename);
+#endif
 	pSensors->m_gps->gps_write_status=4;
 	if(!pSD->sd_failed){
 		pSensors->m_gps->gps_write_status=5;
 		if(storage_outdated){ // jede Minute
+#ifdef SD_DEBUG
+			Serial.println("Schreibe wirklich");
+#endif
 			pSensors->m_gps->gps_write_status=6;
 			SdFile root;
 			SdFile file;
@@ -174,8 +181,8 @@ int configuration::write(const char *filename){
 
 					// get the info from the gps class
 #ifdef SD_DEBUG
-						Serial.print("*** vor get_logged_points ist im puffer: ");
-						Serial.println(buffer);
+					Serial.print("*** vor get_logged_points ist im puffer: ");
+					Serial.println(buffer);
 #endif
 					int i=0;
 					while(i<100 && pSensors->m_gps->get_logged_points(&buffer[0],i)>=0){
@@ -800,6 +807,8 @@ int configuration::parse(char* buffer){
 		parse_short(buffer,seperator,&pSpeedo->gps_widget.y);
 	} else if(strcmp_P(name,PSTR("gps_widget.font"))==0){
 		parse_short(buffer,seperator,&pSpeedo->gps_widget.font);
+	} else if(strcmp_P(name,PSTR("gps_widget.symbol"))==0){
+		parse_bool(buffer,seperator,&pSpeedo->gps_widget.symbol);
 	} else if(strcmp_P(name,PSTR("addinfo_widget.x"))==0){
 		parse_short(buffer,seperator,&pSpeedo->addinfo_widget.x);
 	} else if(strcmp_P(name,PSTR("addinfo_widget.y"))==0){
@@ -1200,10 +1209,7 @@ void configuration::km_save(){
 		};
 		// save as backup
 		last_speed_value=speed_value;
-	} else { // laufender motor => sprit verbrauch => speichern
-		if(pSensors->get_RPM(0)>0){
-			storage_outdated=true;
-		};
+
 	};
 	//save it
 	if(pSensors->m_clock->get_ss()==59){
