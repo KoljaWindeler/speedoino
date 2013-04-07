@@ -99,7 +99,7 @@ void init_speedo(void){
 	pMenu->init(); 				// Start butons // adds the connection between pins and vars
 	pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
 	pSpeedo->reset_bak(); 		// reset all storages, to force the redraw of the speedo
-	pSensors->m_CAN->init();	// hast to be the very last to ensure startup
+	pSensors->m_CAN->init();	// hast to be the very last to ensure startup and to load values from SD to ser correct filter
 	pConfig->ram_info();
 	pDebug->sprintlnp(PSTR("=== Setup finished ==="));
 	Serial.flush(); // jaja, hallo liebes bluetooth modul, will keiner wissen das du alles echos solange wir nicht mit dem pc verbunden sind ...

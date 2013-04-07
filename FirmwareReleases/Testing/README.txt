@@ -1,0 +1,3 @@
+07.04.2013 	Speedoino_1v11		Sollte Stabil laufen, nur schöner programmiert (Interrupts für alle V7 Platinen wenn Triumph nicht aktiv)
+07.04.2013 	Speedoino_1v12		Könnte Stabil laufen, dann mit Lampen Interrupts auch für Triumph
+

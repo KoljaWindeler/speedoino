@@ -33,18 +33,30 @@ speedo_fuel::~speedo_fuel(){
 
 float speedo_fuel::get_fuel(char char_buffer[]){
 	char local_buffer[6];
+	bool should_blink=false;
 	float fuel_diff=(float)round(pSpeedo->trip_dist[5]/1000);
 
-	if(fuel_diff>=blink_start && last_time+2*blink_freq<millis()){ // gib die Zahl aus wie z.B. "119" und schreib in den Buffer "119km"
-		last_time=millis();
-		sprintf(local_buffer,"%3ikm",((int)fuel_diff)%1000);
-		// gib die zahl zurück, alles easy
-	} else if(fuel_diff>=blink_start && last_time+blink_freq<millis()){ // wir sind mit dem Tank weiter gefahren als die Blinkgranze und wollen gerade mal nix anzeigen um das blinken zu symbolisieren
-		sprintf(local_buffer,"     ");
-		fuel_diff=-100;
+
+	if(pSensors->CAN_active && pSensors->m_CAN->get_active_can_type()==CAN_TYPE_TRIUMPH){
+		should_blink=pSensors->m_CAN->get_fuel_blink();
+	} else if(fuel_diff>=blink_start){
+		should_blink=true;
+	}
+
+
+	if(should_blink){
+		if(last_time+2*blink_freq<millis()){ // gib die Zahl aus wie z.B. "119" und schreib in den Buffer "119km"
+			last_time=millis();
+			sprintf(local_buffer,"%3ikm",((int)fuel_diff)%1000);	// gib die zahl zurück, alles easy
+		} else if(last_time+blink_freq<millis()){ // wir sind mit dem Tank weiter gefahren als die Blinkgranze und wollen gerade mal nix anzeigen um das blinken zu symbolisieren
+			sprintf(local_buffer,"     ");
+			fuel_diff=-100;
+		}
 	} else {
 		sprintf(local_buffer,"%3ikm",((int)fuel_diff)%1000);
 	}
+
+	// copy to output
 	for(unsigned int i=0; i<6; i++){
 		char_buffer[i]=local_buffer[i];
 	}

@@ -45,6 +45,8 @@ Speedo_CAN::Speedo_CAN(){
 	can_missed_count=0;
 	high_prio_processing=true;
 	can_bus_type=CAN_TYPE_TRIUMPH;
+	can_fuel_lamp_active=false;
+	can_neutral_gear_lamp_active=false;
 };
 
 Speedo_CAN::~Speedo_CAN(){
@@ -140,7 +142,6 @@ void Speedo_CAN::init(){
 	// activate filter for buffer 0 and 1
 	mcp2515_write_register( RXB0CTRL, (1<<BUKT)|(1<<RXM0)|(0<<FILHIT0));
 	mcp2515_write_register( RXB1CTRL, (1<<RXM0));
-	// TODO: build one filter for "wakeup" communication to buffer1, but for which ID ??
 
 	// define filter RXF0/RXF1 and mask RXM0 to receive only frames with ID: 780-7FF
 	// Filter: 111 1000 0000
@@ -340,6 +341,18 @@ int Speedo_CAN::get_dtc_error(int nr){
 #endif/////////////// DEBUG //////////
 	return -1;
 }
+
+unsigned char Speedo_CAN::get_neutral_gear_state(){
+	//TODO
+	return 0x00;
+	return can_neutral_gear_lamp_active;
+}
+
+bool Speedo_CAN::get_fuel_blink(){
+	//TODO
+	return false;
+	return can_fuel_lamp_active;
+}
 /********************************************* CAN VALUE GETTER ***********************************/
 
 /********************************************* CAN FUNCTIONS ***********************************/
@@ -404,10 +417,6 @@ void Speedo_CAN::process_incoming_messages(){
 			Serial.print(can_rpm);
 			Serial.print(" Speed:");
 			Serial.print(can_speed);
-			Serial.print(" weil ");
-			char hexhex[20];
-			sprintf(hexhex,"%02x %02x",message.data[2],message.data[3]);
-			Serial.println(hexhex);
 #endif
 			if(can_rpm>0){
 				high_prio_processing=false;
@@ -424,6 +433,9 @@ void Speedo_CAN::process_incoming_messages(){
 			// data[0]     Bit2: MIL
 			// data[0] MSB Bit3: Ständer
 			Serial.println("hab was");
+			//can_fuel_lamp_active=((message.data[0]&0x01)>>0); //
+			//can_neutral_gear_lamp_active=((message.data[0]&0x02)>>1); //
+			//can_mil_active=((message.data[0]&0x04)>>2); //
 
 		} else if(message.length>2){ // must be at least 3 chars to check [2]
 			if(message.data[1]==CAN_CURRENT_INFO+0x40){ // its 0x41 on a 0x01 question (current info)!!

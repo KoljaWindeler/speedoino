@@ -47,7 +47,7 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		//pConfig->ram_info(); // nur zum testen 19.12. 2900 free
 		pAktors->m_oiler->check_value(); // gucken ob wir ölen müssten
 		pConfig->km_save();    // avg,max,trips hochzählen, immer wenn ss==59 ist store to sd card
-		pSensors->check_inputs();
+		pSensors->check_inputs(); // check once a second the state of the PINs
 
 		if(pSD->sd_failed && (millis()/1000)%30==0 && pSensors->m_reset->reboots_caused_by_sd_problems<2){ // just two ties .. after that: die SD!
 			Serial.print(millis());
@@ -62,8 +62,7 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		}
 
 		// check if MIL should be active
-		if((millis()/1000)%30==0 && pSensors->CAN_active && pSensors->m_CAN->get_active_can_type()!=CAN_TYPE_TRIUMPH){
-			Serial.println("MIL");
+		if((millis()/1000)%30==0 && pSensors->CAN_active && pSensors->m_CAN->get_active_can_type()==CAN_TYPE_OBD2){
 			pSensors->m_CAN->request(CAN_CURRENT_INFO,CAN_MIL_STATUS);
 		}
 	}
@@ -75,11 +74,7 @@ void speedo_timer::every_sec(configuration* pConfig) {
 void speedo_timer::every_qsec() {
 	if((millis()-every_qsecond_timer)>=250){
 		every_qsecond_timer=millis();
-		// polling  sensors
-		if(pSensors->last_int_state!=(CAN_INTERRUPT_PIN_PORT_V7 & 0x07)){
-			pSensors->last_int_state=(CAN_INTERRUPT_PIN_PORT_V7 & 0x07);
-			pSensors->check_inputs();
-		}
+
 		// see if its a clock startup or a regular startup
 		if(pSpeedo->regular_startup){
 			// TODO: warum so häufig?

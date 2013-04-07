@@ -63,8 +63,10 @@ public:
 	bool get_mil_active();
 	int get_dtc_error_count();
 	int get_dtc_error(int nr);
+	unsigned char get_neutral_gear_state();
 	unsigned int get_RPM();
 	unsigned int get_Speed();
+	bool get_fuel_blink();
 	void shutdown();
 	void request(char mode,char PID);
 	bool failed;
@@ -93,6 +95,8 @@ private:
 	unsigned int can_missed_count;
 	unsigned int can_rpm;
 	unsigned int can_speed;
+	bool can_fuel_lamp_active;
+	bool can_neutral_gear_lamp_active;
 
 
 	unsigned long last_request;

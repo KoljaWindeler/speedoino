@@ -56,7 +56,7 @@ void Speedo_sensors::init(){
 	m_reset->init();
 	m_gear->init();
 	m_voltage->init();
-	//	m_CAN->init();
+	//	m_CAN->init(); // done later in main startup
 
 	cli(); // TODO ... unschön, warum reagiert er überhaupt schon auf interrupts?
 	// Blinker LINKS Interrupt
@@ -306,7 +306,7 @@ void Speedo_sensors::pull_values(){
 		ten_Hz_counter=(ten_Hz_counter+1)%10;
 		update_required=true;
 
-		if(ten_Hz_counter==0){
+		if(ten_Hz_counter==0){ // 1 Hz
 			m_clock->inc();  // sekunden hochzählen
 			m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
 			m_voltage->calc(); // spannungscheck
@@ -502,13 +502,17 @@ ISR(PCINT2_vect ){
 						sei(); // activate them again
 					};
 				}
-
 #ifdef CAN_DEBUG
 				Serial.println("Interrupt: Msg available");
 #endif
 			};
-		};
-	} else if(pConfig->get_hw_version()>7) {
+		//} else if(pSensors->m_CAN->get_active_can_type()!=CAN_TYPE_TRIUMPH){ // if version 7, but not triumpf check light, tritumpf is way to heavy traffic
+			// VERSION MARKER 1v12
+		} else {
+			Serial.print(".");
+			pSensors->check_inputs();
+		}
+	} else if(pConfig->get_hw_version()>7) { // from version higher than 7, CAN Interrupt is not on this interrupt port
 		pSensors->check_inputs();
 	}
 }
@@ -558,10 +562,13 @@ void Speedo_sensors::check_inputs(){
 		oil_pressure=0x00; // switch off
 	}
 
-
-
-	if(PINK&(1<<NEUTRAL_GEAR_PIN)){	 // if the pin is still high, the pulldown is active, signal is not active
-		neutral_gear=0x00;
+	// depending on CAN or non CAN mode ... and if CAN on CAN TYPE
+	if(CAN_active && m_CAN->get_active_can_type()==CAN_TYPE_TRIUMPH){
+		neutral_gear=m_CAN->get_neutral_gear_state();
+	} else {
+		if(PINK&(1<<NEUTRAL_GEAR_PIN)){	 // if the pin is still high, the pulldown is active, signal is not active
+			neutral_gear=0x00;
+		}
 	}
 
 	if(PINE&(1<<FLASHER_LEFT_PIN)){
