@@ -55,6 +55,7 @@ public:
 	short sensor_source;
 	bool CAN_active;
 
+	unsigned char last_int_state;
 private:
 	unsigned long ten_Hz_timer;
 	short ten_Hz_counter;

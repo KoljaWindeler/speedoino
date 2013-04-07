@@ -76,7 +76,7 @@ void Speedo_sensors::init(){
 	PORTK |=(1<<PK0); // activate Pull UP
 	sei();
 	// High Beam
-	PCMSK0|=(1<<PCINT4); // 4 is the new can interface interrupt
+	PCMSK0|=(1<<PCINT4); // 4 is the new can v8 interface interrupt
 	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16) | (1<<PCINT20); // 20 still there even from v7
 	PCICR |=(1<<PCIE2)|(1<<PCIE0); // general interrupt PC aktivieren für SK2
 
@@ -357,7 +357,7 @@ void Speedo_sensors::pull_values(){
 		if(m_CAN->message_available){ // muss hier die pin abfrage rein? dafür gibts doch den interrupt
 			m_CAN->process_incoming_messages();
 		}
-		if(update_required){ // 10Hz
+		if(update_required && m_CAN->get_active_can_type()==CAN_TYPE_OBD2){ // 10Hz, request can OBD2 msg
 			if(ten_Hz_counter==0 || ten_Hz_counter==2 || ten_Hz_counter==4 || ten_Hz_counter==6 || ten_Hz_counter==8){ // 200ms
 				m_CAN->request(CAN_CURRENT_INFO,CAN_RPM);
 			} else if(ten_Hz_counter==1 || ten_Hz_counter==5 ){ // 500ms
@@ -491,23 +491,32 @@ ISR(INT7_vect ){
 ISR(PCINT2_vect ){
 	// check if its the right version before test the pin
 	if(pConfig->get_hw_version()==7){
-		if(!(PINK&(1<<CAN_INTERRUPT_PIN_V7))){	 // if the CAN pin is low, low active interrupt
+		if(!(CAN_INTERRUPT_PIN_PORT_V7&(1<<CAN_INTERRUPT_PIN_V7))){	 // if the CAN pin is low, low active interrupt
 			if(pSensors->CAN_active){		 // is the CAN mode active
 				pSensors->m_CAN->message_available=true;
+
+				if(pSensors->m_CAN->high_prio_processing){
+					if(!(PINB&(1<<PB0))){ // SD CS pin has to be low to access Bus
+						cli(); // stop interrupts
+						pSensors->m_CAN->process_incoming_messages();
+						sei(); // activate them again
+					};
+				}
 
 #ifdef CAN_DEBUG
 				Serial.println("Interrupt: Msg available");
 #endif
 			};
 		};
+	} else if(pConfig->get_hw_version()>7) {
+		pSensors->check_inputs();
 	}
-	pSensors->check_inputs();
 }
 
 ISR(PCINT0_vect){
 	// check if its the right version before test the pin
 	if(pConfig->get_hw_version()>7){
-		if(!(PINB&(1<<CAN_INTERRUPT_PIN_FROM_V8))){	 // if the CAN pin is low, low active interrupt
+		if(!(CAN_INTERRUPT_PIN_PORT_V8&(1<<CAN_INTERRUPT_PIN_FROM_V8))){	 // if the CAN pin is low, low active interrupt
 			if(pSensors->CAN_active){		 // is the CAN mode active
 				pSensors->m_CAN->message_available=true;
 #ifdef CAN_DEBUG
