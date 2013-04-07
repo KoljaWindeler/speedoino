@@ -931,6 +931,7 @@ void speedo_menu::display(){
 	} else if(floor(state/10)==67){
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		pSpeedo->disp_zeile_bak[2]=999; // redraw everything
 	}
 	else if((floor(state/100)==67) | (floor(state/1000)==67) | (floor(state/10000)==67) | (floor(state/100000)==67)){ //67[x][x][x][x][1]
 		if(floor(state/100000)==67){
