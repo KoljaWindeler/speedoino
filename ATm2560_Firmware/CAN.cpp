@@ -43,6 +43,8 @@ Speedo_CAN::Speedo_CAN(){
 	can_dtc_nr=0xff;
 	can_dtc_error_count=0x00;
 	can_missed_count=0;
+	high_prio_processing=true;
+	can_bus_type=CAN_TYPE_TRIUMPH;
 };
 
 Speedo_CAN::~Speedo_CAN(){
@@ -144,39 +146,69 @@ void Speedo_CAN::init(){
 	// Filter: 111 1000 0000
 	// Mask:   111 1000 0000
 	// Accept: 111 1xxx xxxx <=> 780 - 7FF
-	mcp2515_write_register( RXM0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5)|(0<<SID4)|(0<<SID3));
-	mcp2515_write_register( RXM0SIDL, 0x00);
-
-	mcp2515_write_register( RXF0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
-	mcp2515_write_register( RXF0SIDL, 0x00);
+	//	mcp2515_write_register( RXM0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5)|(0<<SID4)|(0<<SID3));
+	//	mcp2515_write_register( RXM0SIDL, 0x00);
+	//
+	//	mcp2515_write_register( RXF0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
+	//	mcp2515_write_register( RXF0SIDL, 0x00);
 
 	// thus i dont understand how to active just one filter, I'll simply copy them
-	mcp2515_write_register( RXF1SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
-	mcp2515_write_register( RXF1SIDL, 0x00);
+	//	mcp2515_write_register( RXF1SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
+	//	mcp2515_write_register( RXF1SIDL, 0x00);
 
 	// extend addr filter leeren, nötig? wir verarbeiten ohnehin nur std adressen
 	mcp2515_write_register( RXM0EID8, 0 );
 	mcp2515_write_register( RXM0EID0, 0 );
 
-	// TODO: build one filter for "wakeup" communication to buffer1, but for which ID ??
-	// define filter RXF2/RXF3/RXF4/RXF5 and mask RXM1 to receive only frames with ID: 780-7FF
-	// Filter: 111 1000 0000
-	// Mask:   111 1000 0000
-	// Accept: 111 1xxx xxxx <=> 780 - 7FF
-	mcp2515_write_register( RXM1SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5)|(0<<SID4)|(0<<SID3));
-	mcp2515_write_register( RXM1SIDL, 0x00);
+	// TODO: build one filter for "wakeup" communication to buffer1, but for which ID 530, 568, 570, 540
+	// 530 = 0b 0101 0011 0000
+	// 568 = 0b 0101 0110 1000
+	// 570 = 0b 0101 0111 0000
+	// 540 = 0b 0101 0100 0000
+	// Mask     X111 1110 0111
+	// Filter1  X101 001X X000 <- 530
+	// Filter2  X101 011X X000 <- 568,570
+	// Filter3  X101 010X X000 <- 540
 
-	mcp2515_write_register( RXF2SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
-	mcp2515_write_register( RXF2SIDL, 0x00);
+	// verhindere Nachricht 518, 519, 530
+	// 518 = 0b 0101 0001 1000
+	// 519 = 0b 0101 0001 1001
+	// 530 = 0b 0101 0011 0000
+	// Mask     X111 1110 0111
+	// Filter1  X101 001X X000 <- bit 5
+	// Filter2  X101 011X X000 <- bit 5
+	// Filter3  X101 010X X000 <- bit 4
+	//
+	// define mask RXM0, RXM1 to receive only frames with ID: 530,568,570
+	mcp2515_write_register( RXM0SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(1<<SID6)|(1<<SID5)|(0<<SID4)|(0<<SID3));
+	mcp2515_write_register( RXM0SIDL, (1<<SID2)|(1<<SID1)|(1<<SID0));
 
-	mcp2515_write_register( RXF3SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
-	mcp2515_write_register( RXF3SIDL, 0x00);
+	mcp2515_write_register( RXM1SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(1<<SID6)|(1<<SID5)|(0<<SID4)|(0<<SID3));
+	mcp2515_write_register( RXM1SIDL, (1<<SID2)|(1<<SID1)|(1<<SID0));
 
-	mcp2515_write_register( RXF4SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
-	mcp2515_write_register( RXF4SIDL, 0x00);
+	// define filter RXF0 to receive only frames with ID: 530
+	mcp2515_write_register( RXF0SIDH, (1<<SID10)|(0<<SID9)|(1<<SID8)|(0<<SID7)|(0<<SID6)|(1<<SID5)|(0<<SID4)|(0<<SID3));
+	mcp2515_write_register( RXF0SIDL, (0<<SID2)|(0<<SID1)|(0<<SID0));
 
-	mcp2515_write_register( RXF5SIDH, (1<<SID10)|(1<<SID9)|(1<<SID8)|(1<<SID7)|(0<<SID6)|(0<<SID5));
-	mcp2515_write_register( RXF5SIDL, 0x00);
+	// define filter RXF0 to receive only frames with ID: 568,570
+	mcp2515_write_register( RXF1SIDH, (1<<SID10)|(0<<SID9)|(1<<SID8)|(0<<SID7)|(1<<SID6)|(1<<SID5)|(0<<SID4)|(0<<SID3));
+	mcp2515_write_register( RXF1SIDL, (0<<SID2)|(0<<SID1)|(0<<SID0));
+
+	// define filter RXF0 to receive only frames with ID: 540
+	mcp2515_write_register( RXF2SIDH, (1<<SID10)|(0<<SID9)|(1<<SID8)|(0<<SID7)|(1<<SID6)|(0<<SID5)|(0<<SID4)|(0<<SID3));
+	mcp2515_write_register( RXF2SIDL, (0<<SID2)|(0<<SID1)|(0<<SID0));
+
+	// what ever
+	mcp2515_write_register( RXF3SIDH, (1<<SID10)|(0<<SID9)|(1<<SID8)|(0<<SID7)|(0<<SID6)|(1<<SID5)|(0<<SID4)|(0<<SID3));
+	mcp2515_write_register( RXF3SIDL, (0<<SID2)|(0<<SID1)|(0<<SID0));
+
+	// what ever
+	mcp2515_write_register( RXF4SIDH, (1<<SID10)|(0<<SID9)|(1<<SID8)|(0<<SID7)|(0<<SID6)|(1<<SID5)|(0<<SID4)|(0<<SID3));
+	mcp2515_write_register( RXF4SIDL, (0<<SID2)|(0<<SID1)|(0<<SID0));
+
+	// what ever
+	mcp2515_write_register( RXF5SIDH, (1<<SID10)|(0<<SID9)|(1<<SID8)|(0<<SID7)|(0<<SID6)|(1<<SID5)|(0<<SID4)|(0<<SID3));
+	mcp2515_write_register( RXF5SIDL, (0<<SID2)|(0<<SID1)|(0<<SID0));
 
 	// extend addr filter leeren, nötig? wir verarbeiten ohnehin nur std adressen
 	mcp2515_write_register( RXM1EID8, 0 );
@@ -237,10 +269,11 @@ int Speedo_CAN::get_oil_temp(){
 };
 
 int Speedo_CAN::get_water_temp(){
-	if(millis()-last_received<1000){
+	if(millis()-last_received<5000){
 		return can_water_temp;
 	} else {
 		can_missed_count=999; // 1 sec no response ... CAN offline or not present
+		Serial.println("ich hör hier nix... scheisse!");
 	}
 	return 0;
 };
@@ -308,6 +341,7 @@ int Speedo_CAN::get_dtc_error(int nr){
 
 /********************************************* CAN FUNCTIONS ***********************************/
 void Speedo_CAN::request(char mode,char PID){
+	return;
 	byte can_first_byte=0x02; //frame im Datenstrom
 
 	//check valid msg
@@ -342,6 +376,7 @@ void Speedo_CAN::request(char mode,char PID){
 	// Nachricht verschicken
 	last_request=millis();
 	can_send_message(&message);
+	return;
 };
 
 void Speedo_CAN::process_incoming_messages(){
@@ -353,7 +388,42 @@ void Speedo_CAN::process_incoming_messages(){
 		};
 		last_received=millis();
 		//		Serial.println("New CAN Message found");
-		if(message.length>2){ // must be at least 3 chars to check [2]
+		if(message.id==0x568){ // Triumph Daytone 675 Tacho request
+			message.length=2;
+			message.id=0x569;
+			message.data[0]=0x00;
+			message.data[1]=0x01;
+			can_send_message(&message);
+		} else if(message.id==0x530){ // Triumph Daytone 675 Tacho request
+			can_rpm=(message.data[1]<<6)|(message.data[0]>>2);
+			can_speed=((message.data[3]<<8)|(message.data[2]))/10;
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
+			Serial.print("RPM:");
+			Serial.print(can_rpm);
+			Serial.print(" Speed:");
+			Serial.print(can_speed);
+			Serial.print(" weil ");
+			char hexhex[20];
+			sprintf(hexhex,"%02x %02x",message.data[2],message.data[3]);
+			Serial.println(hexhex);
+#endif
+			if(can_rpm>0){
+				high_prio_processing=false;
+			};
+		} else if(message.id==0x570){ // Triumph Daytone 675 Tacho request
+			can_water_temp=(message.data[3]<<8)|(message.data[2]);
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
+			Serial.print("Temp:");
+			Serial.println(can_water_temp);
+#endif
+		} else if(message.id==0x540){ // Triumph Daytone 675 Tacho request
+			// data[0] LSB Bit0: Tank
+			// data[0]     Bit1: Leerlauf
+			// data[0]     Bit2: MIL
+			// data[0] MSB Bit3: Ständer
+			Serial.println("hab was");
+
+		} else if(message.length>2){ // must be at least 3 chars to check [2]
 			if(message.data[1]==CAN_CURRENT_INFO+0x40){ // its 0x41 on a 0x01 question (current info)!!
 				if(message.data[2]==CAN_RPM){
 					can_rpm=(message.data[3]<<6)|(message.data[4]>>2);
@@ -361,21 +431,18 @@ void Speedo_CAN::process_incoming_messages(){
 					Serial.print("New RPM:");
 					Serial.println(can_rpm);
 #endif/////////////// DEBUG //////////
-					return;
 				} else if(message.data[2]==CAN_SPEED){
 					can_speed=message.data[3];
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
 					Serial.print("New speed:");
 					Serial.println(can_speed);
 #endif/////////////// DEBUG //////////
-					return;
 				} else if(message.data[2]==CAN_WATER_TEMPERATURE){
 					can_water_temp=(message.data[3]-40)*10;
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
 					Serial.print("New watertemp:");
 					Serial.println(can_water_temp);
 #endif/////////////// DEBUG //////////
-					return;
 				} else if(message.data[2]==CAN_MIL_STATUS){
 					can_mil_active=((message.data[3]&0x80)>>7); // bit 7 (im msb?)
 					can_dtc_error_count=message.data[3]&0x77;
@@ -383,7 +450,6 @@ void Speedo_CAN::process_incoming_messages(){
 					Serial.print("New MIL status:");
 					Serial.println(can_dtc_error_count);
 #endif/////////////// DEBUG //////////
-					return;
 				}
 			} else if(message.data[1]==CAN_DTC+0x40){ // its 0x43 on a 0x03 question (current info)!!
 				if(can_dtc_nr!=0xff){
@@ -422,18 +488,18 @@ void Speedo_CAN::process_incoming_messages(){
 						}
 						can_dtc_errors_processed++;
 					}
-					return;
 				}
 			}
 		}
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
 		Serial.println("Warning - unprocessed message detected");
-		char buffer[30];
-		sprintf(buffer,"%02x %02x %02x %02x %02x %02x %02x %02x",message.data[0],message.data[1],message.data[2],message.data[3],message.data[4],message.data[5],message.data[6],message.data[7]);
+		char buffer[35];
+		sprintf(buffer,"%04x %02x %02x %02x %02x %02x %02x %02x %02x",message.id,message.data[0],message.data[1],message.data[2],message.data[3],message.data[4],message.data[5],message.data[6],message.data[7]);
 		Serial.println(buffer);
 #endif /////////////// DEBUG //////////
 	}
 	message_available=false; // all messages processed
+	return;
 }
 
 bool Speedo_CAN::decode_dtc(char* char_buffer,char ECU_type){
@@ -666,6 +732,10 @@ uint8_t Speedo_CAN::can_get_message(CANMessage *p_message){
 		mcp2515_bit_modify(CANINTF, (1<<RX1IF), 0);
 	}
 	return (status & 0x07);
+}
+
+unsigned char Speedo_CAN::get_active_can_type(){
+	return can_bus_type;
 }
 
 

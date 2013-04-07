@@ -18,6 +18,8 @@
 #define CAN_AIR_TEMP 0x0F
 #define CAN_WATER_TEMPERATURE 0x05
 
+#define CAN_TYPE_TRIUMPH 0x01
+
 // damn it, I had to move the connection from
 // CS PK5 to PB5
 // INT PK4 to PB4
@@ -65,23 +67,22 @@ public:
 	void shutdown();
 	void request(char mode,char PID);
 	bool failed;
+	bool high_prio_processing;
 	volatile bool message_available;
 	void process_incoming_messages();
 	uint8_t can_get_message(CANMessage *p_message);// move me back to private
 	bool decode_dtc(char* char_buffer,char ECU_type);
 	bool init_comm_possible(bool* CAN_active);
+	unsigned char get_active_can_type();
 
 private:
 
-	uint8_t can_send_message(CANMessage *p_message);
-
 	uint8_t spi_putc( uint8_t data );
-
+	uint8_t can_send_message(CANMessage *p_message);
 	uint8_t mcp2515_read_rx_status(void);
 	uint8_t mcp2515_read_register(uint8_t adress);
 	void mcp2515_write_register( uint8_t adress, uint8_t data );
 	void mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data);
-
 	void set_cs_high(bool high);
 
 	CANMessage message;
@@ -97,6 +98,7 @@ private:
 	unsigned int can_dtc_value;
 	char can_dtc_error_count;
 	bool can_mil_active;
+	unsigned char can_bus_type;
 };
 extern Speedo_CAN* pCAN;
 
