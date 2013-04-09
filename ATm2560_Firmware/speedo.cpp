@@ -229,9 +229,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * We prevent the screen from flickering by saving a coresponding
 	 * value in disp_zeile_bak[OIL_TEMP] and check that value before redraw
 	 ************************* water temperature *********************/
-	if(disp_zeile_bak[WATER_TEMP]!=pSensors->get_water_temperature()+pSensors->m_temperature->water_temp_fail_status){
+	if(disp_zeile_bak[WATER_TEMP]!=pSensors->get_water_temperature()+pSensors->get_water_temperature_fail_status()){
 		if((!(water_widget.x==-1 && water_widget.y==-1)) && check_no_collision_with_addinfo2(water_widget.y)){ // only show it if pos != -1/-1
-			disp_zeile_bak[WATER_TEMP]=int(pSensors->get_water_temperature()+pSensors->m_temperature->water_temp_fail_status);
+			disp_zeile_bak[WATER_TEMP]=int(pSensors->get_water_temperature()+pSensors->get_water_temperature_fail_status());
 			// below 20 degree the PTC is very antiliear so we won't show it
 			if(pSensors->get_water_temperature_fail_status()==SENSOR_OPEN){
 				sprintf(char_buffer," -     "); // error occored -> no sensor
