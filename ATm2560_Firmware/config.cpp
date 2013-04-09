@@ -523,6 +523,11 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",pSensors->sensor_source); // SENSOR_AUTO 0x01, SENSOR_FORCE_CAN 0x02, SENSOR_NO_CAN --- everything else
 					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("CAN_type="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pSensors->m_CAN->get_active_can_type()); // triumph 0x01, OBD2 0x02
+					pSD->writeString(file, buffer);
+
 					file.close();
 					storage_outdated=false;
 				};
@@ -979,6 +984,10 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&pAktors->bt_pin);
 	} else if(strcmp_P(name,PSTR("sensor_source"))==0){
 		parse_short(buffer,seperator,&pSensors->sensor_source);
+	} else if(strcmp_P(name,PSTR("CAN_type"))==0){
+		int temp=0x00;
+		parse_int(buffer,seperator,&temp);
+		pSensors->m_CAN->set_active_can_type((unsigned char)(temp&0xff));
 	}
 	else {
 		return_value=-2; // ungltiger identifier

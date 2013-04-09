@@ -18,7 +18,7 @@ speedo_voltage::~speedo_voltage(){
 
 void speedo_voltage::calc(){
 	bool was_regular_startup_befor_mesurement=pSpeedo->regular_startup;
-	/* bei 12V => durch den Spannungsteiler 1/3 = 4V */
+	/* bei 12V => durch den Spannungsteiler ~1/3 = 4V */
 	/* value/1023*5*(3.2k)/1k  */
 
 	int aktueller_wert=round(analogRead(VOLTAGE_PIN)/6.4);

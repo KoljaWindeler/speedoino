@@ -791,6 +791,13 @@ unsigned char Speedo_CAN::get_active_can_type(){
 	return can_bus_type;
 }
 
+void Speedo_CAN::set_active_can_type(unsigned char new_type){
+	if(new_type==CAN_TYPE_OBD2 || new_type==CAN_TYPE_TRIUMPH){
+		can_bus_type=new_type;
+		init();
+	}
+}
+
 
 // version depending pin settings
 void Speedo_CAN::set_cs_high(bool high){

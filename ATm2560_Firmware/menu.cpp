@@ -1164,12 +1164,8 @@ void speedo_menu::display(){
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
-	else if(floor(state/100)==75) { // 00075X
+	else if(floor(state/100)==75) { // 000751X
 		//sensor_source 0=analog, 1=auto_detect, 2=CAN
-
-		// key settings and corresponding var state changing
-		bool up=button_state;
-		bool down=button_state;
 		if(state%10==9){ // "up" key
 			if(pSensors->sensor_source>0){
 				pSensors->sensor_source--;
@@ -1181,13 +1177,8 @@ void speedo_menu::display(){
 				pConfig->storage_outdated=true;
 			}
 		};
-		if(pSensors->sensor_source<=0){
-			up=!button_state;
-		} else if(pSensors->sensor_source>=2){
-			down=!button_state;
-		}
-		set_buttons(button_state,up,down,!button_state); // button directions
-		state=7501;
+
+		state=7511;
 
 		// displaying values
 		pOLED->clear_screen();
@@ -1230,6 +1221,90 @@ void speedo_menu::display(){
 			bg=0x00;
 		}
 		pOLED->string_P(pSpeedo->default_font,PSTR("CAN Sensors"),3,4,bg,fg,0);
+
+		// key settings and corresponding var state changing
+		bool up=button_state;
+		bool down=button_state;
+		if(pSensors->sensor_source<=0){
+			up=!button_state;
+		} else if(pSensors->sensor_source>=2){
+			down=!button_state;
+		}
+
+		// go on to select can type
+		if(pSensors->sensor_source!=SENSOR_AUTO && pSensors->sensor_source!=SENSOR_FORCE_CAN){ //analog
+			set_buttons(button_state,up,down,!button_state); // button directions
+		} else {
+			set_buttons(button_state,up,down,button_state); // button directions
+			char temp[2];
+			sprintf(temp,"%c",127);
+			pOLED->string(pSpeedo->default_font,temp,0,7);
+			pOLED->string_P(pSpeedo->default_font,PSTR("to select type"),2,7);
+		}
+	}
+	// select type
+	else if(floor(state/100)==751) { // 0007511X
+		if(state%10==9){ // "up" key
+			if(pSensors->m_CAN->get_active_can_type()>1){
+				pSensors->m_CAN->set_active_can_type(pSensors->m_CAN->get_active_can_type()-1);
+				pConfig->storage_outdated=true;
+			}
+		} else if(state%10==2){ // "down" key
+			if(pSensors->m_CAN->get_active_can_type()<2){
+				pSensors->m_CAN->set_active_can_type(pSensors->m_CAN->get_active_can_type()+1);
+				pConfig->storage_outdated=true;
+			}
+		};
+
+		state=75111;
+
+		// displaying values
+		pOLED->clear_screen();
+
+		pOLED->highlight_bar(0,0,128,8); // title
+		pOLED->string_P(pSpeedo->default_font,PSTR("CAN Bus Type"),2,0,DISP_BRIGHTNESS,0,0);
+
+		unsigned char fg;
+		unsigned char bg;
+
+		/// CAN_TYPE_TRIUMPH
+		if(pSensors->m_CAN->get_active_can_type()==CAN_TYPE_TRIUMPH){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(8,8*2,110,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("Triumph"),3,2,bg,fg,0);
+
+		/// CAN_TYPE_OBD2
+		if(pSensors->m_CAN->get_active_can_type()==CAN_TYPE_OBD2){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(8,8*3,110,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("OBD2"),3,3,bg,fg,0);
+
+
+		// key settings and corresponding var state changing
+		bool up=button_state;
+		bool down=button_state;
+		if(pSensors->m_CAN->get_active_can_type()<=1){
+			up=!button_state;
+		} else if(pSensors->m_CAN->get_active_can_type()>=2){
+			down=!button_state;
+		}
+
+		set_buttons(button_state,up,down,!button_state); // button directions
+		char temp[3];
+		sprintf(temp,"%c%c",126,126);
+		pOLED->string(pSpeedo->default_font,temp,0,7);
+		pOLED->string_P(pSpeedo->default_font,PSTR("to save"),2,7);
+
 	}
 	/////////// bt reset state  //////////
 	else if(floor(state/10)==76) { // 00089X
@@ -2212,11 +2287,14 @@ void speedo_menu::storage_update_guard(unsigned long* state, unsigned long old_s
 			strcpy_P(char_buffer,PSTR("Save to SD card"));
 			center_me(char_buffer,21);
 			pOLED->string(pSpeedo->default_font,char_buffer,0,5);
+			bool remember_CAN_state=pSensors->CAN_active;
+			pSensors->CAN_active=false;
 			if(pConfig->write("BASE.TXT")==0){
 				strcpy_P(char_buffer,PSTR("OK"));
 			} else {
 				strcpy_P(char_buffer,PSTR("FAILED !!"));
 			}
+			pSensors->CAN_active=remember_CAN_state;
 			center_me(char_buffer,21);
 			pOLED->string(pSpeedo->default_font,char_buffer,0,6);
 
