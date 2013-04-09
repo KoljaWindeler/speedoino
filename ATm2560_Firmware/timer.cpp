@@ -75,6 +75,12 @@ void speedo_timer::every_qsec() {
 	if((millis()-every_qsecond_timer)>=250){
 		every_qsecond_timer=millis();
 
+		// TODO, testen mit meinem krams dran!
+		if(pSensors->last_int_state!=(CAN_INTERRUPT_PIN_PORT_V7&0x07)){
+			pSensors->check_inputs();
+			pSensors->last_int_state=(CAN_INTERRUPT_PIN_PORT_V7&0x07);
+		}
+
 		// see if its a clock startup or a regular startup
 		if(pSpeedo->regular_startup){
 			// TODO: warum so häufig?
