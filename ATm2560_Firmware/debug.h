@@ -11,25 +11,25 @@
 class debugging{
 #undef       PARSE_DEBUG     	// ausgaben vom einlesen
 #undef       PARSE_SHORT     	// ausgaben vom einlesen
-#undef       TACHO_DEBUG       // jeder schreibvorgang wird angezeigt, flackern finden
-#undef       TACHO_IDEBUG      // menustate hasn't change etc
-#undef       RESET_DEBUG       // status change ob nun reset enable oder nicht
-#undef       SPEED_DEBUG       // Die Kontraktschlüsse
-#undef       TACHO_SDEBUG      // only menustate
-#undef       CLOCK_DEBUG       // haha fehler gefunden -> nie wieder abs() nutzen
-#undef       STORAGE_DEBUG     // sehen ob das Datum richtig geladen wird
-#undef       BLINKER_DEBUG     // sehen wie der Blinkerstate ist
-#undef       DZ_DEBUG          // die peaks sehen
-#undef       TEMP_DEBUG        // i2c
-#undef       MENU_DEBUG        // sehen in welchem menu state man gerade ist etc
-#undef       SD_DEBUG          // sehen wann/wohin und wie lange die sd karte schreibt
-#undef       GPS_DEBUG         // ausgabe wenn sich was ergibt, also vollständige pakete empfangen werden
-#undef       IGPS_DEBUG        // alle NMEA zeilen ansehen
-#undef       NAVI_DEBUG        // berechnung der distanz checken
+#undef       TACHO_DEBUG       	// jeder schreibvorgang wird angezeigt, flackern finden
+#undef       TACHO_IDEBUG      	// menustate hasn't change etc
+#undef       RESET_DEBUG       	// status change ob nun reset enable oder nicht
+#undef       SPEED_DEBUG       	// Die Kontraktschlüsse
+#undef       TACHO_SDEBUG     	// only menustate
+#undef       CLOCK_DEBUG      	// haha fehler gefunden -> nie wieder abs() nutzen
+#undef       STORAGE_DEBUG    	// sehen ob das Datum richtig geladen wird
+#undef       BLINKER_DEBUG     	// sehen wie der Blinkerstate ist
+#undef       DZ_DEBUG          	// die peaks sehen
+#undef       TEMP_DEBUG        	// i2c
+#undef       MENU_DEBUG        	// sehen in welchem menu state man gerade ist etc
+#undef       SD_DEBUG          	// sehen wann/wohin und wie lange die sd karte schreibt
+#undef       GPS_DEBUG         	// ausgabe wenn sich was ergibt, also vollständige pakete empfangen werden
+#undef       IGPS_DEBUG        	// alle NMEA zeilen ansehen
+#undef       NAVI_DEBUG        	// berechnung der distanz checken
 #undef       CAN_DEBUG			// Show incoming and outgoing frames
 #undef       DEBUG_TRANSFER           // show traffic on filemanager
 #undef       DEBUG_TRANSFER_INTENSIV  // show every traffic on filemanager
-#undef		 STEPPER_DEBUG
+#undef		 STEPPER_DEBUG		// Show stepper info
 
 public:
 	debugging(void);

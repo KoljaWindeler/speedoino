@@ -41,7 +41,7 @@ struct ring_buffer {
 };
 
 ring_buffer rx_buffer = { { 0 }, 0, 0 };
-ring_buffer rx_buffer1 = { { 0 }, 0, 0 };
+//ring_buffer rx_buffer1 = { { 0 }, 0, 0 };
 ring_buffer rx_buffer2 = { { 0 }, 0, 0 };
 ring_buffer rx_buffer3 = { { 0 }, 0, 0 };
 
