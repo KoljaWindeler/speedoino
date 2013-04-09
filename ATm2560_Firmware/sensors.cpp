@@ -495,6 +495,7 @@ ISR(PCINT2_vect ){
 			if(pSensors->CAN_active){		 // is the CAN mode active
 				pSensors->m_CAN->message_available=true;
 
+				// if we are in the mode, forcing us to answere fast .. to it! :D
 				if(pSensors->m_CAN->high_prio_processing){
 					if(!(PINB&(1<<PB0))){ // SD CS pin has to be low to access Bus
 						cli(); // stop interrupts
@@ -506,10 +507,7 @@ ISR(PCINT2_vect ){
 				Serial.println("Interrupt: Msg available");
 #endif
 			};
-		//} else if(pSensors->m_CAN->get_active_can_type()!=CAN_TYPE_TRIUMPH){ // if version 7, but not triumpf check light, tritumpf is way to heavy traffic
-			// VERSION MARKER 1v12
-		} else {
-			Serial.print(".");
+		} else if(pSensors->m_CAN->get_active_can_type()!=CAN_TYPE_TRIUMPH){ // if version 7, but not triumpf check light, tritumpf is way to heavy traffic
 			pSensors->check_inputs();
 		}
 	} else if(pConfig->get_hw_version()>7) { // from version higher than 7, CAN Interrupt is not on this interrupt port
