@@ -50,6 +50,15 @@ typedef struct
 	uint8_t   data[8];
 } CANMessage;
 
+typedef struct
+{
+	uint16_t id;				//!< ID der Nachricht 11 Bits
+	uint16_t mask;				//!< Maske
+	struct {
+		uint8_t rtr : 2;		//!< Remote Request Frame
+	} flags;
+} can_filter_t;
+
 class Speedo_CAN{
 public:
 	Speedo_CAN(void);
@@ -77,6 +86,7 @@ public:
 	bool decode_dtc(char* char_buffer,char ECU_type);
 	bool init_comm_possible(bool* CAN_active);
 	unsigned char get_active_can_type();
+	bool mcp2515_set_filter(uint8_t number, const can_filter_t *filter);
 
 	unsigned long last_received;
 
@@ -89,8 +99,11 @@ private:
 	void mcp2515_write_register( uint8_t adress, uint8_t data );
 	void mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data);
 	void set_cs_high(bool high);
+	void mcp2515_write_id(const uint16_t *id);
+	static void spi_start(uint8_t data) ;
 
 	CANMessage message;
+
 	int can_water_temp;
 	unsigned int can_missed_count;
 	unsigned int can_rpm;
