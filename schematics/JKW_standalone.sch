@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.4">
+<eagle version="6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -23713,8 +23713,8 @@ SOurce: www.abracon.com</description>
 <part name="GND45" library="SparkFun" deviceset="GND" device=""/>
 <part name="SUPPLY18" library="supply2" deviceset="VDD" device=""/>
 <part name="SUPPLY23" library="supply2" deviceset="VDD" device=""/>
-<part name="R_E2_3" library="RCLDT" deviceset="R" device="0805" value="n.b. / 0R"/>
-<part name="R_E2_4" library="RCLDT" deviceset="R" device="0805" value="n.b. / 0R"/>
+<part name="R_E2_3" library="RCLDT" deviceset="R" device="0805" value="0R / n.b. "/>
+<part name="R_E2_4" library="RCLDT" deviceset="R" device="0805" value="0R / n.b. "/>
 <part name="R13" library="RCLDT" deviceset="R" device="0805" value="4.7k"/>
 <part name="R10" library="RCLDT" deviceset="R" device="0805" value="100"/>
 <part name="R12" library="RCLDT" deviceset="R" device="0805" value="100"/>
@@ -23726,6 +23726,11 @@ SOurce: www.abracon.com</description>
 <part name="U$23" library="crystal" deviceset="ASE" device=""/>
 <part name="GND39" library="SparkFun" deviceset="GND" device=""/>
 <part name="RX1" library="pinhead" deviceset="PINHD-1X2" device=""/>
+<part name="C5" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
+<part name="C7" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
+<part name="C15" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
+<part name="C16" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
+<part name="C20" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
 </parts>
 <sheets>
 <sheet>
@@ -23834,7 +23839,7 @@ SOurce: www.abracon.com</description>
 <text x="-175.26" y="198.12" size="1.778" layer="91">SD CS</text>
 <text x="-167.64" y="106.68" size="1.778" layer="91">Water Temp</text>
 <text x="-167.64" y="111.76" size="1.778" layer="91">V_bat</text>
-<text x="-289.56" y="162.56" size="1.778" layer="91">RESERVE_SCHMITT</text>
+<text x="-266.7" y="165.1" size="1.778" layer="91" rot="R180">RESERVE_SCHMITT</text>
 <text x="-289.56" y="160.02" size="1.778" layer="91">Mccoi</text>
 <text x="-175.26" y="215.9" size="1.778" layer="91">RGB Zeiger</text>
 <text x="-175.26" y="213.36" size="1.778" layer="91">Kupplung</text>
@@ -23990,9 +23995,9 @@ SOurce: www.abracon.com</description>
 <instance part="RX_H" gate="G$1" x="-33.02" y="160.02" rot="R270"/>
 <instance part="GND8" gate="1" x="-12.7" y="71.12"/>
 <instance part="GND9" gate="1" x="-33.02" y="137.16"/>
-<instance part="D6" gate="G$1" x="88.9" y="236.22" smashed="yes" rot="MR270">
-<attribute name="NAME" x="86.995" y="245.618" size="1.778" layer="95" rot="MR270"/>
-<attribute name="VALUE" x="92.329" y="250.698" size="1.778" layer="96" rot="MR270"/>
+<instance part="D6" gate="G$1" x="91.44" y="236.22" smashed="yes" rot="MR270">
+<attribute name="NAME" x="89.535" y="245.618" size="1.778" layer="95" rot="MR270"/>
+<attribute name="VALUE" x="94.869" y="250.698" size="1.778" layer="96" rot="MR270"/>
 </instance>
 <instance part="GND12" gate="1" x="-307.34" y="215.9"/>
 <instance part="GND14" gate="1" x="-279.4" y="200.66" rot="R270"/>
@@ -24164,28 +24169,28 @@ SOurce: www.abracon.com</description>
 <instance part="SUPPLY3" gate="G$1" x="358.14" y="238.76"/>
 <instance part="SUPPLY9" gate="G$1" x="60.96" y="246.38"/>
 <instance part="R_DZ_DOWN" gate="G$1" x="81.28" y="236.22" rot="MR90"/>
-<instance part="C8" gate="C" x="71.12" y="236.22" smashed="yes" rot="MR90">
-<attribute name="NAME" x="68.58" y="238.76" size="2.032" layer="95" rot="MR90"/>
-<attribute name="VALUE" x="73.66" y="233.68" size="1.778" layer="96" rot="MR90"/>
+<instance part="C8" gate="C" x="86.36" y="236.22" smashed="yes" rot="MR90">
+<attribute name="NAME" x="83.82" y="238.76" size="2.032" layer="95" rot="MR90"/>
+<attribute name="VALUE" x="88.9" y="233.68" size="1.778" layer="96" rot="MR90"/>
 </instance>
-<instance part="R_FLASHL" gate="G$1" x="137.16" y="220.98" rot="MR90"/>
-<instance part="R_FLASHL_DOWN" gate="G$1" x="137.16" y="236.22" rot="MR90"/>
-<instance part="GND11" gate="1" x="124.46" y="248.92" rot="MR180"/>
-<instance part="R_FLASHR_DOWN" gate="G$1" x="119.38" y="236.22" rot="MR90"/>
-<instance part="R_FLASHR" gate="G$1" x="119.38" y="218.44" rot="MR90"/>
-<instance part="R_HB" gate="G$1" x="101.6" y="215.9" rot="R90"/>
-<instance part="R_HB_DOWN" gate="G$1" x="101.6" y="236.22" rot="R90"/>
-<instance part="GND17" gate="1" x="106.68" y="248.92" rot="R180"/>
-<instance part="D1" gate="G$1" x="129.54" y="236.22" rot="MR270"/>
-<instance part="D2" gate="G$1" x="147.32" y="236.22" rot="MR270"/>
-<instance part="D8" gate="G$1" x="111.76" y="236.22" rot="R270"/>
+<instance part="R_FLASHL" gate="G$1" x="139.7" y="220.98" rot="MR90"/>
+<instance part="R_FLASHL_DOWN" gate="G$1" x="139.7" y="236.22" rot="MR90"/>
+<instance part="GND11" gate="1" x="127" y="248.92" rot="MR180"/>
+<instance part="R_FLASHR_DOWN" gate="G$1" x="121.92" y="236.22" rot="MR90"/>
+<instance part="R_FLASHR" gate="G$1" x="121.92" y="218.44" rot="MR90"/>
+<instance part="R_HB" gate="G$1" x="104.14" y="215.9" rot="R90"/>
+<instance part="R_HB_DOWN" gate="G$1" x="104.14" y="236.22" rot="R90"/>
+<instance part="GND17" gate="1" x="109.22" y="248.92" rot="R180"/>
+<instance part="D1" gate="G$1" x="132.08" y="236.22" rot="MR270"/>
+<instance part="D2" gate="G$1" x="149.86" y="236.22" rot="MR270"/>
+<instance part="D8" gate="G$1" x="114.3" y="236.22" rot="R270"/>
 <instance part="SUPPLY11" gate="G$1" x="109.22" y="175.26"/>
 <instance part="R_REED_UP" gate="G$1" x="109.22" y="167.64" smashed="yes" rot="R270">
 <attribute name="VALUE" x="127" y="173.355" size="1.778" layer="96" rot="R180"/>
 </instance>
 <instance part="SPEEDOSTECKER" gate="G$1" x="193.04" y="193.04"/>
 <instance part="GND18" gate="1" x="154.94" y="218.44" rot="R270"/>
-<instance part="GND19" gate="1" x="142.24" y="248.92" rot="MR180"/>
+<instance part="GND19" gate="1" x="144.78" y="248.92" rot="MR180"/>
 <instance part="SUPPLY12" gate="G$1" x="76.2" y="177.8" rot="R270"/>
 <instance part="SUPPLY16" gate="G$1" x="66.04" y="152.4"/>
 <instance part="R_WATER_UP" gate="G$1" x="66.04" y="144.78" rot="R270"/>
@@ -24236,9 +24241,9 @@ SOurce: www.abracon.com</description>
 <instance part="CP4" gate="G$1" x="231.14" y="2.54" rot="R90"/>
 <instance part="D3" gate="G$1" x="50.8" y="132.08" rot="MR90"/>
 <instance part="GND27" gate="1" x="50.8" y="121.92" rot="MR0"/>
-<instance part="D10" gate="G$1" x="88.9" y="193.04" rot="MR0"/>
-<instance part="GND28" gate="1" x="96.52" y="190.5" rot="MR0"/>
-<instance part="D21" gate="G$1" x="88.9" y="208.28" rot="MR0"/>
+<instance part="D10" gate="G$1" x="93.98" y="193.04" rot="MR0"/>
+<instance part="GND28" gate="1" x="101.6" y="190.5" rot="MR0"/>
+<instance part="D21" gate="G$1" x="91.44" y="208.28" rot="MR0"/>
 <instance part="GND30" gate="1" x="96.52" y="205.74" rot="MR0"/>
 <instance part="D22" gate="G$1" x="86.36" y="129.54" rot="MR90"/>
 <instance part="GND31" gate="1" x="86.36" y="121.92" rot="MR0"/>
@@ -24521,6 +24526,26 @@ SOurce: www.abracon.com</description>
 <instance part="U$23" gate="G$1" x="-134.62" y="210.82"/>
 <instance part="GND39" gate="1" x="-149.86" y="200.66"/>
 <instance part="RX1" gate="G$1" x="-292.1" y="149.86" rot="R180"/>
+<instance part="C5" gate="C" x="144.78" y="236.22" smashed="yes" rot="MR90">
+<attribute name="NAME" x="142.24" y="238.76" size="2.032" layer="95" rot="MR90"/>
+<attribute name="VALUE" x="147.32" y="233.68" size="1.778" layer="96" rot="MR90"/>
+</instance>
+<instance part="C7" gate="C" x="127" y="236.22" smashed="yes" rot="MR90">
+<attribute name="NAME" x="124.46" y="238.76" size="2.032" layer="95" rot="MR90"/>
+<attribute name="VALUE" x="129.54" y="233.68" size="1.778" layer="96" rot="MR90"/>
+</instance>
+<instance part="C15" gate="C" x="109.22" y="236.22" smashed="yes" rot="MR90">
+<attribute name="NAME" x="106.68" y="238.76" size="2.032" layer="95" rot="MR90"/>
+<attribute name="VALUE" x="111.76" y="233.68" size="1.778" layer="96" rot="MR90"/>
+</instance>
+<instance part="C16" gate="C" x="91.44" y="213.36" smashed="yes" rot="MR0">
+<attribute name="NAME" x="88.9" y="210.82" size="2.032" layer="95" rot="MR0"/>
+<attribute name="VALUE" x="93.98" y="215.9" size="1.778" layer="96" rot="MR0"/>
+</instance>
+<instance part="C20" gate="C" x="93.98" y="195.58" smashed="yes" rot="MR0">
+<attribute name="NAME" x="91.44" y="193.04" size="2.032" layer="95" rot="MR0"/>
+<attribute name="VALUE" x="96.52" y="198.12" size="1.778" layer="96" rot="MR0"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -24541,17 +24566,18 @@ SOurce: www.abracon.com</description>
 <segment>
 <pinref part="GND1" gate="1" pin="GND"/>
 <pinref part="D6" gate="G$1" pin="A"/>
-<wire x1="88.9" y1="238.76" x2="88.9" y2="243.84" width="0.1524" layer="91"/>
-<wire x1="88.9" y1="243.84" x2="81.28" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="238.76" x2="91.44" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="243.84" x2="86.36" y2="243.84" width="0.1524" layer="91"/>
 <pinref part="R_DZ_DOWN" gate="G$1" pin="2"/>
 <wire x1="81.28" y1="243.84" x2="81.28" y2="246.38" width="0.1524" layer="91"/>
 <wire x1="81.28" y1="241.3" x2="81.28" y2="243.84" width="0.1524" layer="91"/>
 <junction x="81.28" y="243.84"/>
 <pinref part="C8" gate="C" pin="2"/>
-<wire x1="81.28" y1="243.84" x2="71.12" y2="243.84" width="0.1524" layer="91"/>
-<wire x1="71.12" y1="243.84" x2="71.12" y2="241.3" width="0.1524" layer="91"/>
+<wire x1="81.28" y1="243.84" x2="86.36" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="243.84" x2="86.36" y2="241.3" width="0.1524" layer="91"/>
 <junction x="81.28" y="243.84"/>
 <wire x1="81.28" y1="246.38" x2="81.28" y2="248.92" width="0.1524" layer="91"/>
+<junction x="86.36" y="243.84"/>
 </segment>
 <segment>
 <wire x1="165.1" y1="48.26" x2="175.26" y2="48.26" width="0.1524" layer="91"/>
@@ -24916,24 +24942,28 @@ SOurce: www.abracon.com</description>
 <segment>
 <pinref part="GND11" gate="1" pin="GND"/>
 <pinref part="R_FLASHR_DOWN" gate="G$1" pin="2"/>
-<wire x1="124.46" y1="246.38" x2="124.46" y2="243.84" width="0.1524" layer="91"/>
-<wire x1="124.46" y1="243.84" x2="119.38" y2="243.84" width="0.1524" layer="91"/>
-<wire x1="119.38" y1="243.84" x2="119.38" y2="241.3" width="0.1524" layer="91"/>
+<wire x1="127" y1="246.38" x2="127" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="127" y1="243.84" x2="121.92" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="121.92" y1="243.84" x2="121.92" y2="241.3" width="0.1524" layer="91"/>
 <pinref part="D1" gate="G$1" pin="A"/>
-<wire x1="124.46" y1="243.84" x2="129.54" y2="243.84" width="0.1524" layer="91"/>
-<wire x1="129.54" y1="243.84" x2="129.54" y2="238.76" width="0.1524" layer="91"/>
-<junction x="124.46" y="243.84"/>
+<wire x1="127" y1="243.84" x2="132.08" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="132.08" y1="243.84" x2="132.08" y2="238.76" width="0.1524" layer="91"/>
+<junction x="127" y="243.84"/>
+<pinref part="C7" gate="C" pin="2"/>
+<wire x1="127" y1="241.3" x2="127" y2="243.84" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="R_HB_DOWN" gate="G$1" pin="2"/>
 <pinref part="GND17" gate="1" pin="GND"/>
-<wire x1="101.6" y1="241.3" x2="101.6" y2="243.84" width="0.1524" layer="91"/>
-<wire x1="101.6" y1="243.84" x2="106.68" y2="243.84" width="0.1524" layer="91"/>
-<wire x1="106.68" y1="243.84" x2="106.68" y2="246.38" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="241.3" x2="104.14" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="243.84" x2="109.22" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="243.84" x2="109.22" y2="246.38" width="0.1524" layer="91"/>
 <pinref part="D8" gate="G$1" pin="A"/>
-<wire x1="111.76" y1="238.76" x2="111.76" y2="243.84" width="0.1524" layer="91"/>
-<wire x1="111.76" y1="243.84" x2="106.68" y2="243.84" width="0.1524" layer="91"/>
-<junction x="106.68" y="243.84"/>
+<wire x1="114.3" y1="238.76" x2="114.3" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="114.3" y1="243.84" x2="109.22" y2="243.84" width="0.1524" layer="91"/>
+<junction x="109.22" y="243.84"/>
+<pinref part="C15" gate="C" pin="2"/>
+<wire x1="109.22" y1="243.84" x2="109.22" y2="241.3" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="SPEEDOSTECKER" gate="G$1" pin="GND"/>
@@ -24943,14 +24973,16 @@ SOurce: www.abracon.com</description>
 </segment>
 <segment>
 <pinref part="GND19" gate="1" pin="GND"/>
-<wire x1="142.24" y1="246.38" x2="142.24" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="246.38" x2="144.78" y2="243.84" width="0.1524" layer="91"/>
 <pinref part="R_FLASHL_DOWN" gate="G$1" pin="2"/>
-<wire x1="142.24" y1="243.84" x2="137.16" y2="243.84" width="0.1524" layer="91"/>
-<wire x1="137.16" y1="243.84" x2="137.16" y2="241.3" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="243.84" x2="139.7" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="243.84" x2="139.7" y2="241.3" width="0.1524" layer="91"/>
 <pinref part="D2" gate="G$1" pin="A"/>
-<wire x1="142.24" y1="243.84" x2="147.32" y2="243.84" width="0.1524" layer="91"/>
-<wire x1="147.32" y1="243.84" x2="147.32" y2="238.76" width="0.1524" layer="91"/>
-<junction x="142.24" y="243.84"/>
+<wire x1="144.78" y1="243.84" x2="149.86" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="149.86" y1="243.84" x2="149.86" y2="238.76" width="0.1524" layer="91"/>
+<junction x="144.78" y="243.84"/>
+<pinref part="C5" gate="C" pin="2"/>
+<wire x1="144.78" y1="241.3" x2="144.78" y2="243.84" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="R_E2_2" gate="G$1" pin="2"/>
@@ -25033,12 +25065,17 @@ SOurce: www.abracon.com</description>
 <segment>
 <pinref part="D10" gate="G$1" pin="A"/>
 <pinref part="GND28" gate="1" pin="GND"/>
-<wire x1="96.52" y1="193.04" x2="91.44" y2="193.04" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="193.04" x2="96.52" y2="193.04" width="0.1524" layer="91"/>
+<pinref part="C20" gate="C" pin="1"/>
+<wire x1="99.06" y1="195.58" x2="101.6" y2="195.58" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="195.58" x2="101.6" y2="193.04" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="D21" gate="G$1" pin="A"/>
 <pinref part="GND30" gate="1" pin="GND"/>
-<wire x1="91.44" y1="208.28" x2="96.52" y2="208.28" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="208.28" x2="96.52" y2="208.28" width="0.1524" layer="91"/>
+<pinref part="C16" gate="C" pin="1"/>
+<wire x1="96.52" y1="208.28" x2="96.52" y2="213.36" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="D22" gate="G$1" pin="A"/>
@@ -25287,8 +25324,8 @@ SOurce: www.abracon.com</description>
 </net>
 <net name="DZ" class="0">
 <segment>
-<wire x1="88.9" y1="233.68" x2="88.9" y2="220.98" width="0.1524" layer="91"/>
-<wire x1="88.9" y1="220.98" x2="81.28" y2="220.98" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="233.68" x2="91.44" y2="220.98" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="220.98" x2="86.36" y2="220.98" width="0.1524" layer="91"/>
 <label x="71.12" y="193.04" size="1.778" layer="95" rot="R270"/>
 <pinref part="R_DZ" gate="G$1" pin="2"/>
 <pinref part="D6" gate="G$1" pin="C"/>
@@ -25299,10 +25336,11 @@ SOurce: www.abracon.com</description>
 <wire x1="71.12" y1="220.98" x2="71.12" y2="182.88" width="0.1524" layer="91"/>
 <wire x1="71.12" y1="182.88" x2="66.04" y2="182.88" width="0.1524" layer="91"/>
 <pinref part="C8" gate="C" pin="1"/>
-<wire x1="71.12" y1="231.14" x2="71.12" y2="220.98" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="231.14" x2="86.36" y2="220.98" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="220.98" x2="81.28" y2="220.98" width="0.1524" layer="91"/>
 <wire x1="71.12" y1="220.98" x2="81.28" y2="220.98" width="0.1524" layer="91"/>
 <junction x="81.28" y="220.98"/>
-<junction x="71.12" y="220.98"/>
+<junction x="86.36" y="220.98"/>
 </segment>
 </net>
 <net name="BAT+" class="0">
@@ -25804,6 +25842,11 @@ SOurce: www.abracon.com</description>
 <wire x1="86.36" y1="193.04" x2="86.36" y2="187.96" width="0.1524" layer="91"/>
 <junction x="86.36" y="187.96"/>
 <pinref part="R_HB5" gate="G$1" pin="2"/>
+<pinref part="C20" gate="C" pin="2"/>
+<wire x1="88.9" y1="195.58" x2="86.36" y2="195.58" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="195.58" x2="86.36" y2="193.04" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="193.04" x2="91.44" y2="193.04" width="0.1524" layer="91"/>
+<junction x="86.36" y="193.04"/>
 </segment>
 <segment>
 <wire x1="-256.54" y1="137.16" x2="-274.32" y2="137.16" width="0.1524" layer="91"/>
@@ -27035,28 +27078,36 @@ SOurce: www.abracon.com</description>
 <segment>
 <pinref part="R_FLASHL" gate="G$1" pin="2"/>
 <pinref part="R_FLASHL_DOWN" gate="G$1" pin="1"/>
-<wire x1="137.16" y1="226.06" x2="137.16" y2="228.6" width="0.1524" layer="91"/>
-<wire x1="137.16" y1="228.6" x2="137.16" y2="231.14" width="0.1524" layer="91"/>
-<wire x1="137.16" y1="228.6" x2="147.32" y2="228.6" width="0.1524" layer="91"/>
-<junction x="137.16" y="228.6"/>
+<wire x1="139.7" y1="226.06" x2="139.7" y2="228.6" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="228.6" x2="139.7" y2="231.14" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="228.6" x2="144.78" y2="228.6" width="0.1524" layer="91"/>
+<junction x="139.7" y="228.6"/>
 <pinref part="D2" gate="G$1" pin="C"/>
-<wire x1="137.16" y1="228.6" x2="25.4" y2="228.6" width="0.1524" layer="91"/>
-<wire x1="147.32" y1="233.68" x2="147.32" y2="228.6" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="228.6" x2="149.86" y2="228.6" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="228.6" x2="25.4" y2="228.6" width="0.1524" layer="91"/>
+<wire x1="149.86" y1="233.68" x2="149.86" y2="228.6" width="0.1524" layer="91"/>
 <label x="30.48" y="228.6" size="1.778" layer="95"/>
+<pinref part="C5" gate="C" pin="1"/>
+<wire x1="144.78" y1="231.14" x2="144.78" y2="228.6" width="0.1524" layer="91"/>
+<junction x="144.78" y="228.6"/>
 </segment>
 </net>
 <net name="HB_IN" class="0">
 <segment>
 <pinref part="R_HB" gate="G$1" pin="2"/>
 <pinref part="R_HB_DOWN" gate="G$1" pin="1"/>
-<wire x1="101.6" y1="220.98" x2="101.6" y2="223.52" width="0.1524" layer="91"/>
-<wire x1="101.6" y1="223.52" x2="101.6" y2="231.14" width="0.1524" layer="91"/>
-<wire x1="101.6" y1="223.52" x2="25.4" y2="223.52" width="0.1524" layer="91"/>
-<junction x="101.6" y="223.52"/>
+<wire x1="104.14" y1="220.98" x2="104.14" y2="223.52" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="223.52" x2="104.14" y2="231.14" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="223.52" x2="25.4" y2="223.52" width="0.1524" layer="91"/>
+<junction x="104.14" y="223.52"/>
 <pinref part="D8" gate="G$1" pin="C"/>
-<wire x1="111.76" y1="233.68" x2="111.76" y2="223.52" width="0.1524" layer="91"/>
-<wire x1="111.76" y1="223.52" x2="101.6" y2="223.52" width="0.1524" layer="91"/>
+<wire x1="114.3" y1="233.68" x2="114.3" y2="223.52" width="0.1524" layer="91"/>
+<wire x1="114.3" y1="223.52" x2="109.22" y2="223.52" width="0.1524" layer="91"/>
 <label x="30.48" y="223.52" size="1.778" layer="95"/>
+<pinref part="C15" gate="C" pin="1"/>
+<wire x1="109.22" y1="223.52" x2="104.14" y2="223.52" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="231.14" x2="109.22" y2="223.52" width="0.1524" layer="91"/>
+<junction x="109.22" y="223.52"/>
 </segment>
 <segment>
 <wire x1="-256.54" y1="139.7" x2="-274.32" y2="139.7" width="0.1524" layer="91"/>
@@ -27073,30 +27124,34 @@ SOurce: www.abracon.com</description>
 <segment>
 <pinref part="R_FLASHR" gate="G$1" pin="2"/>
 <pinref part="R_FLASHR_DOWN" gate="G$1" pin="1"/>
-<wire x1="119.38" y1="223.52" x2="119.38" y2="226.06" width="0.1524" layer="91"/>
-<wire x1="119.38" y1="226.06" x2="119.38" y2="231.14" width="0.1524" layer="91"/>
-<wire x1="119.38" y1="226.06" x2="25.4" y2="226.06" width="0.1524" layer="91"/>
-<junction x="119.38" y="226.06"/>
+<wire x1="121.92" y1="223.52" x2="121.92" y2="226.06" width="0.1524" layer="91"/>
+<wire x1="121.92" y1="226.06" x2="121.92" y2="231.14" width="0.1524" layer="91"/>
+<wire x1="121.92" y1="226.06" x2="25.4" y2="226.06" width="0.1524" layer="91"/>
+<junction x="121.92" y="226.06"/>
 <label x="30.48" y="226.06" size="1.778" layer="95"/>
 <pinref part="D1" gate="G$1" pin="C"/>
-<wire x1="119.38" y1="226.06" x2="129.54" y2="226.06" width="0.1524" layer="91"/>
-<wire x1="129.54" y1="226.06" x2="129.54" y2="233.68" width="0.1524" layer="91"/>
+<wire x1="121.92" y1="226.06" x2="127" y2="226.06" width="0.1524" layer="91"/>
+<wire x1="127" y1="226.06" x2="132.08" y2="226.06" width="0.1524" layer="91"/>
+<wire x1="132.08" y1="226.06" x2="132.08" y2="233.68" width="0.1524" layer="91"/>
+<pinref part="C7" gate="C" pin="1"/>
+<wire x1="127" y1="231.14" x2="127" y2="226.06" width="0.1524" layer="91"/>
+<junction x="127" y="226.06"/>
 </segment>
 </net>
 <net name="BL_R_IN_H" class="0">
 <segment>
 <pinref part="R_FLASHR" gate="G$1" pin="1"/>
 <pinref part="SPEEDOSTECKER" gate="G$1" pin="FLASH_R"/>
-<wire x1="185.42" y1="208.28" x2="119.38" y2="208.28" width="0.1524" layer="91"/>
-<wire x1="119.38" y1="208.28" x2="119.38" y2="213.36" width="0.1524" layer="91"/>
+<wire x1="185.42" y1="208.28" x2="121.92" y2="208.28" width="0.1524" layer="91"/>
+<wire x1="121.92" y1="208.28" x2="121.92" y2="213.36" width="0.1524" layer="91"/>
 <label x="139.7" y="208.28" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="BL_L_IN_H" class="0">
 <segment>
 <pinref part="SPEEDOSTECKER" gate="G$1" pin="FLASH_L"/>
-<wire x1="185.42" y1="213.36" x2="137.16" y2="213.36" width="0.1524" layer="91"/>
-<wire x1="137.16" y1="213.36" x2="137.16" y2="215.9" width="0.1524" layer="91"/>
+<wire x1="185.42" y1="213.36" x2="139.7" y2="213.36" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="213.36" x2="139.7" y2="215.9" width="0.1524" layer="91"/>
 <pinref part="R_FLASHL" gate="G$1" pin="1"/>
 <label x="142.24" y="213.36" size="1.778" layer="95"/>
 </segment>
@@ -27104,9 +27159,9 @@ SOurce: www.abracon.com</description>
 <net name="HB_IN_H" class="0">
 <segment>
 <pinref part="R_HB" gate="G$1" pin="1"/>
-<wire x1="101.6" y1="210.82" x2="101.6" y2="193.04" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="210.82" x2="104.14" y2="193.04" width="0.1524" layer="91"/>
 <pinref part="SPEEDOSTECKER" gate="G$1" pin="HIGH_BEAM"/>
-<wire x1="185.42" y1="193.04" x2="101.6" y2="193.04" width="0.1524" layer="91"/>
+<wire x1="185.42" y1="193.04" x2="104.14" y2="193.04" width="0.1524" layer="91"/>
 <label x="139.7" y="193.04" size="1.778" layer="95"/>
 </segment>
 </net>
@@ -27118,6 +27173,10 @@ SOurce: www.abracon.com</description>
 <wire x1="86.36" y1="208.28" x2="86.36" y2="203.2" width="0.1524" layer="91"/>
 <junction x="86.36" y="203.2"/>
 <pinref part="R_HB1" gate="G$1" pin="2"/>
+<pinref part="C16" gate="C" pin="2"/>
+<wire x1="88.9" y1="208.28" x2="86.36" y2="208.28" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="208.28" x2="86.36" y2="213.36" width="0.1524" layer="91"/>
+<junction x="86.36" y="208.28"/>
 </segment>
 <segment>
 <pinref part="IC4" gate="1" pin="PK0(ADC8/PCINT16)"/>
