@@ -491,22 +491,8 @@ ISR(INT7_vect ){
 ISR(PCINT2_vect ){
 	// check if its the right version before test the pin
 	if(pConfig->get_hw_version()==7){
-		if(!(CAN_INTERRUPT_PIN_PORT_V7&(1<<CAN_INTERRUPT_PIN_V7))){	 // if the CAN pin is low, low active interrupt
-			if(pSensors->CAN_active){		 // is the CAN mode active
-				pSensors->m_CAN->message_available=true;
-
-				// if we are in the mode, forcing us to answere fast .. to it! :D
-				if(pSensors->m_CAN->high_prio_processing){
-					if(!(PINB&(1<<PB0))){ // SD CS pin has to be low to access Bus
-						cli(); // stop interrupts
-						pSensors->m_CAN->process_incoming_messages();
-						sei(); // activate them again
-					};
-				}
-#ifdef CAN_DEBUG
-				Serial.println("Interrupt: Msg available");
-#endif
-			};
+		if(pSensors->m_CAN->check_message()){
+			// processing is in CAN class
 		} else if(pSensors->m_CAN->get_active_can_type()!=CAN_TYPE_TRIUMPH){ // if version 7, but not triumpf check light, tritumpf is way to heavy traffic
 			pSensors->check_inputs();
 		}
@@ -515,19 +501,19 @@ ISR(PCINT2_vect ){
 	}
 }
 
-ISR(PCINT0_vect){
-	// check if its the right version before test the pin
-	if(pConfig->get_hw_version()>7){
-		if(!(CAN_INTERRUPT_PIN_PORT_V8&(1<<CAN_INTERRUPT_PIN_FROM_V8))){	 // if the CAN pin is low, low active interrupt
-			if(pSensors->CAN_active){		 // is the CAN mode active
-				pSensors->m_CAN->message_available=true;
-#ifdef CAN_DEBUG
-				Serial.println("Interrupt: Msg available");
-#endif
-			};
-		};
-	}
-}
+//ISR(PCINT0_vect){
+//	// check if its the right version before test the pin
+//	if(pConfig->get_hw_version()>7){
+//		if(!(CAN_INTERRUPT_PIN_PORT_V8&(1<<CAN_INTERRUPT_PIN_FROM_V8))){	 // if the CAN pin is low, low active interrupt
+//			if(pSensors->CAN_active){		 // is the CAN mode active
+//				pSensors->m_CAN->message_available=true;
+//#ifdef CAN_DEBUG
+//				Serial.println("Interrupt: Msg available");
+//#endif
+//			};
+//		};
+//	}
+//}
 
 void Speedo_sensors::check_inputs(){
 	unsigned char high_beam=0x00;

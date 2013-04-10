@@ -88,6 +88,7 @@ public:
 	unsigned char get_active_can_type();
 	bool mcp2515_set_filter(uint8_t number, const can_filter_t *filter);
 	void set_active_can_type(unsigned char new_type);
+	bool check_message();
 	unsigned long last_received;
 
 private:

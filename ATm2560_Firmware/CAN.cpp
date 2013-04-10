@@ -241,6 +241,29 @@ void Speedo_CAN::init(){
 	};
 };
 
+bool Speedo_CAN::check_message(){
+	if(pSensors->CAN_active){		 // is the CAN mode active
+		if(!(CAN_INTERRUPT_PIN_PORT_V7&(1<<CAN_INTERRUPT_PIN_V7))){	 // if the CAN pin is low, low active interrupt
+			pSensors->m_CAN->message_available=true;
+
+			// if we are in the mode, forcing us to answere fast .. to it! :D
+			if(pSensors->m_CAN->high_prio_processing){
+				if(PINB&(1<<PB0)){ // SD CS pin has to be high to access Bus
+					cli(); // stop interrupts
+					pSensors->m_CAN->process_incoming_messages();
+					sei(); // activate them again
+				}
+			}
+#ifdef CAN_DEBUG
+			Serial.println("Interrupt: Msg available");
+#endif
+			return true;
+		};
+
+	}
+	return false;
+}
+
 void Speedo_CAN::shutdown(){
 
 };

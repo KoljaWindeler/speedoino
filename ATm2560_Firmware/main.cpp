@@ -120,9 +120,7 @@ int main(void) {
 
 
 	for (;;) {
-//		if(pSensors->CAN_active){
-//			pSensors->m_CAN->process_incoming_messages();
-//		};
+		pSensors->m_CAN->check_message();
 		//////////////////////////////////////////////////
 		//		pSensors->m_reset->set_deactive(false,false);
 		//		Serial3.end();
@@ -153,9 +151,7 @@ int main(void) {
 		/************************ every deamon activity is clear, now draw speedo ********************
 		 * we are round about 0000[1]1 - 0000[1]9
 		 ************************ every deamon activity is clear, now draw speedo ********************/
-//		if(pSensors->CAN_active){
-//			pSensors->m_CAN->process_incoming_messages();
-//		};
+		pSensors->m_CAN->check_message();
 
 		if((pMenu->state/10)==1 || pMenu->state==7311111)  {
 			pSpeedo->loop(previousMillis);
