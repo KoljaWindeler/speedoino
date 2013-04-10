@@ -299,6 +299,11 @@ int Speedo_CAN::get_CAN_missed_count(){
 
 unsigned int Speedo_CAN::get_Speed(){
 	if(millis()-last_received<1000){
+		if(get_active_can_type()==CAN_TYPE_TRIUMPH){
+			if(can_speed<=5){ // triumph
+				return 0;
+			}
+		}
 		return can_speed;
 	}
 	return 0;
@@ -424,7 +429,8 @@ void Speedo_CAN::process_incoming_messages(){
 		////////////////////////////////////////////////////////////////////////////////
 		else if(message.id==0x530){ // Triumph Daytone 675 Tacho request
 			can_rpm=(message.data[1]<<6)|(message.data[0]>>2);
-			can_speed=((message.data[3]<<8)|(message.data[2]))/10;
+			can_speed=round(pSensors->flatIt((int)(((message.data[3]<<8)|(message.data[2]))/10),&can_speed_counter,4,can_speed)); // IIR 4 Tabs
+			//can_speed=(((message.data[3]<<8)|(message.data[2]))/10); // raw
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
 			Serial.print("RPM:");
 			Serial.print(can_rpm);

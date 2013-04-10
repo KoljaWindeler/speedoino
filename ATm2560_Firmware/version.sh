@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=`git --git-dir=$1../.git/ describe --tags 2>/home/jkw/log`;
+VERSION=`git --git-dir=$1../.git/ describe --tags 2>/dev/null`;
 echo "#ifndef VERSION_H_
 #define VERSION_H_
     #define GIT_REV \"$VERSION\"

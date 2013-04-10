@@ -108,6 +108,7 @@ private:
 	unsigned int can_missed_count;
 	unsigned int can_rpm;
 	unsigned int can_speed;
+	unsigned char can_speed_counter;
 	bool can_fuel_lamp_active;
 	bool can_neutral_gear_lamp_active;
 
