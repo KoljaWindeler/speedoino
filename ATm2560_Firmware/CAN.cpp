@@ -759,7 +759,8 @@ uint8_t Speedo_CAN::mcp2515_read_rx_status(void){
 	return data;
 }
 
-uint8_t Speedo_CAN::can_get_message(CANMessage *p_message){
+uint8_t Speedo_CAN::can_get_message(CANMessage *p_message){ //dauert so etwa 72µS
+
 	// Status auslesen
 	uint8_t status = mcp2515_read_rx_status();
 

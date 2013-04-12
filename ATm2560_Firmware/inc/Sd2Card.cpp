@@ -227,8 +227,8 @@ uint8_t Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
 #ifndef SOFTWARE_SPI
   // SS must be in output mode even it is not chip select
   pinMode(SS_PIN, OUTPUT);
-  // Enable SPI, Master, clock rate f_osc/128
-  SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1) | (1 << SPR0);
+  // Enable SPI, Master, clock rate f_osc/16
+  SPCR = (1 << SPE) | (1 << MSTR) | (0 << SPR1) | (1 << SPR0);
   // clear double speed
   SPSR &= ~(1 << SPI2X);
 #endif  // SOFTWARE_SPI
