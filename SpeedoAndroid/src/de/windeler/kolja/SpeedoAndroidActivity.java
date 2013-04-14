@@ -844,6 +844,7 @@ OnClickListener {
 		private String shown_message=null;
 		private String temp_message=null;
 		private int last_update_state=0;
+		private int return_value=0;
 		ProgressDialog dialog;
 
 		public firmwareBurnDialog(Context cxt) {
@@ -859,7 +860,7 @@ OnClickListener {
 			try {
 				// params[0] ist der filename
 				// params[1] ist das Bluetooth device
-				int return_value=mSerialService.uploadFirmware(params[0],mHandlerUpdate,params[1]);
+				return_value=mSerialService.uploadFirmware(params[0],mHandlerUpdate,params[1]);
 				if(return_value>0){
 					Log.i(TAG, "Warum kam denn uploadFirmware mit status "+String.valueOf(return_value)+" zurueck");
 				}
@@ -882,6 +883,19 @@ OnClickListener {
 		protected void onPostExecute(String result) {
 			dialog.dismiss();
 			firmware_flash_bluetooth_device=null;
+			
+			AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+			alertDialog.setTitle("Info");
+			if(return_value==0){
+				alertDialog.setMessage("Your speedo is up2date");
+			} else {
+				alertDialog.setMessage("Warning:return value "+String.valueOf(return_value)+". Update failed!");
+			}		
+			
+			alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {	}});
+			alertDialog.show();
 		}
 
 		private final Handler mHandlerUpdate = new Handler() {
