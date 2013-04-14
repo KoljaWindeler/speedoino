@@ -19,7 +19,7 @@ void speedo_stepper::init(){
 	Serial3.begin(19200); // macht eigentlich schon der reset, aber zur sicherheit
 	Serial3.flush();
 	// select startup mode
-	if(pSpeedo->regular_startup){
+	if(pSpeedo->startup_by_ignition){
 		init_steps_to_go=5;//5
 	} else {
 		init_steps_to_go=0;//5

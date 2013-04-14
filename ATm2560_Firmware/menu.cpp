@@ -1850,7 +1850,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	 *  2. the shorter delay is passed (millis()>(menu_button_fast_timeout+button_time)) (0.1sec)
 	 */
 
-	if((hw_keys_en || button_first_push!=0) && pSpeedo->regular_startup){		// hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedrückt ist
+	if((hw_keys_en || button_first_push!=0) && pSpeedo->startup_by_ignition){		// hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedrückt ist
 		if((millis()>(button_time+menu_button_timeout)) ||
 				((button_first_push>0 && millis()>(button_first_push+menu_button_fast_delay)) && millis()>(menu_button_fast_timeout+button_time)) ){ // halbe sek timeout
 			//////////////////////// rechts ist gedrückt ////////////////////////
@@ -1956,7 +1956,7 @@ void speedo_menu::init(){
 	PCICR |=(1<<PCIE1);																						// PCINT Activieren
 
 	// see if its a clock startup or a regular startup
-	if(pSpeedo->regular_startup){
+	if(pSpeedo->startup_by_ignition){
 		state=11;
 	} else {
 		state=291; // clock mode

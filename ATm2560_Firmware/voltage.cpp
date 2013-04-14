@@ -16,8 +16,8 @@ speedo_voltage::speedo_voltage(){
 speedo_voltage::~speedo_voltage(){
 };
 
-void speedo_voltage::calc(){
-	bool was_regular_startup_befor_mesurement=pSpeedo->regular_startup;
+void speedo_voltage::calc(bool first_start){
+	bool was_regular_startup_befor_mesurement=pSpeedo->startup_by_ignition;
 	/* bei 12V => durch den Spannungsteiler ~1/3 = 4V */
 	/* value/1023*5*(3.2k)/1k  */
 
@@ -27,37 +27,50 @@ void speedo_voltage::calc(){
 
 	/////////////////////// clock mode stuff ///////////////////////////
 	//check mode
-	if(value<45){ // 4,5V
-		pSpeedo->regular_startup=false;
-	} else {
-		pSpeedo->regular_startup=true;
-	}
-
-	if(pSpeedo->regular_startup){
-		if(value<45){ // shutdown ?
-			keep_me_alive(false); // shut down if low pass voltage under 4.5V
+	// first start => Value >45, regular start, keep_alive!
+	// first start => value <45, clock start, keep_alive AND set regular start to false
+	// loop => was NOT regular start, but value is now >45 -> init
+	// loop => was NOT regular start, value is still <45 -> keep_alive
+	// loop => was regular start, value is still >45 -> keep_alive
+	// loop => was regular start, value is now <45 -> shut down
+	if(first_start){
+		if(value<45){ // 4,5V
+			pSpeedo->startup_by_ignition=false;
+			keep_me_alive(true); // shutdown is done in clock class
+		} else {
+			pSpeedo->startup_by_ignition=true;
 		}
-	} else { // i am in clock mode
-		// check if we still hold the "left" button, to extend the time
-		if(!(PINJ & (1<<menu_button_links))){ // button still down
-			start_time=millis()/1000;
-		};
+	} else {
+		if(pSpeedo->startup_by_ignition){
+			if(pSensors->get_RPM(0)>0){
+				keep_me_alive(true); // balance load
+			} else {
+				keep_me_alive(false); // fast switch off
+			}
+		} else { // i am in clock mode
+			// check if we still hold the "left" button, to extend the time
+			if(!(PINJ & (1<<menu_button_links))){ // button still down
+				start_time=millis()/1000;
+			};
 
-		// check if we have to deactivate us self
-		if((start_time+CLOCK_UP_TIME)<(millis()/1000)){ // clock was visible for N sec
-			keep_me_alive(false); // shut down
-		} else if((start_time+CLOCK_UP_TIME-1)<(millis()/1000)){ // 1sek previous
-			pOLED->string_P(pSpeedo->default_font,PSTR("ByeBye "),7,7);
-		};
-	};
+			// check if we have to deactivate us self
+			if((start_time+CLOCK_UP_TIME)<(millis()/1000)){ // clock was visible for N sec
+				keep_me_alive(false); // shut down
+				_delay_ms(9999);
+			} else if((start_time+CLOCK_UP_TIME-1)<(millis()/1000)){ // 1sek previous
+				pOLED->string_P(pSpeedo->default_font,PSTR("ByeBye "),7,7);
+			};
 
-	// main power turn up while in clock mode
-	if(!was_regular_startup_befor_mesurement && pSpeedo->regular_startup){
-		keep_me_alive(true); 		// true
-		pOLED->init_speedo();
-		pMenu->init(); // restart init process
-		pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
-		pSpeedo->reset_bak(); 		// reset all storages, to force the redraw of the speedo
+			// main power turn up while in clock mode
+			if(!was_regular_startup_befor_mesurement && aktueller_wert>45){
+				value_counter=0; 					// reset counter to avoid "voltage below 11V" - warning, cause we are at >45 but not at >110
+				pSpeedo->startup_by_ignition=true; 	// since we have power on the power switch, it should be a regular startup
+				pOLED->init_speedo();
+				pMenu->init(); 						// restart init process
+				pMenu->display(); 					// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
+				pSpeedo->reset_bak(); 				// reset all storages, to force the redraw of the speedo
+			}
+		};
 	}
 	/////////////////////// clock mode stuff ///////////////////////////
 }
@@ -98,9 +111,9 @@ void speedo_voltage::init(){
 	//	}
 
 	// do a initial read, to estimate if its a regular startup or a "show clock"-startup
-	pSpeedo->regular_startup=true;
-	calc();
-	if(!pSpeedo->regular_startup){
+	pSpeedo->startup_by_ignition=true;
+	calc(true); // submit true as "this is the first start"
+	if(!pSpeedo->startup_by_ignition){
 		start_time=millis()/1000; // sec of start
 		keep_me_alive(true);
 	} else {

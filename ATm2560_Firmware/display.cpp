@@ -517,7 +517,7 @@ void speedo_disp::init_speedo(){
 
 	// wenn die Karte ok ist können wir startup zeigen, wenn wir wollen
 	// see if its a clock startup or a regular startup
-	if(pSpeedo->regular_startup){
+	if(pSpeedo->startup_by_ignition){
 		show_animation(startup);
 	} else {
 		clear_screen();

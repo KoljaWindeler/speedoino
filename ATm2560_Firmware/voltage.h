@@ -17,7 +17,7 @@ public:
 	void init();
 	int check_vars();
 	int get();
-	void calc();
+	void calc(bool first_start);
 	bool bat_empty;
 private:
 	int value;

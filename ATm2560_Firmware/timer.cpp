@@ -82,7 +82,7 @@ void speedo_timer::every_qsec() {
 		}
 
 		// see if its a clock startup or a regular startup
-		if(pSpeedo->regular_startup){
+		if(pSpeedo->startup_by_ignition){
 			// TODO: warum so häufig?
 			pAktors->update_outer_leds(false,false);
 

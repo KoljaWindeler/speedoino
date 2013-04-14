@@ -163,7 +163,7 @@ void Speedo_aktors::init(){
 	pinMode(RGB_IN_W,OUTPUT);
 
 	// see if its a clock startup or a regular startup
-	if(pSpeedo->regular_startup){
+	if(pSpeedo->startup_by_ignition){
 		// beleuchtung
 		analogWrite(RGB_IN_W,255);
 		// beleuchtung
@@ -177,7 +177,7 @@ void Speedo_aktors::init(){
 	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
 
 	// see if its a clock startup or a regular startup
-	if(pSpeedo->regular_startup){
+	if(pSpeedo->startup_by_ignition){
 		set_rbg_active((int)0x0000);
 		update_outer_leds(true,true);
 	};

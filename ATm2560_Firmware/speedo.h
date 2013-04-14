@@ -51,7 +51,7 @@ public:
 	unsigned long avg_timebase[9];
 	unsigned long trip_dist[9]; // 0=Total, 1=Non permanent, 2=Day, 3=Tour, 4=Quick, 5=Fuel, 6=Oiler, 7=Saison, 8=Board
 	int 		  refresh_cycle;
-	bool 		  regular_startup;
+	bool 		  startup_by_ignition;
 
 	int maximum;
 	int minimum;

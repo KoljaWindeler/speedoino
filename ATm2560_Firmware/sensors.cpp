@@ -160,11 +160,11 @@ unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 		exact_value=m_dz->get_dz(true); // just get the number, no calculation
 	}
 
-	// return value based on mode
+	// return value based on mode,
 	if(mode==1){
-		return rpm_flatted;
+		return rpm_flatted;	// will be calculated with 10Hz in pull values
 	} else if(mode==2){
-		return 50*round(rpm_flatted/50); // TODO exact verwenden? oder höher teilen?
+		return 50*round(rpm_flatted/50); // will be calculated with 10Hz in pull values
 	};
 
 	return exact_value;
@@ -240,7 +240,7 @@ void Speedo_sensors::single_read(){
 	pDebug->sprintp(PSTR("Done\r\nReading: Water temp ... "));
 	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren TODO nur wenn kein CAN
 	pDebug->sprintp(PSTR("Done\r\nReading: Voltages ... "));
-	pSensors->m_voltage->calc(); // spannungscheck
+	pSensors->m_voltage->calc(false); // spannungscheck
 	char temp[6];
 	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/10)),int(m_voltage->get()%10));
 	Serial.print(temp);
@@ -309,7 +309,7 @@ void Speedo_sensors::pull_values(){
 		if(ten_Hz_counter==0){ // 1 Hz
 			m_clock->inc();  // sekunden hochzählen
 			m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
-			m_voltage->calc(); // spannungscheck
+			m_voltage->calc(false); // spannungscheck
 			m_temperature->read_oil_temp();  // temperaturen aktualisieren
 
 			// auto CAN detection ... geht nicht .. warum? TODO
