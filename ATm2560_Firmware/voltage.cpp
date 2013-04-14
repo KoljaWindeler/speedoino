@@ -65,6 +65,7 @@ void speedo_voltage::calc(bool first_start){
 			if(!was_regular_startup_befor_mesurement && aktueller_wert>45){
 				value_counter=0; 					// reset counter to avoid "voltage below 11V" - warning, cause we are at >45 but not at >110
 				pSpeedo->startup_by_ignition=true; 	// since we have power on the power switch, it should be a regular startup
+				pDebug->sprintlnp(PSTR("Power up during Clock Mode"));
 				pOLED->init_speedo();
 				pMenu->init(); 						// restart init process
 				pMenu->display(); 					// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
