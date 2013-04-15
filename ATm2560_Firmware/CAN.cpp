@@ -67,12 +67,15 @@ void Speedo_CAN::init(){
 		CAN_PORT_CS_TILL_V7 |= (1<<CAN_INTERRUPT_PIN_V7); //  active low => pull up
 		// CS as output
 		CAN_DDR_CS_TILL_V7 |= (1<<CAN_PIN_CS_TILL_V7);
+		PCMSK2|=(1<<PCINT20); // CAN interrupt pin v7
 	} else if(pConfig->get_hw_version()>7){
 		// CS Input with pull up
 		CAN_DDR_CS_FROM_V8 &= ~(1<<CAN_INTERRUPT_PIN_FROM_V8); // input
 		CAN_PORT_CS_FROM_V8 |= (1<<CAN_INTERRUPT_PIN_FROM_V8); //  active low => pull up
 		// CS as output
 		CAN_DDR_CS_FROM_V8 |= (1<<CAN_PIN_CS_FROM_V8);
+		PCMSK0|=(1<<PCINT4); // CAN interrupt pin v(>7)
+		PCICR |=(1<<PCIE0); //new interrupt just for CAN
 	};
 
 
@@ -200,6 +203,8 @@ void Speedo_CAN::init(){
 		filter.id=0x570;
 		mcp2515_set_filter(5,&filter);
 
+		high_prio_processing=true;
+
 	} else { // assume OBD2 as fallback
 		// Mask0:   111 1000 0000
 		// Filter0 111 1000 0000
@@ -220,6 +225,8 @@ void Speedo_CAN::init(){
 		mcp2515_set_filter(3,&filter);
 		mcp2515_set_filter(4,&filter);
 		mcp2515_set_filter(5,&filter);
+
+		high_prio_processing=false;
 	}
 
 

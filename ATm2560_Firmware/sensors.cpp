@@ -76,9 +76,8 @@ void Speedo_sensors::init(){
 	PORTK |=(1<<PK0); // activate Pull UP
 	sei();
 	// High Beam
-	PCMSK0|=(1<<PCINT4); // 4 is the new can v8 interface interrupt
-	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16) | (1<<PCINT20); // 20 still there even from v7
-	PCICR |=(1<<PCIE2)|(1<<PCIE0); // general interrupt PC aktivieren für SK2
+	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16); //Oil in, High beam in, Neutral gear
+	PCICR |=(1<<PCIE2); // general interrupt PC aktivieren für SK2
 
 	rpm_flatted_counter=0;
 	pDebug->sprintlnp(PSTR("Sensors init done"));

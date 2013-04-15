@@ -929,6 +929,11 @@ void speedo_menu::display(){
 
 		///////////////////////// set bt pin ///////////////////////////
 	} else if(floor(state/10)==67){
+		if(old_state>state && pConfig->storage_outdated){
+			if(pAktors->set_bt_pin()!=0){
+				pConfig->storage_outdated=false; // avoid saving if we could not set it
+			}
+		}
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen übergang zu erzeugen
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 		pSpeedo->disp_zeile_bak[2]=999; // redraw everything
