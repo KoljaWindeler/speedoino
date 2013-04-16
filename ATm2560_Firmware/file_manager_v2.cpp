@@ -642,6 +642,7 @@ void speedo_filemanager_v2::parse_command(){
 				answere_transmitted=true;
 
 				pAktors->run_reset_on_ATm328(); //
+				pMenu->state=11; // speedo
 				pMenu->display();
 				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
 				////////////////////////// USE THIS AS STARTUP ANIMATION /////////////////

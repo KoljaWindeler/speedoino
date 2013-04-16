@@ -62,7 +62,7 @@ const char setup_m_4[] PROGMEM = "5. Sensor source"; // can or no CAN
 const char setup_m_5[] PROGMEM = "6. BT Reset state";
 const char setup_m_6[] PROGMEM = "7. Water temp warn.";
 const char setup_m_7[] PROGMEM = "8. Oil temp warn.";
-const char setup_m_8[] PROGMEM = "9. -";
+const char setup_m_8[] PROGMEM = "9. Man. update 328";
 const char  * const menu_setup[9] PROGMEM= { setup_m_0,setup_m_1,setup_m_2,setup_m_3,setup_m_4,setup_m_5,setup_m_6,setup_m_7,setup_m_8 };
 
 ///////////////////// Customize /////////////////////
@@ -1008,7 +1008,7 @@ void speedo_menu::display(){
 	 *	76 Bluetooth reset
 	 *	77 Water Warning temperature
 	 *	78 Oil Warning temperature
-	 *	79 -
+	 *	79 Menual Update of ATm328
 	 ********************************************* Menu 7 - Start of Setup Menu *********************************************/
 	//////////////////////// Setup Menu ////////////////////////////
 	else if(floor(state/10)==7) { //00007[X]
@@ -1396,6 +1396,13 @@ void speedo_menu::display(){
 		sprintf(char_buffer,"%3i,%i{C",int(floor(pSensors->m_temperature->oil_warning_temp/10)),int(pSensors->m_temperature->oil_warning_temp%10));
 		center_me(char_buffer,21);
 		pOLED->string(pSpeedo->default_font,char_buffer,0,5);
+	}
+	////////////////////////////////// water temp premenu //////////////////////////////////
+	else if(floor(state/10)==79) {
+		pAktors->run_reset_on_ATm328();
+	}
+	else if(floor(state/100)==79) {
+		pAktors->run_reset_on_ATm328();
 	}
 	/********************************************* End of Setup Menu *********************************************/
 

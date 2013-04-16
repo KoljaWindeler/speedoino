@@ -74,7 +74,7 @@ void Speedo_aktors::run_reset_on_ATm328(){
 	}
 	Serial3.end();
 	Serial3.begin(19200);
-	pMenu->display();
+	pMenu->back();
 }
 
 
