@@ -69,10 +69,10 @@ void speedo_filemanager_v2::parse_command(){
 
 			if(isLeave!=1){
 				//////////////////
-				#ifdef DEBUG_TRANSFER
-					pOLED->string(0,"-",0,1);
-					_delay_ms(500);
-				#endif
+#ifdef DEBUG_TRANSFER
+				pOLED->string(0,"-",0,1);
+				_delay_ms(500);
+#endif
 				//////////////////
 				c = Serial.read();
 				timeout = 0;
@@ -84,13 +84,13 @@ void speedo_filemanager_v2::parse_command(){
 
 					if ( c == MESSAGE_START ){
 						//////////////////
-						#ifdef DEBUG_TRANSFER
-							pOLED->string(0,"1",0,1);
-							_delay_ms(500);
-						#endif
-						#ifdef DEBUG_TRANSFER_INTENSIV
-							Serial.println("MSG gehalten");
-						#endif
+#ifdef DEBUG_TRANSFER
+						pOLED->string(0,"1",0,1);
+						_delay_ms(500);
+#endif
+#ifdef DEBUG_TRANSFER_INTENSIV
+						Serial.println("MSG gehalten");
+#endif
 						//////////////////
 						msgParseState	=	ST_GET_SEQ_NUM;
 						checksum		=	MESSAGE_START;
@@ -108,15 +108,15 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_GET_SEQ_NUM:
 					if ((c == 1) || (c == seqNum)){
 						//////////////////
-						#ifdef DEBUG_TRANSFER
-							pOLED->string(0,"2",0,1);
-							_delay_ms(500);
-						#endif
-						#ifdef DEBUG_TRANSFER_INTENSIV
-							Serial.print("seq nr: ");
-							Serial.print(c,DEC);
-							Serial.println(" erhalten");
-						#endif
+#ifdef DEBUG_TRANSFER
+						pOLED->string(0,"2",0,1);
+						_delay_ms(500);
+#endif
+#ifdef DEBUG_TRANSFER_INTENSIV
+						Serial.print("seq nr: ");
+						Serial.print(c,DEC);
+						Serial.println(" erhalten");
+#endif
 						//////////////////
 						seqNum			=	c;
 						msgParseState	=	ST_MSG_SIZE;
@@ -128,14 +128,14 @@ void speedo_filemanager_v2::parse_command(){
 
 				case ST_MSG_SIZE:
 					//////////////////
-					#ifdef DEBUG_TRANSFER
-						pOLED->string(0,"3",0,1);
-						_delay_ms(500);
-					#endif
-					#ifdef DEBUG_TRANSFER_INTENSIV
-						Serial.print("MSG size:");
-						Serial.println(c,DEC);
-					#endif
+#ifdef DEBUG_TRANSFER
+					pOLED->string(0,"3",0,1);
+					_delay_ms(500);
+#endif
+#ifdef DEBUG_TRANSFER_INTENSIV
+					Serial.print("MSG size:");
+					Serial.println(c,DEC);
+#endif
 					//////////////////
 					msgLength		=	c<<8;
 					msgParseState	=	ST_MSG_SIZE_2;
@@ -144,14 +144,14 @@ void speedo_filemanager_v2::parse_command(){
 
 				case ST_MSG_SIZE_2:
 					//////////////////
-					#ifdef DEBUG_TRANSFER
-						pOLED->string(0,"4",0,1);
-						_delay_ms(500);
-					#endif
-					#ifdef DEBUG_TRANSFER_INTENSIV
-						Serial.print("MSG size:");
-						Serial.println(c,DEC);
-					#endif
+#ifdef DEBUG_TRANSFER
+					pOLED->string(0,"4",0,1);
+					_delay_ms(500);
+#endif
+#ifdef DEBUG_TRANSFER_INTENSIV
+					Serial.print("MSG size:");
+					Serial.println(c,DEC);
+#endif
 					//////////////////
 					msgLength		|=	c;
 					msgParseState	=	ST_GET_TOKEN;
@@ -161,13 +161,13 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_GET_TOKEN:
 					if ( c == TOKEN ){
 						//////////////////
-						#ifdef DEBUG_TRANSFER
-							pOLED->string(0,"5",0,1);
-							_delay_ms(500);
-						#endif
-						#ifdef DEBUG_TRANSFER_INTENSIV
-							Serial.println("Token erhalten");
-						#endif
+#ifdef DEBUG_TRANSFER
+						pOLED->string(0,"5",0,1);
+						_delay_ms(500);
+#endif
+#ifdef DEBUG_TRANSFER_INTENSIV
+						Serial.println("Token erhalten");
+#endif
 						//////////////////
 						msgParseState	=	ST_GET_DATA;
 						checksum		^=	c;
@@ -179,13 +179,13 @@ void speedo_filemanager_v2::parse_command(){
 
 				case ST_GET_DATA:
 					//////////////////
-					#ifdef DEBUG_TRANSFER
-						pOLED->string(0,"6",0,1);
-						_delay_ms(500);
-					#endif
-					#ifdef DEBUG_TRANSFER_INTENSIV
-						Serial.println("Daten erhalten");
-					#endif
+#ifdef DEBUG_TRANSFER
+					pOLED->string(0,"6",0,1);
+					_delay_ms(500);
+#endif
+#ifdef DEBUG_TRANSFER_INTENSIV
+					Serial.println("Daten erhalten");
+#endif
 					//////////////////
 					msgBuffer[ii++]	=	c;
 					checksum		^=	c;
@@ -202,13 +202,13 @@ void speedo_filemanager_v2::parse_command(){
 					//					pOLED->string(0,buffer,0,4);
 					if ( c == checksum){
 						//////////////////
-						#ifdef DEBUG_TRANSFER
-							pOLED->string(0,"7",0,1);
-							_delay_ms(500);
-						#endif
-						#ifdef DEBUG_TRANSFER_INTENSIV
-							Serial.println("Checksum correct");
-						#endif
+#ifdef DEBUG_TRANSFER
+						pOLED->string(0,"7",0,1);
+						_delay_ms(500);
+#endif
+#ifdef DEBUG_TRANSFER_INTENSIV
+						Serial.println("Checksum correct");
+#endif
 						//////////////////
 						msgParseState	=	ST_PROCESS;
 					} else {
@@ -231,22 +231,22 @@ void speedo_filemanager_v2::parse_command(){
 			//bool change_disp=false;
 			answere_transmitted=false;
 
-			#ifdef DEBUG_TRANSFER
-				char buffer[10];
-				if(floor(msgBuffer[0]/16)>10){
-					buffer[0]='a'+(floor(msgBuffer[0]/16)-10);
-				} else {
-					buffer[0]='0'+floor(msgBuffer[0]/16);
-				};
+#ifdef DEBUG_TRANSFER
+			char buffer[10];
+			if(floor(msgBuffer[0]/16)>10){
+				buffer[0]='a'+(floor(msgBuffer[0]/16)-10);
+			} else {
+				buffer[0]='0'+floor(msgBuffer[0]/16);
+			};
 
-				if((msgBuffer[0]%16)>10){
-					buffer[1]='a'+(msgBuffer[0]%16)-10;
-				} else {
-					buffer[1]='0'+(msgBuffer[0]%16);
-				}
-				buffer[2]='\0';
-				pOLED->string(0,buffer,0,1);
-			#endif
+			if((msgBuffer[0]%16)>10){
+				buffer[1]='a'+(msgBuffer[0]%16)-10;
+			} else {
+				buffer[1]='0'+(msgBuffer[0]%16);
+			}
+			buffer[2]='\0';
+			pOLED->string(0,buffer,0,1);
+#endif
 
 			/////////////////////////// SIGN ON ///////////////////////////////////////
 
@@ -617,7 +617,7 @@ void speedo_filemanager_v2::parse_command(){
 				msgLength=2; // cmd + status ok
 				fast_reply_buffer[0]=CMD_SHOW_GFX;
 				fast_reply_buffer[1]=STATUS_CMD_OK;
-				send_answere(msgBuffer,msgLength,&seqNum,&msgParseState);
+				send_answere(fast_reply_buffer,msgLength,&seqNum,&msgParseState);
 				answere_transmitted=true;
 
 				// show gif/jpg
@@ -641,7 +641,7 @@ void speedo_filemanager_v2::parse_command(){
 				send_answere(msgBuffer,msgLength,&seqNum,&msgParseState);
 				answere_transmitted=true;
 
-				pAktors->run_reset_on_ATm328(); //
+				pAktors->run_reset_on_ATm328(RESET_COMPLETE); //
 				pMenu->state=11; // speedo
 				pMenu->display();
 				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
@@ -665,8 +665,13 @@ void speedo_filemanager_v2::parse_command(){
 					msgBuffer[1]=STATUS_CMD_OK;
 				}
 				////////////////////////// USE THIS AS STARTUP ANIMATION /////////////////
+				///////////////////////////// BOOTLOADER /////////////////////////////////
+			} else if(msgBuffer[0]==CMD_GET_PARAMETER || msgBuffer[0]==CMD_SET_PARAMETER || msgBuffer[0]==CMD_SET_DEVICE_PARAMETERS){
+				// jump to bootloader
+				typedef void (*AppPtr_t)(void) __attribute__ ((noreturn));
+				AppPtr_t AppStartPtr = (AppPtr_t)0x0000;
+				AppStartPtr();
 				///////////////////////////// EMERGENCY /////////////////////////////////
-
 			} else {
 				msgLength		=	2;
 				//msgBuffer[0]	=	msgBuffer[0]; // keep old command

@@ -53,9 +53,9 @@ class speedo_filemanager_v2{
 	#define WAIT_MS_FOR_DATA		2000
 
 
-//#define CMD_SET_PARAMETER                   0x02
-//#define CMD_GET_PARAMETER                   0x03
-//#define CMD_SET_DEVICE_PARAMETERS           0x04
+#define CMD_SET_PARAMETER                   0x02
+#define CMD_GET_PARAMETER                   0x03
+#define CMD_SET_DEVICE_PARAMETERS           0x04
 //#define CMD_OSCCAL                          0x05
 //#define CMD_LOAD_ADDRESS                    0x06
 //#define CMD_FIRMWARE_UPGRADE                0x07
