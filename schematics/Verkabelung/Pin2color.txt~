@@ -4,23 +4,46 @@ Von oben auf die platine geguckt
 9012
 3456
 
-grau / rosa	Oil Temp
-weiß		High Beam
-braun		Oil Pressure
-grün		Blinker Rechts
+grau / rosa	Oil Temp			abgerissen beim Ölwecchsel
+weiß		High Beam			GEHT
+braun		Oil Pressure			GEHT NICHT
+grün		Blinker Rechts			GEHT
 
-rot blau	Kupplung in
-weiß grün	Mc Coi
-braun grün	DZ in
-gelb		Leerlauf
+rot blau	Kupplung in			
+weiß grün	Mc Coi				??? geht aufm schreibtisch
+braun grün	DZ in				GEHT NICHT
+gelb		Leerlauf			GEHT NICHT
 
-lila		Reed
-gelb braun	Blinker links
-schwarz		Masse
-weiß gelb	wasser temp	TESTEN
+lila		Reed				GEHT NICHT
+gelb braun	Blinker links			GEHT
+schwarz		Masse				GEHT
+weiß gelb	wasser temp			GEHT
 
-blau		extra
-rot		12V
-rosa		12V dauer
-grau		extra
+blau		extra CAN LOW			??? geht aufm schreibtisch
+rot		12V				GEHT
+rosa		12V dauer			??? geht aufm schreibtisch
+grau		extra CAN HIGH			??? geht aufm schreibtisch
+
+
+stecker mit gelbbraun vom tacho an stecker mit braungrün
+
+Rundstecker 1
+1 Rot 		12V			
+2 Schwarz 	Masse
+3 lila 		Reed
+4 brau grün 	DZ
+5 weiß gelb 	Wasser Temp
+6 gelb braun 	blinker links
+7 gelb 		leerlauf
+8 weiß 		highbeam
+
+Rundstecker 2
+1 rosa 		12V dauer
+2 braun 	oil pressure
+3 blau 		CAN LOW
+4 grau 		CAN HIGH
+5 grau/rosa 	oil temp
+6 grün 		blinker rechts
+7 weiß grün 	Mc Coi
+8 rot blau 	Kupplung in
 
