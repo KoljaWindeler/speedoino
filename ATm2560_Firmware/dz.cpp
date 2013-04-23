@@ -55,7 +55,7 @@ void speedo_dz::calc() {
 		if(differ>112){
 			previous_time=now;
 
-			int demo_mode=2;
+			int demo_mode=3;
 
 			if(demo_mode==1){
 				int temp=analogRead(OIL_TEMP_PIN)-180;
@@ -66,22 +66,17 @@ void speedo_dz::calc() {
 				rounded=exact_disp;
 			} else if(demo_mode==2){
 				if(int(floor(millis()/1000))%10<=5){
-					int dz=random(15000);
+					int dz=(15000);
 					exact=pSensors->flatIt(dz,&dz_faktor_counter,30,exact);
 					exact_disp=exact;
 					rounded=exact_disp;
 				};
 			} else if(demo_mode==3){
-				int speed_me_up=50; // gut mit 50
-				if(((millis()/speed_me_up)%210)<50){
-					rounded=0;
-				} else {
-					rounded=((millis()/speed_me_up)%210)*70;
-				};
+				exact=(20*pSensors->get_speed(false));
 			};
 			pSensors->m_gear->calc();
 			//pAktors->m_stepper->go_to(exact/11.73);
-			pAktors->m_stepper->go_to(exact/11.5);
+			pAktors->m_stepper->go_to(exact/11.73);
 		}
 	} else if(now_peaks>4 && differ>25){ 				// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
 		// am 17.8. von 50 auf 25 geändert ... das sind jetzt 40 Hz, mal sehen ob das noch klappt
