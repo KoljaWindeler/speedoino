@@ -13,6 +13,10 @@
 #define RGB_OUT_B 9
 #define RGB_IN_W 13
 
+#define RESET_KICK_TO_RESET 0x01
+#define RESET_COMPLETE 0x02
+#define RESET_PREPARE 0x03
+
 #define ATM328RESETPIN PD4
 #define PORT_REP_ADDR 0x20				// I2C Address of MCP23017 Chip
 #define PORT_REP_ADDR_GPIO_A 0x12     // Register Address of Port A
@@ -65,7 +69,7 @@ public:
 	void set_rgb_out(int r,int g,int b,int save);
 	void dimm_rgb_to(int r,int g,int b,int max_dimm_steps);
 	void timer_overflow();
-	void run_reset_on_ATm328();
+	void run_reset_on_ATm328(char mode);
 	bool dimm_available();
 	int  update_outer_leds(bool dimm,bool overwrite);
 	int set_bt_pin();

@@ -42,39 +42,81 @@ Speedo_aktors::~Speedo_aktors(){
 };
 
 
-void Speedo_aktors::run_reset_on_ATm328(){
-	pSensors->m_reset->set_deactive(false,false);
-	Serial3.end();
-	Serial3.begin(115200);
-	pOLED->clear_screen();
-	pOLED->string_P(pSpeedo->default_font,PSTR("Running Update"),3,3);
-	pOLED->string_P(pSpeedo->default_font,PSTR("on AT328P"),5,4);
-	// pin as output
-	DDRD |= (1<<ATM328RESETPIN);
-	// set low -> low active
-	PORTD &= ~(1<<ATM328RESETPIN);
-	_delay_ms(50);
-	PORTD |= (1<<ATM328RESETPIN);
-	// set high, as pull up
-	DDRD |= (1<<ATM328RESETPIN);
-	PORTD |= (1<<ATM328RESETPIN);
+// run reset could be called in three ways,
+// convertional by the bluetooth command
+// -> that should write "Running Update", reconfigure serial speed and reset the ATm328
+// second from the menu
+// -> thereby only the "running update" should be written and the serial speed should be reconfigured
+// third: from the state (2) if the user pushed "right" button to trigger reset
+// -> only reset ATm328 and return to last state
+void Speedo_aktors::run_reset_on_ATm328(char mode){
+	// serial setup and "klickibunti"-"show some msg"
+	if(mode==RESET_COMPLETE || mode==RESET_PREPARE){
+		pSensors->m_reset->set_deactive(false,false);
+		_delay_ms(100);// give serial 3 some time to send the messeage
+		Serial3.end();
+		Serial3.begin(115200);
+		pOLED->clear_screen();
+		pOLED->string_P(pSpeedo->default_font,PSTR("Running Update"),3,2);
+		pOLED->string_P(pSpeedo->default_font,PSTR("on AT328P"),5,3);
+	};
 
-	// tunnel mode
-	unsigned long timeout=millis();
-	while(millis()-timeout<5000){ // time out
-
-		while(true){
-			while(Serial3.available()>0){
-				Serial.print(Serial3.read(),BYTE);
-			}
-			while(Serial.available()>0){
-				Serial3.print(Serial.read(),BYTE);
-			}
-		}
+	// show "_R_to_trigger_reset__" only if in "preparation" mode
+	if(mode==RESET_PREPARE){
+		char temp[2];
+        sprintf(temp,"%c",127);
+        pOLED->string(pSpeedo->default_font,temp,1,7);
+		pOLED->string_P(pSpeedo->default_font,PSTR("to trigger reset"),3,7);
 	}
-	Serial3.end();
-	Serial3.begin(19200);
-	pMenu->back();
+
+	// run the reset
+	if(mode==RESET_COMPLETE || mode==RESET_KICK_TO_RESET){
+		// pin as output
+		DDRD |= (1<<ATM328RESETPIN);
+		// set low -> low active
+		PORTD &= ~(1<<ATM328RESETPIN);
+		_delay_ms(50);
+		PORTD |= (1<<ATM328RESETPIN);
+		// set high, as pull up
+		DDRD |= (1<<ATM328RESETPIN);
+		PORTD |= (1<<ATM328RESETPIN);
+	}
+
+	// tunnel connection
+	if(mode==RESET_COMPLETE || mode==RESET_PREPARE){
+		// tunnel mode
+		unsigned long timeout=millis();
+		unsigned long menu_state_on_enter=pMenu->state; // save the menu state, to detect button pushes
+		unsigned int max_time=5000; // should be enough if in android mode
+		if(mode==RESET_PREPARE){ // longer timeout if in "menu-mode"
+			max_time=30000;
+		};
+		while(millis()-timeout<max_time){ // time out
+				while(Serial3.available()>0){
+					Serial.print(Serial3.read(),BYTE);
+					timeout=millis();
+				}
+				while(Serial.available()>0){
+					Serial3.print(Serial.read(),BYTE);
+					timeout=millis();
+				}
+				if(mode==RESET_PREPARE){
+					if(menu_state_on_enter==((pMenu->state/10))){ // button "right" was pushed
+						run_reset_on_ATm328(RESET_KICK_TO_RESET); // to the reset
+						pMenu->state=menu_state_on_enter; // reset menu state
+					} else if(menu_state_on_enter==((pMenu->state*10)+1)){ // button "left" was pushed
+						pMenu->state=menu_state_on_enter; // reset menu state, because menu->back will otherwise recaluclate two steps back
+						max_time=0;
+						break;
+					}
+				}
+		}
+		Serial3.end();
+		Serial3.begin(19200);
+		pSensors->m_reset->set_active(false,false);
+		pMenu->back();
+	};
+
 }
 
 
