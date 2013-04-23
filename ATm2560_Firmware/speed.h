@@ -10,6 +10,8 @@
 
 class speedo_speed{
 #define SPEED_PIN PE5
+#define SPEED_REED_OK 0
+#define SPEED_REED_ERROR 1
 public:
 	speedo_speed();
 	~speedo_speed();

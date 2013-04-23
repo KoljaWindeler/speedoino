@@ -118,7 +118,6 @@ int main(void) {
 	 ******************** setup procedure ********************************************/
 	unsigned long   previousMillis = 0;
 
-
 	for (;;) {
 		pSensors->m_CAN->check_message();
 		//////////////////////////////////////////////////

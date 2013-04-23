@@ -120,7 +120,7 @@ void speedo_gear::calibrate(){
 		pOLED->string(pSpeedo->default_font,temp,14,7);
 	}
 
-	_delay_ms(150);
+	_delay_ms(150); // 128 values for LP, 150ms per Value + calc time ~> 22sec
 	pSensors->m_dz->calc(); // erst berechnen dann damit weiter rechnen
 	faktor_flat=pSensors->flatIt(int((unsigned long)(10*pSensors->get_RPM(0))/pSensors->get_speed(true)),&faktor_counter,127,faktor_flat);
 	if(faktor_flat!=pSpeedo->disp_zeile_bak[1]){

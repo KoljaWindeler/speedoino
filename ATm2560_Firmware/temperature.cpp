@@ -205,6 +205,9 @@ void speedo_temperature::read_water_temp() {
 		} else if(water_temp_fail_status<9){
 			water_temp_fail_status++;
 		}
+		if(DEMO_MODE){
+			water_temp_fail_status=0;
+		}
 	} else { // Kurzschluss nach masse: 102=(1024-x)/10  	x<=4
 		if(water_temp_fail_status<5){ // nach sechs maligem fehler => ausgabe!
 			water_temp_fail_status++;

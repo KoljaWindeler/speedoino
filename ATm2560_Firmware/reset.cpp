@@ -50,8 +50,9 @@ void speedo_reset::init(){
 		pDebug->sprintlnp(PSTR("AVR watchdog"));
 	} else if(last_reset==2){
 		pDebug->sprintlnp(PSTR("BT connect"));
+	} else {
+		pDebug->sprintlnp(PSTR("ATm328 down!"));
 	}
-
 
 	// watchdog einschalten um ihn dann zu deaktivieren ... strange aber muss wohl so
 	wdt_enable(WDTO_8S);

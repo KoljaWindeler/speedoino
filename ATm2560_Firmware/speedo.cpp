@@ -159,7 +159,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			};
 
 		}
-		else if(kmh_widget.x!=-1 && kmh_widget.y!=-1 && pSensors->m_speed->status==1){
+		else if(kmh_widget.x!=-1 && kmh_widget.y!=-1 && pSensors->m_speed->status==SPEED_REED_ERROR){
 			if(disp_zeile_bak[ADD_INFO2]!=110){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=110;
 				pDebug->speedo_loop(14,0,previousMillis," ");

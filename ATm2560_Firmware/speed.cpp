@@ -39,7 +39,7 @@ speedo_speed::~speedo_speed(){
 void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==HIGH){ // außen drum herum
 	unsigned long jetzt=millis();
 	unsigned long differ=jetzt-last_time;
-	status=0;
+	status=SPEED_REED_OK;
 	if(differ>250){ // mit max 10 hz und nach peak anzahl neu berechnen
 		int temp_reed_speed=round(((reifen_umfang*1000*speed_peaks)/differ) * 3.6 ); // 1 Magnet // eventuell /360*280 => wenn 280° zwischen dem letzen und dem ersten flattern liegen, aber ich denke das werden eher 358° sein
 
@@ -67,7 +67,9 @@ void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==
 };
 
 
-ISR(INT5_vect){	pSensors->m_speed->calc(); } // der eingentliche
+ISR(INT5_vect){
+	pSensors->m_speed->calc();
+} // der eingentliche
 
 void speedo_speed::init (){
 	//DDRE  &=~(1<<SPEED_PIN); // interrupt 5 eingang
@@ -76,7 +78,7 @@ void speedo_speed::init (){
 	EICRB |= (1<<ISC50) | (1<<ISC51); // rising edge on INT5
 	speed_peaks=0; // clear
 
-	status=0; // alles gut
+	status=SPEED_REED_OK; // alles gut
 	pDebug->sprintlnp(PSTR("Speed init done"));
 };
 
@@ -126,7 +128,7 @@ int speedo_speed::getSpeed(){
 			return reed_speed;
 		};
 	} else if(pSensors->m_gps->get_drive_status()) { // wir haben lange nichts mehr vom reed gehört, gps sagt wir fahren
-		status=1;
+		status=SPEED_REED_ERROR;
 		return pSensors->m_gps->speed;
 	} else {
 		reed_speed=0;
