@@ -1045,15 +1045,20 @@ void speedo_menu::display(){
 	//////////////////// calibration done, save it now.  ///////////////////
 	else if(floor(state/1000)==71){
 		set_buttons(!button_state,!button_state,!button_state,!button_state); // message only
+		int current_gear=int(pSensors->m_gps->mod(pMenu->state,1000))/100;
 
-		pSensors->m_gear->n_gang[int(pSensors->m_gps->mod(pMenu->state,1000))/100]=pSensors->m_gear->faktor_flat;
+		pSensors->m_gear->n_gang[current_gear]=pSensors->m_gear->faktor_flat;
 		pConfig->storage_outdated=true;
 		pConfig->write("GANG.TXT");
 
 		pOLED->clear_screen();
 		pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
 		_delay_ms(300);
-		state=711;
+		if(current_gear<6 && current_gear>0){
+			state=701+(current_gear+1)*10; // next gear
+		} else {
+			state=711; // first gear again
+		}
 		update_display=true;
 	}
 	///////////////////// speed calibration //////////////////////////
@@ -1399,10 +1404,8 @@ void speedo_menu::display(){
 	}
 	////////////////////////////////// water temp premenu //////////////////////////////////
 	else if(floor(state/10)==79) {
-		pAktors->run_reset_on_ATm328();
-	}
-	else if(floor(state/100)==79) {
-		pAktors->run_reset_on_ATm328();
+		set_buttons(button_state,!button_state,!button_state,button_state); // no right
+		pAktors->run_reset_on_ATm328(RESET_PREPARE);
 	}
 	/********************************************* End of Setup Menu *********************************************/
 
