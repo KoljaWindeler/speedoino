@@ -121,8 +121,23 @@ int speedo_speed::getSpeed(){
 	unsigned long jetzt=millis();
 	unsigned long differ=jetzt-last_time;
 
+	/* Speed sensor choice
+	 * First of all: Dont ask more frequent than 1Hz
+	 * Than: Take normal Reed Speed per default
+	 * But:
+	 * If Reed suggests that we are faster than gps_takeover (~120 km/h config value)
+	 * and GPS says as well that we are fast (>120km/h)
+	 * and GPS is up to date (as been updated within the last <2sec)
+	 * and the difference between GPS and Reed is less then 12% (shift by 3, is devide by 8, is 12,5%)
+	 * THAN take GPS Speed
+	 */
+
 	if(differ<1000){
-		if(reed_speed > gps_takeover &&	signed(pSensors->m_gps->speed) > gps_takeover && pSensors->m_gps->valid<=2 && abs(reed_speed-pSensors->m_gps->speed)<10){ // gps valid innerhalb der letzten 3 sek und über 80 kmh, das 1sek rumdümpeln raus
+		if(	reed_speed > gps_takeover &&
+			signed(pSensors->m_gps->speed) > gps_takeover &&
+			pSensors->m_gps->valid<=2 &&
+			abs(reed_speed-pSensors->m_gps->speed)<unsigned((reed_speed>>3))
+					){ // gps valid innerhalb der letzten 3 sek und über 80 kmh, das 1sek rumdümpeln raus
 			return pSensors->m_gps->speed;
 		} else {
 			return reed_speed;
