@@ -59,11 +59,13 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * 112 CAN
 	 * ??? Navi, 0-990 (rounded to 10)(m),1-X (km)
 	 */
-
 	if(!(addinfo2_widget.x==-1 && addinfo2_widget.y==-1)){ // only show it if pos != -1/-1
 		// now, print variable messages, additional infos, see top comment (4)
 		// lets assume that we are showing a warning right now, its easier to assume it and set it to false as soon if we are NOT showing a warning
 		addinfo2_currently_shown=true;
+#ifdef TACHO_SMALLDEBUG
+		pDebug->sprintp(PSTR("-a2"));
+#endif
 		/// warnung wegen zu hoher Drehzahl, erstmal checken ob wir von der drehzahl her in betrachtkommen
 		if(pSensors->get_RPM(false)>7000){
 			if((pSensors->get_oil_temperature()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || 		// temperatur < 60°
@@ -191,6 +193,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=105;
 			};
 		};
+#ifdef TACHO_SMALLDEBUG
+		pDebug->sprintlnp(PSTR("."));
+#endif
 	};
 	/********************* additional informations II *****************************/
 
@@ -201,6 +206,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * We prevent the screen from flickering by saving a coresponding
 	 * value in disp_zeile_bak[OIL_TEMP] and check that value before redraw
 	 ************************* oil temperature *********************/
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-o"));
+#endif
 	if(disp_zeile_bak[OIL_TEMP]!=pSensors->get_oil_temperature()+pSensors->m_temperature->oil_temp_fail_status){
 		if((!(oil_widget.x==-1 && oil_widget.y==-1)) && check_no_collision_with_addinfo2(oil_widget.y)){ // only show it if pos != -1/-1
 			disp_zeile_bak[OIL_TEMP]=int(pSensors->get_oil_temperature()+pSensors->m_temperature->oil_temp_fail_status);
@@ -219,6 +227,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			pOLED->string(oil_widget.font,char_buffer,oil_widget.x+4,oil_widget.y,0,DISP_BRIGHTNESS,-4);
 		};
 	};
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
 	/************************* oil temperature *********************/
 
 
@@ -228,7 +239,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * pSensors->m_temperature->water_temp_out. That value is degree multiplied by 10.
 	 * We prevent the screen from flickering by saving a coresponding
 	 * value in disp_zeile_bak[OIL_TEMP] and check that value before redraw
+	 *
+	 * 7 Chars
+	 * "_-_____" <- Sensor open (based on 5x read 1024 on the analog pin)
+	 * "_--____" <- Sensor short to ground (based on 5x read 0 on the analog pin)
+	 * "_32.4°C" <- regular temp + filling
+	 * "102.3°C" <- regular temp
+	 * ">110°C_" <- temp to high
+	 * "<30°C__" <- temp to low
 	 ************************* water temperature *********************/
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-w"));
+#endif
 	if(disp_zeile_bak[WATER_TEMP]!=pSensors->get_water_temperature()+pSensors->get_water_temperature_fail_status()){
 		if((!(water_widget.x==-1 && water_widget.y==-1)) && check_no_collision_with_addinfo2(water_widget.y)){ // only show it if pos != -1/-1
 			disp_zeile_bak[WATER_TEMP]=int(pSensors->get_water_temperature()+pSensors->get_water_temperature_fail_status());
@@ -245,11 +267,11 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				} else {
 					// Sensor temperature is save, within a certain range ...
 					if(pSensors->get_water_temperature()>1100){
-						sprintf(char_buffer,">110{C  "); // more then 110°C add a space to have 5 chars
+						sprintf(char_buffer,">110{C "); // more then 110°C add a space to have 7 chars
 					} else 	if(pSensors->get_water_temperature()>300){
 						sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_water_temperature()/10))%1000,pSensors->get_water_temperature()%10); // _32.3°C  7 stellen
 					} else {
-						sprintf(char_buffer,"<30{C  "); // below 20°C add a space to have 5 chars
+						sprintf(char_buffer,"<30{C  "); // below 30°C add a space to have 7 chars
 					};
 				}
 
@@ -260,6 +282,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			pOLED->string(water_widget.font,char_buffer,water_widget.x+4,water_widget.y,0,DISP_BRIGHTNESS,-4);
 		};
 	};
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
 	/************************* water temperature *********************/
 	pDebug->speedo_loop(22,1,0," ");
 
@@ -271,6 +296,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * We prevent the screen from flickering by saving a corresponding
 	 * value in disp_zeile_bak[OIL_TEMP] and check that value before redraw
 	 ************************* air temperature *********************/
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-at"));
+#endif
 	if(disp_zeile_bak[AIR_TEMP]!=pSensors->get_air_temperature()){
 		if((!(air_widget.x==-1 && air_widget.y==-1)) && check_no_collision_with_addinfo2(air_widget.y)){ // only show it if pos != -1/-1
 			disp_zeile_bak[AIR_TEMP]=int(pSensors->get_air_temperature());
@@ -280,6 +308,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			pOLED->string(air_widget.font,char_buffer,air_widget.x+1,air_widget.y,0,DISP_BRIGHTNESS,2);
 		};
 	};
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
 	/************************* air temperature *********************/
 	pDebug->speedo_loop(23,1,0," ");
 
@@ -289,6 +320,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * on change we get another arrow to the goal,
 	 * A TODO would be a kind of "show north"-Mode, so .. here we go TODO TODO
 	 **************************************************/
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-n"));
+#endif
 	if(pSensors->m_gps->navi_active || pSensors->m_gps->navi_active){ // Arrow Mode TODO
 		if((!(pSpeedo->arrow_widget.x==-1 && pSpeedo->arrow_widget.y==-1)) && check_no_collision_with_addinfo2(arrow_widget.y)){
 			int result_value=pSensors->m_gps->get_order(char_buffer); // distance will be calculated on the parse routine, this call just copies it
@@ -299,6 +333,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			}
 		};
 	}
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
 
 
 	/************************* speed *********************
@@ -306,6 +343,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * first if checks if the value equals -99, in this case the full display has to be rewritten, draw "km/h"
 	 * else just draw the number of km/h, but only refresh it if the difference is higher than 2 or we are very slow (below 10)
 	 ************************* geschwindigkeit *********************/
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-gs"));
+#endif
 	int temp_speed=pSensors->get_speed(false);
 	int temp_gps_speed=pSensors->get_speed(true); // warum heisst der denn gps, wenns doch der mag ist?
 	if((!(kmh_widget.x==-1 && kmh_widget.y==-1)) && check_no_collision_with_addinfo2(kmh_widget.y)){ // only show it if pos != -1/-1
@@ -330,6 +370,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			disp_zeile_bak[SPEED_VALUE]=int(temp_gps_speed+1);
 		}
 	};
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
 	/************************* speed *********************/
 
 
@@ -343,6 +386,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 ***********************************************************************/
 	// see comment on top, number (1)
 	//pSensors->m_dz->calc(); // calc in main loop to run the stepper in every menu
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-dz"));
+#endif
 	if((!(dz_widget.x==-1 && dz_widget.y==-1)) && check_no_collision_with_addinfo2(dz_widget.y)){ // only show it if pos != -1/-1
 		if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->get_RPM(2)+1)){
 			if(disp_zeile_bak[DZ_VALUE]==-99){ //schreib alles neu, auch die buchstaben
@@ -358,8 +404,14 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			disp_zeile_bak[DZ_VALUE]=int(pSensors->get_RPM(2)+1);
 		};
 	};
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
 
 	// see comment on top (2)
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-gps"));
+#endif
 	if((!(gps_widget.x==-1 && gps_widget.y==-1)) && check_no_collision_with_addinfo2(gps_widget.y)){ // only show it if pos != -1/-1
 		int sats=pSensors->m_gps->get_info(6);
 		if(disp_zeile_bak[GPS_VALUE]!=int(sats+1)){
@@ -378,9 +430,15 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			disp_zeile_bak[GPS_VALUE]=int(1+sats);
 		};
 	};
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
 
 	//////////////////////////////////////// ADD INFO WIDGET ////////////////////////////////////////////////////////
 	// see on top comment, number (3)
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-ai"));
+#endif
 	if((!(addinfo_widget.x==-1 && addinfo_widget.y==-1)) && check_no_collision_with_addinfo2(addinfo_widget.y)){ // only show it if pos != -1/-1
 		if(unsigned(disp_zeile_bak[ADD_INFO])!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)+pSensors->m_gps->mod(floor(avg_timebase[8]/100),100)){ // immer wenn sich trip_dist ändert den string ausgeben der direkt drüber steht, auf 0.1 km genau
 			// trip[8] => gesamt/100 => 100er Meter, 27.342,8 => 28
@@ -488,8 +546,12 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			pOLED->string(addinfo_widget.font,char_buffer,0,addinfo_widget.y,0,DISP_BRIGHTNESS,0);
 		};
 	};
-
-
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-tt"));
+#endif
 	/********************** Zeitanzeige nur wenn anders  *******************/
 	if((!(clock_widget.x==-1 && clock_widget.y==-1)) && check_no_collision_with_addinfo2(clock_widget.y)){ // only show it if pos != -1/-1
 		if(pSensors->m_clock->changed(disp_zeile_bak+TIME_BAK)){ // coooooool, we need only one adress of the array, so we take the array header address and add the Field
@@ -499,8 +561,12 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		};
 	};
 	/********************** Zeitanzeige nur wen anders  *******************/
-
-
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-gear"));
+#endif
 	/*********************** Ganganzeige unten mitte  *********************
 	 * zuerst den faktor berechnen aus drehzahl und dem speed am mmag sensor
 	 * da gps und drehzahl nicht perfekt synchron laufen
@@ -526,8 +592,13 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		};
 	};
 	/*********************** Ganganzeige unten mitte  *********************/
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
 
-
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintp(PSTR("-f"));
+#endif
 	/********************** benzinanzeige unten rechts ********************
 	 * hat die kleine besonderheit das sie blinken soll,
 	 * daher kann fuel_copy() auch -100 zurueckgeben.
@@ -543,7 +614,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		};
 	};
 	/********************** benzinanzeige unten rechts ********************/
-
+#ifdef TACHO_SMALLDEBUG
+	pDebug->sprintlnp(PSTR("."));
+#endif
 
 	/*************** jump navigation points **********************
 	 * if the navigation is active, but the menu_state is !=1 than the up/down button has been pushed
