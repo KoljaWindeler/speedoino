@@ -13,6 +13,7 @@ class debugging{
 #undef       PARSE_SHORT     	// ausgaben vom einlesen
 #undef       TACHO_DEBUG       	// jeder schreibvorgang wird angezeigt, flackern finden
 #undef       TACHO_IDEBUG      	// menustate hasn't change etc
+#undef       TACHO_SMALLDEBUG   // tell BT receiver what we are doing
 #undef       RESET_DEBUG       	// status change ob nun reset enable oder nicht
 #undef       SPEED_DEBUG       	// Die Kontraktschlüsse
 #undef       TACHO_SDEBUG     	// only menustate

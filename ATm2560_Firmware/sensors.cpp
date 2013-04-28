@@ -301,6 +301,11 @@ void Speedo_sensors::pull_values(){
 	// is an update required?
 	boolean update_required=false;
 	if((millis()-ten_Hz_timer)>=99){ // 100ms
+
+#ifdef TACHO_SMALLDEBUG
+			pDebug->sprintp(PSTR("-s"));
+#endif
+
 		ten_Hz_timer=millis();
 		ten_Hz_counter=(ten_Hz_counter+1)%10;
 		update_required=true;
@@ -367,6 +372,9 @@ void Speedo_sensors::pull_values(){
 				//m_CAN->request(?);
 			};
 		}
+#ifdef TACHO_SMALLDEBUG
+			pDebug->sprintlnp(PSTR("."));
+#endif
 	}
 
 	/***************** no can available, *********************
@@ -382,6 +390,10 @@ void Speedo_sensors::pull_values(){
 			if(ten_Hz_counter%2==0){ // do this, every 5Hz, 200ms
 				m_dz->calc(); // calc rpms from non CAN sensors
 			};
+
+#ifdef TACHO_SMALLDEBUG
+			pDebug->sprintlnp(PSTR("."));
+#endif
 		}
 	}
 }
@@ -522,7 +534,9 @@ void Speedo_sensors::check_inputs(){
 	unsigned char neutral_gear=0x01; // low active
 
 	if(PINK&(1<<HIGH_BEAM_PIN)){  // pin is high
-		if(last_highbeam_on==0){
+		if(m_CAN->get_active_can_type()!=CAN_TYPE_TRIUMPH){ // on "non triumph" -> on means on :D
+			high_beam=0x01;
+		} else if(last_highbeam_on==0){ // addition keep off for triumph
 			last_highbeam_on=millis();
 			high_beam=0x00; // not now
 		} else if(millis()-last_highbeam_on>500) { // last active >1sec

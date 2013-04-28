@@ -180,16 +180,21 @@ void speedo_gps::recv_data(){
  * werden die daten geparst
  */
 void speedo_gps::check_flag(){
-
 	if(gps_ready1){
 		// debug
 #ifdef GPS_DEBUG
 		pDebug->sprintlnp(PSTR("calling get_gps buffer1:"));
 		Serial.println(gps_buffer1);
 #endif
+#ifdef TACHO_SMALLDEBUG
+			pDebug->sprintp(PSTR("-g"));
+#endif
 		// debug
 		parse(gps_buffer1,1);         // Daten übergeben
 		gps_ready1=false;
+#ifdef TACHO_SMALLDEBUG
+			pDebug->sprintlnp(PSTR("."));
+#endif
 	};
 
 	if(gps_ready2){
@@ -198,9 +203,15 @@ void speedo_gps::check_flag(){
 		pDebug->sprintlnp(PSTR("calling get_gps buffer2:"));
 		Serial.println(gps_buffer2);
 #endif
+#ifdef TACHO_SMALLDEBUG
+			pDebug->sprintp(PSTR("-g"));
+#endif
 		// debug
 		parse(gps_buffer2,2);         // Daten übergeben
 		gps_ready2=false;
+#ifdef TACHO_SMALLDEBUG
+			pDebug->sprintlnp(PSTR("."));
+#endif
 	};
 };
 

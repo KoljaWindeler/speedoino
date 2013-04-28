@@ -43,6 +43,9 @@ void ram_info() {
 
 void speedo_timer::every_sec(configuration* pConfig) {
 	if((millis()-every_second_timer)>=998){
+#ifdef TACHO_SMALLDEBUG
+		pDebug->sprintp(PSTR("-t1"));
+#endif
 		every_second_timer=millis();
 		//pConfig->ram_info(); // nur zum testen 19.12. 2900 free
 		pAktors->m_oiler->check_value(); // gucken ob wir ölen müssten
@@ -65,6 +68,9 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		if((millis()/1000)%30==0 && pSensors->CAN_active && pSensors->m_CAN->get_active_can_type()==CAN_TYPE_OBD2){
 			pSensors->m_CAN->request(CAN_CURRENT_INFO,CAN_MIL_STATUS);
 		}
+#ifdef TACHO_SMALLDEBUG
+		pDebug->sprintlnp(PSTR("."));
+#endif
 	}
 };
 
@@ -73,6 +79,9 @@ void speedo_timer::every_sec(configuration* pConfig) {
 // Muss öfter sein,da die Blink Geschichte sonst nicht klappt
 void speedo_timer::every_qsec() {
 	if((millis()-every_qsecond_timer)>=250){
+#ifdef TACHO_SMALLDEBUG
+		pDebug->sprintp(PSTR("-t2"));
+#endif
 		every_qsecond_timer=millis();
 
 		// TODO, testen mit meinem krams dran!
@@ -89,6 +98,9 @@ void speedo_timer::every_qsec() {
 			// könntem mit 250ms update rate fast etwas lahm sein
 			pAktors->m_stepper->startup();
 		}
+#ifdef TACHO_SMALLDEBUG
+		pDebug->sprintlnp(PSTR("."));
+#endif
 	};
 };
 
