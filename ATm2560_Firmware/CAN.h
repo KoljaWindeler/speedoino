@@ -18,8 +18,10 @@
 #define CAN_AIR_TEMP 0x0F
 #define CAN_WATER_TEMPERATURE 0x05
 
+#define CAN_TYPE_NONE 0x00
 #define CAN_TYPE_TRIUMPH 0x01
 #define CAN_TYPE_OBD2 0x02
+
 
 // damn it, I had to move the connection from
 // CS PK5 to PB5

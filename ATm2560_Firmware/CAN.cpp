@@ -825,6 +825,9 @@ uint8_t Speedo_CAN::can_get_message(CANMessage *p_message){ //dauert so etwa 72Â
 }
 
 unsigned char Speedo_CAN::get_active_can_type(){
+	if(!pSensors->CAN_active){
+		return CAN_TYPE_NONE;
+	}
 	return can_bus_type;
 }
 
