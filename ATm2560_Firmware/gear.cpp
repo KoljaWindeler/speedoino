@@ -32,6 +32,7 @@ void speedo_gear::init(){
 	pinMode(kupplungs_pin,INPUT);
 	digitalWrite(kupplungs_pin,HIGH); // input mit pull up
 	last_time_executed=millis();
+	neutral_set=false;
 }
 
 int speedo_gear::check_vars(){
@@ -88,12 +89,20 @@ void speedo_gear::calc(){
 }
 
 int speedo_gear::get(){
-	if(DEMO_MODE)
+	if(DEMO_MODE){
 		return 2;
-	if(gang>=-1 && gang<=6)
-		return gang;
-	else
-		return  -1;
+	}
+
+	if(neutral_set){
+		return 0; // show as "N" in speedo
+	} else if(gang>=-1 && gang<=6){
+		return gang; // show as 1-6 in speedo
+	}
+	return -1; // clears output -> failsave
+}
+
+void speedo_gear::set_neutral(bool is_neutral){
+	neutral_set=is_neutral;
 }
 
 void speedo_gear::calibrate(){

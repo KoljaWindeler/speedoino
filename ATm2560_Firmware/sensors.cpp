@@ -562,18 +562,25 @@ void Speedo_sensors::check_inputs(){
 	// depending on CAN or non CAN mode ... and if CAN on CAN TYPE
 	if(CAN_active && m_CAN->get_active_can_type()==CAN_TYPE_TRIUMPH){
 		neutral_gear=m_CAN->get_neutral_gear_state();
+		pSensors->m_gear->set_neutral(m_CAN->get_neutral_gear_state());
 	} else {
-		if(PINK&(1<<NEUTRAL_GEAR_PIN)){	 // if the pin is still high, the pulldown is active, signal is not active
+		if(PINK&(1<<NEUTRAL_GEAR_PIN)){	 // if the pin is still high, the pulldown is not active, signal is not active
 			neutral_gear=0x00;
+			pSensors->m_gear->set_neutral(false);
+		} else {
+			neutral_gear=0x01;
+			pSensors->m_gear->set_neutral(true);
 		}
 	}
 
 	if(PINE&(1<<FLASHER_LEFT_PIN)){
 		flasher_left=0x01;
+		pSensors->m_blinker->pin_toogled();
 	}
 
 	if(PINE&(1<<FLASHER_RIGHT_PIN)){
 		flasher_right=0x01;
+		pSensors->m_blinker->pin_toogled();
 	}
 
 	pAktors->set_controll_lights(oil_pressure,flasher_left,neutral_gear,flasher_right,high_beam);

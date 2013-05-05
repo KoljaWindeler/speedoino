@@ -9,18 +9,22 @@
 #define GEAR_H_
 
 class speedo_gear{
+
 #define kupplungs_pin 12
+
 public:
 	speedo_gear(void);
 	~speedo_gear();
 	void init();
 	int get();
+	void set_neutral(bool is_neutral);
 	void calc();
 	int check_vars();
 	void calibrate();
 
 	int n_gang[7];
 	int gang;
+	bool neutral_set;
 	// used to calibration mode && to calc to gear in speedo mode
 	float faktor_flat;
 	unsigned char faktor_counter;
