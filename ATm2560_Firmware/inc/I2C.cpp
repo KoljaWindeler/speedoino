@@ -118,11 +118,11 @@ void I2C::setSpeed(uint8_t _fast)
 {
   if(!_fast)
   {
-    TWBR = ((F_CPU / 100000) - 16) / 2;
+    TWBR = ((F_CPU / 100000) - 16) / 2; //(160-16)/2 = 72
   }
   else
   {
-    TWBR = ((F_CPU / 400000) - 16) / 2;
+    TWBR = ((F_CPU / 400000) - 16) / 2; // ((160/4)-16)/2 = 12
   }
 }
   
@@ -433,9 +433,9 @@ uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes)
     if(returnStatus == 1){return(5);}
     return(returnStatus);
   }
-  for(uint8_t i = 0; i < numberBytes; i++)
+  for(uint8_t i = 0; i < numberBytes && i<MAX_BUFFER_SIZE; i++)
   {
-    if( i == nack )
+    if( i == nack ) // letzter
     {
       returnStatus = receiveByte(0);
       if(returnStatus == 1){return(6);}

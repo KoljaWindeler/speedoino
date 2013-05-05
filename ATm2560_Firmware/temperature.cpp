@@ -75,15 +75,16 @@ int speedo_temperature::check_vars(){
 
 void speedo_temperature::init(){
 	I2c.begin();
-	I2c.timeOut(1000); // 1000 ms to get Temperature
+	I2c.setSpeed(1); /// slow
+	I2c.timeOut(100); // 100 ms to get Temperature
 	Serial.println("Temp init done.");
 }
 
 void speedo_temperature::read_oil_temp() {
 	// werte in array speichern in °C*10 für Nachkommastelle
-	#ifdef TEMP_DEBUG
+#ifdef TEMP_DEBUG
 	Serial.println("\n\rTemp: Beginne Öl zu lesen");
-	#endif
+#endif
 
 	//// Widerstandsberechnung ////
 	/*	Spannungsabgriff zwischen 2 Widerständen, R1 ggn 5V da drunter in Reihe "R".
@@ -114,26 +115,26 @@ void speedo_temperature::read_oil_temp() {
 				int aktueller_wert=round(10*(oil_t_werte[i]-offset*differ_t/differ_r));
 				oil_temp_value=pSensors->flatIt(aktueller_wert,&oil_temp_value_counter,20,oil_temp_value);
 
-				#ifdef TEMP_DEBUG
-					Serial.print("Oel Wert eingelesen: ");
-					Serial.print(oil_value);
-					Serial.print(" und interpretiert ");
-					Serial.print(aktueller_wert);
-					Serial.print(" und geplaettet: ");
-					Serial.println(int(round(oil_temp_value)));
-				#endif
+#ifdef TEMP_DEBUG
+				Serial.print("Oel Wert eingelesen: ");
+				Serial.print(oil_value);
+				Serial.print(" und interpretiert ");
+				Serial.print(aktueller_wert);
+				Serial.print(" und geplaettet: ");
+				Serial.println(int(round(oil_temp_value)));
+#endif
 				oil_temp_fail_status=0;
 				break; // break the for loop
 			};
 		};
 	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
-		#ifdef TEMP_DEBUG
-			Serial.print("@");
-			Serial.print(millis());
-			Serial.print(": oil Wert -> OPEN");
-			Serial.print(" | Oil fail status:");
-			Serial.println((int)oil_temp_fail_status);
-		#endif
+#ifdef TEMP_DEBUG
+		Serial.print("@");
+		Serial.print(millis());
+		Serial.print(": oil Wert -> OPEN");
+		Serial.print(" | Oil fail status:");
+		Serial.println((int)oil_temp_fail_status);
+#endif
 
 		if(oil_temp_fail_status<6){
 			oil_temp_fail_status=6;
@@ -145,21 +146,21 @@ void speedo_temperature::read_oil_temp() {
 			oil_temp_fail_status++;
 		};
 
-		#ifdef TEMP_DEBUG
-			Serial.print("@");
-			Serial.print(millis());
-			Serial.print(": oil Wert -> Short to GND");
-			Serial.print(" | Oil fail status:");
-			Serial.println((int)oil_temp_fail_status);
-		#endif
+#ifdef TEMP_DEBUG
+		Serial.print("@");
+		Serial.print(millis());
+		Serial.print(": oil Wert -> Short to GND");
+		Serial.print(" | Oil fail status:");
+		Serial.println((int)oil_temp_fail_status);
+#endif
 	}
 };
 
 void speedo_temperature::read_water_temp() {
 	// werte in array speichern in °C*10 für Nachkommastelle
-	#ifdef TEMP_DEBUG
+#ifdef TEMP_DEBUG
 	Serial.println("\n\rTemp: Beginne Water zu lesen");
-	#endif
+#endif
 
 	// werte auslesen
 	unsigned int water_value=analogRead(WATER_TEMP_PIN);
@@ -186,14 +187,14 @@ void speedo_temperature::read_water_temp() {
 					int aktueller_wert=round(10*(water_t_werte[i]-offset*differ_t/differ_r));
 					water_temp_value=pSensors->flatIt(aktueller_wert,&water_temp_value_counter,60,water_temp_value);
 
-					#ifdef TEMP_DEBUG
-						Serial.print("Water Wert eingelesen: ");
-						Serial.print(water_value);
-						Serial.print(" und interpretiert als R ");
-						Serial.print(r_temp);
-						Serial.print(" und geplaettet: ");
-						Serial.println(int(round(water_temp_value)));
-					#endif
+#ifdef TEMP_DEBUG
+					Serial.print("Water Wert eingelesen: ");
+					Serial.print(water_value);
+					Serial.print(" und interpretiert als R ");
+					Serial.print(r_temp);
+					Serial.print(" und geplaettet: ");
+					Serial.println(int(round(water_temp_value)));
+#endif
 					water_temp_fail_status=0;
 					break; // break the for loop
 				};
@@ -213,36 +214,42 @@ void speedo_temperature::read_water_temp() {
 			water_temp_fail_status++;
 		};
 
-		#ifdef TEMP_DEBUG
-			Serial.print("Water Wert Kurzschluss ggn Masse");
-		#endif
+#ifdef TEMP_DEBUG
+		Serial.print("Water Wert Kurzschluss ggn Masse");
+#endif
 	}
 };
 
 void speedo_temperature::read_air_temp() {
 	// get i2c tmp102 //
+#ifdef TEMP_DEBUG
+	Serial.println("beginne air read");
+#endif
 	int sensorAddress = 0b01001000;  // From datasheet sensor address is 0x91 shift the address 1 bit right
 	byte msb;
 	byte lsb;
 	I2c.read(sensorAddress,0x00,2);
-	#ifdef TEMP_DEBUG
+#ifdef TEMP_DEBUG
 	Serial.println("request abgeschickt");
-	#endif
+#endif
 
 	if (I2c.available() >= 2){  // if two bytes were received
-		#ifdef TEMP_DEBUG
+#ifdef TEMP_DEBUG
 		Serial.println("2 Byte im Puffer");
-		#endif
+#endif
 		msb = I2c.receive();  // receive high byte (full degrees)
 		lsb = I2c.receive();  // receive low byte (fraction degrees)
 		air_temp_value = ((msb) << 3);  // MSB
 		air_temp_value|= (lsb >> 5);    // LSB
 		air_temp_value = round(air_temp_value*1.25); // round and save
-		#ifdef TEMP_DEBUG
+#ifdef TEMP_DEBUG
 		Serial.print("Air value "); Serial.println(air_temp_value);
-		#endif
+#endif
 	} else {
 		air_temp_value = 999;
+#ifdef TEMP_DEBUG
+		Serial.println("ALARM!!");
+#endif
 	};
 };
 
