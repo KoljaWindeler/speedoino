@@ -25,6 +25,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -160,6 +162,8 @@ OnClickListener {
 	private static final String ITEM_IMAGE = "image";
 	// String buffer for outgoing messages
 	public TextView mTest;
+	PowerManager pm;
+	WakeLock wl;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -167,6 +171,9 @@ OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		wl =  pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
+		
 		Resources res = getResources(); // Resource object to get Drawables
 		TabHost tabHost = getTabHost(); // The activity TabHost
 		TabHost.TabSpec spec; // Resusable TabSpec for each tab
@@ -278,6 +285,7 @@ OnClickListener {
 			return;
 		}
 	}
+
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////// Bluetooth startup & shutdown /////////////////////////////////////

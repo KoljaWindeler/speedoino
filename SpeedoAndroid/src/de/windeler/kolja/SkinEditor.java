@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -38,12 +41,13 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 	public static final int  VISITOR_SMALL_2X_FONT=11; // OK,visitor_code
 	public static final int  VISITOR_SMALL_3X_FONT=12; // OK,visitor_code
 	public static final int  VISITOR_SMALL_4X_FONT=13; // OK,visitor_code
-	
+
 	private ImageView small_preview_view;
 	private Bitmap construction_bitmap;
 	private int x_global;
 	private int y_global;
 	public static final String INPUT_FILE_NAME = "leeer";
+	public String global_text="";
 
 	private int kmhchar_x,oil_x,water_x,air_x,arrow_x,kmh_x,dz_x;
 	private int fuel_x,gear_x,addinfo_x,addinfo2_x,clock_x,gps_x;
@@ -97,7 +101,7 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 		//		if(kmh_x!=-1 && kmh_y!=-1){
 		//			findViewById(R.id.checkActive).setSelected(true);
 		//		}
-		
+
 		input_filename = getIntent().getStringExtra(INPUT_FILE_NAME);
 
 		if(!read_skinfile(input_filename)){
@@ -189,8 +193,12 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 
 		// gps
 		if(gps_x!=-1 && gps_y!=-1){
-			// highlightbar
-			string(gps_font,"12 GPS",gps_x,gps_y,0,0,0);
+			if(gps_symbol){
+				draw_gps(gps_x*3,gps_y*8);
+			} else {
+				// highlightbar
+				string(gps_font,"12 GPS",gps_x,gps_y,0,0,0);
+			}
 		}
 
 		small_preview_view.setImageBitmap(construction_bitmap);
@@ -209,9 +217,14 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 		try {
 			fStream = new FileInputStream(filename);
 			BufferedReader in = new BufferedReader(new InputStreamReader(fStream));
+			int line_nr=0;
 			while (in.ready()) {
 				String line = in.readLine();
-				if(line.startsWith("#")){ 
+				line_nr++;
+				if(line.startsWith("#")){
+					if(line_nr==1){
+						global_text=line.substring(1);
+					}
 					continue;
 				}
 
@@ -390,9 +403,9 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 		return true;
 	}
 
-	private boolean save_skinfile(String filename){
+	private boolean save_skinfile(String filename, String title){
 		String output="";
-		output+="#Koljas Porsche Tacho, kein km\r\n";
+		output+="#"+title+"\r\n";
 		output+="# Die erste Zeile wird als Beschreibung genutzt wenn sie mit einem \"#\" anfängt, bitte umlaute vermeiden.\r\n";
 		output+="# Kommentarzeilen grundsätzlich mit einem \"#\" beginnen lassen und nicht hinter einem zu parsenden string\r\n";
 		output+="# also nicht: \"fuel_widget.x<=14; #damit es passt\"\r\n";
@@ -421,8 +434,8 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 			output+="fuel_widget.symbol=0;\r\n";
 		}
 		output+="fuel_widget.font="+String.valueOf(fuel_font)+";\r\n";
-		
-		
+
+
 		output+="oil_widget.x="+String.valueOf(oil_x)+";\r\n";
 		output+="oil_widget.y="+String.valueOf(oil_y)+";\r\n";
 		if(oil_symbol){
@@ -431,8 +444,8 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 			output+="oil_widget.symbol=0;\r\n";
 		}
 		output+="oil_widget.font="+String.valueOf(oil_font)+";\r\n";
-		
-		
+
+
 		output+="water_widget.x="+String.valueOf(water_x)+";\r\n";
 		output+="water_widget.y="+String.valueOf(water_y)+";\r\n";
 		if(water_symbol){
@@ -441,8 +454,8 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 			output+="water_widget.symbol=0;\r\n";
 		}
 		output+="water_widget.font="+String.valueOf(water_font)+";\r\n";
-		
-		
+
+
 		output+="air_widget.x="+String.valueOf(air_x)+";\r\n";
 		output+="air_widget.y="+String.valueOf(air_y)+";\r\n";
 		if(air_symbol){
@@ -451,8 +464,8 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 			output+="air_widget.symbol=0;\r\n";
 		}
 		output+="air_widget.font="+String.valueOf(air_font)+";\r\n";
-		
-		
+
+
 		output+="clock_widget.x="+String.valueOf(clock_x)+";\r\n";
 		output+="clock_widget.y="+String.valueOf(clock_y)+";\r\n";
 		if(clock_symbol){
@@ -461,45 +474,49 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 			output+="clock_widget.symbol=0;\r\n";
 		}
 		output+="clock_widget.font="+String.valueOf(clock_font)+";\r\n";
-		
-		
+
+
 		output+="arrow_widget.x="+String.valueOf(arrow_x)+";\r\n";
 		output+="arrow_widget.y="+String.valueOf(arrow_y)+";\r\n";
-		
-		
+
+
 		output+="kmh_widget.x="+String.valueOf(kmh_x)+";\r\n";
 		output+="kmh_widget.y="+String.valueOf(kmh_y)+";\r\n";
 		output+="kmh_widget.font="+String.valueOf(kmh_font)+";\r\n";
 		output+="kmhchar_widget.x="+String.valueOf(kmhchar_x)+";\r\n";
 		output+="kmhchar_widget.y="+String.valueOf(kmhchar_y)+";\r\n";
 		output+="kmhchar_widget.font="+String.valueOf(kmhchar_font)+";\r\n";
-		
-		
+
+
 		output+="gear_widget.x="+String.valueOf(gear_x)+";\r\n";
 		output+="gear_widget.y="+String.valueOf(gear_y)+";\r\n";
 		output+="gear_widget.font="+String.valueOf(gear_font)+";\r\n";
-		
-		
+
+
 		output+="dz_widget.x="+String.valueOf(dz_x)+";\r\n";
 		output+="dz_widget.y="+String.valueOf(dz_y)+";\r\n";
 		output+="dz_widget.font="+String.valueOf(dz_font)+";\r\n";
-		
-		
+
+
 		output+="addinfo_widget.x="+String.valueOf(addinfo_x)+";\r\n";
 		output+="addinfo_widget.y="+String.valueOf(addinfo_y)+";\r\n";
 		output+="addinfo_widget.font="+String.valueOf(addinfo_font)+";\r\n";
-		
-		
+
+
 		output+="addinfo2_widget.x="+String.valueOf(addinfo2_x)+";\r\n";
 		output+="addinfo2_widget.y="+String.valueOf(addinfo2_y)+";\r\n";
 		output+="addinfo2_widget.font="+String.valueOf(addinfo2_font)+";\r\n";
-		
-		
+
+
 		output+="gps_widget.x="+String.valueOf(gps_x)+";\r\n";
 		output+="gps_widget.y="+String.valueOf(gps_y)+";\r\n";
 		output+="gps_widget.font="+String.valueOf(gps_font)+";\r\n";
-		
-		
+		if(gps_symbol){
+			output+="gps_widget.symbol=1;\r\n";
+		} else {
+			output+="gps_widget.symbol=0;\r\n";
+		}
+
 		output+="default_font=10;\r\n";
 
 		FileOutputStream out = null;
@@ -514,8 +531,8 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 			return false;
 		}
 	}
-	
-	
+
+
 
 	private void load_skin(){
 		fuel_x=14;
@@ -574,6 +591,7 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 
 		gps_x=14;
 		gps_y=5;
+		gps_symbol=true;
 		gps_font=VISITOR_SMALL_1X_FONT;
 	}
 
@@ -705,6 +723,8 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 				water_symbol=!water_symbol;
 			} else if(selected_sensor.equals(tempArray[4])){
 				air_symbol=!air_symbol;
+			} else if(selected_sensor.equals(tempArray[9])){
+				gps_symbol=!gps_symbol;
 			} else if(selected_sensor.equals(tempArray[12])){
 				clock_symbol=!clock_symbol;
 			}
@@ -809,7 +829,31 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 				}
 			} 
 		} else if(arg0.getId()==R.id.button_save){
-			save_skinfile(input_filename);
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);                 
+			alert.setTitle("Enter title");  
+			alert.setMessage("one line, will be displayed in Speedoino.");                
+
+			// Set an EditText view to get user input   
+			final EditText input = new EditText(this); 
+			alert.setView(input);
+			input.setText(global_text);
+
+			alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {  
+				public void onClick(DialogInterface dialog, int whichButton) {  
+					String value = input.getText().toString();
+					save_skinfile(input_filename,value);
+					return;                  
+				}  
+			});  
+
+			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					return;   
+				}
+			});
+			alert.show();
 		} else if(arg0.getId()==R.id.checkWarning){
 			if(show_addinfo2){
 				// hier warnung einbauen 			
@@ -1292,6 +1336,33 @@ public class SkinEditor extends Activity implements OnClickListener, OnItemSelec
 		x_global=x*2;
 		send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xFF); send_char(0x00);
 	}
+
+	private void draw_gps(int x,int y){
+		x_global=x*2;
+		y_global=y;
+		send_char(0x00);  send_char(0x00);  send_char(0xFF);  send_char(0x00);
+		y_global++;
+		x_global=x*2;
+		send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0xF0);
+		y_global++;
+		x_global=x*2;
+		send_char(0x0F);  send_char(0x00);  send_char(0xF0);  send_char(0x0F);
+		y_global++;
+		x_global=x*2;
+		send_char(0xF0);  send_char(0xF0);  send_char(0x0F);  send_char(0x0F);
+		y_global++;
+		x_global=x*2;
+		send_char(0xF0);  send_char(0x0F);  send_char(0x00);  send_char(0x00);
+		y_global++;
+		x_global=x*2;
+		send_char(0xF0);  send_char(0x00);  send_char(0xF0);  send_char(0x00);
+		y_global++;
+		x_global=x*2;
+		send_char(0x0F);  send_char(0x00);  send_char(0x0F);  send_char(0x00);
+		y_global++;
+		x_global=x*2;
+		send_char(0x00);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);
+	};
 
 	private void draw_water(int x,int y){
 		x_global=x*2;

@@ -113,6 +113,7 @@ public class BluetoothSerialService {
 	public static final byte CMD_LEAVE_PROGMODE_ISP	=  0x11;
 	public static final byte CMD_CHIP_ERASE_ISP		=  0x12;
 	public static final byte CMD_PROGRAM_FLASH_ISP	=  0x13;
+	public static final byte CMD_READ_FLASH_ISP     =  0x14;
 	public static final byte CMD_SPI_MULTI			=  0x1D;
 	public static final byte CMD_GO_LEFT				=  0x25;
 	public static final byte CMD_GO_RIGHT				=  0x26;
@@ -619,12 +620,12 @@ public class BluetoothSerialService {
 			for(int i=0; i<msgLength; i++){
 				p[0]	=	data[i];
 				checksum[0] ^= p[0];
-				//Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)p)&0x00ff)+"/"+String.valueOf((char)p)+"   /DATA "+String.valueOf(i+1)+"/"+String.valueOf(msgLength));
+//				Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)p[0])&0x00ff)+"/"+String.valueOf((char)p[0])+"   /DATA "+String.valueOf(i+1)+"/"+String.valueOf(msgLength));
 			}
 			write(data,msgLength);
 			write(checksum,1);	//	CHECKSUM
-			Log.i(TAG_TIME,"checksum send "+String.valueOf(msgLength));
-			Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)checksum[0])+" /Checksum");
+			//Log.i(TAG_TIME,"checksum send "+String.valueOf(msgLength));
+			//Log.d(TAG_RECV,"BTsend:"+String.valueOf((int)checksum[0])+" /Checksum");
 			rx_tx_state=ST_START; // start listening
 
 			// install guard, 2sec until check of receive
@@ -663,7 +664,7 @@ public class BluetoothSerialService {
 	};
 
 	private void process_incoming(char data) {
-		Log.i(TAG,"process_incoming gestartet mit:"+String.valueOf((int)(data&0x00ff))+"/"+((char)(data&0x00ff))+" rx_state:"+String.valueOf((int)rx_tx_state));			
+//		Log.i(TAG,"process_incoming gestartet mit:"+String.valueOf((int)(data&0x00ff))+"/"+((char)(data&0x00ff))+" rx_state:"+String.valueOf((int)rx_tx_state));			
 		switch(rx_tx_state){
 		case ST_START:
 			if ( data == MESSAGE_START){
@@ -710,6 +711,9 @@ public class BluetoothSerialService {
 				rx_tx_state		=	ST_GET_DATA;
 				checksum		^=	data;
 				ii				=	0;
+				for(int ii=0;ii<msgBuffer.length;ii++){
+					msgBuffer[ii]=0x00;
+				};
 			} else {
 				Log.e(TAG,"Token NICHT erhalten!");
 				rx_tx_state	=	ST_START;
@@ -719,7 +723,7 @@ public class BluetoothSerialService {
 		case ST_GET_DATA:
 			msgBuffer[ii++]	=	data;
 			checksum		^=	data;
-			Log.i(TAG,"Erhalte Daten i="+String.valueOf((int)ii)+" von "+String.valueOf((int)msgLength));
+//			Log.i(TAG,"Erhalte Daten i="+String.valueOf((int)ii)+" von "+String.valueOf((int)msgLength));
 			if (ii == msgLength ){
 				rx_tx_state	=	ST_GET_CHECK;
 				msgBuffer[ii]='\0';
@@ -811,6 +815,7 @@ public class BluetoothSerialService {
 				case CMD_LEAVE_PROGMODE_ISP:
 				case CMD_CHIP_ERASE_ISP:
 				case CMD_PROGRAM_FLASH_ISP:
+				case CMD_READ_FLASH_ISP:
 				case CMD_DEL_FILE:
 				case CMD_SHOW_GFX:
 				case CMD_FILE_RECEIVE:
@@ -846,7 +851,7 @@ public class BluetoothSerialService {
 			}
 			break;
 		}	
-		Log.i(TAG,"Process incoming toll");
+		//Log.i(TAG,"Process incoming toll");
 	}
 
 	public int getDir(String dir, Handler mHandlerUpdate) throws InterruptedException{
@@ -1429,7 +1434,7 @@ public class BluetoothSerialService {
 	 * 5. Die ID des Bootloaders abzufragen
 	 * 6. Die Firmware aus dem HexFile in den Controller schreiben
 	 */
-	public int uploadFirmware(String filename,Handler mHandlerUpdate,String flashingDevice)throws IOException, InterruptedException {
+	public int uploadFirmware(String filename,Handler mHandlerUpdate,String flashingDevice) throws IOException, InterruptedException {
 		Log.i(TAG, "uploadFirmware soll laden:"+filename);
 		int error=0;
 		int flash2560=1;
@@ -1631,7 +1636,7 @@ public class BluetoothSerialService {
 				Message msg4 = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 				Bundle bundle4 = new Bundle();
 				bundle4.putString("msg", "Connection established");
-				bundle4.putInt("state", 103);
+				bundle4.putInt("state", 3);
 				msg4.setData(bundle4);
 				mHandlerUpdate.sendMessage(msg4);
 
@@ -1770,7 +1775,7 @@ public class BluetoothSerialService {
 			Bundle bundle = new Bundle();
 			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 			bundle.putString("msg", "Sign on done");
-			bundle.putInt("state", 88);
+			bundle.putInt("state", 5);
 			msg.setData(bundle);
 			mHandlerUpdate.sendMessage(msg);
 			// fortschritt schreiben
@@ -1888,7 +1893,7 @@ public class BluetoothSerialService {
 				} else {
 					bundle8.putString("msg", "ATm328 ID found");
 				}
-				bundle8.putInt("state", 45);
+				bundle8.putInt("state", 44);
 				msg8.setData(bundle8);
 				mHandlerUpdate.sendMessage(msg8);
 				// fortschritt schreiben
@@ -1951,7 +1956,7 @@ public class BluetoothSerialService {
 			// send telegramm and check response
 			Log.i("SEND","upload_fileware5()");
 			if(send_save(send2,max_size_to_send+10,3000,1)==0){
-				if(msgBuffer[1]!=STATUS_CMD_OK){
+				if(msgBuffer[0]!=CMD_PROGRAM_FLASH_ISP || msgBuffer[1]!=STATUS_CMD_OK){
 					error=7;
 
 					// fortschritt schreiben
@@ -1966,6 +1971,8 @@ public class BluetoothSerialService {
 
 					return error;
 				};
+				msgBuffer[0]=0xff; //clear
+				msgBuffer[1]=0xff; //clear
 			} else {
 				error=8;
 
@@ -2004,13 +2011,20 @@ public class BluetoothSerialService {
 			// calculate amount
 			String amount=String.valueOf(Math.floor(send_position/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10);
 			String prozent=String.valueOf((int)(send_position*100)/highest_pos);
-			
+			if((int)((send_position*100)/highest_pos)==99){ // FUUUHUSCH
+				amount=String.valueOf(Math.floor(highest_pos/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10);
+				prozent="100";
+				std_left="00";
+				min_left="00";
+				sec_left="00";
+			}
+
 			// build message
 			String full_message="Speedoino at "+prozent+"%\n";
 			full_message+="    Total "+amount+" KB\n";
 			full_message+="    Upload @ "+speed_filled+" KB/sec\n";
 			full_message+="    Remaining "+std_left+":"+min_left+":"+sec_left;
-			
+
 			Bundle bundle = new Bundle();
 			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
 			bundle.putString("msg", full_message);
@@ -2020,6 +2034,92 @@ public class BluetoothSerialService {
 			// fortschritt schreiben
 
 		}
+
+		// Verify
+		send2[0]=CMD_LOAD_ADDRESS;
+		send2[1]=(byte) 0x80; //warum denn 0x80 ? ist wahrscheinlich egal oder?
+		send2[2]=0x00;
+		send2[3]=0x00;
+		send2[4]=0x00;
+		send2[5]=(byte) 0x8f;
+		if(send_save(send2,6,3000,1)!=0){
+			return 62;
+		}
+		if(msgBuffer[1]!=STATUS_CMD_OK){
+			error=721;
+			return error;
+		};
+
+		int read_time = (int) (System.currentTimeMillis());
+		float read_speed_flat=1600;
+		for(int page=0; page<=highest_pos/256; page++){ // todo <=
+			int size=256;
+			if(page==highest_pos/256){
+				size=(int)(highest_pos%256);
+				if(size%2==1) size--;// word oriented
+			};
+			// send read command
+			send2[0]=CMD_READ_FLASH_ISP;
+			send2[1]=(byte)((byte)(size>>8)&0xff);  // 0x20
+			send2[2]=(byte)(size&0xff);				// 0x00
+			if(send_save(send2,3,3000,1)!=0){
+				return 73;
+			}
+			if(msgBuffer[1]!=STATUS_CMD_OK){
+				error=731;
+				return error;
+			};
+
+			for(int rel_flash_pos=0; rel_flash_pos<size; rel_flash_pos+=2){ // in [0] steht das command und in [1] der status, danach die Daten
+				int flash_word=page*256+rel_flash_pos;
+				byte controllerbyte_low=(byte)msgBuffer[rel_flash_pos+2];
+				byte controllerbyte_high=(byte)msgBuffer[rel_flash_pos+1+2];
+				byte hexbyte_low=send[flash_word];
+				byte hexbyte_high=send[flash_word+1];
+				if(controllerbyte_high!=hexbyte_high || controllerbyte_low!=hexbyte_low){
+					error=741;
+					return error;
+				}
+			}
+			// fortschritt schreiben
+			// calculate speed
+			int time_diff= ((int)System.currentTimeMillis()-read_time)/1000;
+			if(time_diff==0) time_diff=1;
+			int read_speed=page*256/time_diff;
+			read_speed_flat=(19*read_speed_flat+read_speed)/20;
+			String speed_filled=String.valueOf(Math.floor(read_speed_flat/10)/100);
+			while(speed_filled.substring(speed_filled.lastIndexOf('.')+1).length()<2){
+				speed_filled+="0";
+			}
+			// calculate remaining time
+			if(read_speed_flat==0) read_speed_flat=1600;
+			int time_left=(int) ((highest_pos-(page*256))/read_speed_flat);
+			String std_left=String.valueOf((int)Math.floor(time_left/3600));
+			if(std_left.length()<2) std_left="0"+std_left;
+			String min_left=String.valueOf((int)Math.floor(time_left/60));
+			if(min_left.length()<2) min_left="0"+min_left;
+			String sec_left=String.valueOf(time_left%60);
+			if(sec_left.length()<2) sec_left="0"+sec_left;
+			// calculate amount
+			String amount=String.valueOf(Math.floor((page*256)/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10);
+			String prozent=String.valueOf((int)((page*256)*100)/highest_pos);
+
+			// build message
+			String full_message="Speedoino "+prozent+"% verified\n";
+			full_message+="    Total "+amount+" KB\n";
+			full_message+="    Download @ "+speed_filled+" KB/sec\n";
+			full_message+="    Remaining "+std_left+":"+min_left+":"+sec_left;
+
+			Bundle bundle = new Bundle();
+			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			bundle.putString("msg", full_message);
+			bundle.putInt("state", 8);
+			msg.setData(bundle);
+			mHandlerUpdate.sendMessage(msg);
+			// fortschritt schreiben
+		}
+		// Verify
+
 		// send leave_programmer command
 		send2[0]=CMD_LEAVE_PROGMODE_ISP;
 		Log.i("SEND","upload_fileware6()");
