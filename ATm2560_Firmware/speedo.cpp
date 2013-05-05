@@ -74,7 +74,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 					disp_zeile_bak[ADD_INFO2]=101;
 					pDebug->speedo_loop(10,0,previousMillis," ");
 					pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-					pOLED->string_P(addinfo2_widget.font,PSTR("Engine cold"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+					strcpy_P(char_buffer,PSTR("Engine cold"));
+					pMenu->center_me(char_buffer,17);
+					pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 				};
 			}
 		}
@@ -84,7 +86,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=108;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("oil temp warning"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+				strcpy_P(char_buffer,PSTR("oil temp warning"));
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 			};
 
 		}
@@ -93,7 +97,10 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=109;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("water temp warning"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+				strcpy_P(char_buffer,PSTR("water temp warning"));
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+
 			};
 
 		}
@@ -103,7 +110,10 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=102;
 				pDebug->speedo_loop(11,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("Flasher?"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+				strcpy_P(char_buffer,PSTR("Flasher?"));
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+
 			};
 
 		}
@@ -113,7 +123,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=111;
 				pDebug->speedo_loop(11,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("Voltage below 11V"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+				strcpy_P(char_buffer,PSTR("Voltage below 11V"));
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 			};
 
 		}
@@ -123,7 +135,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=112;
 				pDebug->speedo_loop(11,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("Engine malfunction"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+				strcpy_P(char_buffer,PSTR("Engine malfunction"));
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 			};
 		}
 		///// Navi ////
@@ -137,7 +151,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 					pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x,addinfo2_widget.y,15,0,1); // die Ziel ausgabe
 				} else {
 					pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8);
-					pOLED->string_P(addinfo2_widget.font,PSTR("No GPS"),addinfo2_widget.x+9,addinfo2_widget.y,15,0,1);
+					strcpy_P(char_buffer,PSTR("No GPS"));
+					pMenu->center_me(char_buffer,17);
+					pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 					pOLED->draw_arrow(-1,arrow_widget.x,arrow_widget.y); // clears arrow
 				};
 			};
@@ -148,7 +164,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=106;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("Oil read failed"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+				strcpy_P(char_buffer,PSTR("oil read failed"));
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 			};
 
 		}
@@ -157,7 +175,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=107;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("Water read failed"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+				strcpy_P(char_buffer,PSTR("Water read failed"));
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 			};
 
 		}
@@ -166,7 +186,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=110;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("Reed sensor error"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+				strcpy_P(char_buffer,PSTR("Reed sensor error"));
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 			};
 
 		}
@@ -176,7 +198,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=104;
 				pDebug->speedo_loop(14,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				pOLED->string_P(addinfo2_widget.font,PSTR("SD access failed"),addinfo2_widget.x+2,addinfo2_widget.y,15,0,1);
+				strcpy_P(char_buffer,PSTR("SD access failed"));
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 			};
 
 		}
@@ -473,7 +497,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				if(m_trip_mode==1){
 					if(temp_trip_dist>999999){
 						// "NonPermanent 32878km"  20 Chars
-						sprintf(char_buffer,"%s %ikm",temp_char_array,(int)floor(temp_trip_dist/1000));
+						sprintf(char_buffer,"%s %lukm",temp_char_array,(unsigned long)floor(temp_trip_dist/1000));
 					}
 					// less then 10000 km
 					else {
