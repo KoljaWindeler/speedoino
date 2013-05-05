@@ -37,7 +37,7 @@ void moped_blinker::pin_toogled(){
 
 
 void moped_blinker::check(){
-	if((millis()-last_toggle_time)>1000){ // 1 sec no change on pin => flasher off, could be down to 500ms?
+	if((millis()-last_toggle_time)>1500){ // 1.5 sec no change on pin => flasher off, could be down to 500ms?
 		flasher_active=false;
 	};
 };
