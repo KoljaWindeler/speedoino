@@ -475,13 +475,46 @@ public class MapEditor extends Activity implements OnClickListener{
 					count_unmodified_points1++;
 			};
 			if(count_unmodified_points1==0){
-				String filename="";
-				try {				filename=save_to_file();			} 
-				catch (IOException e) {	e.printStackTrace();	}
+
+				////////// save
+				AlertDialog.Builder alert = new AlertDialog.Builder(this);                 
+				alert.setTitle("Enter title");  
+				alert.setMessage("one line, will be displayed in Speedoino.");                
+
+				// Set an EditText view to get user input   
+				final EditText input = new EditText(this); 
+				alert.setView(input);
+				//input.setText(global_text);
+
+				alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {  
+					public void onClick(DialogInterface dialog, int whichButton) {  
+						String value = input.getText().toString();
+						try {
+							String filename="";
+							filename=save_to_file(value);
+							getIntent().putExtra(OUTPUT_FILE_PATH,filename);
+							setResult(RESULT_OK, getIntent());
+						} catch (IOException e) {	
+							e.printStackTrace();
+							setResult(RESULT_CANCELED,getIntent());
+						}
+						
+						finish();
+						return;                  
+					}  
+				});  
+
+				alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						return;   
+					}
+				});
+				alert.show();
+				////////// save			
+
 				Log.i(TAG,"Bis hier save");
-				setResult(RESULT_OK, getIntent());
-				getIntent().putExtra(OUTPUT_FILE_PATH,filename);
-				finish();
 			} else {
 				Toast mToast = new Toast(this);
 				mToast = Toast.makeText(getApplicationContext(), "Please complete the last "+String.valueOf(count_unmodified_points1)+" points and set their direction", Toast.LENGTH_LONG);
@@ -510,17 +543,7 @@ public class MapEditor extends Activity implements OnClickListener{
 	}
 
 
-	private String save_to_file() throws IOException {
-		// --------- ask for description ----------------//
-		AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-		alertDialog.setTitle("Please enter title");
-		alertDialog.setMessage("...");
-		alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {	finish();	}});
-		//alertDialog.show();
-		// --------- ask for description ----------------//
-
+	private String save_to_file(String title) throws IOException {
 		// --------- generate filename ----------------//
 		String basedir = getIntent().getStringExtra(INPUT_DIR_PATH);
 		int max_lenght=8;
@@ -535,7 +558,7 @@ public class MapEditor extends Activity implements OnClickListener{
 		//---------- save file ---------------//
 		FileOutputStream out = null;
 		out = new FileOutputStream(result_filename);
-		String write_buffer="#d"+"\n";//+ description !!
+		String write_buffer="#d"+title+"\n";//+ description !!
 		out.write(write_buffer.getBytes());
 		for(int i=0;i<turnpoints_coordinats_modified.size();i++){
 			write_buffer=turnpoints_coordinats_modified.get(i)+turnpoints_modified.get(i)+"\n";

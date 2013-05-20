@@ -439,7 +439,44 @@ public class RouteMap extends MapActivity implements OnTouchListener
 
 			output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"</description>";
 			out.write(output.getBytes());
-			output="<Style><IconStyle><color>FF0001ff</color><scale>0.25</scale><Icon><href>http://www.tischlerei-windeler.de/punkt.png</href></Icon></IconStyle></Style>";
+			
+			// 0-100 is fade from full red to yellow (red+green)
+			// 100-200 is fade from full yellow (red+green) to green
+			
+			// red -> 000..100 -> 255
+			// red -> 100..200 -> 255..0
+			// red -> 200..000 -> 0
+			int red=0;
+			if(add_info_speed.get(i)<=100){
+				red=255;
+			} else if(add_info_speed.get(i)>100 && add_info_speed.get(i)<=200){
+				red=-((add_info_speed.get(i)-100)*255)/100+255;
+			} else {
+				red=0;
+			}
+			String red_str=Integer.toHexString(red);
+			while(red_str.length()<2){
+				red_str="0"+red_str;
+			}
+			
+			// green -> 000..100 -> 0
+			// green -> 100..200 -> 0..255
+			// green -> 200..000 -> 255
+			int green=0;
+			if(add_info_speed.get(i)<=100){
+				green=0;
+			} else if(add_info_speed.get(i)>100 && add_info_speed.get(i)<=200){
+				green=((add_info_speed.get(i)-100)*255)/100;
+			} else {
+				green=255;
+			}
+			String green_str=Integer.toHexString(green);
+			while(green_str.length()<2){
+				green_str="0"+green_str;
+			}
+						
+			 
+			output="<Style><IconStyle><color>FF00"+green_str+red_str+"</color><scale>0.25</scale><Icon><href>http://www.tischlerei-windeler.de/punkt.png</href></Icon></IconStyle></Style>";
 			out.write(output.getBytes());
 			output="<Point><coordinates>"+String.valueOf(p.getLongitudeE6()/1E6)+","+String.valueOf(p.getLatitudeE6()/1E6)+",0</coordinates></Point></Placemark>";
 			out.write(output.getBytes());
