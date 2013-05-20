@@ -122,6 +122,7 @@ class I2C
     static uint8_t bufferIndex;
     static uint8_t totalBytes;
     static uint16_t timeOutDelay;
+    static uint16_t timeOutCount;
 
 };
 

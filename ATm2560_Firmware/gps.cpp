@@ -816,7 +816,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 			navi_ziel_name[10]='\0';
 
 			// r oder l oder g
-			navi_ziel_rl=int(buf[20])-48;
+			navi_ziel_rl=int(buf[20])-48; // gradeaus(93+0x20=125),links,rechts: g=125+('0'-48),l=125+('1'-48)
 
 			//////////// DEBUG /////////////////
 #ifdef NAVI_DEBUG
