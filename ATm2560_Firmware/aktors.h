@@ -73,11 +73,12 @@ public:
 	bool dimm_available();
 	int  update_outer_leds(bool dimm,bool overwrite);
 	int set_bt_pin();
+	void check_flag();
 	int ask_bt(char *command);
 	void stop_dimmer();
 	void set_active_dimmer(bool state);
 	int set_expander();
-	int set_controll_lights(unsigned char oil,unsigned char flasher_left,unsigned char n_gear,unsigned char flasher_right,unsigned char high_beam);
+	int set_controll_lights(unsigned char oil,unsigned char flasher_left,unsigned char n_gear,unsigned char flasher_right,unsigned char high_beam, bool now);
 	int set_rbg_active(int status);
 	speedo_stepper* m_stepper;
 	speedo_oiler* m_oiler;
@@ -91,6 +92,7 @@ private:
 	int dimm_steps,dimm_step,in_out;
 	short int dimm_state;
 	bool colorfade_active;
+	bool expander_outdated;
 	unsigned char control_lights;
 	unsigned char led_area_controll;
 

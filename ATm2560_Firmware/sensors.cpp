@@ -583,6 +583,6 @@ void Speedo_sensors::check_inputs(){
 		pSensors->m_blinker->pin_toogled();
 	}
 
-	pAktors->set_controll_lights(oil_pressure,flasher_left,neutral_gear,flasher_right,high_beam);
+	pAktors->set_controll_lights(oil_pressure,flasher_left,neutral_gear,flasher_right,high_beam,false);
 }
 /********************************** WARN light section *************************************/

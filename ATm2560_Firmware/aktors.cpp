@@ -187,10 +187,10 @@ bool Speedo_aktors::check_vars(){
 
 void Speedo_aktors::init(){
 	/* vier werte paare:
-	 * 1. Außen -> ändert sich öfters mal, wird mit std werten geladen
-	 * 2. Innen -> ändert sich eigentlich nie
-	 * 3. Flasher -> Farbe zu der übergeblendet wird wenn die schaltdrehzahl erreicht wird
-	 * 4. out_base -> Farbkopie von Außen
+	 * 1. AuÃŸen -> Ã¤ndert sich Ã¶fters mal, wird mit std werten geladen
+	 * 2. Innen -> Ã¤ndert sich eigentlich nie
+	 * 3. Flasher -> Farbe zu der Ã¼bergeblendet wird wenn die schaltdrehzahl erreicht wird
+	 * 4. out_base -> Farbkopie von AuÃŸen
 	 */
 
 	dimm_step=0;
@@ -200,6 +200,7 @@ void Speedo_aktors::init(){
 	colorfade_active=true;
 	control_lights=0x00;
 	led_area_controll=0x00;
+	expander_outdated=true;
 
 	// innen
 	pinMode(RGB_IN_W,OUTPUT);
@@ -211,7 +212,7 @@ void Speedo_aktors::init(){
 		// beleuchtung
 	}
 
-	// außen
+	// auÃŸen
 	pinMode(RGB_OUT_R,OUTPUT);
 	pinMode(RGB_OUT_G,OUTPUT);
 	pinMode(RGB_OUT_B,OUTPUT);
@@ -278,7 +279,7 @@ void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps){
 
 	TCCR3A = 0x00;
 	/* ich denke mal alles umzuschalten => 256 schritte in 2,56 sec
-	 * wäre doch okay, also 256 Timer Schritte in 0,01 sec
+	 * wÃ¤re doch okay, also 256 Timer Schritte in 0,01 sec
 	 * ein schritt demnach in 0,01/256=0,000039062
 	 * das sind in der welt von 16 mhz => 1/16000000*x=0,000039062
 	 * x=625 schritte .. das ist doof vorteiler kann 256 oder 1024 sein
@@ -308,8 +309,8 @@ void Speedo_aktors::timer_overflow(){
 
 
 	// sind am ende ? wenn ja, timer aus und to werte in from speichern,
-	// wenn nicht dimm_steps hochzählen und timer wieder vorladen damit er mit 10 ms
-	// läuft
+	// wenn nicht dimm_steps hochzÃ¤hlen und timer wieder vorladen damit er mit 10 ms
+	// lÃ¤uft
 	if(dimm_step<dimm_steps){
 		dimm_step++;
 		// 127 vorladen
@@ -493,7 +494,7 @@ int Speedo_aktors::set_bt_pin(){
 				if(ask_bt(&at_commands[0])==0){
 					sprintf(at_commands,"ATL5%c",0x0D);
 					ask_bt(&at_commands[0]);											// fire && forget
-					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, können wir hier nicht testen
+					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, kÃ¶nnen wir hier nicht testen
 					Serial.end();														// setzte neue serielle Geschwindigkeit
 					pOLED->string_P(pSpeedo->default_font,PSTR("RETRYING"),0,6);		// hat nicht geklappt
 					Serial.begin(115200);
@@ -582,10 +583,11 @@ int Speedo_aktors::set_expander(){
 	//	Sprint(data2,"Setze auf %i:%i",data[0],data[1]);
 	//	Serial.println(data2);
 	I2c.write(PORT_REP_ADDR,PORT_REP_ADDR_GPIO_A,data,2);
+	expander_outdated=false; // update done
 	return 0;
 }
 
-int Speedo_aktors::set_controll_lights(unsigned char oil,unsigned char flasher_left,unsigned char n_gear,unsigned char flasher_right,unsigned char high_beam){
+int Speedo_aktors::set_controll_lights(unsigned char oil,unsigned char flasher_left,unsigned char n_gear,unsigned char flasher_right,unsigned char high_beam, bool now){
 	// light, 0=off, 1==on, x=dontcar
 	unsigned char input[5]={flasher_right,high_beam,n_gear,flasher_left,oil};
 	for(int i=3; i<8; i++){ // pins of port extender
@@ -595,8 +597,19 @@ int Speedo_aktors::set_controll_lights(unsigned char oil,unsigned char flasher_l
 			control_lights|=(1<<i);
 		}
 	};
-	return set_expander();
+	if(now){
+		return set_expander();
+	} else {
+		expander_outdated=true;
+		return 0;
+	};
 }
+
+void Speedo_aktors::check_flag(){
+	if(expander_outdated){
+		set_expander();
+	};
+};
 
 int Speedo_aktors::set_rbg_active(int status){
 	unsigned char shifter[11]={5,6,2,7,4,1,1,2,3,0,0};
