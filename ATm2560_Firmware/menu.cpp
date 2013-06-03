@@ -140,7 +140,7 @@ const char * const menu_titel[10] PROGMEM = { titel_0,titel_1,titel_2,titel_3,ti
 
 /////
 const char trip_setup_m_0[] PROGMEM = "Total";   // "String 0" etc are strings to store - change to suit.
-const char trip_setup_m_1[] PROGMEM = "NonPermanent";
+const char trip_setup_m_1[] PROGMEM = "From Start";
 const char trip_setup_m_2[] PROGMEM = "Day";
 const char trip_setup_m_3[] PROGMEM = "Tour";
 const char trip_setup_m_4[] PROGMEM = "Chain/Tire";
