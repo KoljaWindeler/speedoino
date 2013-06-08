@@ -454,11 +454,10 @@ void speedo_disp::disp_waiting(int position,unsigned char spalte,unsigned char z
 void speedo_disp::animation(int a){
 	switch(a){
 	case 1: //////////////////// simpsons ///////////////////
-		show_animation("SIMP.TXT,0,19,15"); // 200 -> 15
+		show_animation("BULLET.SGF,0,77,20");
 		break;
 	case 2: //////////////////// girl ///////////////////
-		show_animation("BULLET.SGF,0,77,20");
-		show_animation("LG2.TXT,0,1,400");
+		show_animation("SIMP.TXT,0,19,15"); // 200 -> 15
 		break;
 	case 3:
 		show_animation("FROG.SGF,0,7,200");

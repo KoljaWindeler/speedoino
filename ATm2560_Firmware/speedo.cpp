@@ -68,7 +68,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 #endif
 		/// warnung wegen zu hoher Drehzahl, erstmal checken ob wir von der drehzahl her in betrachtkommen
 		if(pSensors->get_RPM(false)>7000){
-			if((pSensors->get_oil_temperature()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || 		// temperatur < 60°
+			if((pSensors->get_oil_temperature()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || 		// temperatur < 60Â°
 					(pSensors->get_water_temperature()<600 && pSensors->m_temperature->water_temp_fail_status==0)){ // und keine Fehler beim lesen
 				if(disp_zeile_bak[ADD_INFO2]!=101){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 					disp_zeile_bak[ADD_INFO2]=101;
@@ -142,7 +142,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		}
 		///// Navi ////
 		else if(pSensors->m_gps->navi_active){
-			int result_value=pSensors->m_gps->get_order(char_buffer); // result value ist der zahlen wert bis zur nächsten aktion, 11km => 11 | 900m => 900 (10m Schritte)
+			int result_value=pSensors->m_gps->get_order(char_buffer); // result value ist der zahlen wert bis zur nÃ¤chsten aktion, 11km => 11 | 900m => 900 (10m Schritte)
 			if(disp_zeile_bak[ADD_INFO2]!=result_value){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh! // wird also einmal pro sek geschrieben
 				disp_zeile_bak[ADD_INFO2]=int(result_value);
 				pDebug->speedo_loop(13,0,previousMillis," ");
@@ -204,7 +204,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			};
 
 		}
-		//// löschen
+		//// lÃ¶schen
 		else{
 			addinfo2_currently_shown=false;
 			if(disp_zeile_bak[ADD_INFO2]!=105){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
@@ -242,9 +242,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			} else if(pSensors->m_temperature->oil_temp_fail_status==SENSOR_SHORT_TO_GND){
 				sprintf(char_buffer," --    "); // error occored -> short to gnd
 			} else 	if(pSensors->get_oil_temperature()>200){
-				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_oil_temperature()/10))%1000,pSensors->get_oil_temperature()%10); // _32.3°C  7 stellen
+				sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_oil_temperature()/10))%1000,pSensors->get_oil_temperature()%10); // _32.3Â°C  7 stellen
 			} else {
-				sprintf(char_buffer,"<20{C  "); // below 20°C add a space to have 5 chars
+				sprintf(char_buffer,"<20{C  "); // below 20Â°C add a space to have 5 chars
 			};
 			pDebug->speedo_loop(1,0,previousMillis," "); // debug
 			// depend on skinsettings
@@ -267,10 +267,10 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * 7 Chars
 	 * "_-_____" <- Sensor open (based on 5x read 1024 on the analog pin)
 	 * "_--____" <- Sensor short to ground (based on 5x read 0 on the analog pin)
-	 * "_32.4°C" <- regular temp + filling
-	 * "102.3°C" <- regular temp
-	 * ">110°C_" <- temp to high
-	 * "<30°C__" <- temp to low
+	 * "_32.4Â°C" <- regular temp + filling
+	 * "102.3Â°C" <- regular temp
+	 * ">110Â°C_" <- temp to high
+	 * "<30Â°C__" <- temp to low
 	 ************************* water temperature *********************/
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintp(PSTR("-w"));
@@ -287,15 +287,15 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				// check if its a CAN value or a measured value
 				if(pSensors->CAN_active){
 					// CAN temperature is save, display it
-					sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_water_temperature()/10))%1000,pSensors->get_water_temperature()%10); // _32.3°C  7 stellen
+					sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_water_temperature()/10))%1000,pSensors->get_water_temperature()%10); // _32.3Â°C  7 stellen
 				} else {
 					// Sensor temperature is save, within a certain range ...
 					if(pSensors->get_water_temperature()>1100){
-						sprintf(char_buffer,">110{C "); // more then 110°C add a space to have 7 chars
+						sprintf(char_buffer,">110{C "); // more then 110Â°C add a space to have 7 chars
 					} else 	if(pSensors->get_water_temperature()>300){
-						sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_water_temperature()/10))%1000,pSensors->get_water_temperature()%10); // _32.3°C  7 stellen
+						sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_water_temperature()/10))%1000,pSensors->get_water_temperature()%10); // _32.3Â°C  7 stellen
 					} else {
-						sprintf(char_buffer,"<30{C  "); // below 30°C add a space to have 7 chars
+						sprintf(char_buffer,"<30{C  "); // below 30Â°C add a space to have 7 chars
 					};
 				}
 
@@ -420,7 +420,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				pDebug->speedo_loop(5,0,previousMillis," ");
 				// depend on skinsettings
 				pOLED->string(dz_widget.font,char_buffer,dz_widget.x,dz_widget.y,0,DISP_BRIGHTNESS,0);
-			} else { // nur eine änderung im wert
+			} else { // nur eine Ã¤nderung im wert
 				sprintf(char_buffer,"%5i",pSensors->get_RPM(2));
 				pDebug->speedo_loop(6,0,previousMillis," ");
 				pOLED->string(dz_widget.font,char_buffer,dz_widget.x,dz_widget.y,0,DISP_BRIGHTNESS,0);
@@ -445,7 +445,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				if(disp_zeile_bak[GPS_VALUE]==-99){ //schreib alles neu, auch die buchstaben
 					sprintf(char_buffer,"no GPS");
 					pDebug->speedo_loop(6,0,previousMillis," ");
-				} else { // nur eine änderung im wert
+				} else { // nur eine Ã¤nderung im wert
 					sprintf(char_buffer,"%2i",int(sats)%100);
 					pDebug->speedo_loop(6,0,previousMillis," ");
 				};
@@ -464,9 +464,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	pDebug->sprintp(PSTR("-ai"));
 #endif
 	if((!(addinfo_widget.x==-1 && addinfo_widget.y==-1)) && check_no_collision_with_addinfo2(addinfo_widget.y)){ // only show it if pos != -1/-1
-		if(unsigned(disp_zeile_bak[ADD_INFO])!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)+pSensors->m_gps->mod(floor(avg_timebase[8]/100),100)){ // immer wenn sich trip_dist ändert den string ausgeben der direkt drüber steht, auf 0.1 km genau
+		if(unsigned(disp_zeile_bak[ADD_INFO])!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)+pSensors->m_gps->mod(floor(avg_timebase[8]/60),100)){ // immer wenn sich trip_dist Ã¤ndert den string ausgeben der direkt drÃ¼ber steht, auf 0.1 km genau
 			// trip[8] => gesamt/100 => 100er Meter, 27.342,8 => 28
-			disp_zeile_bak[ADD_INFO]=int(pSensors->m_gps->mod(floor(trip_dist[8]/100),100)+pSensors->m_gps->mod(floor(avg_timebase[8]/100),100));
+			disp_zeile_bak[ADD_INFO]=int(pSensors->m_gps->mod(floor(trip_dist[8]/100),100)+pSensors->m_gps->mod(floor(avg_timebase[8]/60),100));
 
 			// temp buffer
 			unsigned long temp_trip_dist=trip_dist[m_trip_storage-1];
@@ -506,7 +506,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 					}
 				} else if(m_trip_mode==2){
 					// "NonPermanent 345:34" 19 Chars
-					sprintf(char_buffer,"%s %02i:%02i",temp_char_array,(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60));
+					sprintf(char_buffer,"%s %02i:%02i",temp_char_array,(int)floor(temp_avg_timebase/3600),(int)floor((temp_avg_timebase%3600)/60));
 				} else if(m_trip_mode==3){
 					// "NonPerma AVG 111km/h" 20 Chars
 					sprintf(char_buffer,"%s AVG %ikm/h",temp_char_array,(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
@@ -523,7 +523,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				}
 				// less that 10.000 km and less than 100 hours ==>4543.1km | 68:22h<=== 17 chars
 				else {
-					sprintf(char_buffer,"%i.%ikm | %02i:%02i",(int)floor(temp_trip_dist/1000),(int)floor((temp_trip_dist%1000)/100),(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60));
+					sprintf(char_buffer,"%i.%ikm | %02i:%02i",(int)floor(temp_trip_dist/1000),(int)floor((temp_trip_dist%1000)/100),(int)floor(temp_avg_timebase/3600),(int)floor((temp_avg_timebase%3600)/60));
 				};
 			}
 			// Distance & Avg
@@ -546,7 +546,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				// less than 100h
 				else {
 					// ==>45:04 | 111km/h<== 15 chars
-					sprintf(char_buffer,"%02i:%02i | %ikm/h",(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60),(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
+					sprintf(char_buffer,"%02i:%02i | %ikm/h",(int)floor(temp_avg_timebase/3600),(int)floor((temp_avg_timebase%3600)/60),(int)floor(temp_trip_dist*3.6/temp_avg_timebase));
 				}
 			}
 			// Time & Max
@@ -559,7 +559,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				// less than 100h
 				else {
 					// ==>45:04 | 232km/h<== 15 chars
-					sprintf(char_buffer,"%02i:%02i | %ikm/h",(int)floor(temp_avg_timebase/3600),(int)floor((temp_trip_dist%3600)/60),(int)temp_max_speed);
+					sprintf(char_buffer,"%02i:%02i | %ikm/h",(int)floor(temp_avg_timebase/3600),(int)floor((temp_avg_timebase%3600)/60),(int)temp_max_speed);
 				}
 			}
 
@@ -646,14 +646,14 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * if the navigation is active, but the menu_state is !=1 than the up/down button has been pushed
 	 * during navigation mode => so change the Navipointer!! to jump in the points
 	 **************************************************************/
-	if(pSensors->m_gps->navi_active && (pMenu->state%10)==2){ // runter gedrückt ( nach hinten )
+	if(pSensors->m_gps->navi_active && (pMenu->state%10)==2){ // runter gedrÃ¼ckt ( nach hinten )
 		pSensors->m_gps->navi_point++;
 		// store change
 		byte tempByte = (pSensors->m_gps->navi_point & 0xFF);
 		eeprom_write_byte((uint8_t *)147,tempByte);
 		pMenu->state=11; // reset state
 		pSensors->m_gps->generate_new_order();
-	} else if(pSensors->m_gps->navi_active && (pMenu->state%10)==9){ // hoch gedrückt
+	} else if(pSensors->m_gps->navi_active && (pMenu->state%10)==9){ // hoch gedrÃ¼ckt
 		pSensors->m_gps->navi_point--;
 		if(pSensors->m_gps->navi_point<1) { pSensors->m_gps->navi_point=0; };
 		// store change
