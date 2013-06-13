@@ -1,0 +1,17 @@
+avrdude/configs/programmerconfig.1/baudrate=115200
+avrdude/configs/programmerconfig.1/description=Default AVRDude Programmer Configuration. Modify as required for your setup.
+avrdude/configs/programmerconfig.1/name=Bluetooth Speedoino
+avrdude/configs/programmerconfig.1/port=/dev/rfcomm5
+avrdude/configs/programmerconfig.1/postAvrdudeDelayMs=
+avrdude/configs/programmerconfig.1/ppresetline=
+avrdude/configs/programmerconfig.1/ppvccline=
+avrdude/configs/programmerconfig.1/programmer=stk500v2
+avrdudepropertypage/previewexpanded=true
+avrdudepropertypage/weight_preview_collapsed=50
+avrdudepropertypage/weight_preview_expanded=200
+avrdudepropertypage/weight_top_collapsed=950
+avrdudepropertypage/weight_top_expanded=800
+avrpaths//systempath/AVRDUDE=/usr/bin
+avrpaths//systempath/AVRGCC=/usr/bin
+avrpaths//systempath/MAKE=/usr/bin
+eclipse.preferences.version=1
