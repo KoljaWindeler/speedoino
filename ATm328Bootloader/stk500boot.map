@@ -288,10 +288,10 @@ Address of section .text set to 0x7800
  *(.debug_frame)
  .debug_frame   0x0000000000000000       0x4c stk500boot.o
 
-.debug_str      0x0000000000000000      0x206
+.debug_str      0x0000000000000000      0x204
  *(.debug_str)
- .debug_str     0x0000000000000000      0x206 stk500boot.o
-                                        0x247 (size before relaxing)
+ .debug_str     0x0000000000000000      0x204 stk500boot.o
+                                        0x245 (size before relaxing)
 
 .debug_loc      0x0000000000000000      0x97e
  *(.debug_loc)

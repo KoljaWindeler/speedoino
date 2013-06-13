@@ -2593,16 +2593,16 @@
  1462               		.file 3 "/usr/lib/gcc/avr/4.7.0/../../../avr/include/stdint.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 stk500boot.c
-     /tmp/ccrladRg.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccrladRg.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccrladRg.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccrladRg.s:5      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccrladRg.s:6      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccrladRg.s:10     .text:0000000000000000 sendchar
-     /tmp/ccrladRg.s:37     .init9:0000000000000000 __jumpMain
-     /tmp/ccrladRg.s:47     *ABS*:00000000000008ff __stack
-     /tmp/ccrladRg.s:85     .text.startup:0000000000000000 main
-     /tmp/ccrladRg.s:1407   .rodata:0000000000000000 CSWTCH.12
+     /tmp/cc9tg5gm.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc9tg5gm.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc9tg5gm.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc9tg5gm.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc9tg5gm.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc9tg5gm.s:10     .text:0000000000000000 sendchar
+     /tmp/cc9tg5gm.s:37     .init9:0000000000000000 __jumpMain
+     /tmp/cc9tg5gm.s:47     *ABS*:00000000000008ff __stack
+     /tmp/cc9tg5gm.s:85     .text.startup:0000000000000000 main
+     /tmp/cc9tg5gm.s:1407   .rodata:0000000000000000 CSWTCH.12
 
 UNDEFINED SYMBOLS
 __do_copy_data
