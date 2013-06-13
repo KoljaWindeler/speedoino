@@ -1299,11 +1299,13 @@ OnClickListener {
 		// first call, set vars
 		if(init==1){
 			firmware_flash_filename=null;
+			firmware_flash_bluetooth_device=null;
+			/*
 			if(mSerialService.last_connected_device!=null){
 				firmware_flash_bluetooth_device=mSerialService.last_connected_device.getAddress();
 			} else {
 				firmware_flash_bluetooth_device=null;
-			}
+			}*/
 		}
 
 		//mal sehen ob wir aufruf parameter haben
