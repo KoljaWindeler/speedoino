@@ -321,33 +321,37 @@ void speedo_filemanager_v2::parse_command(){
 				 */
 
 				// buffer for dir name
-				char dir[8];
+				unsigned char dir[msgLength];
 				// copy reqested dir
 				for(unsigned int i=3;i<msgLength;i++){
-					dir[i-3]=msgBuffer[i];
+					dir[i-3+2]=msgBuffer[i];
 				}
 				// add end of string
-				dir[msgLength-3]='\0';
+				dir[msgLength-3+2]='\0';
+				// and save length in string to make it suiteable for "get_file_handle"
+				dir[1]=msgLength-3; // -3: command + nr_high + nr_low
+
 				// get item id
 				int item=(msgBuffer[1]<<8)|msgBuffer[2];
 
 				// open root and maybe go on
-				SdFile fm_handle,returner;
-				fm_handle.openRoot(&pSD->volume);
-				if(!(dir[0]=='/')){	// wenn es NICHT ".." ist
-					returner.open(&fm_handle, dir, O_READ);
-					fm_handle=returner;
-				}
+				SdFile fm_handle;
+				int status=0;
+				unsigned long size=0;
 				// get filename and type of item
 				char name[13];
-				unsigned long size=0;
-				int status=fm_handle.lsJKWNext(name,item,&size);
-				returner.close();
-				fm_handle.close();
-
 				// write the returner
 				msgBuffer[0]=CMD_DIR;
 				msgBuffer[1]=STATUS_CMD_OK;
+
+				if(get_file_handle(dir,last_file,&fm_file,&fm_handle,O_READ)<0){
+					status=-1;
+				} else {
+					last_file[0]='\0';// remove from cache to avoid reuse
+
+					status=fm_handle.lsJKWNext(name,item,&size);
+					fm_handle.close();
+				}
 
 				if(status>0) {
 					msgBuffer[2]=status;
@@ -736,55 +740,73 @@ int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned cha
 	 * msgBuffer[2..2+FN_length] =Filename
 	 * msgBuffer[3+FN_length..]=Data
 	 */
+	// gibt den pointer auf die datei -> FM_FILE
+	// und das zugehörigen Verzeichniss -> FM_HANDLE
+	// zurück
 
-	unsigned int start_of_filename=2;
-	unsigned int start_of_real_filename=0;
+	unsigned int start_of_filename=2;			// fix
+	unsigned int start_of_real_filename=0;		// pos of the "FILE"name
 	unsigned int length_of_filename=(unsigned int)msgBuffer[1];
 	char filename[13];
 	char subdir[13];
+	subdir[0]='\0';
+	unsigned char subdir_pointer=0;
+
 	fm_handle->close();
 	fm_file->close();
 	fm_handle->openRoot(&pSD->volume);
 
-	// checken ob ein "/" drin ist, und die datei somit in einem verzeichniss liegt
-	bool is_subdir_file=false;
+	// check filename for subdirs and open them one by one
 	for(unsigned int i=start_of_filename;i<start_of_filename+length_of_filename;i++){
-		if(msgBuffer[i]=='/'){
-			is_subdir_file=true;
-			subdir[i-start_of_filename]='\0';
+		// we have to destinguish between normal chars and the '/'
+		if(msgBuffer[i]=='/'){ // open actual subdir
+			//Serial.print("Opening subdir:");
+			//Serial.println(subdir);
 			start_of_real_filename=i+1;
-			break;
-		} else {
-			subdir[i-start_of_filename]=msgBuffer[i];
+			if(subdir[0]!='\0'){ // check if we have something .. just error prevention
+				SdFile returner;
+				if(!returner.open(fm_handle, subdir, O_READ)){ // create it, if it is not existing
+					//Serial.println("Failed");
+					if((flags && O_CREAT)==0){
+						return -2;
+					}
+					//Serial.println("creating");
+					if(!returner.mkdir(fm_handle,subdir,true)){
+						//Serial.println("Failed!");
+						return -1; // could not create it
+					}
+
+				}
+				//Serial.println("passing on");
+				*fm_handle=returner; // pass on handle
+				subdir[0]='\0';
+				subdir_pointer=0;
+			}
+		} else { // regular char
+			subdir[subdir_pointer]=msgBuffer[i];
+			if(subdir_pointer<10) subdir_pointer++; // dir should be max 8 chars ..
+			subdir[subdir_pointer]='\0';
 		}
-	};
+	}
 
-
-	// verzeichnissnamen auslesen und oeffnen
-	if(is_subdir_file){
-		SdFile temp;
-		if(!temp.open(fm_handle, subdir, O_READ)){
-			return -2;
-		}
-		*fm_handle=temp; // das hier ist quatsch
-	};
-
-	// dateinamen auslesen
-	for(unsigned int i=start_of_real_filename;i<start_of_filename+length_of_filename;i++){
-		filename[i-start_of_real_filename]=msgBuffer[i];
-		last_file[i-start_of_real_filename]=msgBuffer[i];
-		if(i==(start_of_filename+length_of_filename-1)){
-			filename[i-start_of_real_filename+1]='\0';
-			last_file[i-start_of_real_filename+1]='\0';
+	if(msgBuffer[start_of_filename+length_of_filename-1]!='/'){ // if the very last char in the filename NOT equals "/" --> then its a file
+		// dateinamen auslesen
+		for(unsigned int i=start_of_real_filename;i<start_of_filename+length_of_filename;i++){
+			filename[i-start_of_real_filename]=msgBuffer[i];
+			last_file[i-start_of_real_filename]=msgBuffer[i];
+			if(i==(start_of_filename+length_of_filename-1)){
+				filename[i-start_of_real_filename+1]='\0';
+				last_file[i-start_of_real_filename+1]='\0';
+			};
 		};
-	};
 
-	SdFile temp_f;
-	// datei oeffnen
-	if (!temp_f.open(fm_handle, filename,flags)){
-		return -1;
-	} else {
-		*fm_file=temp_f;
+		SdFile temp_f;
+		// datei oeffnen
+		if (!temp_f.open(fm_handle, filename,flags)){
+			return -1;
+		} else {
+			*fm_file=temp_f;
+		}
 	}
 
 	return start_of_filename+length_of_filename;
