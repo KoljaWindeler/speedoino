@@ -135,7 +135,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=112;
 				pDebug->speedo_loop(11,0,previousMillis," ");
 				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("Engine malfunction"));
+				strcpy_P(char_buffer,PSTR("CAN warning"));
 				pMenu->center_me(char_buffer,17);
 				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 			};
@@ -338,7 +338,6 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	/************************* air temperature *********************/
 	pDebug->speedo_loop(23,1,0," ");
 
-
 	/************************* arrow ******************
 	 * if we move the return value of m_gps->get_order will change (will return distance to next goal)
 	 * on change we get another arrow to the goal,
@@ -347,7 +346,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintp(PSTR("-n"));
 #endif
-	if(pSensors->m_gps->navi_active || pSensors->m_gps->navi_active){ // Arrow Mode TODO
+	if(pSensors->m_gps->navi_active){ // Arrow Mode
 		if((!(pSpeedo->arrow_widget.x==-1 && pSpeedo->arrow_widget.y==-1)) && check_no_collision_with_addinfo2(arrow_widget.y)){
 			int result_value=pSensors->m_gps->get_order(char_buffer); // distance will be calculated on the parse routine, this call just copies it
 			if(disp_zeile_bak[ARROW]!=result_value+pSensors->m_gps->valid){
