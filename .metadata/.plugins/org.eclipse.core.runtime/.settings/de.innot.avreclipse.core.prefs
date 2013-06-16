@@ -1,7 +1,7 @@
 avrdude/configs/programmerconfig.1/baudrate=115200
 avrdude/configs/programmerconfig.1/description=Default AVRDude Programmer Configuration. Modify as required for your setup.
 avrdude/configs/programmerconfig.1/name=Bluetooth Speedoino
-avrdude/configs/programmerconfig.1/port=/dev/rfcomm5
+avrdude/configs/programmerconfig.1/port=/dev/rfcomm4
 avrdude/configs/programmerconfig.1/postAvrdudeDelayMs=
 avrdude/configs/programmerconfig.1/ppresetline=
 avrdude/configs/programmerconfig.1/ppvccline=

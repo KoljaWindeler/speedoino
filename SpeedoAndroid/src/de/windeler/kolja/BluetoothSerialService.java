@@ -969,7 +969,7 @@ public class BluetoothSerialService {
 
 		// open File
 		// lets see, what kind of file we have
-		if(filename.substring(filename.indexOf('/')+1).toLowerCase().equals("gps")){
+		if(filename.substring(filename.lastIndexOf('.')+1).toLowerCase().equals("gps")){
 			dlBaseDir=dlBaseDir+"GPS/";
 		} else if(filename.substring(filename.indexOf('/')+1).toLowerCase().equals("sgf")){
 			dlBaseDir=dlBaseDir+"GFX/";
@@ -977,7 +977,7 @@ public class BluetoothSerialService {
 			dlBaseDir=dlBaseDir+"NAVI/";
 		}
 		File dir = new File (dlBaseDir);
-		File file = new File(dir, filename.substring(filename.indexOf('/')+1));
+		File file = new File(dir, filename.substring(filename.lastIndexOf('/')+1));
 
 		FileOutputStream out = null;
 		try { 								out = new FileOutputStream(file);	} 

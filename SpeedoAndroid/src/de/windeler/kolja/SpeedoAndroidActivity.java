@@ -1,5 +1,3 @@
-//00:1e:64:44:40:94
-
 package de.windeler.kolja;
 
 import java.io.File;
@@ -173,7 +171,7 @@ OnClickListener {
 
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wl =  pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
-		
+
 		Resources res = getResources(); // Resource object to get Drawables
 		TabHost tabHost = getTabHost(); // The activity TabHost
 		TabHost.TabSpec spec; // Resusable TabSpec for each tab
@@ -439,6 +437,7 @@ OnClickListener {
 		case R.id.loadRoot:
 			_getDirDialog = new getDirDialog(this);
 			_getDirDialog.execute("/");
+			dir_path="/";
 			break;
 		case R.id.DownloadButtonSelect:
 			Log.i(TAG, "download gedrueckt");
@@ -891,7 +890,7 @@ OnClickListener {
 		protected void onPostExecute(String result) {
 			dialog.dismiss();
 			firmware_flash_bluetooth_device=null;
-			
+
 			AlertDialog alertDialog = new AlertDialog.Builder(context).create();
 			alertDialog.setTitle("Info");
 			if(return_value==0){
@@ -899,7 +898,7 @@ OnClickListener {
 			} else {
 				alertDialog.setMessage("Warning:return value "+String.valueOf(return_value)+". Update failed!");
 			}		
-			
+
 			alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {	}});
@@ -1116,10 +1115,20 @@ OnClickListener {
 							new String[] { ITEM_KEY, ITEM_IMAGE, ITEM_KEY_LOW }, new int[] {
 						R.id.fdrowtext, R.id.fdrowimage, R.id.fdrowtext_lower });
 
-					if (dir_path != "/") {
+					/*if (dir_path != "") {		// add reference to root
 						addItem("/", R.drawable.folder,-1);
 						typeMap.put("/", 2);
-					};
+					};*/
+
+					// add reference to parent directory
+					if(dir_path != "" && dir_path != "/"){
+						addItem("..", R.drawable.folder,-1);
+						typeMap.put("..", 2);
+					} else {
+						dir_path="/";
+						((TextView) findViewById(R.id.dl_selected_file)).setText("Selected path: "+ dir_path);
+					}
+
 
 					for (String dir : dirsMap.tailMap("").values()) {
 						if (dir.toString().length() > 23) {
@@ -1140,8 +1149,8 @@ OnClickListener {
 					}
 					mDLListView.setAdapter(fileList);
 					registerForContextMenu(mDLListView);
-					mDLListView
-					.setOnItemClickListener(new OnItemClickListener() {
+
+					mDLListView.setOnItemClickListener(new OnItemClickListener() { //TODO TODO
 						public void onItemClick(AdapterView<?> arg0,
 								View arg1, int arg2, long arg3) {
 							String name = null;
@@ -1154,24 +1163,37 @@ OnClickListener {
 							type = typeMap.get(name);
 							size = sizeMap.get(name);
 
-							if (type == 1) {
+							if (type == 1) { // file
 								t2a_dest = "";
 								if (dir_path != "/") // z.B. CONFIG
-									t2a_dest = dir_path + "/"; // CONFIG/
+									t2a_dest = dir_path; // CONFIG/
 								t2a_dest = t2a_dest + name; // CONFIG/BASE.TXT
 								t2a_size = size;
 
-								TextView mselfile = (TextView) findViewById(R.id.dl_selected_file);
-								mselfile.setText("Selected file: "
-										+ t2a_dest);
-
+								((TextView) findViewById(R.id.dl_selected_file)).setText("Selected file: "+ t2a_dest);
 								DlselButton.setEnabled(true);
 								DeleteButton.setEnabled(true);
-							} else if (type == 2) {
-								dir_path = name;
-								_getDirDialog = new getDirDialog(arg0
-										.getContext());
-								_getDirDialog.execute(name);
+							} else if (type == 2) { // folder
+								/*if(name=="/"){ // goto root
+									dir_path="/";
+								} else*/ 
+								if(name==".."){ // go one higher (parent)
+									if(dir_path.lastIndexOf('/')>0){
+										String parent_dir=dir_path.substring(0,dir_path.lastIndexOf('/'));
+										if(parent_dir.lastIndexOf('/')>0){
+											dir_path=parent_dir.substring(0,parent_dir.lastIndexOf('/')+1);
+										} else {
+											dir_path="/";
+										}
+									}
+								} else { // go deeper
+									dir_path += name+"/";
+								}
+								((TextView) findViewById(R.id.dl_selected_file)).setText("Selected path: "+ dir_path);
+								DlselButton.setEnabled(false);
+								DeleteButton.setEnabled(false);
+								_getDirDialog = new getDirDialog(arg0.getContext());
+								_getDirDialog.execute(dir_path); // add slash if its a directory
 							}
 						} // public void onItemClick(A
 					}); // setOnItemClickListener(...

@@ -153,7 +153,8 @@ public class RouteMap extends MapActivity implements OnTouchListener
 			try {
 				while ((line = buffreader.readLine()) != null) {
 					//Log.d(DEBUG_TAG, "LogLine: " + line + " length "+ String.valueOf(line.length()));
-					if(line.length()==55){
+					//z.b. 111543,160613,052230803,00333,004,00227,4294964509,6,2,0
+					if(line.replaceAll("[^,]","").length()==9){ // exakt 9 ","
 						double latitude=Double.parseDouble(line.substring(14, 23));
 						double longitude=Double.parseDouble(line.substring(24, 33));
 						//Log.d(DEBUG_TAG, "Koordinaten: " + String.valueOf(longitude) + " / "+ String.valueOf(latitude));
@@ -305,7 +306,10 @@ public class RouteMap extends MapActivity implements OnTouchListener
 		mapView.getOverlays().clear();
 		mapView.getOverlays().add(nearPicOverlay);
 		mapView.getOverlays().add(nearPicPOIOverlay);
-		mc.animateTo(p);
+		
+		if(p!=null){
+			mc.animateTo(p);
+		}
 		return true;
 	}
 
@@ -439,10 +443,10 @@ public class RouteMap extends MapActivity implements OnTouchListener
 
 			output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"</description>";
 			out.write(output.getBytes());
-			
+
 			// 0-100 is fade from full red to yellow (red+green)
 			// 100-200 is fade from full yellow (red+green) to green
-			
+
 			// red -> 000..100 -> 255
 			// red -> 100..200 -> 255..0
 			// red -> 200..000 -> 0
@@ -458,7 +462,7 @@ public class RouteMap extends MapActivity implements OnTouchListener
 			while(red_str.length()<2){
 				red_str="0"+red_str;
 			}
-			
+
 			// green -> 000..100 -> 0
 			// green -> 100..200 -> 0..255
 			// green -> 200..000 -> 255
@@ -474,8 +478,8 @@ public class RouteMap extends MapActivity implements OnTouchListener
 			while(green_str.length()<2){
 				green_str="0"+green_str;
 			}
-						
-			 
+
+
 			output="<Style><IconStyle><color>FF00"+green_str+red_str+"</color><scale>0.25</scale><Icon><href>http://www.tischlerei-windeler.de/punkt.png</href></Icon></IconStyle></Style>";
 			out.write(output.getBytes());
 			output="<Point><coordinates>"+String.valueOf(p.getLongitudeE6()/1E6)+","+String.valueOf(p.getLatitudeE6()/1E6)+",0</coordinates></Point></Placemark>";
