@@ -562,7 +562,7 @@ void Speedo_sensors::check_inputs(){
 	// depending on CAN or non CAN mode ... and if CAN on CAN TYPE
 	if(CAN_active && m_CAN->get_active_can_type()==CAN_TYPE_TRIUMPH){
 		neutral_gear=m_CAN->get_neutral_gear_state();
-		pSensors->m_gear->set_neutral(m_CAN->get_neutral_gear_state());
+		pSensors->m_gear->set_neutral(neutral_gear);
 	} else {
 		if(PINK&(1<<NEUTRAL_GEAR_PIN)){	 // if the pin is still high, the pulldown is not active, signal is not active
 			neutral_gear=0x00;

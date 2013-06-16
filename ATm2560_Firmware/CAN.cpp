@@ -435,6 +435,9 @@ void Speedo_CAN::request(char mode,char PID){
 
 void Speedo_CAN::process_incoming_messages(){
 	while(can_get_message(&message)!=0xff){ //0xff=no more frames available
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
+		Serial.print("*");
+#endif
 		if(can_missed_count==999){
 			can_missed_count=0;
 		} else if(can_missed_count>1){
@@ -587,6 +590,9 @@ void Speedo_CAN::process_incoming_messages(){
 		Serial.println(buffer);
 #endif /////////////// DEBUG //////////
 	}
+#ifdef CAN_DEBUG /////////////// DEBUG //////////
+		Serial.println("?");
+#endif
 	message_available=false; // all messages processed
 	return;
 }
