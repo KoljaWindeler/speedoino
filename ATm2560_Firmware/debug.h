@@ -27,7 +27,7 @@ class debugging{
 #undef       GPS_DEBUG         	// ausgabe wenn sich was ergibt, also vollständige pakete empfangen werden
 #undef       IGPS_DEBUG        	// alle NMEA zeilen ansehen
 #undef       NAVI_DEBUG        	// berechnung der distanz checken
-#define       CAN_DEBUG			// Show incoming and outgoing frames
+#undef       CAN_DEBUG			// Show incoming and outgoing frames
 #undef       DEBUG_TRANSFER           // show traffic on filemanager
 #undef       DEBUG_TRANSFER_INTENSIV  // show every traffic on filemanager
 #undef		 STEPPER_DEBUG		// Show stepper info

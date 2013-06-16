@@ -1995,6 +1995,9 @@ void speedo_menu::set_buttons(bool left,bool up,bool down,bool right){
 int speedo_menu::center_me(char* input,int length){
 	int word_length=0;
 	while(input[word_length]!='\0') word_length++; // asdf\0  0,1,2,3,4
+	if(length<=word_length){ // if the input is longer than the available space
+		return -1;
+	}
 
 	char temp[length];
 	int free_space=length-word_length; // 21-4=17

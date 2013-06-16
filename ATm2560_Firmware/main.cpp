@@ -79,7 +79,6 @@ void init_speedo(void){
 	pSD->init(); 				// try open SD Card
 	// first, set all variables to a zero value
 	pSensors->init(); 			// start every init sequence of each sensor
-
 	pSensors->clear_vars();		// clear all sensor values;
 	pSpeedo->clear_vars();		// refresh cycle
 	// read configuration file from sd card
