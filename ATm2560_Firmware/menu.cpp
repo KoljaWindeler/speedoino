@@ -572,13 +572,37 @@ void speedo_menu::display(){
 
 	//////////////////////// show animation ////////////////////////
 	else if(floor(state/10)==57){ //57[x]
-		pOLED->animation(state%10);
-	}
-	else if(floor(state/100)==57){
-		state/=10;
-		update_display=true;
-	}
+		// 571 is the starting point
+		// 572 means "pushed up"
+		// 573 means static
+		// 574 means "pushed down"
+		if(old_state*10+1==state){ // comming from "upper" menu 57 and now state iss 571
+			state_helper=0; // <-- that is the important step, reset the state helper
+		} else {
+			if((state%10)==2){
+				if(state_helper>0){ // that means that we won't show anything new if a users starts with "up" after nr 0...
+					state_helper--;
+				}
+			} else if((state%10)==4){
+				state_helper++;
+			}
+		};
 
+		state=floor(state/10)*10+3; // move to fixed state, to be sure
+		int status=pOLED->animation(state_helper); // <-- RUN ANIMATION
+		if(status==-1){ //Post work -1: Dir problems, -2: EOF
+			pOLED->clear_screen();
+			pOLED->string(pSpeedo->default_font,"Open dir failed",3,2,0,DISP_BRIGHTNESS,0);
+		} else if(status==-2){ // we reached end of file, restart with the first file
+			if(state_helper==0){ // we were able to open the dir, but we found not one SGF file at all
+				pOLED->clear_screen();
+				pOLED->string(pSpeedo->default_font,"no SGF file found",3,2,0,DISP_BRIGHTNESS,0);
+			} else {
+				state_helper=0;
+				update_display=true; // rerun this loop to show the first animation again
+			}
+		}
+	}
 	////////////////////////////////// ABOUT //////////////////////////////////
 	else if(floor(state/10)==58) { // 00058X
 		set_buttons(button_state,!button_state,!button_state,!button_state); // msg only

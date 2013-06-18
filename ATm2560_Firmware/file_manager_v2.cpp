@@ -339,7 +339,7 @@ void speedo_filemanager_v2::parse_command(){
 				int status=0;
 				unsigned long size=0;
 				// get filename and type of item
-				char name[13];
+				unsigned char name[13];
 				// write the returner
 				msgBuffer[0]=CMD_DIR;
 				msgBuffer[1]=STATUS_CMD_OK;
@@ -616,7 +616,7 @@ void speedo_filemanager_v2::parse_command(){
 				// shown, ==1 => failed, no frame shown
 
 				//assume that its alright
-				pMenu->state=9999999;
+				pMenu->state=11;
 				unsigned char fast_reply_buffer[3];
 				msgLength=2; // cmd + status ok
 				fast_reply_buffer[0]=CMD_SHOW_GFX;

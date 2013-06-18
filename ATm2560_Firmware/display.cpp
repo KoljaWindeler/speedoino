@@ -334,17 +334,17 @@ void speedo_disp::show_storry(char storry[],unsigned int storry_length,char titl
 }
 
 
-void speedo_disp::show_animation(const char command[]){
+void speedo_disp::show_animation(unsigned char *command){
 	//pSensors->m_reset->set_deactive(false,false); // just deaktivate ist by now, dont save it, nowhere. this makes it possible to restore the IO state by var
 	int spacer[4];
 	int pointer_to_spacer=0;
 	// alles nach den kommata durchsuchen
 	for(int i=0;i<40;i++){
-		if(char(command[i])==','){
+		if(command[i]==','){
 			spacer[pointer_to_spacer]=i;
 			pointer_to_spacer++;
 		};
-		if(char(command[i])=='\0'){
+		if(command[i]=='\0'){
 			spacer[pointer_to_spacer]=i;
 			i=99;
 		};
@@ -451,40 +451,75 @@ void speedo_disp::disp_waiting(int position,unsigned char spalte,unsigned char z
 	};
 };
 
-void speedo_disp::animation(int a){
-	switch(a){
-	case 1: //////////////////// simpsons ///////////////////
-		show_animation("BULLET.SGF,0,77,20");
-		break;
-	case 2: //////////////////// girl ///////////////////
-		show_animation("SIMP.TXT,0,19,15"); // 200 -> 15
-		break;
-	case 3:
-		show_animation("FROG.SGF,0,7,200");
-		break;
-	case 4:
-		show_animation("LG2.TXT,0,1,400");
-		break;
-	case 5:
-		show_animation("JTM.TXT,0,37,15");
-		break;
-	case 6: //////////////////// nur "honda" "hornet" ///////////////////
-		show_animation("BLO.TXT,0,37,15");
-		break;
-	case 7: //////////////////// hornet - biene ///////////////////
-		show_animation("TM.TXT,0,6,15");
-		show_animation("TM.TXT,0,6,15");
-		show_animation("TM.TXT,0,6,15");
-		break;
-	case 8: //////////////////// Titten-Maus ///////////////////
-		show_animation("LG2.TXT,0,1,400");
-		break;
-	case 9: //////////////////// hornet-logo ///////////////////
-		show_animation("LG2.TXT,0,1,400");
-		//
-		break;
-	};
-};
+int speedo_disp::animation(int ani_nr){
+	SdFile dir_handle;
+	SdFile file_handle;
+	int status=0;
+	int item=0; // filecounter
+	int ani_found=0;
+	unsigned long size=0;
+	bool sgf_file_found=false;
+	unsigned char filename[24]; // reused for show_animation string
+	// prepare handle (reuse of filename) for dir /GFX/ (length:5)
+	filename[0]='x'; // Dont care...
+	filename[1]=5;
+	filename[2]='/';
+	filename[3]='G';
+	filename[4]='F';
+	filename[5]='X';
+	filename[6]='/';
+	filename[7]='\0';
+
+	if(pFilemanager_v2->get_file_handle(filename,filename,&file_handle,&dir_handle,O_READ)<0){
+		status=-1; // DIR problem
+	} else {
+		filename[0]='\0';// remove from cache to avoid reuse
+		while(!sgf_file_found && status>=0){ // file not found AND no problem
+			// status: 0=EOF, 1=FILE, 2=FOLDER
+			if(dir_handle.lsJKWNext(filename,item,&size)){ // <- returns the filename of the file nr "item"
+				// get length
+				unsigned char filename_length=0;
+				while(filename[filename_length]!='\0' && filename_length<8+3+1+1){ // Filename is 8+3 (+1='.' +1='\0')
+					filename_length++;
+				}
+				// e.g. deyes.sgf: filename_length is 9
+				if(filename[filename_length-3]=='S' && filename[filename_length-2]=='G' && filename[filename_length-1]=='F'){ // correct suffix
+					if(ani_found==ani_nr){ // check if this is the animiation nr we were looking for
+						// file info
+						char msgBuffer[22];
+						clear_screen();
+						sprintf(msgBuffer, "File #%i",ani_nr);
+						pMenu->center_me(msgBuffer,21);
+						string(pSpeedo->default_font,msgBuffer,0,2,0,DISP_BRIGHTNESS,0);
+						sprintf(msgBuffer, "Showing %s",filename);
+						pMenu->center_me(msgBuffer,21);
+						string(pSpeedo->default_font,msgBuffer,0,3,0,DISP_BRIGHTNESS,0);
+						sprintf(msgBuffer, "%i Frames",(int)(size>>12));
+						pMenu->center_me(msgBuffer,21);
+						string(pSpeedo->default_font,msgBuffer,0,4,0,DISP_BRIGHTNESS,0);
+						_delay_ms(2000);
+						// go show it
+						int delay=20;
+						if((size>>12)<10) { delay = 100; }
+						sprintf((char *)filename,"%s,%i,%i,%i",(char *)filename,0,(int)(size>>12),delay); // filename, start at frame 0, end at last frame (size/4096), 20ms interframespacing
+						show_animation(filename);
+						sgf_file_found=true; // ACK
+					} else {
+						item++; // yes, its a animation but not the one we are looking for
+						ani_found++;
+					}
+				} else { // not a SGF file
+					item++; // look for next file
+				}
+			} else {
+				status=-2; // EOF
+			}
+		}
+		file_handle.close();
+		dir_handle.close();
+	}
+	return status;
+}
 
 
 void speedo_disp::init_speedo(){

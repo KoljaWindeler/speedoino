@@ -247,7 +247,7 @@ int configuration::write(const char *filename){
 
 					strcpy_P(buffer, PSTR("startup="));
 					pSD->writeString(file, buffer);
-					pSD->writeString(file, pOLED->startup);
+					pSD->writeString(file, (char *)pOLED->startup);
 					pSD->writeString(file, (char *)";\n");
 
 					strcpy_P(buffer, PSTR("blinker="));
@@ -693,7 +693,7 @@ int configuration::parse(char* buffer){
 
 	// hier wissen wir wie der name ist
 	if(strcmp_P(name,PSTR("startup"))==0){
-		parse_a(buffer,seperator,pOLED->startup,sizeof(pOLED->startup)/sizeof(pOLED->startup[0]));
+		parse_a(buffer,seperator,(char *)pOLED->startup,sizeof(pOLED->startup)/sizeof(pOLED->startup[0]));
 	} else if(strcmp_P(name,PSTR("active_navi_file"))==0){ // welche datei ist die aktive ?
 		parse_int(buffer,seperator,&pSensors->m_gps->active_file);
 	} else if(strcmp_P(name,PSTR("skin_file"))==0){ // welche datei ist der aktive skin

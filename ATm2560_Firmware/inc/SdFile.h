@@ -267,7 +267,7 @@ class SdFile {
   }
   void ls(Print* pr, uint8_t flags = 0, uint8_t indent = 0);
   void ls(uint8_t flags = 0);
-  int8_t lsJKWNext(char* buffer,int item, unsigned long* size);
+  int8_t lsJKWNext(unsigned char* buffer,int item, unsigned long* size);
   bool mkdir(SdFile* dir, const char* path, bool pFlag = true);
   // alias for backward compactability
   bool makeDir(SdFile* dir, const char* path) {return mkdir(dir, path, false);}

@@ -695,7 +695,7 @@ void speedo_speedo::clear_vars(){
 	addinfo2_currently_shown=false; // actually the addinfo2 is not shown
 	// Startup sequenz im Tacho
 	memset(pOLED->startup,'\0',200);
-	sprintf(pOLED->startup,"ERROR,0,0,0;");
+	sprintf((char *)pOLED->startup,"ERROR,0,0,0;");
 	pDebug->sprintlnp(PSTR("Speedo values clear"));
 }
 
