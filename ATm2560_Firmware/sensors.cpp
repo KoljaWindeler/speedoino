@@ -150,6 +150,9 @@ void Speedo_sensors::check_vars(){
  * - Coolant Temparture
  ********************************** GET section *************************************/
 unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
+#ifdef DEMO_MODE
+	return pDemo->get_RPM();
+#endif
 	unsigned int exact_value=0;
 
 	// get exact value
@@ -170,6 +173,9 @@ unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 };
 
 unsigned int Speedo_sensors::get_speed(bool mag_if_possible){
+#ifdef DEMO_MODE
+	return pDemo->get_speed();
+#endif
 	unsigned int return_value;
 	if(CAN_active && !m_CAN->failed){
 		return_value=m_CAN->get_Speed();
@@ -184,6 +190,9 @@ unsigned int Speedo_sensors::get_speed(bool mag_if_possible){
 };
 
 int Speedo_sensors::get_water_temperature(){
+#ifdef DEMO_MODE
+	return pDemo->get_water_temperature();
+#endif
 	if(CAN_active && !m_CAN->failed){
 		return m_CAN->get_water_temp();
 	} else {
@@ -195,6 +204,9 @@ int Speedo_sensors::get_water_temperature(){
 // return 5 on short to gnd
 // 9 on no sensor value (no responses on CAN)
 int Speedo_sensors::get_water_temperature_fail_status(){
+#ifdef DEMO_MODE
+	return 0;
+#endif
 	if(CAN_active && !m_CAN->failed){
 		return m_CAN->get_CAN_missed_count();
 	} else {
@@ -211,6 +223,9 @@ int Speedo_sensors::get_air_temperature(){
 };
 
 int Speedo_sensors::get_oil_temperature(){
+#ifdef DEMO_MODE
+	return pDemo->get_oil_temperature();
+#endif
 	//	if(CAN_active && !m_CAN->failed){ // no can sensor available
 	//		return m_CAN->get_oil_temp();
 	//	} else {

@@ -115,7 +115,6 @@ int speedo_speed::check_vars(){
 };
 
 int speedo_speed::getSpeed(){
-	if(DEMO_MODE) { return ((millis()/300)%260); }
 	if(GPS_SPEED_ONLY) { return pSensors->m_gps->speed; };
 
 	unsigned long jetzt=millis();
@@ -153,7 +152,6 @@ int speedo_speed::getSpeed(){
 };
 
 int speedo_speed::get_sat_speed(){
-	if(DEMO_MODE) { return getSpeed(); }
 	if(pSensors->m_gps->get_info(6)<3){
 		return -1;
 	}
@@ -162,7 +160,6 @@ int speedo_speed::get_sat_speed(){
 
 // für die gang berechnung ist der speed am magnet geiler als der vom gps weil beim beschleunigen sonst fehler kommen
 int speedo_speed::get_mag_speed(){
-	if(DEMO_MODE) { return getSpeed(); }
 	return reed_speed;
 };
 

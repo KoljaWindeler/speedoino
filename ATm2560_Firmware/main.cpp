@@ -31,7 +31,9 @@ speedo_sprint* 			pSprint=new speedo_sprint();
 Speedo_sensors*			pSensors=new Speedo_sensors();
 Speedo_aktors*			pAktors=new Speedo_aktors();
 speedo_timer*   		pTimer=new speedo_timer(); 		// brauch ich ja nur hier, den braucht sonst keiner
-speedo_
+#ifdef DEMO_MODE
+speedo_demo*			pDemo=new speedo_demo();
+#endif
 //** create objects **//
 
 

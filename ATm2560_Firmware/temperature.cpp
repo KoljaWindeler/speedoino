@@ -206,9 +206,6 @@ void speedo_temperature::read_water_temp() {
 		} else if(water_temp_fail_status<9){
 			water_temp_fail_status++;
 		}
-		if(DEMO_MODE){
-			water_temp_fail_status=0;
-		}
 	} else { // Kurzschluss nach masse: 102=(1024-x)/10  	x<=4
 		if(water_temp_fail_status<5){ // nach sechs maligem fehler => ausgabe!
 			water_temp_fail_status++;
@@ -262,18 +259,14 @@ int speedo_temperature::get_air_temp(){
 }
 
 int speedo_temperature::get_oil_temp(){
-	if(DEMO_MODE)
-		return 302+((millis()/2000)%100)*7+((millis()/1000)%10);
-	else if(pSpeedo->trip_dist[2]==0 && get_air_temp()!=999 && oil_temp_value!=8888 && oil_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
+	if(pSpeedo->trip_dist[2]==0 && get_air_temp()!=999 && oil_temp_value!=8888 && oil_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
 		return get_air_temp()-1;
 	else
 		return int(round(oil_temp_value));
 }
 
 int speedo_temperature::get_water_temp(){
-	if(DEMO_MODE)
-		return 302+((millis()/2000)%100)*7+((millis()/1000)%10);
-	else if(pSpeedo->trip_dist[2]==0  && get_air_temp()!=999 && water_temp_value!=8888 && water_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
+	if(pSpeedo->trip_dist[2]==0  && get_air_temp()!=999 && water_temp_value!=8888 && water_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
 		return get_air_temp()-1;
 	else
 		return int(round(water_temp_value));

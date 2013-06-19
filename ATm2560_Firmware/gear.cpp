@@ -89,10 +89,6 @@ void speedo_gear::calc(){
 }
 
 int speedo_gear::get(){
-	if(DEMO_MODE){
-		return 2;
-	}
-
 	if(neutral_set){
 		return 0; // show as "N" in speedo
 	} else if(gang>=-1 && gang<=6){

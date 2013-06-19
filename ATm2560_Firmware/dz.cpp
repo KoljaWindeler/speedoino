@@ -51,34 +51,7 @@ void speedo_dz::calc() {
 	unsigned long now=millis(); 											// aktuelle zeit
 	unsigned long differ=now-previous_time; 								// zeit seit dem letzte mal abholen der daten
 	unsigned int  now_peaks=peak_count; 									// aktueller dz zähler stand, separate var damit der peakcount weiter verndert werden koennte
-	if(DEMO_MODE){
-		if(differ>112){
-			previous_time=now;
-
-			int demo_mode=3;
-
-			if(demo_mode==1){
-				int temp=analogRead(OIL_TEMP_PIN)-180;
-				if(temp<0) temp=0;
-				if (temp>600) temp=600;
-				rounded=15000-temp*25;
-				exact=rounded;
-				rounded=exact_disp;
-			} else if(demo_mode==2){
-				if(int(floor(millis()/1000))%10<=5){
-					int dz=(15000);
-					exact=pSensors->flatIt(dz,&dz_faktor_counter,30,exact);
-					exact_disp=exact;
-					rounded=exact_disp;
-				};
-			} else if(demo_mode==3){
-				exact=(20*pSensors->get_speed(false));
-			};
-			pSensors->m_gear->calc();
-			//pAktors->m_stepper->go_to(exact/11.73);
-			pAktors->m_stepper->go_to(exact/11.73);
-		}
-	} else if(now_peaks>4 && differ>25){ 				// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+	if(now_peaks>4 && differ>25){ 				// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
 		// am 17.8. von 50 auf 25 geändert ... das sind jetzt 40 Hz, mal sehen ob das noch klappt
 		// am 3.8. von 100 auf 50 geändert
 		// bei 4.000 rpm => 66 pps => 15ms Pro Peak, 4 Peaks in 60 ms
