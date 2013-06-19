@@ -31,6 +31,7 @@ class debugging{
 #undef       DEBUG_TRANSFER           // show traffic on filemanager
 #undef       DEBUG_TRANSFER_INTENSIV  // show every traffic on filemanager
 #undef		 STEPPER_DEBUG		// Show stepper info
+#define		 DEMO_MODE			// show fancy demo values
 
 public:
 	debugging(void);
