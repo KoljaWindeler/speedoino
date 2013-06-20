@@ -1079,9 +1079,9 @@ void speedo_menu::display(){
 		pOLED->string_P(pSpeedo->default_font,PSTR("Saved"),7,3);
 		_delay_ms(300);
 		if(current_gear<6 && current_gear>0){
-			state=701+(current_gear+1)*10; // next gear
+			state=7101+(current_gear+1)*10; // next gear
 		} else {
-			state=711; // first gear again
+			state=7111; // first gear again
 		}
 		update_display=true;
 	}

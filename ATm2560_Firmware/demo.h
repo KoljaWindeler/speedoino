@@ -1,6 +1,5 @@
 #ifndef DEMO_H_
 #define DEMO_H_
-#ifdef DEMO_MODE
 
 class speedo_demo{
 public:
@@ -15,7 +14,7 @@ private:
 	unsigned int timing_sec[6];
 };
 
-
+#ifdef DEMO_MODE
 extern speedo_demo* pDemo;
 #endif
 

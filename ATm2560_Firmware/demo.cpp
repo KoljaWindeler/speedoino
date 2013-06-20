@@ -41,40 +41,39 @@
 #ifdef DEMO_MODE
 
 speedo_demo::speedo_demo(){
-	timing_sec[0]=3;
-	timing_sec[1]=8;
-	timing_sec[2]=18;
-	timing_sec[3]=28;
-	timing_sec[4]=38;
+	timing_sec[0]=3; // 9
+	timing_sec[1]=8; // 24
+	timing_sec[2]=18; // 54
+	timing_sec[3]=28; // 84
+	timing_sec[4]=38; // 114
 	timing_sec[5]=100;
 }
 
-speedo_demo::~speedo_demo(){
-
-}
+speedo_demo::~speedo_demo(){}
 
 unsigned int  speedo_demo::get_RPM(){
 	if(millis()>30000){
-		unsigned int max_k_rpm[6]={7,11,9,10,12,9};
-		unsigned int min_k_rpm[6]={0,3,4,4,5,5};
+		unsigned int max_k_rpm[6]={7,10,10,12,10,12};
+		unsigned int min_k_rpm[6]={0,4,6,8,9,8};
 
 		unsigned long my_millis=pSensors->m_gps->mod((millis()-30000),100000); // das wird so ja wahrscheinlich eher nicht gehen
 		int i=0;
-		while(my_millis>1000*timing_sec[i] && i<5){
+		while(my_millis>(1000*(unsigned long)timing_sec[i]) && i<5){
 			i++;
 		};
 
 		int offset=min_k_rpm[i]*1000;
-		long delta_time=timing_sec[i];
-		long start_time=0;
+		unsigned long delta_time=timing_sec[i];
+		unsigned long delta_rpm=(max_k_rpm[i]-min_k_rpm[i])*1000;
+		unsigned long start_time=0;
+
 		if(i>0){
-			delta_time=timing_sec[i]-timing_sec[i-1];
-			start_time=timing_sec[i-1];
+			delta_time=timing_sec[i]-timing_sec[i-1]; // wieviel gesamt zeit hab ich, wie ist mein delta x
+			start_time=timing_sec[i-1]; // wann haben wir angefangen also wie war mein offset x
 		}
-		delta_time*=1000;
 		start_time*=1000;
-		float return_value=offset;
-		return_value+=((float)(my_millis-start_time)/delta_time)*((max_k_rpm[i]-min_k_rpm[i])*1000);
+		unsigned long prefactor=(my_millis-start_time)/delta_time;
+		unsigned long return_value=offset+prefactor*delta_rpm/1000; // offset_y+(x-offset_y)/delta_x*delta_y; // wie ist mein offset y
 		return (unsigned int) return_value;
 	};
 	return 0;
@@ -89,7 +88,10 @@ unsigned int speedo_demo::get_speed(){
 			i++;
 		};
 		// pSensors->m_gear->faktor_counter=0; // sollte den tiefpass brücken, ist das gut?
-		return (pSensors->get_RPM(1)*10)/pSensors->m_gear->n_gang[i];
+		if(pSensors->m_gear->n_gang[i+1]<1){
+			return 222;
+		}
+		return ((unsigned long)(pSensors->get_RPM(1))*10)/pSensors->m_gear->n_gang[i+1];
 	}
 	return 0;
 }
