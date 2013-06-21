@@ -964,7 +964,7 @@ OnClickListener {
 				mSerialService.delFile(params[0]);
 				mSerialService.reset_seq();
 				mSerialService.getDir(
-						params[0].substring(0, params[0].lastIndexOf('/')),
+						params[0].substring(0, params[0].lastIndexOf('/')+1),
 						mHandlerUpdate);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
