@@ -109,6 +109,7 @@ int speedo_demo::get_water_temperature(){
 }
 
 int speedo_demo::get_oil_temperature(){
+	pSensors->m_temperature->oil_temp_fail_status=1;
 	if(millis()>30000){
 		unsigned long my_millis=pSensors->m_gps->mod((millis()-30000),100000); // das wird so ja wahrscheinlich eher nicht gehen
 		if(my_millis<70000){

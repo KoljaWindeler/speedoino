@@ -67,19 +67,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		pDebug->sprintp(PSTR("-a2"));
 #endif
 		/// warnung wegen zu hoher Drehzahl, erstmal checken ob wir von der drehzahl her in betrachtkommen
-		if(pSensors->get_RPM(false)>7000){
-			if((pSensors->get_oil_temperature()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || 		// temperatur < 60Â°
-					(pSensors->get_water_temperature()<600 && pSensors->m_temperature->water_temp_fail_status==0)){ // und keine Fehler beim lesen
-				if(disp_zeile_bak[ADD_INFO2]!=101){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
-					disp_zeile_bak[ADD_INFO2]=101;
-					pDebug->speedo_loop(10,0,previousMillis," ");
-					pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-					strcpy_P(char_buffer,PSTR("Engine cold"));
-					pMenu->center_me(char_buffer,17);
-					pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
-				};
-			}
+		if(pSensors->get_RPM(false)>7000 && ((pSensors->get_oil_temperature()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || // temperatur < 60°C
+				(pSensors->get_water_temperature()<600 && pSensors->m_temperature->water_temp_fail_status==0))){ // und keine Fehler beim lesen
+			if(disp_zeile_bak[ADD_INFO2]!=101){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=101;
+				pDebug->speedo_loop(10,0,previousMillis," ");
+				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
+				strcpy_P(char_buffer,PSTR("Engine cold"));
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+			};
 		}
+
 		///// Temp to high /////
 		else if(pSensors->get_oil_temperature()>=pSensors->m_temperature->oil_warning_temp && pSensors->get_oil_temperature()<8888 && (pSensors->m_temperature->oil_temp_fail_status!=SENSOR_OPEN || pSensors->m_temperature->oil_temp_fail_status!=SENSOR_SHORT_TO_GND)){
 			if(disp_zeile_bak[ADD_INFO2]!=108){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
@@ -466,7 +465,6 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		if(unsigned(disp_zeile_bak[ADD_INFO])!=pSensors->m_gps->mod(floor(trip_dist[8]/100),100)+pSensors->m_gps->mod(floor(avg_timebase[8]/60),100)){ // immer wenn sich trip_dist Ã¤ndert den string ausgeben der direkt drÃ¼ber steht, auf 0.1 km genau
 			// trip[8] => gesamt/100 => 100er Meter, 27.342,8 => 28
 			disp_zeile_bak[ADD_INFO]=int(pSensors->m_gps->mod(floor(trip_dist[8]/100),100)+pSensors->m_gps->mod(floor(avg_timebase[8]/60),100));
-
 			// temp buffer
 			unsigned long temp_trip_dist=trip_dist[m_trip_storage-1];
 			unsigned long temp_avg_timebase=avg_timebase[m_trip_storage-1];
