@@ -495,7 +495,8 @@ void Speedo_CAN::process_incoming_messages(){
 			can_fuel_lamp_active=((message.data[0]&0x01)>>0);
 			can_neutral_gear_lamp_active=((message.data[0]&0x02)>>1);
 			if(can_rpm>0){
-				can_mil_active=((message.data[0]&0x04)>>2);
+				//can_mil_active=((message.data[0]&0x04)>>2); //removed because otherwise the error "CAN-bus" will let this pop up
+				can_mil_active=false;
 			} else {
 				can_mil_active=false;
 			}
