@@ -616,7 +616,7 @@ void speedo_filemanager_v2::parse_command(){
 				// shown, ==1 => failed, no frame shown
 
 				//assume that its alright
-				pMenu->state=11;
+				pMenu->state=57111; // 11 will refresh the speedo every second
 				unsigned char fast_reply_buffer[3];
 				msgLength=2; // cmd + status ok
 				fast_reply_buffer[0]=CMD_SHOW_GFX;

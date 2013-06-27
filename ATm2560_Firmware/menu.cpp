@@ -603,6 +603,12 @@ void speedo_menu::display(){
 			}
 		}
 	}
+	//////////////////////// helper for filemanager showing picture/animiation ////////////////////////
+	// filemanager kicks menu_state to 57111, so [right] will be 571111, [up/down] leads to 5711X, [left] to 5711
+	else if(state==571111 || floor(state/10)==5711 || state==5711){
+		state=11; // kick us back to dispay
+		update_display=true; // rerun this loop
+	}
 	////////////////////////////////// ABOUT //////////////////////////////////
 	else if(floor(state/10)==58) { // 00058X
 		set_buttons(button_state,!button_state,!button_state,!button_state); // msg only
