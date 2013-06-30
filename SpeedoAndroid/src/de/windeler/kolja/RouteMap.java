@@ -1,5 +1,7 @@
 package de.windeler.kolja;
 
+//Route editor => log zu kml
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

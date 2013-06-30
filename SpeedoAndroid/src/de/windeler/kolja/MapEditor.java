@@ -1,5 +1,7 @@
 package de.windeler.kolja;
 
+// MAP editor => zum ertellen von Touren!
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
