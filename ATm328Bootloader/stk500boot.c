@@ -103,7 +103,6 @@ LICENSE:
 #define CONFIG_PARAM_SW_MAJOR						2
 #define CONFIG_PARAM_SW_MINOR						0x0A
 
-
 /*
  * Calculate the address where the bootloader starts from FLASHEND and BOOTSIZE
  * (adjust BOOTSIZE below and BOOTLOADER_ADDRESS in Makefile if you want to change the size of the bootloader)
@@ -675,6 +674,7 @@ int main(void)
 			case CMD_PROGRAM_EEPROM_ISP:
 			{
 				unsigned int  size = (((unsigned int)msgBuffer[1])<<8) | msgBuffer[2];
+				if(size>128) break;
 				unsigned char *p = msgBuffer+10;
 				unsigned int  data;
 				unsigned char highByte, lowByte;

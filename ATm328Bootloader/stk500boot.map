@@ -107,7 +107,7 @@ Address of section .text set to 0x7800
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000007800      0x5e0
+.text           0x0000000000007800      0x5a4
  *(.vectors)
  *(.vectors)
  *(.progmem.gcc*)
@@ -156,9 +156,9 @@ Address of section .text set to 0x7800
  .text          0x000000000000780e       0x18 stk500boot.o
                 0x0000000000007826                . = ALIGN (0x2)
  *(.text.*)
- .text.startup  0x0000000000007826      0x5ba stk500boot.o
+ .text.startup  0x0000000000007826      0x57e stk500boot.o
                 0x0000000000007826                main
-                0x0000000000007de0                . = ALIGN (0x2)
+                0x0000000000007da4                . = ALIGN (0x2)
  *(.fini9)
  *(.fini9)
  *(.fini8)
@@ -179,9 +179,9 @@ Address of section .text set to 0x7800
  *(.fini1)
  *(.fini0)
  *(.fini0)
-                0x0000000000007de0                _etext = .
+                0x0000000000007da4                _etext = .
 
-.data           0x0000000000800100        0x4 load address 0x0000000000007de0
+.data           0x0000000000800100        0x4 load address 0x0000000000007da4
                 0x0000000000800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800100        0x0 stk500boot.o
@@ -202,8 +202,8 @@ Address of section .text set to 0x7800
  *(.bss*)
  *(COMMON)
                 0x0000000000800104                PROVIDE (__bss_end, .)
-                0x0000000000007de0                __data_load_start = LOADADDR (.data)
-                0x0000000000007de4                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0000000000007da4                __data_load_start = LOADADDR (.data)
+                0x0000000000007da8                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0000000000800104        0x0
                 0x0000000000800104                PROVIDE (__noinit_start, .)
@@ -280,9 +280,9 @@ Address of section .text set to 0x7800
  *(.debug_abbrev)
  .debug_abbrev  0x0000000000000000      0x1f6 stk500boot.o
 
-.debug_line     0x0000000000000000      0x2de
+.debug_line     0x0000000000000000      0x2e2
  *(.debug_line)
- .debug_line    0x0000000000000000      0x2de stk500boot.o
+ .debug_line    0x0000000000000000      0x2e2 stk500boot.o
 
 .debug_frame    0x0000000000000000       0x4c
  *(.debug_frame)
@@ -293,17 +293,17 @@ Address of section .text set to 0x7800
  .debug_str     0x0000000000000000      0x204 stk500boot.o
                                         0x245 (size before relaxing)
 
-.debug_loc      0x0000000000000000      0x97e
+.debug_loc      0x0000000000000000      0x947
  *(.debug_loc)
- .debug_loc     0x0000000000000000      0x97e stk500boot.o
+ .debug_loc     0x0000000000000000      0x947 stk500boot.o
 
 .debug_macinfo
  *(.debug_macinfo)
 OUTPUT(stk500boot.elf elf32-avr)
 LOAD linker stubs
 
-.debug_ranges   0x0000000000000000       0xf0
- .debug_ranges  0x0000000000000000       0xf0 stk500boot.o
+.debug_ranges   0x0000000000000000       0xf8
+ .debug_ranges  0x0000000000000000       0xf8 stk500boot.o
 
 Cross Reference Table
 
