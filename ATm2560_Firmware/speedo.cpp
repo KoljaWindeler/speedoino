@@ -146,7 +146,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=int(result_value);
 				pDebug->speedo_loop(13,0,previousMillis," ");
 				if(result_value>-1){ // -1 => no gps
-					pOLED->filled_rect(0,8*addinfo2_widget.y,8,128,15); // den bereich am ende der Zeile leeren ??
+					pOLED->filled_rect(0,8*addinfo2_widget.y,128,8,15); // den bereich am ende der Zeile leeren ??
 					pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x,addinfo2_widget.y,15,0,1); // die Ziel ausgabe
 				} else {
 					pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8);

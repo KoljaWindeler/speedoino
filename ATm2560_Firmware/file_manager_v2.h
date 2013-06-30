@@ -22,11 +22,11 @@ class speedo_filemanager_v2{
 	#define MESSAGE_START			0x1B        //= ESC = 27 decimal
 	#define TOKEN					0x0E
 
-	#define STATUS_CMD_OK          0x00
-	#define	 STATUS_EOF				0x10
-	#define STATUS_CMD_FAILED      0xC0
-	#define STATUS_CKSUM_ERROR     0xC1
-	#define STATUS_CMD_UNKNOWN     0xC9
+	#define STATUS_CMD_OK          	0x00
+	#define STATUS_EOF		       	0x10
+	#define STATUS_CMD_FAILED      	0xC0
+	#define STATUS_CKSUM_ERROR     	0xC1
+	#define STATUS_CMD_UNKNOWN     	0xC9
 
 	#define CMD_SIGN_ON				0x01
 	#define CMD_LEAVE_FM			0x04

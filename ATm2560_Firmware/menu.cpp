@@ -388,7 +388,10 @@ void speedo_menu::display(){
 			file.close();
 			char title[17];
 			sprintf(title,"Navifile Nr: %i/9",pSensors->m_gps->active_file);
-			if(buffer_big[0]=='#'){
+			if(buffer_big[0]=='#' && buffer_big[1]=='d'){
+				for(int i=2;i<=byte_read;i++){ // remove "#d" from destriction string
+					buffer_big[i-2]=buffer_big[i];
+				};
 				pOLED->show_storry(buffer_big,byte_read,title,sizeof(title)/sizeof(title[0]));
 			} else {
 				pOLED->clear_screen();
@@ -399,7 +402,7 @@ void speedo_menu::display(){
 		} else { // if there is no file with that number
 			pOLED->clear_screen();
 			char title[17];
-			sprintf(title,"Navifile Nr: %i/8",pSensors->m_gps->active_file);
+			sprintf(title,"Navifile Nr: %i/9",pSensors->m_gps->active_file);
 			pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
 			pOLED->string(pSpeedo->default_font,title,2,0,DISP_BRIGHTNESS,0,0);
 			pOLED->string_P(pSpeedo->default_font,PSTR("File not found"),2,3,0,DISP_BRIGHTNESS,0);

@@ -638,10 +638,9 @@ void speedo_filemanager_v2::parse_command(){
 				////////////////////////////// SHOW GFX /////////////////////////////////
 				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
 			} else if(msgBuffer[0]==CMD_RESET_SMALL_AVR){
-				unsigned char fast_reply_buffer[3];
 				msgLength=2; // cmd + status ok
-				fast_reply_buffer[0]=CMD_RESET_SMALL_AVR;
-				fast_reply_buffer[1]=STATUS_CMD_OK;
+				msgBuffer[0]=CMD_RESET_SMALL_AVR;
+				msgBuffer[1]=STATUS_CMD_OK;
 				send_answere(msgBuffer,msgLength,&seqNum,&msgParseState);
 				answere_transmitted=true;
 
