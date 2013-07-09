@@ -155,31 +155,51 @@ public class RouteMap extends MapActivity implements OnTouchListener
 			try {
 				while ((line = buffreader.readLine()) != null) {
 					//Log.d(DEBUG_TAG, "LogLine: " + line + " length "+ String.valueOf(line.length()));
-					//z.b. 111543,160613,052230803,00333,004,00227,4294964509,6,2,0
-					if(line.replaceAll("[^,]","").length()==9){ // exakt 9 ","
-						double latitude=Double.parseDouble(line.substring(14, 23));
-						double longitude=Double.parseDouble(line.substring(24, 33));
-						//Log.d(DEBUG_TAG, "Koordinaten: " + String.valueOf(longitude) + " / "+ String.valueOf(latitude));
-						latitude=Math.floor(latitude/1000000.0)*1000000+Math.round((latitude%1000000.0)*10/6);
-						longitude=Math.floor(longitude/1000000.0)*1000000+Math.round((longitude%1000000.0)*10/6);
-						p = new GeoPoint((int) (latitude),(int) (longitude));
-						gps_points.add(p);
-						int temp_int=Integer.parseInt(line.substring(34, 37));
-						add_info_speed.add(temp_int);
-						add_info_time.add(line.substring(0,6));
-						date=line.substring(7,13);
+					//z.b. 111543,160613,052230803,00333,004,00227,4294964509,06,2,0
+					/* 	0 gps_time[a]
+						1 gps_date[a],
+						2 gps_lati[a],
+						3 gps_long[a],
+						4 gps_speed_arr[a],
+						5 gps_course[a],
+						6 gps_alt[a],
+						7 gps_sats[a],
+						8 gps_fix[a],
+						9 gps_special[a]);
+					 */
+					try {
+						if(line.replaceAll("[^,]","").length()==9){ // exakt 9 ","
+							String[] line_splitted = line.split(",");
+							// Koordinaten
+							double latitude=Double.parseDouble(line_splitted[2]);
+							double longitude=Double.parseDouble(line_splitted[3]);
+							//Log.d(DEBUG_TAG, "Koordinaten: " + String.valueOf(longitude) + " / "+ String.valueOf(latitude));
+							latitude=Math.floor(latitude/1000000.0)*1000000+Math.round((latitude%1000000.0)*10/6);
+							longitude=Math.floor(longitude/1000000.0)*1000000+Math.round((longitude%1000000.0)*10/6);
+							p = new GeoPoint((int) (latitude),(int) (longitude));
+							gps_points.add(p);
+							// speed
+							int temp_int=Integer.parseInt(line_splitted[4]);
+							add_info_speed.add(temp_int);
+							// time & date
+							add_info_time.add(line_splitted[0]);
+							date=line_splitted[1];
 
-						if(Integer.parseInt(line.substring(54,55))==1){
-							//Log.d(DEBUG_TAG, "POI: " + line);
-							POI_points.add(p);
+							if(Integer.parseInt(line_splitted[9])==1){
+								//Log.d(DEBUG_TAG, "POI: " + line);
+								POI_points.add(p);
+							}
 						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						Log.d(DEBUG_TAG, "Parsing one point failed, but dont worry, we'll go on: " + e.getMessage());
 					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				Log.d(DEBUG_TAG, "Error reading Line from File: " + e.getMessage());
 			}
-
+			/// CLOSE
 			try {
 				in.close();
 			} catch (Exception e) {
@@ -187,8 +207,6 @@ public class RouteMap extends MapActivity implements OnTouchListener
 				Log.d(DEBUG_TAG, "Error closing File: " + e.getMessage());
 
 			}
-
-
 		} catch (java.io.FileNotFoundException e) {
 			e.printStackTrace();
 			Log.d(DEBUG_TAG, "File not found: " + e.getMessage());
@@ -308,7 +326,7 @@ public class RouteMap extends MapActivity implements OnTouchListener
 		mapView.getOverlays().clear();
 		mapView.getOverlays().add(nearPicOverlay);
 		mapView.getOverlays().add(nearPicPOIOverlay);
-		
+
 		if(p!=null){
 			mc.animateTo(p);
 		}
@@ -443,7 +461,11 @@ public class RouteMap extends MapActivity implements OnTouchListener
 		for(int i=0;i<gps_points.size();i++){
 			p = gps_points.get(i);
 
-			output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"</description>";
+			if(add_info_time.get(i).length()>=9){ // neue files mit ms timestamp
+				output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"."+add_info_time.get(i).substring(6, 9)+"</description>";
+			} else { // alte files ohne ms
+				output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"</description>";
+			}
 			out.write(output.getBytes());
 
 			// 0-100 is fade from full red to yellow (red+green)
