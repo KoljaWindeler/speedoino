@@ -200,8 +200,8 @@ int configuration::write(const char *filename){
 				} else {
 					pSensors->m_gps->gps_write_status=7;
 					// get some buffer
-					char buffer[60];
-					memset(buffer,'\0',60);
+					char buffer[63];
+					memset(buffer,'\0',63);
 
 					// get the info from the gps class
 #ifdef SD_DEBUG
