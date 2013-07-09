@@ -65,8 +65,8 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss, 
 	Serial.println(char_buffer);
 	free(char_buffer);
 #endif
-	int internal_clock_timestamp=signed((((m_hh*60)+m_mm)*60)+m_ss);
-	int setter_clock_timestamp=(((hh*60)+mm)*60)+ss;
+	int internal_clock_timestamp=signed((m_mm*60)+m_ss);
+	int setter_clock_timestamp=(mm*60)+ss;
 
 	// gehen wir erstmal von Winterzeit mit GMT offset aus
 	if(( (internal_clock_timestamp-setter_clock_timestamp)>10 || (internal_clock_timestamp-setter_clock_timestamp)<-10) && ss>-1){ m_ss=unsigned(ss); }; // min 10 sec differenz
