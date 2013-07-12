@@ -68,6 +68,11 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		if((millis()/1000)%30==0 && pSensors->CAN_active && pSensors->m_CAN->get_active_can_type()==CAN_TYPE_OBD2){
 			pSensors->m_CAN->request(CAN_CURRENT_INFO,CAN_MIL_STATUS);
 		}
+
+		// check gps
+		if((millis()/1000)%10==0 && pSensors->m_gps->wait_on_gps()){
+			pSensors->m_gps->reconfigure();
+		}
 #ifdef TACHO_SMALLDEBUG
 		pDebug->sprintlnp(PSTR("."));
 #endif
