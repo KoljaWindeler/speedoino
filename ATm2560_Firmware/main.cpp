@@ -148,7 +148,7 @@ int main(void) {
 
 		/************************* timer *********************/
 		pTimer->every_sec(pConfig);		// 1000 ms
-		//pTimer->every_qsec();			// 250  ms TODO
+		pTimer->every_qsec();			// 250  ms TODO
 		pTimer->every_custom();  		// one custom timer, redrawing the speedo, time is defined by "refresh_cycle" in the base.txt
 		/************************* push buttons *********************
 		 * using true as argument, this will activate bluetooth input as well
