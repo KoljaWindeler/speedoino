@@ -22,8 +22,8 @@
  * den letzten nur nach bedarf per config, war 15 sec
  ************************* timer *********************/
 speedo_timer::speedo_timer(){
-	every_second_timer=millis();   // Zeitstempel vom letzten ausführen der "every_sec" funktion
-	every_qsecond_timer=millis();   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
+	every_second_timer=millis()+50;   // Zeitstempel vom letzten ausführen der "every_sec" funktion
+	every_qsecond_timer=millis()+125;   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
 	every_custom_timer=millis();   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
 	blitzer_warning_visible=false;
 	pinMode(3,INPUT);
