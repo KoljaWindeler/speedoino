@@ -141,8 +141,8 @@ const char  * const menu_navi[9] PROGMEM= {navi_m_0,navi_m_1,navi_m_2,navi_m_3,n
 const char titel_0[] PROGMEM = "= Main menu =";   // "String 0" etc are strings to store - change to suit.
 const char titel_1[] PROGMEM = ""; // tacho hat keine caption
 const char titel_2[] PROGMEM = ""; // sprint hat keine caption
-const char titel_3[] PROGMEM = "= Navigation ="; // GPS hat keine caption
-const char titel_4[] PROGMEM = "";
+const char titel_3[] PROGMEM = "= Navigation =";
+const char titel_4[] PROGMEM = "= Lap-Timer =";
 const char titel_5[] PROGMEM = "= Information =";
 const char titel_6[] PROGMEM = "= Customize =";
 const char titel_7[] PROGMEM = "= Setup =";
