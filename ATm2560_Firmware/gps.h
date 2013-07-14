@@ -36,6 +36,10 @@ public:
 	void generate_new_order();
 	unsigned long nmea_to_dec(unsigned long nmea);
 	int get_logged_points(char* buffer,int i);
+	void reconfigure();
+	bool wait_on_gps();
+	void update_rate_1Hz();
+	void update_rate_10Hz();
 
 	// die letzen 30 infos
 	unsigned long gps_lati[30],gps_long[30];
@@ -44,7 +48,6 @@ public:
 	int navi_point;
 	int winkel; // 0-359
 	int gps_count; // aktuelle position in der gespeichert wird
-	bool gps_count_up[2];
 	unsigned int written_gps_points;
 	char navi_ziel_name[14];//= "Helmholtzstr."; //seperate var, muss das länger halten
 	int active_file; //
@@ -58,7 +61,9 @@ private:
 	int navi_ziel_rl;//=1;
 	// die letzen 30 infos
 	unsigned int gps_speed_arr[30],gps_course[30],gps_sats[30],gps_fix[30],gps_special[30];
+	unsigned int gps_sats_temp,gps_fix_temp;
 	long gps_alt[30],gps_date[30],gps_time[30];
+	long gps_alt_temp;
 	bool inner_circle;
 	bool gps_ready1;
 	bool gps_ready2;

@@ -43,8 +43,6 @@ speedo_gps::speedo_gps(){
 
 	// speichern
 	gps_count=-1;
-	gps_count_up[0]=false;
-	gps_count_up[1]=false;
 	// speichern
 
 	// Debug
@@ -53,6 +51,11 @@ speedo_gps::speedo_gps(){
 
 	motion_start=-1;
 	active_file=0; //default datei navi0.smf
+
+	navi_ziel_lati=0;
+	navi_ziel_long=0;
+	navi_ziel_rl=0;
+	navi_point=0;
 };
 
 speedo_gps::~speedo_gps(){
@@ -64,32 +67,19 @@ ISR(USART1_RX_vect){
 };
 
 void speedo_gps::init(){
-
 	// interrupt + UART
 #ifndef F_CPU
 #warning "F_CPU war noch nicht definiert, wird nun nachgeholt mit 16Mhz"
 #define F_CPU 16000000UL // Systemtakt in Hz - Definition als unsigned long beachten
 #endif
+#define UART_BAUD_SELECT(baudRate,xtalCpu) (((float)(xtalCpu))/(((float)(baudRate))*8.0)-1.0+0.5)
+	// set own UART datarate to 115200 @16MHz clock
+#define BAUDRATE_115200 115200
+	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_115200,F_CPU);
+	UCSR1B |=	(1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
+	UCSR1A |= 	(1<<U2X1); // Double the USART Transmission Speed
+	sei();
 
-	// Berechnungen
-#define BAUD 9600UL // Baudrate
-#define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1) // clever runden
-#define BAUD_REAL (F_CPU/(16*(UBRR_VAL+1))) // Reale Baudrate
-#define BAUD_ERROR ((BAUD_REAL*1000)/BAUD) // Fehler in Promille, 1000 = kein Fehler.
-#if ((BAUD_ERROR<990) || (BAUD_ERROR>1010))
-#error Systematischer Fehler der Baudrate grsser 1% und damit zu hoch!
-#endif
-	UBRR1H = UBRR_VAL >> 8;
-	UBRR1L = UBRR_VAL & 0xFF;
-
-	UCSR1B |= (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
-
-	sei(); // global anschalten, falls sie es nicht ohnehin schon sind
-	// interrupt
-
-
-	// hier das gps konfigurieren ..  yeah yeah yeah
-	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
 	pDebug->sprintlnp(PSTR("GPS init done"));
 };
 
@@ -98,12 +88,46 @@ int speedo_gps::check_vars(){
 	return 0;
 };
 
+bool speedo_gps::wait_on_gps(){
+	return first_dataset;
+}
+
+void speedo_gps::update_rate_1Hz(){
+	SendString("$PMTK220,1000*1F\r\n");
+	//SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"); // hä?
+}
+
+void speedo_gps::update_rate_10Hz(){
+	SendString("$PMTK220,100*2F\r\n");
+	//SendString("$PMTK314,0,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"); // hä?
+}
+
+
+void speedo_gps::reconfigure(){
+	//Serial.println("GPS failed, reconfiguring");
+	// Berechnungen
+#define BAUDRATE_9600 9600
+	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_9600,F_CPU);
+	UCSR1B |= (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
+	UCSR1A |= (1 <<U2X1); // Double the USART Transmission Speed
+	sei(); // global anschalten, falls sie es nicht ohnehin schon sind
+	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
+	// set GPS UART datarate to 115200:
+	SendString("$PMTK251,115200*1F\r\n");
+	_delay_ms(100); // time needed to send the last char
+#define BAUDRATE_115200 115200
+	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_115200,F_CPU);
+	UCSR1B |=	(1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
+	UCSR1A |= 	(1<<U2X1); // Double the USART Transmission Speed
+	sei();
+}
+
 // wird als interrupt aufgerufen
 // prüft ob daten da sind, die valid sind
 // wenn ja dann wird get_GPS damit aufgerufen
 void speedo_gps::recv_data(){
 	char byteGPS = UDR1;
-
+	//Serial.print(byteGPS);
 	switch(gps_state){
 	case 0:  // hier sitzen wir und warten auf das startzeichen
 		if(byteGPS=='$'){ gps_state=1;	};
@@ -187,13 +211,13 @@ void speedo_gps::check_flag(){
 		Serial.println(gps_buffer1);
 #endif
 #ifdef TACHO_SMALLDEBUG
-			pDebug->sprintp(PSTR("-g"));
+		pDebug->sprintp(PSTR("-g"));
 #endif
 		// debug
 		parse(gps_buffer1,1);         // Daten übergeben
 		gps_ready1=false;
 #ifdef TACHO_SMALLDEBUG
-			pDebug->sprintlnp(PSTR("."));
+		pDebug->sprintlnp(PSTR("."));
 #endif
 	};
 
@@ -204,13 +228,13 @@ void speedo_gps::check_flag(){
 		Serial.println(gps_buffer2);
 #endif
 #ifdef TACHO_SMALLDEBUG
-			pDebug->sprintp(PSTR("-g"));
+		pDebug->sprintp(PSTR("-g"));
 #endif
 		// debug
 		parse(gps_buffer2,2);         // Daten übergeben
 		gps_ready2=false;
 #ifdef TACHO_SMALLDEBUG
-			pDebug->sprintlnp(PSTR("."));
+		pDebug->sprintlnp(PSTR("."));
 #endif
 	};
 };
@@ -281,8 +305,10 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		// zeit in jedem fall berechnen, auch wenn das sample nicht valid ist, das ist der RTC
 		long temp_gps_time=0;
 		long temp_gps_date=0;
-		for (int j=indices[0]+1;j<(indices[0]+7);j++){ // format 234500 für füddelvorzwölf
-			temp_gps_time=temp_gps_time*10+(linea[j]-48);
+		for (int j=indices[0]+1;j<(indices[0]+11);j++){ // format 234500.000 für füddelvorzwölf
+			if(linea[j]!='.'){
+				temp_gps_time=temp_gps_time*10+(linea[j]-48);
+			}
 		}
 		for (int j=indices[8]+1;j<(indices[9]);j++){
 			temp_gps_date=temp_gps_date*10+(linea[j]-48);    //181102 für 18.Nov 2002
@@ -291,33 +317,31 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		// Uhr stellen
 		int temp_mon=int(floor(temp_gps_date/100))%100;
 		int temp_day=floor(temp_gps_date/10000);
-		if(first_dataset || status=='A'){ // wenn die daten gültig sind oder es der erste datensatz ist
+		//if(first_dataset || status=='A'){ // wenn die daten gültig sind oder es der erste datensatz ist
 
-			pSensors->m_clock->set_date_time(
-					int(temp_gps_date-temp_mon*100-temp_day*10000)%100,
-					temp_mon,
-					temp_day,
-					int(floor(temp_gps_time/10000))%24,
-					int(floor(temp_gps_time/100))%100,
-					temp_gps_time%100,
-					first_dataset
-			);
-			if(first_dataset){
-				pConfig->day_trip_check();
-				first_dataset=false;
-			}
-		};
+		pSensors->m_clock->set_date_time(
+				int(temp_gps_date-temp_mon*100-temp_day*10000)%100,
+				temp_mon,
+				temp_day,
+				int(floor(temp_gps_time/10000000))%24,
+				int(floor(temp_gps_time/100000))%100,
+				int(mod((unsigned long)(floor(temp_gps_time/1000)),100)), // std "%" can be use case 23.48.73 > 32768
+				first_dataset
+		);
+		if(first_dataset){
+			//Serial.println("GPS connected, configuring data");
+			pConfig->day_trip_check();
+			//configure GPS
+			update_rate_1Hz();
+			first_dataset=false;
+		}
+		//};
 
-		if(status=='A'){
+		if(status=='A'){ // only evaluate if valid (A means valid)
 			valid=0;
-			if(gps_count_up[0] && gps_count_up[1]){
-				if(gps_count<(signed(sizeof(gps_time)/sizeof(gps_time[0])-1))){ // [0] .. [29] = 30 Einträge
-					gps_count++;
-				}
-				gps_count_up[0]=false;
-				gps_count_up[1]=false;
+			if(gps_count<(signed(sizeof(gps_time)/sizeof(gps_time[0])-1))){ // [0] .. [29] = 30 Einträge
+				gps_count++;
 			}
-			gps_count_up[1]=true;
 			// alle leeren
 			gps_time[gps_count]=0;
 			gps_date[gps_count]=0;
@@ -362,6 +386,10 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			gps_speed_arr[gps_count]=round(gps_speed_arr[gps_count]/54);//round((gps_speed_arr[gps_count]*1.852)/100); // auf kmh umbbiegen
 			speed=gps_speed_arr[gps_count];
 
+			gps_alt[gps_count]=gps_alt_temp;
+			gps_sats[gps_count]=gps_sats_temp;
+			gps_fix[gps_count]=gps_fix_temp;
+
 
 			// debug
 #ifdef GPS_DEBUG
@@ -387,13 +415,14 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			if(navi_active){ // only calc if needed
 				calc_navi();
 			}
+
 #ifdef NAVI_DEBUG
 			pDebug->sprintp(PSTR("Zeit nach gps_navi: "));
 			Serial.println(millis());
 #endif
 			// uiuiuiuiuiuiui
 		}
-		set_drive_status(speed,temp_gps_time%100,gps_sats[gps_count],status);
+		set_drive_status(speed,int(floor(temp_gps_time/1000))%100,gps_sats[gps_count],status);
 	} // anderer modus, gpgga empfangen
 	else if(datensatz==2){ // altitude, fix ok?,sats,
 		/* GPS Datensatz 2:
@@ -428,50 +457,48 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		 *	sats=Anzahl der erfassten Satelliten (zwischen dem 6. und 7. ",")
 		 *
 		 */
-		gps_count_up[0]=true;
-		gps_alt[gps_count]=0;
-		gps_sats[gps_count]=0;
+		gps_alt_temp=0;
+		gps_sats_temp=0;
 		for (int j=indices[5]+1;j<(indices[6]);j++){
-			gps_fix[gps_count]=(linea[j]-48);
+			gps_fix_temp=(linea[j]-48);
 		};
-		if(gps_fix[gps_count]>0 && valid<5){ //innerhalb der letzten 5 sec ein valid bekommen && fix>0
+		if(gps_fix_temp>0 && valid<5){ //innerhalb der letzten 5 sec ein valid bekommen && fix>0
 			for (int j=indices[6]+1;j<(indices[7]);j++){
-				gps_sats[gps_count]=gps_sats[gps_count]*10+(linea[j]-48);
+				gps_sats_temp=gps_sats_temp*10+(linea[j]-48);
 			}
 			for (int j=indices[8]+1;j<(indices[9]);j++){
 				if(linea[j]!=46){
-					gps_alt[gps_count]=gps_alt[gps_count]*10+(linea[j]-48);
+					gps_alt_temp=gps_alt_temp*10+(linea[j]-48);
 				};
 			}
-			if(gps_alt[gps_count]>100000){ // sind wir höher als 10 km?
-				gps_alt[gps_count]=0;
+			if(gps_alt_temp>100000){ // sind wir höher als 10 km?
+				gps_alt_temp=0;
 			}
 		};
 
 		//debug
 #ifdef GPS_DEBUG
 		pDebug->sprintp(PSTR("alt: "));
-		Serial.println(gps_alt[gps_count]);
+		Serial.println(gps_alt_temp);
 		pDebug->sprintp(PSTR("sats: "));
-		Serial.println(gps_sats[gps_count]);
+		Serial.println(gps_sats_temp);
 		pDebug->sprintp(PSTR("fix? 1==ja: "));
-		Serial.println(gps_fix[gps_count]);
+		Serial.println(gps_fix_temp);
 #endif
 		//debug
 	};
-	// klappt das ? eigentlich schon oder? wir dürfen nur keine Datensatz verpassen oder ?
-	if(gps_count>=29 && gps_count_up[0] && gps_count_up[1]){ // nur jede halbe minute speichern, burstmäßig auf die Karte schreiben
+	if(gps_count>=29){ // save every 30 datapoints as burst ... compromise between RAM usage and burst size
+
 #ifdef SD_DEBUG
 		pDebug->sprintlnp(PSTR("Vor store_to_sd()"));
 		Serial.println(millis());
 #endif
+
 		gps_write_status=1;
 		if(pSensors->get_RPM(0)>0){
-			store_to_sd();
+			store_to_sd(); //to save 30 datapoints about 70ms SD write time are needed
 		};
-		gps_count=0; // after writing the points to sd => erase them
-		gps_count_up[0]=false;
-		gps_count_up[1]=false;
+		gps_count=-1; // after writing the points to sd => erase them, parse will count up to 0 for us
 
 #ifdef SD_DEBUG
 		pDebug->sprintlnp(PSTR("nach store_to_sd()"));
@@ -493,55 +520,40 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 
 // return values of the gps_field, convertet as long
 long speedo_gps::get_info(unsigned char select){
+	int inner_gps_count=gps_count;
 	if(gps_count==-1){
-		return 0;
-	};
-
-	unsigned char gps_older_counter=gps_count;
-	/* Handling of gps_count:
-	// gps_count_up[0] will be set, as soon as the second dataset is processed
-	// if gps_count_up[1] is set, the first dataset is processed and gps_count is increased
-	// so we need to look at the older sample for the data, related to dataset 1
-	// this is done, by adding 29 to gps_output_counter and calculating the modulo of
-	// max values .. so (2+29)%30=31%30=1 or (0+29)%30=29
-	// same happens if the gps save routine will be runned. the routine sets both
-	// flags to false and you can not longer suggest which dataset came last,
-	// but its safe to decrease the counter in this case as well.
-	// So decreasing is only bound to gps_count_up[0]
-	 */
-	if(!gps_count_up[0]){
-		gps_older_counter=(gps_older_counter+29)%30;
+		inner_gps_count=29;
 	};
 
 	switch(select){
 	case 0:
-		return gps_time[gps_count];
+		return floor(gps_time[inner_gps_count]/1000);
 		break;
 	case 1:
-		return gps_date[gps_count];
+		return gps_date[inner_gps_count];
 		break;
 	case 2:
-		return gps_long[gps_count];
+		return gps_long[inner_gps_count];
 		break;
 	case 3:
-		return gps_lati[gps_count];
+		return gps_lati[inner_gps_count];
 		break;
 	case 4:
-		return gps_alt[gps_older_counter];
+		return gps_alt[inner_gps_count];
 		break;
 	case 5:
-		return long(gps_speed_arr[gps_count]);
+		return long(gps_speed_arr[inner_gps_count]);
 		break;
 	case 6:
-		if(long(gps_sats[gps_older_counter])>20) { return 20; }; //höhö
-		if(long(gps_sats[gps_older_counter])<0) { return 0; };
-		return long(gps_sats[gps_older_counter]);
+		if(long(gps_sats[inner_gps_count])>20) { return 20; }; //höhö
+		if(long(gps_sats[inner_gps_count])<0) { return 0; };
+		return long(gps_sats[inner_gps_count]);
 		break;
 	case 7:
-		return long(gps_fix[gps_older_counter]);
+		return long(gps_fix[inner_gps_count]);
 		break;
 	case 8:
-		return long(gps_course[gps_count]);
+		return long(gps_course[inner_gps_count]);
 		break;
 	case 9:
 		return valid;
@@ -881,7 +893,7 @@ void speedo_gps::loop(){
 int speedo_gps::get_logged_points(char* buffer,int a){
 	gps_write_status=9;
 	if(a<=gps_count || (a<=2)){
-		if(gps_time[a]>240000) gps_time[a]=000000;
+		if(gps_time[a]>240000000L) gps_time[a]=000000;
 		if(gps_date[a]>311299) gps_date[a]=311299;
 		if(gps_lati[a]>180000000) gps_lati[a]=0;
 		if(gps_long[a]>180000000) gps_long[a]=0;
@@ -892,9 +904,10 @@ int speedo_gps::get_logged_points(char* buffer,int a){
 		if(gps_fix[a]>1) gps_fix[a]=2;
 		if(gps_special[a]>9) gps_special[a]=9;
 
-		//6+1+6+1+9+1+9+1+3+1+5+1+5+1+2+1+1+1+1+\n = 59
-		sprintf(buffer,"%06lu,%06lu,%09lu,%09lu,%03i,%05u,%05lu,%i,%i,%i\n",
+		//9+1+6+1+9+1+9+1+3+1+5+1+5+1+2+1+1+1+1+\n = 62
+		sprintf(buffer,"%09lu,%06lu,%09lu,%09lu,%03i,%05u,%05lu,%02i,%i,%i\n",
 				gps_time[a],gps_date[a],gps_lati[a],gps_long[a],gps_speed_arr[a],gps_course[a],gps_alt[a],gps_sats[a],gps_fix[a],gps_special[a]);
+
 		written_gps_points++;
 		return 0;
 	} else {

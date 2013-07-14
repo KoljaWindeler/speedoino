@@ -32,7 +32,7 @@ class debugging{
 #undef       DEBUG_TRANSFER_INTENSIV  	// show every traffic on filemanager
 #undef		 STEPPER_DEBUG				// Show stepper info
 #undef		 DEMO_MODE					// show fancy demo values
-#define		 LOAD_CALC					// show calc load
+#undef		 LOAD_CALC					// show calc load
 
 public:
 	debugging(void);
