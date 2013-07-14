@@ -43,15 +43,27 @@ speedo_menu::~speedo_menu(){
 /////////////////////////////// Menus PROGMEM ///////////////////////////////
 ///////////////////// Main Menu /////////////////////
 const char main_m_0[] PROGMEM = "1. Speedoino";   // "String 0" etc are strings to store - change to suit.
-const char main_m_1[] PROGMEM = "2. Sprint clock";
+const char main_m_1[] PROGMEM = "2. Sprint-Clock";
 const char main_m_2[] PROGMEM = "3. Tour-Assistent";
-const char main_m_3[] PROGMEM = "4. -";
-const char main_m_4[] PROGMEM = "5. Extended info";
+const char main_m_3[] PROGMEM = "4. Lap-Timer";
+const char main_m_4[] PROGMEM = "5. Extended Info";
 const char main_m_5[] PROGMEM = "6. Customize";
 const char main_m_6[] PROGMEM = "7. Basic Setup";
 const char main_m_7[] PROGMEM = "8. Trip Avg Max";
 const char main_m_8[] PROGMEM = "9. Refueling";
 const char * const menu_main[9] PROGMEM= { main_m_0,main_m_1,main_m_2,main_m_3,main_m_4,main_m_5,main_m_6,main_m_7,main_m_8 }; 	   // change "string_table" name to suit
+
+///////////////////// Laptimer /////////////////////
+const char lap_t_m_0[] PROGMEM = "1. Race Mode";
+const char lap_t_m_1[] PROGMEM = "2. Set Sectors";
+const char lap_t_m_2[] PROGMEM = "3. Set 10 Hz GPS";
+const char lap_t_m_3[] PROGMEM = "4. Set 1 Hz GPS";
+const char lap_t_m_4[] PROGMEM = "5. -";
+const char lap_t_m_5[] PROGMEM = "6. -";
+const char lap_t_m_6[] PROGMEM = "7. -";
+const char lap_t_m_7[] PROGMEM = "8. -";
+const char lap_t_m_8[] PROGMEM = "9. -";
+const char  * const menu_lap_t[9] PROGMEM= { lap_t_m_0,lap_t_m_1,lap_t_m_2,lap_t_m_3,lap_t_m_4,lap_t_m_5,lap_t_m_6,lap_t_m_7,lap_t_m_8 };
 
 ///////////////////// Setup /////////////////////
 const char setup_m_0[] PROGMEM = "1. Gear calib.";   // "String 0" etc are strings to store - change to suit.
@@ -423,8 +435,39 @@ void speedo_menu::display(){
 
 
 	/********************************************* Menu 4, completly empty by now *********************************************
+	 * Submenus:
+	 * 41 Race Mode";   // "String 0" etc are strings to store - change to suit.
+	 * 42 Set Sectors
+	 * 43 Set GPS to 10 Hz
+	 * 44 Set GPS to 1 Hz
+	 * 45 -
+	 * 46 -
+	 * 47 -
+	 * 48 -
+	 * 49 -
 	 ********************************************* Menu 4, completly empty by now *********************************************/
-
+	else if(floor(state/10)==4){ // 31/10 = 3
+		// Menu vorbereiten
+		draw(&menu_lap_t[0],sizeof(menu_lap_t)/sizeof(menu_lap_t[0]));
+	}
+	///////////////////// swith to 10 Hz
+	else if(floor(state/10)==43){
+		pSensors->m_gps->update_rate_10Hz();
+		pOLED->clear_screen();
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS set to 10Hz"),2,3);
+		_delay_ms(500);
+		state=11; // kick back to Speedoino screen ... this is just a testing menu
+		update_display=true;
+	}
+	///////////////////// swith to 1 Hz
+	else if(floor(state/10)==44){
+		pSensors->m_gps->update_rate_1Hz();
+		pOLED->clear_screen();
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS set to 1Hz"),2,3);
+		_delay_ms(500);
+		state=11; // kick back to Speedoino screen ... this is just a testing menu
+		update_display=true;
+	}
 
 
 	/********************************************* Menu 5 - Start of Extend Info Menu *********************************************
@@ -785,7 +828,7 @@ void speedo_menu::display(){
 	}
 
 	//////////////////////// skin speichern -> zum menüpunkt 11 gehen und alles ist gut ////////////////////////////
-	else if(floor(state/1000)==61) { // 0061[XXX]
+	else if(floor(state/1000)==61) { // 0061[xyz]
 		pOLED->clear_screen();
 		pConfig->skin_file=(int(floor(state/100))%10)-1;
 		pConfig->storage_outdated=true;
