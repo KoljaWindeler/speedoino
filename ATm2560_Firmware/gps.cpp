@@ -94,12 +94,12 @@ bool speedo_gps::wait_on_gps(){
 
 void speedo_gps::update_rate_1Hz(){
 	SendString("$PMTK220,1000*1F\r\n");
-	//SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"); // hä?
+	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
 }
 
 void speedo_gps::update_rate_10Hz(){
 	SendString("$PMTK220,100*2F\r\n");
-	//SendString("$PMTK314,0,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"); // hä?
+	SendString("$PMTK314,0,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0*2C\r\n");
 }
 
 
