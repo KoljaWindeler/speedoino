@@ -49,16 +49,16 @@ void Speedo_sensors::init(){
 	m_blinker->init();
 	m_clock->init();
 	m_dz->init();
-	m_gps->init();
 	m_temperature->init();
 	m_fuel->init();
 	m_speed->init();
 	m_reset->init();
 	m_gear->init();
 	m_voltage->init();
+	m_gps->init();
 	//	m_CAN->init(); // done later in main startup
 
-	cli(); // TODO ... unschön, warum reagiert er überhaupt schon auf interrupts?
+	cli(); //  ... unschön, aber gps macht interrupts an
 	// Blinker LINKS Interrupt
 	EIMSK |= (1<<INT6); // Enable Interrupt
 	EICRB |= (1<<ISC60); // any change on INT5
@@ -320,18 +320,16 @@ void Speedo_sensors::pull_values(){
 #ifdef TACHO_SMALLDEBUG
 			pDebug->sprintp(PSTR("-s"));
 #endif
-
 		ten_Hz_timer=millis();
 		ten_Hz_counter=(ten_Hz_counter+1)%10;
 		update_required=true;
 
 		if(ten_Hz_counter==0){ // 1 Hz
-			m_clock->inc();  // sekunden hochzählen
-			m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
 			m_voltage->calc(false); // spannungscheck
 			m_temperature->read_oil_temp();  // temperaturen aktualisieren
-
-			// auto CAN detection ... geht nicht .. warum? TODO
+			m_clock->inc();  // sekunden hochzählen
+			m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
+			// auto CAN detection ...
 			if(sensor_source==SENSOR_AUTO){
 				if(!m_CAN->init_comm_possible(&CAN_active)){ // returns always true, exept the communcation was NOT possible even if it should
 					pDebug->sprintlnp(PSTR("=== CAN timed out ==="));
@@ -342,7 +340,7 @@ void Speedo_sensors::pull_values(){
 					pDebug->sprintlnp(PSTR("=== CAN timed out ==="));
 				}
 			};
-		} else if(update_required && ten_Hz_counter%2==0){ // do this, every 5Hz, 200ms
+		} else if(update_required){//do this, every 10Hz, 100ms // && ten_Hz_counter%2==0){ // do this, every 5Hz, 200ms
 			m_blinker->check();    // blinken wir?
 
 			/* gear */
@@ -402,9 +400,7 @@ void Speedo_sensors::pull_values(){
 				m_temperature->read_air_temp();  // temperaturen aktualisieren
 				m_temperature->read_water_temp();  // temperaturen aktualisieren
 			}
-			if(ten_Hz_counter%2==0){ // do this, every 5Hz, 200ms
-				m_dz->calc(); // calc rpms from non CAN sensors
-			};
+			m_dz->calc(); // calc rpms from non CAN sensors 10Hz
 
 #ifdef TACHO_SMALLDEBUG
 			pDebug->sprintlnp(PSTR("."));
