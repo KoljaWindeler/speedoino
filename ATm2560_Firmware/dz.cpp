@@ -46,12 +46,12 @@ unsigned int speedo_dz::get_dz(bool exact_dz){
 	return exact;
 }
 
-void speedo_dz::calc() {
+void speedo_dz::calc() { // called by "pull_values" with 10Hz // new 3.7.2013, previous 5Hz
 	///// DZ BERECHNUNG ////////
 	unsigned long now=millis(); 											// aktuelle zeit
 	unsigned long differ=now-previous_time; 								// zeit seit dem letzte mal abholen der daten
 	unsigned int  now_peaks=peak_count; 									// aktueller dz zähler stand, separate var damit der peakcount weiter verndert werden koennte
-	if(now_peaks>4 && differ>25){ 				// max mit 10Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+	if(now_peaks>4 && differ>25){ 				// max mit 40Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
 		// am 17.8. von 50 auf 25 geändert ... das sind jetzt 40 Hz, mal sehen ob das noch klappt
 		// am 3.8. von 100 auf 50 geändert
 		// bei 4.000 rpm => 66 pps => 15ms Pro Peak, 4 Peaks in 60 ms

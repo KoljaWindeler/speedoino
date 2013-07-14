@@ -101,7 +101,7 @@ void init_speedo(void){
 	pMenu->init(); 				// Start butons // adds the connection between pins and vars
 	pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
 	pSpeedo->reset_bak(); 		// reset all storages, to force the redraw of the speedo
-	pSensors->m_CAN->init();	// hast to be the very last to ensure startup and to load values from SD to ser correct filter
+	pSensors->m_CAN->init();	// hast to be the very last to ensure startup and to load values from SD to configure correct filter
 	pConfig->ram_info();
 	pDebug->sprintlnp(PSTR("=== Setup finished ==="));
 	Serial.flush(); // jaja, hallo liebes bluetooth modul, will keiner wissen das du alles echos solange wir nicht mit dem pc verbunden sind ...
@@ -119,6 +119,10 @@ int main(void) {
 	 * all initialisations must been made before the main loop, before THIS
 	 ******************** setup procedure ********************************************/
 	unsigned long   previousMillis = 0;
+#ifdef LOAD_CALC
+	unsigned long load_calc=0;
+	unsigned long lasttime_calc=0;
+#endif
 
 	for (;;) {
 		pSensors->m_CAN->check_message();
@@ -144,7 +148,7 @@ int main(void) {
 
 		/************************* timer *********************/
 		pTimer->every_sec(pConfig);		// 1000 ms
-		pTimer->every_qsec();			// 250  ms
+		//pTimer->every_qsec();			// 250  ms TODO
 		pTimer->every_custom();  		// one custom timer, redrawing the speedo, time is defined by "refresh_cycle" in the base.txt
 		/************************* push buttons *********************
 		 * using true as argument, this will activate bluetooth input as well
@@ -186,6 +190,16 @@ int main(void) {
 		else if(floor(pMenu->state/100)==71){
 			pSensors->m_gear->calibrate();
 		}
+
+#ifdef LOAD_CALC
+		load_calc++;
+		if(millis()-lasttime_calc>1000){
+			Serial.print(load_calc);
+			Serial.println(" cps");
+			load_calc=0;
+			lasttime_calc=millis();
+		}
+#endif
 	} // end for
 } // end main
 
