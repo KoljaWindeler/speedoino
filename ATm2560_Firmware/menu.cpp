@@ -555,7 +555,7 @@ void speedo_menu::display(){
 	}
 	//////////////////////// stepper info ////////////////////////////
 	else if(floor(state/10)==54) {
-		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
+		set_buttons(button_state,!button_state,!button_state,button_state); // left & right only
 		// Menu vorbereiten
 		pSpeedo->reset_bak();
 		pOLED->clear_screen();
@@ -564,6 +564,21 @@ void speedo_menu::display(){
 		// this is just the caption,
 		// the loop will fill the screen
 		//		 pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS);
+	}
+	//////////////////////// stepper test ////////////////////////////
+	// this will kick to needle to 6k ... thats all
+	else if(floor(state/100)==54) {
+		set_buttons(button_state,!button_state,!button_state,!button_state); // left & right only
+		// Menu vorbereiten
+		pSpeedo->reset_bak();
+		pOLED->clear_screen();
+		pOLED->highlight_bar(0,0,128,8);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Additional info"),2,0,15,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Kicking to 6k"),2,2,0,15,0);
+		pAktors->m_stepper->go_to(6000/11.73);
+		_delay_ms(3000);
+		back();
+		update_display=true;
 	}
 	//////////////////////// TEST des watchdogs durch absitzen ////////////////////////
 	else if(floor(state/10)==56){ // 56[X]
