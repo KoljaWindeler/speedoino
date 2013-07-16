@@ -14,8 +14,11 @@
 #define		INFO_SPEED 5
 /**************** gps *******************/
 class speedo_gps{
+#define STD_MARK
 #define SIMPLE_MARK 1
-#define RACING_MARK 2
+#define SECTOR_END_MARK 2
+#define LAP_END_MARK 3
+
 #define NAVI_FOLDER "navi"
 public:
 	speedo_gps();
@@ -29,6 +32,7 @@ public:
 	void SendByte(unsigned char data);
 	void SendString(const char Str[]);
 	bool get_drive_status();
+	void set_gps_mark(int type);
 
 	unsigned long calc_dist(unsigned long longitude,unsigned long latitude);
 	unsigned long mod(unsigned long zahl,unsigned long teiler);
@@ -51,7 +55,6 @@ public:
 	unsigned int written_gps_points;
 	char navi_ziel_name[14];//= "Helmholtzstr."; //seperate var, muss das länger halten
 	int active_file; //
-	int note_this_place;                          // damit kann man marker auf die strecke setzen
 	int valid;
 	bool navi_active;
 	int gps_write_status;
@@ -59,6 +62,7 @@ public:
 private:
 	long entf; // die entfernung in metern. 32km könnte zuwenig sein, daher long
 	int navi_ziel_rl;//=1;
+	int note_this_place;                          // damit kann man marker auf die strecke setzen
 	// die letzen 30 infos
 	unsigned int gps_speed_arr[30],gps_course[30],gps_sats[30],gps_fix[30],gps_special[30];
 	unsigned int gps_sats_temp,gps_fix_temp;

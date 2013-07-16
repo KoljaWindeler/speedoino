@@ -349,15 +349,8 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			gps_lati[gps_count]=0;
 			gps_speed_arr[gps_count]=0;
 			gps_course[gps_count]=0;
-
-			if(note_this_place!=0){ // kann man im tacho setzen, bewirkt dann das im logfile eine zahl statt 0 steht
-				gps_special[gps_count]=note_this_place;
-				note_this_place=0;
-			}
-			else {
-				gps_special[gps_count]=0;
-			};
-
+			gps_special[gps_count]=note_this_place;
+			set_gps_mark(SIMPLE_MARK); // reset
 			gps_time[gps_count]=temp_gps_time;
 			gps_date[gps_count]=temp_gps_date;
 
@@ -730,6 +723,10 @@ int speedo_gps::get_order(char char_buffer[]){
 	};
 	return value;
 };
+
+void speedo_gps::set_gps_mark(int type){
+	note_this_place=type;
+}
 
 // die globalen variablen neu befüllen, auf basis des zuvor gesetzten navi_point
 void speedo_gps::generate_new_order(){ // eine neue Order auslesen

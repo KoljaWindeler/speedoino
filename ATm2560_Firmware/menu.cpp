@@ -235,7 +235,7 @@ void speedo_menu::display(){
 #ifdef MENU_DEBUG
 		Serial.println("Menustate war 111, daher biege ich ihn auf 11 um");
 #endif
-		pSensors->m_gps->note_this_place=SIMPLE_MARK;
+		pSensors->m_gps->set_gps_mark(SIMPLE_MARK);
 		state=11;
 	}
 	/********************************************* Menu 1 - SPEEDOINO *********************************************
