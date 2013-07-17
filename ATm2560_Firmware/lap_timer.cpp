@@ -23,9 +23,9 @@
  1. Basic Steps
  1.1. 	Calling menu 4
 		4.1: Race Mode
-		4.2: Set Sector marks
-		4.3: Clear all marks
-		4.4: Load markfile
+		4.2: Load Sectors
+		4.3: Set new Sectors
+		4.4: Clear Sectors
 		4.5: Evaluate Race
 
  1.2. 	"Set Sector marks" means that a new file with virtual Sector Goals will be recorded.
@@ -46,7 +46,7 @@
 
  2. pMenu->states
 		4: Main Menu
-		41-49: Race Menu
+		4x: Race Menu
 		411: waiting_on_speed_up()
 		4111: race_loop();
 
@@ -69,7 +69,7 @@
 	#define UPDATE_LAP_TIME 2
 	#define LAPTIMER_TARGET_RADIUS 15
 
-	==> 140 Byte (based on ram_info)
+	==> 86 Byte (based on ram_info)
  */
 // this will be callen on and on
 
@@ -191,19 +191,32 @@ void LapTimer::draw_waiting_screen(){
 	calc_best_theoretical_lap_time();
 	starting_standing_timestamp_s=0;
 	if(pSensors->get_speed(false)>0){ // we are moving, quick show scren
-		pMenu->state=4111;
+		pMenu->state=41111;
 		init_screen(); //draw border elements
 		update_screen(0xff); // draw display values
 	} else { // we are standing
-		pMenu->state=411;
+		pMenu->state=4111;
 		pOLED->clear_screen();
-		pOLED->string_P(pSpeedo->default_font,PSTR("READY TO RACE"),4,3);
+
+
+
+		char buffer[21];
+		strcpy_P(buffer,PSTR("READY TO RACE"));
+		pMenu->center_me(buffer,20);
+		pOLED->string(pSpeedo->default_font,buffer,0,3);
+		strcpy_P(buffer,PSTR("speed up"));
+		pMenu->center_me(buffer,20);
+		pOLED->string(pSpeedo->default_font,buffer,0,4);
 	}
 };
 
 
 void LapTimer::waiting_on_speed_up(){
-	if(pSensors->get_speed(false)>0){ // we are moving, quick show scren
+	if(pMenu->old_state==pMenu->state*10+1){
+		pSensors->m_gps->update_rate_1Hz();
+		pMenu->back();
+		pMenu->display();
+	} else if(pSensors->get_speed(false)>0){ // we are moving, quick show scren
 		pMenu->state=pMenu->state*10+1; // move deeper
 		init_screen(); //draw border elements
 		race_loop(); // draw display values
