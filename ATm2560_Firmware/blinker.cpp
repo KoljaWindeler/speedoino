@@ -36,10 +36,14 @@ void moped_blinker::pin_toogled(){
 };
 
 
-void moped_blinker::check(){
-	if((millis()-last_toggle_time)>1500){ // 1.5 sec no change on pin => flasher off, could be down to 500ms?
-		flasher_active=false;
-	};
+void moped_blinker::check(){ // called every 100ms from pSensors->pull_values()
+	if(flasher_active){ // yep, we are flashing
+		if((millis()-last_toggle_time)>1500){ // 1.5 sec no change on pin => flasher off! could be down to 500ms?
+			flasher_active=false;
+		} else if(pSensors->get_speed(false)==0){ // still flashing but now standing
+			start=pSpeedo->trip_dist[8]; // reset length
+		}
+	}
 };
 
 void moped_blinker::set_start(unsigned long dist,int kmh){
