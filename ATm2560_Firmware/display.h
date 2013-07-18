@@ -12,6 +12,7 @@
 #include      <ssd0323.h>
 class speedo_disp : public ssd0323 {
 #define DISP_BRIGHTNESS 15
+#define DIALOG_NO_YES 1
 public:
 	unsigned char 	phase;//=0x62;
 	unsigned char 	ref;//=0x3F;
@@ -34,6 +35,9 @@ public:
 	void disp_waiting(int position,unsigned char spalte,unsigned char zeile);
 	int animation(int a);
 	void show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length);
+	void show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length, uint8_t type);
+	void show_storry(const char* storry,const char* title);
+	void show_storry(const char* storry,const char* title, uint8_t type);
 };
 extern speedo_disp* pOLED;
 ////////////// DISPLAY ///////////////////////////////////

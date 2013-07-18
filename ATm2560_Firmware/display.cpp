@@ -264,8 +264,25 @@ int speedo_disp::sd2ssd(char filename[10],int frame){
 };
 
 // aufruf parameter:
+void speedo_disp::show_storry(const char* storry,const char* title){
+	show_storry(storry,title,0x00);
+}
+
+void speedo_disp::show_storry(const char* storry,const char* title, uint8_t type){
+	char storry_char[strlen_P(storry)+1];
+	char title_char[strlen_P(title)+1];
+
+	strcpy_P(storry_char,storry);
+	strcpy_P(title_char,title);
+
+	show_storry(storry_char,strlen_P(storry),title_char,strlen_P(title),type);
+}
 
 void speedo_disp::show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length){
+	show_storry(storry,storry_length,title, title_length, 0x00);
+}
+
+void speedo_disp::show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length, uint8_t type){
 	// show title
 	pOLED->clear_screen();
 	pOLED->highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
@@ -330,6 +347,11 @@ void speedo_disp::show_storry(char storry[],unsigned int storry_length,char titl
 			//delete buffer
 			free(buffer2);
 		};
+	}
+
+	//
+	if(type & (1<<DIALOG_NO_YES)){
+		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E back        next \x7F"),0,7);
 	}
 }
 
