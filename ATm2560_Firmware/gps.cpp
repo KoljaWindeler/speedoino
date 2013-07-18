@@ -551,6 +551,9 @@ long speedo_gps::get_info(unsigned char select){
 	case 9:
 		return valid;
 		break;
+	case 10:
+		return gps_time[inner_gps_count];
+		break;
 	}
 	return -1;
 };
