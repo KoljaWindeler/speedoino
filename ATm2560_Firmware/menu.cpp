@@ -481,20 +481,29 @@ void speedo_menu::display(){
 			// go to next state that will draw the screen
 			state=state*10+1;
 			update_display=true;
-		} else if(old_state==state*10+1){ // comming from menu above, so obiviously we have just reached the FINISH LINE
-			// save point as regualr sector border
-			pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
+		} else if(old_state==state*10+1){ // comming from menu above, so obviously we have just reached the FINISH LINE
+			if(pSensors->m_gps->get_info(6)<3){
+				pOLED->clear_screen();
+				pOLED->string_P_centered(PSTR("No GPS"),3);
+				pOLED->string_P_centered(PSTR("Nothing saved"),4);
+				_delay_ms(500); // show it for a certain time
+				back();
+				update_display=true;
+			} else {
+				// save point as regualr sector border
+				pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
 
-			// some fancy output
-			char buffer[21];
-			sprintf(buffer,"Finish-Line");
-			center_me(buffer,20);
-			pOLED->string(pSpeedo->default_font,buffer,0,3);
-			_delay_ms(100); // we will loose one gps points !! wise?
+				// some fancy output
+				char buffer[21];
+				sprintf(buffer,"Finish-Line");
+				center_me(buffer,20);
+				pOLED->string(pSpeedo->default_font,buffer,0,3);
+				_delay_ms(100); // we will loose one gps points !! wise?
 
-			// switch the state & draw the screen
-			state=411;
-			pLapTimer->prepare_race_loop();
+				// switch the state & draw the screen
+				state=411;
+				pLapTimer->prepare_race_loop();
+			}
 		}	else { // coming from elsewhere (431111)
 			// point has been captured, now show capture screen again
 			state=state*10+1;

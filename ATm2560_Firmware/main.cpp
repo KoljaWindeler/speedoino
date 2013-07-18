@@ -171,6 +171,17 @@ int main(void) {
 		else if(pMenu->state==291){
 			pSensors->m_clock->loop();
 		}
+		////////////////// race mode ////////////////////
+		else if(pMenu->state==411){
+			pLapTimer->waiting_on_speed_up();
+		}
+		else if(pMenu->state==4111){
+			pLapTimer->race_loop();
+		}
+		////////////////// set gps point ////////////////////
+		else if(pMenu->state==43111){
+			pLapTimer->gps_capture_loop();
+		}
 		//////////////////// voltage mode ///////////////////
 		else if(pMenu->state==531){
 			pSensors->addinfo_show_loop();

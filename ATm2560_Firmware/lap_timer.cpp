@@ -138,7 +138,7 @@ LapTimer::LapTimer(){
 	starting_standing_timestamp_s=0;
 	delay_ms=0;
 	delay_calc_active=false;
-	filename[0]='\0';
+	sprintf((char *)filename,"NAVI/HANNOVER.SST");
 }
 
 void LapTimer::race_loop(){
@@ -288,11 +288,71 @@ void LapTimer::gps_capture_loop(){
 	if(pSpeedo->disp_zeile_bak[0]!=(int)(pSensors->m_gps->get_info(10)&0xffff)){
 		// jep new GPS data available
 		pSpeedo->disp_zeile_bak[0]=(int)(pSensors->m_gps->get_info(10)&0xffff);
-		uint8_t update_level = 0; 	// helps us to update only needed areas
 
-		// calc dist
-		uint32_t dist=pSensors->m_gps->calc_dist(sector_end_longitude,sector_end_latitude); // reused as "last sector coordinates"
+		char char_buffer[21];
 
+		/*
+		Sector:_02__________
+		____________________
+		GPS Signal:_Good_(12)
+		052.342232/09.211343
+		Interspace:_186m____
+		____________________
+		\x7F_to_set_sector_end__
+		\x7E_to_set_finish_line
+		 */
+
+		// sector
+		sprintf(char_buffer,"%02i",current_sector+1);
+		pOLED->string(pSpeedo->default_font,char_buffer,8,0);
+
+		// gps
+		if(pSensors->m_gps->get_info(6)<3){
+			pOLED->string_P(pSpeedo->default_font,PSTR("-   "),12,2);
+			sprintf(char_buffer,"(%i02)",pSensors->m_gps->get_info(6));
+			pOLED->string(pSpeedo->default_font,char_buffer,14,2);
+		} else if(pSensors->m_gps->get_info(6)<5){
+			pOLED->string_P(pSpeedo->default_font,PSTR("bad "),12,2);
+			sprintf(char_buffer,"(%i02)",pSensors->m_gps->get_info(6));
+			pOLED->string(pSpeedo->default_font,char_buffer,16,2);
+		} else if(pSensors->m_gps->get_info(6)<7){
+			pOLED->string_P(pSpeedo->default_font,PSTR("ok  "),12,2);
+			sprintf(char_buffer,"(%i02)",pSensors->m_gps->get_info(6));
+			pOLED->string(pSpeedo->default_font,char_buffer,15,2);
+		} else {
+			pOLED->string_P(pSpeedo->default_font,PSTR("good"),12,2);
+			sprintf(char_buffer,"(%i02)",pSensors->m_gps->get_info(6));
+			pOLED->string(pSpeedo->default_font,char_buffer,17,2);
+		}
+
+		// coordinates
+		sprintf(char_buffer,"%09lu / %09lu",pSensors->m_gps->get_info(2),pSensors->m_gps->get_info(3));
+		pOLED->string(pSpeedo->default_font,char_buffer,0,3);
+
+		// interspace = distance to last point
+		if(current_sector>0){
+			sprintf(char_buffer,"%4im",pSensors->m_gps->calc_dist(sector_end_longitude,sector_end_latitude));
+			pOLED->string(pSpeedo->default_font,char_buffer,12,4);
+		} else {
+			pOLED->string_P(pSpeedo->default_font,PSTR("-    "),12,4);
+		}
+
+		// arrows
+		if(pSensors->m_gps->get_info(6)<3){
+			if(pSpeedo->disp_zeile_bak[1]!=1){
+				pSpeedo->disp_zeile_bak[1]=1;
+				pOLED->string_P(pSpeedo->default_font,PSTR("no GPS             "),0,6);
+				pOLED->string_P(pSpeedo->default_font,PSTR("\x7E back             "),0,7);
+				pMenu->set_buttons(true,false,false,false); // only back
+			}
+		} else {
+			if(pSpeedo->disp_zeile_bak[1]!=2){
+				pSpeedo->disp_zeile_bak[1]=2;
+				pOLED->string_P(pSpeedo->default_font,PSTR("\x7F to set sector end"),0,6);
+				pOLED->string_P(pSpeedo->default_font,PSTR("\x7E to set finish line"),0,7);
+				pMenu->set_buttons(true,false,false,true); // only left and right
+			}
+		}
 	}
 };
 
@@ -302,33 +362,28 @@ void LapTimer::initial_draw_gps_capture_screen(){
 	char char_buffer[21];
 	pOLED->clear_screen();
 
+	/*
+	Sector:_02__________
+	____________________
+	GPS Signal:_Good_(12)
+	052.342232/09.211343
+	Interspace:_186m____
+	____________________
+	\x7F_to_set_sector_end__
+	\x7E_to_set_finish_line
+	 */
+
+	// sector
 	pOLED->string_P(pSpeedo->default_font,PSTR("Sector:"),0,0);
-	sprintf(char_buffer,"%02i",current_sector);
-	pOLED->string(pSpeedo->default_font,char_buffer,8,0);
 
+	// gps
+	pOLED->string_P(pSpeedo->default_font,PSTR("GPS Signal:"),0,2);
 
-	pOLED->string_P(pSpeedo->default_font,PSTR("GPS Signal:"),0,1);
-	if(pSensors->m_gps->get_info(6)<3){
+	// interspace = distance to last point
+	pOLED->string_P(pSpeedo->default_font,PSTR("Interspace:"),0,4);
 
-	}
-	sprintf(char_buffer,"%02i",current_sector);
-	pOLED->string(pSpeedo->default_font,char_buffer,8,0);
-
-
-
-	sprintf(char_buffer,"GPS Signal:");
-	pOLED->string(pSpeedo->default_font,char_buffer,0,0);
-
-/*
-Sector:_02__________
-____________________
-GPS Signal:_Good_(12)
-052.342232/09.211343
-Interspace:_186m____
-____________________
-\x7F_to_set_sector_end__
-\x7E_to_set_finish_line
-*/
+	pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
+	gps_capture_loop();
 };
 
 
@@ -496,6 +551,9 @@ int LapTimer::add_sector(uint32_t latitude, uint32_t longitude, unsigned char* f
 	}
 	file.close();
 	folder.close();
+
+	sector_end_longitude=longitude;
+	sector_end_latitude=latitude;
 	return 0;
 };
 
