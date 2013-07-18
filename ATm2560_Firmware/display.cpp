@@ -263,6 +263,17 @@ int speedo_disp::sd2ssd(char filename[10],int frame){
 	return 0;
 };
 
+void speedo_disp::string_P_centered(const char* text, uint8_t line){
+	if(strlen_P(text)>20){
+		return;
+	};
+
+	char text_char[22]; // full display width +1
+	strcpy_P(text_char,text);
+	pMenu->center_me(text_char,20); // full display width
+	pOLED->string(pSpeedo->default_font,text_char,0,line);
+}
+
 // aufruf parameter:
 void speedo_disp::show_storry(const char* storry,const char* title){
 	show_storry(storry,title,0x00);

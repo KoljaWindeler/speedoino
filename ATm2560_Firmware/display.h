@@ -38,6 +38,7 @@ public:
 	void show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length, uint8_t type);
 	void show_storry(const char* storry,const char* title);
 	void show_storry(const char* storry,const char* title, uint8_t type);
+	void string_P_centered(const char* text, uint8_t line);
 };
 extern speedo_disp* pOLED;
 ////////////// DISPLAY ///////////////////////////////////
