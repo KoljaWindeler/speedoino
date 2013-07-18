@@ -1,4 +1,6 @@
 
+
+
 /* Speedoino - This file is part of the firmware.
  * Copyright (C) 2011 Kolja Windeler
  *
@@ -21,34 +23,76 @@
 
 /*  ============ LAPTIMER ============
  1. Basic Steps
+
  1.1. 	Calling menu 4
 		4.1: Race Mode
 		4.2: Load Sectors
 		4.3: Set new Sectors
-		4.4: Clear Sectors
+		4.4:
 		4.5: Evaluate Race
 
- 1.2. 	"Set Sector marks" means that a new file with virtual Sector Goals will be recorded.
-		Therefor the driver start at any place on the track BEHIND the START/GOAL line.
+ 1.2. 	"Set Sector marks"  means that a new file with virtual Sector Goals will be recorded.
+		Therefore the driver start at any place on the track BEHIND the START/GOAL line.
 		As soon as he reaches the END of the first section he pushes the "right" button and the
 		position will be saved to the SD Card. The END of sector N is in the same time the START
 		of sector (N+1).
 		The END of the very last sector is the END of the LAP and should therefor be the START/GOAL line.
+		Is is set by leaving the "set new sectors" menu by pushing the "left" button
 
- 1.1. 	"Race Mode" shows the Laptimer display (not jet defined)
+ 1.3. 	"Race Mode" shows the Laptimer display (not jet defined)
 		On entering the "Race Mode" the file should be checkt if the track was new recoded or has been driven already
 		See check_vars();
 
 		After that race_loop() will check if the distance to the next endpoint and calc new values
 
 		Start race mode by calling:
-		1. draw_waiting_screen()
+		1. prepare_race_loop()
+
 
  2. pMenu->states
+
+ 2.1. Single States:
 		4: Main Menu
+
 		4x: Race Menu
-		411: waiting_on_speed_up()
-		4111: race_loop();
+
+		411: Menu calls prepare_race_loop()
+				[ensures that state is 411]
+				IF old_state was 4111 (so we are leaving) update_rate_1Hz() will be executed
+				ELSE if old_state was 41 (so we are coming from main menu) update_rate_10Hz() will be executed
+
+				IF we are already moving -> quickstart: menu state=4111 and draw screen
+				ELSE we are standing and waiting -> print some nice "waiting on start" to the screen
+
+		411: main loop will call waiting_on_speed_up() in this state,
+				IF we are moving: waiting_on_speed_up() sets state=4111
+
+		4111: main loop will call race_loop(); IF we are NOT moving for 2 sec, race_loop() kicks us back to prepare_race_loop();
+		421: TODO
+		431: state in the middle
+				menu->old_state=43 	-> show "sure to clear file"
+		4311: state in the middle
+				menu->old_state=431 -> clear_file() + update_rate_10Hz() + kick state to 43111 + draw capture screen
+				menu->old_state=43111 -> save coordinates as finish line + kick state to 411, start race mode by call prepare_race_loop()
+				else -> kick state to 43111 + draw capture screen
+		43111: capture mode, update place + gps signal + interspace
+		431111: save coordiante as waypoint, show message + kick back to 4311 (will kick us to 43111 after redrawing to interface)
+
+ 2.2. State Flow:
+		FIRST DAY
+		On reaching the racetrack the user opens "main menu" -> "4. Race menu" -> "3. Set new Sectors" [11->X->4X->431]
+		The Speedo will ask some sort of "Really clear all Sectors and record new", user will confirm by "right" [431->4311->43111]
+		The Speedo shows the "record gps points"-screen. User will start driving on the track, on reaching the first sector end, he will push the "right" button [43111->431111]
+		Speedo will save that point (and show a message as feedback) and return to the "record gps points"-screen. [431111->4311->43111]
+		After setting all points in between the driver will reach the finish line. After crossing the finish line the first "real" lap begins.
+		By pushing the "left" button the speedo will go by "flying start" race mode [43111->4311->411->4111]
+		After Race is over, the user will push the "left" button to leave the race mode [4111->411->41]
+
+		SECOND DAY
+		On the second day the user will opens "main menu" -> "4. Race menu" -> "2. Load Sector" ... HERE SOME MAGIC HAPPENS AND A TRACK GOT LOADED, [11->X->4X->421-> ??? ->411]
+		Speedo will show some fancy "waiting on start" to the screen
+		The Driver starts and the Speedo will flip over to the race screen [411->4111]
+		After Race is over, the user will push the "left" button to leave the race mode [4111->411->41]
 
  3. Needed RAM
 	uint8_t 	sector_count;
@@ -176,29 +220,28 @@ void LapTimer::race_loop(){
 				if(starting_standing_timestamp_s==0){
 					starting_standing_timestamp_s=millis();
 				} else if((millis()-starting_standing_timestamp_s)>2000){
-					draw_waiting_screen(); // kick back
+					prepare_race_loop(); // kick back
 				};
 			}
 
 		} // we are on the way to the next marken, but haven't reacht him
-		update_screen(update_level);
+		update_race_screen(update_level);
 	} // new GPS point // else { this is nonsense, we have no new data to draw..
 }
 
 
-void LapTimer::draw_waiting_screen(){
+void LapTimer::prepare_race_loop(){
 	// prepare calculations
 	calc_best_theoretical_lap_time();
 	starting_standing_timestamp_s=0;
-	if(pSensors->get_speed(false)>0){ // we are moving, quick show scren
-		pMenu->state=41111;
-		init_screen(); //draw border elements
-		update_screen(0xff); // draw display values
-	} else { // we are standing
+
+	if(pSensors->get_speed(false)>0){ // we are moving, quick show screen
 		pMenu->state=4111;
-		pOLED->clear_screen();
-
-
+		init_race_screen(); //draw border elements
+		update_race_screen(0xff); // draw display values
+	} else { // we are standing, but we are ready to race
+		pMenu->state=411; // main loop will call waiting_on_speed_up() in this state
+		pOLED->clear_screen(); // draw some fancy screen while we are waiting
 
 		char buffer[21];
 		strcpy_P(buffer,PSTR("READY TO RACE"));
@@ -212,19 +255,15 @@ void LapTimer::draw_waiting_screen(){
 
 
 void LapTimer::waiting_on_speed_up(){
-	if(pMenu->old_state==pMenu->state*10+1){
-		pSensors->m_gps->update_rate_1Hz();
-		pMenu->back();
-		pMenu->display();
-	} else if(pSensors->get_speed(false)>0){ // we are moving, quick show scren
+	if(pSensors->get_speed(false)>0){ // we are moving, quick show scren
 		pMenu->state=pMenu->state*10+1; // move deeper
-		init_screen(); //draw border elements
+		init_race_screen(); //draw border elements
 		race_loop(); // draw display values
 	}
 };
 
 
-void LapTimer::init_screen(){
+void LapTimer::init_race_screen(){
 	pOLED->clear_screen();
 	pOLED->filled_rect(70,0,56,16,15);
 	pOLED->string_P(pSpeedo->default_font,PSTR("Delay"),13,0,15,0,0);
@@ -241,20 +280,67 @@ void LapTimer::init_screen(){
 	char char_buffer[8];
 	sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_oil_temperature()/10))%1000,pSensors->get_oil_temperature()%10); // _32.3Â°C  7 stellen
 	pOLED->string(pSpeedo->default_font,char_buffer,4,5,0,DISP_BRIGHTNESS,-4);
-
 }
 
+/* will be called from main() */
+void LapTimer::gps_capture_loop(){
+	// check if we have a new gps timestamp
+	if(pSpeedo->disp_zeile_bak[0]!=(int)(pSensors->m_gps->get_info(10)&0xffff)){
+		// jep new GPS data available
+		pSpeedo->disp_zeile_bak[0]=(int)(pSensors->m_gps->get_info(10)&0xffff);
+		uint8_t update_level = 0; 	// helps us to update only needed areas
+
+		// calc dist
+		uint32_t dist=pSensors->m_gps->calc_dist(sector_end_longitude,sector_end_latitude); // reused as "last sector coordinates"
+
+	}
+};
+
+/* will be called from menu */
+void LapTimer::initial_draw_gps_capture_screen(){
+	current_sector=0;
+	char char_buffer[21];
+	pOLED->clear_screen();
+
+	pOLED->string_P(pSpeedo->default_font,PSTR("Sector:"),0,0);
+	sprintf(char_buffer,"%02i",current_sector);
+	pOLED->string(pSpeedo->default_font,char_buffer,8,0);
+
+
+	pOLED->string_P(pSpeedo->default_font,PSTR("GPS Signal:"),0,1);
+	if(pSensors->m_gps->get_info(6)<3){
+
+	}
+	sprintf(char_buffer,"%02i",current_sector);
+	pOLED->string(pSpeedo->default_font,char_buffer,8,0);
+
+
+
+	sprintf(char_buffer,"GPS Signal:");
+	pOLED->string(pSpeedo->default_font,char_buffer,0,0);
+
+/*
+Sector:_02__________
+____________________
+GPS Signal:_Good_(12)
+052.342232/09.211343
+Interspace:_186m____
+____________________
+\x7F_to_set_sector_end__
+\x7E_to_set_finish_line
+*/
+};
 
 
 /* update display - is used to refresh all the drawn values on the screen.
-	race_loop calls update_screen as soon as new GPS data are available.
+	race_loop calls update_race_screen as soon as new GPS data are available.
 	[in] level - is a bitwise OR connected field of:
 		#define UPDATE_BEST_LAP 0
 		#define UPDATE_DELAY 1
 		#define UPDATE_LAP_TIME 2
 		helping us to update only needed fields
  */
-void LapTimer::update_screen(uint8_t level){
+void LapTimer::update_race_screen(uint8_t level){
 	char char_buffer[20];
 	uint16_t min,sec,f_sec;
 
@@ -288,7 +374,7 @@ void LapTimer::update_screen(uint8_t level){
 	add them up and save it in best_theoretical_lap_time_ms
 	This should be the starting call!
  */
-void LapTimer::calc_best_theoretical_lap_time(){
+int LapTimer::calc_best_theoretical_lap_time(){
 	unsigned char temp[20];
 	SdFile folder;
 	SdFile file;
@@ -307,12 +393,14 @@ void LapTimer::calc_best_theoretical_lap_time(){
 		if(temp==99999999){ // initial time for sector
 			delay_calc_active=false;
 			best_theoretical_lap_time_ms=0; // invalid
+			return -1;
 		} else {
 			best_theoretical_lap_time_ms+=temp;
 		}
 	};
 
 	current_sector=0; // is that wise?
+	return 0;
 };
 
 
@@ -357,6 +445,23 @@ int LapTimer::update_sector_time(uint8_t sector_id, uint32_t sector_time, unsign
 	return 0;
 };
 
+/* simply returns the pointer to the filename */
+unsigned char* LapTimer::get_active_filename(){ // overload for the menu.cpp
+	return filename;
+};
+
+/* clear file will open a file in truncate mode and close it*/
+int LapTimer::clear_file(unsigned char* filename){
+	SdFile folder;
+	SdFile file;
+	unsigned char temp[20];
+	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_TRUNC)<0){
+		return -1;
+	};
+
+	file.close();
+	folder.close();
+};
 
 /* add_sector is used to append a NEW sector to a SST file
 	[in] latitude
