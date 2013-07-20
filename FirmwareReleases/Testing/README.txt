@@ -3,3 +3,4 @@
 27.06.2013	Speedoino_v2.1-6-g5eff85a.hex	Bilder werden nicht von den Tachoelemente übermalt, wenn man dem Tacho per Handy anweist, sie anzuzeigen
 30.06.2013	Speedoino_v2.1-7-g0a953d1.hex	Navigationsanweisung mit durchgehendem Balken, "#d" aus der Beschreibung der Navidatei gelöscht (im Auswahl-Menü)
 14.07.2013	Speedoino_v2.1-26-g8514c15.hex	GPS mit 10Hz updaterate und 115200 baud, leeres Laptimer menü, Zeitstempel mit ms im Log, kleine Verbesserungen
+19.07.2013	Speedoino_v2.1-36-g12971d0.hex	Erste Testing version mit Speedo-LapTimer, Blinker reset im stehen
