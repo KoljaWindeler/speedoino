@@ -323,13 +323,11 @@ void speedo_filemanager_v2::parse_command(){
 				// buffer for dir name
 				unsigned char dir[msgLength];
 				// copy reqested dir
-				for(unsigned int i=3;i<msgLength;i++){
-					dir[i-3+2]=msgBuffer[i];
+				for(unsigned int i=0;i<msgLength-3;i++){
+					dir[i]=msgBuffer[i+3];
 				}
 				// add end of string
-				dir[msgLength-3+2]='\0';
-				// and save length in string to make it suiteable for "get_file_handle"
-				dir[1]=msgLength-3; // -3: command + nr_high + nr_low
+				dir[msgLength-3]='\0';
 
 				// get item id
 				int item=(msgBuffer[1]<<8)|msgBuffer[2];
@@ -387,6 +385,27 @@ void speedo_filemanager_v2::parse_command(){
 				 */
 
 			} else if(msgBuffer[0]==CMD_GET_FILE){
+				/* hinweg:
+				 * msgBuffer[0]=CMD_GET_FILE
+				 * msgBUffer[1]=length of filename
+				 * msgBuffer[2..1+length_of_filename]=filename  ... datei.txt oder folder/datei.txt
+				 * msgBuffer[length_of_filename+2]=high_nibble of cluster nr
+				 * msgBuffer[length_of_filename+3]=low_nibble of cluster nr
+				 *
+				 * e.G.
+				 * msgBuffer[0]=CMD_GET_FILE
+				 * msgBuffer[1]=3
+				 * msgBuffer[2]='A'
+				 * msgBuffer[3]='S'
+				 * msgBuffer[4]='D'
+				 * msgBuffer[5]= high
+				 * msgBuffer[6]= low
+				 *
+				 * rueckweg:
+				 * msgBuffer[0]=CMD_GET_FILE
+				 * msgBuffer[1]=COMMAND_OK
+				 * msgBuffer[2..]=DATA
+				 */
 
 				// 1. checken: haben wir im t2a_file noch was offen
 				// 2. checken: ist der dateiname noch der gleiche wie der, den wir bekommen haben?
@@ -397,11 +416,17 @@ void speedo_filemanager_v2::parse_command(){
 				bool file_already_open=true;
 				bool file_open_failed=false;
 				bool file_seek_failed=false;
-				int payload_start=0;
+				unsigned int length_of_filename=msgBuffer[1];
+
+				// move filename
+				for(unsigned int i=0;i<length_of_filename;i++){
+					msgBuffer[i]=msgBuffer[i+2]; // make it openable for get_file_handle
+				}
+				msgBuffer[length_of_filename]='\0';
 
 				if(fm_file.isFile()){
-					for(unsigned int i=0;i<msgLength-2;i++){
-						if(last_file[i]!=msgBuffer[i+3]){
+					for(unsigned int i=0;i<length_of_filename;i++){
+						if(last_file[i]!=msgBuffer[i]){
 							file_already_open=false;
 						}
 					}
@@ -416,18 +441,20 @@ void speedo_filemanager_v2::parse_command(){
 				// 1.2. subverzeichniss oeffnen
 				// 2. Dateiname auslesen
 				// 3. Dateihandle oeffnen
+				// jetzt noch verschieben an die richtige stelle im buffer
+
 
 				if(!file_already_open){
-					payload_start=get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle,O_CREAT| O_READ);
-					if(payload_start<0)
+					if(get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle,O_CREAT| O_READ)<0){
 						file_open_failed=true;
-				} // filealready open
+					}
+				} // file already open
 
 				// setze pointer
 				if(!file_open_failed){
 					unsigned long pos;
-					pos=msgBuffer[payload_start]<<8;
-					pos|=msgBuffer[payload_start+1];
+					pos=msgBuffer[length_of_filename+2]<<8;
+					pos|=msgBuffer[length_of_filename+3];
 					pos*=250;
 
 					if(last_file_seek!=pos){
@@ -494,11 +521,14 @@ void speedo_filemanager_v2::parse_command(){
 
 
 				if(fm_file.isFile()){
-					for(unsigned int i=0;i<msgLength-2;i++){
-						if(last_file[i]!=msgBuffer[i+3]){
+					uint16_t filename_length=msgBuffer[1];
+					for(unsigned int i=0;i<filename_length;i++){
+						msgBuffer[i]=msgBuffer[i+2]; // make it suiteable for get_file_handle
+						if(last_file[i]!=msgBuffer[i]){
 							file_already_open=false;
 						}
 					}
+					msgBuffer[filename_length]='\0';
 				} else {
 					file_already_open=false;
 				};
@@ -578,7 +608,21 @@ void speedo_filemanager_v2::parse_command(){
 				////////////////////////////// PUT FILE /////////////////////////////////
 				////////////////////////////// DEL FILE /////////////////////////////////
 			} else if(msgBuffer[0]==CMD_DEL_FILE){
-				get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle, O_CREAT| O_WRITE);
+				/* hinweg:
+				 * msgBuffer[0]=CMD_DEL_FILE
+				 * msgBuffer[1]=length of filename
+				 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
+				 *
+				 * rueckweg:
+				 * msgBuffer[0]=CMD_PUT_FILE
+				 * msgBuffer[1]=COMMAND_OK
+				 */
+				unsigned int length_of_filename=msgBuffer[1];
+				for(unsigned int i=0; i<length_of_filename; i++){ // move it for get_file_handle
+					msgBuffer[i]=msgBuffer[i+2];
+				}
+				msgBuffer[length_of_filename]='\0';
+				get_file_handle(msgBuffer,&last_file[0],&fm_file,&fm_handle, O_CREAT| O_WRITE);
 				if(fm_file.remove()){
 					fm_file.close();
 					fm_handle.close();
@@ -734,18 +778,14 @@ int speedo_filemanager_v2::send_answere(unsigned char *msgBuffer,unsigned int ms
 
 
 int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,SdFile *fm_file,SdFile *fm_handle,uint8_t flags){
-	/* msgBuffer[0] =CMD
-	 * msgBuffer[1] =FN_length
-	 * msgBuffer[2..2+FN_length] =Filename
-	 * msgBuffer[3+FN_length..]=Data
+	/* msgBuffer[0..X] =Filename
 	 */
 	// gibt den pointer auf die datei -> FM_FILE
 	// und das zugehörigen Verzeichniss -> FM_HANDLE
 	// zurück
 
-	unsigned int start_of_filename=2;			// fix
 	unsigned int start_of_real_filename=0;		// pos of the "FILE"name
-	unsigned int length_of_filename=(unsigned int)msgBuffer[1];
+	unsigned int length_of_filename=strlen((char*)msgBuffer);
 	char filename[13];
 	char subdir[13];
 	subdir[0]='\0';
@@ -756,7 +796,7 @@ int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned cha
 	fm_handle->openRoot(&pSD->volume);
 
 	// check filename for subdirs and open them one by one
-	for(unsigned int i=start_of_filename;i<start_of_filename+length_of_filename;i++){
+	for(unsigned int i=0;i<length_of_filename;i++){
 		// we have to destinguish between normal chars and the '/'
 		if(msgBuffer[i]=='/'){ // open actual subdir
 			//Serial.print("Opening subdir:");
@@ -764,6 +804,8 @@ int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned cha
 			start_of_real_filename=i+1;
 			if(subdir[0]!='\0'){ // check if we have something .. just error prevention
 				SdFile returner;
+				//				Serial.print("open dir:");
+				//				Serial.println(subdir);
 				if(!returner.open(fm_handle, subdir, O_READ)){ // create it, if it is not existing
 					//Serial.println("Failed");
 					if((flags && O_CREAT)==0){
@@ -788,12 +830,12 @@ int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned cha
 		}
 	}
 
-	if(msgBuffer[start_of_filename+length_of_filename-1]!='/'){ // if the very last char in the filename NOT equals "/" --> then its a file
+	if(msgBuffer[length_of_filename-1]!='/'){ // if the very last char in the filename NOT equals "/" --> then its a file
 		// dateinamen auslesen
-		for(unsigned int i=start_of_real_filename;i<start_of_filename+length_of_filename;i++){
+		for(unsigned int i=start_of_real_filename;i<length_of_filename;i++){
 			filename[i-start_of_real_filename]=msgBuffer[i];
 			last_file[i-start_of_real_filename]=msgBuffer[i];
-			if(i==(start_of_filename+length_of_filename-1)){
+			if(i==(length_of_filename-1)){
 				filename[i-start_of_real_filename+1]='\0';
 				last_file[i-start_of_real_filename+1]='\0';
 			};
@@ -801,12 +843,15 @@ int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned cha
 
 		SdFile temp_f;
 		// datei oeffnen
+		//		Serial.print("open file:");
+		//		Serial.println(filename);
 		if (!temp_f.open(fm_handle, filename,flags)){
+			//			Serial.println("failed");
 			return -1;
 		} else {
+			//			Serial.println("passed");
 			*fm_file=temp_f;
 		}
 	}
-
-	return start_of_filename+length_of_filename;
+	return length_of_filename;
 }

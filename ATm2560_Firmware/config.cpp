@@ -165,28 +165,26 @@ int configuration::write(const char *filename){
 				pSD->power_up();*/
 				//Serial.println("Save Point start");
 				// buffer for dir name /GPS/2013/06/130612.GPS
-				unsigned char dir[24+3]; // 24 CHARS for filename + 3 for compatiblity
-				unsigned char last_file[24+3]; // for compatiblity
+				unsigned char dir[24+1]; // 24 CHARS for filename + 3 for compatiblity
+				unsigned char last_file[24+1]; // for compatiblity
 				// create filename
-				dir[0]=0;
-				dir[1]=24; // length
-				dir[2]='/';
-				dir[3]='G';
-				dir[4]='P';
-				dir[5]='S';
-				dir[6]='/';
-				dir[7]='2';
-				dir[8]='0';
-				dir[9]=filename[0];
-				dir[10]=filename[1];
-				dir[11]='/';
-				dir[12]=filename[2];
-				dir[13]=filename[3];
-				dir[14]='/';
+				dir[0]='/';
+				dir[1]='G';
+				dir[2]='P';
+				dir[3]='S';
+				dir[4]='/';
+				dir[5]='2';
+				dir[6]='0';
+				dir[7]=filename[0];
+				dir[8]=filename[1];
+				dir[9]='/';
+				dir[10]=filename[2];
+				dir[11]=filename[3];
+				dir[12]='/';
 				for (int i=0;i<=9; i++){
-					dir[i+15]=filename[i];
+					dir[i+13]=filename[i];
 				}
-				dir[24]='\0';
+				dir[22]='\0';
 
 				// now open it up
 				if(!pFilemanager_v2->get_file_handle(dir,last_file,&file,&subdir,O_READ|O_CREAT)){
