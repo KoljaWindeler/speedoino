@@ -264,14 +264,34 @@ int speedo_disp::sd2ssd(char filename[10],int frame){
 };
 
 void speedo_disp::string_P_centered(const char* text, uint8_t line){
+	string_P_centered(text,line,false);
+}
+
+void speedo_disp::string_P_centered(const char* text, uint8_t line, bool inverted){
 	if(strlen_P(text)>20){
 		return;
 	};
 
-	char text_char[22]; // full display width +1
+	uint16_t front_color=0x0f;
+	uint16_t back_color=0x00;
+	uint16_t start_pos=0;
+	uint16_t length_of_char=22;
+
+	if(inverted){
+		front_color=0x00;
+		back_color=0x0f;
+		if(strlen_P(text)<16){
+			length_of_char=16;
+			start_pos=2;
+			pOLED->highlight_bar(0,line*8,128,8);
+		} else {
+			pOLED->filled_rect(0,line*8,128,8,0x0f);
+		}
+	}
+	char text_char[length_of_char]; // full display width +1
 	strcpy_P(text_char,text);
-	pMenu->center_me(text_char,20); // full display width
-	pOLED->string(pSpeedo->default_font,text_char,0,line);
+	pMenu->center_me(text_char,length_of_char); // full display width
+	pOLED->string(pSpeedo->default_font,text_char,start_pos,line,back_color,front_color,0);
 }
 
 // aufruf parameter:
@@ -361,8 +381,82 @@ void speedo_disp::show_storry(char storry[],unsigned int storry_length,char titl
 	}
 
 	//
-	if(type & (1<<DIALOG_NO_YES)){
+	unsigned int current_state=pMenu->state;
+	unsigned long current_timestamp=millis();
+
+	if(type==DIALOG_NO_YES){
 		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E back        next \x7F"),0,7);
+	}
+	else if(type==DIALOG_GO_RIGHT_200MS){
+		while(current_state==pMenu->state && (millis()-current_timestamp)<200){
+			_delay_ms(1);
+		}
+		if(current_state==pMenu->state){
+			pMenu->go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_200MS){
+		while(current_state==pMenu->state && (millis()-current_timestamp)<200){
+			_delay_ms(1);
+		}
+		if(current_state==pMenu->state){
+			pMenu->go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_500MS){
+		while(current_state==pMenu->state && (millis()-current_timestamp)<500){
+			_delay_ms(1);
+		}
+		if(current_state==pMenu->state){
+			pMenu->go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_500MS){
+		while(current_state==pMenu->state && (millis()-current_timestamp)<500){
+			_delay_ms(1);
+		}
+		if(current_state==pMenu->state){
+			pMenu->go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_1000MS){
+		while(current_state==pMenu->state && (millis()-current_timestamp)<1000){
+			_delay_ms(1);
+		}
+		if(current_state==pMenu->state){
+			pMenu->go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_1000MS){
+		while(current_state==pMenu->state && (millis()-current_timestamp)<1000){
+			_delay_ms(1);
+		}
+		if(current_state==pMenu->state){
+			pMenu->go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_2000MS){
+		while(current_state==pMenu->state && (millis()-current_timestamp)<2000){
+			_delay_ms(1);
+		}
+		if(current_state==pMenu->state){
+			pMenu->go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_2000MS){
+		while(current_state==pMenu->state && (millis()-current_timestamp)<2000){
+			_delay_ms(1);
+		}
+		if(current_state==pMenu->state){
+			pMenu->go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_5000MS){
+		while(current_state==pMenu->state && (millis()-current_timestamp)<5000){
+			_delay_ms(1);
+		}
+		if(current_state==pMenu->state){
+			pMenu->go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_5000MS){
+		while(current_state==pMenu->state && (millis()-current_timestamp)<5000){
+			_delay_ms(1);
+		}
+		if(current_state==pMenu->state){
+			pMenu->go_left(true);
+		}
 	}
 }
 
@@ -494,14 +588,12 @@ int speedo_disp::animation(int ani_nr){
 	bool sgf_file_found=false;
 	unsigned char filename[24]; // reused for show_animation string
 	// prepare handle (reuse of filename) for dir /GFX/ (length:5)
-	filename[0]='x'; // Dont care...
-	filename[1]=5;
-	filename[2]='/';
-	filename[3]='G';
-	filename[4]='F';
-	filename[5]='X';
-	filename[6]='/';
-	filename[7]='\0';
+	filename[0]='/';
+	filename[1]='G';
+	filename[2]='F';
+	filename[3]='X';
+	filename[4]='/';
+	filename[5]='\0';
 
 	if(pFilemanager_v2->get_file_handle(filename,filename,&file_handle,&dir_handle,O_READ)<0){
 		status=-1; // DIR problem

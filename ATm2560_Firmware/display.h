@@ -13,6 +13,17 @@
 class speedo_disp : public ssd0323 {
 #define DISP_BRIGHTNESS 15
 #define DIALOG_NO_YES 1
+#define DIALOG_GO_LEFT_200MS 2
+#define DIALOG_GO_RIGHT_200MS 3
+#define DIALOG_GO_LEFT_500MS 4
+#define DIALOG_GO_RIGHT_500MS 5
+#define DIALOG_GO_LEFT_1000MS 6
+#define DIALOG_GO_RIGHT_1000MS 7
+#define DIALOG_GO_LEFT_2000MS 8
+#define DIALOG_GO_RIGHT_2000MS 9
+#define DIALOG_GO_LEFT_5000MS 10
+#define DIALOG_GO_RIGHT_5000MS 11
+
 public:
 	unsigned char 	phase;//=0x62;
 	unsigned char 	ref;//=0x3F;
@@ -39,6 +50,8 @@ public:
 	void show_storry(const char* storry,const char* title);
 	void show_storry(const char* storry,const char* title, uint8_t type);
 	void string_P_centered(const char* text, uint8_t line);
+	void string_P_centered(const char* text, uint8_t line, bool inverted);
+
 };
 extern speedo_disp* pOLED;
 ////////////// DISPLAY ///////////////////////////////////
