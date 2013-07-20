@@ -30,6 +30,9 @@ speedo_gps::speedo_gps(){
 	gps_ready2=false;
 	gps_state=0;
 	written_gps_points=0;
+	gps_fix_temp=0;
+	gps_sats_temp=0;
+	gps_alt_temp=0;
 	// parsen
 
 	// navigation
@@ -56,6 +59,17 @@ speedo_gps::speedo_gps(){
 	navi_ziel_long=0;
 	navi_ziel_rl=0;
 	navi_point=0;
+
+	for(int i=0; i<30; i++){
+		gps_speed_arr[i]=0;
+		gps_course[i]=0;
+		gps_sats[i]=0;
+		gps_fix[i]=0;
+		gps_special[i]=0;
+		gps_alt[i]=0;
+		gps_date[i]=0;
+		gps_time[i]=0;
+	}
 };
 
 speedo_gps::~speedo_gps(){
@@ -79,6 +93,7 @@ void speedo_gps::init(){
 	UCSR1B |=	(1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
 	UCSR1A |= 	(1<<U2X1); // Double the USART Transmission Speed
 	sei();
+
 
 	pDebug->sprintlnp(PSTR("GPS init done"));
 };
