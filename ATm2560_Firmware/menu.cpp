@@ -434,7 +434,7 @@ void speedo_menu::display(){
 	/********************************************* Menu 3 - End of Navigation Menu *********************************************/
 
 
-	/********************************************* Menu 4, completly empty by now *********************************************
+	/********************************************* Menu 4, Race mode  *********************************************
 	 * Submenus:
 	 * 41 Race Mode";   // "String 0" etc are strings to store - change to suit.
 	 * 42 Set Sectors
@@ -445,7 +445,7 @@ void speedo_menu::display(){
 	 * 47 -
 	 * 48 -
 	 * 49 -
-	 ********************************************* Menu 4, completly empty by now *********************************************/
+	 ********************************************* Menu 4, Race mode  *********************************************/
 	else if(floor(state/10)==4){ // 31/10 = 3
 		// Menu vorbereiten
 		draw(&menu_lap_t[0],sizeof(menu_lap_t)/sizeof(menu_lap_t[0]));
@@ -470,23 +470,24 @@ void speedo_menu::display(){
 	///////////////////// ask if you really want to clear all current sectors
 	else if(state==431){
 		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
-		pOLED->show_storry(PSTR("Do you really want to clear all marks and record new?"),PSTR("GPS Marker"),(1<<DIALOG_NO_YES));
+		pOLED->show_storry(PSTR("Do you really want to clear all marks and record new?"),PSTR("GPS Marker"),DIALOG_NO_YES);
 	}
 	///////////////////// state in the middle, switch gps update + clear file OR save finishline coordinates
 	else if(state==4311){
 		if(old_state*10+1==state){ // comming from menu below
 			// delete that file and switch on high speed GPS
 			pLapTimer->clear_file(pLapTimer->get_active_filename());
-			pSensors->m_gps->update_rate_10Hz();
+			//pSensors->m_gps->update_rate_10Hz();
 			// go to next state that will draw the screen
 			state=state*10+1;
 			update_display=true;
 		} else if(old_state==state*10+1){ // comming from menu above, so obviously we have just reached the FINISH LINE
 			if(pSensors->m_gps->get_info(6)<3){
 				pOLED->clear_screen();
-				pOLED->string_P_centered(PSTR("No GPS"),3);
-				pOLED->string_P_centered(PSTR("Nothing saved"),4);
-				_delay_ms(500); // show it for a certain time
+				pOLED->string_P_centered(PSTR("No GPS"),3,true);
+				pOLED->string_P_centered(PSTR("Nothing saved"),4,true);
+				pSensors->m_gps->update_rate_1Hz();
+				_delay_ms(1500); // show it for a certain time
 				back();
 				update_display=true;
 			} else {
@@ -494,10 +495,8 @@ void speedo_menu::display(){
 				pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
 
 				// some fancy output
-				char buffer[21];
-				sprintf(buffer,"Finish-Line");
-				center_me(buffer,20);
-				pOLED->string(pSpeedo->default_font,buffer,0,3);
+				pOLED->clear_screen();
+				pOLED->string_P_centered(PSTR("Finish-Line"),3,true);
 				_delay_ms(100); // we will loose one gps points !! wise?
 
 				// switch the state & draw the screen
@@ -518,12 +517,13 @@ void speedo_menu::display(){
 	///////////////////// capture new GPS marker
 	else if(state==431111){
 		pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
-		char buffer[21];
-		sprintf(buffer,"Saved");
-		center_me(buffer,20);
-		pOLED->string(pSpeedo->default_font,buffer,0,3);
+		pOLED->clear_screen();
+		pOLED->string_P_centered(PSTR("Saved"),3,true);
+		pSpeedo->reset_bak();
 		_delay_ms(200); // we will loose some gps points !! wise?
+		old_state=state;
 		state=4311;
+		update_display=true;
 	}
 
 

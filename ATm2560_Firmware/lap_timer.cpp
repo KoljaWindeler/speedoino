@@ -232,24 +232,26 @@ void LapTimer::race_loop(){
 
 void LapTimer::prepare_race_loop(){
 	// prepare calculations
-	calc_best_theoretical_lap_time();
-	starting_standing_timestamp_s=0;
+	if(calc_best_theoretical_lap_time()>=0){ // if any kind of read error happens, don't go on
+		starting_standing_timestamp_s=0;
 
-	if(pSensors->get_speed(false)>0){ // we are moving, quick show screen
-		pMenu->state=4111;
-		init_race_screen(); //draw border elements
-		update_race_screen(0xff); // draw display values
-	} else { // we are standing, but we are ready to race
-		pMenu->state=411; // main loop will call waiting_on_speed_up() in this state
-		pOLED->clear_screen(); // draw some fancy screen while we are waiting
+		if(pSensors->get_speed(false)>0){ // we are moving, quick show screen
+			pMenu->state=4111;
+			init_race_screen(); //draw border elements
+			update_race_screen(0xff); // draw display values
+		} else { // we are standing, but we are ready to race
+			pMenu->state=411; // main loop will call waiting_on_speed_up() in this state
+			pOLED->clear_screen(); // draw some fancy screen while we are waiting
 
-		char buffer[21];
-		strcpy_P(buffer,PSTR("READY TO RACE"));
-		pMenu->center_me(buffer,20);
-		pOLED->string(pSpeedo->default_font,buffer,0,3);
-		strcpy_P(buffer,PSTR("speed up"));
-		pMenu->center_me(buffer,20);
-		pOLED->string(pSpeedo->default_font,buffer,0,4);
+			char buffer[21];
+			strcpy_P(buffer,PSTR("READY TO RACE"));
+			pMenu->center_me(buffer,20);
+			pOLED->string(pSpeedo->default_font,buffer,0,3);
+			strcpy_P(buffer,PSTR("speed up"));
+			pMenu->center_me(buffer,20);
+			pOLED->string(pSpeedo->default_font,buffer,0,4);
+			pMenu->set_buttons(true,false,false,false);
+		}
 	}
 };
 
@@ -288,7 +290,6 @@ void LapTimer::gps_capture_loop(){
 	if(pSpeedo->disp_zeile_bak[0]!=(int)(pSensors->m_gps->get_info(10)&0xffff)){
 		// jep new GPS data available
 		pSpeedo->disp_zeile_bak[0]=(int)(pSensors->m_gps->get_info(10)&0xffff);
-
 		char char_buffer[21];
 
 		/*
@@ -308,30 +309,29 @@ void LapTimer::gps_capture_loop(){
 
 		// gps
 		if(pSensors->m_gps->get_info(6)<3){
-			pOLED->string_P(pSpeedo->default_font,PSTR("-   "),12,2);
-			sprintf(char_buffer,"(%i02)",pSensors->m_gps->get_info(6));
-			pOLED->string(pSpeedo->default_font,char_buffer,14,2);
+			pOLED->string_P(pSpeedo->default_font,PSTR("-    "),12,2);
 		} else if(pSensors->m_gps->get_info(6)<5){
-			pOLED->string_P(pSpeedo->default_font,PSTR("bad "),12,2);
-			sprintf(char_buffer,"(%i02)",pSensors->m_gps->get_info(6));
-			pOLED->string(pSpeedo->default_font,char_buffer,16,2);
+			pOLED->string_P(pSpeedo->default_font,PSTR("bad  "),12,2);
 		} else if(pSensors->m_gps->get_info(6)<7){
-			pOLED->string_P(pSpeedo->default_font,PSTR("ok  "),12,2);
-			sprintf(char_buffer,"(%i02)",pSensors->m_gps->get_info(6));
-			pOLED->string(pSpeedo->default_font,char_buffer,15,2);
+			pOLED->string_P(pSpeedo->default_font,PSTR("ok   "),12,2);
 		} else {
-			pOLED->string_P(pSpeedo->default_font,PSTR("good"),12,2);
-			sprintf(char_buffer,"(%i02)",pSensors->m_gps->get_info(6));
-			pOLED->string(pSpeedo->default_font,char_buffer,17,2);
+			pOLED->string_P(pSpeedo->default_font,PSTR("good "),12,2);
 		}
+		sprintf(char_buffer,"(%02i)",(int)pSensors->m_gps->get_info(6));
+		pOLED->string(pSpeedo->default_font,char_buffer,17,2);
+
 
 		// coordinates
-		sprintf(char_buffer,"%09lu / %09lu",pSensors->m_gps->get_info(2),pSensors->m_gps->get_info(3));
+		if(pSensors->m_gps->get_info(6)<3){
+			sprintf(char_buffer,"    -     /    -     ");
+		} else {
+			sprintf(char_buffer,"%09lu / %09lu",pSensors->m_gps->mod(pSensors->m_gps->get_info(2),1000000000),pSensors->m_gps->mod(pSensors->m_gps->get_info(3),1000000000));
+		};
 		pOLED->string(pSpeedo->default_font,char_buffer,0,3);
 
 		// interspace = distance to last point
 		if(current_sector>0){
-			sprintf(char_buffer,"%4im",pSensors->m_gps->calc_dist(sector_end_longitude,sector_end_latitude));
+			sprintf(char_buffer,"%4im",int(pSensors->m_gps->calc_dist(sector_end_longitude,sector_end_latitude))%1000);
 			pOLED->string(pSpeedo->default_font,char_buffer,12,4);
 		} else {
 			pOLED->string_P(pSpeedo->default_font,PSTR("-    "),12,4);
@@ -341,13 +341,15 @@ void LapTimer::gps_capture_loop(){
 		if(pSensors->m_gps->get_info(6)<3){
 			if(pSpeedo->disp_zeile_bak[1]!=1){
 				pSpeedo->disp_zeile_bak[1]=1;
-				pOLED->string_P(pSpeedo->default_font,PSTR("no GPS             "),0,6);
-				pOLED->string_P(pSpeedo->default_font,PSTR("\x7E back             "),0,7);
+				pOLED->filled_rect(0,48,128,16,0);
+				pOLED->string_P_centered(PSTR("no GPS"),6,true);
+				pOLED->string_P(pSpeedo->default_font,PSTR("\x7E back"),0,7);
 				pMenu->set_buttons(true,false,false,false); // only back
 			}
 		} else {
 			if(pSpeedo->disp_zeile_bak[1]!=2){
 				pSpeedo->disp_zeile_bak[1]=2;
+				pOLED->filled_rect(0,48,128,16,0);
 				pOLED->string_P(pSpeedo->default_font,PSTR("\x7F to set sector end"),0,6);
 				pOLED->string_P(pSpeedo->default_font,PSTR("\x7E to set finish line"),0,7);
 				pMenu->set_buttons(true,false,false,true); // only left and right
@@ -358,8 +360,6 @@ void LapTimer::gps_capture_loop(){
 
 /* will be called from menu */
 void LapTimer::initial_draw_gps_capture_screen(){
-	current_sector=0;
-	char char_buffer[21];
 	pOLED->clear_screen();
 
 	/*
@@ -383,7 +383,6 @@ void LapTimer::initial_draw_gps_capture_screen(){
 	pOLED->string_P(pSpeedo->default_font,PSTR("Interspace:"),0,4);
 
 	pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
-	gps_capture_loop();
 };
 
 
@@ -403,7 +402,7 @@ void LapTimer::update_race_screen(uint8_t level){
 		min=floor(delay_ms/60000);
 		sec=int(floor(delay_ms/1000))%60;
 		f_sec=floor((delay_ms%1000)/10);
-		sprintf(char_buffer,"%+02i:%02i.%02",min,sec,f_sec);
+		sprintf(char_buffer,"%+02i:%02i.%02i",min,sec,f_sec);
 		pOLED->string(pSpeedo->default_font+1,char_buffer,2,6);
 	}
 
@@ -411,7 +410,7 @@ void LapTimer::update_race_screen(uint8_t level){
 		min=floor(best_theoretical_lap_time_ms/60000);
 		sec=int(floor(best_theoretical_lap_time_ms/1000))%60;
 		f_sec=floor((best_theoretical_lap_time_ms%1000)/10);
-		sprintf(char_buffer,"%02i:%02i.%02",min,sec,f_sec);
+		sprintf(char_buffer,"%02i:%02i.%02i",min,sec,f_sec);
 		pOLED->string(pSpeedo->default_font+1,char_buffer,2,6);
 	}
 
@@ -419,7 +418,7 @@ void LapTimer::update_race_screen(uint8_t level){
 		min=floor((pSensors->m_gps->get_info(10)-lap_start_timestamp_ms)/60000);
 		sec=int(floor((pSensors->m_gps->get_info(10)-lap_start_timestamp_ms)/1000))%60;
 		f_sec=floor(((pSensors->m_gps->get_info(10)-lap_start_timestamp_ms)%1000)/10);
-		sprintf(char_buffer,"%02i:%02i.%02",min,sec,f_sec);
+		sprintf(char_buffer,"%02i:%02i.%02i",min,sec,f_sec);
 		pOLED->string(pSpeedo->default_font,char_buffer,13,4);
 	}
 }
@@ -433,28 +432,35 @@ int LapTimer::calc_best_theoretical_lap_time(){
 	unsigned char temp[20];
 	SdFile folder;
 	SdFile file;
+
 	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_CREAT| O_WRITE)<0){
-		//pOLED->show_storry("File could not be read", 22,"Error",5);
+		pOLED->show_storry(PSTR("File could not be read"),PSTR("Error"),DIALOG_GO_LEFT_1000MS);
+		return -1;
 	};
 
 	delay_calc_active=true; // assume that this track has been driven
 	best_theoretical_lap_time_ms=0;
 	sector_count=(int)floor(file.fileSize()/30);
-	for(uint8_t i=0;i<sector_count; i++){
-		uint32_t temp;
-		if(get_sector_data(i,&temp,&temp,&temp,filename)<0){
-			//pOLED->show_storry("File could not be read", 22,"Error",5);
-		}
-		if(temp==99999999){ // initial time for sector
-			delay_calc_active=false;
-			best_theoretical_lap_time_ms=0; // invalid
-			return -1;
-		} else {
-			best_theoretical_lap_time_ms+=temp;
-		}
-	};
-
-	current_sector=0; // is that wise?
+	if(sector_count==0){
+		pOLED->show_storry(PSTR("The current selected file is empty, record some sectors first"),PSTR("Empty file"),DIALOG_GO_LEFT_2000MS);
+		return -1;
+	} else {
+		for(uint8_t i=0;i<sector_count; i++){
+			uint32_t temp;
+			if(get_sector_data(i,&temp,&temp,&temp,filename)<0){
+				pOLED->show_storry(PSTR("Get Sectors from file failed"),PSTR("Error"),DIALOG_GO_LEFT_1000MS); // <-- pretty cool
+				return -1;
+			}
+			if(temp==99999999){ // initial time for sector
+				delay_calc_active=false;
+				best_theoretical_lap_time_ms=0; // invalid
+				return -1;
+			} else {
+				best_theoretical_lap_time_ms+=temp;
+			}
+		};
+		current_sector=0; // is that wise?
+	}
 	return 0;
 };
 
@@ -510,12 +516,14 @@ int LapTimer::clear_file(unsigned char* filename){
 	SdFile folder;
 	SdFile file;
 	unsigned char temp[20];
-	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_TRUNC)<0){
+	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_TRUNC|O_CREAT)<0){
 		return -1;
 	};
 
 	file.close();
 	folder.close();
+	current_sector=0;
+	return 0;
 };
 
 /* add_sector is used to append a NEW sector to a SST file
@@ -554,6 +562,7 @@ int LapTimer::add_sector(uint32_t latitude, uint32_t longitude, unsigned char* f
 
 	sector_end_longitude=longitude;
 	sector_end_latitude=latitude;
+	current_sector++; // we captured one ..goto next
 	return 0;
 };
 
@@ -573,7 +582,7 @@ int LapTimer::get_sector_data(uint8_t sector_id, uint32_t* latitude,uint32_t* lo
 	SdFile file;
 
 	// open file
-	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_CREAT| O_WRITE)<0){
+	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_READ)<0){
 		file.close();
 		folder.close();
 		return -3;
