@@ -369,7 +369,7 @@ void speedo_menu::display(){
 		SdFile root;
 		root.openRoot(&pSD->volume);
 		SdFile subdir;
-		if(!subdir.open(&root, NAVI_FOLDER, O_READ)) {  Serial.println("open subdir /config failed"); };
+		if(!subdir.open(&root, NAVI_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); };
 		// generate filename
 		char navi_filename[13];
 		sprintf(navi_filename,"NAVI%i.SMF",pSensors->m_gps->active_file);
@@ -462,7 +462,6 @@ void speedo_menu::display(){
 			if(old_state*10+1==state){
 				pSensors->m_gps->update_rate_10Hz();
 			}
-
 			// check moving, if we are moving race_loop will be shown, if not some nice text appears
 			pLapTimer->prepare_race_loop();
 		}
@@ -477,7 +476,7 @@ void speedo_menu::display(){
 		if(old_state*10+1==state){ // comming from menu below
 			// delete that file and switch on high speed GPS
 			pLapTimer->clear_file(pLapTimer->get_active_filename());
-			//pSensors->m_gps->update_rate_10Hz();
+			pSensors->m_gps->update_rate_10Hz();
 			// go to next state that will draw the screen
 			state=state*10+1;
 			update_display=true;
@@ -797,7 +796,7 @@ void speedo_menu::display(){
 		SdFile root;
 		root.openRoot(&pSD->volume);
 		SdFile subdir;
-		if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  Serial.println("open subdir /config failed"); };
+		if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); };
 
 		// generate filename
 		char filename[10];
@@ -2130,7 +2129,7 @@ void speedo_menu::init(){
 	update_display=false;
 	just_marker_update=false;
 
-	Serial.println("Menu init done");
+	pDebug->sprintlnp(PSTR("Menu init done"));
 };
 
 void speedo_menu::set_buttons(bool left,bool up,bool down,bool right){
