@@ -14,7 +14,7 @@
 #define		INFO_SPEED 5
 /**************** gps *******************/
 class speedo_gps{
-#define STD_MARK
+#define STD_MARK 0
 #define SIMPLE_MARK 1
 #define SECTOR_END_MARK 2
 #define LAP_END_MARK 3
@@ -77,7 +77,7 @@ private:
 	int ringbuf_counter; // position im ring-empfangs-buffer
 	char gps_buffer1[SERIAL_BUFFER_SIZE]; // buffer zum entgegennehmen der seriellen daten
 	char gps_buffer2[SERIAL_BUFFER_SIZE]; // buffer zum entgegennehmen der seriellen daten
-	void store_to_sd();
+	int store_to_sd();
 	void parse(char linea[SERIAL_BUFFER_SIZE],int datensatz);
 	void calc_navi();
 	void set_drive_status(int speed, int ss, int sat, char status);

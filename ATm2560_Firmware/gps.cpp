@@ -87,8 +87,9 @@ void speedo_gps::init(){
 #define F_CPU 16000000UL // Systemtakt in Hz - Definition als unsigned long beachten
 #endif
 #define UART_BAUD_SELECT(baudRate,xtalCpu) (((float)(xtalCpu))/(((float)(baudRate))*8.0)-1.0+0.5)
-	// set own UART datarate to 115200 @16MHz clock
+#define BAUDRATE_9600 9600
 #define BAUDRATE_115200 115200
+	// set own UART datarate to 115200 @16MHz clock
 	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_115200,F_CPU);
 	UCSR1B |=	(1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
 	UCSR1A |= 	(1<<U2X1); // Double the USART Transmission Speed
@@ -121,7 +122,6 @@ void speedo_gps::update_rate_10Hz(){
 void speedo_gps::reconfigure(){
 	//Serial.println("GPS failed, reconfiguring");
 	// Berechnungen
-#define BAUDRATE_9600 9600
 	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_9600,F_CPU);
 	UCSR1B |= (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
 	UCSR1A |= (1 <<U2X1); // Double the USART Transmission Speed
@@ -130,7 +130,6 @@ void speedo_gps::reconfigure(){
 	// set GPS UART datarate to 115200:
 	SendString("$PMTK251,115200*1F\r\n");
 	_delay_ms(100); // time needed to send the last char
-#define BAUDRATE_115200 115200
 	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_115200,F_CPU);
 	UCSR1B |=	(1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
 	UCSR1A |= 	(1<<U2X1); // Double the USART Transmission Speed
@@ -325,24 +324,22 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 				temp_gps_time=temp_gps_time*10+(linea[j]-48);
 			}
 		}
+
 		for (int j=indices[8]+1;j<(indices[9]);j++){
 			temp_gps_date=temp_gps_date*10+(linea[j]-48);    //181102 für 18.Nov 2002
 		}
-		// in date steht sowas wie  030411 für 3.4.2011
-		// Uhr stellen
-		int temp_mon=int(floor(temp_gps_date/100))%100;
-		int temp_day=floor(temp_gps_date/10000);
 		//if(first_dataset || status=='A'){ // wenn die daten gültig sind oder es der erste datensatz ist
 
 		pSensors->m_clock->set_date_time(
-				int(temp_gps_date-temp_mon*100-temp_day*10000)%100,
-				temp_mon,
-				temp_day,
+				int(mod(temp_gps_date,100)),
+				int(floor(temp_gps_date/100))%100,
+				int(floor(temp_gps_date/10000)),
 				int(floor(temp_gps_time/10000000))%24,
 				int(floor(temp_gps_time/100000))%100,
 				int(mod((unsigned long)(floor(temp_gps_time/1000)),100)), // std "%" can be use case 23.48.73 > 32768
 				first_dataset
 		);
+
 		if(first_dataset){
 			//Serial.println("GPS connected, configuring data");
 			pConfig->day_trip_check();
@@ -365,7 +362,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			gps_speed_arr[gps_count]=0;
 			gps_course[gps_count]=0;
 			gps_special[gps_count]=note_this_place;
-			set_gps_mark(SIMPLE_MARK); // reset
+			set_gps_mark(STD_MARK); // reset
 			gps_time[gps_count]=temp_gps_time;
 			gps_date[gps_count]=temp_gps_date;
 
@@ -504,9 +501,10 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 
 		gps_write_status=1;
 		if(pSensors->get_RPM(0)>0){
-			store_to_sd(); //to save 30 datapoints about 70ms SD write time are needed
+			if(store_to_sd()>=0){ //to save 30 datapoints about 70ms SD write time are needed
+				gps_count=-1; // after writing the points to sd => erase them, parse will count up to 0 for us
+			}
 		};
-		gps_count=-1; // after writing the points to sd => erase them, parse will count up to 0 for us
 
 #ifdef SD_DEBUG
 		pDebug->sprintlnp(PSTR("nach store_to_sd()"));
@@ -575,7 +573,7 @@ long speedo_gps::get_info(unsigned char select){
 
 // alle 30 gültigen gps sample einmalauf der SD speichern bitte
 // im kolja_gps format -> yeah bloß nix bekanntes, kompatibles verwenden, alles properitär machen :D
-void speedo_gps::store_to_sd(){
+int speedo_gps::store_to_sd(){
 	// generate filename && store
 	char *filename;
 	filename = (char*) malloc (11);
@@ -583,7 +581,11 @@ void speedo_gps::store_to_sd(){
 	else memset(filename,'\0',11);
 
 	// 20.3.2011 => 110320
-	sprintf(filename,"%06lu.GPS",pSensors->m_clock->get_long_date());
+	if(pSensors->m_clock->get_long_date()!=999999){
+		sprintf(filename,"%06lu.GPS",pSensors->m_clock->get_long_date());
+	} else {
+		return -1;
+	}
 
 #ifdef SD_DEBUG
 	pDebug->sprintlnp(PSTR("filename is "));
@@ -598,6 +600,7 @@ void speedo_gps::store_to_sd(){
 
 	free(filename);
 	//done
+	return 0;
 };
 
 /********* berechnung der distanz ***********
@@ -907,11 +910,11 @@ void speedo_gps::loop(){
  ****************************************************/
 int speedo_gps::get_logged_points(char* buffer,int a){
 	gps_write_status=9;
-	if(a<=gps_count || (a<=2)){
+	if(a<=gps_count){
 		if(gps_time[a]>240000000L) gps_time[a]=000000;
 		if(gps_date[a]>311299) gps_date[a]=311299;
-		if(gps_lati[a]>180000000) gps_lati[a]=0;
-		if(gps_long[a]>180000000) gps_long[a]=0;
+		if(gps_lati[a]>180000000) gps_lati[a]=0;	// NMEA Format!
+		if(gps_long[a]>180000000) gps_long[a]=0;	// NMEA Format!
 		if(gps_speed_arr[a]>300) gps_speed_arr[a]=300;
 		if(gps_course[a]>3600) gps_course[a]=0;
 		if(gps_alt[a]>50000 || gps_alt[a]<50000) gps_alt[a]=50000;
