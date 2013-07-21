@@ -72,9 +72,9 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss, 
 	if(( (internal_clock_timestamp-setter_clock_timestamp)>10 || (internal_clock_timestamp-setter_clock_timestamp)<-10) && ss>-1){ m_ss=unsigned(ss); }; // min 10 sec differenz
 	if(mm>-1 && mm<60){ m_mm=mm; };
 	if(hh>-1 && hh<24){ m_hh=hh; }; // Überlauf checken
-	if(day>-1 && day<32){ m_day=day; };
-	if(mon>-1 && mon<13){ m_mon=mon; };
-	if(year>-1){ m_year=year; };
+	if(day>0 && day<32){ m_day=day; };
+	if(mon>0 && mon<13){ m_mon=mon; };
+	if(year>0){ m_year=year; };
 
 	// berechnung der Winterzeit mit Rohdaten
 	if(check_winter){
