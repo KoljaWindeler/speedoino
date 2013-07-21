@@ -488,6 +488,7 @@ void speedo_menu::display(){
 				pSensors->m_gps->update_rate_1Hz();
 				_delay_ms(1500); // show it for a certain time
 				back();
+				back(); // jump back to menu
 				update_display=true;
 			} else {
 				// save point as regualr sector border
