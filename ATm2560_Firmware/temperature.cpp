@@ -77,7 +77,7 @@ void speedo_temperature::init(){
 	I2c.begin();
 	I2c.setSpeed(1); /// slow
 	I2c.timeOut(100); // 100 ms to get Temperature
-	Serial.println("Temp init done.");
+	pDebug->sprintlnp(PSTR("Temp init done."));
 }
 
 void speedo_temperature::read_oil_temp() {

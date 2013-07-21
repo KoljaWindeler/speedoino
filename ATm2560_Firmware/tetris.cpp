@@ -611,8 +611,8 @@ void tetris::check_stack(){
 
 void tetris::show_grid_on_serial(){
 	/////////////// SHOW GRID ///////////////////
-	Serial.println("\n\n");
-	Serial.println("===== GRID =====");
+	pDebug->sprintlnp(PSTR("\n\n"));
+	pDebug->sprintlnp(PSTR("===== GRID ====="));
 	for(int a_y=0;a_y<LINES;a_y++){
 		for(int a_x=0;a_x<COLS;a_x++){
 			if(area[a_y] & (1<<(COLS-a_x)))
@@ -622,8 +622,8 @@ void tetris::show_grid_on_serial(){
 		}
 		Serial.println("");
 	}
-	Serial.println("===== GRID =====");
-	Serial.println("\n\n");
+	pDebug->sprintlnp(PSTR("===== GRID ====="));
+	pDebug->sprintlnp(PSTR("\n\n"));
 	/////////////// SHOW GRID ///////////////////
 };
 

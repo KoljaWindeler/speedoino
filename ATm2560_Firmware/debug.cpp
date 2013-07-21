@@ -147,17 +147,17 @@ void debugging::speedo_loop(int state,int intensive,unsigned long previousMillis
 		} else if(state==18){
 			sprintlnp(PSTR("Schreibe Gang"));
 		} else if(state==19){
-			Serial.print("Schreibe Fuel:");
+			sprintp(PSTR("Schreibe Fuel:"));
 			Serial.println(char_buffer);
 		} else if(state==20){
 			differ_show=millis()-previousMillis;
-			Serial.print("Normeler Tacho refresh dauerte ");
+			sprintp(PSTR("Normeler Tacho refresh dauerte "));
 			Serial.print(differ_show);
-			Serial.print(" ms");
+			sprintp(PSTR(" ms"));
 		} else if(state==21){
-			Serial.print("Loop Durchlauf, menustate ist ");
+			sprintp(PSTR("Loop Durchlauf, menustate ist "));
 			Serial.print(pMenu->state);
-			Serial.print("\n");
+			sprintp(PSTR("\n"));
 		} else if(state==22){
 			sprintlnp(PSTR("Oel fertig"));
 		} else if(state==23){

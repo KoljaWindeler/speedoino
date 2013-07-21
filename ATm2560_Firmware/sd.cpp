@@ -51,7 +51,7 @@ int speedo_sd::writeString(SdFile& f, char *str) {
 void speedo_sd::init(){
 	// p kanal runterziehen damit er leitend wird
 	power_up(3);
-	Serial.println(", SD init done");
+	pDebug->sprintlnp(PSTR(", SD init done"));
 };
 
 void speedo_sd::power_down(){
@@ -65,7 +65,7 @@ void speedo_sd::power_up(unsigned char tries){
 	sd_failed=false;
 	bool allright=true;
 	while(tries>0){ //maximal 3 versuche die sd karte zu öffnen
-		Serial.print("SD try:");
+		pDebug->sprintlnp(PSTR("SD try:"));
 		Serial.print(3-tries);
 		allright=true;
 		if (card.init((unsigned char)SPI_HALF_SPEED)==0){	allright=false; };

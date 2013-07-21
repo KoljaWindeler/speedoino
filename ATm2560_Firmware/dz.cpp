@@ -101,7 +101,7 @@ void speedo_dz::init() {
 	EICRB |= (1<<ISC40) | (1<<ISC41); // rising edge on INT4
 	peak_count=0; // set to zero
 
-	Serial.println("DZ init done");
+	pDebug->sprintlnp(PSTR("DZ init done"));
 	blitz_en=false;
 	Serial3.flush();
 };

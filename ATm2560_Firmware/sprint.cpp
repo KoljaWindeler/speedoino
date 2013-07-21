@@ -69,7 +69,6 @@ void speedo_sprint::loop(){
 
 	// refresh display if needed
 	if(refresh){
-		Serial.println("Bin im refresh");
 		char *char_buffer;
 		char_buffer = (char*) malloc (22);
 		if (char_buffer==NULL) pDebug->sprintlnp(PSTR("Malloc failed"));
@@ -113,7 +112,6 @@ void speedo_sprint::loop(){
 		};
 
 		if(pSpeedo->disp_zeile_bak[1]!=signed(sprint_time+1+status+int(blink_show))){
-			Serial.println("ungleich buak");
 			pSpeedo->disp_zeile_bak[1]=int(sprint_time+1+status+int(blink_show));
 			if(blink_show){
 				if(status==SPRINT_WAIT_ON_STOP){
@@ -126,7 +124,6 @@ void speedo_sprint::loop(){
 			} else {
 				strcpy_P(char_buffer, PSTR("          "));
 			}
-			Serial.println(char_buffer);
 			pMenu->center_me(char_buffer,22);
 			Serial.println(char_buffer);
 			pOLED->string(pSpeedo->default_font,char_buffer,0,6,0,DISP_BRIGHTNESS,0);

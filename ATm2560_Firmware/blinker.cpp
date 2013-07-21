@@ -57,8 +57,8 @@ void moped_blinker::set_start(unsigned long dist,int kmh){
 bool moped_blinker::warn(unsigned long dist){
 	if(flasher_active && BLINKER_ENABLED){
 		if(dist>(start+dist_to_warn)){ // mal nachfragen wenn nach 200 metern der Blinker noch an ist
-			Serial.println("return true");
-			_delay_ms(100);
+			//Serial.println("return true");
+			//_delay_ms(100);
 			return true;
 		};
 	};
