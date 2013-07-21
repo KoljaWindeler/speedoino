@@ -174,8 +174,8 @@ public class RouteMap extends MapActivity implements OnTouchListener
 							double latitude=Double.parseDouble(line_splitted[2]);
 							double longitude=Double.parseDouble(line_splitted[3]);
 							//Log.d(DEBUG_TAG, "Koordinaten: " + String.valueOf(longitude) + " / "+ String.valueOf(latitude));
-							latitude=Math.floor(latitude/1000000.0)*1000000+Math.round((latitude%1000000.0)*10/6);
-							longitude=Math.floor(longitude/1000000.0)*1000000+Math.round((longitude%1000000.0)*10/6);
+							latitude=Math.floor(latitude/1000000.0)*1000000+Math.round((latitude%1000000.0)*10/6); // nmea to dec!!
+							longitude=Math.floor(longitude/1000000.0)*1000000+Math.round((longitude%1000000.0)*10/6); // nmea to dec!!
 							p = new GeoPoint((int) (latitude),(int) (longitude));
 							gps_points.add(p);
 							// speed
