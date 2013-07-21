@@ -101,7 +101,7 @@ int configuration::write(const char *filename){
 			if(strncmp("speedo.txt",filename,10)==0 && storage_outdated){
 				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
-					Serial.print("platzhalter1");
+					//Serial.print("platzhalter1");
 					return -2;
 				} else {
 					// get some buffer
@@ -132,7 +132,7 @@ int configuration::write(const char *filename){
 			} else if(strncmp("GANG.TXT",filename,8)==0){
 				if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  pDebug->sprintlnp(PSTR("open subdir /config failed")); return -1; };
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
-					Serial.print("platzhalter2");
+					//Serial.print("platzhalter2");
 					return -2;
 				} else {
 					// get some buffer
@@ -192,7 +192,6 @@ int configuration::write(const char *filename){
 					return -1;
 				};
 				if (!file.open(&subdir, filename, O_CREAT |  O_APPEND | O_WRITE)){
-					Serial.print("platzhalter3");
 					pSensors->m_gps->gps_write_status=-2;
 					return -2;
 				} else {
@@ -230,7 +229,7 @@ int configuration::write(const char *filename){
 					return -1;
 				};
 				if (!file.open(&subdir, filename, O_CREAT |  O_TRUNC | O_WRITE)){
-					Serial.print("platzhalter4");
+					//Serial.print("platzhalter4");
 					return -2;
 				} else {
 					// get some buffer
@@ -604,7 +603,7 @@ int configuration::read( const char* folder, const char* filename, int read_mode
 
 		uint8_t* buffer; // buffer fuer jedes Zeichen
 		buffer = (uint8_t*) malloc (2);
-		if (buffer==NULL) Serial.println("Malloc failed");
+		if (buffer==NULL) pDebug->sprintp(PSTR("Malloc failed"));
 		else memset(buffer,'\0',2);
 
 		while ((n = file.read(buffer, 1)) > 0) { // n=1/0=wieviele byte gelesen wurden
@@ -615,17 +614,17 @@ int configuration::read( const char* folder, const char* filename, int read_mode
 					if(read_mode==READ_MODE_CONFIGFILE){
 						int return_value=parse(&buf[0]);
 						if(return_value<0) {
-							Serial.print("parse_config erzeugte Fehlercode ");
+							pDebug->sprintp(PSTR("parse_config erzeugte Fehlercode "));
 							Serial.print(return_value);
-							Serial.print(". Eingabe war:");
+							pDebug->sprintp(PSTR(". Eingabe war:"));
 							Serial.println(buf);
 						};
 					} else if(read_mode==READ_MODE_TEXTREPLACEMENT){
 						int return_value=parse_textreplacement(buf,search_string);
 						if(return_value<0) {
-							Serial.print("parse_textreplacement erzeugte Fehlercode ");
+							pDebug->sprintp(PSTR("parse_textreplacement erzeugte Fehlercode "));
 							Serial.print(return_value);
-							Serial.print(". Eingabe war:");
+							pDebug->sprintp(PSTR(". Eingabe war:"));
 							Serial.println(buf);
 						};
 					};
