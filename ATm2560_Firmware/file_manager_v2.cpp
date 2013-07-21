@@ -518,17 +518,21 @@ void speedo_filemanager_v2::parse_command(){
 				bool file_open_failed=false;
 				bool file_seek_failed=false;
 				int start_of_payload=0;
-
+				uint16_t filename_length=msgBuffer[1];
+				for(unsigned int i=0;i<filename_length;i++){
+					msgBuffer[i]=msgBuffer[i+2]; // make it suiteable for get_file_handle
+					if(last_file[i]!=msgBuffer[i]){
+						file_already_open=false;
+					}
+				}
+				msgBuffer[filename_length]='\0';
 
 				if(fm_file.isFile()){
-					uint16_t filename_length=msgBuffer[1];
 					for(unsigned int i=0;i<filename_length;i++){
-						msgBuffer[i]=msgBuffer[i+2]; // make it suiteable for get_file_handle
 						if(last_file[i]!=msgBuffer[i]){
 							file_already_open=false;
 						}
 					}
-					msgBuffer[filename_length]='\0';
 				} else {
 					file_already_open=false;
 				};
