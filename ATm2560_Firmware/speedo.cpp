@@ -141,9 +141,10 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		}
 		///// Navi ////
 		else if(pSensors->m_gps->navi_active){
-			int result_value=pSensors->m_gps->get_order(char_buffer); // result value ist der zahlen wert bis zur nÃ¤chsten aktion, 11km => 11 | 900m => 900 (10m Schritte)
-			if(disp_zeile_bak[ADD_INFO2]!=result_value){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh! // wird also einmal pro sek geschrieben
-				disp_zeile_bak[ADD_INFO2]=int(result_value);
+			int dist=0;
+			int result_value=pSensors->m_gps->get_order(char_buffer,&dist); // result value ist der zahlen wert bis zur nÃ¤chsten aktion, 11km => 11 | 900m => 900 (10m Schritte)
+			if(disp_zeile_bak[ADD_INFO2]!=dist){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh! // wird also einmal pro sek geschrieben
+				disp_zeile_bak[ADD_INFO2]=int(dist);
 				pDebug->speedo_loop(13,0,previousMillis," ");
 				if(result_value>-1){ // -1 => no gps
 					pOLED->filled_rect(0,8*addinfo2_widget.y,128,8,15); // den bereich am ende der Zeile leeren ??
@@ -347,7 +348,8 @@ void speedo_speedo::loop(unsigned long previousMillis){
 #endif
 	if(pSensors->m_gps->navi_active){ // Arrow Mode
 		if((!(pSpeedo->arrow_widget.x==-1 && pSpeedo->arrow_widget.y==-1)) && check_no_collision_with_addinfo2(arrow_widget.y)){
-			int result_value=pSensors->m_gps->get_order(char_buffer); // distance will be calculated on the parse routine, this call just copies it
+			int result_value;
+			pSensors->m_gps->get_order(char_buffer,&result_value); // distance will be calculated on the parse routine, this call just copies it
 			if(disp_zeile_bak[ARROW]!=result_value+pSensors->m_gps->valid){
 				pOLED->draw_arrow(pSensors->m_gps->winkel,arrow_widget.x,arrow_widget.y);
 				//pOLED->draw_arrow((pSensors->m_clock->get_ss()*9+1)%360,arrow_widget.x,arrow_widget.y);

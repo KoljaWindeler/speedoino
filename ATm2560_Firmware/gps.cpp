@@ -713,7 +713,7 @@ unsigned long speedo_gps::mod(unsigned long zahl,unsigned long teiler){
 };
 
 // gib distanz,richtung,straße zurück
-int speedo_gps::get_order(char char_buffer[]){
+int speedo_gps::get_order(char char_buffer[], int* dist){
 	// wenn kein gps signal am start war für mehr als 15 sec
 	char_buffer[0]='\0'; // leeren
 	if(valid>15){
@@ -727,23 +727,26 @@ int speedo_gps::get_order(char char_buffer[]){
 	if(entf>=10000){ // mehr als 10 km
 		value=int(floor(entf/1000)); // wert als km
 		//3+2+1+1+1+10+1+2=21+'\0'=22 -- 25 max
-		sprintf(char_buffer,"%3ikm %c XXXXXXXXXX %02i",value,(125+navi_ziel_rl),navi_point%100); // max 999km
+		sprintf(char_buffer,"%3ikm %c            %02i",value,(125+navi_ziel_rl),navi_point%100); // max 999km
 	}
 	else if(entf>=1000){ // mehr als 1 km
 		value=int(floor(entf/1000)); // wert als km
 		value2=int(floor((entf%1000)/100)); // wert als km
-		sprintf(char_buffer,"%i.%ikm %c XXXXXXXXXX %02i",value,value2,(125+navi_ziel_rl),navi_point%100); // max 9.9km
+		sprintf(char_buffer,"%i.%ikm %c            %02i",value,value2,(125+navi_ziel_rl),navi_point%100); // max 9.9km
 		value=value*10+value2;
 	}
 	else {  // weniger als 1000 m
 		value=int(floor(entf/10)*10); // auf 10m runterbrechen
-		sprintf(char_buffer," %3im %c XXXXXXXXXX %02i",value,(125+navi_ziel_rl),navi_point%100); //max 999m
+		sprintf(char_buffer," %3im %c            %02i",value,(125+navi_ziel_rl),navi_point%100); //max 999m
 	};
-	for(unsigned int i=0;i<10; i++){ // klappt anders nicht ...grmpf in arduino ging das, in eclipse nicht mehr
+	for(unsigned int i=0;i<10 && i<strlen(navi_ziel_name); i++){
 		char_buffer[i+8]=navi_ziel_name[i];
 	};
-	return value;
+
+	*dist=value;
+	return 0;
 };
+
 
 void speedo_gps::set_gps_mark(int type){
 	note_this_place=type;

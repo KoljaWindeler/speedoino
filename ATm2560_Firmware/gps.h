@@ -36,7 +36,7 @@ public:
 
 	unsigned long calc_dist(unsigned long longitude,unsigned long latitude);
 	unsigned long mod(unsigned long zahl,unsigned long teiler);
-	int get_order(char char_buffer[]);
+	int get_order(char char_buffer[], int* dist);
 	void generate_new_order();
 	unsigned long nmea_to_dec(unsigned long nmea);
 	int get_logged_points(char* buffer,int i);
