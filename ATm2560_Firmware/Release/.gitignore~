@@ -5,5 +5,4 @@
 *.lss
 *.map
 *.mk
-*.hex
 makefile

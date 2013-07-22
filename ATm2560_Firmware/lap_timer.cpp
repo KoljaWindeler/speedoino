@@ -149,13 +149,18 @@ void LapTimer::race_loop(){
 		uint8_t update_level = 0; 	// helps us to update only needed areas
 		// calc dist
 		uint32_t dist=pSensors->m_gps->calc_dist(sector_end_longitude,sector_end_latitude);
+		Serial.print("D:");
+		Serial.println(dist);
 
 		if(dist<=LAPTIMER_TARGET_RADIUS){
+			Serial.println("in");
 			// we are close to target
 			if(dist<last_dist_to_target){ // we are moving nearer to the target ... lets wait a bit more
+				Serial.println("closer");
 				update_level|=(1<<UPDATE_LAP_TIME); // just update time
 				last_dist_to_target=dist;
 			} else { // waaah we are moving away again!
+				Serial.println("CALC");
 				// start calculations!
 				last_dist_to_target=255; // set to high value
 				uint32_t cur_sector_time_ms=pSensors->m_gps->get_info(10) - sector_start_timestamp_ms; 	// time we needed in this sector
@@ -232,9 +237,7 @@ void LapTimer::race_loop(){
 
 void LapTimer::prepare_race_loop(){
 	// prepare calculations
-	Serial.println("prepare_reace");
 	if(calc_best_theoretical_lap_time()>=0){ // if any kind of read error happens, don't go on
-		Serial.println("calc_done");
 		/* calc_best_theoretical_lap_time will:
 		 * set delay_calc_active
 		 * set best_theoretical_lap_time_ms
@@ -244,11 +247,9 @@ void LapTimer::prepare_race_loop(){
 
 		if(pSensors->get_speed(false)>0){ // we are moving, quick show screen
 			pMenu->state=4111;
-			Serial.println("if");
 			init_race_screen(); //draw border elements
 			update_race_screen(0xff); // draw display values
 		} else { // we are standing, but we are ready to race
-			Serial.println("else");
 			pMenu->state=411; // main loop will call waiting_on_speed_up() in this state
 			pOLED->clear_screen(); // draw some fancy screen while we are waiting
 
@@ -436,10 +437,8 @@ void LapTimer::update_race_screen(uint8_t level){
 	}
 
 	if(level&(1<<UPDATE_LAP_TIME)){
-		Serial.println("updateing laptime");
 		unsigned long differ=pSensors->m_gps->get_info(10)-lap_start_timestamp_ms;
 		if(differ<5940000){ // 1*99*60*1000=5940000
-			Serial.println(differ);
 			min=floor(differ/60000);
 			sec=int(floor(differ/1000))%60;
 			f_sec=floor((differ%1000)/10);
@@ -676,7 +675,7 @@ int LapTimer::get_sector_data(uint8_t sector_id, uint32_t* latitude,uint32_t* lo
 
 	// get latitude
 	uint32_t temp_value=0;
-	for(int i=0;i<10;i++){ // 10-0 = 10 Chars
+	for(int i=0;i<9;i++){ // 8-0 = 9 Chars
 		if(temp[i]>='0' && temp[i]<='9'){
 			temp_value=temp_value*10+(temp[i]-'0');
 		}
@@ -685,7 +684,7 @@ int LapTimer::get_sector_data(uint8_t sector_id, uint32_t* latitude,uint32_t* lo
 
 	// get longitude
 	temp_value=0;
-	for(int i=11;i<21;i++){ // 21-11 = 10 Chars
+	for(int i=10;i<19;i++){ // 21-11 = 10 Chars
 		if(temp[i]>='0' && temp[i]<='9'){
 			temp_value=temp_value*10+(temp[i]-'0');
 		}
@@ -694,7 +693,7 @@ int LapTimer::get_sector_data(uint8_t sector_id, uint32_t* latitude,uint32_t* lo
 
 	// get sector_time
 	temp_value=0;
-	for(int i=22;i<30;i++){ // 30-22 = 8 Chars
+	for(int i=20;i<29;i++){ // 30-22 = 8 Chars
 		if(temp[i]>='0' && temp[i]<='9'){
 			temp_value=temp_value*10+(temp[i]-'0');
 		}
