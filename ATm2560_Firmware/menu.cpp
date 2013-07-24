@@ -57,7 +57,7 @@ const char * const menu_main[9] PROGMEM= { main_m_0,main_m_1,main_m_2,main_m_3,m
 const char lap_t_m_0[] PROGMEM = "1. Race Mode";
 const char lap_t_m_1[] PROGMEM = "2. Load Sectors";
 const char lap_t_m_2[] PROGMEM = "3. Set new Sectors";
-const char lap_t_m_3[] PROGMEM = "4. -";
+const char lap_t_m_3[] PROGMEM = "4. Reset besttimes";
 const char lap_t_m_4[] PROGMEM = "5. -";
 const char lap_t_m_5[] PROGMEM = "6. -";
 const char lap_t_m_6[] PROGMEM = "7. -";
@@ -523,6 +523,20 @@ void speedo_menu::display(){
 		_delay_ms(200); // we will loose some gps points !! wise?
 		old_state=state;
 		state=4311;
+		update_display=true;
+	}
+	///////////// reset times
+	else if(state==441){
+		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
+		pOLED->show_storry(PSTR("Do you really want to reset all sector times?"),PSTR("Reset record"),DIALOG_NO_YES);
+	}
+	else if(state==4411){
+		pLapTimer->reset_times(pLapTimer->get_active_filename());
+		pOLED->clear_screen();
+		pOLED->string_P_centered(PSTR("Saved"),3,true);
+		_delay_ms(1000);
+		back();
+		back();
 		update_display=true;
 	}
 
@@ -1982,7 +1996,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 		return true;
 	}
 
-	if(bt_keys_en){
+	if(bt_keys_en){	// set to false if you need the serial interface
 		if(Serial.available()>100){ // wenns zuviele sind flushen
 			Serial.flush();
 		} else if(Serial.available()>0){ // an sonsten gern
