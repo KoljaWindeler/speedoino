@@ -562,9 +562,11 @@ long speedo_gps::get_info(unsigned char select){
 		return long(gps_course[inner_gps_count]);
 		break;
 	case 9:
+		//		return 0; //
 		return valid;
 		break;
 	case 10:
+		//		return floor(millis()/100)*100; //
 		return gps_time[inner_gps_count];
 		break;
 	}
@@ -583,14 +585,15 @@ int speedo_gps::store_to_sd(){
 	// 20.3.2011 => 110320
 	if(pSensors->m_clock->get_long_date()!=999999){
 		sprintf(filename,"%06lu.GPS",pSensors->m_clock->get_long_date());
+#ifdef SD_DEBUG
+		pDebug->sprintlnp(PSTR("filename is "));
+		Serial.println(filename);
+#endif
 	} else {
 		return -1;
 	}
 
-#ifdef SD_DEBUG
-	pDebug->sprintlnp(PSTR("filename is "));
-	Serial.println(filename);
-#endif
+
 	gps_write_status=2;
 	// das kann auch ruhig alle 30 sec gemacht werden
 	//pSensors->m_clock->store();
