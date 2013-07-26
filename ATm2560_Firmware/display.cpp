@@ -28,6 +28,7 @@ speedo_disp::speedo_disp(void){
 speedo_disp::~speedo_disp(){
 };
 
+
 void speedo_disp::draw_gps(unsigned char x,unsigned char y, unsigned char sats){
 	send_command(0x15);
 	send_command(x);
@@ -486,6 +487,7 @@ void speedo_disp::show_animation(unsigned char *command){
 	if(pointer_to_spacer!=3){
 		pDebug->sprintp(PSTR("falsche anzahl an kommata"));
 	} else {
+		init(0x38,0x38);
 		// start zahl suchen
 		int start=0;
 		for(int i=spacer[0]+1;i<spacer[1];i++){
@@ -557,6 +559,7 @@ void speedo_disp::show_animation(unsigned char *command){
 				_delay_ms(1); // check ob das hier viel aendert
 			}; //wait
 		}; // for frames
+		init(phase,ref);
 	}; // enough spacer (',')
 };
 
@@ -683,3 +686,5 @@ void speedo_disp::init_speedo(){
 	}
 	pDebug->sprintlnp(PSTR("Done"));
 };
+
+
