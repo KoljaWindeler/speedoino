@@ -452,13 +452,14 @@ void speedo_menu::display(){
 	}
 	///////////////////// set GPS, move to next state
 	else if(state==411){
+		set_buttons(button_state,!button_state,!button_state,!button_state); // just back
 		// check GPS handling
-		if(old_state==state*10+1){ // comming from menu above
+		if(floor(old_state/10)==state){ // comming from menu above
 			pSensors->m_gps->update_rate_1Hz();
 			back();
 			update_display=true;
 		} else {
-			// comming from menu below .. direct by menu switch on high speed gps, otherwise it is already active
+			// comming from menu below .. direct by menu -> switch on high speed gps, otherwise it is already active
 			if(old_state*10+1==state){
 				pSensors->m_gps->update_rate_10Hz();
 			}

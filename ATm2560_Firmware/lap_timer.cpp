@@ -207,7 +207,7 @@ void LapTimer::waiting_on_speed_up(){
 	} else if(pSensors->get_speed(false)>0){ // we are in this state because we were standing
 		pMenu->state=pMenu->state*10+1; // move deeper
 		init_race_screen(true); //draw border elements, reset times
-		race_loop(); // draw display values // TODO call it on our own or let main loop do that?
+		update_race_screen(0xff); // draw display values
 	}
 };
 
