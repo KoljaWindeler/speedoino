@@ -195,15 +195,14 @@ int speedo_clock::getdate(){
 
 //20.12.2011  -> 111220 unsigned long
 unsigned long speedo_clock::get_long_date(){
-	if(m_year+m_mon+m_day==0) // falls die uhr so gar nciht ging geben wir den 99.99.2099 zurück
-		return 999999;
-
-	unsigned long date=m_year;
-	date=date*100+m_mon;
-	date=date*100+m_day;
-	if(date>991231) // two digit year
-		return 0;
-	return date;
+	if(m_year>0 && m_year<99){
+		if(m_mon>0 && m_mon<13){
+			if(m_day>0 && m_day<32){
+				return (((m_year*100)+m_mon)*100)+m_day;
+			}
+		}
+	}
+	return 999999;
 }
 
 
