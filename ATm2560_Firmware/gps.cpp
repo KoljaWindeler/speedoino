@@ -325,29 +325,31 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			}
 		}
 
-		for (int j=indices[8]+1;j<(indices[9]);j++){
-			temp_gps_date=temp_gps_date*10+(linea[j]-48);    //181102 für 18.Nov 2002
+		for (int j=indices[8]+1;j<(indices[9]) && linea[j]>='0' && linea[j]<='9';j++){
+			temp_gps_date=temp_gps_date*10+(linea[j]-48); //181102 für 18.Nov 2002
 		}
-		//if(first_dataset || status=='A'){ // wenn die daten gültig sind oder es der erste datensatz ist
 
-		pSensors->m_clock->set_date_time(
-				int(mod(temp_gps_date,100)),
-				int(floor(temp_gps_date/100))%100,
-				int(floor(temp_gps_date/10000)),
-				int(floor(temp_gps_time/10000000))%24,
-				int(floor(temp_gps_time/100000))%100,
-				int(mod((unsigned long)(floor(temp_gps_time/1000)),100)), // std "%" can be use case 23.48.73 > 32768
-				first_dataset
-		);
+		if(first_dataset || status=='A'){ // wenn die daten gültig sind oder es der erste datensatz ist
+			if(temp_gps_date>=010100 && temp_gps_date<=311299){
+				pSensors->m_clock->set_date_time(
+						int(mod(temp_gps_date,100)),
+						int(floor(temp_gps_date/100))%100,
+						int(floor(temp_gps_date/10000)),
+						int(floor(temp_gps_time/10000000))%24,
+						int(floor(temp_gps_time/100000))%100,
+						int(mod((unsigned long)(floor(temp_gps_time/1000)),100)), // std "%" can be use case 23.48.73 > 32768
+						first_dataset
+				);
+			};
 
-		if(first_dataset){
-			//Serial.println("GPS connected, configuring data");
-			pConfig->day_trip_check();
-			//configure GPS
-			update_rate_1Hz();
-			first_dataset=false;
-		}
-		//};
+			if(first_dataset){
+				//Serial.println("GPS connected, configuring data");
+				pConfig->day_trip_check();
+				//configure GPS
+				update_rate_1Hz();
+				first_dataset=false;
+			}
+		};
 
 		if(status=='A'){ // only evaluate if valid (A means valid)
 			valid=0;
@@ -355,8 +357,6 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 				gps_count++;
 			}
 			// alle leeren
-			gps_time[gps_count]=0;
-			gps_date[gps_count]=0;
 			gps_long[gps_count]=0;
 			gps_lati[gps_count]=0;
 			gps_speed_arr[gps_count]=0;
