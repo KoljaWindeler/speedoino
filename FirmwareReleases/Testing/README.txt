@@ -5,3 +5,4 @@
 14.07.2013	Speedoino_v2.1-26-g8514c15.hex	GPS mit 10Hz updaterate und 115200 baud, leeres Laptimer menü, Zeitstempel mit ms im Log, kleine Verbesserungen
 19.07.2013	Speedoino_v2.1-36-g12971d0.hex	Erste Testing version mit Speedo-LapTimer, Blinker reset im stehen
 25.07.2013	Speedoino_v2.1-56-g34d8c55.hex	Speedo-LapTimer Test Version. Basis Funktion sehen gut aus, GPS log?
+27.07.2013	Speedoino_v2.1-61-g23fa402.hex	GPS Logging repariert.
