@@ -198,7 +198,7 @@ unsigned long speedo_clock::get_long_date(){
 	if(m_year>0 && m_year<99){
 		if(m_mon>0 && m_mon<13){
 			if(m_day>0 && m_day<32){
-				return (((m_year*100)+m_mon)*100)+m_day;
+				return (unsigned long)((unsigned long)((unsigned long)(m_year*100)+m_mon)*100)+m_day;
 			}
 		}
 	}
