@@ -32,6 +32,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -135,6 +136,9 @@ public class BluetoothSerialService {
 	public static final char STATUS_CKSUM_ERROR =  0xC1;
 	public static final char STATUS_CMD_UNKNOWN =  0xC9;
 	public static final char STATUS_EOF		   =  0x10;
+	
+	public static final String PREFS_NAME = "SpeedoinoSettings";
+	
 
 	/**
 	 * Constructor. Prepares a new BluetoothChat session.
@@ -265,7 +269,7 @@ public class BluetoothSerialService {
 			}
 
 			// check if connected
-			silent=true; // kein popup, da wir durchaus mal 1...2... timeouts abwarten müssen für den bootloader
+			silent=true; // kein popup, da wir durchaus mal 1...2... timeouts abwarten m�ssen f�r den bootloader
 			byte send[] = new byte[1];
 			send[0] = CMD_SIGN_ON_FIRMWARE;
 			if(send_save(send,1,400,60)==0){ // 24 sec versuchen
@@ -1315,7 +1319,7 @@ public class BluetoothSerialService {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} // 10 sec für die animation
+		} // 10 sec f�r die animation
 
 		if(send_value>0){
 			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
@@ -1686,7 +1690,7 @@ public class BluetoothSerialService {
 					Log.i("SEND","upload_fileware0()");
 					if(send_save(send2, 1, 750, 15)==0){ // 750ms timeout, 15 retries, das hier wartet nochmal bis zu ~10sec
 						// testing!!
-						if(msgBuffer[1]!=STATUS_CMD_OK){ //!! BUG !! der Tacho geht zuerst in den Reset und würde danach erst anworten, daher wird hier nix zurück kommen :(
+						if(msgBuffer[1]!=STATUS_CMD_OK){ //!! BUG !! der Tacho geht zuerst in den Reset und w�rde danach erst anworten, daher wird hier nix zur�ck kommen :(
 							error=401;
 
 							// fortschritt schreiben
@@ -2035,90 +2039,94 @@ public class BluetoothSerialService {
 
 		}
 
-		// Verify
-		send2[0]=CMD_LOAD_ADDRESS;
-		send2[1]=(byte) 0x80; //warum denn 0x80 ? ist wahrscheinlich egal oder?
-		send2[2]=0x00;
-		send2[3]=0x00;
-		send2[4]=0x00;
-		send2[5]=(byte) 0x8f;
-		if(send_save(send2,6,3000,1)!=0){
-			return 62;
-		}
-		if(msgBuffer[1]!=STATUS_CMD_OK){
-			error=721;
-			return error;
-		};
-
-		int read_time = (int) (System.currentTimeMillis());
-		float read_speed_flat=1600;
-		for(int page=0; page<=highest_pos/256; page++){ // todo <=
-			int size=256;
-			if(page==highest_pos/256){
-				size=(int)(highest_pos%256);
-				if(size%2==1) size--;// word oriented
-			};
-			// send read command
-			send2[0]=CMD_READ_FLASH_ISP;
-			send2[1]=(byte)((byte)(size>>8)&0xff);  // 0x20
-			send2[2]=(byte)(size&0xff);				// 0x00
-			if(send_save(send2,3,3000,1)!=0){
-				return 73;
+		SharedPreferences settings = mContext.getSharedPreferences(PREFS_NAME, 0);
+        Boolean verify_active =settings.getBoolean("verify_active",true);
+		if(verify_active){
+			// Verify
+			send2[0]=CMD_LOAD_ADDRESS;
+			send2[1]=(byte) 0x80; //warum denn 0x80 ? ist wahrscheinlich egal oder?
+			send2[2]=0x00;
+			send2[3]=0x00;
+			send2[4]=0x00;
+			send2[5]=(byte) 0x8f;
+			if(send_save(send2,6,3000,1)!=0){
+				return 62;
 			}
 			if(msgBuffer[1]!=STATUS_CMD_OK){
-				error=731;
+				error=721;
 				return error;
 			};
 
-			for(int rel_flash_pos=0; rel_flash_pos<size; rel_flash_pos+=2){ // in [0] steht das command und in [1] der status, danach die Daten
-				int flash_word=page*256+rel_flash_pos;
-				byte controllerbyte_low=(byte)msgBuffer[rel_flash_pos+2];
-				byte controllerbyte_high=(byte)msgBuffer[rel_flash_pos+1+2];
-				byte hexbyte_low=send[flash_word];
-				byte hexbyte_high=send[flash_word+1];
-				if(controllerbyte_high!=hexbyte_high || controllerbyte_low!=hexbyte_low){
-					error=741;
-					return error;
+			int read_time = (int) (System.currentTimeMillis());
+			float read_speed_flat=1600;
+			for(int page=0; page<=highest_pos/256; page++){ // todo <=
+				int size=256;
+				if(page==highest_pos/256){
+					size=(int)(highest_pos%256);
+					if(size%2==1) size--;// word oriented
+				};
+				// send read command
+				send2[0]=CMD_READ_FLASH_ISP;
+				send2[1]=(byte)((byte)(size>>8)&0xff);  // 0x20
+				send2[2]=(byte)(size&0xff);				// 0x00
+				if(send_save(send2,3,3000,1)!=0){
+					return 73;
 				}
-			}
-			// fortschritt schreiben
-			// calculate speed
-			int time_diff= ((int)System.currentTimeMillis()-read_time)/1000;
-			if(time_diff==0) time_diff=1;
-			int read_speed=page*256/time_diff;
-			read_speed_flat=(19*read_speed_flat+read_speed)/20;
-			String speed_filled=String.valueOf(Math.floor(read_speed_flat/10)/100);
-			while(speed_filled.substring(speed_filled.lastIndexOf('.')+1).length()<2){
-				speed_filled+="0";
-			}
-			// calculate remaining time
-			if(read_speed_flat==0) read_speed_flat=1600;
-			int time_left=(int) ((highest_pos-(page*256))/read_speed_flat);
-			String std_left=String.valueOf((int)Math.floor(time_left/3600));
-			if(std_left.length()<2) std_left="0"+std_left;
-			String min_left=String.valueOf((int)Math.floor(time_left/60));
-			if(min_left.length()<2) min_left="0"+min_left;
-			String sec_left=String.valueOf(time_left%60);
-			if(sec_left.length()<2) sec_left="0"+sec_left;
-			// calculate amount
-			String amount=String.valueOf(Math.floor((page*256)/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10);
-			String prozent=String.valueOf((int)((page*256)*100)/highest_pos);
+				if(msgBuffer[1]!=STATUS_CMD_OK){
+					error=731;
+					return error;
+				};
 
-			// build message
-			String full_message="Speedoino "+prozent+"% verified\n";
-			full_message+="    Total "+amount+" KB\n";
-			full_message+="    Download @ "+speed_filled+" KB/sec\n";
-			full_message+="    Remaining "+std_left+":"+min_left+":"+sec_left;
+				for(int rel_flash_pos=0; rel_flash_pos<size; rel_flash_pos+=2){ // in [0] steht das command und in [1] der status, danach die Daten
+					int flash_word=page*256+rel_flash_pos;
+					byte controllerbyte_low=(byte)msgBuffer[rel_flash_pos+2];
+					byte controllerbyte_high=(byte)msgBuffer[rel_flash_pos+1+2];
+					byte hexbyte_low=send[flash_word];
+					byte hexbyte_high=send[flash_word+1];
+					if(controllerbyte_high!=hexbyte_high || controllerbyte_low!=hexbyte_low){
+						error=741;
+						return error;
+					}
+				}
+				// fortschritt schreiben
+				// calculate speed
+				int time_diff= ((int)System.currentTimeMillis()-read_time)/1000;
+				if(time_diff==0) time_diff=1;
+				int read_speed=page*256/time_diff;
+				read_speed_flat=(19*read_speed_flat+read_speed)/20;
+				String speed_filled=String.valueOf(Math.floor(read_speed_flat/10)/100);
+				while(speed_filled.substring(speed_filled.lastIndexOf('.')+1).length()<2){
+					speed_filled+="0";
+				}
+				// calculate remaining time
+				if(read_speed_flat==0) read_speed_flat=1600;
+				int time_left=(int) ((highest_pos-(page*256))/read_speed_flat);
+				String std_left=String.valueOf((int)Math.floor(time_left/3600));
+				if(std_left.length()<2) std_left="0"+std_left;
+				String min_left=String.valueOf((int)Math.floor(time_left/60));
+				if(min_left.length()<2) min_left="0"+min_left;
+				String sec_left=String.valueOf(time_left%60);
+				if(sec_left.length()<2) sec_left="0"+sec_left;
+				// calculate amount
+				String amount=String.valueOf(Math.floor((page*256)/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10);
+				String prozent=String.valueOf((int)((page*256)*100)/highest_pos);
 
-			Bundle bundle = new Bundle();
-			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-			bundle.putString("msg", full_message);
-			bundle.putInt("state", 8);
-			msg.setData(bundle);
-			mHandlerUpdate.sendMessage(msg);
-			// fortschritt schreiben
+				// build message
+				String full_message="Speedoino "+prozent+"% verified\n";
+				full_message+="    Total "+amount+" KB\n";
+				full_message+="    Download @ "+speed_filled+" KB/sec\n";
+				full_message+="    Remaining "+std_left+":"+min_left+":"+sec_left;
+
+				Bundle bundle = new Bundle();
+				Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+				bundle.putString("msg", full_message);
+				bundle.putInt("state", 8);
+				msg.setData(bundle);
+				mHandlerUpdate.sendMessage(msg);
+				// fortschritt schreiben
+			}
+			// Verify
 		}
-		// Verify
 
 		// send leave_programmer command
 		send2[0]=CMD_LEAVE_PROGMODE_ISP;

@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-sdk android:minSdkVersion="10" />
 
@@ -47,11 +47,15 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/ImageEditor"
             android:theme="@android:style/Theme.NoTitleBar" />
-
         <activity
             android:name=".MapEditor"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/MapEditor"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".MySettings"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/MySettingsTitle"
             android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name=".RouteMap"
@@ -63,6 +67,7 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/Settings"
             android:theme="@android:style/Theme.Dialog" />
+
         <uses-library android:name="com.google.android.maps" />
     </application>
 

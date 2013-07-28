@@ -351,7 +351,8 @@ OnClickListener {
 			}
 			return true;
 		case R.id.menu_settings:
-			// doPreferences();
+			Intent serverIntent = new Intent(this, MySettings.class);
+			startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
 			return true;
 		case R.id.menu_about:
 			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
@@ -770,11 +771,13 @@ OnClickListener {
 		protected void onPreExecute() {
 			dialog.setMessage("Downloading file...");
 			dialog.show();
+			wl.acquire();
 		};
 
 		@Override
 		protected void onPostExecute(String result) {
 			dialog.dismiss();
+			wl.release();
 		}
 
 		private final Handler mHandlerUpdate = new Handler() {
@@ -828,11 +831,13 @@ OnClickListener {
 		protected void onPreExecute() {
 			dialog.setMessage("Uploading file...");
 			dialog.show();
+			wl.acquire();
 		};
 
 		@Override
 		protected void onPostExecute(String result) {
 			dialog.dismiss();
+			wl.release();
 		}
 
 		private final Handler mHandlerUpdate = new Handler() {
@@ -884,6 +889,7 @@ OnClickListener {
 		protected void onPreExecute() {
 			dialog.setMessage("Flashing Firmware ...");
 			dialog.show();
+			wl.acquire();
 		};
 
 		@Override
@@ -903,6 +909,7 @@ OnClickListener {
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {	}});
 			alertDialog.show();
+			wl.release();
 		}
 
 		private final Handler mHandlerUpdate = new Handler() {
