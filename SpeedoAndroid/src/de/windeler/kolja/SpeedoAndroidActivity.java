@@ -812,9 +812,9 @@ OnClickListener {
 				Log.i("JKW","put file passed");
 				// 3) and if it is a GFX File, show it
 				if (params[1].substring(0, 3).contentEquals("GFX")) {
-					mSerialService.showgfx(params[1].substring(params[1].lastIndexOf('/') + 1));
-					// delete source file, if its a GFX file 
 					File deleteSource = new File(params[0]);
+					mSerialService.showgfx(params[1].substring(params[1].lastIndexOf('/') + 1),25,0,(int) (deleteSource.length()/4096));
+					// delete source file, if its a GFX file
 					if(deleteSource.exists())
 						deleteSource.delete();
 				}
@@ -946,13 +946,13 @@ OnClickListener {
 		};
 	}
 
-	protected class showGFX extends AsyncTask<String, Integer, String> {
-		@Override
-		protected String doInBackground(String... params) {
-			mSerialService.showgfx(params[0]);
-			return "japp";
-		}
-	};
+//	protected class showGFX extends AsyncTask<String, Integer, String> {
+//		@Override
+//		protected String doInBackground(String... params) {
+//			mSerialService.showgfx(params[0]);
+//			return "japp";
+//		}
+//	};
 
 	// klasse die das loading fenster startet und im hintergrund "download"
 	// ausfuehrt
@@ -1279,7 +1279,7 @@ OnClickListener {
 
 		// go on
 		if(menuItemIndex==0){
-			mSerialService.showgfx(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1));
+			mSerialService.showgfx(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1),25,0,(int) (t2a_size/4096));
 		} else if(menuItemIndex==2){
 			mSerialService.setStartup(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1),25,0,(int) (t2a_size/4096));
 		}
@@ -1301,7 +1301,7 @@ OnClickListener {
 			public void onClick(DialogInterface dialog, int which) {  
 				int InterFramedelay=(which+1)*5;
 				if(menuItemIndex==1){
-					mSerialService.showgfx(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1)); // TODO Add speed
+					mSerialService.showgfx(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1),InterFramedelay,0,(int) (t2a_size/4096));
 				} else if(menuItemIndex==3){
 					mSerialService.setStartup(t2a_dest.substring(t2a_dest.lastIndexOf('/')+1),InterFramedelay,0,(int) (t2a_size/4096));
 				}

@@ -641,27 +641,17 @@ void speedo_filemanager_v2::parse_command(){
 				////////////////////////////// DEL FILE /////////////////////////////////
 				////////////////////////////// SHOW GFX /////////////////////////////////
 				// TRANSFER VOM HANDY ZUM TACHO
-				/* hinweg:
-				 * msgBuffer[0]=CMD_SHOW_GFX
-				 * msgBuffer[1]=length of filename
-				 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
-				 *
-				 * rueckweg:
-				 * msgBuffer[0]=CMD_SHOW_GFX
-				 * msgBuffer[1]=COMMAND_OK
-				 */
+				// incoming:
+				// [0]CMD_SHOW_GFX
+				// [1..(msgLength-1)]CMD_SHOW_GFX
+				// outgoing
+				// [0]CMD_SHOW_GFX
+				// [1]STATUS
 			} else if(msgBuffer[0]==CMD_SHOW_GFX){
-				unsigned int length_of_filename=(unsigned int)msgBuffer[1];
-				char filename[13];
-				for(unsigned int i=0;i<length_of_filename;i++){
-					filename[i]=msgBuffer[i+2];
+				for(unsigned int i=0;i<msgLength-1;i++){
+					msgBuffer[i]=msgBuffer[i+1]; // shift it from 1..(msgLength-1) to 0..(msgLength-2)
 				}
-				filename[length_of_filename]='\0';
-				// we don't know if this is a animation or just an ordinary file... so try to loop
-				// a animation. if the seeker could not reach the suggested frame, sd2ssd returns 3
-				// frame_counter starts with =0, if the sd2ssd returns a value > 0, the while loop
-				// ends after one interation. so frame_counter will be =1, so: >1 => ok, at least 1 frame
-				// shown, ==1 => failed, no frame shown
+				msgBuffer[msgLength-1]=0x00; // set stopper
 
 				//assume that its alright
 				pMenu->state=57111; // 11 will refresh the speedo every second
@@ -673,16 +663,7 @@ void speedo_filemanager_v2::parse_command(){
 				answere_transmitted=true;
 
 				// show gif/jpg
-				int return_value=0;
-				int frame_counter=0;
-				while(return_value==0){
-					return_value=pOLED->sd2ssd(filename,frame_counter);
-					_delay_ms(20);
-					frame_counter++;
-					pSensors->m_reset->toggle();
-				}
-				// end animation
-
+				pOLED->show_animation(msgBuffer);
 				////////////////////////////// SHOW GFX /////////////////////////////////
 				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
 			} else if(msgBuffer[0]==CMD_RESET_SMALL_AVR){

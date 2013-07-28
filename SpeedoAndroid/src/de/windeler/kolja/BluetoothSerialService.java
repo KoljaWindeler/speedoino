@@ -136,9 +136,9 @@ public class BluetoothSerialService {
 	public static final char STATUS_CKSUM_ERROR =  0xC1;
 	public static final char STATUS_CMD_UNKNOWN =  0xC9;
 	public static final char STATUS_EOF		   =  0x10;
-	
+
 	public static final String PREFS_NAME = "SpeedoinoSettings";
-	
+
 
 	/**
 	 * Constructor. Prepares a new BluetoothChat session.
@@ -624,7 +624,7 @@ public class BluetoothSerialService {
 			for(int i=0; i<msgLength; i++){
 				p[0]	=	data[i];
 				checksum[0] ^= p[0];
-//				Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)p[0])&0x00ff)+"/"+String.valueOf((char)p[0])+"   /DATA "+String.valueOf(i+1)+"/"+String.valueOf(msgLength));
+				//				Log.d(TAG_RECV,"BTsend:"+String.valueOf(((int)p[0])&0x00ff)+"/"+String.valueOf((char)p[0])+"   /DATA "+String.valueOf(i+1)+"/"+String.valueOf(msgLength));
 			}
 			write(data,msgLength);
 			write(checksum,1);	//	CHECKSUM
@@ -668,7 +668,7 @@ public class BluetoothSerialService {
 	};
 
 	private void process_incoming(char data) {
-//		Log.i(TAG,"process_incoming gestartet mit:"+String.valueOf((int)(data&0x00ff))+"/"+((char)(data&0x00ff))+" rx_state:"+String.valueOf((int)rx_tx_state));			
+		//		Log.i(TAG,"process_incoming gestartet mit:"+String.valueOf((int)(data&0x00ff))+"/"+((char)(data&0x00ff))+" rx_state:"+String.valueOf((int)rx_tx_state));			
 		switch(rx_tx_state){
 		case ST_START:
 			if ( data == MESSAGE_START){
@@ -727,7 +727,7 @@ public class BluetoothSerialService {
 		case ST_GET_DATA:
 			msgBuffer[ii++]	=	data;
 			checksum		^=	data;
-//			Log.i(TAG,"Erhalte Daten i="+String.valueOf((int)ii)+" von "+String.valueOf((int)msgLength));
+			//			Log.i(TAG,"Erhalte Daten i="+String.valueOf((int)ii)+" von "+String.valueOf((int)msgLength));
 			if (ii == msgLength ){
 				rx_tx_state	=	ST_GET_CHECK;
 				msgBuffer[ii]='\0';
@@ -1292,64 +1292,63 @@ public class BluetoothSerialService {
 		return 0;
 	}
 
-	public int showgfx(String filename) {
+	public int showgfx(String filename, int interFrameTime, int StartFrame, int EndFrame) {
 		/* hinweg:
 		 * msgBuffer[0]=CMD_SHOW_GFX
-		 * msgBuffer[1]=length of filename
-		 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
-		 * 
+		 * msgBuffer[1..X]=Filename,startframe,endframe,interframeTime
+		 *
 		 * rueckweg:
 		 * msgBuffer[0]=CMD_SHOW_GFX
 		 * msgBuffer[1]=COMMAND_OK
 		 */
 		filename=filename.toUpperCase();
-		Log.i(TAG, "Zeige bild");
-		byte send[] = new byte[2+filename.length()]; // 250 auf Vorbehalt, da die tatsaechliche laenge auch davon abhoengt wieviel noch da ist in der Datei
+		if(filename.lastIndexOf('/')>=0){
+			filename=filename.substring(filename.lastIndexOf('/')+1); // remove the "path" from filename
+		}
+		String construction_string=filename+","+String.valueOf(StartFrame)+","+String.valueOf(EndFrame)+","+String.valueOf(interFrameTime);
+
+		byte send[] = new byte[construction_string.length()+2]; // +2 because one is command and one to be save
 		// prepare static part
 		send[0]=CMD_SHOW_GFX;
-		send[1]=(byte) (filename.length() & 0x000000FF);
-		for(int i=0;i<filename.length();i++){
-			send[i+2]=(byte)filename.charAt(i);
+		for(int i=0;i<construction_string.length();i++){
+			send[i+1]=(byte)construction_string.charAt(i);
 		};
+
+
+
 		Log.i(TAG, "sendet");
 		Log.i("SEND","showgfx()");
 		int send_value=0;
 		try {
-			send_value = send(send, 2+filename.length(),1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} // 10 sec f�r die animation
+			send_value = send(send, construction_string.length(),1000); // 1 sec for saving (writing to SD Card might take some ms)
+		} catch (InterruptedException e) {    e.printStackTrace();    }
 
 		if(send_value>0){
 			mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
 			semaphore.release();
-			Log.i(TAG_SEM,"show gfx send failed hat den semaphore zurueck gegeben");
+			Log.i(TAG_SEM,"set CMD_SHOW_GFX send failed hat den semaphore zurueck gegeben");
 			return send_value;
 		}
 
 		// wait here until we can get the semaphore
 		// im schlimmsten fall hier ein while auf ne globale variable
-		Log.i(TAG_SEM, "show gfx wartet");
+		Log.i(TAG_SEM, "set CMD_SHOW_GFX wartet");
 		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
-		try {
-			semaphore.acquire();
-		} catch (InterruptedException e) {	e.printStackTrace();	} 
-		// TODO, warum kommt der Timer hier nicht her?
-		Log.i(TAG_SEM,"showgfx hat sich einen semaphore gekrallt");
+		try {    semaphore.acquire();    } catch (InterruptedException e) {    e.printStackTrace();    }
+		Log.i(TAG_SEM,"set CMD_SHOW_GFX hat sich einen semaphore gekrallt");
 		semaphore.release();
 		Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");
-		Log.i(TAG_SEM,"show gfx hat den semaphore zurueck gegeben");
+		Log.i(TAG_SEM,"set CMD_SHOW_GFX hat den semaphore zurueck gegeben");
 		// hier koennen wir nun am status sehen, wer uns wieder freigegeben hat: 1=Speedoino, ST_EMERGENCY_RELEASE=Timer
 		if(status==ST_EMERGENCY_RELEASE){
 			Log.i(TAG_RECV,"EMERGENCY TOKEN RETURN");
-			// hier sowas wie: 
+			// hier sowas wie:
 
 			status=STATUS_EOF;
 			msgLength=0;
 			Message msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
 			Bundle bundle = new Bundle();
-			bundle.putString(SpeedoAndroidActivity.TOAST, "Show image failed");
+			bundle.putString(SpeedoAndroidActivity.TOAST, "Set CMD_SHOW_GFX failed");
 			msg.setData(bundle);
 			mHandler.sendMessage(msg);
 			Log.i(TAG, "return -1");
@@ -1358,7 +1357,6 @@ public class BluetoothSerialService {
 		}
 		Log.i(TAG, "return 0");
 		return 0;
-
 	}
 
 	public int setStartup(String filename, int interFrameTime, int StartFrame, int EndFrame) {
@@ -2040,7 +2038,7 @@ public class BluetoothSerialService {
 		}
 
 		SharedPreferences settings = mContext.getSharedPreferences(PREFS_NAME, 0);
-        Boolean verify_active =settings.getBoolean("verify_active",true);
+		Boolean verify_active =settings.getBoolean("verify_active",true);
 		if(verify_active){
 			// Verify
 			send2[0]=CMD_LOAD_ADDRESS;
