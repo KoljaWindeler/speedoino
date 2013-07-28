@@ -62,19 +62,6 @@ void ssd0323::send_char(unsigned char zeichen)
 	senden_spi(zeichen);
 }
 
-/////////////////////////////// leeren ///////////////////////////////
-void ssd0323::clear_screen()
-{
-	send_command(0x15);
-	send_command(0x00);
-	send_command(0x7F);
-	send_command(0x75);
-	send_command(0x00);
-	send_command(0x3F);
-	for (int a=0;a<(128*32);a++){
-		send_char(0x00);
-	}
-}
 
 /////////////////////////////// kommando funktion ///////////////////////////////
 void ssd0323::set2pixels(unsigned char x, unsigned char y,unsigned char first,unsigned char second){

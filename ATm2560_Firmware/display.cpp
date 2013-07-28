@@ -487,7 +487,6 @@ void speedo_disp::show_animation(unsigned char *command){
 	if(pointer_to_spacer!=3){
 		pDebug->sprintp(PSTR("falsche anzahl an kommata"));
 	} else {
-		init(0x38,0x38);
 		// start zahl suchen
 		int start=0;
 		for(int i=spacer[0]+1;i<spacer[1];i++){
@@ -527,9 +526,14 @@ void speedo_disp::show_animation(unsigned char *command){
 		pMenu->button_unten_valid=true;
 		unsigned int state_before=pMenu->state%100;
 
+		// switch to image mode and remeber that
+		init(0x38,0x38);
+		reinit_display=true;
+
+
 		// animation starten
 		unsigned long timestamp=millis();
-		for(int i=start; i<=ende; i++){
+		for(int i=start; i<ende; i++){ // check i<ende OR i<=ende (like it was) TODO
 			// try to show the image, and print every error
 			if(sd2ssd(filename,i)>0){
 				i=ende;
@@ -559,7 +563,6 @@ void speedo_disp::show_animation(unsigned char *command){
 				_delay_ms(1); // check ob das hier viel aendert
 			}; //wait
 		}; // for frames
-		init(phase,ref);
 	}; // enough spacer (',')
 };
 
@@ -654,6 +657,7 @@ void speedo_disp::init_speedo(){
 	pDebug->sprintp(PSTR("Display init ... "));
 	pinMode(29,INPUT); // interessiert keine sau, aber da der pin jetzt extern auf masse gezogen wird sollte der hier nicht besser kein Pegel treiben
 	init(phase,ref);
+	reinit_display=false;
 	clear_screen();
 
 	// if hardware version is above 6, there is an emergency V_BACKUP_driver for the GPS
@@ -687,4 +691,23 @@ void speedo_disp::init_speedo(){
 	pDebug->sprintlnp(PSTR("Done"));
 };
 
+/////////////////////////////// leeren ///////////////////////////////
+void speedo_disp::clear_screen(){
+	// if a animation was started, reinit_display will be set to true.
+	// after that, we have to reinit it
+	if(reinit_display){
+		init(phase,ref);
+		reinit_display=false;
+	}
+
+	send_command(0x15);
+	send_command(0x00);
+	send_command(0x7F);
+	send_command(0x75);
+	send_command(0x00);
+	send_command(0x3F);
+	for (int a=0;a<(128*32);a++){
+		send_char(0x00);
+	}
+}
 

@@ -33,6 +33,7 @@ public:
 	void init_speedo();
 	speedo_disp(void);
 	~speedo_disp();
+	void clear_screen();
 	void draw_oil(unsigned char x,unsigned char y);
 	void draw_water(unsigned char x,unsigned char y);
 	void draw_air(unsigned char x,unsigned char y);
@@ -51,6 +52,8 @@ public:
 	void show_storry(const char* storry,const char* title, uint8_t type);
 	void string_P_centered(const char* text, uint8_t line);
 	void string_P_centered(const char* text, uint8_t line, bool inverted);
+private:
+	bool reinit_display;
 
 };
 extern speedo_disp* pOLED;

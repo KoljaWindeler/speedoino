@@ -59,7 +59,6 @@ typedef uint8_t byte;
 		ssd0323();
 		// Control functions
 		void init(unsigned char phase,unsigned char ref);
-		void clear_screen();
 		void send_char(unsigned char zeichen);
 		void send_command(unsigned char theCommand);
 		// Graphic Functions
