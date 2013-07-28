@@ -445,7 +445,7 @@ void speedo_filemanager_v2::parse_command(){
 
 
 				if(!file_already_open){
-					if(get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle,O_CREAT| O_READ)<0){
+					if(get_file_handle(msgBuffer,last_file,&fm_file,&fm_handle,O_CREAT| O_READ)<0){
 						file_open_failed=true;
 					}
 				} // file already open
@@ -503,11 +503,11 @@ void speedo_filemanager_v2::parse_command(){
 				// TRANSFER VOM HANDY ZUM TACHO
 				/* hinweg:
 				 * msgBuffer[0]=CMD_PUT_FILE
-				 * msgBuffer[1]=length of filename
-				 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
-				 * msgBuffer[x+1]=high_nibble of cluster nr
-				 * msgBuffer[x+2]=low_nibble of cluster nr
-				 * msgBuffer[X+3..250]=Content
+				 * msgBuffer[1]=length of filename = X
+				 * msgBuffer[2..1+X]=filename  ... datei.txt oder folder/datei.txt
+				 * msgBuffer[x+2]=high_nibble of cluster nr
+				 * msgBuffer[x+3]=low_nibble of cluster nr
+				 * msgBuffer[X+4..250]=Content
 				 *
 				 * rueckweg:
 				 * msgBuffer[0]=CMD_PUT_FILE
@@ -517,8 +517,8 @@ void speedo_filemanager_v2::parse_command(){
 				bool file_already_open=true;
 				bool file_open_failed=false;
 				bool file_seek_failed=false;
-				int start_of_payload=0;
 				uint16_t filename_length=msgBuffer[1];
+				int start_of_payload=filename_length+4;
 				for(unsigned int i=0;i<filename_length;i++){
 					msgBuffer[i]=msgBuffer[i+2]; // make it suiteable for get_file_handle
 					if(last_file[i]!=msgBuffer[i]){
@@ -547,16 +547,16 @@ void speedo_filemanager_v2::parse_command(){
 				// 3. Dateihandle oeffnen
 
 				if(!file_already_open){
-					start_of_payload=get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle, O_CREAT| O_RDWR | O_SYNC | O_APPEND);
-					if(start_of_payload<0)
+					if(get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle, O_CREAT| O_RDWR | O_SYNC | O_APPEND)<0){
 						file_open_failed=true;
+					}
 				}
 
 				// setze pointer
 				if(!file_open_failed){
 					int pos;
-					pos=msgBuffer[start_of_payload]<<8;
-					pos|=msgBuffer[start_of_payload+1];
+					pos=msgBuffer[filename_length+2]<<8;
+					pos|=msgBuffer[filename_length+3];
 					//					if(!fm_file.seekSet(pos*(msgLength-offset))){ // das ist noch totaler mist, das hier kein Seeken moeglich ist
 					//						file_seek_failed=true;
 					//					} else {
@@ -571,11 +571,11 @@ void speedo_filemanager_v2::parse_command(){
 				// wenn immer noch alles gut, dann konnten wir die Datei oeffnen und auch den Filepointer dahin setzten wo er hin soll
 				if(!file_open_failed && !file_seek_failed){
 					//Serial.println("file_seek OK");
-					for(unsigned int i=0;i<msgLength-start_of_payload-2;i++){ // start_of_payload wird -2 weil noch 2 byte seek info
-						msgBuffer[i]=msgBuffer[i+start_of_payload+2]; // msgBuffer[233]=msgBuffer[253]
+					for(unsigned int i=0;i<msgLength-start_of_payload;i++){ // start_of_payload wird -2 weil noch 2 byte seek info
+						msgBuffer[i]=msgBuffer[i+start_of_payload]; // msgBuffer[233]=msgBuffer[253]
 					}
 
-					int n=fm_file.write(msgBuffer, msgLength-start_of_payload-2); // 254 - 20
+					int n=fm_file.write(msgBuffer, msgLength-start_of_payload); // 254 - 20
 
 					if(n > 0) { // 250 Byte happen
 						msgLength=2; // cmd + status ok
