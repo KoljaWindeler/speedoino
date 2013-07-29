@@ -23,6 +23,7 @@ public:
 
 private:
 	uint8_t 	sector_count;
+	uint8_t 	lap;
 	uint8_t 	current_sector;
 	uint8_t		last_dist_to_target; // TODO init?
 	uint32_t	sector_end_latitude;

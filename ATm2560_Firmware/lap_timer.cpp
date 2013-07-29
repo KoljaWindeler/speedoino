@@ -94,6 +94,7 @@
 	uint8_t 	sector_count;
 	uint8_t 	current_sector;
 	uint8_t		last_dist_to_target;
+	uint8_t		lap;
 	uint32_t	sector_end_latitude;
 	uint32_t 	sector_end_longitude;
 	uint32_t 	best_sector_time_ms;
@@ -127,6 +128,7 @@ LapTimer::~LapTimer(){
 };
 
 LapTimer::LapTimer(){
+	lap=0;											// current lap
 	sector_count=0;									// Number of Sectors ( 7 for 7 setors )
 	current_sector=0;								// Sector we are currently in (0..sector_count-1)
 	last_dist_to_target=LAPTIMER_TARGET_RADIUS+1;	// temporary storage to save the last distance
@@ -167,6 +169,7 @@ void LapTimer::prepare_race_loop(){
 		 * set sector end coordinates
 		 */
 		current_sector=0;
+		lap=0;
 		if(get_sector_data(current_sector,&sector_end_latitude,&sector_end_longitude,&best_sector_time_ms,filename)<0){
 			pOLED->show_storry(PSTR("Sector read from file failed"),PSTR("Error"));
 		}
@@ -251,6 +254,9 @@ void LapTimer::race_loop(){
 	if(pSpeedo->disp_zeile_bak[0]!=(int)pSensors->m_gps->mod(pSensors->m_gps->get_info(10),10000)){		// check if we have new gps data by comparing the current gps timestamp to the stored one
 		pSpeedo->disp_zeile_bak[0]=(int)pSensors->m_gps->mod(pSensors->m_gps->get_info(10),10000); 		// jep new GPS data available, save timestamp to storage
 		uint8_t update_level=(1<<UPDATE_LAP_TIME); 														// helps us to update only needed areas just update lap time by now
+		if((pSensors->m_gps->get_info(10) - lap_start_timestamp_ms) < 5000 && lap>0){					// dont update the laptime within the first 5 sec of a new lap
+				update_level&=~(1<<UPDATE_LAP_TIME);													// exept its the first lap
+		};
 		uint32_t dist=pSensors->m_gps->calc_dist(sector_end_longitude,sector_end_latitude);				// calc dist between actual location and the end of this sector
 
 		//	///////////////////////////////////////////////////////////////////
@@ -328,6 +334,7 @@ void LapTimer::race_loop(){
 #endif
 					pSensors->m_gps->set_gps_mark(LAP_END_MARK);										// jep Start/goal Passed
 					current_sector=0;																	// reset sector ID
+					lap++;																				// count up to 255 ... should be enough
 					if(!delay_calc_active){																// have we already passed one round? delay_calc_active=false if not
 #ifdef LAPTIMER_DEBUG_OUTPUT
 						Serial.println("Delay calculation was not active until now.");
