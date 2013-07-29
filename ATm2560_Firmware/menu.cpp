@@ -467,6 +467,12 @@ void speedo_menu::display(){
 			pLapTimer->prepare_race_loop();
 		}
 	}
+	///////////////////// is capture mode, active content is controlled in the LapTimer Class
+	else if(state==421){
+		set_buttons(button_state,!button_state,!button_state,!button_state); // no up/down
+		pOLED->clear_screen();
+		pOLED->show_storry(PSTR("Right now, only one files is used. Here is some magic needed"),PSTR("TODO"));
+	}
 	///////////////////// ask if you really want to clear all current sectors
 	else if(state==431){
 		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
@@ -540,7 +546,12 @@ void speedo_menu::display(){
 		back();
 		update_display=true;
 	}
-
+	////////// Eval
+	else if(state==451){
+			set_buttons(button_state,!button_state,!button_state,!button_state); // no up/down
+			pOLED->clear_screen();
+			pOLED->show_storry(PSTR("Evaluation is not yet implemented. Here is some magic needed"),PSTR("TODO"));
+		}
 
 	/********************************************* Menu 5 - Start of Extend Info Menu *********************************************
 	 * Submenus:

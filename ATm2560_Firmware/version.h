@@ -1,4 +1,4 @@
 #ifndef VERSION_H_
 #define VERSION_H_
-    #define GIT_REV "Speedoino_v2.1-64-gd85ae67"
+    #define GIT_REV "Speedoino_v2.1-69-gbb3e273"
 #endif
