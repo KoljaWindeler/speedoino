@@ -130,6 +130,10 @@ public class BluetoothSerialService {
 	public static final byte CMD_SIGN_ON_FIRMWARE		=  0x41;
 	public static final byte CMD_SET_STARTUP			=  0x42;
 
+	public static final char FAILURE_FILE_OPEN           =  0x01;
+	public static final char FAILURE_FILE_SEEK           =  0x02;
+	public static final char FAILURE_FILE_READ           =  0x03;
+
 
 	public static final char STATUS_CMD_OK      =  0x00;
 	public static final char STATUS_CMD_FAILED  =  0xC0;
@@ -975,9 +979,9 @@ public class BluetoothSerialService {
 		// lets see, what kind of file we have
 		if(filename.substring(filename.lastIndexOf('.')+1).toLowerCase().equals("gps")){
 			dlBaseDir=dlBaseDir+"GPS/";
-		} else if(filename.substring(filename.indexOf('/')+1).toLowerCase().equals("sgf")){
+		} else if(filename.substring(filename.indexOf('/')+1).toLowerCase().equals("sgf")){ // TODO
 			dlBaseDir=dlBaseDir+"GFX/";
-		} else if(filename.substring(filename.indexOf('/')+1).toLowerCase().equals("smf")){
+		} else if(filename.substring(filename.indexOf('/')+1).toLowerCase().equals("smf")){ // TODO
 			dlBaseDir=dlBaseDir+"NAVI/";
 		}
 		File dir = new File (dlBaseDir);
@@ -991,8 +995,8 @@ public class BluetoothSerialService {
 		// check folder in filename, if isset
 		// JFile file.open()
 
-		status=1;
-		while(status!=STATUS_EOF){
+		status=0;
+		while(status!=STATUS_EOF && status!=FAILURE_FILE_SEEK && status!=FAILURE_FILE_OPEN && status!=FAILURE_FILE_READ){
 			Log.i(TAG,"Whileschleifeniteration");
 
 			// fortschritt schreiben
@@ -1063,11 +1067,33 @@ public class BluetoothSerialService {
 
 			// loese desSemaphore und damit sind wir bei 0 genommenen semaphoren und send kann in der naechsten 
 			// runde, wieder einen semphore ohne einschraenkung bekommen
-
 			if((msgBuffer[1]&0x00ff)==(STATUS_CMD_FAILED&0x00ff)){
-				status=STATUS_EOF;
+				if((msgBuffer[2]&0x00ff)==(FAILURE_FILE_OPEN&0x00ff)){
+					status=FAILURE_FILE_OPEN;
+					shown_message="File open failure";
+					bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
+					msg.setData(bundle);
+					mHandlerUpdate.sendMessage(msg);
+					return -1;
+				} else if((msgBuffer[2]&0x00ff)==(FAILURE_FILE_READ&0x00ff)){
+					status=FAILURE_FILE_READ;
+					shown_message="File read failure";
+					bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
+					msg.setData(bundle);
+					mHandlerUpdate.sendMessage(msg);
+					return -2;
+				} else {
+					status=FAILURE_FILE_SEEK;
+					shown_message="File seek failure";
+					bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
+					msg.setData(bundle);
+					mHandlerUpdate.sendMessage(msg);
+					return -3;
+				}
 			} else if ((msgBuffer[1]&0x00ff)==(STATUS_EOF&0x00ff)) {
 				status=STATUS_EOF;
+			} else  {
+				status=msgBuffer[1]; // get file transferes the status in byte 1 not in byte 2 as a lot of other functions does
 			}
 			semaphore.release();
 			Log.i(TAG_SEM,"getFile hat den semaphore zurueck gegeben");

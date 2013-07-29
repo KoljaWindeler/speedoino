@@ -742,6 +742,8 @@ OnClickListener {
 	protected class getFileDialog extends AsyncTask<String, Integer, String> {
 		private Context context;
 		ProgressDialog dialog;
+		private int return_value=0;
+
 
 		public getFileDialog(Context cxt) {
 			context = cxt;
@@ -755,11 +757,10 @@ OnClickListener {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				mSerialService.getFile(params[0], params[1], mHandlerUpdate, params[2]);
+				return_value=mSerialService.getFile(params[0], params[1], mHandlerUpdate, params[2]);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
-			;
+			};
 			return "japp";
 		}
 
@@ -778,6 +779,24 @@ OnClickListener {
 		protected void onPostExecute(String result) {
 			dialog.dismiss();
 			wl.release();
+
+			if(return_value<0){
+				String error_string="";
+				if(return_value==-1){
+					error_string="File open failure";
+				} else if(return_value==-2){
+					error_string="File read failure";
+				} else if(return_value==-3){
+					error_string="File seek failure";
+				}
+				AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+				alertDialog.setTitle("Info");
+				alertDialog.setMessage("Warning: Get File returned: "+error_string);
+				alertDialog.setButton("OK",new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {    }});
+				alertDialog.show();
+			}
 		}
 
 		private final Handler mHandlerUpdate = new Handler() {
@@ -788,6 +807,8 @@ OnClickListener {
 			};
 		};
 	}
+
+
 
 	// klasse die das loading fenster startet und im hintergrund "download"
 	// ausfuehrt
@@ -815,8 +836,9 @@ OnClickListener {
 					File deleteSource = new File(params[0]);
 					mSerialService.showgfx(params[1].substring(params[1].lastIndexOf('/') + 1),25,0,(int) (deleteSource.length()/4096));
 					// delete source file, if its a GFX file
-					if(deleteSource.exists())
+					if(deleteSource.exists()){
 						deleteSource.delete();
+					}
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -946,13 +968,13 @@ OnClickListener {
 		};
 	}
 
-//	protected class showGFX extends AsyncTask<String, Integer, String> {
-//		@Override
-//		protected String doInBackground(String... params) {
-//			mSerialService.showgfx(params[0]);
-//			return "japp";
-//		}
-//	};
+	//	protected class showGFX extends AsyncTask<String, Integer, String> {
+	//		@Override
+	//		protected String doInBackground(String... params) {
+	//			mSerialService.showgfx(params[0]);
+	//			return "japp";
+	//		}
+	//	};
 
 	// klasse die das loading fenster startet und im hintergrund "download"
 	// ausfuehrt
@@ -1374,13 +1396,13 @@ OnClickListener {
 		} else if(size>=10*1024*1024){ // ab 10mb
 			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+"."+String.valueOf((size/1024/102)%10)+" MB");
 		} else if(size>=1024*1024){ // ab 1mb
-			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+"."+String.valueOf((size/1024/10)%100)+" MB");
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024/1024)+"."+add_zeros(String.valueOf((size/1024/10)%100),2)+" MB");
 		} else if(size>=100*1024){ // ab 100kb
 			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+" KB");
 		} else if(size>=10*1024){ // ab 10kb
 			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+"."+String.valueOf((size/102)%10)+" KB");
 		} else if(size>=1024){ // ab 1kb
-			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+"."+String.valueOf((size/10)%100)+" KB");
+			item.put(ITEM_KEY_LOW, String.valueOf(size/1024)+"."+add_zeros(String.valueOf((size/10)%100),2)+" KB");   
 		} else if(size>0){	// solange es nicht 0 ist
 			item.put(ITEM_KEY_LOW, String.valueOf(size)+" Byte");
 		} else {
@@ -1388,6 +1410,13 @@ OnClickListener {
 		};
 		item.put(ITEM_IMAGE, imageId);
 		mList.add(item);
+	}
+
+	private String add_zeros(String input,int length){
+		while(input.length()<length){
+			input='0'+input;
+		}
+		return input;
 	}
 
 	private Runnable mCheckVer = new Runnable() {
