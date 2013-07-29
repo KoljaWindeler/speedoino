@@ -470,30 +470,37 @@ void speedo_filemanager_v2::parse_command(){
 					//Serial.println("file_seek OK");
 					int n=fm_file.read(msgBuffer, sizeof(byte)*250); // 250
 
-					if(n > 0) { // 250 Byte happen
+					if(n >= 0) { // read okay
 						// jetzt noch verschieben an die richtige stelle im buffer
 						for(int i=n-1; i>=0; i--){
 							msgBuffer[i+2]=msgBuffer[i];
 						};
 						msgLength=n+2; // n buchstaben + cmd + status ok = 252 im besten Fall
 						msgBuffer[0]=CMD_GET_FILE;
-						msgBuffer[1]=STATUS_CMD_OK;
-						//Serial.println("gelesen: kommt noch");
 
+						if(n==250){
+							msgBuffer[1]=STATUS_CMD_OK; // full buffer read -> read on
+						} else {
+							msgBuffer[1]=STATUS_EOF; // last bit of file read
+						}
 					} else {
-						msgLength=2; // n buchstaben + cmd + status eof
+						msgLength=3; // n buchstaben + cmd + status eof
 						msgBuffer[0]=CMD_GET_FILE;
-						msgBuffer[1]=STATUS_EOF;
+						msgBuffer[1]=STATUS_CMD_FAILED;
+						msgBuffer[2]=FAILURE_FILE_READ;
+						last_file[0]='\0'; // damit er nicht denkt das haette geklappt
 					}
 				} else if(file_seek_failed){
-					msgLength=2; // n buchstaben + cmd + status failed
+					msgLength=3; // n buchstaben + cmd + status failed
 					msgBuffer[0]=CMD_GET_FILE;
 					msgBuffer[1]=STATUS_CMD_FAILED;
+					msgBuffer[2]=FAILURE_FILE_SEEK;
 					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
 				} else {
-					msgLength=2; // n buchstaben + cmd + status failed
+					msgLength=3; // n buchstaben + cmd + status failed
 					msgBuffer[0]=CMD_GET_FILE;
 					msgBuffer[1]=STATUS_CMD_FAILED;
+					msgBuffer[2]=FAILURE_FILE_OPEN;
 					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
 				}
 
