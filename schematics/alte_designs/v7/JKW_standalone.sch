@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.2">
+<eagle version="6.4">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -22989,7 +22989,7 @@ www.irf.com&lt;p&gt;
 <part name="R_BL_R" library="RCLDT" deviceset="R" device="0805" value="33R"/>
 <part name="R_OIL" library="RCLDT" deviceset="R" device="0805" value="52R"/>
 <part name="R_HIGHB" library="RCLDT" deviceset="R" device="0805" value="46R"/>
-<part name="R_REED_DOWN" library="RCLDT" deviceset="R" device="0805" value="5k / n.b. (Reed / 5V Honda Signal)"/>
+<part name="R_REED_DOWN" library="RCLDT" deviceset="R" device="0805" value="5k (12V Honda Signal) / 100nF (Reed)"/>
 <part name="U$12" library="SUPPLY" deviceset="GND" device=""/>
 <part name="R_REED" library="RCLDT" deviceset="R" device="0805" value="7k "/>
 <part name="RGB_7" library="Kolja" deviceset="RGB_LED" device=""/>
