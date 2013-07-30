@@ -69,6 +69,7 @@ public:
 	//void get_filename(char* buffer);
 	void run();
 	void parse_command();
+	int get_file_handle(unsigned char *pathToFile, SdFile *fm_file, uint8_t flags);
 	int get_file_handle(unsigned char *msgBuffer,unsigned char *last_file, SdFile *fm_file, SdFile *fm_handle,uint8_t flags);
 private:
 	int send_answere(unsigned char *msgBuffer,unsigned int msgLength,unsigned char *seqNum, unsigned char *msgParseState);

@@ -768,6 +768,11 @@ int speedo_filemanager_v2::send_answere(unsigned char *msgBuffer,unsigned int ms
 	return 0;
 }
 
+int speedo_filemanager_v2::get_file_handle(unsigned char *pathToFile, SdFile *fm_file, uint8_t flags){
+	unsigned char last_filename_buffer[strlen((char*)pathToFile)];
+	SdFile temp_dir;
+	return get_file_handle(pathToFile,last_filename_buffer,fm_file,&temp_dir,flags);
+}
 
 int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,SdFile *fm_file,SdFile *fm_handle,uint8_t flags){
 	/* msgBuffer[0..X] =Filename
