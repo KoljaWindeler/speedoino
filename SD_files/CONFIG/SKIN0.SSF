@@ -1,4 +1,4 @@
-#Koljas Porsche Tacho, kein km
+#Porsche Font plus KM
 # Die erste Zeile wird als Beschreibung genutzt wenn sie mit einem "#" anfängt, bitte umlaute vermeiden.
 # Kommentarzeilen grundsätzlich mit einem "#" beginnen lassen und nicht hinter einem zu parsenden string
 # also nicht: "fuel_widget.x<=14; #damit es passt"
@@ -49,16 +49,17 @@ kmhchar_widget.font=10;
 gear_widget.x=11;
 gear_widget.y=7;
 gear_widget.font=10;
-dz_widget.x=0;
-dz_widget.y=5;
+dz_widget.x=-1;
+dz_widget.y=-1;
 dz_widget.font=10;
-addinfo_widget.x=-1;
-addinfo_widget.y=-1;
+addinfo_widget.x=0;
+addinfo_widget.y=5;
 addinfo_widget.font=10;
 addinfo2_widget.x=0;
-addinfo2_widget.y=6;
+addinfo2_widget.y=5;
 addinfo2_widget.font=10;
-gps_widget.x=14;
-gps_widget.y=5;
+gps_widget.x=11;
+gps_widget.y=0;
 gps_widget.font=10;
+gps_widget.symbol=1;
 default_font=10;

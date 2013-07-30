@@ -1,37 +1,37 @@
-#This is an auto-generated file from (MonDay) 126
+#This is an auto-generated file from (MonDay) 730
 max_1=255;
-avg_time_1=1603602;
-trip_1=35374618;
+avg_time_1=1800117;
+trip_1=38495503;
 
 max_2=0;
-avg_time_2=0;
+avg_time_2=17;
 trip_2=0;
 
-max_3=0;
-avg_time_3=0;
-trip_3=0;
+max_3=59;
+avg_time_3=647;
+trip_3=4277;
 
 max_4=255;
-avg_time_4=159925;
-trip_4=3224836;
+avg_time_4=356440;
+trip_4=6345721;
 
-max_5=0;
-avg_time_5=0;
-trip_5=0;
+max_5=191;
+avg_time_5=142375;
+trip_5=2291069;
 
-max_6=252;
-avg_time_6=5149;
-trip_6=129663;
+max_6=166;
+avg_time_6=6814;
+trip_6=97306;
 
-max_7=64;
-avg_time_7=96;
-trip_7=1182;
+max_7=59;
+avg_time_7=329;
+trip_7=2261;
 
 max_8=255;
-avg_time_8=304601;
-trip_8=9769634;
+avg_time_8=501116;
+trip_8=12890519;
 
 max_9=255;
-avg_time_9=185686;
-trip_9=5569976;
+avg_time_9=382201;
+trip_9=8690861;
 
