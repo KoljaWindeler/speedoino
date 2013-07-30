@@ -6,12 +6,11 @@
 19.07.2013	Speedoino_v2.1-36-g12971d0.hex	Erste Testing Version mit Speedo-LapTimer, 
 						Blinker reset im stehen
 25.07.2013	Speedoino_v2.1-56-g34d8c55.hex	Speedo-LapTimer Test Version. Basis Funktion sehen gut aus, GPS logging scheinbar defekt
-27.07.2013	Speedoino_v2.1-61-g23fa402.hex	GPS Logging repariert
 28.07.2013	Speedoino_v2.1-64-gd85ae67.hex	Animationen auf dem Tacho mit der Android App mit einstellbarer Geschwindigkeit abspielen
-29.07.2013	Speedoino_v2.1-71-ga75eb65.hex	Zeit der letzte runde im Laptimer für 5 sec anzeigen,
+30.07.2013	Speedoino_v2.1-72-gfeba021.hex	Zeit der letzte runde im Laptimer für 5 sec anzeigen,
 						Upload/Download von Dateien verbessert (neue Android App nutzen!), 
 						Animationen werden auf dem Tacho mit verminderter Helligkeit abgespielt (bessere Graustufen Unterschiede)
-						
+						GPS Logging repariert
 
 
 
