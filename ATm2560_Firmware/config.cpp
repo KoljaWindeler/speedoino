@@ -163,37 +163,40 @@ int configuration::write(const char *filename){
 				/*pSD->power_down();
 				delay(20);
 				pSD->power_up();*/
-				//Serial.println("Save Point start"); // TODO
+				Serial.println("Save Point start"); // TODO
 				// buffer for dir name /GPS/2013/06/130612.GPS
-				unsigned char dir[24+1]; // 24 CHARS for filename + 3 for compatiblity
-				unsigned char last_file[24+1]; // for compatiblity
+				unsigned char full_filename[24+1]; // 24 CHARS for filename + 3 for compatiblity
 				// create filename
-				dir[0]='/';
-				dir[1]='G';
-				dir[2]='P';
-				dir[3]='S';
-				dir[4]='/';
-				dir[5]='2';
-				dir[6]='0';
-				dir[7]=filename[0];
-				dir[8]=filename[1];
-				dir[9]='/';
-				dir[10]=filename[2];
-				dir[11]=filename[3];
-				dir[12]='/';
+				full_filename[0]='/';
+				full_filename[1]='G';
+				full_filename[2]='P';
+				full_filename[3]='S';
+				full_filename[4]='/';
+				full_filename[5]='2';
+				full_filename[6]='0';
+				full_filename[7]=filename[0];
+				full_filename[8]=filename[1];
+				full_filename[9]='/';
+				full_filename[10]=filename[2];
+				full_filename[11]=filename[3];
+				full_filename[12]='/';
 				for (int i=0;i<=9; i++){
-					dir[i+13]=filename[i];
+					full_filename[i+13]=filename[i];
 				}
-				dir[23]='\0';
+				full_filename[23]='\0';
 
+#ifdef SD_DEBUG
+				Serial.print("*** Openning: ");
+				Serial.println((char*)full_filename);
+#endif
 				// now open it up
-				if(!pFilemanager_v2->get_file_handle(dir,last_file,&file,&subdir,O_READ|O_CREAT)){
+				if(!pFilemanager_v2->get_file_handle(full_filename,&file,O_WRITE|O_CREAT|O_APPEND)<0){
 					pDebug->sprintlnp(PSTR("open subdir /config failed"));
+#ifdef SD_DEBUG
+					Serial.print("*** Could not open: ");
+					Serial.println((char*)full_filename);
+#endif
 					return -1;
-				};
-				if (!file.open(&subdir, filename, O_CREAT |  O_APPEND | O_WRITE)){
-					pSensors->m_gps->gps_write_status=-2;
-					return -2;
 				} else {
 					pSensors->m_gps->gps_write_status=7;
 					// get some buffer
@@ -211,7 +214,13 @@ int configuration::write(const char *filename){
 						Serial.print("*** get_logged_points liefert: ");
 						Serial.println(buffer);
 #endif
-						pSD->writeString(file, buffer);
+						int result=pSD->writeString(file, buffer);
+#ifdef SD_DEBUG
+						if(result<0){
+							Serial.print("*** writeString error: ");
+							Serial.println(result);
+						}
+#endif
 						i++;
 					}
 					// free buffer and close file
