@@ -47,6 +47,7 @@ public class RouteMap extends MapActivity implements OnTouchListener
 	private MenuItem mMenuItemConnect;
 	int Zoomlevel;
 	boolean is_touched=false;
+	boolean lap_marker_in_file=false;
 	private OverlayItem speedo_gps_points;
 	private Drawable userPic,userPOIPic;
 	private MyItemizedOverlay userPicOverlay;
@@ -54,7 +55,7 @@ public class RouteMap extends MapActivity implements OnTouchListener
 	private ArrayList<GeoPoint> gps_points = new ArrayList<GeoPoint>();
 	private ArrayList<Integer> add_info_speed = new ArrayList<Integer>();
 	private ArrayList<String> add_info_time = new ArrayList<String>();
-	private ArrayList<GeoPoint> POI_points = new ArrayList<GeoPoint>();
+	private ArrayList<Integer> add_info_special = new ArrayList<Integer>();
 
 
 
@@ -140,7 +141,7 @@ public class RouteMap extends MapActivity implements OnTouchListener
 	protected boolean loadRoutefromFile(String filename){
 		gps_points.clear();
 		add_info_speed.clear();
-		POI_points.clear();
+		add_info_special.clear();
 		add_info_time.clear();
 		String line = "";
 		try {
@@ -184,11 +185,11 @@ public class RouteMap extends MapActivity implements OnTouchListener
 							// time & date
 							add_info_time.add(line_splitted[0]);
 							date=line_splitted[1];
-
-							if(Integer.parseInt(line_splitted[9])==1){
-								//Log.d(DEBUG_TAG, "POI: " + line);
-								POI_points.add(p);
+							add_info_special.add(Integer.parseInt(line_splitted[9]));
+							if(Integer.parseInt(line_splitted[9])==2 || Integer.parseInt(line_splitted[9])==3){
+								lap_marker_in_file=true;
 							}
+
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -315,14 +316,6 @@ public class RouteMap extends MapActivity implements OnTouchListener
 			}
 		}
 
-		// add ALL POI, since there are always just a few
-		for(int i=0;i<POI_points.size();i++){
-			p2 = POI_points.get(i);
-			speedo_gps_points = new OverlayItem(p2,"Name", null);//just check the brackets i just made change here so....
-			//Log.d(DEBUG_TAG,"add overlay");
-			nearPicPOIOverlay.addOverlay(speedo_gps_points);
-		};
-
 		mapView.getOverlays().clear();
 		mapView.getOverlays().add(nearPicOverlay);
 		mapView.getOverlays().add(nearPicPOIOverlay);
@@ -445,6 +438,7 @@ public class RouteMap extends MapActivity implements OnTouchListener
 
 	private void save_as_kml() throws IOException {
 		// TODO Auto-generated method stub
+		Integer lap_counter=1;
 		String filename_out = filename.substring(0,filename.lastIndexOf('.'))+".kml";
 		FileOutputStream out = null;
 		out = new FileOutputStream(filename_out,false);
@@ -454,7 +448,14 @@ public class RouteMap extends MapActivity implements OnTouchListener
 		out.write(output.getBytes());
 		output="<Style id=\"routeStyle\"><LineStyle><color>7FFF0055</color><width>3.0</width></LineStyle></Style>";
 		out.write(output.getBytes());
-		output="<Style id=\"trackStyle\"><LineStyle><color>FFFF00FF</color><width>3.0</width></LineStyle></Style><Folder><name>Waypoints</name>";
+		output="<Style id=\"trackStyle\"><LineStyle><color>FFFF00FF</color><width>3.0</width></LineStyle></Style>";
+		out.write(output.getBytes());
+		
+		if(lap_marker_in_file){
+			output="<Folder><name>Lap "+String.valueOf(lap_counter)+"</name>";
+		} else {
+			output="<Folder><name>GPS Waypoints</name>";
+		}
 		out.write(output.getBytes());
 
 
@@ -502,12 +503,25 @@ public class RouteMap extends MapActivity implements OnTouchListener
 			while(green_str.length()<2){
 				green_str="0"+green_str;
 			}
-
-
-			output="<Style><IconStyle><color>FF00"+green_str+red_str+"</color><scale>0.25</scale><Icon><href>http://www.tischlerei-windeler.de/punkt.png</href></Icon></IconStyle></Style>";
+			
+			if(add_info_special.get(i)==2 || add_info_special.get(i)==3) {
+				String flag_color="FF0000FF";	// red flag = Finish lap flag
+				if(add_info_special.get(i)==2){ 
+					flag_color="FF00FFFF"; // yellow flag = sector end flag
+				}
+				output="<Style><IconStyle><color>"+flag_color+"</color><scale>1</scale><Icon><href>http://www.tischlerei-windeler.de/finish_line.gif</href></Icon></IconStyle></Style>";
+			} else {
+				output="<Style><IconStyle><color>FF00"+green_str+red_str+"</color><scale>0.18</scale><Icon><href>http://www.tischlerei-windeler.de/punkt.png</href></Icon></IconStyle></Style>";
+			}
 			out.write(output.getBytes());
 			output="<Point><coordinates>"+String.valueOf(p.getLongitudeE6()/1E6)+","+String.valueOf(p.getLatitudeE6()/1E6)+",0</coordinates></Point></Placemark>";
 			out.write(output.getBytes());
+			
+			if(add_info_special.get(i)==3) { // lap end marker
+				lap_counter++;
+				output="</Folder><Folder><name>Lap "+String.valueOf(lap_counter)+"</name>";
+				out.write(output.getBytes());
+			}
 
 		}
 		output = "</Folder></Document></kml>";
