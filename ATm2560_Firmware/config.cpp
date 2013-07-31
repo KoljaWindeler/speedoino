@@ -163,7 +163,7 @@ int configuration::write(const char *filename){
 				/*pSD->power_down();
 				delay(20);
 				pSD->power_up();*/
-				Serial.println("Save Point start"); // TODO
+				//				Serial.println("Save Point start");
 				// buffer for dir name /GPS/2013/06/130612.GPS
 				unsigned char full_filename[24+1]; // 24 CHARS for filename + 3 for compatiblity
 				// create filename

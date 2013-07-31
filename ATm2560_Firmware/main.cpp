@@ -66,12 +66,6 @@ speedo_demo*			pDemo=new speedo_demo();
  * ---> if not, display them on the screen and store to internal storage ( disp_backup array )
  ******************* Basics *************************/
 
-/******************* TODO List ***************************
- * -> die stelle finden an der mehr als 22 byte in das char array geschrieben werden
- * bzw rausfinden wann und warum manchmal die temperaturanzeige total am rad dreht
- * -> eine stelle finden an der man den sd error zurücksetzen kann, also im menü finden
- * -> bootloader mit verify
- ******************* TODO List ***************************/
 void init_speedo(void){
 	Serial.begin(115200);
 
