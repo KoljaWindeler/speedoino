@@ -26,6 +26,7 @@
 		4.3: Set new Sectors
 		4.4: Clear Sectors
 		4.5: Evaluate Race
+		4.6: Race Settings
 
  1.2. 	"Set Sector marks"  means that a new file with virtual Sector Goals will be recorded.
 		Therefore the driver start at any place on the track BEHIND the START/GOAL line.
@@ -98,21 +99,17 @@
 	uint32_t	sector_end_latitude;
 	uint32_t 	sector_end_longitude;
 	uint32_t 	best_sector_time_ms;
-	uint32_t 	best_theoretical_lap_time_ms;
+	uint32_t 	best_lap_time_ms;
 	uint32_t	sector_start_timestamp_ms;
 	uint32_t	lap_start_timestamp_ms;
 	uint32_t	starting_standing_timestamp_ms;
 	int32_t		delay_ms;
+	bool		used_realtime_not_calculated;
 	bool	 	delay_calc_active;
 	bool 		last_gps_valid;
 	unsigned char filename[20]; // "/NAVI/HOCKENHE.SST"
-	#define UPDATE_BEST_LAP 0
-	#define UPDATE_DELAY 1
-	#define UPDATE_LAP_TIME 2
-	#define UPDATE_SECTOR 3
-	#define LAPTIMER_TARGET_RADIUS 15
 
-	==> 86 Byte (based on ram_info)
+	==> 87 Byte (based on ram_info)
  */
 // this will be callen on and on
 
@@ -120,7 +117,10 @@
 #define UPDATE_DELAY 1
 #define UPDATE_LAP_TIME 2
 #define UPDATE_SECTOR 3
-#define LAPTIMER_TARGET_RADIUS 15
+#define LAPTIMER_TARGET_RADIUS 25
+#define LAPTIMER_SHOW_LAPTIME_DELAY 5000
+
+#define LAPTIMER_TEMP_FILE "NAVI/TEMP.SST"
 
 #define LAPTIMER_DEBUG_OUTPUT
 
@@ -135,7 +135,7 @@ LapTimer::LapTimer(){
 	sector_end_latitude=0;							// coordinates of the end of this sector
 	sector_end_longitude=0;
 	best_sector_time_ms=0;							// best time for the current sector, stored on the sd card
-	best_theoretical_lap_time_ms=0;					// sum of all sector best times
+	best_lap_time_ms=0;								// sum of all sector best times
 	sector_start_timestamp_ms=0;					// timestamp from GPS, saved when entering the sector
 	lap_start_timestamp_ms=0;						// timestamp from GPS, saved when entering the lap
 	starting_standing_timestamp_ms=0;				// millis() timestamp from first measured speed=0
@@ -143,12 +143,13 @@ LapTimer::LapTimer(){
 	delay_calc_active=false;						// if delay should be calced or not
 	last_gps_valid=true;							// validity of the last gps state
 	strcpy_P((char *)filename,PSTR("NAVI/HANNOVER.SST")); // static file for the moment
+	use_realtime_not_calculated=true;				// used real besttime and not the calculated besttime <- sum of sector besttimes
 }
 
 /* prepare_race_loop() is the entry point to the laptimer <- by menu 411 OR after recording GPS points
  * first we check the selected file, read sector count, lap records and so on
  *
- * if an error occures while reading the file, calc_best_theoretical_lap_time() kicks us back
+ * if an error occures while reading the file, calc_best_lap_time() kicks us back
  * to the menu on its own.
  *
  * if no error occures, the current speed and the gps connection is checked:
@@ -159,19 +160,31 @@ LapTimer::LapTimer(){
  */
 void LapTimer::prepare_race_loop(){
 	// prepare calculations
-	if(calc_best_theoretical_lap_time()>=0){ // if any kind of read error happens, don't go on
-		/* calc_best_theoretical_lap_time will:
+	if(calc_best_lap_time()>=0){ // if any kind of read error happens, don't go on
+		/* calc_best_lap_time will:
 		 * set delay_calc_active
-		 * set best_theoretical_lap_time_ms
+		 * set best_lap_time_ms (theoretical or real, depending what is in the file)
 		 * set sector_count
 		 *
 		 * get_sector_data() will:
 		 * set sector end coordinates
 		 */
+		 if(use_realtime_not_calculated){												// prepare the temp file, by clearing it and copying as many sectors to it as in the race file
+			unsigned char temp_file[20];
+			strcpy_P((char *)temp_file,PSTR(LAPTIMER_TEMP_FILE)); 						// static temp file
+
+			clear_file(temp_file);														// will reset the temp file
+			for(int i=0; i<sector_count; i++){											// loop through sectors and add sectors with useless data to the temp file, just to have the right amount of data in that file
+				if(add_sector(0,0,temp_file)<0){										// add coordiantes 0,0
+					pOLED->show_storry(PSTR("Sector read from file failed"),PSTR("Error"),DIALOG_SHOW_500MS);
+				}
+			}
+		}
+
 		current_sector=0;
 		lap=0;
 		if(get_sector_data(current_sector,&sector_end_latitude,&sector_end_longitude,&best_sector_time_ms,filename)<0){
-			pOLED->show_storry(PSTR("Sector read from file failed"),PSTR("Error"));
+			pOLED->show_storry(PSTR("Sector read from file failed"),PSTR("Error"),DIALOG_SHOW_500MS);
 		}
 		starting_standing_timestamp_ms=0;
 		if(pSensors->m_gps->get_info(9)>3){ 	// we DONT have GPS signal
@@ -226,7 +239,11 @@ void LapTimer::init_race_screen(bool reset_vars){
 	pOLED->string_P(pSpeedo->default_font,PSTR("Delay"),13,0,15,0,0);
 	pOLED->string_P(pSpeedo->default_font,PSTR("+--:--.--"),12,1,15,0,0);
 
-	pOLED->string_P(pSpeedo->default_font,PSTR("Calc.Best"),12,3);
+	if(use_realtime_not_calculated){
+		pOLED->string_P(pSpeedo->default_font,PSTR("Best Lap"),12,3);
+	} else {
+		pOLED->string_P(pSpeedo->default_font,PSTR("Calc.Best"),12,3);
+	}
 	pOLED->string_P(pSpeedo->default_font,PSTR("--:--.--"),13,4);
 
 	pOLED->string_P(pSpeedo->default_font,PSTR("Sec 01"),0,4);
@@ -254,20 +271,22 @@ void LapTimer::race_loop(){
 	if(pSpeedo->disp_zeile_bak[0]!=(int)pSensors->m_gps->mod(pSensors->m_gps->get_info(10),10000)){		// check if we have new gps data by comparing the current gps timestamp to the stored one
 		pSpeedo->disp_zeile_bak[0]=(int)pSensors->m_gps->mod(pSensors->m_gps->get_info(10),10000); 		// jep new GPS data available, save timestamp to storage
 		uint8_t update_level=(1<<UPDATE_LAP_TIME); 														// helps us to update only needed areas just update lap time by now
-		if((pSensors->m_gps->get_info(10) - lap_start_timestamp_ms) < 5000 && lap>0){					// dont update the laptime within the first 5 sec of a new lap
+		if((pSensors->m_gps->get_info(10) - lap_start_timestamp_ms) < LAPTIMER_SHOW_LAPTIME_DELAY && lap>0){	// dont update the laptime within the first 5 sec of a new lap
 			update_level&=~(1<<UPDATE_LAP_TIME);													// exept its the first lap
 		};
 		uint32_t dist=pSensors->m_gps->calc_dist(sector_end_longitude,sector_end_latitude);				// calc dist between actual location and the end of this sector
 
-		//	///////////////////////////////////////////////////////////////////
-		//	dist=0;														//
-		//	while(Serial.available()){									//
-		//		char one_char=Serial.read();							//
-		//		if(one_char>='0' && one_char<='9'){						//
-		//			dist=dist*10+(one_char-'0');						//
-		//		}														//
-		//	}															//
-		//	///////////////////////////////////////////////////////////////////
+//			///////////////////////////////////////////////////////////////////
+//			// menu line 2011
+//			// sensors 189
+//			dist=0;														//
+//			while(Serial.available()){									//
+//				char one_char=Serial.read();							//
+//				if(one_char>='0' && one_char<='9'){						//
+//					dist=dist*10+(one_char-'0');						//
+//				}														//
+//			}															//
+//			///////////////////////////////////////////////////////////////////
 
 		if((dist<=LAPTIMER_TARGET_RADIUS || last_dist_to_target<LAPTIMER_TARGET_RADIUS)){ 				// eighter the actual distance is short or the distance has been short before
 			if(dist<=last_dist_to_target){ 																// ********** we are moving NEARER to the target ... lets wait a bit more **********
@@ -286,27 +305,38 @@ void LapTimer::race_loop(){
 				Serial.print("ms, best was ");
 				Serial.println(best_sector_time_ms);
 #endif
-
-				if(cur_sector_time_ms<best_sector_time_ms){												// ********** update sector time and theoretical best lap time ?? **********
-#ifdef LAPTIMER_DEBUG_OUTPUT
-					Serial.println("Thus we are updating the file.");
-#endif
-					int error=update_sector_time(current_sector,cur_sector_time_ms,filename);			// obviously we have a new record for this sector, write it to the SD file
+				////////////////////////////////////////////////////////////////////////////////// UPDATE SECTOR TIMES //////////////////////////////////////////////////////////////////////////////////
+				if(use_realtime_not_calculated){														// IF we would like to see the real time, we have to save EVERY sector to our temp file
+					unsigned char temp_file[20];														// and copy it to the race file IF the time of the complete lap is a new record time, not earlier
+					strcpy_P((char *)temp_file,PSTR(LAPTIMER_TEMP_FILE)); 								// static temp file
+					int error=update_sector_time(current_sector,cur_sector_time_ms,temp_file);			// save it to the temp file, every time we cross a sector border
 					if(error<0){
-						pOLED->show_storry(PSTR("File could not be written"),PSTR("Error"));
+						pOLED->show_storry(PSTR("File could not be written"),PSTR("Error"),DIALOG_SHOW_500MS);	// this might drop some gps marks, but its a real problem
 					};
-
-					if(delay_calc_active){																// as soon as we have times for all sectors, we can calculate a theoretical best lap, have we filled all slots?
-						best_theoretical_lap_time_ms+=(cur_sector_time_ms-best_sector_time_ms);			// yes, so calc NEW theoretical best lap time!! (new sector record -> new best lap)
-						update_level|=(1<<UPDATE_BEST_LAP);												// tell update_screen to draw that
+				} else {																				// but if we are in "theortical mode" we just have to update it, if it is better
+					if(cur_sector_time_ms<best_sector_time_ms){											// ********** update sector time and theoretical best lap time ?? **********
 #ifdef LAPTIMER_DEBUG_OUTPUT
-						Serial.print("Based on the new sector time, we have a theoretical best-lap-time of ");
-						Serial.print(best_theoretical_lap_time_ms);
-						Serial.println("ms");
+						Serial.println("Thus we are updating the file.");
 #endif
-					};
-				} // cur_sector_time_ms<best_sector_time_ms
+						int error=update_sector_time(current_sector,cur_sector_time_ms,filename);		// obviously we have a new record for this sector, write it to the SD file
+						if(error<0){
+							pOLED->show_storry(PSTR("File could not be written"),PSTR("Error"),DIALOG_SHOW_500MS);	// this might drop some gps marks, but its a real problem
+						};
 
+						if(delay_calc_active){															// as soon as we have times for all sectors, we can calculate a theoretical best lap, have we filled all slots?
+							best_lap_time_ms+=(cur_sector_time_ms-best_sector_time_ms);					// yes, so calc NEW theoretical best lap time!! (new sector record -> new best lap)
+							update_level|=(1<<UPDATE_BEST_LAP);											// tell update_screen to draw that
+#ifdef LAPTIMER_DEBUG_OUTPUT
+							Serial.print("Based on the new sector time, we have a theoretical best-lap-time of ");
+							Serial.print(best_lap_time_ms);
+							Serial.println("ms");
+#endif
+						};
+					} // cur_sector_time_ms<best_sector_time_ms
+				} // if NOT (use_realtime_not_calculated)
+				////////////////////////////////////////////////////////////////////////////////// UPDATE SECTOR TIMES //////////////////////////////////////////////////////////////////////////////////
+
+				////////////////////////////////////////////////////////////////////////////////// FINISH LINE HANDLING //////////////////////////////////////////////////////////////////////////////////
 				if(current_sector+1>=sector_count){														// ********** start/goal line or "just" sector end? **********
 #ifdef LAPTIMER_DEBUG_OUTPUT
 					Serial.println("Attention, we reached the Finish line.");
@@ -314,32 +344,62 @@ void LapTimer::race_loop(){
 					pSensors->m_gps->set_gps_mark(LAP_END_MARK);										// jep Start/goal Passed
 					current_sector=0;																	// reset sector ID
 					lap++;																				// count up to 255 ... should be enough
+					if(use_realtime_not_calculated){													// IF we are using real time, we have to compare if this lap is a new record, otherwise it will be done in the end of each sector
+						if((lap_start_timestamp_ms-sector_start_timestamp_ms)<best_lap_time_ms){		// check if THIS lap was better than best_lap. sector_start_timestamp_ms holds accurate timestamp of "now"
+#ifdef LAPTIMER_DEBUG_OUTPUT
+							Serial.print("Starting to copy sector times from tempfile to racefile at:");
+							Serial.println(millis());
+#endif
+							unsigned char temp_file[20];												// now copy all sector times from the temp file in the race file
+							strcpy_P((char *)temp_file,PSTR(LAPTIMER_TEMP_FILE)); 						// static temp file
+							uint32_t sector_time_this_lap;
+							for(int i=0; i<sector_count; i++){											// loop through sectors
+								if(get_sector_data(i,&sector_time_this_lap,&sector_time_this_lap,&sector_time_this_lap,temp_file)<0){	// read time from temp
+									pOLED->show_storry(PSTR("Get Sectors from file failed"),PSTR("Error"),DIALOG_GO_LEFT_1000MS); // <-- pretty cool
+								} else {
+									int error=update_sector_time(i,sector_time_this_lap,filename);										// save it to the race file
+									if(error<0){
+										pOLED->show_storry(PSTR("Race File could not be written"),PSTR("Error"),DIALOG_GO_LEFT_1000MS);
+									};
+								}
+							}
+#ifdef LAPTIMER_DEBUG_OUTPUT
+							Serial.print("Finished at:");
+							Serial.println(millis());
+#endif
+							best_lap_time_ms=(lap_start_timestamp_ms-sector_start_timestamp_ms);		// save new best time and
+							update_level|=(1<<UPDATE_BEST_LAP);											// show that on the screen
+						} // new best lap
+					}
+																										// Activate delay calculation
 					if(!delay_calc_active){																// have we already passed one round? delay_calc_active=false if not
 #ifdef LAPTIMER_DEBUG_OUTPUT
 						Serial.println("Delay calculation was not active until now.");
 #endif
-						calc_best_theoretical_lap_time();												// not yet: okay, we have to calculate the theoretical best lap time, delay_calc_active is set to "true" by calc_best_theoretical_lap_time() as well
+						calc_best_lap_time();															// not yet: okay, we have to calculate the theoretical best lap time, delay_calc_active is set to "true" by calc_best_lap_time() as well
 						update_level|=(1<<UPDATE_BEST_LAP);												// show that on the screen
 					}
-					lap_start_timestamp_ms=sector_start_timestamp_ms; 									// reset lap time. sector_start_timestamp_ms holds accurate timestamp
+					lap_start_timestamp_ms=sector_start_timestamp_ms; 									// reset lap time. sector_start_timestamp_ms holds accurate timestamp of "now"
 					if(lap>0){																			// avoid updating the displayed laptime
 						update_level&=~(1<<UPDATE_LAP_TIME);											// right after crossing the finish line.
-					}																					// after a time of 5 sec it will be updated
+					}																					// after a time of 5 sec it will be updated <- Phils idea to realize the laptime
 				} else {
 					pSensors->m_gps->set_gps_mark(SECTOR_END_MARK);										// ********** nope just sector border **********
 					current_sector++;																	// just entering the next sector of this lap
 				}
+				////////////////////////////////////////////////////////////////////////////////// FINISH LINE HANDLING //////////////////////////////////////////////////////////////////////////////////
 
+				////////////////////////////////////////////////////////////////////////////////// DELAY CALCULATION //////////////////////////////////////////////////////////////////////////////////
 				if(delay_calc_active){																	// ********** we finished a sector, lets check how good we are, calc delay **********
 #ifdef LAPTIMER_DEBUG_OUTPUT
 					Serial.print("Before reaching the sector end, our delay was ");
 					Serial.print(delay_ms);
 					Serial.println("ms");
 #endif
-					if(current_sector==0){ 																// we finished the first sector of this lap, reset delay calc
+					if(current_sector==1){ 																// we finished the first sector of this lap, reset delay calc
 						delay_ms=0;																		// so we have allways the delay of the current lap displayed
 #ifdef LAPTIMER_DEBUG_OUTPUT
-						Serial.println("This was the first sector, reseting delay.");
+						Serial.println("This was the first sector, resetting delay.");
 #endif
 					};
 					delay_ms+=cur_sector_time_ms-best_sector_time_ms; 									// if you were faster, cur_sector_time_ms is smaller than best_sector_time_ms and your delay becomes "negative"
@@ -350,10 +410,13 @@ void LapTimer::race_loop(){
 #endif
 					update_level|=(1<<UPDATE_DELAY);													// tell update_screen the write the new delay
 				};
-				// ********** load the new sector end coordiantes and sector record from file  **********
+				////////////////////////////////////////////////////////////////////////////////// DELAY CALCULATION //////////////////////////////////////////////////////////////////////////////////
+
+				////////////////////////////////////////////////////////////////////////////////// LOAD NEXT SECTOR //////////////////////////////////////////////////////////////////////////////////
 				if(get_sector_data(current_sector,&sector_end_latitude,&sector_end_longitude,&best_sector_time_ms,filename)<0){
 					pOLED->show_storry(PSTR("Sector read from file failed"),PSTR("Error"));
 				};
+				////////////////////////////////////////////////////////////////////////////////// LOAD NEXT SECTOR //////////////////////////////////////////////////////////////////////////////////
 
 #ifdef LAPTIMER_DEBUG_OUTPUT
 				Serial.print("New sector end coordinates are ");
@@ -445,9 +508,9 @@ void LapTimer::update_race_screen(uint8_t level){
 	}
 
 	if(level&(1<<UPDATE_BEST_LAP)){
-		min=floor(best_theoretical_lap_time_ms/60000);
-		sec=int(floor(best_theoretical_lap_time_ms/1000))%60;
-		f_sec=floor((best_theoretical_lap_time_ms%1000)/10);
+		min=floor(best_lap_time_ms/60000);
+		sec=int(floor(best_lap_time_ms/1000))%60;
+		f_sec=floor((best_lap_time_ms%1000)/10);
 		sprintf(char_buffer,"%02i:%02i.%02i",min,sec,f_sec);
 		pOLED->string(pSpeedo->default_font,char_buffer,13,4);
 	}
@@ -602,7 +665,7 @@ int LapTimer::clear_file(unsigned char* filename){
 
 /*reset times uses update_sector_times to reset every sector to 99999999 ms */
 int LapTimer::reset_times(unsigned char* filename){
-	calc_best_theoretical_lap_time();
+	calc_best_lap_time();
 	for(uint8_t i=0;i<sector_count; i++){
 		int result=update_sector_time(i,99999999,filename);
 		if(result<0){
@@ -728,11 +791,11 @@ int LapTimer::update_sector_time(uint8_t sector_id, uint32_t sector_time, unsign
 	return 0;
 };
 
-/* calc_best_theoretical_lap_time() - is used to parse the SD Card and find all best sector times,
-	add them up and save it in best_theoretical_lap_time_ms
+/* calc_best_lap_time() - is used to parse the SD Card and find all best sector times,
+	add them up and save it in best_lap_time_ms
 	This should be the starting call!
  */
-int LapTimer::calc_best_theoretical_lap_time(){
+int LapTimer::calc_best_lap_time(){
 	unsigned char temp[20];
 	SdFile folder;
 	SdFile file;
@@ -746,7 +809,7 @@ int LapTimer::calc_best_theoretical_lap_time(){
 		return -1;
 	};
 	delay_calc_active=true; // assume that this track has been driven
-	best_theoretical_lap_time_ms=0;
+	best_lap_time_ms=0;
 	sector_count=(int)floor(file.fileSize()/30);
 	if(sector_count==0){
 		pOLED->show_storry(PSTR("The current selected file is empty, record some sectors first"),PSTR("Empty file"),DIALOG_GO_LEFT_2000MS);
@@ -765,15 +828,15 @@ int LapTimer::calc_best_theoretical_lap_time(){
 			}
 			if(temp==999999){ // initial time for sector
 				delay_calc_active=false;
-				best_theoretical_lap_time_ms=0; // invalid
+				best_lap_time_ms=0; // invalid
 				return 0; // no error but done, at least this sector has no "best" time
 			} else {
-				best_theoretical_lap_time_ms+=temp;
+				best_lap_time_ms+=temp;
 			}
 		};
 		// max 99 min
-		if(best_theoretical_lap_time_ms>5940000){ // 1*99*60*1000=5940000
-			best_theoretical_lap_time_ms=0;
+		if(best_lap_time_ms>5940000){ // 1*99*60*1000=5940000
+			best_lap_time_ms=0;
 			delay_calc_active=false;
 		}
 	}
