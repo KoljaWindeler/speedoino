@@ -450,7 +450,12 @@ public class RouteMap extends MapActivity implements OnTouchListener
 		out.write(output.getBytes());
 		output="<Style id=\"trackStyle\"><LineStyle><color>FFFF00FF</color><width>3.0</width></LineStyle></Style>";
 		out.write(output.getBytes());
-		
+		p = gps_points.get(0);
+		if(p!=null){
+			output="<LookAt id=\"ID\"><longitude>"+String.valueOf(p.getLongitudeE6()/1E6)+"</longitude><latitude>"+String.valueOf(p.getLatitudeE6()/1E6)+"</latitude><altitude>1000</altitude><heading>0</heading><tilt>0</tilt><range></range><altitudeMode>absolute</altitudeMode></LookAt>";
+			out.write(output.getBytes());
+		};
+
 		if(lap_marker_in_file){
 			output="<Folder><name>Lap "+String.valueOf(lap_counter)+"</name>";
 		} else {
@@ -503,20 +508,22 @@ public class RouteMap extends MapActivity implements OnTouchListener
 			while(green_str.length()<2){
 				green_str="0"+green_str;
 			}
-			
+
 			if(add_info_special.get(i)==2 || add_info_special.get(i)==3) {
-				String flag_color="FF0000FF";	// red flag = Finish lap flag
+				String flag_color="FF00FFFF";	// red flag = Finish lap flag
+				String scale="1.5";
 				if(add_info_special.get(i)==2){ 
-					flag_color="FF00FFFF"; // yellow flag = sector end flag
+					flag_color="FFFFFFFF"; // yellow flag = sector end flag
+					scale="1";
 				}
-				output="<Style><IconStyle><color>"+flag_color+"</color><scale>1</scale><Icon><href>http://www.tischlerei-windeler.de/finish_line.gif</href></Icon></IconStyle></Style>";
+				output="<Style><IconStyle><color>"+flag_color+"</color><scale>"+scale+"</scale><Icon><href>http://www.tischlerei-windeler.de/finish_line.gif</href></Icon></IconStyle></Style>";
 			} else {
 				output="<Style><IconStyle><color>FF00"+green_str+red_str+"</color><scale>0.18</scale><Icon><href>http://www.tischlerei-windeler.de/punkt.png</href></Icon></IconStyle></Style>";
 			}
 			out.write(output.getBytes());
 			output="<Point><coordinates>"+String.valueOf(p.getLongitudeE6()/1E6)+","+String.valueOf(p.getLatitudeE6()/1E6)+",0</coordinates></Point></Placemark>";
 			out.write(output.getBytes());
-			
+
 			if(add_info_special.get(i)==3) { // lap end marker
 				lap_counter++;
 				output="</Folder><Folder><name>Lap "+String.valueOf(lap_counter)+"</name>";
@@ -524,7 +531,34 @@ public class RouteMap extends MapActivity implements OnTouchListener
 			}
 
 		}
-		output = "</Folder></Document></kml>";
+		output = "</Folder>";
+		out.write(output.getBytes());
+
+		/////////////////////////////// add path ///////////////////////////////
+		String formating="<Style><LineStyle><color>#ffff5500</color><width>5</width></LineStyle></Style>";
+		lap_counter=1;
+		output="<Folder><name>Laps Paths</name>";
+		out.write(output.getBytes());
+		output = "<Placemark id=\"Track\"><name>Lap "+String.valueOf(lap_counter)+"</name><LineString><coordinates>";
+		out.write(output.getBytes());
+		for(int i=0;i<gps_points.size();i++){
+			p = gps_points.get(i);
+			output= String.valueOf(p.getLongitudeE6()/1E6)+","+String.valueOf(p.getLatitudeE6()/1E6)+",0 ";
+			out.write(output.getBytes());
+			if(add_info_special.get(i)==3) { // lap end marker 
+				output="</coordinates></LineString>"+formating+"</Placemark>";
+				out.write(output.getBytes());
+				lap_counter++;
+				output = "<Placemark id=\"Track\"><name>Lap "+String.valueOf(lap_counter)+"</name><LineString><coordinates>";
+				out.write(output.getBytes());
+			}
+		}
+		output="</coordinates></LineString>"+formating+"</Placemark></Folder>";
+		out.write(output.getBytes());
+		/////////////////////////////// add path ///////////////////////////////
+
+		// end document
+		output = "</Document></kml>";
 		out.write(output.getBytes());
 		out.close();
 
