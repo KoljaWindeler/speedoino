@@ -23,6 +23,7 @@ class speedo_disp : public ssd0323 {
 #define DIALOG_GO_RIGHT_2000MS 9
 #define DIALOG_GO_LEFT_5000MS 10
 #define DIALOG_GO_RIGHT_5000MS 11
+#define DIALOG_SHOW_500MS 12
 
 public:
 	unsigned char 	phase;//=0x62;

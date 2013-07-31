@@ -458,6 +458,8 @@ void speedo_disp::show_storry(char storry[],unsigned int storry_length,char titl
 		if(current_state==pMenu->state){
 			pMenu->go_left(true);
 		}
+	} else if(type==DIALOG_SHOW_500MS){
+		_delay_ms(500);
 	}
 }
 
