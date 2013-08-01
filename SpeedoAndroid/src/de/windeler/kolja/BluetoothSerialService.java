@@ -98,6 +98,7 @@ public class BluetoothSerialService {
 	private boolean preamble_found=false; 
 
 	//private EmulatorView mEmulatorView;
+	private int transfere_speed_flat;
 
 	// Constants that indicate the current connection state
 	public static final int STATE_NONE = 0;       // we're doing nothing
@@ -964,7 +965,7 @@ public class BluetoothSerialService {
 
 		//topProcess.publishProgress(3);
 		//topProcess.onProgressUpdate(13); 
-
+		int return_value=0;
 		int failCounter=0;
 		item = 0;
 		byte send[] = new byte[2+filename.length()+2]; // 2 fuer 250Byte Cluster + n fuer name + 1 command + 1 filename length
@@ -994,22 +995,11 @@ public class BluetoothSerialService {
 		// check folder dlBaseDir
 		// check folder in filename, if isset
 		// JFile file.open()
-
+		int start_time = (int) (System.currentTimeMillis());
 		status=0;
-		while(status!=STATUS_EOF && status!=FAILURE_FILE_SEEK && status!=FAILURE_FILE_OPEN && status!=FAILURE_FILE_READ){
+		while(status!=STATUS_EOF && status!=FAILURE_FILE_SEEK && status!=FAILURE_FILE_OPEN && status!=FAILURE_FILE_READ && return_value>=0){
 			Log.i(TAG,"Whileschleifeniteration");
-
-			// fortschritt schreiben
-			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-			Bundle bundle = new Bundle();
-
-			String shown_message=null;
-			int prozent=(int) ((int)(item*250*100)/Long.parseLong(file_size));
-			if(prozent>100 && Long.parseLong(file_size)<250) prozent=100; // wir ?bertragen 250 Byte auf einmal .. daher
-			shown_message=String.valueOf(prozent)+ "% of "+file_size+" Bytes transfered";
-			bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
-			msg.setData(bundle);
-			mHandlerUpdate.sendMessage(msg); 
+			String shown_message="";
 
 			// prepare dynamic part
 			send[2+filename.length()]=(byte) ((item & 0xff00)>>8); //danger wegen signed ? interessant ab ueber 127 Files
@@ -1043,11 +1033,8 @@ public class BluetoothSerialService {
 				if(failCounter>3){
 					status=STATUS_EOF;
 					msgLength=0;
-					msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
-					bundle = new Bundle();
-					bundle.putString(SpeedoAndroidActivity.TOAST, "Transmission failed");
-					msg.setData(bundle);
-					mHandler.sendMessage(msg);
+					shown_message="Transmission failed";
+					return_value=-4;
 				}
 			} else { 
 				failCounter=0;
@@ -1071,24 +1058,15 @@ public class BluetoothSerialService {
 				if((msgBuffer[2]&0x00ff)==(FAILURE_FILE_OPEN&0x00ff)){
 					status=FAILURE_FILE_OPEN;
 					shown_message="File open failure";
-					bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
-					msg.setData(bundle);
-					mHandlerUpdate.sendMessage(msg);
-					return -1;
+					return_value=-1;
 				} else if((msgBuffer[2]&0x00ff)==(FAILURE_FILE_READ&0x00ff)){
 					status=FAILURE_FILE_READ;
 					shown_message="File read failure";
-					bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
-					msg.setData(bundle);
-					mHandlerUpdate.sendMessage(msg);
-					return -2;
+					return_value=-2;
 				} else {
 					status=FAILURE_FILE_SEEK;
 					shown_message="File seek failure";
-					bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
-					msg.setData(bundle);
-					mHandlerUpdate.sendMessage(msg);
-					return -3;
+					return_value=-3;
 				}
 			} else if ((msgBuffer[1]&0x00ff)==(STATUS_EOF&0x00ff)) {
 				status=STATUS_EOF;
@@ -1098,12 +1076,25 @@ public class BluetoothSerialService {
 			semaphore.release();
 			Log.i(TAG_SEM,"getFile hat den semaphore zurueck gegeben");
 
+			// fortschritt schreiben
+			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			Bundle bundle = new Bundle();
+
+			if(shown_message.length()==0){
+				shown_message=filename.substring(filename.lastIndexOf('/')+1)+"\n";
+				shown_message+=get_speed_text(start_time,Long.parseLong(file_size),(item*250),1);
+			};
+			bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
+			msg.setData(bundle);
+			mHandlerUpdate.sendMessage(msg); 
+
+
 		}
 		// status EOF erreich, datei schliessen und meldung zurueck geben
 		// file.close();
 		try {						out.close();			} 
 		catch (IOException e) {		e.printStackTrace();	}
-		return 0;
+		return return_value;
 
 	}
 
@@ -1150,29 +1141,11 @@ public class BluetoothSerialService {
 
 		int upload_status=1;
 		int transfered_bytes=0;
+		int start_time = (int) (System.currentTimeMillis());
 
 		while(upload_status!=STATUS_EOF){
 			Log.i(TAG_RECV,"Vor dem Send item"+String.valueOf(item));
-
-			// fortschritt schreiben
-			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
-			Bundle bundle = new Bundle();
-
-			String shown_message=null;
-			int per_transfered=(int) (transfered_bytes*100/filesize);
-			if(per_transfered<120){
-				if(per_transfered>100){
-					shown_message="Transfer completed";
-				} else {
-					shown_message=String.valueOf(per_transfered)+ "% transfered";
-				};
-			} else {
-				shown_message="Error in transfer";
-			}
-			bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
-			msg.setData(bundle);
-			mHandlerUpdate.sendMessage(msg); 
-
+			String shown_message="";
 			// datei auslesen und in puffer packen
 			bytesToSend=startOfPayload; // 										17
 			//in.reset(); // rewind file
@@ -1217,11 +1190,7 @@ public class BluetoothSerialService {
 
 				status=STATUS_EOF;
 				msgLength=0;
-				msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
-				bundle = new Bundle();
-				bundle.putString(SpeedoAndroidActivity.TOAST, "Transmission failed");
-				msg.setData(bundle);
-				mHandler.sendMessage(msg);
+				shown_message="Transmission failed";
 				return_value=-2;
 			}
 
@@ -1234,15 +1203,24 @@ public class BluetoothSerialService {
 			if(msgBuffer[1]==STATUS_EOF || msgBuffer[1]==STATUS_CMD_FAILED){
 				upload_status=STATUS_EOF;
 				if(msgBuffer[1]==STATUS_CMD_FAILED){
-					msg = mHandler.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_LOG);
-					bundle = new Bundle();
-					bundle.putString(SpeedoAndroidActivity.TOAST, "Transmission error");
-					msg.setData(bundle);
-					mHandler.sendMessage(msg);
+					shown_message="Transmission error";
 					return_value=-1;
 				}
 				break;
 			}
+
+
+			// fortschritt schreiben
+			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
+			Bundle bundle = new Bundle();
+
+			if(shown_message.length()==0){
+				shown_message=dest.substring(dest.lastIndexOf('/')+1)+"\n";
+				shown_message=get_speed_text(start_time,filesize,transfered_bytes,2);
+			};
+			bundle.putString(SpeedoAndroidActivity.BYTE_TRANSFERED, shown_message);
+			msg.setData(bundle);
+			mHandlerUpdate.sendMessage(msg); 
 
 		}
 		Log.i(TAG,"while schleife abgeschlossen");
@@ -2018,40 +1996,7 @@ public class BluetoothSerialService {
 			};
 
 			// fortschritt schreiben
-			// calculate speed
-			int time_diff= ((int)System.currentTimeMillis()-time)/1000;
-			if(time_diff==0) time_diff=1;
-			int speed=send_position/time_diff;
-			speed_flat=(19*speed_flat+speed)/20;
-			String speed_filled=String.valueOf(Math.floor(speed_flat/10)/100);
-			while(speed_filled.substring(speed_filled.lastIndexOf('.')+1).length()<2){
-				speed_filled+="0";
-			}
-			// calculate remaining time
-			if(speed_flat==0) speed_flat=1600;
-			int time_left=(int) ((highest_pos-send_position)/speed_flat);
-			String std_left=String.valueOf((int)Math.floor(time_left/3600));
-			if(std_left.length()<2) std_left="0"+std_left;
-			String min_left=String.valueOf((int)Math.floor(time_left/60));
-			if(min_left.length()<2) min_left="0"+min_left;
-			String sec_left=String.valueOf(time_left%60);
-			if(sec_left.length()<2) sec_left="0"+sec_left;
-			// calculate amount
-			String amount=String.valueOf(Math.floor(send_position/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10);
-			String prozent=String.valueOf((int)(send_position*100)/highest_pos);
-			if((int)((send_position*100)/highest_pos)==99){ // FUUUHUSCH
-				amount=String.valueOf(Math.floor(highest_pos/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10);
-				prozent="100";
-				std_left="00";
-				min_left="00";
-				sec_left="00";
-			}
-
-			// build message
-			String full_message="Speedoino at "+prozent+"%\n";
-			full_message+="    Total "+amount+" KB\n";
-			full_message+="    Upload @ "+speed_filled+" KB/sec\n";
-			full_message+="    Remaining "+std_left+":"+min_left+":"+sec_left;
+			String full_message=get_speed_text(time, highest_pos, send_position, 0);
 
 			Bundle bundle = new Bundle();
 			Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -2113,33 +2058,7 @@ public class BluetoothSerialService {
 					}
 				}
 				// fortschritt schreiben
-				// calculate speed
-				int time_diff= ((int)System.currentTimeMillis()-read_time)/1000;
-				if(time_diff==0) time_diff=1;
-				int read_speed=page*256/time_diff;
-				read_speed_flat=(19*read_speed_flat+read_speed)/20;
-				String speed_filled=String.valueOf(Math.floor(read_speed_flat/10)/100);
-				while(speed_filled.substring(speed_filled.lastIndexOf('.')+1).length()<2){
-					speed_filled+="0";
-				}
-				// calculate remaining time
-				if(read_speed_flat==0) read_speed_flat=1600;
-				int time_left=(int) ((highest_pos-(page*256))/read_speed_flat);
-				String std_left=String.valueOf((int)Math.floor(time_left/3600));
-				if(std_left.length()<2) std_left="0"+std_left;
-				String min_left=String.valueOf((int)Math.floor(time_left/60));
-				if(min_left.length()<2) min_left="0"+min_left;
-				String sec_left=String.valueOf(time_left%60);
-				if(sec_left.length()<2) sec_left="0"+sec_left;
-				// calculate amount
-				String amount=String.valueOf(Math.floor((page*256)/100)/10)+"/"+String.valueOf(Math.floor(highest_pos/100)/10);
-				String prozent=String.valueOf((int)((page*256)*100)/highest_pos);
-
-				// build message
-				String full_message="Speedoino "+prozent+"% verified\n";
-				full_message+="    Total "+amount+" KB\n";
-				full_message+="    Download @ "+speed_filled+" KB/sec\n";
-				full_message+="    Remaining "+std_left+":"+min_left+":"+sec_left;
+				String full_message=get_speed_text(time, highest_pos, (page*256), 3);
 
 				Bundle bundle = new Bundle();
 				Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION);
@@ -2171,4 +2090,55 @@ public class BluetoothSerialService {
 		return 0;
 	}
 	///////////////////////////// FIRMWARE UPDATE /////////////////////////////
+
+	///////////////////////////// get_speed_text /////////////////////////////
+	public String get_speed_text(int start_time, long filesize,long transfered_bytes, int transfere_type){
+		// fortschritt schreiben
+		// calculate speed
+		int time_diff= ((int)System.currentTimeMillis()-start_time)/1000;
+		if(time_diff==0) time_diff=1;
+		int read_speed=(int) (transfered_bytes/time_diff);
+		transfere_speed_flat=(19*transfere_speed_flat+read_speed)/20;
+		String speed_filled=String.valueOf(Math.floor(transfere_speed_flat/10)/100);
+		while(speed_filled.substring(speed_filled.lastIndexOf('.')+1).length()<2){
+			speed_filled+="0";
+		}
+		// calculate remaining time
+		if(transfere_speed_flat==0) transfere_speed_flat=1600;
+		int time_left=(int) ((filesize-transfered_bytes)/transfere_speed_flat);
+		String std_left=String.valueOf((int)Math.floor(time_left/3600));
+		if(std_left.length()<2) std_left="0"+std_left;
+		String min_left=String.valueOf((int)Math.floor(time_left/60));
+		if(min_left.length()<2) min_left="0"+min_left;
+		String sec_left=String.valueOf(time_left%60);
+		if(sec_left.length()<2) sec_left="0"+sec_left;
+		// calculate amount
+		String amount=String.valueOf(Math.floor(transfered_bytes/100)/10)+"/"+String.valueOf(Math.floor(filesize/100)/10);
+		String prozent=String.valueOf((int)(transfered_bytes*100)/filesize);
+
+		// build message
+		String full_message="";
+		if(transfere_type==0){
+			full_message="Speedoino at "+prozent+"%\n";
+			full_message+="    Total "+amount+" KB\n";
+			full_message+="    Upload @ "+speed_filled+" KB/sec\n";
+			full_message+="    Remaining "+std_left+":"+min_left+":"+sec_left;
+		} else if(transfere_type==3){
+			full_message="Speedoino "+prozent+"% verified\n";
+			full_message+="    Total "+amount+" KB\n";
+			full_message+="    Download @ "+speed_filled+" KB/sec\n";
+			full_message+="    Remaining "+std_left+":"+min_left+":"+sec_left;
+		} else {
+			if(transfere_type==1){
+				full_message="File "+prozent+"% downloaded\n";
+			} else if(transfere_type==2){
+				full_message="File "+prozent+"% uploaded\n";
+			}
+			full_message+="Total "+amount+" KB\n";
+			full_message+="Transfere @ "+speed_filled+" KB/sec\n";
+			full_message+="Remaining "+std_left+":"+min_left+":"+sec_left;
+		}
+		return full_message;
+		// fortschritt schreiben
+	};
 }
