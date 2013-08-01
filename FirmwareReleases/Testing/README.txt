@@ -19,7 +19,8 @@
 
 
 
-29.07.2013	SpeedoAndroid.apk				+ Settings Tab zur Auswahl vom verifizieren hinzugefügt und variable Geschwindigkeit für die Animation eingebaut
+01.08.2013	SpeedoAndroid.apk				+ Settings Tab zur Auswahl vom verifizieren hinzugefügt und variable Geschwindigkeit für die Animation eingebaut
 											+ Upload/Download von Dateien verbessert (neue Android App nutzen!),
 											+ Runden Auswertung in den Google Earth
 											+ Zu jedem Waypoint werden Paths erzeugt
+											+ Alle Upload und Download Dialoge zeigen nun Geschwindigkeit und Restzeit an
