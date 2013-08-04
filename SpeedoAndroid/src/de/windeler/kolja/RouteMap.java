@@ -40,6 +40,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
+import de.windeler.kolja.ImageEditor.convertImageDialog;
 import de.windeler.kolja.SpeedoAndroidActivity.getDirDialog;
 
 
@@ -199,7 +200,12 @@ public class RouteMap extends MapActivity implements OnTouchListener
 					int start_of_last_dataset=-14;
 
 					while(n < buffer.length){
-						if(buffer[n]=='*' && n-start_of_last_dataset>13){ // found the beginning of the next point -> eval point
+						if(buffer[n]=='*' && n-start_of_last_dataset>14){ // found the beginning of the next point -> eval point
+							
+							if(n-start_of_last_dataset>15){
+								start_of_last_dataset=n;
+								continue;
+							}
 							start_of_last_dataset=n;
 							/* compressed gps format contains just:
 							 * gps_time: 23:59:59.900 => 235.959.900 => 4 Byte [0..3]
@@ -222,7 +228,7 @@ public class RouteMap extends MapActivity implements OnTouchListener
 										time=time | integer_one_char;
 									}
 								}
-								add_info_time.add(String.valueOf(time));
+								
 
 								// latitude
 								long latitude=0;
@@ -255,6 +261,27 @@ public class RouteMap extends MapActivity implements OnTouchListener
 								//Log.d(DEBUG_TAG, "Koordinaten: " + String.valueOf(longitude) + " / "+ String.valueOf(latitude));
 								latitude=(int) (Math.floor(latitude/1000000.0)*1000000+Math.round((latitude%1000000.0)*10/6)); // nmea to dec!!
 								longitude=(int) (Math.floor(longitude/1000000.0)*1000000+Math.round((longitude%1000000.0)*10/6)); // nmea to dec!!
+//								if(latitude<10000000){
+//									//asd
+//									int asd=1;
+//									asd++;
+//									
+//								}
+								// check if this point is valid
+								if(p!=null){
+									boolean add_me=true;
+									if(Math.abs(p.getLatitudeE6()-latitude)>0.1*latitude){ // more than 10% away? not so much .. 
+										add_me=false;
+									}
+									if(Math.abs(p.getLongitudeE6()-longitude)>0.1*longitude){
+										add_me=false;
+									}
+									if(!add_me){
+										continue;
+									}
+								}
+								add_info_time.add(String.valueOf(time));
+								
 								p = new GeoPoint((int) (latitude),(int) (longitude));
 								gps_points.add(p);
 
@@ -615,12 +642,17 @@ public class RouteMap extends MapActivity implements OnTouchListener
 
 		for(int i=0;i<gps_points.size();i++){
 			p = gps_points.get(i);
-
+			if(Double.parseDouble(add_info_time.get(i))>695250306){
+				continue;
+			}
+			
 			if(add_info_time.get(i).length()>=9){ // neue files mit ms timestamp
 				Log.i("ASD", "Bin bei get("+String.valueOf(i)+")");
 				output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"."+add_info_time.get(i).substring(6, 9)+"</description>";
-			} else { // alte files ohne ms
-				output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"</description>";
+			} else if(add_info_time.get(i).length()>=7){  // alte files ohne ms				
+					output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"</description>";
+			} else {
+				continue;
 			}
 			out.write(output.getBytes());
 
