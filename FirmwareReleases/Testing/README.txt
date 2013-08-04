@@ -14,9 +14,11 @@
 											+ Navigation endet beim letzten Punkt und zeigt ihn danach weiterhin an (vorher kam eine Fehlermeldung)
 											+ Kommentar der Android App zur Navigationsdatei wird im Tacho angezeigt
 											+ LapTimer auf beste RundenZeit umgebaut ... aber noch immer Alpha Stadium, Bug mit fehlerhaften Delay korrigiert. 
-											  Noch auf Serial Debug Mode, also Filedownload/Android App im Racemodus nicht nutzbar. 
+											  Noch auf Serial Debug Mode, also Filedownload/Android App im Racemodus nicht nutzbar.
+03.08.2013	Speedoino_v2.1-89-g46962a1.hex	+ GPS logging im binären format testweise hinzugefügt, ist momentan dauer aktiv und nicht auswählbar (TODO)
+											  Binär werden nur 15 statt 63 Byte pro Punkt benötigt, das reduziert die Downloadzeit erheblich. 											  
 
-
+================================================================================================================================================================================================
 
 
 01.08.2013	SpeedoAndroid.apk				+ Settings Tab zur Auswahl vom verifizieren hinzugefügt und variable Geschwindigkeit für die Animation eingebaut
@@ -24,3 +26,4 @@
 											+ Runden Auswertung in den Google Earth
 											+ Zu jedem Waypoint werden Paths erzeugt
 											+ Alle Upload und Download Dialoge zeigen nun Geschwindigkeit und Restzeit an
+03.08.2013	SpeedoAndroid.apk				+ Dekodieren des binären GPS Formats hinzugefügt															
