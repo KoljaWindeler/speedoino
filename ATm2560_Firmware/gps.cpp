@@ -914,7 +914,7 @@ void speedo_gps::loop(){
  * wir triggern da das write und das wird uns hier aufrufen
  * um die infos zu bekommen
  ****************************************************/
-int speedo_gps::get_logged_points(char* buffer,int a){
+int speedo_gps::get_logged_points(char* buffer,int a,int* nbytes){
 	gps_write_status=9;
 	if(a<=gps_count){
 		if(gps_time[a]>240000000L) gps_time[a]=000000;
@@ -928,9 +928,51 @@ int speedo_gps::get_logged_points(char* buffer,int a){
 		if(gps_fix[a]>1) gps_fix[a]=2;
 		if(gps_special[a]>9) gps_special[a]=9;
 
-		//9+1+6+1+9+1+9+1+3+1+5+1+5+1+2+1+1+1+1+\n = 62
-		sprintf(buffer,"%09lu,%06lu,%09lu,%09lu,%03i,%05u,%05lu,%02i,%i,%i\n",
-				gps_time[a],gps_date[a],gps_lati[a],gps_long[a],gps_speed_arr[a],gps_course[a],gps_alt[a],gps_sats[a],gps_fix[a],gps_special[a]);
+		//if(log_format==COMPRESSED_LOG_FORMAT){
+		if(true){
+			/* compressed gps format contains just:
+			 * gps_time: 23:59:59.900 => 235.959.900 => 4 Byte [1..4]
+			 * gps_lati: 009456123 => 4 Byte [5..8]
+			 * gps_long: 052144879 => 4 Byte [9..12]
+			 * speed: 0..255 + [13,14]
+			 * gps_special => 2 Byte <-- gps special is high nibble ob byte 13
+			 * 4+4+4+2=14 + 1 (Spacer) = 15 Byte
+			 */
+
+			buffer[0]='*';
+			buffer[1]=(gps_time[a]&0xff000000)>>24;
+			buffer[2]=(gps_time[a]&0x00ff0000)>>16;
+			buffer[3]=(gps_time[a]&0x0000ff00)>>8;
+			buffer[4]=(gps_time[a]&0x000000ff)>>0;
+			buffer[5]=(gps_lati[a]&0xff000000)>>24;
+			buffer[6]=(gps_lati[a]&0x00ff0000)>>16;
+			buffer[7]=(gps_lati[a]&0x0000ff00)>>8;
+			buffer[8]=(gps_lati[a]&0x000000ff)>>0;
+			buffer[9]=(gps_long[a]&0xff000000)>>24;
+			buffer[10]=(gps_long[a]&0x00ff0000)>>16;
+			buffer[11]=(gps_long[a]&0x0000ff00)>>8;
+			buffer[12]=(gps_long[a]&0x000000ff)>>0;
+			buffer[13]=(gps_speed_arr[a]&0x0f00)>>8 | (gps_special[a]&0x0f)<<4;
+			buffer[14]=(gps_speed_arr[a]&0x00ff)>>0;
+			*nbytes=15;
+		} else {
+			/* std gps format contains:
+			 * gps_time: 9 digits, 19:23:45.451 => 192345451
+			 * gps_date: 6 digits, 25.7.2013 => 250713
+			 * gps_lati: 9 digits, 52.14,2356° => 052142356
+			 * gps_long: 9 digits, 9.11,457 => 00911457
+			 * gps_speed_arr: 3 digits, 278
+			 * gps_course: 5 digits, deci deg "172.3"
+			 * gps_alt: 5 digits, decimeter
+			 * gps_sats: 2 digits, number of
+			 * gps_fix: 1 digit, sec
+			 * gps_special: 1 digit, marker 0..9
+			 * 9+1+6+1+9+1+9+1+3+1+5+1+5+1+2+1+1+1+1+\n = 62
+			 */
+			sprintf(buffer,"%09lu,%06lu,%09lu,%09lu,%03i,%05u,%05lu,%02i,%i,%i\n",
+			gps_time[a],gps_date[a],gps_lati[a],gps_long[a],gps_speed_arr[a],gps_course[a],gps_alt[a],gps_sats[a],gps_fix[a],gps_special[a]);
+			*nbytes=62;
+		}
 
 		written_gps_points++;
 		return 0;

@@ -39,7 +39,7 @@ public:
 	int get_order(char char_buffer[], int* dist);
 	void generate_new_order();
 	unsigned long nmea_to_dec(unsigned long nmea);
-	int get_logged_points(char* buffer,int i);
+	int get_logged_points(char* buffer,int i,int* nbytes);
 	void reconfigure();
 	bool wait_on_gps();
 	void update_rate_1Hz();

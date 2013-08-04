@@ -209,17 +209,18 @@ int configuration::write(const char *filename){
 					Serial.println(buffer);
 #endif
 					int i=0;
-					while(i<100 && pSensors->m_gps->get_logged_points(&buffer[0],i)>=0){
+					int nbytes=0;
+					while(i<100 && pSensors->m_gps->get_logged_points(buffer,i,&nbytes)>=0){
 #ifdef SD_DEBUG
 						Serial.print("*** get_logged_points liefert: ");
 						Serial.println(buffer);
-#endif
-						int result=pSD->writeString(file, buffer);
-#ifdef SD_DEBUG
+						int result=file.write((uint8_t *)buffer, nbytes);
 						if(result<0){
 							Serial.print("*** writeString error: ");
 							Serial.println(result);
 						}
+#else
+						file.write((uint8_t *)buffer, nbytes);
 #endif
 						i++;
 					}
