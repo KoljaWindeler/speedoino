@@ -3,6 +3,8 @@ package de.windeler.kolja;
 //Route editor => log zu kml
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,13 +12,17 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +39,8 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
+
+import de.windeler.kolja.SpeedoAndroidActivity.getDirDialog;
 
 
 public class RouteMap extends MapActivity implements OnTouchListener
@@ -56,7 +64,7 @@ public class RouteMap extends MapActivity implements OnTouchListener
 	private ArrayList<Integer> add_info_speed = new ArrayList<Integer>();
 	private ArrayList<String> add_info_time = new ArrayList<String>();
 	private ArrayList<Integer> add_info_special = new ArrayList<Integer>();
-
+	private loadRoutefromFileDialog _loadRoutefromFileDialog;
 
 
 	/** Called when the activity is first created. */
@@ -100,9 +108,9 @@ public class RouteMap extends MapActivity implements OnTouchListener
 
 		} else {
 
-			loadRoutefromFile(filename);
-			loadVisiblePoints(mapView);
-			mapView.invalidate();
+			_loadRoutefromFileDialog = new loadRoutefromFileDialog(this);
+			_loadRoutefromFileDialog.execute(filename);
+			
 		};
 	}
 
@@ -138,37 +146,158 @@ public class RouteMap extends MapActivity implements OnTouchListener
 	}
 
 
-	protected boolean loadRoutefromFile(String filename){
-		gps_points.clear();
-		add_info_speed.clear();
-		add_info_special.clear();
-		add_info_time.clear();
-		String line = "";
-		try {
-			// File zum Lesen oeffenen
-			FileInputStream in = new FileInputStream(filename);
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////// load classes for function in background ////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// klasse die das loading fenster startet und im hintergrund "loadGPSpoints" ausfuehrt
+	protected class loadRoutefromFileDialog extends AsyncTask<String, Integer, String> {
+		private Context context;
+		ProgressDialog dialog;
 
-			// Wenn das File existiert zum einlesen vorbereiten
-			InputStreamReader input = new InputStreamReader(in);
-			BufferedReader buffreader = new BufferedReader(input);
+		public loadRoutefromFileDialog(Context cxt) {
+			context = cxt;
+			dialog = new ProgressDialog(context);
+		}
 
-
+		@Override
+		protected String doInBackground(String... params) {
+			filename=params[0];
+			gps_points.clear();
+			add_info_speed.clear();
+			add_info_special.clear();
+			add_info_time.clear();
 			try {
-				while ((line = buffreader.readLine()) != null) {
-					//Log.d(DEBUG_TAG, "LogLine: " + line + " length "+ String.valueOf(line.length()));
-					//z.b. 111543,160613,052230803,00333,004,00227,4294964509,06,2,0
-					/* 	0 gps_time[a]
-						1 gps_date[a],
-						2 gps_lati[a],
-						3 gps_long[a],
-						4 gps_speed_arr[a],
-						5 gps_course[a],
-						6 gps_alt[a],
-						7 gps_sats[a],
-						8 gps_fix[a],
-						9 gps_special[a]);
-					 */
-					try {
+				// File zum Lesen oeffenen
+				FileInputStream in = new FileInputStream(filename);
+				InputStreamReader input = new InputStreamReader(in);
+				BufferedReader buffreader = new BufferedReader(input);
+				int first_char=buffreader.read();
+				buffreader.close();
+				input.close();
+				in.close();
+
+
+				if(first_char=='*'){ // compressed format starts with '*'
+					// don't reset the file -> we use the '*' as end marker
+
+					// since we have no date field, we should try to get it from the filename
+					String filename_without_subdir=filename.substring(filename.lastIndexOf('/')+1); // should be something like 130412.GPS for 12.04.2013
+					if(filename_without_subdir.length()>=6){
+						// format in date should be 120413
+						String jahr=filename_without_subdir.substring(4,6);
+						String monat=filename_without_subdir.substring(2,4);
+						String tag=filename_without_subdir.substring(0,2);
+						date=jahr+monat+tag;
+					}
+
+					File file = new File(filename);
+					byte [] buffer = new byte[(int)file.length()];
+					DataInputStream dis = new DataInputStream(new FileInputStream(file));
+					dis.readFully(buffer);
+					dis.close();
+					int n=0;
+					int start_of_last_dataset=-14;
+
+					while(n < buffer.length){
+						if(buffer[n]=='*' && n-start_of_last_dataset>13){ // found the beginning of the next point -> eval point
+							start_of_last_dataset=n;
+							/* compressed gps format contains just:
+							 * gps_time: 23:59:59.900 => 235.959.900 => 4 Byte [0..3]
+							 * gps_lati: 009456123 => 4 Byte [4..7]
+							 * gps_long: 052144879 => 4 Byte [8..11]
+							 * speed: 0..255 + [12,13]
+							 * gps_special => 2 Byte <-- gps special is high nibble ob byte 12
+							 */
+							if(buffer.length>n+13){
+								// time & date
+								long time=0;
+								for(int ii=0; ii<4; ii++){
+									int integer_one_char=buffer[n+ii+1];
+									if(integer_one_char<0){
+										integer_one_char+=256;
+									}
+
+									time=time<<8;
+									if(buffer[n+ii+1]!=0x00){
+										time=time | integer_one_char;
+									}
+								}
+								add_info_time.add(String.valueOf(time));
+
+								// latitude
+								long latitude=0;
+								for(int ii=0; ii<4; ii++){
+									int integer_one_char=buffer[n+ii+5];
+									if(integer_one_char<0){
+										integer_one_char+=256;
+									}
+
+									latitude=latitude<<8;
+									if(buffer[n+ii+5]!=0x00){
+										latitude=latitude | integer_one_char;
+									}
+								}
+
+								// longitude
+								long longitude=0;
+								for(int ii=0; ii<4; ii++){
+									int integer_one_char=buffer[n+ii+9];
+									if(integer_one_char<0){
+										integer_one_char+=256;
+									}
+
+									longitude=longitude<<8;
+									if(buffer[n+ii+9]!=0x00){
+										longitude=longitude | integer_one_char;
+									}
+								}
+
+								//Log.d(DEBUG_TAG, "Koordinaten: " + String.valueOf(longitude) + " / "+ String.valueOf(latitude));
+								latitude=(int) (Math.floor(latitude/1000000.0)*1000000+Math.round((latitude%1000000.0)*10/6)); // nmea to dec!!
+								longitude=(int) (Math.floor(longitude/1000000.0)*1000000+Math.round((longitude%1000000.0)*10/6)); // nmea to dec!!
+								p = new GeoPoint((int) (latitude),(int) (longitude));
+								gps_points.add(p);
+
+								// speed
+								int temp_int=(buffer[n+13]<<8) | buffer[n+14];
+								add_info_speed.add(temp_int);
+
+								// special
+								int special=buffer[n+13]>>4; 
+								add_info_special.add(special);
+								if(special==2 || special==3){
+									lap_marker_in_file=true;
+								}
+							}
+							// progress update
+							Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION); // typ egal wir zeigen alles an
+							Bundle bundle = new Bundle();
+							String shown_message=add_info_special.size()+" Points loaded";
+							bundle.putString("POINTSLOADED", shown_message);
+							msg.setData(bundle);
+							mHandlerUpdate.sendMessage(msg); 
+						}
+						n++;
+					}
+				} else { // uncompressed version
+					in = new FileInputStream(filename);
+					input = new InputStreamReader(in);
+					buffreader = new BufferedReader(input);
+					String line = "";
+					while ((line = buffreader.readLine()) != null) {
+						//Log.d(DEBUG_TAG, "LogLine: " + line + " length "+ String.valueOf(line.length()));
+						//z.b. 111543,160613,052230803,00333,004,00227,4294964509,06,2,0
+						/*      0 gps_time[a]
+								1 gps_date[a],
+								2 gps_lati[a],
+								3 gps_long[a],
+								4 gps_speed_arr[a],
+								5 gps_course[a],
+								6 gps_alt[a],
+								7 gps_sats[a],
+								8 gps_fix[a],
+								9 gps_special[a]);
+						 */
 						if(line.replaceAll("[^,]","").length()==9){ // exakt 9 ","
 							String[] line_splitted = line.split(",");
 							// Koordinaten
@@ -189,32 +318,52 @@ public class RouteMap extends MapActivity implements OnTouchListener
 							if(Integer.parseInt(line_splitted[9])==2 || Integer.parseInt(line_splitted[9])==3){
 								lap_marker_in_file=true;
 							}
+							
+							// progress update
+							Message msg = mHandlerUpdate.obtainMessage(SpeedoAndroidActivity.MESSAGE_SET_VERSION); // typ egal wir zeigen alles an
+							Bundle bundle = new Bundle();
+							String shown_message=add_info_special.size()+" Points loaded";
+							bundle.putString("POINTSLOADED", shown_message);
+							msg.setData(bundle);
+							mHandlerUpdate.sendMessage(msg);
 
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
-						Log.d(DEBUG_TAG, "Parsing one point failed, but dont worry, we'll go on: " + e.getMessage());
-					}
-				}
+
+					} // while
+				} // not compressed
+				buffreader.close();
+				input.close();
+				in.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 				Log.d(DEBUG_TAG, "Error reading Line from File: " + e.getMessage());
 			}
-			/// CLOSE
-			try {
-				in.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-				Log.d(DEBUG_TAG, "Error closing File: " + e.getMessage());
-
-			}
-		} catch (java.io.FileNotFoundException e) {
-			e.printStackTrace();
-			Log.d(DEBUG_TAG, "File not found: " + e.getMessage());
-
+			return "japp";
 		}
-		return false;
+
+		@Override
+		protected void onPreExecute() {
+			dialog.setMessage("Loading GPS points...");
+			dialog.show();
+		};
+
+		@Override
+		protected void onPostExecute(String result) {
+			dialog.dismiss();
+			loadVisiblePoints(mapView); // show loaded points 
+			mapView.invalidate();		// show loaded points 
+		}
+
+		private final Handler mHandlerUpdate = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				dialog.setMessage(msg.getData().getString("POINTSLOADED"));
+				
+			};
+		};
 	}
+
+
 
 	protected boolean is_point_visible(GeoPoint p, GeoPoint topLeft, GeoPoint bottomRight){
 		if(p.getLatitudeE6()>topLeft.getLatitudeE6())
@@ -468,6 +617,7 @@ public class RouteMap extends MapActivity implements OnTouchListener
 			p = gps_points.get(i);
 
 			if(add_info_time.get(i).length()>=9){ // neue files mit ms timestamp
+				Log.i("ASD", "Bin bei get("+String.valueOf(i)+")");
 				output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"."+add_info_time.get(i).substring(6, 9)+"</description>";
 			} else { // alte files ohne ms
 				output="\n\r<Placemark><name></name><description>Speedoino autosaved point\nSpeed: "+add_info_speed.get(i)+" km/h\nTime: "+add_info_time.get(i).substring(0, 2)+":"+add_info_time.get(i).substring(2, 4)+":"+add_info_time.get(i).substring(4, 6)+"</description>";
@@ -537,7 +687,11 @@ public class RouteMap extends MapActivity implements OnTouchListener
 		/////////////////////////////// add path ///////////////////////////////
 		String formating="<Style><LineStyle><color>#ffff5500</color><width>5</width></LineStyle></Style>";
 		lap_counter=1;
-		output="<Folder><name>Laps Paths</name>";
+		if(lap_marker_in_file){
+			output="<Folder><name>Laps Paths</name>";
+		} else {
+			output="<Folder><name>Path</name>";
+		}		
 		out.write(output.getBytes());
 		output = "<Placemark id=\"Track\"><name>Lap "+String.valueOf(lap_counter)+"</name><LineString><coordinates>";
 		out.write(output.getBytes());
