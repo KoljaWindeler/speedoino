@@ -34,7 +34,7 @@ void speedo_voltage::calc(bool first_start){
 	// loop => was regular start, value is still >45 -> keep_alive
 	// loop => was regular start, value is now <45 -> shut down
 	if(first_start){
-		if(value<45){ // 4,5V
+		if(value<35){ // 3,5V
 			pSpeedo->startup_by_ignition=false;
 			keep_me_alive(true); // shutdown is done in clock class
 		} else {
