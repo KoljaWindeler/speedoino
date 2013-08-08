@@ -169,7 +169,7 @@ void LapTimer::prepare_race_loop(){
 		 * get_sector_data() will:
 		 * set sector end coordinates
 		 */
-		 if(use_realtime_not_calculated){												// prepare the temp file, by clearing it and copying as many sectors to it as in the race file
+		if(use_realtime_not_calculated){												// prepare the temp file, by clearing it and copying as many sectors to it as in the race file
 			unsigned char temp_file[20];
 			strcpy_P((char *)temp_file,PSTR(LAPTIMER_TEMP_FILE)); 						// static temp file
 
@@ -188,6 +188,9 @@ void LapTimer::prepare_race_loop(){
 		}
 		starting_standing_timestamp_ms=0;
 		if(pSensors->m_gps->get_info(9)>3){ 	// we DONT have GPS signal
+#ifdef LAPTIMER_DEBUG_OUTPUT
+			Serial.println("Setze last_gps_valid=false, da GPS nicht valid ist.");
+#endif
 			last_gps_valid=false; 	// this will help us, jump to the "if(!last_gps_valid){" part of "waiting_on_speed_up()"
 			pMenu->state=411; 		// main loop will call waiting_on_speed_up() in this state
 			pOLED->clear_screen(); 	// draw some fancy screen while we are waiting
@@ -196,6 +199,9 @@ void LapTimer::prepare_race_loop(){
 		} else {								// we have GPS signal
 			if(pSensors->get_speed(false)<=0) { // we are standing, but we are ready to race
 				pMenu->state=411; 			// main loop will call waiting_on_speed_up() in this state
+#ifdef LAPTIMER_DEBUG_OUTPUT
+				Serial.println("Setze last_gps_valid=false, da geschwindigkeit<=0 ist.");
+#endif
 				last_gps_valid=false; 		// shortcut: jump to the "if(!last_gps_valid){" part of "waiting_on_speed_up()" eventhough we have gps, show "speed up" on screen
 			} else { 						// we are moving, quick show screen and skip "waiting_on_speed_up()"
 				last_gps_valid=true; 		// this will help us, jump to the "} else if(pSensors->get_speed(false)>0){" part of "waiting_on_speed_up()"
@@ -272,21 +278,21 @@ void LapTimer::race_loop(){
 		pSpeedo->disp_zeile_bak[0]=(int)pSensors->m_gps->mod(pSensors->m_gps->get_info(10),10000); 		// jep new GPS data available, save timestamp to storage
 		uint8_t update_level=(1<<UPDATE_LAP_TIME); 														// helps us to update only needed areas just update lap time by now
 		if((pSensors->m_gps->get_info(10) - lap_start_timestamp_ms) < LAPTIMER_SHOW_LAPTIME_DELAY && lap>0){	// dont update the laptime within the first 5 sec of a new lap
-			update_level&=~(1<<UPDATE_LAP_TIME);													// exept its the first lap
+			update_level&=~(1<<UPDATE_LAP_TIME);														// exept its the first lap
 		};
 		uint32_t dist=pSensors->m_gps->calc_dist(sector_end_longitude,sector_end_latitude);				// calc dist between actual location and the end of this sector
 
-//			///////////////////////////////////////////////////////////////////
-//			// menu line 2011
-//			// sensors 189
-//			dist=0;														//
-//			while(Serial.available()){									//
-//				char one_char=Serial.read();							//
-//				if(one_char>='0' && one_char<='9'){						//
-//					dist=dist*10+(one_char-'0');						//
-//				}														//
-//			}															//
-//			///////////////////////////////////////////////////////////////////
+		//			///////////////////////////////////////////////////////////////////
+		//			// menu line 2011
+		//			// sensors 189
+		//			dist=0;														//
+		//			while(Serial.available()){									//
+		//				char one_char=Serial.read();							//
+		//				if(one_char>='0' && one_char<='9'){						//
+		//					dist=dist*10+(one_char-'0');						//
+		//				}														//
+		//			}															//
+		//			///////////////////////////////////////////////////////////////////
 
 		if((dist<=LAPTIMER_TARGET_RADIUS || last_dist_to_target<LAPTIMER_TARGET_RADIUS)){ 				// eighter the actual distance is short or the distance has been short before
 			if(dist<=last_dist_to_target){ 																// ********** we are moving NEARER to the target ... lets wait a bit more **********
@@ -371,7 +377,7 @@ void LapTimer::race_loop(){
 							update_level|=(1<<UPDATE_BEST_LAP);											// show that on the screen
 						} // new best lap
 					}
-																										// Activate delay calculation
+					// Activate delay calculation
 					if(!delay_calc_active){																// have we already passed one round? delay_calc_active=false if not
 #ifdef LAPTIMER_DEBUG_OUTPUT
 						Serial.println("Delay calculation was not active until now.");
@@ -396,13 +402,17 @@ void LapTimer::race_loop(){
 					Serial.print(delay_ms);
 					Serial.println("ms");
 #endif
-					if(current_sector==1){ 																// we finished the first sector of this lap, reset delay calc
-						delay_ms=0;																		// so we have allways the delay of the current lap displayed
+					if(current_sector==0){																// reset delay when crossing the finish line
+						delay_ms=0;																		// to have this 0:00.000 feeling
+					} else {
+						if(current_sector==1){ 															// we finished the first sector of this lap, reset delay calc
+							delay_ms=0;																	// so we have allways the delay of the current lap displayed
 #ifdef LAPTIMER_DEBUG_OUTPUT
-						Serial.println("This was the first sector, resetting delay.");
+							Serial.println("This was the first sector, resetting delay.");
 #endif
+						};
+						delay_ms+=cur_sector_time_ms-best_sector_time_ms; 								// if you were faster, cur_sector_time_ms is smaller than best_sector_time_ms and your delay becomes "negative"
 					};
-					delay_ms+=cur_sector_time_ms-best_sector_time_ms; 									// if you were faster, cur_sector_time_ms is smaller than best_sector_time_ms and your delay becomes "negative"
 #ifdef LAPTIMER_DEBUG_OUTPUT
 					Serial.print("It is now ");
 					Serial.print(delay_ms);
@@ -439,11 +449,17 @@ void LapTimer::race_loop(){
 				// GPS Handling: last_gps_valid=true -> the last time we checked it, we had gps connection
 			} else if(pSensors->m_gps->get_info(9)>3){ 													// 3 sec no valid GPS signal .. baaad
 				if(last_gps_valid){																		// but last time GPS was OK, so obvious we just lost it
+#ifdef LAPTIMER_DEBUG_OUTPUT
+					Serial.println("Setze last_gps_valid=false, da gps nicht valid ist.");
+#endif
 					last_gps_valid=false;																// remember that
 					pOLED->filled_rect(0,24,128,24,0x00);												// show some nice message
 					pOLED->string_P_centered(PSTR("no GPS"),4,true);
 				}
 			} else if(!last_gps_valid){ 																// we have now a valid gps signal but we were offline before
+#ifdef LAPTIMER_DEBUG_OUTPUT
+				Serial.println("Init mit false, in der loop");
+#endif
 				init_race_screen(false); 																// redraw the race screen because we painted that fancy "no gps" message but dont reset vars
 				last_gps_valid=true;																	// remember that we are reconnected
 				update_level=0xff; 																		// update all on update_race_screen()
@@ -508,10 +524,14 @@ void LapTimer::update_race_screen(uint8_t level){
 	}
 
 	if(level&(1<<UPDATE_BEST_LAP)){
-		min=floor(best_lap_time_ms/60000);
-		sec=int(floor(best_lap_time_ms/1000))%60;
-		f_sec=floor((best_lap_time_ms%1000)/10);
-		sprintf(char_buffer,"%02i:%02i.%02i",min,sec,f_sec);
+		if(best_lap_time_ms>0){
+			min=floor(best_lap_time_ms/60000);
+			sec=int(floor(best_lap_time_ms/1000))%60;
+			f_sec=floor((best_lap_time_ms%1000)/10);
+			sprintf(char_buffer,"%02i:%02i.%02i",min,sec,f_sec);
+		} else {
+			sprintf(char_buffer,"--:--.--");
+		}
 		pOLED->string(pSpeedo->default_font,char_buffer,13,4);
 	}
 

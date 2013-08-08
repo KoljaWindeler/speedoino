@@ -20,6 +20,7 @@ public:
 	int add_sector(uint32_t latitude, uint32_t longitude, unsigned char* filename);
 	int clear_file(unsigned char* filename);
 	int reset_times(unsigned char* filename);
+	bool		use_realtime_not_calculated;
 
 private:
 	uint8_t 	sector_count;
@@ -34,7 +35,6 @@ private:
 	uint32_t	lap_start_timestamp_ms;
 	uint32_t	starting_standing_timestamp_ms;
 	int32_t		delay_ms;
-	bool		use_realtime_not_calculated;
 	bool	 	delay_calc_active;
 	bool		last_gps_valid;
 	unsigned char filename[20]; // "/NAVI/HOCKENHE.SST"

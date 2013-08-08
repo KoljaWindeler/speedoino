@@ -20,6 +20,7 @@ class speedo_gps{
 #define LAP_END_MARK 3
 
 #define NAVI_FOLDER "navi"
+
 public:
 	speedo_gps();
 	~speedo_gps();
@@ -57,6 +58,7 @@ public:
 	int active_file; //
 	int valid;
 	bool navi_active;
+	bool use_compressed_log_format;
 	int gps_write_status;
 
 private:
