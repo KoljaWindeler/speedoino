@@ -559,6 +559,27 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",pSensors->m_CAN->get_active_can_type()); // triumph 0x01, OBD2 0x02
 					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("GPS_format="));
+					pSD->writeString(file, buffer);
+					if(pSensors->m_gps->use_compressed_log_format){
+						sprintf(buffer,"1\n");
+					} else {
+						sprintf(buffer,"0\n");
+					}
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("LT_realtime="));
+					pSD->writeString(file, buffer);
+					if(pLapTimer->use_realtime_not_calculated){
+						sprintf(buffer,"1\n");
+					} else {
+						sprintf(buffer,"0\n");
+					}
+					pSD->writeString(file, buffer);
+
+					// ==============================================================================================================//
+
+
 					file.close();
 					storage_outdated=false;
 				};
@@ -1019,6 +1040,10 @@ int configuration::parse(char* buffer){
 		int temp=0x00;
 		parse_int(buffer,seperator,&temp);
 		pSensors->m_CAN->set_active_can_type((unsigned char)(temp&0xff));
+	} else if(strcmp_P(name,PSTR("GPS_format"))==0){
+		parse_bool(buffer,seperator,&pSensors->m_gps->use_compressed_log_format);
+	} else if(strcmp_P(name,PSTR("LT_realtime"))==0){
+		parse_bool(buffer,seperator,&pLapTimer->use_realtime_not_calculated);
 	}
 	else {
 		return_value=-2; // ungltiger identifier
