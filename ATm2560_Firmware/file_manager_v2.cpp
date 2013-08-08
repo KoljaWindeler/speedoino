@@ -692,7 +692,7 @@ void speedo_filemanager_v2::parse_command(){
 				// outgoing
 				// [0]CMD_SET_STARTUP
 				// [1]STATUS
-				for(unsigned int i=1;i<msgLength && i<200;i++){
+				for(unsigned int i=1;i<msgLength && i<sizeof(pOLED->startup)/sizeof(pOLED->startup[0]);i++){
 					pOLED->startup[i-1]=msgBuffer[i];
 				}
 				pOLED->startup[msgLength]=0x00; // set stopper
