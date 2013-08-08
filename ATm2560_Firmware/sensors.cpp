@@ -318,7 +318,7 @@ void Speedo_sensors::pull_values(){
 	if((millis()-ten_Hz_timer)>=99){ // 100ms
 
 #ifdef TACHO_SMALLDEBUG
-			pDebug->sprintp(PSTR("-s"));
+		pDebug->sprintp(PSTR("-s"));
 #endif
 		ten_Hz_timer=millis();
 		ten_Hz_counter=(ten_Hz_counter+1)%10;
@@ -340,7 +340,7 @@ void Speedo_sensors::pull_values(){
 					pDebug->sprintlnp(PSTR("=== CAN timed out ==="));
 				}
 			};
-		} else if(update_required){//do this, every 10Hz, 100ms // && ten_Hz_counter%2==0){ // do this, every 5Hz, 200ms
+		} else {//do this, every 10Hz, 100ms
 			m_blinker->check();    // blinken wir?
 
 			/* gear */
@@ -356,6 +356,14 @@ void Speedo_sensors::pull_values(){
 
 		// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
 		rpm_flatted=pSensors->flatIt(get_RPM(0),&rpm_flatted_counter,4,get_RPM(1));
+	} else { // <<-- this else is new and should lead to more RPM updates ...
+		if(pAktors->m_stepper->init_steps_to_go==0){  // we are ready to show "real" rpm
+			if(m_dz->calc()){ // returns true if new rpm valus is available
+				if(abs(get_RPM(0)-rpm_flatted)>500){ // heavy change detected
+					pAktors->m_stepper->go_to(get_RPM(0)/11.73);
+				};
+			}
+		}
 	}
 
 
@@ -386,7 +394,7 @@ void Speedo_sensors::pull_values(){
 			};
 		}
 #ifdef TACHO_SMALLDEBUG
-			pDebug->sprintlnp(PSTR("."));
+		pDebug->sprintlnp(PSTR("."));
 #endif
 	}
 

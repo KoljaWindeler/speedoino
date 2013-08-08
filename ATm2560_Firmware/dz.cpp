@@ -46,49 +46,51 @@ unsigned int speedo_dz::get_dz(bool exact_dz){
 	return exact;
 }
 
-void speedo_dz::calc() { // called by "pull_values" with 10Hz // new 3.7.2013, previous 5Hz
-	///// DZ BERECHNUNG ////////
-	unsigned long now=millis(); 											// aktuelle zeit
-	unsigned long differ=now-previous_time; 								// zeit seit dem letzte mal abholen der daten
-	unsigned int  now_peaks=peak_count; 									// aktueller dz zähler stand, separate var damit der peakcount weiter verndert werden koennte
-	if(now_peaks>4 && differ>25){ 				// max mit 40Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
-		// am 17.8. von 50 auf 25 geändert ... das sind jetzt 40 Hz, mal sehen ob das noch klappt
-		// am 3.8. von 100 auf 50 geändert
-		// bei 4.000 rpm => 66 pps => 15ms Pro Peak, 4 Peaks in 60 ms
-		// somit kann man mit 50 statt 100 bis 4800 doppelt so schnell reagieren,
-		// mit 100ms war das sehr träge, mal sehen ob das die COM schnittstelle hergibt
-		//now_peaks=now_peaks>>anzahl_shift;								// könnte ja sein das man weniger umdrehungen als funken hat, hornet hat 2 Funken je Umdrehun
-		// die maximale übertragungsrate zwischen ATm8 und ATm2560 sollte nicht überschritten werden
-		// pro Übertragung werden benötigt: 19200 Baud, 2400 Byte/sek, 7 Byte, 2,916667 ms, machen wir mal 10 ms draus.
-		// bei 15.000 U/min => 250 U/sec
-		// da bei der Hornet 2 Zündungen pro Umdrehung vorkommen
-		// 500 Pulse / sec => 2ms zwischen 2 Pulsen, 5 Pulse in 10 ms
-		//
-		// bei 1.300 U/min => 21,6 U/min
-		// 43 Pulse / sec => 23ms zwischen 2 Pulsen, 5 Pulse in 116,27ms
+bool speedo_dz::calc() { // called by "pull_values" with 10Hz // new 3.7.2013, previous 5Hz
+    ///// DZ BERECHNUNG ////////
+    unsigned long now=millis();                                             // aktuelle zeit
+    unsigned long differ=now-previous_time;                                 // zeit seit dem letzte mal abholen der daten
+    unsigned int  now_peaks=peak_count;                                     // aktueller dz zähler stand, separate var damit der peakcount weiter verndert werden koennte
+    if(now_peaks>4 && differ>25){                 // max mit 40Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+        // am 17.8. von 50 auf 25 geändert ... das sind jetzt 40 Hz, mal sehen ob das noch klappt
+        // am 3.8. von 100 auf 50 geändert
+        // bei 4.000 rpm => 66 pps => 15ms Pro Peak, 4 Peaks in 60 ms
+        // somit kann man mit 50 statt 100 bis 4800 doppelt so schnell reagieren,
+        // mit 100ms war das sehr träge, mal sehen ob das die COM schnittstelle hergibt
+        //now_peaks=now_peaks>>anzahl_shift;                                // könnte ja sein das man weniger umdrehungen als funken hat, hornet hat 2 Funken je Umdrehun
+        // die maximale übertragungsrate zwischen ATm8 und ATm2560 sollte nicht überschritten werden
+        // pro Übertragung werden benötigt: 19200 Baud, 2400 Byte/sek, 7 Byte, 2,916667 ms, machen wir mal 10 ms draus.
+        // bei 15.000 U/min => 250 U/sec
+        // da bei der Hornet 2 Zündungen pro Umdrehung vorkommen
+        // 500 Pulse / sec => 2ms zwischen 2 Pulsen, 5 Pulse in 10 ms
+        //
+        // bei 1.300 U/min => 21,6 U/min
+        // 43 Pulse / sec => 23ms zwischen 2 Pulsen, 5 Pulse in 116,27ms
 
-		unsigned int dz=60000/differ*now_peaks/2; // Drehzahl berechnet (60.000 weil ms => min)
-		if(dz>15000){ // wenn man über 15000 U/min => Abstand von 2 Zündungen = 60000[ms/min]/15000[U/min] = 4 [ms/U]
-			dz=previous_dz; // alten Wert halten, kann nicht sein
-		};
+        unsigned int dz=60000/differ*now_peaks/2; // Drehzahl berechnet (60.000 weil ms => min)
+        if(dz>15000){ // wenn man über 15000 U/min => Abstand von 2 Zündungen = 60000[ms/min]/15000[U/min] = 4 [ms/U]
+            dz=previous_dz; // alten Wert halten, kann nicht sein
+        };
 
-		/* Timing */
-		peak_count=0;
-		previous_time=now; // speichere wann ich zuletzt nachgesehen habe
-		previous_dz=dz; // speichere die aktuelle dz
-		/* Timing */
+        /* Timing */
+        peak_count=0;
+        previous_time=now; // speichere wann ich zuletzt nachgesehen habe
+        previous_dz=dz; // speichere die aktuelle dz
+        /* Timing */
 
-		/* values */
-		//exact=dz;
-		exact=pSensors->flatIt(dz,&dz_faktor_counter,4,exact);						// IIR mit Rückführungsfaktor 1 für DZmotor
-		/* values */
-
-		// Stop
-	} else if(now-previous_time>500){
-		rounded=0;
-		exact=0;
-		previous_time=now;
-	};
+        /* values */
+        //exact=dz;
+        exact=pSensors->flatIt(dz,&dz_faktor_counter,4,exact);                        // IIR mit Rückführungsfaktor 1 für DZmotor
+        /* values */
+		return true;
+        // Stop
+    } else if(now-previous_time>500){
+        rounded=0;
+        exact=0;
+        previous_time=now;
+		return true;
+    };
+	return false;
 };
 
 ISR(INT4_vect){
