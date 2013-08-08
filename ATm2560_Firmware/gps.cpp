@@ -70,6 +70,8 @@ speedo_gps::speedo_gps(){
 		gps_date[i]=0;
 		gps_time[i]=0;
 	}
+
+	use_compressed_log_format=true; // reduces filesize to 24%
 };
 
 speedo_gps::~speedo_gps(){
@@ -539,9 +541,15 @@ long speedo_gps::get_info(unsigned char select){
 		return gps_date[inner_gps_count];
 		break;
 	case 2:
+#ifdef GPS_FAKE_MODE
+		return 52123000+(int)(floor(millis()/50))%200;
+#endif
 		return gps_long[inner_gps_count];
 		break;
 	case 3:
+#ifdef GPS_FAKE_MODE
+		return 9456000+(int)(floor(millis()/50))%200;
+#endif
 		return gps_lati[inner_gps_count];
 		break;
 	case 4:
@@ -551,6 +559,9 @@ long speedo_gps::get_info(unsigned char select){
 		return long(gps_speed_arr[inner_gps_count]);
 		break;
 	case 6:
+#ifdef GPS_FAKE_MODE
+		return 6;
+#endif
 		if(long(gps_sats[inner_gps_count])>20) { return 20; }; //höhö
 		if(long(gps_sats[inner_gps_count])<0) { return 0; };
 		return long(gps_sats[inner_gps_count]);
@@ -562,11 +573,15 @@ long speedo_gps::get_info(unsigned char select){
 		return long(gps_course[inner_gps_count]);
 		break;
 	case 9:
-		//		return 0; //
+#ifdef GPS_FAKE_MODE
+				return 0; //todo
+#endif
 		return valid;
 		break;
 	case 10:
-		//		return floor(millis()/100)*100; //
+#ifdef GPS_FAKE_MODE
+		return floor(millis()/100)*100; //
+#endif
 		return gps_time[inner_gps_count];
 		break;
 	}
@@ -928,8 +943,7 @@ int speedo_gps::get_logged_points(char* buffer,int a,int* nbytes){
 		if(gps_fix[a]>1) gps_fix[a]=2;
 		if(gps_special[a]>9) gps_special[a]=9;
 
-		//if(log_format==COMPRESSED_LOG_FORMAT){
-		if(true){
+		if(use_compressed_log_format){
 			/* compressed gps format contains just:
 			 * gps_time: 23:59:59.900 => 235.959.900 => 4 Byte [1..4]
 			 * gps_lati: 009456123 => 4 Byte [5..8]
