@@ -32,6 +32,7 @@ public:
 	void addinfo_show_loop();
 	void check_inputs();
 	float flatIt(int actual,unsigned char *counter, char max_counter, float old_flat);
+	float flatIt_shift(int actual, uint8_t *counter, uint8_t shift, float old_flat);
 	void pull_values();
 
 	unsigned int get_RPM(int mode); // 0=exact, 1=flated, 2=flatted_display_ready
@@ -57,8 +58,8 @@ public:
 
 	unsigned char last_int_state;
 private:
-	unsigned long ten_Hz_timer;
-	short ten_Hz_counter;
+	unsigned long fourty_Hz_timer;
+	short fourty_Hz_counter;
 
 	unsigned int rpm_flatted;
 	unsigned char rpm_flatted_counter;

@@ -31,8 +31,8 @@ Speedo_sensors::Speedo_sensors(){
 	m_voltage=new speedo_voltage();
 	m_CAN=new Speedo_CAN();
 
-	ten_Hz_counter=0;
-	ten_Hz_timer=millis();
+	fourty_Hz_counter=0;
+	fourty_Hz_timer=millis();
 	CAN_active=true; // don't care, will change it in init
 	sensor_source=0;
 	last_highbeam_on=0;
@@ -186,7 +186,7 @@ unsigned int Speedo_sensors::get_speed(bool mag_if_possible){
 			return_value=(unsigned)m_speed->getSpeed();
 		};
 	}
-	return return_value;
+	return return_value+1;
 };
 
 int Speedo_sensors::get_water_temperature(){
@@ -256,7 +256,7 @@ void Speedo_sensors::single_read(){
 	pDebug->sprintp(PSTR("Done\r\nReading: Voltages ... "));
 	pSensors->m_voltage->calc(false); // spannungscheck
 	char temp[6];
-	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/10)),int(m_voltage->get()%10));
+	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/100)),int((m_voltage->get()/10)%10));
 	Serial.print(temp);
 	pDebug->sprintp(PSTR(" Done\r\nReading: Control lights ... "));
 	check_inputs();
@@ -315,16 +315,16 @@ void Speedo_sensors::single_read(){
 void Speedo_sensors::pull_values(){
 	// is an update required?
 	boolean update_required=false;
-	if((millis()-ten_Hz_timer)>=99){ // 100ms
+	if((millis()-fourty_Hz_timer)>=24){ // 100ms
 
 #ifdef TACHO_SMALLDEBUG
 		pDebug->sprintp(PSTR("-s"));
 #endif
-		ten_Hz_timer=millis();
-		ten_Hz_counter=(ten_Hz_counter+1)%10;
+		fourty_Hz_timer=millis();
+		fourty_Hz_counter=(fourty_Hz_counter+1)%40;
 		update_required=true;
 
-		if(ten_Hz_counter==0){ // 1 Hz
+		if(fourty_Hz_counter==0){ // 1 Hz
 			m_voltage->calc(false); // spannungscheck
 			m_temperature->read_oil_temp();  // temperaturen aktualisieren
 			m_clock->inc();  // sekunden hochzählen
@@ -340,7 +340,9 @@ void Speedo_sensors::pull_values(){
 					pDebug->sprintlnp(PSTR("=== CAN timed out ==="));
 				}
 			};
-		} else {//do this, every 10Hz, 100ms
+		}
+
+		if(fourty_Hz_counter%4==0){			//do this, every 10Hz, 100ms
 			m_blinker->check();    // blinken wir?
 
 			/* gear */
@@ -352,13 +354,21 @@ void Speedo_sensors::pull_values(){
 				pAktors->m_stepper->go_to(get_RPM(0)/11.73); // einfach mal flatit probieren, sonst
 			};
 			/*stepper*/
-		}
 
-		// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
-		rpm_flatted=pSensors->flatIt(get_RPM(0),&rpm_flatted_counter,4,get_RPM(1));
-	} else { // <<-- this else is new and should lead to more RPM updates ...
-		if(pAktors->m_stepper->init_steps_to_go==0){  // we are ready to show "real" rpm
-			if(m_dz->calc()){ // returns true if new rpm valus is available
+			// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
+			rpm_flatted=pSensors->flatIt(get_RPM(0),&rpm_flatted_counter,4,get_RPM(1));
+
+		} else if(pAktors->m_stepper->init_steps_to_go==0){
+			// to this with 40hz, 25ms
+			// in addtion to the message above: handling of RPM and aktor
+			bool update_stepper=false;
+			if(CAN_active && !m_CAN->failed){
+				update_stepper=true;
+			} else if(m_dz->calc(true)){ // returns true if new rpm valus is available // TODO is it wise to have two timers?
+				update_stepper=true;
+			};
+
+			if(update_stepper){
 				if(abs(get_RPM(0)-rpm_flatted)>500){ // heavy change detected
 					pAktors->m_stepper->go_to(get_RPM(0)/11.73);
 				};
@@ -383,13 +393,13 @@ void Speedo_sensors::pull_values(){
 			m_CAN->process_incoming_messages();
 		}
 		if(update_required && m_CAN->get_active_can_type()==CAN_TYPE_OBD2){ // 10Hz, request can OBD2 msg
-			if(ten_Hz_counter==0 || ten_Hz_counter==2 || ten_Hz_counter==4 || ten_Hz_counter==6 || ten_Hz_counter==8){ // 200ms
+			if(fourty_Hz_counter==0 || fourty_Hz_counter==2 || fourty_Hz_counter==4 || fourty_Hz_counter==6 || fourty_Hz_counter==8){ // 200ms
 				m_CAN->request(CAN_CURRENT_INFO,CAN_RPM);
-			} else if(ten_Hz_counter==1 || ten_Hz_counter==5 ){ // 500ms
+			} else if(fourty_Hz_counter==1 || fourty_Hz_counter==5 ){ // 500ms
 				m_CAN->request(CAN_CURRENT_INFO,CAN_SPEED);
-			} else if(ten_Hz_counter==7){ // 1000ms
+			} else if(fourty_Hz_counter==7){ // 1000ms
 				m_CAN->request(CAN_CURRENT_INFO,CAN_WATER_TEMPERATURE);
-			} else if(ten_Hz_counter==9 ){  // 1000ms one free slot
+			} else if(fourty_Hz_counter==9 ){  // 1000ms one free slot
 				//m_CAN->request(?);
 			};
 		}
@@ -404,12 +414,10 @@ void Speedo_sensors::pull_values(){
 	else {
 		if(update_required){ // 100ms spacing
 			// do this, once a second
-			if(ten_Hz_counter==0){
+			if(fourty_Hz_counter==0){
 				m_temperature->read_air_temp();  // temperaturen aktualisieren
 				m_temperature->read_water_temp();  // temperaturen aktualisieren
 			}
-			m_dz->calc(); // calc rpms from non CAN sensors 10Hz
-
 #ifdef TACHO_SMALLDEBUG
 			pDebug->sprintlnp(PSTR("."));
 #endif
@@ -433,11 +441,11 @@ void Speedo_sensors::pull_values(){
  * - float value of IIR
  ************* IIR Tiefpass ***********************/
 float Speedo_sensors::flatIt(int actual, unsigned char *counter, char max_counter, float old_flat){
-	if(*counter<max_counter && *counter>=0){
+	if(*counter==max_counter){
+		return (float)((old_flat*(max_counter-1)+actual)/(max_counter));
+	} else if(*counter<max_counter && *counter>=0){
 		*counter=*counter+1;
 		return (float)((old_flat*(*counter-1)+actual)/(*counter));
-	} else if(*counter==max_counter){
-		return (float)((old_flat*(max_counter-1)+actual)/(max_counter));
 	} else {
 		*counter=1;
 		return actual;
@@ -445,6 +453,21 @@ float Speedo_sensors::flatIt(int actual, unsigned char *counter, char max_counte
 	// hier besteht die gefahr das ein messwert nur [INTmax]/max_counter groß sein darf
 	// bei 20 Werten also nur 3276,8
 }
+
+float Speedo_sensors::flatIt_shift(int actual, uint8_t *counter, uint8_t shift, float old_flat){
+	if(*counter==1<<(shift+1)){ // e.G. shift == 4 (2⁴=16) = (0b10000=16)
+		return (float)(old_flat+((int)(actual-old_flat)>>shift)); // e.g. shift = 2, old_flat=1, actual=2, result should be 1.25: (old_flat*3+actual)/4=5/4=1.25 OR BY SHIFT: 1+((2-1)>>2=1+1>>2=1+0.25=1.25
+	} else if(*counter<1<<shift && *counter>=0){
+		*counter=*counter+1;
+		return (float)((old_flat*(*counter-1)+actual)/(*counter));
+	} else {
+		*counter=1;
+		return actual;
+	}
+	// hier besteht die gefahr das ein messwert nur [INTmax]/max_counter groß sein darf
+	// bei 20 Werten also nur 3276,8
+}
+
 
 void Speedo_sensors::addinfo_show_loop(){
 	char *char_buffer;
@@ -500,7 +523,7 @@ void Speedo_sensors::addinfo_show_loop(){
 	if(voltage!=pSpeedo->disp_zeile_bak[1]){
 		pSpeedo->disp_zeile_bak[1]=voltage;
 		char temp[6];
-		sprintf(temp,"%2i,%iV",int(floor(voltage/10)),int(voltage%10));
+		sprintf(temp,"%2i,%iV",int(floor(voltage/100)),int(voltage%100));
 		pOLED->string(pSpeedo->default_font,temp,9,7);
 	};
 	free(char_buffer);
