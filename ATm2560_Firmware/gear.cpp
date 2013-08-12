@@ -126,7 +126,7 @@ void speedo_gear::calibrate(){
 	}
 
 	_delay_ms(150); // 128 values for LP, 150ms per Value + calc time ~> 22sec
-	pSensors->m_dz->calc(); // erst berechnen dann damit weiter rechnen
+	pSensors->m_dz->calc(false); // erst berechnen dann damit weiter rechnen
 	faktor_flat=pSensors->flatIt(int((unsigned long)(10*pSensors->get_RPM(0))/pSensors->get_speed(true)),&faktor_counter,127,faktor_flat);
 	if(faktor_flat!=pSpeedo->disp_zeile_bak[1]){
 		pSpeedo->disp_zeile_bak[1]=faktor_flat;
