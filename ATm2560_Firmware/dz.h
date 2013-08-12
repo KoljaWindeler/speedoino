@@ -19,7 +19,7 @@ public:
 	speedo_dz(void);
 	~speedo_dz(void);
 	void counter();
-	bool calc();
+	bool calc(bool force_calc);
 	void init();
 	int check_vars();
 	unsigned int get_dz(bool exact_dz);
