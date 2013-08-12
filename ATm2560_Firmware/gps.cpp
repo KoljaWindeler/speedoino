@@ -71,7 +71,7 @@ speedo_gps::speedo_gps(){
 		gps_time[i]=0;
 	}
 
-	use_compressed_log_format=true; // reduces filesize to 24%
+	use_compressed_log_format=false; // reduces filesize to 24%
 };
 
 speedo_gps::~speedo_gps(){
