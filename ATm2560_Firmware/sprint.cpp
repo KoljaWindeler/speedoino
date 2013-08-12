@@ -85,7 +85,7 @@ void speedo_sprint::loop(){
 
 
 		// drehzahl
-		pSensors->m_dz->calc();
+		pSensors->m_dz->calc(false);
 		if(pSpeedo->disp_zeile_bak[2]==-99){ // wenn es gerade reseted wurde -> alles hinmalen
 			sprintf(char_buffer,"%5u U/min",pSensors->get_RPM(0));
 			pOLED->string(pSpeedo->default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
