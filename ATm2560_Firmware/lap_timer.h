@@ -37,6 +37,7 @@ private:
 	int32_t		delay_ms;
 	bool	 	delay_calc_active;
 	bool		last_gps_valid;
+	bool		delay_reseted;
 	unsigned char filename[20]; // "/NAVI/HOCKENHE.SST"
 
 	int calc_best_lap_time();
