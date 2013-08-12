@@ -8,6 +8,7 @@
 #include "global.h"
 
 speedo_voltage::speedo_voltage(){
+	start_time=0;
 	value_counter=0;
 	value=0;
 	bat_empty=false;
@@ -21,9 +22,11 @@ void speedo_voltage::calc(bool first_start){
 	/* bei 12V => durch den Spannungsteiler ~1/3 = 4V */
 	/* value/1023*5*(3.2k)/1k  */
 
-	int aktueller_wert=round(analogRead(VOLTAGE_PIN)/6.4);
+	//int aktueller_wert=round(analogRead(VOLTAGE_PIN)/6.4);
+	int aktueller_wert=round(analogRead(VOLTAGE_PIN)*1.5625); // cV centiVolt
+
 	// hier können wir ruhig heftig tiefpassen, beim startup gibts ohnehin nur einen wert und der ist der aktuelle
-	value=pSensors->flatIt(aktueller_wert,&value_counter,20,value);
+	value=pSensors->flatIt_shift(aktueller_wert,&value_counter,4,value); // TP with 16
 
 	/////////////////////// clock mode stuff ///////////////////////////
 	//check mode
@@ -34,7 +37,7 @@ void speedo_voltage::calc(bool first_start){
 	// loop => was regular start, value is still >45 -> keep_alive
 	// loop => was regular start, value is now <45 -> shut down
 	if(first_start){
-		if(value<35){ // 3,5V
+		if(value<350){ // 3,5V
 			pSpeedo->startup_by_ignition=false;
 			keep_me_alive(true); // shutdown is done in clock class
 		} else {
@@ -77,7 +80,7 @@ void speedo_voltage::calc(bool first_start){
 }
 
 int speedo_voltage::get(){
-	if(value<=150 && value>=0){
+	if(value<=1500 && value>=0){
 		return value;
 	} else {
 		return -1;

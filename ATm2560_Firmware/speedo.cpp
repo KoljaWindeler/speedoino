@@ -117,7 +117,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 
 		}
 		///// Voltage ////
-		else if(pSensors->m_voltage->get()<110){ // less than 11.0 Volts
+		else if(pSensors->m_voltage->get()<1100){ // less than 11.0 Volts
 			if(disp_zeile_bak[ADD_INFO2]!=111 && millis()>20000){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=111;
 				pDebug->speedo_loop(11,0,previousMillis," ");
