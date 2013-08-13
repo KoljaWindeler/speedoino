@@ -375,7 +375,7 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){
 				dimm_state=STATIC_COLOR_REACHED;
 			};
 		} else {
-			pAktors->dimm_rgb_to(pAktors->static_color.r,pAktors->static_color.g,pAktors->static_color.b,200); // 200*10ms = 2000 ms
+			pAktors->dimm_rgb_to(pAktors->static_color.r,pAktors->static_color.g,pAktors->static_color.b,25); // 25*10ms = 250 ms
 			dimm_state=DIMM_TO_STATIC_COLOR;
 		};
 		return 0;
@@ -458,7 +458,7 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){
 				temp_b = float(to_color.b-from_color.b)/float(differ)*(current_sensor_value-min_value)+from_color.b;
 			};
 
-			pAktors->dimm_rgb_to(temp_r,temp_g,temp_b,200); // 200*10ms = 2000 ms
+			pAktors->dimm_rgb_to(temp_r,temp_g,temp_b,25); // 25*10ms = 250 ms
 			dimm_state=DIMM_TO_STATIC_COLOR;
 			///////// dimm now end ///////////
 		}
