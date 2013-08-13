@@ -59,7 +59,7 @@ const char lap_t_m_1[] PROGMEM = "2. Load Sectors";
 const char lap_t_m_2[] PROGMEM = "3. Set new Sectors";
 const char lap_t_m_3[] PROGMEM = "4. Reset besttimes";
 const char lap_t_m_4[] PROGMEM = "5. Evaluation";
-const char lap_t_m_5[] PROGMEM = "6. -";
+const char lap_t_m_5[] PROGMEM = "6. Best Lap Calc";
 const char lap_t_m_6[] PROGMEM = "7. -";
 const char lap_t_m_7[] PROGMEM = "8. -";
 const char lap_t_m_8[] PROGMEM = "9. -";
@@ -581,7 +581,7 @@ void speedo_menu::display(){
 		if(!pLapTimer->use_realtime_not_calculated){
 			fg=0x00;
 			bg=DISP_BRIGHTNESS;
-			pOLED->highlight_bar(8,8*2,110,8); // mit hintergrundfarbe nen kasten malen
+			pOLED->highlight_bar(8,8*3,110,8); // mit hintergrundfarbe nen kasten malen
 		} else {
 			fg=DISP_BRIGHTNESS;
 			bg=0x00;
@@ -592,7 +592,7 @@ void speedo_menu::display(){
 		if(pLapTimer->use_realtime_not_calculated){
 			fg=0x00;
 			bg=DISP_BRIGHTNESS;
-			pOLED->highlight_bar(8,8*3,110,8); // mit hintergrundfarbe nen kasten malen
+			pOLED->highlight_bar(8,8*4,110,8); // mit hintergrundfarbe nen kasten malen
 		} else {
 			fg=DISP_BRIGHTNESS;
 			bg=0x00;
