@@ -34,6 +34,7 @@ private:
 	uint32_t	sector_start_timestamp_ms;
 	uint32_t	lap_start_timestamp_ms;
 	uint32_t	starting_standing_timestamp_ms;
+	uint32_t	total_lap_time_blink_ms;
 	int32_t		delay_ms;
 	bool	 	delay_calc_active;
 	bool		last_gps_valid;
