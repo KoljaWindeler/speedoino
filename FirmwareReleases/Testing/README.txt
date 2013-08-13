@@ -19,7 +19,7 @@
                                             - Binär werden nur 15 statt 63 Byte pro Punkt benötigt, das reduziert die Downloadzeit erheblich. 											  
 07.08.2013	Speedoino_v2.1-98-g751cb02.hex	+ DZM erheblich beschleunigt!, LapTimer Delay zurücksetzen beim Überfahren der Start/Ziel linie
                                             - LapTimer initialisierung merkwürdig, Fehlerquelle unbekannt, Debug hinzugefügt
-13.08.2013	Speedoino_v2.1-114-g9da5b86.hex + DZM für alle systeme verbessert (universal)
+13.08.2013	Speedoino_v2.1-115-g054daa7.hex + DZM für alle systeme verbessert (universal)
                                             - LapTimer RealTime Best Lap sieht vielversprechend aus
                                             - Menü für Modus hinzugefügt 
 

@@ -33,7 +33,7 @@ class debugging{
 #undef		 STEPPER_DEBUG				// Show stepper info
 #undef		 DEMO_MODE					// show fancy demo values
 #undef		 LOAD_CALC					// show calc load
-#define		 GPS_FAKE_MODE				// simply fake some data
+#undef		 GPS_FAKE_MODE				// simply fake some data
 
 public:
 	debugging(void);
