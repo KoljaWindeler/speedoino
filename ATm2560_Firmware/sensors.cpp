@@ -186,7 +186,7 @@ unsigned int Speedo_sensors::get_speed(bool mag_if_possible){
 			return_value=(unsigned)m_speed->getSpeed();
 		};
 	}
-	return return_value+1;
+	return return_value;
 };
 
 int Speedo_sensors::get_water_temperature(){
