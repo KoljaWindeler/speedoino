@@ -26,7 +26,7 @@ void speedo_voltage::calc(bool first_start){
 	int aktueller_wert=round(analogRead(VOLTAGE_PIN)*1.5625); // cV centiVolt
 
 	// hier können wir ruhig heftig tiefpassen, beim startup gibts ohnehin nur einen wert und der ist der aktuelle
-	value=pSensors->flatIt_shift(aktueller_wert,&value_counter,4,value); // TP with 16
+	value=pSensors->flatIt_shift(aktueller_wert,&value_counter,6,value); // TP with 64
 
 	/////////////////////// clock mode stuff ///////////////////////////
 	//check mode
