@@ -437,11 +437,11 @@ void speedo_menu::display(){
 	/********************************************* Menu 4, Race mode  *********************************************
 	 * Submenus:
 	 * 41 Race Mode";   // "String 0" etc are strings to store - change to suit.
-	 * 42 Set Sectors
-	 * 43 Set GPS to 10 Hz
-	 * 44 Set GPS to 1 Hz
-	 * 45 -
-	 * 46 -
+	 * 42 Select file
+	 * 43 Set Sectors
+	 * 44 Clear Besttimes
+	 * 45 Evaluation
+	 * 46 Setup (Realtime / theoretical time)
 	 * 47 -
 	 * 48 -
 	 * 49 -
@@ -548,10 +548,69 @@ void speedo_menu::display(){
 	}
 	////////// Eval
 	else if(state==451){
-			set_buttons(button_state,!button_state,!button_state,!button_state); // no up/down
-			pOLED->clear_screen();
-			pOLED->show_storry(PSTR("Evaluation is not yet implemented. Here is some magic needed"),PSTR("TODO"));
+		set_buttons(button_state,!button_state,!button_state,!button_state); // no up/down
+		pOLED->clear_screen();
+		pOLED->show_storry(PSTR("Evaluation is not yet implemented. Here is some magic needed"),PSTR("TODO"));
+	}
+	////////// Setup of laptimer
+	else if(floor(state/10)==46) { // 00046X
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+	}
+	// now the "mode" selector
+	else if(floor(state/100)==46) { // 000461X
+		if(state%10==9){ // "up" key
+			pLapTimer->use_realtime_not_calculated=true;
+			pConfig->storage_outdated=true;
+		} else if(state%10==2){ // "down" key
+			pLapTimer->use_realtime_not_calculated=false;
+			pConfig->storage_outdated=true;
+		};
+
+		state=4611;
+
+		// displaying values
+		pOLED->clear_screen();
+
+		pOLED->highlight_bar(0,0,128,8); // title
+		pOLED->string_P(pSpeedo->default_font,PSTR("Best Time Mode"),2,0,DISP_BRIGHTNESS,0,0);
+
+		unsigned char fg;
+		unsigned char bg;
+
+		/// theoretical
+		if(!pLapTimer->use_realtime_not_calculated){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(8,8*2,110,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
 		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("calculated time"),2,3,bg,fg,0);
+
+		/// real
+		if(pLapTimer->use_realtime_not_calculated){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(8,8*3,110,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("Real time"),2,4,bg,fg,0);
+
+
+		// key settings and corresponding var state changing
+		bool up=button_state;
+		bool down=button_state;
+		if(pLapTimer->use_realtime_not_calculated){
+			up=!button_state;
+		} else if(!pLapTimer->use_realtime_not_calculated){
+			down=!button_state;
+		}
+
+		set_buttons(button_state,up,down,!button_state); // button directions
+	}
 
 	/********************************************* Menu 5 - Start of Extend Info Menu *********************************************
 	 * Submenus:
@@ -1087,7 +1146,7 @@ void speedo_menu::display(){
 
 		/////////////////////// speed based color fade ///////////////////
 	} else if(floor(state/10)==642 || floor(state/100)==642 ||floor(state/1000)==642){
-		color_select_menu(642,&pAktors->kmh_start_color,&pAktors->kmh_end_color,&pAktors->kmh_min_value,&pAktors->kmh_max_value,300,button_state, PSTR("Speed"),PSTR("km\h"),1,false);
+		color_select_menu(642,&pAktors->kmh_start_color,&pAktors->kmh_end_color,&pAktors->kmh_min_value,&pAktors->kmh_max_value,300,button_state, PSTR("Speed"),PSTR("km\\h"),1,false);
 
 		/////////////////////// rpm based color fade ///////////////////
 	} else if(floor(state/10)==643 || floor(state/100)==643 || floor(state/1000)==643){
