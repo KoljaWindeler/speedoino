@@ -69,7 +69,7 @@ const char  * const menu_lap_t[9] PROGMEM= { lap_t_m_0,lap_t_m_1,lap_t_m_2,lap_t
 const char setup_m_0[] PROGMEM = "1. Gear calib.";   // "String 0" etc are strings to store - change to suit.
 const char setup_m_1[] PROGMEM = "2. Speed calib.";   // "String 0" etc are strings to store - change to suit.
 const char setup_m_2[] PROGMEM = "3. Display setup";
-const char setup_m_3[] PROGMEM = "4. Reset memory";
+const char setup_m_3[] PROGMEM = "4. GPS Format";
 const char setup_m_4[] PROGMEM = "5. Sensor source"; // can or no CAN
 const char setup_m_5[] PROGMEM = "6. BT Reset state";
 const char setup_m_6[] PROGMEM = "7. Water temp warn.";
@@ -297,12 +297,12 @@ void speedo_menu::display(){
 		if((state%10)==9){
 			pSensors->m_gps->navi_active=true;
 			pSensors->m_gps->generate_new_order();
-			byte tempByte = (1 & 0xFF);
-			eeprom_write_byte((uint8_t *)146,tempByte); // store navistate to eeprom ... warum auch immer wir das noch tun ... TODO!!!!
+			pConfig->storage_outdated=true;		// store navipointer to SD Card
+			pConfig->write("BASE.TXT");
 		} else if((state%10)==2){
 			pSensors->m_gps->navi_active=false;
-			byte tempByte = (0 & 0xFF);
-			eeprom_write_byte((uint8_t *)146,tempByte); // store navistate to eeprom
+			pConfig->storage_outdated=true;		// store navipointer to SD Card
+			pConfig->write("BASE.TXT");
 		};
 		state=311;
 		pOLED->clear_screen();
@@ -581,7 +581,7 @@ void speedo_menu::display(){
 		if(!pLapTimer->use_realtime_not_calculated){
 			fg=0x00;
 			bg=DISP_BRIGHTNESS;
-			pOLED->highlight_bar(8,8*3,110,8); // mit hintergrundfarbe nen kasten malen
+			pOLED->highlight_bar(0,8*3,118,8); // mit hintergrundfarbe nen kasten malen
 		} else {
 			fg=DISP_BRIGHTNESS;
 			bg=0x00;
@@ -592,13 +592,14 @@ void speedo_menu::display(){
 		if(pLapTimer->use_realtime_not_calculated){
 			fg=0x00;
 			bg=DISP_BRIGHTNESS;
-			pOLED->highlight_bar(8,8*4,110,8); // mit hintergrundfarbe nen kasten malen
+			pOLED->highlight_bar(0,8*4,118,8); // mit hintergrundfarbe nen kasten malen
 		} else {
 			fg=DISP_BRIGHTNESS;
 			bg=0x00;
 		}
 		pOLED->string_P(pSpeedo->default_font,PSTR("Real time"),2,4,bg,fg,0);
 
+		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E save"),0,7);
 
 		// key settings and corresponding var state changing
 		bool up=button_state;
@@ -1320,22 +1321,18 @@ void speedo_menu::display(){
 			else if(floor(state/10)==73111) {pOLED->ref++;}
 
 			pOLED->init(pOLED->phase,pOLED->ref);
-			byte tempByte = (pOLED->phase & 0xFF);
-			eeprom_write_byte((uint8_t *)144,tempByte);
-			tempByte = (pOLED->ref & 0xFF);
-			eeprom_write_byte((uint8_t *)145,tempByte);
+			pConfig->storage_outdated=true;		// store change
+			pConfig->write("BASE.TXT");
 
 		} else if(state%10==2){
-			if(floor(state/10)==73) { pOLED->phase=pOLED->phase-16; } // warum auch immer wie das machen im eeprom, warum nicht auf der SD ?? TODO
+			if(floor(state/10)==73) { pOLED->phase=pOLED->phase-16; }
 			else if(floor(state/10)==731) {pOLED->phase--;}
 			else if(floor(state/10)==7311) {pOLED->ref=pOLED->ref-16;}
 			else if(floor(state/10)==73111) {pOLED->ref--;}
 
 			pOLED->init(pOLED->phase,pOLED->ref);
-			byte tempByte = (pOLED->phase & 0xFF);
-			eeprom_write_byte((uint8_t *)144,tempByte);
-			tempByte = (pOLED->ref & 0xFF);
-			eeprom_write_byte((uint8_t *)145,tempByte);
+			pConfig->storage_outdated=true;		// store change
+			pConfig->write("BASE.TXT");
 		};
 
 		int olc=0,orc=0;
@@ -1363,43 +1360,66 @@ void speedo_menu::display(){
 		pOLED->string(pSpeedo->default_font,char_buffer,12,6,abs(urc-1)*15,urc*15,0);
 
 	}
-	///////////////////// reset setup //////////////////////////
-	else if(state==741) {
-		yesno("Really reset","total EEPROM","");
-		set_buttons(button_state,!button_state,!button_state,button_state); // left-right only
+	////////// Setup of GPS Log Format
+	else if(floor(state/10)==74) { // 00074X
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
-	else if(state==7411) {
-		set_buttons(!button_state,!button_state,!button_state,!button_state); // message only
-		byte tempByte;
-		eeprom_write_byte((uint8_t *)2, 1& 0xFF);   // tripmode=1
+	// now the "mode" selector
+	else if(floor(state/100)==74) { // 000461X
+		if(state%10==9){ // "up" key
+			pSensors->m_gps->use_compressed_log_format=true;
+			pConfig->storage_outdated=true;
+		} else if(state%10==2){ // "down" key
+			pSensors->m_gps->use_compressed_log_format=false;
+			pConfig->storage_outdated=true;
+		};
 
+		state=7411;
 
-		eeprom_write_byte((uint8_t *)144, 0xA8); // display
-		eeprom_write_byte((uint8_t *)145, 0x38); // display
+		// displaying values
+		pOLED->clear_screen();
 
-		tempByte = ((int)15 & 0xFF);
-		eeprom_write_byte((uint8_t *)147, tempByte); // Navi_pos=0
-		eeprom_write_byte((uint8_t *)149, (int)1 & 0xFF); // reset_enable=>1
-		tempByte = ((int)92 & 0xFF);
-		eeprom_write_byte((uint8_t *)150, tempByte); // fuel_max=9.2 l
-		tempByte = ((int)0 & 0xFF);
-		eeprom_write_byte((uint8_t *)151, tempByte); // fuel_step=0
-		eeprom_write_byte((uint8_t *)152, tempByte); // fuel_counter=0
+		pOLED->highlight_bar(0,0,128,8); // title
+		pOLED->string_P(pSpeedo->default_font,PSTR("GPS Format"),2,0,DISP_BRIGHTNESS,0,0);
 
+		unsigned char fg;
+		unsigned char bg;
 
-		pSD->sd_failed=false;
-		for(unsigned int i=0;i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]);i++){
-			pSpeedo->max_speed[i]=0;
-			pSpeedo->avg_timebase[i]=0;
-			pSpeedo->trip_dist[i]=0;
+		/// compressed
+		if(pSensors->m_gps->use_compressed_log_format){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*3,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
 		}
-		pConfig->write("SPEEDO.TXT");
-		pConfig->write("BASE.TXT");
-		pConfig->write("GANG.TXT");
+		pOLED->string_P(pSpeedo->default_font,PSTR("Compressed"),2,3,bg,fg,0);
+
+		/// not compressed
+		if(!pSensors->m_gps->use_compressed_log_format){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*4,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("Readable"),2,4,bg,fg,0);
+
+		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E save"),0,7);
 
 
-		popup(PSTR("The memory"),PSTR("has been reset"));
-		state=11;
+		// key settings and corresponding var state changing
+		bool up=button_state;
+		bool down=button_state;
+		if(pSensors->m_gps->use_compressed_log_format){
+			up=!button_state;
+		} else if(!pSensors->m_gps->use_compressed_log_format){
+			down=!button_state;
+		}
+
+		set_buttons(button_state,up,down,!button_state); // button directions
 	}
 	/////////// Sensor source  //////////
 	// this is our sneaky state in the middle, see if we have to store
