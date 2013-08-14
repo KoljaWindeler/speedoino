@@ -1051,10 +1051,11 @@ void speedo_gps::set_drive_status(int speed, int ss, int sat, char status){
 unsigned long speedo_gps::GpsTimeToTimeStamp(unsigned long input){
 	// input is something like 151932100 at 15:19:32.100
 	// output should be 15*3600000+19*60000+32100=55172100
-	unsigned int sec_with_frac=mod(input,100000);
-	unsigned int min=(int)floor(input/10000)%100;
-	unsigned int hour=floor(input/1000000);
+	unsigned int min=(int)floor(input/100000)%100;
+	unsigned int hour=floor(input/10000000);
+	unsigned int sec_with_frac=input-(unsigned long)((hour*100+min)*100000);
 
 	unsigned long return_value=((unsigned long)(hour*60+min))*60000+sec_with_frac;
+
 	return return_value;
 }
