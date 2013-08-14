@@ -23,10 +23,10 @@ public:
 	void read_air_temp();
 	int check_vars();
 	void init();
-	short oil_r_werte[19];
-	short oil_t_werte[19];
-	short water_r_werte[19];
-	short water_t_werte[19];
+	int oil_r_werte[19];
+	char oil_t_werte[19];
+	int water_r_werte[19];
+	char water_t_werte[19];
 	int	oil_warning_temp;
 	int water_warning_temp;
 	unsigned char water_temp_fail_status;

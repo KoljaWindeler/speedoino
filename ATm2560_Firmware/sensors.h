@@ -53,7 +53,7 @@ public:
 	speedo_gear* m_gear;
 	speedo_voltage* m_voltage;
 	Speedo_CAN* m_CAN;
-	short sensor_source;
+	int8_t sensor_source;
 	bool CAN_active;
 
 	unsigned char last_int_state;

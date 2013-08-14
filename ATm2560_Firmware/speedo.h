@@ -9,16 +9,16 @@
 #define SPEEDO_H_
 
 typedef struct {
-	short x;
-	short y;
-	short font;
+	int8_t x;
+	int8_t y;
+	int8_t font;
 	bool symbol;
 } widget;
 
 //109982 - 4737
 //110308 - 4899 :( --struct
 //110414 - 4953 :(( -- kmhchars
-	//109088 - 4467 :] -- die elseif geschichte gelöscht -> nur ein test, keine reale variante
+//109088 - 4467 :] -- die elseif geschichte gelöscht -> nur ein test, keine reale variante
 //110432 - 4245 :D --string in flash
 //111696 - 3715 :D --string in flash
 
@@ -58,7 +58,7 @@ public:
 
 	widget		kmhchar_widget,oil_widget,water_widget,air_widget,arrow_widget,kmh_widget,dz_widget;
 	widget		fuel_widget,gear_widget,addinfo_widget,addinfo2_widget,clock_widget,gps_widget;
-	short default_font;
+	int8_t default_font;
 private:
 	bool check_no_collision_with_addinfo2(int current_widget_y);
 	bool addinfo2_currently_shown;

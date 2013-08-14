@@ -297,6 +297,26 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",pSensors->m_gps->active_file%10); // 12 chars max: max_=1=300\n\0
 					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("navi_active="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pSensors->m_gps->navi_active);
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("navi_point="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pSensors->m_gps->navi_point));
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("disp_phase="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pOLED->phase));
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("disp_ref="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",int(pOLED->ref));
+					pSD->writeString(file, buffer);
+
 					strcpy_P(buffer, PSTR("mode_trip="));
 					pSD->writeString(file, buffer);
 					sprintf(buffer,"%i\n",pSpeedo->m_trip_mode%10); // 12 chars max: max_=1=300\n\0
@@ -324,11 +344,7 @@ int configuration::write(const char *filename){
 
 					strcpy_P(buffer, PSTR("dz_flash_en="));
 					pSD->writeString(file, buffer);
-					if(pSensors->m_dz->blitz_en){
-						sprintf(buffer,"1\n"); // 12 chars max: max_=1=300\n\0
-					} else {
-						sprintf(buffer,"0\n"); // 12 chars max: max_=1=300\n\0
-					}
+					sprintf(buffer,"%i\n",pSensors->m_dz->blitz_en);
 					pSD->writeString(file, buffer);
 
 					strcpy_P(buffer, PSTR("dz_min="));
@@ -570,11 +586,7 @@ int configuration::write(const char *filename){
 
 					strcpy_P(buffer, PSTR("LT_realtime="));
 					pSD->writeString(file, buffer);
-					if(pLapTimer->use_realtime_not_calculated){
-						sprintf(buffer,"1\n");
-					} else {
-						sprintf(buffer,"0\n");
-					}
+					sprintf(buffer,"%i\n",pLapTimer->use_realtime_not_calculated);
 					pSD->writeString(file, buffer);
 
 					// ==============================================================================================================//
@@ -724,6 +736,14 @@ int configuration::parse(char* buffer){
 		parse_a(buffer,seperator,(char *)pOLED->startup,sizeof(pOLED->startup)/sizeof(pOLED->startup[0]));
 	} else if(strcmp_P(name,PSTR("active_navi_file"))==0){ // welche datei ist die aktive ?
 		parse_int(buffer,seperator,&pSensors->m_gps->active_file);
+	} else if(strcmp_P(name,PSTR("navi_active"))==0){
+		parse_bool(buffer,seperator,&pSensors->m_gps->navi_active);
+	} else if(strcmp_P(name,PSTR("navi_point"))==0){
+		parse_int(buffer,seperator,&pSensors->m_gps->navi_point);
+	} else if(strcmp_P(name,PSTR("disp_phase"))==0){
+		parse_uint8_t(buffer,seperator,&pOLED->phase);
+	} else if(strcmp_P(name,PSTR("disp_ref"))==0){
+		parse_uint8_t(buffer,seperator,&pOLED->ref);
 	} else if(strcmp_P(name,PSTR("skin_file"))==0){ // welche datei ist der aktive skin
 		parse_int(buffer,seperator,&pConfig->skin_file);
 	} else if(strcmp_P(name,PSTR("oil_dist"))==0){ // distanz in meter nachder ge...lt wird
@@ -733,7 +753,7 @@ int configuration::parse(char* buffer){
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
 			sprintf(var_name,"oil_temp_r_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
-				parse_short(buffer,seperator,&pSensors->m_temperature->oil_r_werte[j]);
+				parse_int(buffer,seperator,&pSensors->m_temperature->oil_r_werte[j]);
 			};
 		};
 	} else if(strncmp("oil_temp_t_",name,11)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
@@ -741,7 +761,7 @@ int configuration::parse(char* buffer){
 		for(int j=0;j<19;j++){ // alle mglichen strings erzeugen
 			sprintf(var_name,"oil_temp_t_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
-				parse_short(buffer,seperator,&pSensors->m_temperature->oil_t_werte[j]);
+				parse_uint8_t(buffer,seperator,(uint8_t*)&pSensors->m_temperature->oil_t_werte[j]);
 			};
 		};
 	} else if(strncmp("water_temp_r_",name,13)==0){ // ganzen Block auslesen, alle temp_rXXX gehen hier rein
@@ -749,7 +769,7 @@ int configuration::parse(char* buffer){
 		for(int j=0;j<19;j++){ // alle mglichen strings von temp_r_0 bis temp_r_18 erzeugen
 			sprintf(var_name,"water_temp_r_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
-				parse_short(buffer,seperator,&pSensors->m_temperature->water_r_werte[j]);
+				parse_int(buffer,seperator,&pSensors->m_temperature->water_r_werte[j]);
 			};
 		};
 	} else if(strncmp("water_temp_t_",name,13)==0){// ganzen Block auslesen, alle temp_tXXX gehen hier rein
@@ -757,7 +777,7 @@ int configuration::parse(char* buffer){
 		for(int j=0;j<19;j++){ // alle mglichen strings erzeugen
 			sprintf(var_name,"water_temp_t_%i",j);
 			if(strcmp(var_name,name)==0){ // testen welcher denn nun der richtige ist und den fllen
-				parse_short(buffer,seperator,&pSensors->m_temperature->water_t_werte[j]);
+				parse_uint8_t(buffer,seperator,(uint8_t*)&pSensors->m_temperature->water_t_werte[j]);
 			};
 		};
 	} else if(strncmp("n_gang_",name,7)==0){// ganzen Block auslesen, alle n_gangXXX gehen hier rein
@@ -813,95 +833,95 @@ int configuration::parse(char* buffer){
 	} else if(strcmp_P(name,PSTR("storage_trip"))==0){
 		parse_int(buffer,seperator,&pSpeedo->m_trip_storage);
 	} else if(strcmp_P(name,PSTR("oil_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->oil_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->oil_widget.x);
 	} else if(strcmp_P(name,PSTR("oil_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->oil_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->oil_widget.y);
 	} else if(strcmp_P(name,PSTR("oil_widget.symbol"))==0){
 		parse_bool(buffer,seperator,&pSpeedo->oil_widget.symbol);
 	} else if(strcmp_P(name,PSTR("oil_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->oil_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->oil_widget.font);
 	} else if(strcmp_P(name,PSTR("water_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->water_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->water_widget.x);
 	} else if(strcmp_P(name,PSTR("water_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->water_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->water_widget.y);
 	} else if(strcmp_P(name,PSTR("water_widget.symbol"))==0){
 		parse_bool(buffer,seperator,&pSpeedo->water_widget.symbol);
 	} else if(strcmp_P(name,PSTR("water_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->water_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->water_widget.font);
 	} else if(strcmp_P(name,PSTR("air_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->air_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->air_widget.x);
 	} else if(strcmp_P(name,PSTR("air_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->air_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->air_widget.y);
 	} else if(strcmp_P(name,PSTR("air_widget.symbol"))==0){
 		parse_bool(buffer,seperator,&pSpeedo->air_widget.symbol);
 	} else if(strcmp_P(name,PSTR("air_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->air_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->air_widget.font);
 	} else if(strcmp_P(name,PSTR("kmh_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->kmh_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->kmh_widget.x);
 	} else if(strcmp_P(name,PSTR("kmh_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->kmh_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->kmh_widget.y);
 	} else if(strcmp_P(name,PSTR("kmh_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->kmh_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->kmh_widget.font);
 	} else if(strcmp_P(name,PSTR("kmhchar_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->kmhchar_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->kmhchar_widget.x);
 	} else if(strcmp_P(name,PSTR("kmhchar_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->kmhchar_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->kmhchar_widget.y);
 	} else if(strcmp_P(name,PSTR("kmhchar_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->kmhchar_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->kmhchar_widget.font);
 	} else if(strcmp_P(name,PSTR("arrow_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->arrow_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->arrow_widget.x);
 	} else if(strcmp_P(name,PSTR("arrow_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->arrow_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->arrow_widget.y);
 	} else if(strcmp_P(name,PSTR("dz_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->dz_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->dz_widget.x);
 	} else if(strcmp_P(name,PSTR("dz_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->dz_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->dz_widget.y);
 	} else if(strcmp_P(name,PSTR("dz_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->dz_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->dz_widget.font);
 	} else if(strcmp_P(name,PSTR("gps_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->gps_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->gps_widget.x);
 	} else if(strcmp_P(name,PSTR("gps_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->gps_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->gps_widget.y);
 	} else if(strcmp_P(name,PSTR("gps_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->gps_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->gps_widget.font);
 	} else if(strcmp_P(name,PSTR("gps_widget.symbol"))==0){
 		parse_bool(buffer,seperator,&pSpeedo->gps_widget.symbol);
 	} else if(strcmp_P(name,PSTR("addinfo_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->addinfo_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->addinfo_widget.x);
 	} else if(strcmp_P(name,PSTR("addinfo_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->addinfo_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->addinfo_widget.y);
 	} else if(strcmp_P(name,PSTR("addinfo_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->addinfo_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->addinfo_widget.font);
 	} else if(strcmp_P(name,PSTR("addinfo2_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->addinfo2_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->addinfo2_widget.x);
 	} else if(strcmp_P(name,PSTR("addinfo2_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->addinfo2_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->addinfo2_widget.y);
 	} else if(strcmp_P(name,PSTR("addinfo2_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->addinfo2_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->addinfo2_widget.font);
 	} else if(strcmp_P(name,PSTR("clock_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->clock_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->clock_widget.x);
 	} else if(strcmp_P(name,PSTR("clock_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->clock_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->clock_widget.y);
 	} else if(strcmp_P(name,PSTR("clock_widget.symbol"))==0){
 		parse_bool(buffer,seperator,&pSpeedo->clock_widget.symbol);
 	} else if(strcmp_P(name,PSTR("clock_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->clock_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->clock_widget.font);
 	} else if(strcmp_P(name,PSTR("gear_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->gear_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->gear_widget.x);
 	} else if(strcmp_P(name,PSTR("gear_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->gear_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->gear_widget.y);
 	} else if(strcmp_P(name,PSTR("gear_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->gear_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->gear_widget.font);
 	} else if(strcmp_P(name,PSTR("fuel_widget.x"))==0){
-		parse_short(buffer,seperator,&pSpeedo->fuel_widget.x);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->fuel_widget.x);
 	} else if(strcmp_P(name,PSTR("fuel_widget.y"))==0){
-		parse_short(buffer,seperator,&pSpeedo->fuel_widget.y);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->fuel_widget.y);
 	} else if(strcmp_P(name,PSTR("fuel_widget.symbol"))==0){
 		parse_bool(buffer,seperator,&pSpeedo->fuel_widget.symbol);
 	} else if(strcmp_P(name,PSTR("fuel_widget.font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->fuel_widget.font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->fuel_widget.font);
 	} else if(strcmp_P(name,PSTR("default_font"))==0){
-		parse_short(buffer,seperator,&pSpeedo->default_font);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSpeedo->default_font);
 	} else if(strcmp_P(name,PSTR("dz_flash"))==0){
 		parse_int(buffer,seperator,&pSensors->m_dz->blitz_dz);
 	} else if(strcmp_P(name,PSTR("dz_flash_en"))==0){
@@ -1030,12 +1050,12 @@ int configuration::parse(char* buffer){
 		parse_int(buffer,seperator,&temp);
 		pAktors->dz_end_color.b=temp;
 	} else if(strcmp_P(name,PSTR("led_mode"))==0){
-		parse_short(buffer,seperator,&pAktors->led_mode);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pAktors->led_mode);
 		/////// RGB LEDs /////////
 	} else if(strcmp_P(name,PSTR("bt_pin"))==0){
 		parse_int(buffer,seperator,&pAktors->bt_pin);
 	} else if(strcmp_P(name,PSTR("sensor_source"))==0){
-		parse_short(buffer,seperator,&pSensors->sensor_source);
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pSensors->sensor_source);
 	} else if(strcmp_P(name,PSTR("CAN_type"))==0){
 		int temp=0x00;
 		parse_int(buffer,seperator,&temp);
@@ -1156,20 +1176,19 @@ int configuration::parse_int(char* buffer,int i,int* wert){
 	return return_value;
 };
 
-/******* short parsen *************
+
+/******* short uint8_t *************
  * buffer ist das char-array in dem die zahl steht,
  * i der identifier ab wo gesucht werden soll
  * *wert ist der Zeiger auf das Ergebniss
  * wird von parse_float bedient und gecastet ..
  ***************************************************/
-short configuration::parse_short(char* buffer,int i,short* wert){
-	float temp;
-	int return_value=parse_float(buffer,i,&temp);
-	//	Serial.println(temp);
-	*wert=short(temp);
+int configuration::parse_uint8_t(char* buffer,int i,uint8_t* wert){
+    float temp;
+    int return_value=parse_float(buffer,i,&temp);
+    *wert=int(temp)&0xff;	// cast to int to get ridge of the ".xxx" and than take lowest byte
 
-	//pDebug->parse_short();
-	return return_value;
+    return return_value;
 };
 
 /******* chararray aus chararray parsen *************
@@ -1317,32 +1336,6 @@ void configuration::day_trip_check(){
 	};
 }
 
-
-void configuration::EEPROM_init(){
-	pDebug->sprintp(PSTR("Lade EEPROM... "));
-
-	// immer reseten -> non permanent
-	pSpeedo->trip_dist[1]=0;
-	pSpeedo->max_speed[1]=0;
-	pSpeedo->avg_timebase[1]=0;
-
-	// load naviposition
-	pSensors->m_gps->navi_point=eeprom_read_byte((const uint8_t *)147);
-
-	// display setup
-	pOLED->phase=eeprom_read_byte((const uint8_t *)144);
-	pOLED->ref=eeprom_read_byte((const uint8_t *)145);
-
-	// load navi on off
-	if(eeprom_read_byte((const uint8_t *)146)==1){
-		pSensors->m_gps->navi_active=true;
-		pSensors->m_gps->generate_new_order();
-	} else {
-		pSensors->m_gps->navi_active=false;
-	};
-	pDebug->sprintlnp(PSTR("Done"));
-
-};
 
 int configuration::parse_textreplacement(char* buffer, char* search_recopy_string){
 	int seperator=0;

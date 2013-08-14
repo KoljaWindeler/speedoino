@@ -91,7 +91,6 @@ void init_speedo(void){
 	pSpeedo->check_vars();		// rettet das Skinning wenn SD_failed von den sensoren auf true gesetzt wird
 	pSensors->single_read();	// read all sensor values once to ensure we are ready to show them
 	pAktors->init();			// Start outer LEDs // ausschlag des zeigers // Motorausschlag und block bis motor voll ausgeschlagen, solange das letzte intro bild halten
-	pConfig->EEPROM_init(); 	// read vars from eeprom, reset Day Based storage etc
 	pOLED->init_speedo(); 		// Start Screen //execute this AFTER Config->init(), init() will load  phase,config,startup. PopUp will be shown if sd access fails
 	pMenu->init(); 				// Start butons // adds the connection between pins and vars
 	pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols

@@ -104,7 +104,10 @@ void speedo_gps::init(){
 
 
 int speedo_gps::check_vars(){
-	return 0;
+	if(navi_active){
+		generate_new_order();
+	}
+    return 0;
 };
 
 bool speedo_gps::wait_on_gps(){

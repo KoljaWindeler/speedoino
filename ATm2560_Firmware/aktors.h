@@ -84,7 +84,7 @@ public:
 	speedo_oiler* m_oiler;
 	led RGB;
 	led_simple dz_flasher,oil_start_color,oil_end_color,water_start_color,water_end_color,kmh_start_color,kmh_end_color,dz_start_color,dz_end_color,static_color;
-	short int led_mode;
+	int8_t led_mode;
 	int oil_max_value,oil_min_value,water_max_value,water_min_value,kmh_max_value,kmh_min_value,dz_max_value,dz_min_value,bt_pin;
 
 private:

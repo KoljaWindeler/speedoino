@@ -57,8 +57,8 @@ int speedo_temperature::check_vars(){
 
 		// Water
 		//TODO
-		int r_werte2[19]={354,323,241,198,157,135,111,93,80,64,52,43,37,30,23,18,15,10,9}; // widerstandswerte
-		int t_werte2[19]={  30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,116}; // passender Temperaturwert
+		int r_werte2[19]={354,323,241,198,157,135,111,93,80,64,52,43,37,30, 23, 18, 15, 10,  9}; // widerstandswerte
+		int t_werte2[19]={ 30, 35, 40, 45, 50, 55, 60,65,70,75,80,85,90,95,100,105,110,115,116}; // passender Temperaturwert
 		for(unsigned int j=0; j<sizeof(water_r_werte)/sizeof(water_r_werte[0]); j++){
 			water_r_werte[j]=r_werte2[j];
 			water_t_werte[j]=t_werte2[j];
@@ -245,7 +245,7 @@ void speedo_temperature::read_air_temp() {
 	} else {
 		air_temp_value = 999;
 #ifdef TEMP_DEBUG
-		Serial.println("ALARM!!");
+		Serial.println("ALARM keine Antwort vom I2C sensor!!");
 #endif
 	};
 };

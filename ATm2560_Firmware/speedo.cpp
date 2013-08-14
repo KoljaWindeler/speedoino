@@ -645,20 +645,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * if the navigation is active, but the menu_state is !=1 than the up/down button has been pushed
 	 * during navigation mode => so change the Navipointer!! to jump in the points
 	 **************************************************************/
-	if(pSensors->m_gps->navi_active && (pMenu->state%10)==2){ // runter gedrÃ¼ckt ( nach hinten )
+	if(pSensors->m_gps->navi_active && (pMenu->state%10)==2){ // button down
 		pSensors->m_gps->navi_point++;
-		// store change
-		byte tempByte = (pSensors->m_gps->navi_point & 0xFF);
-		eeprom_write_byte((uint8_t *)147,tempByte);
-		pMenu->state=11; // reset state
+		pConfig->storage_outdated=true;		// store change
+		pConfig->write("BASE.TXT");
+		pMenu->state=11; 					// reset state
 		pSensors->m_gps->generate_new_order();
-	} else if(pSensors->m_gps->navi_active && (pMenu->state%10)==9){ // hoch gedrÃ¼ckt
+	} else if(pSensors->m_gps->navi_active && (pMenu->state%10)==9){ // button up
 		pSensors->m_gps->navi_point--;
 		if(pSensors->m_gps->navi_point<1) { pSensors->m_gps->navi_point=0; };
-		// store change
-		byte tempByte = (pSensors->m_gps->navi_point & 0xFF);
-		eeprom_write_byte((uint8_t *)147,tempByte);
-		pMenu->state=11; // reset state
+		pConfig->storage_outdated=true;		// store change
+		pConfig->write("BASE.TXT");
+		pMenu->state=11; 					// reset state
 		pSensors->m_gps->generate_new_order();
 	}
 	/*************** jump navigation points **********************/
@@ -692,10 +690,14 @@ void speedo_speedo::clear_vars(){
 	refresh_cycle=-1; // anzahl an ms nachdem der haupttacho gecleared wird
 	m_trip_mode=-1;
 	m_trip_storage=-1;
-	addinfo2_currently_shown=false; // actually the addinfo2 is not shown
-	// Startup sequenz im Tacho
-	memset(pOLED->startup,'\0',sizeof(pOLED->startup)/sizeof(pOLED->startup[0]));
+	addinfo2_currently_shown=false; 												// assume that the addinfo2 is not shown
+	memset(pOLED->startup,'\0',sizeof(pOLED->startup)/sizeof(pOLED->startup[0]));	// Startup sequence
 	sprintf((char *)pOLED->startup,"ERROR,0,0,0;");
+
+	trip_dist[1]=0;																	// always reseten -> non permanent storage
+	max_speed[1]=0;
+	avg_timebase[1]=0;
+
 	pDebug->sprintlnp(PSTR("Speedo values clear"));
 }
 
