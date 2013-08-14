@@ -21,10 +21,12 @@
                                             - LapTimer initialisierung merkwürdig, Fehlerquelle unbekannt, Debug hinzugefügt
 14.08.2013  Speedoino_v2.1-118-g9e5101d.hex + DZM für alle systeme verbessert (universal)
                                             - LapTimer RealTime Best Lap sieht vielversprechend aus
-                                            - Menü für Modus hinzugefügt
+                                            - Menü für Laptimer Bestlap Modus hinzugefügt
                                             - Zeit Fehler behoben
-                                             
-
+14.08.2013  Speedoino_v2.1-119-gf842af8.hex + Menü für GPS log format hinzugefügt
+                                            - Navipointer und viele andere werte vom EEPROM auf die SD Karte geschoben
+                                            - Speicheroptimierung (2520/8192 Byte RAM frei) 
+                                            
 ================================================================================================================================================================================================
 
 
