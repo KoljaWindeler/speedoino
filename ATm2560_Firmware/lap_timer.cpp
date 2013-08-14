@@ -267,8 +267,8 @@ void LapTimer::init_race_screen(bool reset_vars){
 	pSpeedo->reset_bak();
 
 	if(reset_vars){ // reset times
-		sector_start_timestamp_ms=pSensors->m_gps->get_info(10);
-		lap_start_timestamp_ms=pSensors->m_gps->get_info(10);
+		sector_start_timestamp_ms=pSensors->m_gps->get_info(11);
+		lap_start_timestamp_ms=pSensors->m_gps->get_info(11);
 		delay_ms=0;
 	}
 }
@@ -298,10 +298,10 @@ void LapTimer::init_race_screen(bool reset_vars){
  *
  */
 void LapTimer::race_loop(){
-	if(pSpeedo->disp_zeile_bak[0]!=(int)pSensors->m_gps->mod(pSensors->m_gps->get_info(10),10000)){		// check if we have new gps data by comparing the current gps timestamp to the stored one
-		pSpeedo->disp_zeile_bak[0]=(int)pSensors->m_gps->mod(pSensors->m_gps->get_info(10),10000); 		// jep new GPS data available, save timestamp to storage
+	if(pSpeedo->disp_zeile_bak[0]!=(int)pSensors->m_gps->mod(pSensors->m_gps->get_info(11),10000)){		// check if we have new gps data by comparing the current gps timestamp to the stored one
+		pSpeedo->disp_zeile_bak[0]=(int)pSensors->m_gps->mod(pSensors->m_gps->get_info(11),10000); 		// jep new GPS data available, save timestamp to storage
 		uint8_t update_level=(1<<UPDATE_LAP_TIME); 														// helps us to update only needed areas just update lap time by now
-		if((pSensors->m_gps->get_info(10) - lap_start_timestamp_ms) < LAPTIMER_SHOW_LAPTIME_DELAY && lap>0){	// to show this blinking delay we have to submit the update request
+		if((pSensors->m_gps->get_info(11) - lap_start_timestamp_ms) < LAPTIMER_SHOW_LAPTIME_DELAY && lap>0){	// to show this blinking delay we have to submit the update request
 			update_level|=(1<<UPDATE_DELAY);
 		} else if(!delay_reseted && lap>0 && current_sector==0){										// once if LAPTIMER_SHOW_LAPTIME_DELAY is over in the first sector of any loop != 1st
 			delay_reseted=true;																			// avoid entering the loop twice
@@ -326,8 +326,8 @@ void LapTimer::race_loop(){
 				last_dist_to_target=dist;																// remember this distance to compare it to the distance of the next gps sample
 			} else { 																					// ********** waaah we are moving AWAY again! start calculations! **********
 				last_dist_to_target=255; 																// we are calculating now, reset var to avoid entering this "if" on and on
-				uint32_t cur_sector_time_ms=pSensors->m_gps->get_info(10) - sector_start_timestamp_ms; 	// time we needed in this sector
-				sector_start_timestamp_ms=pSensors->m_gps->get_info(10);								// quick, save "now" as start of the new sector
+				uint32_t cur_sector_time_ms=pSensors->m_gps->get_info(11) - sector_start_timestamp_ms; 	// time we needed in this sector
+				sector_start_timestamp_ms=pSensors->m_gps->get_info(11);								// quick, save "now" as start of the new sector
 				update_level|=(1<<UPDATE_SECTOR);														// as soone as we finish a sector update_screen should draw the current sector
 
 #ifdef LAPTIMER_DEBUG_OUTPUT
@@ -545,8 +545,8 @@ void LapTimer::update_race_screen(uint8_t level){
 
 	if(level&(1<<UPDATE_DELAY)){
 		bool skip_displaying=false;
-		if(lap>0 && current_sector==0 && (pSensors->m_gps->get_info(10) - lap_start_timestamp_ms) < LAPTIMER_SHOW_LAPTIME_DELAY){
-			unsigned long blink_timer=pSensors->m_gps->mod((unsigned long)(pSensors->m_gps->get_info(10) - lap_start_timestamp_ms),2*LT_BLINK_FREQ);
+		if(lap>0 && current_sector==0 && (pSensors->m_gps->get_info(11) - lap_start_timestamp_ms) < LAPTIMER_SHOW_LAPTIME_DELAY){
+			unsigned long blink_timer=pSensors->m_gps->mod((unsigned long)(pSensors->m_gps->get_info(11) - lap_start_timestamp_ms),2*LT_BLINK_FREQ);
 			if(blink_timer<LT_BLINK_FREQ && pSpeedo->disp_zeile_bak[10]!=99){
 				pSpeedo->disp_zeile_bak[10]=99;
 				sprintf(char_buffer,"         ");
@@ -589,8 +589,8 @@ void LapTimer::update_race_screen(uint8_t level){
 		bool skip_displaying=false;
 		unsigned long differ;
 
-		if(lap>0 && current_sector==0 && (pSensors->m_gps->get_info(10) - lap_start_timestamp_ms) < LAPTIMER_SHOW_LAPTIME_DELAY){
-			unsigned long blink_timer=pSensors->m_gps->mod((unsigned long)(pSensors->m_gps->get_info(10) - lap_start_timestamp_ms),2*LT_BLINK_FREQ);
+		if(lap>0 && current_sector==0 && (pSensors->m_gps->get_info(11) - lap_start_timestamp_ms) < LAPTIMER_SHOW_LAPTIME_DELAY){
+			unsigned long blink_timer=pSensors->m_gps->mod((unsigned long)(pSensors->m_gps->get_info(11) - lap_start_timestamp_ms),2*LT_BLINK_FREQ);
 			if(blink_timer<LT_BLINK_FREQ && pSpeedo->disp_zeile_bak[1]!=99){
 				pSpeedo->disp_zeile_bak[1]=99;
 				sprintf(char_buffer,"        ");
@@ -603,7 +603,7 @@ void LapTimer::update_race_screen(uint8_t level){
 				skip_displaying=true;
 			}
 		} else {
-			differ=pSensors->m_gps->get_info(10)-lap_start_timestamp_ms;
+			differ=pSensors->m_gps->get_info(11)-lap_start_timestamp_ms;
 		}
 
 		if(!skip_displaying){
@@ -680,15 +680,15 @@ void LapTimer::initial_draw_gps_capture_screen(){
 	pOLED->string_P(pSpeedo->default_font,PSTR("Interspace:"),0,4);
 
 	pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
-	sector_start_timestamp_ms=pSensors->m_gps->get_info(10);
+	sector_start_timestamp_ms=pSensors->m_gps->get_info(11);
 };
 
 /* will be called from main() */
 void LapTimer::gps_capture_loop(){
 	// check if we have a new gps timestamp
-	if(pSpeedo->disp_zeile_bak[0]!=(int)(pSensors->m_gps->get_info(10)&0xffff)){
+	if(pSpeedo->disp_zeile_bak[0]!=(int)(pSensors->m_gps->get_info(11)&0xffff)){
 		// jep new GPS data available
-		pSpeedo->disp_zeile_bak[0]=(int)(pSensors->m_gps->get_info(10)&0xffff);
+		pSpeedo->disp_zeile_bak[0]=(int)(pSensors->m_gps->get_info(11)&0xffff);
 		char char_buffer[21];
 
 		/*
@@ -821,8 +821,8 @@ int LapTimer::add_sector(uint32_t latitude, uint32_t longitude, unsigned char* f
 		return -3;
 	};
 
-	unsigned long time_needed=pSensors->m_gps->get_info(10)-sector_start_timestamp_ms;
-	sector_start_timestamp_ms=pSensors->m_gps->get_info(10);
+	unsigned long time_needed=pSensors->m_gps->get_info(11)-sector_start_timestamp_ms;
+	sector_start_timestamp_ms=pSensors->m_gps->get_info(11);
 	if(time_needed>99999999){
 		time_needed=99999999;
 	}

@@ -69,6 +69,7 @@ private:
 	unsigned int gps_speed_arr[30],gps_course[30],gps_sats[30],gps_fix[30],gps_special[30];
 	unsigned int gps_sats_temp,gps_fix_temp;
 	long gps_alt[30],gps_date[30],gps_time[30];
+	unsigned long gps_timestamp;
 	long gps_alt_temp;
 	bool inner_circle;
 	bool gps_ready1;
@@ -83,6 +84,7 @@ private:
 	void parse(char linea[SERIAL_BUFFER_SIZE],int datensatz);
 	void calc_navi();
 	void set_drive_status(int speed, int ss, int sat, char status);
+	unsigned long GpsTimeToTimeStamp(unsigned long input);
 
 };
 /**************** gps *******************/

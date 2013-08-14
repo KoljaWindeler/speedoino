@@ -60,6 +60,7 @@ speedo_gps::speedo_gps(){
 	navi_ziel_rl=0;
 	navi_point=0;
 
+	gps_timestamp=0;
 	for(int i=0; i<30; i++){
 		gps_speed_arr[i]=0;
 		gps_course[i]=0;
@@ -367,6 +368,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			set_gps_mark(STD_MARK); // reset
 			gps_time[gps_count]=temp_gps_time;
 			gps_date[gps_count]=temp_gps_date;
+			gps_timestamp=GpsTimeToTimeStamp(temp_gps_time);
 
 			for (int j=indices[7]+1;j<(indices[8])-2;j++){ // keine Nachkommastelle mehr
 				if(linea[j]!=46){
@@ -584,6 +586,11 @@ long speedo_gps::get_info(unsigned char select){
 #endif
 		return gps_time[inner_gps_count];
 		break;
+	case 11:
+#ifdef GPS_FAKE_MODE
+		return floor(millis()/100)*100; //
+#endif
+		return gps_timestamp;
 	}
 	return -1;
 };
@@ -643,7 +650,7 @@ unsigned long speedo_gps::calc_dist(unsigned long longitude,unsigned long latitu
 	}
 	// können wir nicht mit abs machen, weil das unsigned ist
 	if( actual_long > longitude){
-		// hier kommen grad*10⁶ raus
+		// hier kommen grad*106 raus
 		dist_x=(float)(actual_long - longitude); // erstmal ungewichtet
 	} else {
 		dist_x=(float)(longitude - actual_long); // erstmal ungewichtet
@@ -1041,3 +1048,13 @@ void speedo_gps::set_drive_status(int speed, int ss, int sat, char status){
 	}
 };
 
+unsigned long speedo_gps::GpsTimeToTimeStamp(unsigned long input){
+	// input is something like 151932100 at 15:19:32.100
+	// output should be 15*3600000+19*60000+32100=55172100
+	unsigned int sec_with_frac=mod(input,100000);
+	unsigned int min=(int)floor(input/10000)%100;
+	unsigned int hour=floor(input/1000000);
+
+	unsigned long return_value=((unsigned long)(hour*60+min))*60000+sec_with_frac;
+	return return_value;
+}
