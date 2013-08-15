@@ -10,19 +10,20 @@
 31.07.2013  Speedoino_v2.1-78-g4e1625f.hex  + Zeit der letzte runde im Laptimer für 5 sec anzeigen,
                                             - Upload/Download von Dateien verbessert (neue Android App nutzen!), 
                                             - Animationen werden auf dem Tacho mit verminderter Helligkeit abgespielt (bessere Graustufen-Unterschiede)
-                                            - GPS Logging repariert (dritter Anlauf -> geht)
+                                            - GPS Logging repariert (dritter Anlauf -> geht jetzt scheinbar)
                                             - Navigation endet beim letzten Punkt und zeigt ihn danach weiterhin an (vorher kam eine Fehlermeldung)
                                             - Kommentar der Android App zur Navigationsdatei wird im Tacho angezeigt
                                             - LapTimer auf beste RundenZeit umgebaut ... aber noch immer Alpha Stadium, Bug mit fehlerhaften Delay korrigiert. 
                                             - Noch auf Serial Debug Mode, also Filedownload/Android App im Racemodus nicht nutzbar.
 03.08.2013  Speedoino_v2.1-89-g46962a1.hex  + GPS logging im binären format testweise hinzugefügt, ist momentan dauer aktiv und nicht auswählbar (TODO)
-                                            - Binär werden nur 15 statt 63 Byte pro Punkt benötigt, das reduziert die Downloadzeit erheblich. 											  
+                                            - Binär werden nur 15 statt 63 Byte pro Punkt benötigt, das reduziert die Downloadzeit erheblich.
 07.08.2013  Speedoino_v2.1-98-g751cb02.hex  + DZM erheblich beschleunigt!, LapTimer Delay zurücksetzen beim Überfahren der Start/Ziel linie
                                             - LapTimer initialisierung merkwürdig, Fehlerquelle unbekannt, Debug hinzugefügt
-14.08.2013  Speedoino_v2.1-118-g9e5101d.hex + DZM für alle systeme verbessert (universal)
-                                            - LapTimer RealTime Best Lap sieht vielversprechend aus
+14.08.2013  Speedoino_v2.1-118-g9e5101d.hex + DZM für alle Systeme verbessert (Analog+CAN)
+                                            - LapTimer RealTime Best Lap Berechnung korrigiert
                                             - Menü für Laptimer Bestlap Modus hinzugefügt
-                                            - Zeit Fehler behoben
+                                            - Laptime Zeitberechnungs Fehler behoben
+                                            - Debug Ausgaben wieder vollständig deaktiviert
 14.08.2013  Speedoino_v2.1-119-gf842af8.hex + Menü für GPS log format hinzugefügt
                                             - Navipointer und viele andere werte vom EEPROM auf die SD Karte geschoben
                                             - Speicheroptimierung (2520/8192 Byte RAM frei) 

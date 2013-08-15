@@ -32,6 +32,7 @@ Speedo_sensors*			pSensors=new Speedo_sensors();
 Speedo_aktors*			pAktors=new Speedo_aktors();
 speedo_timer*   		pTimer=new speedo_timer(); 		// brauch ich ja nur hier, den braucht sonst keiner
 LapTimer*				pLapTimer=new LapTimer();
+speedo_speedcams*		pSpeedCams=new speedo_speedcams();
 #ifdef DEMO_MODE
 speedo_demo*			pDemo=new speedo_demo();
 #endif
@@ -119,6 +120,7 @@ int main(void) {
 #endif
 
 	for (;;) {
+		//pSpeedCams->test2(); // remove me TODO
 		pSensors->m_CAN->check_message();
 		//////////////////////////////////////////////////
 		//		pSensors->m_reset->set_deactive(false,false);
@@ -142,7 +144,7 @@ int main(void) {
 
 		/************************* timer *********************/
 		pTimer->every_sec(pConfig);		// 1000 ms
-		pTimer->every_qsec();			// 250  ms TODO
+		pTimer->every_qsec();			// 250  ms
 		pTimer->every_custom();  		// one custom timer, redrawing the speedo, time is defined by "refresh_cycle" in the base.txt
 		/************************* push buttons *********************
 		 * using true as argument, this will activate bluetooth input as well
