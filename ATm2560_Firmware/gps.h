@@ -85,7 +85,6 @@ private:
 	void calc_navi();
 	void set_drive_status(int speed, int ss, int sat, char status);
 	unsigned long GpsTimeToTimeStamp(unsigned long input);
-
 };
 /**************** gps *******************/
 

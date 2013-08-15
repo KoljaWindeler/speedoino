@@ -637,6 +637,7 @@ int speedo_gps::store_to_sd(){
  * LATI ist immer !! 111km pro Grad und ist quasi die y koodinate
  * LONG ist x Richtung und im Abstand ist abhängig von der Latitude, bei 0 ist er auch 111km bei 90° = 0km
  * Ausgabe als meter! och dann können wir maximal ein paar mio km fahren, wirs nix mit zum mars ..
+ * Laufzeit ca 757µs bei 16MHz = 12112 Takte .. puh
  ********************************************/
 unsigned long speedo_gps::calc_dist(unsigned long longitude,unsigned long latitude){
 	if(valid>5) return -1; // rollt über und ist dann unendlich riesig
@@ -658,9 +659,9 @@ unsigned long speedo_gps::calc_dist(unsigned long longitude,unsigned long latitu
 	} else {
 		dist_x=(float)(longitude - actual_long); // erstmal ungewichtet
 	}
+
 	dist_x=round(dist_x*cos(floor((latitude+actual_lati)/2000000.0)*2*M_PI/360)); // gewichtet
-	// berechne distanz
-	return round((unsigned long)sqrt((dist_x*dist_x)+(dist_y*dist_y))*0.111);
+	return round((unsigned long)sqrt((dist_x*dist_x)+(dist_y*dist_y))*0.111);// berechne distanz
 };
 // get distance between aktueller und ziel punkt
 
@@ -1062,3 +1063,4 @@ unsigned long speedo_gps::GpsTimeToTimeStamp(unsigned long input){
 
 	return return_value;
 }
+
