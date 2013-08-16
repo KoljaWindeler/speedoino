@@ -28,6 +28,7 @@ void speedo_speedcams::test(){
 	while(pSensors->m_gps->get_info(9)>3){
 		// wait
 	};
+	calc_gps_goodies();
 	unsigned char filename[20]; // "/NAVI/HOCKENHE.SST"
 	strcpy_P((char *)filename,PSTR("NAVI/HANNOVER.SST")); // static file for the moment
 
@@ -37,6 +38,19 @@ void speedo_speedcams::test(){
 		dist=pSensors->m_gps->calc_dist(2904720,51214280);
 		dist2=pSensors->m_gps->calc_dist(904720,51214280);
 		dist3=pSensors->m_gps->calc_dist(2904720,1214280);
+	}
+	time=millis()-time;
+	Serial.print("1000 Berechnungen der Entfernungen zu 2904720/51214280 kosten ");
+
+	Serial.print(time);
+	Serial.println(" ms");
+	Serial.println(dist);
+	/////////////////////////////////////////////////////
+	time=millis();
+	for(int loop=0;loop<1000;loop++){
+		dist=pSensors->m_gps->guess_dist(2904720,51214280,gps_long_dec_deg,gps_lati_dec_deg,gps_lati_cos);
+		dist2=pSensors->m_gps->guess_dist(904720,51214280);
+		dist3=pSensors->m_gps->guess_dist(2904720,1214280);
 	}
 	time=millis()-time;
 	Serial.print("1000 Berechnungen der Entfernungen zu 2904720/51214280 kosten ");
@@ -130,6 +144,11 @@ void speedo_speedcams::test(){
 	//////////////////////////////////////// TESTING //////////////////////////////////////////
 }
 
+void speedo_speedcams::calc_gps_goodies(){
+	gps_lati_dec_deg=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(3));
+	gps_long_dec_deg=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(2));
+	gps_lati_cos=cos(floor(gps_lati_dec_deg/1000000.0)*2*M_PI/360);
+}
 
 int speedo_speedcams::test2(){
 	////////////////////////////////////////// TESTING //////////////////////////////////////////

@@ -36,6 +36,8 @@ public:
 	void set_gps_mark(int type);
 
 	unsigned long calc_dist(unsigned long longitude,unsigned long latitude);
+	unsigned long guess_dist(unsigned long from_longitude,unsigned long from_latitude,unsigned long to_longitude,unsigned long to_latitude,double gps_lati_cos);
+
 	unsigned long mod(unsigned long zahl,unsigned long teiler);
 	int get_order(char char_buffer[], int* dist);
 	void generate_new_order();
@@ -70,6 +72,7 @@ private:
 	unsigned int gps_sats_temp,gps_fix_temp;
 	long gps_alt[30],gps_date[30],gps_time[30];
 	unsigned long gps_timestamp;
+
 	long gps_alt_temp;
 	bool inner_circle;
 	bool gps_ready1;

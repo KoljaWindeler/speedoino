@@ -371,6 +371,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			set_gps_mark(STD_MARK); // reset
 			gps_time[gps_count]=temp_gps_time;
 			gps_date[gps_count]=temp_gps_date;
+			// calc some nice values
 			gps_timestamp=GpsTimeToTimeStamp(temp_gps_time);
 
 			for (int j=indices[7]+1;j<(indices[8])-2;j++){ // keine Nachkommastelle mehr
@@ -664,6 +665,29 @@ unsigned long speedo_gps::calc_dist(unsigned long longitude,unsigned long latitu
 	return round((unsigned long)sqrt((dist_x*dist_x)+(dist_y*dist_y))*0.111);// berechne distanz
 };
 // get distance between aktueller und ziel punkt
+
+unsigned long speedo_gps::guess_dist(unsigned long from_longitude,unsigned long from_latitude,unsigned long to_longitude,unsigned long to_latitude,double gps_lati_cos){
+	if(valid>5) return -1; // rollt über und ist dann unendlich riesig
+
+	float dist_y,dist_x; // abstands vars
+	// können wir nicht mit abs machen, weil das unsigned ist
+	if( from_latitude > to_latitude){
+		dist_y=(float)(to_latitude - from_latitude); // direkt
+	} else {
+		dist_y=(float)(from_latitude - to_latitude); // direkt
+	}
+	// können wir nicht mit abs machen, weil das unsigned ist
+	if( from_longitude > to_longitude){
+		// hier kommen grad*106 raus
+		dist_x=(float)(from_longitude - to_longitude); // erstmal ungewichtet
+	} else {
+		dist_x=(float)(to_longitude - from_longitude); // erstmal ungewichtet
+	}
+
+	dist_x=round(dist_x*gps_lati_cos); // gewichtet
+	//return round((unsigned long)sqrt((dist_x*dist_x)+(dist_y*dist_y))*0.111);// berechne distanz
+	return (unsigned long)(dist_x+dist_y*0.111);// schätze distanz
+};
 
 
 /*******************************************************************

@@ -14,8 +14,11 @@ public:
 	speedo_speedcams();
 	void test();
 	int test2();
-private:
+	void calc_gps_goodies();
 
+private:
+	unsigned long gps_lati_dec_deg, gps_long_dec_deg;
+	double gps_lati_cos;
 
 };
 extern speedo_speedcams* pSpeedCams;
