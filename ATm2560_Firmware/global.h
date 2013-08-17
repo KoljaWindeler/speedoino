@@ -1,5 +1,11 @@
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
+#include "stdint.h"
+
+typedef struct {
+	uint32_t longitude;
+	uint32_t latitude;
+} simple_coordinate;
 
 // sensoren
 #include "clock_me.h"
@@ -57,5 +63,7 @@
 #include "inc/mcp2515_defs.h"
 void setup();
 void init_speedo();
+
+
 
 #endif /* FKT_H_ */

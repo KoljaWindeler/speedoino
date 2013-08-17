@@ -7,7 +7,6 @@
 
 #ifndef CAN_H_
 #define CAN_H_
-#include "stdint.h"
 
 #define CAN_CURRENT_INFO 0x01
 #define CAN_DTC 0x03
