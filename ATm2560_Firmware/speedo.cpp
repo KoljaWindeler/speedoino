@@ -47,7 +47,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	 * disp_zeile_bak values
 	 * 101 RPM to high
 	 * 102 Flasher
-	 *
+	 * 103 SpeedCam
 	 * 104 SD
 	 * 105 Clear
 	 * 106 Oil read failed
@@ -77,6 +77,19 @@ void speedo_speedo::loop(unsigned long previousMillis){
 				pMenu->center_me(char_buffer,17);
 				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
 			};
+		}
+
+		///// SPEEDCAM - BABOOM /////
+		else if(pSpeedCams->calc()){ // returns true, if a speedcam is next to us
+			if(disp_zeile_bak[ADD_INFO2]!=(int)floor(pSpeedCams->get_dist_to_next_point()/10)){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=(int)floor(pSpeedCams->get_dist_to_next_point()/10);
+				pDebug->speedo_loop(14,0,previousMillis," ");
+				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
+				sprintf_P(char_buffer,PSTR("POI warning %im"),floor(pSpeedCams->get_dist_to_next_point()/5)*5); // round to 5
+				pMenu->center_me(char_buffer,17);
+				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+			};
+
 		}
 
 		///// Temp to high /////
