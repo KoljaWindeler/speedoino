@@ -120,7 +120,6 @@ int main(void) {
 #endif
 
 	for (;;) {
-		//pSpeedCams->test2(); // remove me TODO
 		pSensors->m_CAN->check_message();
 		//////////////////////////////////////////////////
 		//		pSensors->m_reset->set_deactive(false,false);
