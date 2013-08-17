@@ -12,6 +12,7 @@
 #define		INFO_SAT 6
 #define		INFO_VALID 9
 #define		INFO_SPEED 5
+
 /**************** gps *******************/
 class speedo_gps{
 #define STD_MARK 0
@@ -20,6 +21,8 @@ class speedo_gps{
 #define LAP_END_MARK 3
 
 #define NAVI_FOLDER "navi"
+
+
 
 public:
 	speedo_gps();
@@ -36,7 +39,7 @@ public:
 	void set_gps_mark(int type);
 
 	unsigned long calc_dist(unsigned long longitude,unsigned long latitude);
-	unsigned long guess_dist(unsigned long from_longitude,unsigned long from_latitude,unsigned long to_longitude,unsigned long to_latitude,double gps_lati_cos);
+	unsigned long calc_dist_supported(simple_coordinate A,simple_coordinate B,float gps_lati_cos);
 
 	unsigned long mod(unsigned long zahl,unsigned long teiler);
 	int get_order(char char_buffer[], int* dist);

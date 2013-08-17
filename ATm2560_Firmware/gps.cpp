@@ -107,7 +107,7 @@ int speedo_gps::check_vars(){
 	if(navi_active){
 		generate_new_order();
 	}
-    return 0;
+	return 0;
 };
 
 bool speedo_gps::wait_on_gps(){
@@ -403,6 +403,13 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			gps_sats[gps_count]=gps_sats_temp;
 			gps_fix[gps_count]=gps_fix_temp;
 
+			// notify other modules
+			if(pMenu->state==11){
+				if(pSpeedCams->get_active()){
+					pSpeedCams->set_gps_outdated();
+				}
+			}
+
 
 			// debug
 #ifdef GPS_DEBUG
@@ -580,7 +587,7 @@ long speedo_gps::get_info(unsigned char select){
 		break;
 	case 9:
 #ifdef GPS_FAKE_MODE
-				return 0; //todo
+		return 0; //todo
 #endif
 		return valid;
 		break;
@@ -666,28 +673,30 @@ unsigned long speedo_gps::calc_dist(unsigned long longitude,unsigned long latitu
 };
 // get distance between aktueller und ziel punkt
 
-unsigned long speedo_gps::guess_dist(unsigned long from_longitude,unsigned long from_latitude,unsigned long to_longitude,unsigned long to_latitude,double gps_lati_cos){
-	if(valid>5) return -1; // rollt über und ist dann unendlich riesig
+
+// 3000 calc = 397ms  ==> 1 calc ~ 132µs == 2112 Ticks
+unsigned long speedo_gps::calc_dist_supported(simple_coordinate A,simple_coordinate B,float gps_lati_cos){
 
 	float dist_y,dist_x; // abstands vars
 	// können wir nicht mit abs machen, weil das unsigned ist
-	if( from_latitude > to_latitude){
-		dist_y=(float)(to_latitude - from_latitude); // direkt
+	if( B.latitude > A.latitude){
+		dist_y=(float)(B.latitude - A.latitude); // direkt
 	} else {
-		dist_y=(float)(from_latitude - to_latitude); // direkt
+		dist_y=(float)(A.latitude - B.latitude); // direkt
 	}
 	// können wir nicht mit abs machen, weil das unsigned ist
-	if( from_longitude > to_longitude){
+	if( A.longitude > B.longitude){
 		// hier kommen grad*106 raus
-		dist_x=(float)(from_longitude - to_longitude); // erstmal ungewichtet
+		dist_x=((float)(A.longitude - B.longitude))*gps_lati_cos; // gewichtet
 	} else {
-		dist_x=(float)(to_longitude - from_longitude); // erstmal ungewichtet
+		dist_x=((float)(B.longitude - A.longitude))*gps_lati_cos; // gewichtet
 	}
 
-	dist_x=round(dist_x*gps_lati_cos); // gewichtet
-	//return round((unsigned long)sqrt((dist_x*dist_x)+(dist_y*dist_y))*0.111);// berechne distanz
-	return (unsigned long)(dist_x+dist_y*0.111);// schätze distanz
+	return round((unsigned long)sqrt((dist_x*dist_x)+(dist_y*dist_y))*0.111);// berechne distanz
 };
+
+
+
 
 
 /*******************************************************************
@@ -1019,7 +1028,7 @@ int speedo_gps::get_logged_points(char* buffer,int a,int* nbytes){
 			 * 9+1+6+1+9+1+9+1+3+1+5+1+5+1+2+1+1+1+1+\n = 62
 			 */
 			sprintf(buffer,"%09lu,%06lu,%09lu,%09lu,%03i,%05u,%05lu,%02i,%i,%i\n",
-			gps_time[a],gps_date[a],gps_lati[a],gps_long[a],gps_speed_arr[a],gps_course[a],gps_alt[a],gps_sats[a],gps_fix[a],gps_special[a]);
+					gps_time[a],gps_date[a],gps_lati[a],gps_long[a],gps_speed_arr[a],gps_course[a],gps_alt[a],gps_sats[a],gps_fix[a],gps_special[a]);
 			*nbytes=62;
 		}
 
