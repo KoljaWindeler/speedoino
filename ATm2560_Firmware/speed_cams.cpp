@@ -181,7 +181,7 @@ bool speedo_speedcams::calc(){
 				/////////////////////////////////////////////// trigger s2r ///////////////////////////////////////////////
 				// next: check if we have to copy from small db to ram
 				// therefore check first that b2s is not running, otherwise the file is corrupted
-				if(!b2s_status.running && b2s_status.state!=SPEEDCAM_STATE_INIT){
+				if(!b2s_status.running && (b2s_status.state==SPEEDCAM_STATE_READFILE_OPEN || b2s_status.state==SPEEDCAM_STATE_START)){
 					// alright, we can access the small file, now check if a update of our RAM is needed
 					if(pSensors->m_gps->calc_dist_supported(gps_goody,bestOfThree_last_calc,gps_lati_cos)>bestOfThree_retrigger_distance){
 						// our distance to the last point of calc is bigger than our retrigger distance -> rebuild top3 from small db
