@@ -112,6 +112,8 @@ int speedo_stepper::get_pos(){
 	Serial3.flush();
 	Serial3.print("$p*"); // send request
 
+	if(pSensors->m_reset->last_reset==-1) return -1; // ATm328 down
+
 	unsigned long start_time=millis();
 	unsigned int recv=0;
 	int pos=0;
