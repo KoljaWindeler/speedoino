@@ -577,16 +577,17 @@ int configuration::write(const char *filename){
 
 					strcpy_P(buffer, PSTR("GPS_format="));
 					pSD->writeString(file, buffer);
-					if(pSensors->m_gps->use_compressed_log_format){
-						sprintf(buffer,"1\n");
-					} else {
-						sprintf(buffer,"0\n");
-					}
+					sprintf(buffer,"%i\n",pSensors->m_gps->use_compressed_log_format);
 					pSD->writeString(file, buffer);
 
 					strcpy_P(buffer, PSTR("LT_realtime="));
 					pSD->writeString(file, buffer);
 					sprintf(buffer,"%i\n",pLapTimer->use_realtime_not_calculated);
+					pSD->writeString(file, buffer);
+
+					strcpy_P(buffer, PSTR("POI_active="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pSpeedCams->get_active());
 					pSD->writeString(file, buffer);
 
 					// ==============================================================================================================//
@@ -1064,8 +1065,11 @@ int configuration::parse(char* buffer){
 		parse_bool(buffer,seperator,&pSensors->m_gps->use_compressed_log_format);
 	} else if(strcmp_P(name,PSTR("LT_realtime"))==0){
 		parse_bool(buffer,seperator,&pLapTimer->use_realtime_not_calculated);
-	}
-	else {
+	} else if(strcmp_P(name,PSTR("POI_active="))==0){
+			bool temp;
+			parse_bool(buffer,seperator,&temp);
+			pSpeedCams->set_active(temp);
+	} else {
 		return_value=-2; // ungltiger identifier
 	}
 	free(name);
@@ -1184,11 +1188,11 @@ int configuration::parse_int(char* buffer,int i,int* wert){
  * wird von parse_float bedient und gecastet ..
  ***************************************************/
 int configuration::parse_uint8_t(char* buffer,int i,uint8_t* wert){
-    float temp;
-    int return_value=parse_float(buffer,i,&temp);
-    *wert=int(temp)&0xff;	// cast to int to get ridge of the ".xxx" and than take lowest byte
+	float temp;
+	int return_value=parse_float(buffer,i,&temp);
+	*wert=int(temp)&0xff;	// cast to int to get ridge of the ".xxx" and than take lowest byte
 
-    return return_value;
+	return return_value;
 };
 
 /******* chararray aus chararray parsen *************
