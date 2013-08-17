@@ -1,6 +1,10 @@
+#define DEBUG_EXECUTION_TIME
+#undef DEBUG_POINT_FOUND
+#undef DEBUG_HEAVY_CHANGES
+#undef DEBUG_EVERY_POINT_DANGER
 
 /* Speedoino - This file is part of the firmware.
- * Copyright (C) 2011 Kolja Windeler
+ * Copyright (C) 2013 Kolja Windeler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,191 +24,335 @@
 
 // init & clean buffer
 speedo_speedcams::speedo_speedcams(){
+	b2s_status.dest_file_seek=0;			// this is the position in the write file, as indicator if we have written to the file
+	b2s_status.state=SPEEDCAM_STATE_INIT; 	// state= init -> read_file_open -> read_error/read_start
+	b2s_status.dest_file_open=false;		// var to remember if we have opened the write file, important to remember closing it
+	b2s_status.running=false;				// process is currently running
+	b2s_status.in_longitude_section=false;	// if we have an file with sorted longitude and we have reached "our" region
+	b2s_status.POIs_parsed=0;				// number of POI, read from the big db
+	top_three[0].latitude=0;				// reset the top three
+	top_three[0].longitude=0;
+	top_three[1].latitude=0;
+	top_three[1].longitude=0;
+	top_three[2].latitude=0;
+	top_three[2].longitude=0;
+	bestOfThree_last_calc.latitude=0;		// coordinaten of the place, where we last calculated the best three of the small db
+	bestOfThree_last_calc.longitude=0;
+	db_last_calc.latitude=0;				// coordinaten of the place, where we last calculated small db from the big db
+	db_last_calc.longitude=0;
+	gps_outdated=false;						// var that will be triggered by GPS
+	POI_near=false;							// this is the "result"
+	POI_near_dist=64000;					// distance to the POI
+	active=false;							// assume the state is "inactive"
 
+	active=true; // DEBUG
+
+	POI_near_id=-1;							// which of the "top" three is the nearest
+	bestOfThree_retrigger_distance=0;		// how far must the distance between our current coordinates and "bestOfThree_last_calc" be until we retrigger it
+	gps_lati_cos=1;							// current location weight factor
 }
 
-void speedo_speedcams::test(){
-	////////////////////////////////////////// TESTING //////////////////////////////////////////
-	while(pSensors->m_gps->get_info(9)>3){
-		// wait
-	};
+/*void speedo_speedcams::test(){
+	///////////////////////////////////////// TESTING //////////////////////////////////////////
+	if(pSensors->m_gps->get_info(9)>3){	return;	};
 	calc_gps_goodies();
 	unsigned char filename[20]; // "/NAVI/HOCKENHE.SST"
 	strcpy_P((char *)filename,PSTR("NAVI/HANNOVER.SST")); // static file for the moment
 
 	uint32_t dist,dist2,dist3;
 	uint32_t time=millis();
-	for(int loop=0;loop<1000;loop++){
-		dist=pSensors->m_gps->calc_dist(2904720,51214280);
-		dist2=pSensors->m_gps->calc_dist(904720,51214280);
-		dist3=pSensors->m_gps->calc_dist(2904720,1214280);
+	for(int loop=0;loop<1;loop++){
+		dist= pSensors->m_gps->calc_dist(904720,51214280);
+		dist2=pSensors->m_gps->calc_dist(904720,52214280);
+		dist3=pSensors->m_gps->calc_dist(904720,50214280);
 	}
 	time=millis()-time;
-	Serial.print("1000 Berechnungen der Entfernungen zu 2904720/51214280 kosten ");
+	Serial.print("3000 Berechnungen der Entfernungen zu 2904720/51214280 kosten ");
 
 	Serial.print(time);
 	Serial.println(" ms");
-	Serial.println(dist);
+	Serial.print(dist);
+	Serial.print(",");
+	Serial.print(dist2);
+	Serial.print(",");
+	Serial.println(dist3);
 	/////////////////////////////////////////////////////
 	time=millis();
-	for(int loop=0;loop<1000;loop++){
-		dist=pSensors->m_gps->guess_dist(2904720,51214280,gps_long_dec_deg,gps_lati_dec_deg,gps_lati_cos);
-		dist2=pSensors->m_gps->guess_dist(904720,51214280);
-		dist3=pSensors->m_gps->guess_dist(2904720,1214280);
+	for(int loop=0;loop<1;loop++){
+		dist=pSensors->m_gps->calc_dist_supported(904720UL,51214280UL,gps_goody.longitude,gps_goody.latitude,gps_lati_cos);
+		dist2=pSensors->m_gps->calc_dist_supported(904720UL,52214280UL,gps_goody.longitude,gps_goody.latitude,gps_lati_cos);
+		dist3=pSensors->m_gps->calc_dist_supported(904720UL,50214280UL,gps_goody.longitude,gps_goody.latitude,gps_lati_cos);
 	}
 	time=millis()-time;
-	Serial.print("1000 Berechnungen der Entfernungen zu 2904720/51214280 kosten ");
+	Serial.print("3000 optimierte Berechnungen der Entfernungen zu 2904720/51214280 kosten ");
 
 	Serial.print(time);
 	Serial.println(" ms");
-	Serial.println(dist);
+	Serial.print(dist);
+	Serial.print(",");
+	Serial.print(dist2);
+	Serial.print(",");
+	Serial.println(dist3);
 	// reale Distanz 488,848 km
 	// 	757ms mit boardmitteln 	           = 494,709 km => 1,198%
 	// 757µs
-	////////////////////////////////////////////
+	//////////////////////////////////////// TESTING /////////////////////////////////////////
+}*/
 
-	time=millis();
-	for(int loop=0; loop<1000; loop++){
-		//get_sector_data(loop%3, &dist,&dist,&dist,filename);
-	};
+bool speedo_speedcams::get_active(){
+	return active;
+}
 
-	time=millis()-time;
-	Serial.print("1000x Laden eines POI kostet ");
-	Serial.print(time);
-	Serial.println(" ms");
+uint16_t speedo_speedcams::get_dist_to_next_point(){
+	return POI_near_dist;
+}
 
-	////////////////////////////////////////////
+void speedo_speedcams::set_active(bool outer_active){
+	active=outer_active;
+}
 
-	unsigned char temp[31];
-	SdFile folder;
-	SdFile file;
-	int sector_id=1;
+void speedo_speedcams::set_gps_outdated(){
+	gps_outdated=true;
+}
 
-	time=millis();
-	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_READ)<0){
-		file.close();
-		folder.close();
-		Serial.println("DAMN 1");
-	} else {
-		for(int loop=0;loop<1000;loop++){
+void speedo_speedcams::override_start(){
+	b2s_status.running=true;				// trigger db read process
+	b2s_status.state=SPEEDCAM_STATE_START; 	// this will trigger all file open processings
+}
 
-			// move cursor to sector line
-			if(!file.seekSet(sector_id*30)){
-				file.close();
-				folder.close();
-				Serial.println("DAMN 2");
-			};
+bool speedo_speedcams::calc(){
+	//////////////////////////////////////// DEBUG ///////////////////////////////////////////////////
+#if defined(DEBUG_EXECUTION_TIME)					// DEBUG TIME
+	uint32_t time=millis();							// DEBUG TIME
+	uint16_t state=0;								// DEBUG TIME
+#endif												// DEBUG TIME
+	//////////////////////////////////////// DEBUG ///////////////////////////////////////////////////
 
-			// read line
-			int n=file.read(temp, 30);
-			if(n<30){
-				file.close();
-				folder.close();
-				Serial.println("DAMN 3");
-			}
 
-			// get latitude
-			uint32_t temp_value=0;
-			for(int i=0;i<9;i++){ // 8-0 = 9 Chars
-				if(temp[i]>='0' && temp[i]<='9'){
-					temp_value=temp_value*10+(temp[i]-'0');
+	///////////////////////////////// break here if we are not active /////////////////////////////////
+	if(!active){
+		return false;
+	}
+	///////////////////////////////// break here if we are not active /////////////////////////////////
+
+
+	//////////////////////// bigdatabase 2 smalldatabase is currently running ////////////////////////
+	if(b2s_status.running){							// let him finish first (fast)
+#if defined(DEBUG_EXECUTION_TIME)					// DEBUG TIME
+		state=1;									// DEBUG TIME
+#endif												// DEBUG TIME
+		parse_complete_db();						// calc big database to small database
+	}
+	//////////////////////// bigdatabase 2 smalldatabase is currently running ////////////////////////
+
+
+	///////////////////////////////// b2s is not running, trigger b2s/s2r/cn3 /////////////////////////////////
+	else { 											// big2small not running
+		if(gps_outdated){							// updating is only valid if the last gps_sample is outdated
+			if(calc_gps_goodies()>=0){ 				// we have 4 Points at all, so its worth calc the goodies
+				gps_outdated=false;					// GPS is not longer outdated..
+				bool calc_top_three=true;			// assume that we should recalc the top three
+
+
+				/////////////////////////////////////////////// trigger b2s ///////////////////////////////////////////////
+				// DB rebuild process is offline, now check if the seconds of the clock equal 00, if so: check if have to recreate our big db
+				if(pSensors->m_clock->get_ss()==0){// every 60 seconds: check if we have to retrigger db calculation
+					// is the distance between to point of last calculation and our actual coordinates bigger than 10km? if so: recalc db
+					if(pSensors->m_gps->calc_dist_supported(gps_goody,db_last_calc,gps_lati_cos)>10000UL){
+						b2s_status.running=true;				// trigger db read process
+						b2s_status.state=SPEEDCAM_STATE_START; 	// this will trigger all file open processings
+						parse_complete_db();					// aaand go!
+
+#if defined(DEBUG_EXECUTION_TIME)								// DEBUG
+						state=1;								// DEBUG
+#endif															// DEBUG
+						// GarbageCleaning
+						// good results: SPEEDCAM_STATE_READFILE_OPEN,        SPEEDCAM_STATE_START
+						// bad results:  SPEEDCAM_STATE_ERROR_OPEN_READFILE,  SPEEDCAM_STATE_ERROR_OPEN_WRITEFILE
+						// bad results:  SPEEDCAM_STATE_ERROR_WRITEFILE_SEEK, SPEEDCAM_STATE_ERROR_WRITE_WRITEFILE
+						if(b2s_status.state<0){ // error
+							calc_top_three=false; // problem while creation of db -> shutdown
+						} // GC
+					} // neccessary to update complete db
+				} // get_ss==0
+				/////////////////////////////////////////////// trigger b2s ///////////////////////////////////////////////
+
+
+				/////////////////////////////////////////////// trigger s2r ///////////////////////////////////////////////
+				// next: check if we have to copy from small db to ram
+				// therefore check first that b2s is not running, otherwise the file is corrupted
+				if(!b2s_status.running && b2s_status.state!=SPEEDCAM_STATE_INIT){
+					// alright, we can access the small file, now check if a update of our RAM is needed
+					if(pSensors->m_gps->calc_dist_supported(gps_goody,bestOfThree_last_calc,gps_lati_cos)>bestOfThree_retrigger_distance){
+						// our distance to the last point of calc is bigger than our retrigger distance -> rebuild top3 from small db
+						parse_small_db(); 			// onestep operation
+						calc_top_three=false;	 	// to avoid heavy calculation in one step: only calc dist to top three if nothing other happened
+						// GC?
+#if defined(DEBUG_EXECUTION_TIME)
+						state=2;
+#endif
+					}
+
+				} // !b2s_status.running
+				/////////////////////////////////////////////// trigger s2r ///////////////////////////////////////////////
+
+
+				/////////////////////////////////////////////// trigger cn3 ///////////////////////////////////////////////
+				// CalcNext3, coordinates
+				// this should run at any time,exepct in the same timeslot as parse_small_db()
+				// (to save time) and before the small_db has been created once (nonsense)
+				if(calc_top_three && top_three[0].longitude!=0){ // !=0 means they at least one point is next to us and has been calced at any time
+					// now calc distances and find out who is next
+					uint16_t distances[3];
+					POI_near_dist=64000; // 64km...faaar away .. will be recalculated in the next loop
+					for(int i=0;i<3;i++){
+						distances[i]=pSensors->m_gps->calc_dist_supported(gps_goody,top_three[i],gps_lati_cos);
+						if(distances[i]<POI_near_dist){
+							POI_near_id=i;
+							POI_near_dist=distances[POI_near_id];
+						}
+					}
+
+					// is it worth turning on the warning?
+					if(POI_near_dist<WARNING_DIST){
+						POI_near=true;
+					} else {
+						POI_near=false;
+					}
+#if defined(DEBUG_EXECUTION_TIME)				// DEBUG
+					state+=3;					// DEBUG
+#endif											// DEBUG
+				} else { // if calc_top_three
+					POI_near=false;
 				}
-			}
+				/////////////////////////////////////////////// trigger cn3 ///////////////////////////////////////////////
 
-			// get longitude
-			temp_value=0;
-			for(int i=10;i<19;i++){ // 21-11 = 10 Chars
-				if(temp[i]>='0' && temp[i]<='9'){
-					temp_value=temp_value*10+(temp[i]-'0');
-				}
-			}
+			} // gps_goodies ok
+		}// gps outdated
+	} // b2s running
+	///////////////////////////////// b2s is not running, trigger b2s/s2r/cn3 /////////////////////////////////
 
-			// get sector_time
-			temp_value=0;
-			for(int i=20;i<29;i++){ // 30-22 = 8 Chars
-				if(temp[i]>='0' && temp[i]<='9'){
-					temp_value=temp_value*10+(temp[i]-'0');
-				}
-			}
 
-			if(temp_value==0){ // 0 = nonsense, you are not that quick :D
-				temp_value=99999999;
-			}
-		}
-
-		file.close();
-		folder.close();
-
+	//////////////////////////////////////// DEBUG ///////////////////////////////////////////////////
+#if defined(DEBUG_EXECUTION_TIME)
+	if(state>0){
 		time=millis()-time;
-		Serial.print("1x Laden von 1000 POI kostet ");
+		Serial.print("calc() took ");
 		Serial.print(time);
-		Serial.println(" ms");
-	};
-
-	//////////////////////////////////////// TESTING //////////////////////////////////////////
+		Serial.print(" ms");
+		if(state==1){
+			Serial.println(" to run one step of full->small db");
+		} else if(state==2){
+			Serial.println(" to parse the complete small db");
+		} else if(state==3){
+			Serial.print(" to check the nearest 3, closest: ");
+			Serial.print(POI_near_dist);
+			Serial.print(" dist to calc_point: ");
+			Serial.print(pSensors->m_gps->calc_dist_supported(gps_goody,bestOfThree_last_calc,gps_lati_cos));
+			Serial.print(" / ");
+			Serial.println(bestOfThree_retrigger_distance);
+		} else if(state==4){
+			Serial.println("to parse the db + to check the nearest three");
+		}
+	}
+#endif
+	//////////////////////////////////////// DEBUG ///////////////////////////////////////////////////
+	return POI_near;
 }
 
-void speedo_speedcams::calc_gps_goodies(){
-	gps_lati_dec_deg=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(3));
-	gps_long_dec_deg=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(2));
-	gps_lati_cos=cos(floor(gps_lati_dec_deg/1000000.0)*2*M_PI/360);
+
+int speedo_speedcams::calc_gps_goodies(){
+	if(pSensors->m_gps->get_info(9)>5){ return -1; }; // if there is no GPS than calculation is non sense
+	gps_goody.latitude=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(3));
+	gps_goody.longitude=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(2));
+	gps_lati_cos=cos(floor(gps_goody.latitude/1000000.0)*2*M_PI/360);
+	return 0;
 }
 
-int speedo_speedcams::test2(){
-	////////////////////////////////////////// TESTING //////////////////////////////////////////
-	if(pSensors->m_gps->get_info(9)>3){ return -1; };
 
-	unsigned char source_filename[20]; // "/NAVI/HOCKENHE.SST"
-	unsigned char dest_filename[20]; // "/NAVI/HOCKENHE.SST"
-	strcpy_P((char *)source_filename,PSTR("CONFIG/POI.TXT")); // static file for the moment
-	strcpy_P((char *)dest_filename,PSTR("CONFIG/POI_N.TXT")); // static file for the moment
-	uint32_t current_latitude=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(3));
-	uint32_t current_longitude=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(2));
 
-	//uint32_t dist=pSensors->m_gps->calc_dist(2904720,51214280);
-	uint32_t time=millis();
+int8_t speedo_speedcams::parse_complete_db(){
 	unsigned char temp[25];
-
-	uint16_t lines=0;
-	uint16_t found=0;
 	uint32_t loaded_latitude;
 	uint32_t loaded_longitude;
 	uint32_t lati_diff;
 	uint32_t long_diff;
-	SdFile read_file;
-	SdFile write_file;
 
-
-	time=millis();
-	if(pFilemanager_v2->get_file_handle(source_filename,&read_file,O_READ)<0){
-		read_file.close();
-		Serial.println("DAMN 1");
-		return -3;
-	} else {
-		if(pFilemanager_v2->get_file_handle(dest_filename,&write_file,O_RDWR|O_CREAT|O_TRUNC)<0){
-			write_file.close();
-			Serial.println("DAMN 1");
-			return -2;
+	////////////////// open database ////////////////////////////
+	if(b2s_status.state<=SPEEDCAM_STATE_START){ // nothing has been done yet or an error happend
+#if defined(DEBUG_HEAVY_CHANGES)
+		Serial.println("opening sourcefile");
+#endif
+		unsigned char source_filename[20]; //
+		strcpy_P((char *)source_filename,PSTR("CONFIG/POI.TXT")); // static file
+		b2s_status.POIs_parsed=0;
+		source_file.close();	// should fail very often because the file should already be close, but thats not interessting
+		if(pFilemanager_v2->get_file_handle(source_filename,&source_file,O_READ)<0){	// open it now
+			source_file.close();
+#if defined(DEBUG_HEAVY_CHANGES)
+			Serial.println("Damn, opening failed!");
+#endif
+			b2s_status.state=SPEEDCAM_STATE_ERROR_OPEN_READFILE;	// fail
+			b2s_status.running=false;
+			return -3;
+		} else {
+#if defined(DEBUG_HEAVY_CHANGES)
+			Serial.println("ok, file open!");
+#endif
+			b2s_status.state=SPEEDCAM_STATE_READFILE_OPEN;			// ok
+			b2s_status.dest_file_seek=0;							// if we had to reopen our readfile we should reopen our write file
+			b2s_status.dest_file_open=false;
 		}
-		Serial.print("File open, length:");
-		Serial.println(read_file.fileSize());
-		int n=99;
-		while(n>=0){
-			// read line
-			n=read_file.read(temp, 20);
-			if(n<20){
-				read_file.close();
-			} else {
-				lines++;
-				// get longitude
-				loaded_longitude=0;
-				for(int i=0;i<9;i++){ // 8-0 = 9 Chars
-					if(temp[i]>='0' && temp[i]<='9'){
-						loaded_longitude=loaded_longitude*10+(temp[i]-'0');
-					}
-				}
+	}
+	////////////////// open database ////////////////////////////
 
-				// get latitude
+	////////////////// parse database ////////////////////////////
+	bool read_on=true;
+	while(read_on){
+		// read line
+		if(source_file.read(temp, 20)<20){
+			////////////////// EOF  ////////////////////////////
+			source_file.close();				// EOF reached
+			dest_file.close();					// EOF reached
+			b2s_status.dest_file_open=false;
+			b2s_status.state=SPEEDCAM_STATE_START;	// reached EOF, return to start
+			b2s_status.running=false;				// we are done
+			read_on=false;						// break the while loop
+
+			db_last_calc.latitude=gps_goody.latitude;	 // save location
+			db_last_calc.longitude=gps_goody.longitude; // save location
+
+#if defined(DEBUG_HEAVY_CHANGES)
+			Serial.println("Read return less than 20byte, assuming end of file, done :D");
+#endif
+			////////////////// EOF  ////////////////////////////
+		} else {
+#if defined(DEBUG_EVERY_POINT_DANGER)
+			Serial.print("r:");
+			Serial.println((char*)temp);
+#endif
+			// parse longitude first (1st column)
+			loaded_longitude=0;
+			for(int i=0;i<9;i++){ // 8-0 = 9 Chars
+				if(temp[i]>='0' && temp[i]<='9'){
+					loaded_longitude=loaded_longitude*10+(temp[i]-'0');
+				}
+			}
+
+			// check if it is next to us
+			if(gps_goody.longitude>loaded_longitude){
+				long_diff=gps_goody.longitude-loaded_longitude;
+			} else {
+				long_diff=loaded_longitude-gps_goody.longitude;
+			}
+
+			////////////////// POI has small longitude diff  ////////////////////////////
+			if(long_diff<300000){ // ca 20km in E<->W and N<->S
+#if defined(DEBUG_EVERY_POINT_DANGER)
+				Serial.println("long diff < 300000");
+#endif
+				b2s_status.in_longitude_section=true;
+				// get latitude only if longitude is in range
 				loaded_latitude=0;
 				for(int i=10;i<19;i++){ // 21-11 = 10 Chars
 					if(temp[i]>='0' && temp[i]<='9'){
@@ -212,48 +360,185 @@ int speedo_speedcams::test2(){
 					}
 				}
 
-				if(current_latitude>loaded_latitude){
-					lati_diff=current_latitude-loaded_latitude;
+				if(gps_goody.latitude>loaded_latitude){
+					lati_diff=gps_goody.latitude-loaded_latitude;
 				} else {
-					lati_diff=loaded_latitude-current_latitude;
+					lati_diff=loaded_latitude-gps_goody.latitude;
 				}
+				////////////////// POI has small longitude+latitude diff  ////////////////////////////
+				if(lati_diff<200000){
+#if defined(DEBUG_POINT_FOUND)
+					Serial.print("New newby Point found at line ");
+					Serial.print(b2s_status.POIs_parsed);
+					Serial.print(". Coordinates:");
+					Serial.print(loaded_longitude);
+					Serial.print("/");
+					Serial.println(loaded_latitude);
+#endif
+					if(!b2s_status.dest_file_open || b2s_status.state==SPEEDCAM_STATE_ERROR_OPEN_WRITEFILE){					// we are NOT ready to write to the dest_file
+#if defined(DEBUG_HEAVY_CHANGES)
+						Serial.println("Dest file has never been opened, doing it now");
+						if(b2s_status.state==SPEEDCAM_STATE_ERROR_OPEN_WRITEFILE){
+							Serial.println("write error?");
+						}
+#endif
+						////////////////// OPEN WRITE FILE  ////////////////////////////
+						dest_file.close(); 																				// just to be sure
+						unsigned char dest_filename[20]; //
+						strcpy_P((char *)dest_filename,PSTR("CONFIG/POI_N.TXT")); // static file
+						if(b2s_status.dest_file_seek>0){																	// but we HAVE written to it in the past
+#if defined(DEBUG_HEAVY_CHANGES)
+							Serial.println("Dest file should have content, open in append mode");
+#endif
+							if(pFilemanager_v2->get_file_handle(dest_filename,&dest_file,O_RDWR|O_CREAT|O_APPEND)<0){	// so open it to append further lines
+								dest_file.close();
+								b2s_status.dest_file_open=false;
+								b2s_status.state=SPEEDCAM_STATE_ERROR_OPEN_WRITEFILE;
+#if defined(DEBUG_HEAVY_CHANGES)
+								Serial.println("DAMN file open failed");
+#endif
+								read_on=false;
+							}																							// end of reopen file
+						} else {																						// this is the first time we open this file
+							if(pFilemanager_v2->get_file_handle(dest_filename,&dest_file,O_RDWR|O_CREAT|O_TRUNC)<0){	// reset it
+								dest_file.close();
+								b2s_status.dest_file_open=false;
+								b2s_status.state=SPEEDCAM_STATE_ERROR_OPEN_WRITEFILE;
+#if defined(DEBUG_HEAVY_CHANGES)
+								Serial.println("DAMN file open failed");
+#endif
+								read_on=false;
+							}
+						} // restart file
+						////////////////// OPEN WRITE FILE  ////////////////////////////
+					}
+					if(read_on){ // still everything allright
+						b2s_status.dest_file_open=true;
+						if(dest_file.write(temp,20)>=0){
+							b2s_status.dest_file_seek++;
+#if defined(DEBUG_POINT_FOUND)
+							Serial.print("Point nr ");
+							Serial.print(b2s_status.dest_file_seek);
+							Serial.println(" written");
+#endif
+						} else {
+							b2s_status.state=SPEEDCAM_STATE_ERROR_WRITE_WRITEFILE;
+							dest_file.close();
+							b2s_status.dest_file_open=false;
+							b2s_status.running=false;
+							read_on=false;
+						}
+					}
+				};
+#if defined(USE_SORTED_FILE)
+			} else if(b2s_status.in_longitude_section){	// file is sorted by longitude and as soon as we enter "our" region in_longitude_section becomes true, as soon as we leave, we can stop
+#if defined(DEBUG_HEAVY_CHANGES)
+				Serial.println("Point is out of scope from now on, thank you - we are done");
+#endif
+				read_on=false;						// breaks while condition
+				b2s_status.in_longitude_section=false;	// reset for next read
+				dest_file.close();					// done
+				source_file.close();				// done
+				b2s_status.dest_file_open=false;
+				b2s_status.state=SPEEDCAM_STATE_START;	// EOF reached
+				b2s_status.running=false;
+				db_last_calc.latitude=gps_goody.latitude;	 // save location
+				db_last_calc.longitude=gps_goody.longitude; // save location
+#endif
+			}
 
-				if(current_longitude>loaded_longitude){
-					long_diff=current_longitude-loaded_longitude;
-				} else {
-					long_diff=loaded_longitude-current_longitude;
+			b2s_status.POIs_parsed++;
+			if(b2s_status.POIs_parsed%50==0){
+				// 50 points == 13ms
+				read_on=false;						// time for a break, we resume this later
+				if(b2s_status.dest_file_open){			// close write file if open to avoid file corruption
+					dest_file.close();
+					b2s_status.dest_file_open=false;
 				}
-
-				if(long_diff<300000 && lati_diff<200000){ // ca 20km in E<->W and N<->S
-					//					Serial.print(lines);
-					//					Serial.print(" seems to be near to us:");
-					//					Serial.print(loaded_latitude);
-					//					Serial.print(" / ");
-					//					Serial.print(loaded_longitude);
-					//					Serial.print(" | Dist: ");
-					//					Serial.print(pSensors->m_gps->calc_dist(loaded_longitude,loaded_latitude));
-					//					Serial.println(" m");
-					write_file.write(temp,20);
-					found++;
-				}
+#if defined(DEBUG_HEAVY_CHANGES)
+				Serial.println("We parsed 50 POIs, time for a Coke, see you soon");
+#endif
 			}
 		}
-		time=millis()-time;
-		Serial.print(lines);
-		Serial.print(" Points parsed in ");
-		Serial.print(time);
-		Serial.println(" ms");
-		Serial.print(found);
-		Serial.println(" are near");
 	}
-
-	read_file.close();
-	write_file.close();
-	time=millis()-time;
-	//	Serial.print("1x Laden von 1000 POI kostet ");
-	//	Serial.print(time);
-	Serial.println("Fertig");
-	while(1){};
-	return 0;
+	////////////////// parse database ////////////////////////////
+	return b2s_status.state;
 };
 
+
+int8_t speedo_speedcams::parse_small_db(){
+	unsigned char temp[25];
+	simple_coordinate loaded_coordinates;
+	uint16_t distances[3]={64000,64000,64000};
+	uint16_t temp_distance=0;
+	uint8_t points_parsed=0;
+	SdFile poi_n_file;
+	strcpy_P((char *)temp,PSTR("CONFIG/POI_N.TXT")); // static file
+
+	if(pFilemanager_v2->get_file_handle(temp,&poi_n_file,O_READ)<0){	// open it now
+		poi_n_file.close();
+#if defined(DEBUG_HEAVY_CHANGES)
+		Serial.println("Damn, opening failed!");
+#endif
+		return -3;
+	} else {
+		bool read_on=true;
+		top_three[0].latitude=0;	// clear points
+		top_three[0].longitude=0;
+		top_three[1].latitude=0;
+		top_three[1].longitude=0;
+		top_three[2].latitude=0;
+		top_three[2].longitude=0;
+
+		while(read_on){
+			if(poi_n_file.read(temp, 20)<20){
+				read_on=false;
+			} else {
+				// longitude
+				loaded_coordinates.latitude=0;
+				for(int i=10;i<19;i++){ // 21-11 = 10 Chars
+					if(temp[i]>='0' && temp[i]<='9'){
+						loaded_coordinates.latitude=loaded_coordinates.latitude*10+(temp[i]-'0');
+					}
+				}
+
+				// longitude
+				loaded_coordinates.longitude=0;
+				for(int i=0;i<10;i++){ // 21-11 = 10 Chars
+					if(temp[i]>='0' && temp[i]<='9'){
+						loaded_coordinates.longitude=loaded_coordinates.longitude*10+(temp[i]-'0');
+					}
+				}
+
+				temp_distance=pSensors->m_gps->calc_dist_supported(gps_goody,loaded_coordinates,gps_lati_cos);
+
+				if(temp_distance<distances[0]){ //nearest
+					top_three[2]=top_three[1];
+					top_three[1]=top_three[0];
+					top_three[0]=loaded_coordinates;
+					distances[2]=distances[1];
+					distances[1]=distances[0];
+					distances[0]=temp_distance;
+				} else if(temp_distance<distances[1]){
+					top_three[2]=top_three[1];
+					top_three[1]=loaded_coordinates;
+					distances[2]=distances[1];
+					distances[1]=temp_distance;
+				} else if(temp_distance<distances[2]){ // farest
+					top_three[2]=loaded_coordinates;
+					distances[2]=temp_distance;
+				}
+
+				if(points_parsed<3){
+					points_parsed++;
+				}
+			} // read 30 okay
+		} // while read on
+	} // if open file ok
+	poi_n_file.close();
+	//could lead to problems if only one speed-cam is there and we are going straight to it?
+	bestOfThree_retrigger_distance=(3*distances[points_parsed-1])>>2;
+	bestOfThree_last_calc=gps_goody;	 // save current location
+
+	return 0;
+};
