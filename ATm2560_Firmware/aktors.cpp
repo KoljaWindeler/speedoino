@@ -348,7 +348,16 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){
 	if(overwrite) dimm_state=999;
 
 	////////// SHIFT FLASH ////////////////
+	bool attention_required=false;
 	if(pSensors->get_RPM(0)>unsigned(pSensors->m_dz->blitz_dz) && pSensors->m_dz->blitz_en){
+		attention_required=true;
+	} else if(pSpeedCams->get_active() && pMenu->state==11){
+		if(pSpeedCams->calc()){
+			attention_required=true;
+		}
+	}
+
+	if(attention_required){
 		if(dimm_state==FLASH_COLOR_REACHED){
 			return 0;
 		} else if(dimm_state==DIMM_TO_FLASH_COLOR){
