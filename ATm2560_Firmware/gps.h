@@ -50,6 +50,7 @@ public:
 	bool wait_on_gps();
 	void update_rate_1Hz();
 	void update_rate_10Hz();
+	void set_drive_status(int speed, int ss, int sat, char status);
 
 	// die letzen 30 infos
 	unsigned long gps_lati[30],gps_long[30];
@@ -89,7 +90,6 @@ private:
 	int store_to_sd();
 	void parse(char linea[SERIAL_BUFFER_SIZE],int datensatz);
 	void calc_navi();
-	void set_drive_status(int speed, int ss, int sat, char status);
 	unsigned long GpsTimeToTimeStamp(unsigned long input);
 };
 /**************** gps *******************/

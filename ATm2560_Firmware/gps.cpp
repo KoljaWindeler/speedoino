@@ -404,7 +404,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			gps_fix[gps_count]=gps_fix_temp;
 
 			// notify other modules
-			if(pMenu->state==11){
+			if(pMenu->state==11 || pMenu->state==381){ // regular speedo or "show" mode
 				if(pSpeedCams->get_active()){
 					pSpeedCams->set_gps_outdated();
 				}
@@ -555,13 +555,15 @@ long speedo_gps::get_info(unsigned char select){
 		break;
 	case 2:
 #ifdef GPS_FAKE_MODE
-		return 52123000+(int)(floor(millis()/50))%200;
+		//return 9456000+(int)(floor(millis()/50))%200;
+		return 6960577;
 #endif
 		return gps_long[inner_gps_count];
 		break;
 	case 3:
 #ifdef GPS_FAKE_MODE
-		return 9456000+(int)(floor(millis()/50))%200;
+		//return 52123000+(int)(floor(millis()/50))%200;
+		return 50937661;
 #endif
 		return gps_lati[inner_gps_count];
 		break;
@@ -1061,19 +1063,21 @@ void speedo_gps::SendString(const char Str[])
 }
 
 bool speedo_gps::get_drive_status(){
-	if(motion_start<0) return false;
-	int sec_in_motion=motion_start-(millis()/1000);
-	if(sec_in_motion>5){
-		return true;
-	} else {
+	if(motion_start<0){
 		return false;
+	} else {
+		int sec_in_motion=(millis()/1000)-motion_start;
+		if(sec_in_motion>5){
+			return true;
+		}
 	}
+	return false;
 };
 
 
 void speedo_gps::set_drive_status(int speed, int ss, int sat, char status){
 	if(status=='A'){ //measurement valid
-		if(speed>10){
+		if(speed>=15){ // you are driving faster than 15 kmh
 			if(motion_start==-1){
 				motion_start=(millis()/1000)%32000;
 			};
