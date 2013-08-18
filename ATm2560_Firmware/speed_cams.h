@@ -40,6 +40,7 @@ public:
 	uint16_t get_dist_to_next_point();
 	void set_active(bool outer_active);
 	void override_start();
+	void interface();
 
 private:
 	float gps_lati_cos;

@@ -40,9 +40,11 @@ speedo_speedcams::speedo_speedcams(){
 	bestOfThree_last_calc.longitude=0;
 	db_last_calc.latitude=0;				// coordinaten of the place, where we last calculated small db from the big db
 	db_last_calc.longitude=0;
+	gps_goody.latitude=0;
+	gps_goody.longitude=0;
 	gps_outdated=false;						// var that will be triggered by GPS
 	POI_near=false;							// this is the "result"
-	POI_near_dist=64000;					// distance to the POI
+	POI_near_dist=9999;						// distance to the POI
 	active=false;							// assume the state is "inactive"
 
 	active=true; // DEBUG
@@ -118,6 +120,84 @@ void speedo_speedcams::set_gps_outdated(){
 void speedo_speedcams::override_start(){
 	b2s_status.running=true;				// trigger db read process
 	b2s_status.state=SPEEDCAM_STATE_START; 	// this will trigger all file open processings
+}
+
+void speedo_speedcams::interface(){
+	char buffer[22];
+	if(!active){
+		pOLED->string_P_centered(PSTR("inactive"),3);
+		return;
+	}
+
+	// what are you doing
+	if(pSpeedo->disp_zeile_bak[6]!=pSensors->m_clock->get_ss() || b2s_status.state!=pSpeedo->disp_zeile_bak[0]){
+		pSpeedo->disp_zeile_bak[0]=b2s_status.state;
+		pSpeedo->disp_zeile_bak[6]=pSensors->m_clock->get_ss();
+
+		if(b2s_status.state==SPEEDCAM_STATE_INIT){
+			if(pSensors->m_gps->get_info(9)>3){
+				pOLED->string_P(pSpeedo->default_font,PSTR(" Wait for GPS Signal "),0,0);
+			} else {
+				sprintf_P(buffer,PSTR("%2i sec to run 1st b2s"),(60-pSensors->m_clock->get_ss())%60);
+				pOLED->string(pSpeedo->default_font,buffer,0,0);
+			}
+		} else if(b2s_status.state==SPEEDCAM_STATE_READFILE_OPEN){
+			pOLED->string_P_centered(PSTR("b2s running"),0);
+		} else if(b2s_status.state==SPEEDCAM_STATE_START){
+			pOLED->string_P_centered(PSTR("b2s idle"),0);
+		} else if(b2s_status.state==SPEEDCAM_STATE_ERROR_OPEN_READFILE){
+			pOLED->string_P_centered(PSTR("error open db"),0);
+		} else if(b2s_status.state==SPEEDCAM_STATE_ERROR_OPEN_WRITEFILE){
+			pOLED->string_P_centered(PSTR("error open s_db"),0);
+		} else if(b2s_status.state==SPEEDCAM_STATE_ERROR_WRITEFILE_SEEK || b2s_status.state==SPEEDCAM_STATE_ERROR_WRITE_WRITEFILE){
+			pOLED->string_P_centered(PSTR("error write to s_db"),0);
+		}
+	}
+
+	// dont show b2s and s2r if we have nothing calculated
+	// init == no gps, start + top_three[0].lat=0 == not yet calced
+	if(b2s_status.state==SPEEDCAM_STATE_INIT || (b2s_status.state==SPEEDCAM_STATE_START && top_three[0].longitude==0)){
+		return;
+	}
+
+
+	// how many points have we parsed
+	if(pSpeedo->disp_zeile_bak[1]!=b2s_status.POIs_parsed){
+		pSpeedo->disp_zeile_bak[1]=b2s_status.POIs_parsed;
+		sprintf_P(buffer,PSTR("parsed   %7i POIs"),b2s_status.POIs_parsed);
+		pOLED->string(pSpeedo->default_font,buffer,0,2);
+	}
+
+	// how many points have you parsed to the small db
+	if(pSpeedo->disp_zeile_bak[2]!=b2s_status.dest_file_seek){
+		pSpeedo->disp_zeile_bak[2]=b2s_status.dest_file_seek;
+		sprintf_P(buffer,PSTR("s_db has   %5i POIs"),b2s_status.dest_file_seek);
+		pOLED->string(pSpeedo->default_font,buffer,0,3);
+	}
+
+
+	// dist to retrigger b2s
+	int temp=pSensors->m_gps->calc_dist_supported(gps_goody,db_last_calc,gps_lati_cos);
+	if(pSpeedo->disp_zeile_bak[4]!=temp){
+		pSpeedo->disp_zeile_bak[4]=temp;
+		sprintf_P(buffer,PSTR("b2s     %5i m/10 km"),temp);
+		pOLED->string(pSpeedo->default_font,buffer,0,4);
+	}
+
+	// dist to rebuild s2r
+	temp=pSensors->m_gps->calc_dist_supported(gps_goody,bestOfThree_last_calc,gps_lati_cos);
+	if(pSpeedo->disp_zeile_bak[5]!=temp){
+		pSpeedo->disp_zeile_bak[5]=temp;
+		sprintf_P(buffer,PSTR("s2r  %5i m/%6i m"),temp,bestOfThree_retrigger_distance);
+		pOLED->string(pSpeedo->default_font,buffer,0,5);
+	}
+
+	// distance to nearest poi
+	if(pSpeedo->disp_zeile_bak[3]!=POI_near_dist){
+		pSpeedo->disp_zeile_bak[3]=POI_near_dist;
+		sprintf_P(buffer,PSTR("Nearest POI %7i m"),POI_near_dist);
+		pOLED->string(pSpeedo->default_font,buffer,0,7);
+	}
 }
 
 bool speedo_speedcams::calc(){
@@ -268,8 +348,6 @@ int speedo_speedcams::calc_gps_goodies(){
 	gps_lati_cos=cos(floor(gps_goody.latitude/1000000.0)*2*M_PI/360);
 	return 0;
 }
-
-
 
 int8_t speedo_speedcams::parse_complete_db(){
 	unsigned char temp[25];

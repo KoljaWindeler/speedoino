@@ -133,8 +133,8 @@ const char navi_m_3[] PROGMEM = "4. Check writes"; // hier vielleicht ein: way t
 const char navi_m_4[] PROGMEM = "5. -";
 const char navi_m_5[] PROGMEM = "6. -";
 const char navi_m_6[] PROGMEM = "7. -";
-const char navi_m_7[] PROGMEM = "8. -";
-const char navi_m_8[] PROGMEM = "9. -";
+const char navi_m_7[] PROGMEM = "8. POI status";
+const char navi_m_8[] PROGMEM = "9. POI on/off";
 const char  * const menu_navi[9] PROGMEM= {navi_m_0,navi_m_1,navi_m_2,navi_m_3,navi_m_4,navi_m_5,navi_m_6,navi_m_7,navi_m_8};
 
 ///////////////////// Menu title /////////////////////
@@ -431,6 +431,73 @@ void speedo_menu::display(){
 		pOLED->string(pSpeedo->default_font,buffer,5,3,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(pSpeedo->default_font,PSTR("Points written"),3,4,0,DISP_BRIGHTNESS,0);
 	}
+
+	////////////////////////  prepare speedoCam status screen //////////////
+	else if(floor(state/10)==38){ //38[X]
+		set_buttons(true,false,false,false);
+		pSpeedo->reset_bak();
+		pOLED->clear_screen();
+	}
+	////////// Setup of poi warner
+		else if(floor(state/10)==39) { // 00039X
+			storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		}
+		// now the "mode" selector
+		else if(floor(state/100)==39) { // 000461X
+			if(state%10==9){ // "up" key
+				pSpeedCams->set_active(true);
+				pConfig->storage_outdated=true;
+			} else if(state%10==2){ // "down" key
+				pSpeedCams->set_active(false);
+				pConfig->storage_outdated=true;
+			};
+
+			state=3911;
+
+			// displaying values
+			pOLED->clear_screen();
+
+			pOLED->highlight_bar(0,0,128,8); // title
+			pOLED->string_P(pSpeedo->default_font,PSTR("POI warning"),2,0,DISP_BRIGHTNESS,0,0);
+
+			unsigned char fg;
+			unsigned char bg;
+
+			/// theoretical
+			if(pSpeedCams->get_active()){
+				fg=0x00;
+				bg=DISP_BRIGHTNESS;
+				pOLED->highlight_bar(0,8*3,118,8); // mit hintergrundfarbe nen kasten malen
+			} else {
+				fg=DISP_BRIGHTNESS;
+				bg=0x00;
+			}
+			pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,3,bg,fg,0);
+
+			/// off
+			if(!pSpeedCams->get_active()){
+				fg=0x00;
+				bg=DISP_BRIGHTNESS;
+				pOLED->highlight_bar(0,8*4,118,8); // mit hintergrundfarbe nen kasten malen
+			} else {
+				fg=DISP_BRIGHTNESS;
+				bg=0x00;
+			}
+			pOLED->string_P(pSpeedo->default_font,PSTR("inactive"),2,4,bg,fg,0);
+
+			pOLED->string_P(pSpeedo->default_font,PSTR("\x7E save"),0,7);
+
+			// key settings and corresponding var state changing
+			bool up=button_state;
+			bool down=button_state;
+			if(pSpeedCams->get_active()){
+				up=!button_state;
+			} else if(!pSpeedCams->get_active()){
+				down=!button_state;
+			}
+
+			set_buttons(button_state,up,down,!button_state); // button directions
+		}
 	/********************************************* Menu 3 - End of Navigation Menu *********************************************/
 
 
