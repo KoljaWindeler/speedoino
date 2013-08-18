@@ -165,6 +165,11 @@ int main(void) {
 		else if(pMenu->state==291){
 			pSensors->m_clock->loop();
 		}
+		////////////////// Speed Cam Check - Mode ////////////////////////
+		else if(pMenu->state==381){
+			pSpeedCams->calc();
+			pSpeedCams->interface();
+		}
 		////////////////// race mode ////////////////////
 		else if(pMenu->state==411){
 			pLapTimer->waiting_on_speed_up();
