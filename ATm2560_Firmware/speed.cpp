@@ -64,6 +64,7 @@ void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==
 		speed_peaks++;
 		prevent_double_count=jetzt; // wir bekommen immer 2 peaks zur gleichen millis(), daher diese prevent_double_count
 	};
+	pSensors->m_gps->set_drive_status(0,0,10,'A'); // tell gps that we are aware of the moving, reset motion_start
 };
 
 
@@ -118,7 +119,7 @@ int speedo_speed::getSpeed(){
 	if(GPS_SPEED_ONLY) { return pSensors->m_gps->speed; };
 
 	unsigned long jetzt=millis();
-	unsigned long differ=jetzt-last_time;
+	unsigned long differ=jetzt-last_time; // last_time <= is set by ISR
 
 	/* Speed sensor choice
 	 * First of all: Dont ask more frequent than 1Hz
