@@ -281,8 +281,8 @@ void speedo_disp::string_P_centered(const char* text, uint8_t line, bool inverte
 	if(inverted){
 		front_color=0x00;
 		back_color=0x0f;
-		if(strlen_P(text)<16){
-			length_of_char=16;
+		if(strlen_P(text)<=17){ // 6*2pixel == 2 chars. 21 Chars - 2*2 = 17chars max
+			length_of_char=17;
 			start_pos=2;
 			pOLED->highlight_bar(0,line*8,128,8);
 		} else {
