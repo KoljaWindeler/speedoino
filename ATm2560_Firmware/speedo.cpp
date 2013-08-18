@@ -72,10 +72,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			if(disp_zeile_bak[ADD_INFO2]!=101){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=101;
 				pDebug->speedo_loop(10,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("Engine cold"));
-				pMenu->center_me(char_buffer,17);
-				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+				pOLED->string_P_centered(PSTR("Engine cold"),addinfo2_widget.y,true);
 			};
 		}
 
@@ -97,10 +94,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			if(disp_zeile_bak[ADD_INFO2]!=108){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=108;
 				pDebug->speedo_loop(14,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("oil temp warning"));
-				pMenu->center_me(char_buffer,17);
-				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+				pOLED->string_P_centered(PSTR("Oil temp warning"),addinfo2_widget.y,true);
 			};
 
 		}
@@ -108,11 +102,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			if(disp_zeile_bak[ADD_INFO2]!=109){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=109;
 				pDebug->speedo_loop(14,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("water temp warning"));
-				pMenu->center_me(char_buffer,17);
-				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
-
+				pOLED->string_P_centered(PSTR("Water temp warning"),addinfo2_widget.y,true);
 			};
 
 		}
@@ -121,11 +111,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			if(disp_zeile_bak[ADD_INFO2]!=102){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=102;
 				pDebug->speedo_loop(11,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("Flasher?"));
-				pMenu->center_me(char_buffer,17);
-				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
-
+				pOLED->string_P_centered(PSTR("Flasher?"),addinfo2_widget.y,true);
 			};
 
 		}
@@ -134,10 +120,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			if(disp_zeile_bak[ADD_INFO2]!=111 && millis()>20000){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=111;
 				pDebug->speedo_loop(11,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("Voltage below 11V"));
-				pMenu->center_me(char_buffer,17);
-				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+				pOLED->string_P_centered(PSTR("Voltage below 11V"),addinfo2_widget.y,true);
 			};
 
 		}
@@ -146,10 +129,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			if(disp_zeile_bak[ADD_INFO2]!=112){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=112;
 				pDebug->speedo_loop(11,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("CAN warning"));
-				pMenu->center_me(char_buffer,17);
-				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+				pOLED->string_P_centered(PSTR("CAN warning"),addinfo2_widget.y,true);
 			};
 		}
 		///// Navi ////
@@ -176,10 +156,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			if(disp_zeile_bak[ADD_INFO2]!=106){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=106;
 				pDebug->speedo_loop(14,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("oil read failed"));
-				pMenu->center_me(char_buffer,17);
-				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+				pOLED->string_P_centered(PSTR("Oil read failed"),addinfo2_widget.y,true);
 			};
 
 		}
@@ -187,10 +164,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			if(disp_zeile_bak[ADD_INFO2]!=107){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=107;
 				pDebug->speedo_loop(14,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("Water read failed"));
-				pMenu->center_me(char_buffer,17);
-				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+				pOLED->string_P_centered(PSTR("Water read failed"),addinfo2_widget.y,true);
 			};
 
 		}
@@ -198,10 +172,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			if(disp_zeile_bak[ADD_INFO2]!=110){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=110;
 				pDebug->speedo_loop(14,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("Reed sensor error"));
-				pMenu->center_me(char_buffer,17);
-				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+				pOLED->string_P_centered(PSTR("Reed sensor error"),addinfo2_widget.y,true);
 			};
 
 		}
@@ -210,14 +181,11 @@ void speedo_speedo::loop(unsigned long previousMillis){
 			if(disp_zeile_bak[ADD_INFO2]!=104){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=104;
 				pDebug->speedo_loop(14,0,previousMillis," ");
-				pOLED->highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-				strcpy_P(char_buffer,PSTR("SD access failed"));
-				pMenu->center_me(char_buffer,17);
-				pOLED->string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+				pOLED->string_P_centered(PSTR("SD access failed"),addinfo2_widget.y,true);
 			};
 
 		}
-		//// lÃ¶schen
+		//// delete
 		else{
 			addinfo2_currently_shown=false;
 			if(disp_zeile_bak[ADD_INFO2]!=105){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
