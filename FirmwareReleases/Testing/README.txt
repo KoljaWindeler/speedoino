@@ -27,7 +27,11 @@
 14.08.2013  Speedoino_v2.1-119-gf842af8.hex + Menü für GPS log format hinzugefügt
                                             - Navipointer und viele andere werte vom EEPROM auf die SD Karte geschoben
                                             - Speicheroptimierung (2520/8192 Byte RAM frei) 
-                                            
+18.08.2013  Speedoino_v2.1-141-gf2aae3e.hex + === POI Warner hinzugefügt === 
+                                            - RGB LEDs wechseln auf FlasherFarbe wenn POI nah ist
+                                            - Warnung für defekten SpeedSensor hinzugefügt (GPS übernimmt bei fehlendem Sensor die Geschwindigkeit)
+                                            - Freien Speicher durch POI-Warner reduziert (2388/8192 Byte RAM frei) (187940/256000 Byte Flash genutzt (73,4%)) 
+
 ================================================================================================================================================================================================
 
 
