@@ -660,7 +660,7 @@ int configuration::read( const char* folder, const char* filename, int read_mode
 						if(return_value<0) {
 							pDebug->sprintp(PSTR("parse_config erzeugte Fehlercode "));
 							Serial.print(return_value);
-							pDebug->sprintp(PSTR(". Eingabe war:"));
+							pDebug->sprintp(PSTR(".\r\nEingabe war:"));
 							Serial.println(buf);
 						};
 					} else if(read_mode==READ_MODE_TEXTREPLACEMENT){
@@ -1040,7 +1040,6 @@ int configuration::parse(char* buffer){
 	} else if(strcmp_P(name,PSTR("rgb_out_dz_start_b"))==0){
 		parse_int(buffer,seperator,&temp);
 		pAktors->dz_start_color.b=temp;
-
 	} else if(strcmp_P(name,PSTR("rgb_out_dz_end_r"))==0){
 		parse_int(buffer,seperator,&temp);
 		pAktors->dz_end_color.r=temp;
@@ -1065,10 +1064,10 @@ int configuration::parse(char* buffer){
 		parse_bool(buffer,seperator,&pSensors->m_gps->use_compressed_log_format);
 	} else if(strcmp_P(name,PSTR("LT_realtime"))==0){
 		parse_bool(buffer,seperator,&pLapTimer->use_realtime_not_calculated);
-	} else if(strcmp_P(name,PSTR("POI_active="))==0){
-			bool temp;
-			parse_bool(buffer,seperator,&temp);
-			pSpeedCams->set_active(temp);
+	} else if(strcmp_P(name,PSTR("POI_active"))==0){
+		bool temp;
+		parse_bool(buffer,seperator,&temp);
+		pSpeedCams->set_active(temp);
 	} else {
 		return_value=-2; // ungltiger identifier
 	}
