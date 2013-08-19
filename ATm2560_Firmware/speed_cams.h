@@ -16,8 +16,7 @@
 #define SPEEDCAM_STATE_ERROR_WRITEFILE_SEEK -3
 #define	SPEEDCAM_STATE_ERROR_WRITE_WRITEFILE -4
 
-// change to ?? 300?
-#define WARNING_DIST 400
+#define WARNING_DIST 500
 #define USE_SORTED_FILE
 
 typedef struct {
@@ -43,7 +42,6 @@ public:
 	void interface();
 
 private:
-	float gps_lati_cos;
 	bool gps_outdated;
 	bool POI_near;
 	bool active;
@@ -52,7 +50,6 @@ private:
 	uint16_t bestOfThree_retrigger_distance;
 
 	speed_cam_state b2s_status;
-	simple_coordinate gps_goody;
 	simple_coordinate top_three[3];
 	simple_coordinate db_last_calc;
 	simple_coordinate bestOfThree_last_calc;
@@ -60,7 +57,6 @@ private:
 	SdFile source_file;
 	SdFile dest_file;
 
-	int calc_gps_goodies();
 	int8_t parse_complete_db();
 	int8_t parse_small_db();
 

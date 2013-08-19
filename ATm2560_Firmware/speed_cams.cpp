@@ -30,18 +30,16 @@ speedo_speedcams::speedo_speedcams(){
 	b2s_status.running=false;				// process is currently running
 	b2s_status.in_longitude_section=false;	// if we have an file with sorted longitude and we have reached "our" region
 	b2s_status.POIs_parsed=0;				// number of POI, read from the big db
-	top_three[0].latitude=0;				// reset the top three
-	top_three[0].longitude=0;
-	top_three[1].latitude=0;
-	top_three[1].longitude=0;
-	top_three[2].latitude=0;
-	top_three[2].longitude=0;
-	bestOfThree_last_calc.latitude=0;		// coordinaten of the place, where we last calculated the best three of the small db
-	bestOfThree_last_calc.longitude=0;
-	db_last_calc.latitude=0;				// coordinaten of the place, where we last calculated small db from the big db
-	db_last_calc.longitude=0;
-	gps_goody.latitude=0;
-	gps_goody.longitude=0;
+
+	simple_coordinate temp;					// clear coordinates
+	temp.latitude=0;
+	temp.longitude=0;
+	top_three[0]=temp;
+	top_three[1]=temp;
+	top_three[2]=temp;
+	bestOfThree_last_calc=temp;				// coordinaten of the place, where we last calculated the best three of the small db
+	db_last_calc=temp;						// coordinaten of the place, where we last calculated small db from the big db
+
 	gps_outdated=false;						// var that will be triggered by GPS
 	POI_near=false;							// this is the "result"
 	POI_near_dist=9999;						// distance to the POI
@@ -51,55 +49,7 @@ speedo_speedcams::speedo_speedcams(){
 
 	POI_near_id=-1;							// which of the "top" three is the nearest
 	bestOfThree_retrigger_distance=0;		// how far must the distance between our current coordinates and "bestOfThree_last_calc" be until we retrigger it
-	gps_lati_cos=1;							// current location weight factor
 }
-
-/*void speedo_speedcams::test(){
-	///////////////////////////////////////// TESTING //////////////////////////////////////////
-	if(pSensors->m_gps->get_info(9)>3){	return;	};
-	calc_gps_goodies();
-	unsigned char filename[20]; // "/NAVI/HOCKENHE.SST"
-	strcpy_P((char *)filename,PSTR("NAVI/HANNOVER.SST")); // static file for the moment
-
-	uint32_t dist,dist2,dist3;
-	uint32_t time=millis();
-	for(int loop=0;loop<1;loop++){
-		dist= pSensors->m_gps->calc_dist(904720,51214280);
-		dist2=pSensors->m_gps->calc_dist(904720,52214280);
-		dist3=pSensors->m_gps->calc_dist(904720,50214280);
-	}
-	time=millis()-time;
-	Serial.print("3000 Berechnungen der Entfernungen zu 2904720/51214280 kosten ");
-
-	Serial.print(time);
-	Serial.println(" ms");
-	Serial.print(dist);
-	Serial.print(",");
-	Serial.print(dist2);
-	Serial.print(",");
-	Serial.println(dist3);
-	/////////////////////////////////////////////////////
-	time=millis();
-	for(int loop=0;loop<1;loop++){
-		dist=pSensors->m_gps->calc_dist_supported(904720UL,51214280UL,gps_goody.longitude,gps_goody.latitude,gps_lati_cos);
-		dist2=pSensors->m_gps->calc_dist_supported(904720UL,52214280UL,gps_goody.longitude,gps_goody.latitude,gps_lati_cos);
-		dist3=pSensors->m_gps->calc_dist_supported(904720UL,50214280UL,gps_goody.longitude,gps_goody.latitude,gps_lati_cos);
-	}
-	time=millis()-time;
-	Serial.print("3000 optimierte Berechnungen der Entfernungen zu 2904720/51214280 kosten ");
-
-	Serial.print(time);
-	Serial.println(" ms");
-	Serial.print(dist);
-	Serial.print(",");
-	Serial.print(dist2);
-	Serial.print(",");
-	Serial.println(dist3);
-	// reale Distanz 488,848 km
-	// 	757ms mit boardmitteln 	           = 494,709 km => 1,198%
-	// 757µs
-	//////////////////////////////////////// TESTING /////////////////////////////////////////
-}*/
 
 bool speedo_speedcams::get_active(){
 	return active;
@@ -177,15 +127,15 @@ void speedo_speedcams::interface(){
 
 
 	// dist to retrigger b2s
-	int temp=pSensors->m_gps->calc_dist_supported(gps_goody,db_last_calc,gps_lati_cos);
+	int temp=pSensors->m_gps->calc_dist_supported(db_last_calc);
 	if(pSpeedo->disp_zeile_bak[4]!=temp){
 		pSpeedo->disp_zeile_bak[4]=temp;
-		sprintf_P(buffer,PSTR("b2s     %5i m/10 km"),temp);
+		sprintf_P(buffer,PSTR("b2s   %5i m/ ~10 km"),temp);
 		pOLED->string(pSpeedo->default_font,buffer,0,4);
 	}
 
 	// dist to rebuild s2r
-	temp=pSensors->m_gps->calc_dist_supported(gps_goody,bestOfThree_last_calc,gps_lati_cos);
+	temp=pSensors->m_gps->calc_dist_supported(bestOfThree_last_calc);
 	if(pSpeedo->disp_zeile_bak[5]!=temp){
 		pSpeedo->disp_zeile_bak[5]=temp;
 		sprintf_P(buffer,PSTR("s2r  %5i m/%6i m"),temp,bestOfThree_retrigger_distance);
@@ -229,7 +179,7 @@ bool speedo_speedcams::calc(){
 	///////////////////////////////// b2s is not running, trigger b2s/s2r/cn3 /////////////////////////////////
 	else { 											// big2small not running
 		if(gps_outdated){							// updating is only valid if the last gps_sample is outdated
-			if(calc_gps_goodies()>=0){ 				// we have 4 Points at all, so its worth calc the goodies
+			if(pSensors->m_gps->calc_gps_goodies()>=0){ 				// we have 4 Points at all, so its worth calc the goodies
 				gps_outdated=false;					// GPS is not longer outdated..
 				bool calc_top_three=true;			// assume that we should recalc the top three
 
@@ -238,7 +188,7 @@ bool speedo_speedcams::calc(){
 				// DB rebuild process is offline, now check if the seconds of the clock equal 00, if so: check if have to recreate our big db
 				if(pSensors->m_clock->get_ss()==0){// every 60 seconds: check if we have to retrigger db calculation
 					// is the distance between to point of last calculation and our actual coordinates bigger than 10km? if so: recalc db
-					if(pSensors->m_gps->calc_dist_supported(gps_goody,db_last_calc,gps_lati_cos)>10000UL){
+					if(pSensors->m_gps->calc_dist_supported(db_last_calc)>10000UL){
 						b2s_status.running=true;				// trigger db read process
 						b2s_status.state=SPEEDCAM_STATE_START; 	// this will trigger all file open processings
 						parse_complete_db();					// aaand go!
@@ -263,7 +213,7 @@ bool speedo_speedcams::calc(){
 				// therefore check first that b2s is not running, otherwise the file is corrupted
 				if(!b2s_status.running && (b2s_status.state==SPEEDCAM_STATE_READFILE_OPEN || b2s_status.state==SPEEDCAM_STATE_START)){
 					// alright, we can access the small file, now check if a update of our RAM is needed
-					if(pSensors->m_gps->calc_dist_supported(gps_goody,bestOfThree_last_calc,gps_lati_cos)>bestOfThree_retrigger_distance){
+					if(pSensors->m_gps->calc_dist_supported(bestOfThree_last_calc)>bestOfThree_retrigger_distance){
 						// our distance to the last point of calc is bigger than our retrigger distance -> rebuild top3 from small db
 						parse_small_db(); 			// onestep operation
 						calc_top_three=false;	 	// to avoid heavy calculation in one step: only calc dist to top three if nothing other happened
@@ -286,7 +236,7 @@ bool speedo_speedcams::calc(){
 					uint16_t distances[3];
 					POI_near_dist=64000; // 64km...faaar away .. will be recalculated in the next loop
 					for(int i=0;i<3;i++){
-						distances[i]=pSensors->m_gps->calc_dist_supported(gps_goody,top_three[i],gps_lati_cos);
+						distances[i]=pSensors->m_gps->calc_dist_supported(top_three[i]);
 						if(distances[i]<POI_near_dist){
 							POI_near_id=i;
 							POI_near_dist=distances[POI_near_id];
@@ -328,7 +278,7 @@ bool speedo_speedcams::calc(){
 			Serial.print(" to check the nearest 3, closest: ");
 			Serial.print(POI_near_dist);
 			Serial.print(" dist to calc_point: ");
-			Serial.print(pSensors->m_gps->calc_dist_supported(gps_goody,bestOfThree_last_calc,gps_lati_cos));
+			Serial.print(pSensors->m_gps->calc_dist_supported(bestOfThree_last_calc));
 			Serial.print(" / ");
 			Serial.println(bestOfThree_retrigger_distance);
 		} else if(state==4){
@@ -340,14 +290,6 @@ bool speedo_speedcams::calc(){
 	return POI_near;
 }
 
-
-int speedo_speedcams::calc_gps_goodies(){
-	if(pSensors->m_gps->get_info(9)>5){ return -1; }; // if there is no GPS than calculation is non sense
-	gps_goody.latitude=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(3));
-	gps_goody.longitude=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(2));
-	gps_lati_cos=cos(floor(gps_goody.latitude/1000000.0)*2*M_PI/360);
-	return 0;
-}
 
 int8_t speedo_speedcams::parse_complete_db(){
 	unsigned char temp[25];
@@ -397,8 +339,7 @@ int8_t speedo_speedcams::parse_complete_db(){
 			b2s_status.running=false;				// we are done
 			read_on=false;						// break the while loop
 
-			db_last_calc.latitude=gps_goody.latitude;	 // save location
-			db_last_calc.longitude=gps_goody.longitude; // save location
+			db_last_calc=pSensors->m_gps->gps_goody;	 // save location
 
 #if defined(DEBUG_HEAVY_CHANGES)
 			Serial.println("Read return less than 20byte, assuming end of file, done :D");
@@ -418,10 +359,10 @@ int8_t speedo_speedcams::parse_complete_db(){
 			}
 
 			// check if it is next to us
-			if(gps_goody.longitude>loaded_longitude){
-				long_diff=gps_goody.longitude-loaded_longitude;
+			if(pSensors->m_gps->gps_goody.longitude>loaded_longitude){
+				long_diff=pSensors->m_gps->gps_goody.longitude-loaded_longitude;
 			} else {
-				long_diff=loaded_longitude-gps_goody.longitude;
+				long_diff=loaded_longitude-pSensors->m_gps->gps_goody.longitude;
 			}
 
 			////////////////// POI has small longitude diff  ////////////////////////////
@@ -438,10 +379,10 @@ int8_t speedo_speedcams::parse_complete_db(){
 					}
 				}
 
-				if(gps_goody.latitude>loaded_latitude){
-					lati_diff=gps_goody.latitude-loaded_latitude;
+				if(pSensors->m_gps->gps_goody.latitude>loaded_latitude){
+					lati_diff=pSensors->m_gps->gps_goody.latitude-loaded_latitude;
 				} else {
-					lati_diff=loaded_latitude-gps_goody.latitude;
+					lati_diff=loaded_latitude-pSensors->m_gps->gps_goody.latitude;
 				}
 				////////////////// POI has small longitude+latitude diff  ////////////////////////////
 				if(lati_diff<200000){
@@ -520,8 +461,7 @@ int8_t speedo_speedcams::parse_complete_db(){
 				b2s_status.dest_file_open=false;
 				b2s_status.state=SPEEDCAM_STATE_START;	// EOF reached
 				b2s_status.running=false;
-				db_last_calc.latitude=gps_goody.latitude;	 // save location
-				db_last_calc.longitude=gps_goody.longitude; // save location
+				db_last_calc=pSensors->m_gps->gps_goody;	 // save location
 #endif
 			}
 
@@ -588,7 +528,7 @@ int8_t speedo_speedcams::parse_small_db(){
 					}
 				}
 
-				temp_distance=pSensors->m_gps->calc_dist_supported(gps_goody,loaded_coordinates,gps_lati_cos);
+				temp_distance=pSensors->m_gps->calc_dist_supported(loaded_coordinates);
 
 				if(temp_distance<distances[0]){ //nearest
 					top_three[2]=top_three[1];
@@ -616,7 +556,7 @@ int8_t speedo_speedcams::parse_small_db(){
 	poi_n_file.close();
 	//could lead to problems if only one speed-cam is there and we are going straight to it?
 	bestOfThree_retrigger_distance=(3*distances[points_parsed-1])>>2;
-	bestOfThree_last_calc=gps_goody;	 // save current location
+	bestOfThree_last_calc=pSensors->m_gps->gps_goody;	 // save current location
 
 	return 0;
 };

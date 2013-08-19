@@ -8,7 +8,7 @@
 #ifndef GPS_H_
 #define GPS_H_
 
-#define    SERIAL_BUFFER_SIZE 75   // größe des char buffers für die seriellen gps daten
+#define    SERIAL_BUFFER_SIZE 75   // grÃ¶Ãe des char buffers fÃ¼r die seriellen gps daten
 #define		INFO_SAT 6
 #define		INFO_VALID 9
 #define		INFO_SPEED 5
@@ -38,7 +38,9 @@ public:
 	bool get_drive_status();
 	void set_gps_mark(int type);
 
+	int calc_gps_goodies();
 	unsigned long calc_dist(unsigned long longitude,unsigned long latitude);
+	unsigned long calc_dist_supported(simple_coordinate A);
 	unsigned long calc_dist_supported(simple_coordinate A,simple_coordinate B,float gps_lati_cos);
 
 	unsigned long mod(unsigned long zahl,unsigned long teiler);
@@ -60,15 +62,16 @@ public:
 	int winkel; // 0-359
 	int gps_count; // aktuelle position in der gespeichert wird
 	unsigned int written_gps_points;
-	char navi_ziel_name[14];//= "Helmholtzstr."; //seperate var, muss das länger halten
+	char navi_ziel_name[14];//= "Helmholtzstr."; //seperate var, muss das lÃ¤nger halten
 	int active_file; //
 	int valid;
 	bool navi_active;
 	bool use_compressed_log_format;
 	int gps_write_status;
+	simple_coordinate gps_goody;
 
 private:
-	long entf; // die entfernung in metern. 32km könnte zuwenig sein, daher long
+	long entf; // die entfernung in metern. 32km kÃ¶nnte zuwenig sein, daher long
 	int navi_ziel_rl;//=1;
 	int note_this_place;                          // damit kann man marker auf die strecke setzen
 	// die letzen 30 infos
@@ -77,6 +80,7 @@ private:
 	long gps_alt[30],gps_date[30],gps_time[30];
 	unsigned long gps_timestamp;
 
+	float gps_lati_cos;
 	long gps_alt_temp;
 	bool inner_circle;
 	bool gps_ready1;

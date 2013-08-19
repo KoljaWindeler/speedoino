@@ -73,12 +73,16 @@ speedo_gps::speedo_gps(){
 	}
 
 	use_compressed_log_format=false; // reduces filesize to 24%
+
+	gps_goody.latitude=0;
+	gps_goody.longitude=0;
+	gps_lati_cos=100;							// current location weight factor
 };
 
 speedo_gps::~speedo_gps(){
 };
 
-// hässlich hier den interrupt eingefügt .. 
+// hÃ¤sslich hier den interrupt eingefÃ¼gt ..
 ISR(USART1_RX_vect){
 	pSensors->m_gps->recv_data();
 };
@@ -143,7 +147,7 @@ void speedo_gps::reconfigure(){
 }
 
 // wird als interrupt aufgerufen
-// prüft ob daten da sind, die valid sind
+// prÃ¼ft ob daten da sind, die valid sind
 // wenn ja dann wird get_GPS damit aufgerufen
 void speedo_gps::recv_data(){
 	char byteGPS = UDR1;
@@ -166,53 +170,53 @@ void speedo_gps::recv_data(){
 		else
 			gps_state=0;
 		break;
-	case 4: // auch noch interessant, hier müsste auf das R ein M folgen
+	case 4: // auch noch interessant, hier mÃ¼sste auf das R ein M folgen
 		if(byteGPS=='M') // jaha
 			gps_state=5;
-		else			// schade, doch nüscht
+		else			// schade, doch nÃ¼scht
 			gps_state=0;
 		break;
 	case 5: // soweit gut $GPRM fehlt das C
 		if(byteGPS=='C'){// jaha, ab in den "lese modus"
 			ringbuf_counter=0; // position in die geschrieben werden soll
 			gps_state=6;
-		} else			// schade, doch nüscht
+		} else			// schade, doch nÃ¼scht
 			gps_state=0;
 		break;
 	case 6:
-		if(ringbuf_counter>=SERIAL_BUFFER_SIZE-1){ gps_state=0; break; }    // überlauf, kein gps wert ist länger als 75 Byte. Mist
-		gps_buffer1[ringbuf_counter]=byteGPS;   // in den buffer schmeißen
-		if(byteGPS=='*'){                // * das ist mein end signal dann is ende im gelände und abmarsch
+		if(ringbuf_counter>=SERIAL_BUFFER_SIZE-1){ gps_state=0; break; }    // Ã¼berlauf, kein gps wert ist lÃ¤nger als 75 Byte. Mist
+		gps_buffer1[ringbuf_counter]=byteGPS;   // in den buffer schmeiÃen
+		if(byteGPS=='*'){                // * das ist mein end signal dann is ende im gelÃ¤nde und abmarsch
 			gps_ready1=true;
 			gps_state=0;
 		} else if(byteGPS=='$'){ // damn da haben wir was verpasst
 			gps_state=1; // jump start
-		} else { // es scheint also ein ganz normales zeichen zu sein, dann könnte nur noch der hier schief gehen
+		} else { // es scheint also ein ganz normales zeichen zu sein, dann kÃ¶nnte nur noch der hier schief gehen
 			ringbuf_counter++;
 		}
 		break;
-	case 14: // auch noch interessant, hier müsste auf das GPG ein G und dann ein A folgen
+	case 14: // auch noch interessant, hier mÃ¼sste auf das GPG ein G und dann ein A folgen
 		if(byteGPS=='G') // jaha
 			gps_state=15;
-		else			// schade, doch nüscht
+		else			// schade, doch nÃ¼scht
 			gps_state=0;
 		break;
 	case 15: // jetzt fehlt nur noch das A
 		if(byteGPS=='A'){ // jaha
 			ringbuf_counter=0; // position in die geschrieben werden soll
 			gps_state=16;
-		} else			// schade, doch nüscht
+		} else			// schade, doch nÃ¼scht
 			gps_state=0;
 		break;
 	case 16:
-		if(ringbuf_counter>=SERIAL_BUFFER_SIZE){ gps_state=0; break; }    // überlauf, kein gps wert ist länger als 75 Byte. Mist
-		gps_buffer2[ringbuf_counter]=byteGPS;   // in den buffer schmeißen
-		if(byteGPS=='*'){                // * das ist mein end signal dann is ende im gelände und abmarsch
+		if(ringbuf_counter>=SERIAL_BUFFER_SIZE){ gps_state=0; break; }    // Ã¼berlauf, kein gps wert ist lÃ¤nger als 75 Byte. Mist
+		gps_buffer2[ringbuf_counter]=byteGPS;   // in den buffer schmeiÃen
+		if(byteGPS=='*'){                // * das ist mein end signal dann is ende im gelÃ¤nde und abmarsch
 			gps_ready2=true;
 			gps_state=0;
 		} else if(byteGPS=='$'){ // damn da haben wir was verpasst
 			gps_state=1; // jump start
-		} else { // es scheint also ein ganz normales zeichen zu sein, dann könnte nur noch der hier schief gehen
+		} else { // es scheint also ein ganz normales zeichen zu sein, dann kÃ¶nnte nur noch der hier schief gehen
 			ringbuf_counter++;
 		}
 		break;
@@ -220,7 +224,7 @@ void speedo_gps::recv_data(){
 	}
 };
 
-/* diese funktion wird in jeder for schleife abgegraßt und fall hier ein flag auf true steht
+/* diese funktion wird in jeder for schleife abgegraÃt und fall hier ein flag auf true steht
  * werden die daten geparst
  */
 void speedo_gps::check_flag(){
@@ -234,7 +238,7 @@ void speedo_gps::check_flag(){
 		pDebug->sprintp(PSTR("-g"));
 #endif
 		// debug
-		parse(gps_buffer1,1);         // Daten übergeben
+		parse(gps_buffer1,1);         // Daten Ã¼bergeben
 		gps_ready1=false;
 #ifdef TACHO_SMALLDEBUG
 		pDebug->sprintlnp(PSTR("."));
@@ -251,7 +255,7 @@ void speedo_gps::check_flag(){
 		pDebug->sprintp(PSTR("-g"));
 #endif
 		// debug
-		parse(gps_buffer2,2);         // Daten übergeben
+		parse(gps_buffer2,2);         // Daten Ã¼bergeben
 		gps_ready2=false;
 #ifdef TACHO_SMALLDEBUG
 		pDebug->sprintlnp(PSTR("."));
@@ -260,16 +264,16 @@ void speedo_gps::check_flag(){
 };
 
 /* parsen von nmea daten zu gps daten
- * im dümmsten fall haben wir die beiden Datensätze direkt hinter einander
- * dann haben wir durch die Statemashine 2 Byte für die Prüfsumme und 6 Byte für die anfangssequnz bis wir 
+ * im dÃ¼mmsten fall haben wir die beiden DatensÃ¤tze direkt hinter einander
+ * dann haben wir durch die Statemashine 2 Byte fÃ¼r die PrÃ¼fsumme und 6 Byte fÃ¼r die anfangssequnz bis wir
  * in den gleichen serial_buffer reinschreiben
- * bei 4800 Baud sind das 1,6 ms für den Spass hier unten .. nicht gerade üppig
+ * bei 4800 Baud sind das 1,6 ms fÃ¼r den Spass hier unten .. nicht gerade Ã¼ppig
  * datensatz=1 => $GPRMC
  */
 void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 	int cont=0;
 	char status;
-	int indices[13]; // positionsmarker für die kommata
+	int indices[13]; // positionsmarker fÃ¼r die kommata
 
 	//debug
 #ifdef GPS_DEBUG
@@ -297,8 +301,8 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 				   |      | |           |            |   |   |      |     Art der Bestimmung
 				   |      | |           |            |   |   |      |     A=autonomous (selbst)
 				   |      | |           |            |   |   |      |     D=differential
-				   |      | |           |            |   |   |      |     E=estimated (geschätzt)
-				   |      | |           |            |   |   |      |     N=not valid (ungültig)
+				   |      | |           |            |   |   |      |     E=estimated (geschÃ¤tzt)
+				   |      | |           |            |   |   |      |     N=not valid (ungÃ¼ltig)
 				   |      | |           |            |   |   |      |     S=simulator
 				   |      | |           |            |   |   |      |
 				   |      | |           |            |   |   |      Missweisung (mit Richtung)
@@ -307,15 +311,15 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 				   |      | |           |            |   |
 				   |      | |           |            |   Bewegungsrichtung in Grad (wahr)
 				   |      | |           |            |
-				   |      | |           |            Geschwindigkeit über Grund (Knoten)
+				   |      | |           |            Geschwindigkeit Ã¼ber Grund (Knoten)
 				   |      | |           |
-				   |      | |           Längengrad mit (Vorzeichen)-Richtung (E=Ost, W=West)
-				   |      | |           007° 39.3538' Ost
+				   |      | |           LÃ¤ngengrad mit (Vorzeichen)-Richtung (E=Ost, W=West)
+				   |      | |           007Â° 39.3538' Ost
 				   |      | |
-				   |      | Breitengrad mit (Vorzeichen)-Richtung (N=Nord, S=Süd)
-				   |      | 46° 35.5634' Nord
+				   |      | Breitengrad mit (Vorzeichen)-Richtung (N=Nord, S=SÃ¼d)
+				   |      | 46Â° 35.5634' Nord
 				   |      |
-				   |      Status der Bestimmung: A=Active (gültig); V=void (ungültig)
+				   |      Status der Bestimmung: A=Active (gÃ¼ltig); V=void (ungÃ¼ltig)
 				   |
 				   Uhrzeit der Bestimmung: 19:14:10 (UTC-Zeit)
 		 *
@@ -325,17 +329,17 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		// zeit in jedem fall berechnen, auch wenn das sample nicht valid ist, das ist der RTC
 		long temp_gps_time=0;
 		long temp_gps_date=0;
-		for (int j=indices[0]+1;j<(indices[0]+11);j++){ // format 234500.000 für füddelvorzwölf
+		for (int j=indices[0]+1;j<(indices[0]+11);j++){ // format 234500.000 fÃ¼r fÃ¼ddelvorzwÃ¶lf
 			if(linea[j]!='.'){
 				temp_gps_time=temp_gps_time*10+(linea[j]-48);
 			}
 		}
 
 		for (int j=indices[8]+1;j<(indices[9]) && linea[j]>='0' && linea[j]<='9';j++){
-			temp_gps_date=temp_gps_date*10+(linea[j]-48); //181102 für 18.Nov 2002
+			temp_gps_date=temp_gps_date*10+(linea[j]-48); //181102 fÃ¼r 18.Nov 2002
 		}
 
-		if(first_dataset || status=='A'){ // wenn die daten gültig sind oder es der erste datensatz ist
+		if(first_dataset || status=='A'){ // wenn die daten gÃ¼ltig sind oder es der erste datensatz ist
 			if(temp_gps_date>=010100 && temp_gps_date<=311299){
 				pSensors->m_clock->set_date_time(
 						int(mod(temp_gps_date,100)),
@@ -359,7 +363,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 
 		if(status=='A'){ // only evaluate if valid (A means valid)
 			valid=0;
-			if(gps_count<(signed(sizeof(gps_time)/sizeof(gps_time[0])-1))){ // [0] .. [29] = 30 Einträge
+			if(gps_count<(signed(sizeof(gps_time)/sizeof(gps_time[0])-1))){ // [0] .. [29] = 30 EintrÃ¤ge
 				gps_count++;
 			}
 			// alle leeren
@@ -449,11 +453,11 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
         $GPGGA,191410,4735.5634,N,00739.3538,E,1,04,4.4,351.5,M,48.0,M,,*45
 			   ^      ^           ^            ^ ^  ^   ^       ^
 			   |      |           |            | |  |   |       |
-			   |      |           |            | |  |   |       Höhe Geoid minus
-			   |      |           |            | |  |   |       Höhe Ellipsoid (WGS84)
+			   |      |           |            | |  |   |       HÃ¶he Geoid minus
+			   |      |           |            | |  |   |       HÃ¶he Ellipsoid (WGS84)
 			   |      |           |            | |  |   |       in Metern (48.0,M)
 			   |      |           |            | |  |   |
-			   |      |           |            | |  |   Höhe über Meer (über Geoid)
+			   |      |           |            | |  |   HÃ¶he Ã¼ber Meer (Ã¼ber Geoid)
 			   |      |           |            | |  |   in Metern (351.5,M)
 			   |      |           |            | |  |
 			   |      |           |            | |  HDOP (horizontal dilution
@@ -461,19 +465,19 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 			   |      |           |            | |
 			   |      |           |            | Anzahl der erfassten Satelliten
 			   |      |           |            |
-			   |      |           |            Qualität der Messung
-			   |      |           |            (0 = ungültig)
+			   |      |           |            QualitÃ¤t der Messung
+			   |      |           |            (0 = ungÃ¼ltig)
 			   |      |           |            (1 = GPS)
 			   |      |           |            (2 = DGPS)
-			   |      |           |            (6 = geschätzt nur NMEA-0183 2.3)
+			   |      |           |            (6 = geschÃ¤tzt nur NMEA-0183 2.3)
 			   |      |           |
-			   |      |           Längengrad
+			   |      |           LÃ¤ngengrad
 			   |      |
 			   |      Breitengrad
 			   |
 			   Uhrzeit
 		 *
-		 *	fix=Qualität der Messung (zwischen dem 5. und 6. ",")
+		 *	fix=QualitÃ¤t der Messung (zwischen dem 5. und 6. ",")
 		 *	sats=Anzahl der erfassten Satelliten (zwischen dem 6. und 7. ",")
 		 *
 		 */
@@ -491,7 +495,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 					gps_alt_temp=gps_alt_temp*10+(linea[j]-48);
 				};
 			}
-			if(gps_alt_temp>100000){ // sind wir höher als 10 km?
+			if(gps_alt_temp>100000){ // sind wir hÃ¶her als 10 km?
 				gps_alt_temp=0;
 			}
 		};
@@ -577,7 +581,7 @@ long speedo_gps::get_info(unsigned char select){
 #ifdef GPS_FAKE_MODE
 		return 6;
 #endif
-		if(long(gps_sats[inner_gps_count])>20) { return 20; }; //höhö
+		if(long(gps_sats[inner_gps_count])>20) { return 20; }; //hÃ¶hÃ¶
 		if(long(gps_sats[inner_gps_count])<0) { return 0; };
 		return long(gps_sats[inner_gps_count]);
 		break;
@@ -608,8 +612,8 @@ long speedo_gps::get_info(unsigned char select){
 	return -1;
 };
 
-// alle 30 gültigen gps sample einmalauf der SD speichern bitte
-// im kolja_gps format -> yeah bloß nix bekanntes, kompatibles verwenden, alles properitär machen :D
+// alle 30 gÃ¼ltigen gps sample einmalauf der SD speichern bitte
+// im kolja_gps format -> yeah bloÃ nix bekanntes, kompatibles verwenden, alles properitÃ¤r machen :D
 int speedo_gps::store_to_sd(){
 	// generate filename && store
 	char *filename;
@@ -645,24 +649,24 @@ int speedo_gps::store_to_sd(){
  * eingabe als ul in dezimalgrad*10^6 => 9473208.0;
  * aktuelle Position ist im array gps_lati/gps_long
  * LATI ist immer !! 111km pro Grad und ist quasi die y koodinate
- * LONG ist x Richtung und im Abstand ist abhängig von der Latitude, bei 0 ist er auch 111km bei 90° = 0km
- * Ausgabe als meter! och dann können wir maximal ein paar mio km fahren, wirs nix mit zum mars ..
- * Laufzeit ca 757µs bei 16MHz = 12112 Takte .. puh
+ * LONG ist x Richtung und im Abstand ist abhÃ¤ngig von der Latitude, bei 0 ist er auch 111km bei 90Â° = 0km
+ * Ausgabe als meter! och dann kÃ¶nnen wir maximal ein paar mio km fahren, wirs nix mit zum mars ..
+ * Laufzeit ca 757Âµs bei 16MHz = 12112 Takte .. puh
  ********************************************/
 unsigned long speedo_gps::calc_dist(unsigned long longitude,unsigned long latitude){
-	if(valid>5) return -1; // rollt über und ist dann unendlich riesig
+	if(valid>5) return -1; // rollt Ã¼ber und ist dann unendlich riesig
 
 	float dist_y,dist_x; // abstands vars
 	unsigned long actual_long=nmea_to_dec(gps_long[gps_count]);
 	unsigned long actual_lati=nmea_to_dec(gps_lati[gps_count]);
 
-	// können wir nicht mit abs machen, weil das unsigned ist
+	// kÃ¶nnen wir nicht mit abs machen, weil das unsigned ist
 	if( actual_lati > latitude){
 		dist_y=(float)(actual_lati - latitude); // direkt
 	} else {
 		dist_y=(float)(latitude - actual_lati); // direkt
 	}
-	// können wir nicht mit abs machen, weil das unsigned ist
+	// kÃ¶nnen wir nicht mit abs machen, weil das unsigned ist
 	if( actual_long > longitude){
 		// hier kommen grad*106 raus
 		dist_x=(float)(actual_long - longitude); // erstmal ungewichtet
@@ -675,37 +679,38 @@ unsigned long speedo_gps::calc_dist(unsigned long longitude,unsigned long latitu
 };
 // get distance between aktueller und ziel punkt
 
+// overloaded function
+unsigned long speedo_gps::calc_dist_supported(simple_coordinate A){
+	return calc_dist_supported(gps_goody,A,gps_lati_cos);
+}
 
-// 3000 calc = 397ms  ==> 1 calc ~ 132µs == 2112 Ticks
+// 3000 calc = 397ms  ==> 1 calc ~ 132Âµs == 2112 Ticks
 unsigned long speedo_gps::calc_dist_supported(simple_coordinate A,simple_coordinate B,float gps_lati_cos){
 
 	float dist_y,dist_x; // abstands vars
-	// können wir nicht mit abs machen, weil das unsigned ist
+	// kÃ¶nnen wir nicht mit abs machen, weil das unsigned ist
 	if( B.latitude > A.latitude){
 		dist_y=(float)(B.latitude - A.latitude); // direkt
 	} else {
 		dist_y=(float)(A.latitude - B.latitude); // direkt
 	}
-	// können wir nicht mit abs machen, weil das unsigned ist
+	// kÃ¶nnen wir nicht mit abs machen, weil das unsigned ist
 	if( A.longitude > B.longitude){
 		// hier kommen grad*106 raus
-		dist_x=((float)(A.longitude - B.longitude))*gps_lati_cos; // gewichtet
+		dist_x=(((float)(A.longitude - B.longitude))*gps_lati_cos)/100; // gewichtet, GPS_lati_cos is *100
 	} else {
-		dist_x=((float)(B.longitude - A.longitude))*gps_lati_cos; // gewichtet
+		dist_x=(((float)(B.longitude - A.longitude))*gps_lati_cos)/100; // gewichtet, GPS_lati_cos is *100
 	}
 
 	return round((unsigned long)sqrt((dist_x*dist_x)+(dist_y*dist_y))*0.111);// berechne distanz
 };
 
 
-
-
-
 /*******************************************************************
  * kern Funktion des gps,
- * gobale winkel var für den zeiger berechnen und vor allem
+ * gobale winkel var fÃ¼r den zeiger berechnen und vor allem
  * feststellen ob wir die ziel koodinaten erreicht haben
- * falls ja werden die funktionen für "lad das nächste" angetippt
+ * falls ja werden die funktionen fÃ¼r "lad das nÃ¤chste" angetippt
  *******************************************************************/
 void speedo_gps::calc_navi(){
 	// differenz der Breitengrade in grad*1.000.000
@@ -719,12 +724,12 @@ void speedo_gps::calc_navi(){
 		winkel+=90;
 	} else if((nmea_to_dec(float(gps_lati[gps_count]))>navi_ziel_lati) && (nmea_to_dec(float(gps_long[gps_count]))>navi_ziel_long)){ // unter uns und links ist das ziel
 		winkel=270-winkel;
-	} else if((nmea_to_dec(float(gps_lati[gps_count]))<navi_ziel_lati) && (nmea_to_dec(float(gps_long[gps_count]))>navi_ziel_long)){ // über uns und links ist das ziel
+	} else if((nmea_to_dec(float(gps_lati[gps_count]))<navi_ziel_lati) && (nmea_to_dec(float(gps_long[gps_count]))>navi_ziel_long)){ // Ã¼ber uns und links ist das ziel
 		winkel+=270;
-	} else if((nmea_to_dec(float(gps_lati[gps_count]))<navi_ziel_lati) && (nmea_to_dec(float(gps_long[gps_count]))<navi_ziel_long)){ // über uns und rechts ist das ziel
+	} else if((nmea_to_dec(float(gps_lati[gps_count]))<navi_ziel_lati) && (nmea_to_dec(float(gps_long[gps_count]))<navi_ziel_long)){ // Ã¼ber uns und rechts ist das ziel
 		winkel=90-winkel;
 	};
-	winkel=winkel%360; // falls zu groß geworden
+	winkel=winkel%360; // falls zu groÃ geworden
 	//Serial.print("Von meiner Position: "); Serial.print(nmea_to_dec(float(gps_lati[gps_count]))); Serial.print(nmea_to_dec(float(gps_long[gps_count])));
 	//Serial.print(" befindet sich das Ziel "); Serial.print(navi_ziel_lati); Serial.print(navi_ziel_long);
 	//Serial.print(" in einem 0-Winkel von "); Serial.println(gps_winkel);
@@ -749,13 +754,13 @@ void speedo_gps::calc_navi(){
 	Serial.println(entf);
 #endif
 	// debug
-	// die große Frage des Weiterschaltens
+	// die groÃe Frage des Weiterschaltens
 	if(entf<15){ // verdammt nah dran, sofort weiterschalten
 		inner_circle=false;
 		navi_point++;
 		generate_new_order();
 	}
-	else if(entf<30){ // wenn man näher als 30 meter am ziel ist, also quasi dran lang schrammt, vorbereitung treffen
+	else if(entf<30){ // wenn man nÃ¤her als 30 meter am ziel ist, also quasi dran lang schrammt, vorbereitung treffen
 		inner_circle=true;
 	}
 	else if(entf>60 && inner_circle){ // weiter als 60 meter vom ziel entfernt, aber schon im inneren zirkel gewesen weiterschalten
@@ -763,7 +768,7 @@ void speedo_gps::calc_navi(){
 		navi_point++;
 		generate_new_order();
 	};
-	// die große Frage des Weiterschaltens
+	// die groÃe Frage des Weiterschaltens
 };
 
 // nmea format (9 47 3208 => 9 788680) umrechnen, eingabe als ul grad+6"nachkommastellen" ohne punkt getrennt
@@ -771,14 +776,14 @@ unsigned long speedo_gps::nmea_to_dec(unsigned long nmea){
 	return floor(nmea/1000000.0)*1000000+round(mod(nmea,1000000.0)*10/6);
 }
 
-// gibt kein mod für ul ? son müll!
+// gibt kein mod fÃ¼r ul ? son mÃ¼ll!
 unsigned long speedo_gps::mod(unsigned long zahl,unsigned long teiler){
 	return (unsigned long)(zahl-(floor(zahl/teiler)*teiler));
 };
 
-// gib distanz,richtung,straße zurück
+// gib distanz,richtung,straÃe zurÃ¼ck
 int speedo_gps::get_order(char char_buffer[], int* dist){
-	// wenn kein gps signal am start war für mehr als 15 sec
+	// wenn kein gps signal am start war fÃ¼r mehr als 15 sec
 	char_buffer[0]='\0'; // leeren
 	if(valid>15){
 		return -1;
@@ -816,9 +821,9 @@ void speedo_gps::set_gps_mark(int type){
 	note_this_place=type;
 }
 
-// die globalen variablen neu befüllen, auf basis des zuvor gesetzten navi_point
+// die globalen variablen neu befÃ¼llen, auf basis des zuvor gesetzten navi_point
 void speedo_gps::generate_new_order(){ // eine neue Order auslesen
-	// da diese funktion nur aufgerufen wird wenn vorher der navi_pointer geändert wurde speichern wir hier den pointer um das so selten wie nötig zu machen
+	// da diese funktion nur aufgerufen wird wenn vorher der navi_pointer geÃ¤ndert wurde speichern wir hier den pointer um das so selten wie nÃ¶tig zu machen
 	byte tempByte = (navi_point & 0xFF);
 	eeprom_write_byte((uint8_t *)147,tempByte);
 
@@ -855,8 +860,8 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 
 	if(file.open(&subdir, navi_filename, O_READ)) {
 		int16_t n,i;
-		uint8_t buf[36];// immer 35 byte lesen, das ist genau eine anweisung (wobei das array wieder ein Feld größer sein muss)
-		// die ersten bytes sind sowas wie der titel, die können wir zur navigation nicht nutzen, weglesen
+		uint8_t buf[36];// immer 35 byte lesen, das ist genau eine anweisung (wobei das array wieder ein Feld grÃ¶Ãer sein muss)
+		// die ersten bytes sind sowas wie der titel, die kÃ¶nnen wir zur navigation nicht nutzen, weglesen
 		// suche den ersten zeilen umbruch
 		bool found=false;
 		bool eof=false;
@@ -899,14 +904,14 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 			navi_ziel_long=0;
 
 			// lati/long einlesen
-			for(int a=0;a<=8;a++){ // vorwärts
+			for(int a=0;a<=8;a++){ // vorwÃ¤rts
 				//sprintf(serialbuffer,"Ich lese ein: %c und mache daraus %i",buf[a],buf[a]-48);
 				//Serial.println(serialbuffer);
 				navi_ziel_lati=navi_ziel_lati*10+(int(buf[a])-48);
 				navi_ziel_long=navi_ziel_long*10+(int(buf[a+10])-48);
 			};
 			// ziel name
-			for(int a=0;a<=9;a++){ // vorwärts  -> 128/6=21  : 2.1km g helmholtzs 11 --> 10 buchstaben
+			for(int a=0;a<=9;a++){ // vorwÃ¤rts  -> 128/6=21  : 2.1km g helmholtzs 11 --> 10 buchstaben
 				navi_ziel_name[a]=buf[a+22];
 			};
 			navi_ziel_name[10]='\0';
@@ -931,7 +936,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 
 			navi_point=zeile-2; // set to max
 			if(navi_point<0) navi_point=0;
-			generate_new_order(); // das hier ist das zurücksetzen, wenn man über den letzten Punkt hinweg klickt
+			generate_new_order(); // das hier ist das zurÃ¼cksetzen, wenn man Ã¼ber den letzten Punkt hinweg klickt
 		};
 
 	} else { // sd datei nicht gefunden
@@ -951,7 +956,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
  ***************************************************************/
 void speedo_gps::loop(){
 	for(int i=0;i<8;i++){ // ob das so schlau ist, 3 mal get_info aufzurufen ?!
-		if(pSpeedo->disp_zeile_bak[i]!=get_info(i)){ // nur aktualisiern wenn sich was ändert
+		if(pSpeedo->disp_zeile_bak[i]!=get_info(i)){ // nur aktualisiern wenn sich was Ã¤ndert
 			char buffer[10];
 			switch(i){
 			case 0: sprintf(buffer,"%06lu",get_info(i)); break;
@@ -971,7 +976,7 @@ void speedo_gps::loop(){
 
 
 /************************************************
- * Das speichern wird zukünftig die Config klasse übernehmen
+ * Das speichern wird zukÃ¼nftig die Config klasse Ã¼bernehmen
  * wir triggern da das write und das wird uns hier aufrufen
  * um die infos zu bekommen
  ****************************************************/
@@ -1019,7 +1024,7 @@ int speedo_gps::get_logged_points(char* buffer,int a,int* nbytes){
 			/* std gps format contains:
 			 * gps_time: 9 digits, 19:23:45.451 => 192345451
 			 * gps_date: 6 digits, 25.7.2013 => 250713
-			 * gps_lati: 9 digits, 52.14,2356° => 052142356
+			 * gps_lati: 9 digits, 52.14,2356Â° => 052142356
 			 * gps_long: 9 digits, 9.11,457 => 00911457
 			 * gps_speed_arr: 3 digits, 278
 			 * gps_course: 5 digits, deci deg "172.3"
@@ -1074,6 +1079,14 @@ bool speedo_gps::get_drive_status(){
 	return false;
 };
 
+int speedo_gps::calc_gps_goodies(){
+	if(get_info(9)>5){ return -1; }; // if there is no GPS than calculation is non sense
+	gps_goody.latitude=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(3));
+	gps_goody.longitude=pSensors->m_gps->nmea_to_dec(pSensors->m_gps->get_info(2));
+	gps_lati_cos=cos(floor(gps_goody.latitude/1000000.0)*2*M_PI/360)*100;
+	return 0;
+}
+
 
 void speedo_gps::set_drive_status(int speed, int ss, int sat, char status){
 	if(status=='A'){ //measurement valid
@@ -1100,4 +1113,3 @@ unsigned long speedo_gps::GpsTimeToTimeStamp(unsigned long input){
 
 	return return_value;
 }
-
