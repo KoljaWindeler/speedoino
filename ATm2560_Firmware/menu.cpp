@@ -132,9 +132,9 @@ const char navi_m_2[] PROGMEM = "3. Set file";   // "String 0" etc are strings t
 const char navi_m_3[] PROGMEM = "4. Check writes"; // hier vielleicht ein: way to ziel: koordinaten aktuell im vergleich zum ziel, aktuellen course
 const char navi_m_4[] PROGMEM = "5. -";
 const char navi_m_5[] PROGMEM = "6. -";
-const char navi_m_6[] PROGMEM = "7. -";
-const char navi_m_7[] PROGMEM = "8. POI status";
-const char navi_m_8[] PROGMEM = "9. POI on/off";
+const char navi_m_6[] PROGMEM = "7. POI finder";
+const char navi_m_7[] PROGMEM = "8. SC_POI status";
+const char navi_m_8[] PROGMEM = "9. SC_POI on/off";
 const char  * const menu_navi[9] PROGMEM= {navi_m_0,navi_m_1,navi_m_2,navi_m_3,navi_m_4,navi_m_5,navi_m_6,navi_m_7,navi_m_8};
 
 ///////////////////// Menu title /////////////////////
@@ -286,6 +286,11 @@ void speedo_menu::display(){
 	 *	32 Set current pointer within file
 	 *	33 Select current file of navigation
 	 *	34 Get number of written GPS points
+	 *	35
+	 *	36
+	 *	37 POI finder
+	 *	38 SC_POI status
+	 *	39 SC_POI on/off
 	 ********************************************* Menu 3 -  of Navigation Menu *********************************************/
 	else if(floor(state/10)==3){ // 31/10 = 3
 		// Menu vorbereiten
@@ -431,7 +436,97 @@ void speedo_menu::display(){
 		pOLED->string(pSpeedo->default_font,buffer,5,3,0,DISP_BRIGHTNESS,0);
 		pOLED->string_P(pSpeedo->default_font,PSTR("Points written"),3,4,0,DISP_BRIGHTNESS,0);
 	}
+	//////////////////////// POI  finder  //////////////
+	else if(floor(state/10)==37){	// file selection
+		bool build_complete_list=true;
+		bool upper_one=true;	// assume we pressed the "down" button, so we have to refresh to one on top of us
+		if(floor(old_state/10)==floor(state/10)){ // build just a short part of the list, not complee
+			build_complete_list=false;
+			if(old_state-1==state){ // we pressed the "up" button, so we have to refresh to one below
+				upper_one=false;
+			};
+		} else { // first access of this menu -> prepare
+			pOLED->clear_screen();
+			pOLED->string_P_centered(PSTR("= File selector ="),0,false);
+			pOLED->string_P(pSpeedo->default_font,PSTR("\x7E back      select \x7F"),0,7);
+		}
 
+		if(state%10==1){ // avoid going up
+			set_buttons(button_state,!button_state,button_state,button_state);
+		} else if(state%10==6){	// avoid going down
+			set_buttons(button_state,button_state,!button_state,button_state);
+		}
+
+		SdFile dir_handle;
+		SdFile file_handle;
+		int item=0; // filecounter
+		unsigned int file_count=0;
+		int start=0;
+		int stop=4; // 0..4 = 5 file + line on top + line on buttom = 7 lines of display
+		char filename[22];
+		strcpy_P((char*)filename,PSTR("/POI/"));
+
+
+		if(pFilemanager_v2->get_file_handle((unsigned char*)filename,(unsigned char*)filename,&file_handle,&dir_handle,O_READ|O_CREAT)<0){	// O_CREATE to create dir, if not existing <- TODO check if that is working
+			pOLED->show_storry(PSTR("Open POI dir failed"),PSTR("Error"),DIALOG_GO_LEFT_1000MS);
+		} else {
+			if(!build_complete_list){ // only "re-read" two items
+				if(upper_one){ // e.G. state == 374, we pushed "down" 3 times (from 371->374), we want to refresh item 3 and the item above (2)
+					start=(state%10)-2;
+					stop=(state%10)-1;
+				} else { // e.G. state == 374, we pushed "down" 4 times (from 371->375), and than "up" once (375->374) we want to refresh item 3 and the item below (4)
+					start=(state%10)-1;
+					stop=(state%10);
+				}
+			} else { // build complete list
+				start=0;
+				stop=5;
+			}
+
+			item=start;
+			while(item<=stop && item<=5){
+				// status: 0=EOF, 1=FILE, 2=FOLDER
+				unsigned long size;
+				if(dir_handle.lsJKWNext((unsigned char*)filename,item,&size)){ // <- returns the filename of the file nr "item"
+					file_count++;
+					// check resulting filename
+					if(strlen(filename)>=15){
+						filename[15]='\0'; // short it
+					};
+					char temp[21];
+					sprintf(temp,"%i.%s",item+1,filename); // <-- "gas.txt"->"4.GAS.TXT"
+					// fill up
+
+					strcpy(filename,temp);
+					for(int i=strlen(filename);i<17;i++){
+						filename[i]=' ';
+					}
+					filename[17]='\0';
+				} else {
+					sprintf(filename,"%i.-",item+1);
+					if((state%10)>file_count){ // if we are explicit on this item
+						set_buttons(button_links_valid,button_oben_valid,button_unten_valid,!button_state); // avoid go right
+					}
+				}
+				// print it
+				if((build_complete_list && (unsigned)item==(state%10)-1) || (!build_complete_list && upper_one && item==stop) || (!build_complete_list && !upper_one && item==start)){
+					pOLED->highlight_bar(0,(item+1)*8,128,8);
+					pOLED->string(pSpeedo->default_font,filename,2,item+1,0x0f,0x00,0);
+				} else {
+					pOLED->filled_rect(0,(item+1)*8,128,8,0x00);
+					pOLED->string(pSpeedo->default_font,filename,2,item+1);
+				}
+
+				item++;
+			}
+		}
+	} else if(floor(state/100)==37){	// some output
+		pOLED->show_storry(PSTR("It will take some time to generate a navi file from this POI. Continue?"),PSTR("POI Navigation"),DIALOG_NO_YES);
+	} else if(floor(state/1000)==37){	// file selection
+		//pPOI_finder->generate_navi_file(state%10); // this should generate the navi file and kick us to the main screen + activate the navi feature + select the created navi file + set navipointer = 0 // Danger!
+		speedo_poi_finder* pPOI_Finder=new speedo_poi_finder();
+		pPOI_Finder->calc(int(floor(state/100))%10);
+	}
 	////////////////////////  prepare speedoCam status screen //////////////
 	else if(floor(state/10)==38){ //38[X]
 		set_buttons(true,false,false,false);
@@ -439,65 +534,65 @@ void speedo_menu::display(){
 		pOLED->clear_screen();
 	}
 	////////// Setup of poi warner
-		else if(floor(state/10)==39) { // 00039X
-			storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+	else if(floor(state/10)==39) { // 00039X
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+	}
+	// now the "mode" selector
+	else if(floor(state/100)==39) { // 000461X
+		if(state%10==9){ // "up" key
+			pSpeedCams->set_active(true);
+			pConfig->storage_outdated=true;
+		} else if(state%10==2){ // "down" key
+			pSpeedCams->set_active(false);
+			pConfig->storage_outdated=true;
+		};
+
+		state=3911;
+
+		// displaying values
+		pOLED->clear_screen();
+
+		pOLED->highlight_bar(0,0,128,8); // title
+		pOLED->string_P(pSpeedo->default_font,PSTR("POI warning"),2,0,DISP_BRIGHTNESS,0,0);
+
+		unsigned char fg;
+		unsigned char bg;
+
+		/// theoretical
+		if(pSpeedCams->get_active()){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*3,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
 		}
-		// now the "mode" selector
-		else if(floor(state/100)==39) { // 000461X
-			if(state%10==9){ // "up" key
-				pSpeedCams->set_active(true);
-				pConfig->storage_outdated=true;
-			} else if(state%10==2){ // "down" key
-				pSpeedCams->set_active(false);
-				pConfig->storage_outdated=true;
-			};
+		pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,3,bg,fg,0);
 
-			state=3911;
-
-			// displaying values
-			pOLED->clear_screen();
-
-			pOLED->highlight_bar(0,0,128,8); // title
-			pOLED->string_P(pSpeedo->default_font,PSTR("POI warning"),2,0,DISP_BRIGHTNESS,0,0);
-
-			unsigned char fg;
-			unsigned char bg;
-
-			/// theoretical
-			if(pSpeedCams->get_active()){
-				fg=0x00;
-				bg=DISP_BRIGHTNESS;
-				pOLED->highlight_bar(0,8*3,118,8); // mit hintergrundfarbe nen kasten malen
-			} else {
-				fg=DISP_BRIGHTNESS;
-				bg=0x00;
-			}
-			pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,3,bg,fg,0);
-
-			/// off
-			if(!pSpeedCams->get_active()){
-				fg=0x00;
-				bg=DISP_BRIGHTNESS;
-				pOLED->highlight_bar(0,8*4,118,8); // mit hintergrundfarbe nen kasten malen
-			} else {
-				fg=DISP_BRIGHTNESS;
-				bg=0x00;
-			}
-			pOLED->string_P(pSpeedo->default_font,PSTR("inactive"),2,4,bg,fg,0);
-
-			pOLED->string_P(pSpeedo->default_font,PSTR("\x7E save"),0,7);
-
-			// key settings and corresponding var state changing
-			bool up=button_state;
-			bool down=button_state;
-			if(pSpeedCams->get_active()){
-				up=!button_state;
-			} else if(!pSpeedCams->get_active()){
-				down=!button_state;
-			}
-
-			set_buttons(button_state,up,down,!button_state); // button directions
+		/// off
+		if(!pSpeedCams->get_active()){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*4,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
 		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("inactive"),2,4,bg,fg,0);
+
+		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E save"),0,7);
+
+		// key settings and corresponding var state changing
+		bool up=button_state;
+		bool down=button_state;
+		if(pSpeedCams->get_active()){
+			up=!button_state;
+		} else if(!pSpeedCams->get_active()){
+			down=!button_state;
+		}
+
+		set_buttons(button_state,up,down,!button_state); // button directions
+	}
 	/********************************************* Menu 3 - End of Navigation Menu *********************************************/
 
 
