@@ -30,7 +30,9 @@
 18.08.2013  Speedoino_v2.1-141-gf2aae3e.hex + === POI Warner hinzugefügt === 
                                             - RGB LEDs wechseln auf FlasherFarbe wenn POI nah ist
                                             - Warnung für defekten SpeedSensor hinzugefügt (GPS übernimmt bei fehlendem Sensor die Geschwindigkeit)
-                                            - Freien Speicher durch POI-Warner reduziert (2388/8192 Byte RAM frei) (187940/256000 Byte Flash genutzt (73,4%)) 
+                                            - Freien Speicher durch POI-Warner reduziert (2388/8192 Byte RAM frei) (187940/256000 Byte Flash genutzt)
+19.08.2013  Speedoino_v2.1-147-g20644d8.hex + Datei-Auswahl-Menü als Vorversion für den POI Finder hinzugefügt 
+                                            - Freien Speicher durch POI-Finder reduziert (2376/8192 Byte RAM frei) (190092/256000 Byte Flash genutzt)
 
 ================================================================================================================================================================================================
 
