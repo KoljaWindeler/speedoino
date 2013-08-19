@@ -41,6 +41,7 @@ typedef struct {
 #include "tetris.h"
 #include "lap_timer.h"
 #include "speed_cams.h"
+#include "POI_finder.h"
 /**********************************  working settings ********************************/
 // development settings //
 #define       GPS_SPEED_ONLY  false   // to ignore the magnetic value  -> hmm das ist doof, aber muss erstmal alleine arbeiten, mal sehen ob der gang angezeigt wird -> wenn ja => mag rennt
