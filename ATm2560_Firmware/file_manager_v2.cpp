@@ -269,28 +269,36 @@ void speedo_filemanager_v2::parse_command(){
 				////////////////////////// UP DOWN LEFT RIGHT /////////////////////////////
 
 			} else if(msgBuffer[0]==CMD_GO_LEFT){
-				pMenu->go_left(true); // i wait on main loop, i won't update it myself
+				if(pMenu->button_links_valid){
+					pMenu->go_left(true); // i wait on main loop, i won't update it myself
+				}
 				isLeave	=	1;
 				msgLength		=	2;
 				msgBuffer[0]	= 	CMD_GO_LEFT;
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_RIGHT){
-				pMenu->go_right(true); // i wait on main loop, i won't update it myself
+				if(pMenu->button_rechts_valid){
+					pMenu->go_right(true); // i wait on main loop, i won't update it myself
+				}
 				isLeave	=	1;
 				msgLength		=	2;
 				msgBuffer[0]	= 	CMD_GO_RIGHT;
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_UP){
-				pMenu->go_up(true); // i wait on main loop, i won't update it myself
+				if(pMenu->button_oben_valid){
+					pMenu->go_up(true); // i wait on main loop, i won't update it myself
+				}
 				isLeave	=	1;
 				msgLength		=	2;
 				msgBuffer[0]	= 	CMD_GO_UP;
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_DOWN){
-				pMenu->go_down(true); // i wait on main loop, i won't update it myself
+				if(pMenu->button_unten_valid){
+					pMenu->go_down(true); // i wait on main loop, i won't update it myself
+				}
 				isLeave	=	1;
 				msgLength		=	2;
 				msgBuffer[0]	= 	CMD_GO_DOWN;
