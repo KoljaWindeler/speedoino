@@ -16,7 +16,7 @@
  */
 
 #include "global.h"
-#define DEBUG_POI_FINDER
+#undef DEBUG_POI_FINDER
 #undef DEBUG_POI_FINDER_DETAILED
 // init & clean buffer
 speedo_poi_finder::speedo_poi_finder(){}
@@ -34,7 +34,7 @@ speedo_poi_finder::speedo_poi_finder(){}
 
 int speedo_poi_finder::calc(int file_id){
 	// handle GPS
-	pSensors->m_reset->set_deactive(false,false); // might take some time
+	pSensors->m_reset->toggle(); // might take some time
 	if(pSensors->m_gps->calc_gps_goodies()!=0){ // returns false if we are not conneted
 		pOLED->clear_screen();
 		pOLED->string_P_centered(PSTR("Wait on GPS"),3,false);
@@ -59,20 +59,17 @@ int speedo_poi_finder::calc(int file_id){
 	strcpy_P((char*)filename,PSTR("/POI/"));
 	if(pFilemanager_v2->get_file_handle((uint8_t*)filename,(uint8_t*)filename,&read_file,&dir_handle,O_READ|O_CREAT)<0){	// O_CREATE to create dir if not existing, works like charm
 		pOLED->show_storry(PSTR("Open POI dir failed"),PSTR("Error"),DIALOG_GO_LEFT_1000MS);
-		pSensors->m_reset->restore();
 		return -2;
 	} else { // dir is open
 		// (2)
 		unsigned long size;
 		if(!dir_handle.lsJKWNext((uint8_t*)filename,file_id-1,&size)){ // get the filename, cause we have only get passed the "id" of it
 			pOLED->show_storry(PSTR("Get POI filename failed"),PSTR("Error"),DIALOG_GO_LEFT_1000MS);
-			pSensors->m_reset->restore();
 			return -3;
 		} else {
 			read_file.close();
 			if(!read_file.open(dir_handle, filename,O_READ)){ // sure its possible to use "get_file_handle", but that leads to a lot of parsing action for nothing... doing it on our own
 				pOLED->show_storry(PSTR("Open POI file failed"),PSTR("Error"),DIALOG_GO_LEFT_1000MS);
-				pSensors->m_reset->restore();
 				return -4;
 			} else { // file is open
 				// (3)
@@ -85,8 +82,8 @@ int speedo_poi_finder::calc(int file_id){
 				uint32_t long_diff;			// differ of parsed coordinates to our
 				uint32_t lati_diff;
 				uint8_t buffer[2];			// file read buffer
-				uint8_t text_buffer[11]; 		// text to display: 10 chars + \x00
-				int8_t pointer_of_text_buffer=-1;
+				uint8_t text_buffer[13]; 		// text to display: 10 chars + \x00
+				int8_t pointer_of_text_buffer=0;
 				simple_coordinate loaded_pos;		// dummy to calc distance
 				uint32_t best_dist[3]={999999,999999,999999};
 				fpos_t best_dist_seek[3];
@@ -103,13 +100,15 @@ int speedo_poi_finder::calc(int file_id){
 					if(percentage!=pSpeedo->disp_zeile_bak[0]){
 						pSpeedo->disp_zeile_bak[0]=percentage;
 						char disp_buffer[21];
-						sprintf_P(disp_buffer,PSTR("read %2i%%"),percentage%100);
+						sprintf_P(disp_buffer,PSTR("read %3i%%"),percentage%101);
 						pMenu->center_me(disp_buffer,21);
 						pOLED->string(pSpeedo->default_font,disp_buffer,0,1);
+						pSensors->m_reset->toggle(); // might take some time
 					}
 
 					if(n>0){ // read ok
 						if(state==POI_FINDER_PRECOMMA_LONGITUDE || state==POI_FINDER_POSTCOMMA_LONGITUDE || state==POI_FINDER_PRECOMMA_LATITUDE || state==POI_FINDER_POSTCOMMA_LATITUDE){
+							// ascii parse content to the loaded_* vars
 							if(buffer[0]>='0' && buffer[0]<='9'){
 								if(state==POI_FINDER_PRECOMMA_LONGITUDE || state==POI_FINDER_POSTCOMMA_LONGITUDE){
 									loaded_longitude=loaded_longitude*10+(buffer[0]-'0');
@@ -117,7 +116,20 @@ int speedo_poi_finder::calc(int file_id){
 									loaded_latitude=loaded_latitude*10+(buffer[0]-'0');
 								}
 							}
-							if(state==POI_FINDER_POSTCOMMA_LONGITUDE || state==POI_FINDER_POSTCOMMA_LATITUDE){ // if we are in "postcomma" mode we have to skip after 6 digits
+							if(state==POI_FINDER_PRECOMMA_LONGITUDE || state==POI_FINDER_PRECOMMA_LATITUDE){
+								if(buffer[0]=='.'){// move pre comma to post comma mode
+									state++;
+									post_comma=0; // reset for next coordiante half
+#ifdef DEBUG_POI_FINDER_DETAILED
+									Serial.print("'.' found -> state:");
+									Serial.println(state);
+									Serial.print("Lati/Long so far:");
+									Serial.print(loaded_latitude);
+									Serial.print(" / ");
+									Serial.println(loaded_longitude);
+#endif
+								}
+							} else if(state==POI_FINDER_POSTCOMMA_LONGITUDE || state==POI_FINDER_POSTCOMMA_LATITUDE){ // if we are in "postcomma" mode we have to skip after 6 digits
 								post_comma++;
 								if(post_comma>=6){ // yep we are full
 									state++; // goto unused comma mode
@@ -140,7 +152,6 @@ int speedo_poi_finder::calc(int file_id){
 										post_comma++;
 									}
 									state+=2; // skill unused postcomma section cause there are none
-									post_comma=0; // reset for next coordiante half
 #ifdef DEBUG_POI_FINDER_DETAILED
 									Serial.print("Less comma found than expected, filled up -> state:");
 									Serial.println(state);
@@ -154,18 +165,6 @@ int speedo_poi_finder::calc(int file_id){
 #endif
 								}
 							} // post comma state
-							if(buffer[0]=='.'){// move pre comma to post comma
-								state++;
-								post_comma=0; // reset for next coordiante half
-#ifdef DEBUG_POI_FINDER_DETAILED
-								Serial.print("'.' found -> state:");
-								Serial.println(state);
-								Serial.print("Lati/Long so far:");
-								Serial.print(loaded_latitude);
-								Serial.print(" / ");
-								Serial.println(loaded_longitude);
-#endif
-							}
 						} else if(state==POI_FINDER_UNUSED_POSTCOMMA_LONGITUDE || state==POI_FINDER_UNUSED_POSTCOMMA_LATITUDE){
 							if(buffer[0]==','){
 								state++; // goto precomma_latitude or LineBreak Mode
@@ -180,7 +179,7 @@ int speedo_poi_finder::calc(int file_id){
 								}
 #endif
 
-								if(state==POI_FINDER_WAIT_LINE_BREAK && !in_copy_mode){ // now: coordinates parsed, check point (4)
+								if(state==POI_FINDER_WAIT_LINE_BREAK && !in_copy_mode){ // this is the last time we are in this state: coordinates parsed, check point (4)
 									// check if it is next to us
 									if(pSensors->m_gps->gps_goody.longitude > loaded_longitude){
 										long_diff=pSensors->m_gps->gps_goody.longitude - loaded_longitude;
@@ -188,13 +187,13 @@ int speedo_poi_finder::calc(int file_id){
 										long_diff=loaded_longitude - pSensors->m_gps->gps_goody.longitude;
 									}
 
-									if(long_diff<300000){ // ca 20km in E<->W
+									if(long_diff<300000){ // ca 19,3km in E<->W
 										if(pSensors->m_gps->gps_goody.latitude > loaded_latitude){
 											lati_diff=pSensors->m_gps->gps_goody.latitude - loaded_latitude;
 										} else {
 											lati_diff=loaded_latitude - pSensors->m_gps->gps_goody.latitude;
 										}
-										if(lati_diff<200000){// ca 20km in N<->S
+										if(lati_diff<200000){// ca 22km in N<->S
 											loaded_pos.latitude=loaded_latitude;
 											loaded_pos.longitude=loaded_longitude;
 											uint32_t this_dist=pSensors->m_gps->calc_dist_supported(loaded_pos);	// (5) more or less "real distance"
@@ -228,8 +227,8 @@ int speedo_poi_finder::calc(int file_id){
 											if(points_to_copy<3){
 												points_to_copy++;
 
-												sprintf_P((char*)text_buffer,PSTR("At least %i"),points_to_copy); // reusing text_buffer to output
-												pMenu->center_me((char*)text_buffer,10);
+												sprintf_P((char*)text_buffer,PSTR("At least %i/3"),points_to_copy); // reusing text_buffer to output
+												pMenu->center_me((char*)text_buffer,12);
 												pOLED->string(pSpeedo->default_font,(char*)text_buffer,5,3);
 												pOLED->string_P_centered(PSTR("nearby point found"),4,false);
 											}
@@ -239,35 +238,31 @@ int speedo_poi_finder::calc(int file_id){
 							} // wait on "," ... while waiting stay in UNUSED mode
 						} else if(state==POI_FINDER_WAIT_LINE_BREAK){
 							if(in_copy_mode){ // get the Text to copy it
-								if(buffer[0]=='"' && pointer_of_text_buffer==-1){
-									pointer_of_text_buffer=-2;
-								} else if(buffer[0]==']' && pointer_of_text_buffer==-2){
-									pointer_of_text_buffer=-3;
-								} else if(buffer[0]==' ' && pointer_of_text_buffer==-3){
+								if(buffer[0]=='"' && pointer_of_text_buffer==0){ // if string starts with ->"<-
 									pointer_of_text_buffer=0;
-								} else if(pointer_of_text_buffer>=0){
+								} else if(buffer[0]==']' && text_buffer[0]=='['){ // if there is something like [ ] on the starting
+									pointer_of_text_buffer=0;
+								} else if(buffer[0]==' ' && pointer_of_text_buffer==0){ // is string starts with -> <-
+									pointer_of_text_buffer=0;
+								} else {
 									bool write_now=false;
 									if(buffer[0]==0x0a){ // uhuh end of line
 										write_now=true;
-									};
-
-									if(buffer[0]>=0x20){ // don't copy controll char
+									} else if(buffer[0]>=0x20){ // copy everything above controll chars
 										text_buffer[pointer_of_text_buffer]=buffer[0]; // fill 0..9
+										text_buffer[pointer_of_text_buffer+1]=0x00; // move End-of-string
 										pointer_of_text_buffer++; // 9+1->10
 										if(pointer_of_text_buffer>=10){ // 10 == full
 											write_now=true;
+											text_buffer[9]='.'; // add '.' to show that the string is cutted
 										};
 									}
 
 									if(write_now){ // call write_navi_file routine
 										int16_t return_value=write_navi_file(&pointer_of_text_buffer, text_buffer, &loaded_latitude, &loaded_longitude, &append_to_write_file, &points_to_copy, &state, &n, &read_file,best_dist_seek);
 										if(return_value<=0){ // not good, file error? or FINISHED? Anyway: Break processing now!
-											pSensors->m_reset->restore();
 											return return_value;
 										}
-										loaded_latitude=0; // if we are writing before we reach 0x0a
-										loaded_longitude=0; // we have to reset our vars on our own
-										post_comma=0; // state and pos will be set in write navi file
 									} // write to file
 								} // regular text parsing
 							} // in_copy_mode
@@ -275,14 +270,14 @@ int speedo_poi_finder::calc(int file_id){
 							if(buffer[0]==0x0A){ // windows 0x0d 0x0a, linux 0x0a ... everyone happy?
 								state=POI_FINDER_PRECOMMA_LONGITUDE; // rewind
 								read_file.getpos(&seekstart_of_this_line); // +1? prepare for the next coordinate
-								post_comma=0;
+								loaded_latitude=0;	// reset coordinates for next round
+								loaded_longitude=0;
 							};
 						}
 					} else { // n==0
 						if(!in_copy_mode){ // regual EOF ... alright
 							if(points_to_copy==0){	// no points found at all
 								pOLED->string_P_centered(PSTR("No nearby point found"),4,false);
-								pSensors->m_reset->restore();
 								return -8;
 							}
 							read_file.setpos(&best_dist_seek[points_to_copy-1]);
@@ -293,10 +288,8 @@ int speedo_poi_finder::calc(int file_id){
 						} else { // what happens if you try to parse the last line and that one is very short? untypical emergency!
 							int16_t return_value=write_navi_file(&pointer_of_text_buffer, text_buffer, &loaded_latitude, &loaded_longitude, &append_to_write_file, &points_to_copy, &state, &n, &read_file,best_dist_seek); // mumble -2 ?
 							if(return_value<=0){ // not good, break
-								pSensors->m_reset->restore();
 								return return_value;
 							}
-							post_comma=0;
 						}
 					} // n==0
 				} // if(n>0)
@@ -308,13 +301,13 @@ int speedo_poi_finder::calc(int file_id){
 }
 
 int speedo_poi_finder::write_navi_file(int8_t* pointer_of_text_buffer,uint8_t* text_buffer,uint32_t* loaded_latitude,uint32_t* loaded_longitude,bool* append_to_write_file,int8_t* points_to_copy, int8_t* state, int8_t* n, SdFile* read_file,fpos_t* best_dist_seek){
+	pSensors->m_reset->toggle(); // might take some time
 #ifdef DEBUG_POI_FINDER
 	Serial.println("= write_navi_file =");
 	Serial.println("arguments:");
 	Serial.print("pointer_of_text_buffer:");
 	Serial.println(*pointer_of_text_buffer);
 	Serial.print("text_buffer:");
-	text_buffer[*pointer_of_text_buffer]=0x00;
 	Serial.println((char*)text_buffer);
 	Serial.print("loaded_latitude:");
 	Serial.println(*loaded_latitude);
@@ -338,11 +331,7 @@ int speedo_poi_finder::write_navi_file(int8_t* pointer_of_text_buffer,uint8_t* t
 
 	// now copy it all together
 	char file_write_buffer[35]; // 2 chars + 0x0D + 0x0A + 0x00
-	sprintf_P(file_write_buffer,PSTR("%09lu,%09lu,1,%s%c"),*loaded_latitude,*loaded_longitude,text_buffer,0x0A);
-
-#ifdef DEBUG_POI_FINDER
-	Serial.print(file_write_buffer);
-#endif
+	sprintf_P(file_write_buffer,PSTR("%09lu,%09lu,0,%s%c"),*loaded_latitude,*loaded_longitude,text_buffer,0x0A);
 
 	// open file
 	SdFile write_file;
@@ -351,36 +340,53 @@ int speedo_poi_finder::write_navi_file(int8_t* pointer_of_text_buffer,uint8_t* t
 	uint8_t flags;
 	if(!*append_to_write_file){
 		flags=O_WRITE|O_CREAT|O_TRUNC;
+#ifdef DEBUG_POI_FINDER
+		Serial.println("write mode truncate");
+#endif
 	} else {
-		flags=O_WRITE; // don't delte or create it
+		flags=O_WRITE|O_APPEND; // don't delte or create it
+#ifdef DEBUG_POI_FINDER
+		Serial.println("write mode append");
+#endif
 	}
+
+	// open file
 	if(pFilemanager_v2->get_file_handle((uint8_t*)write_filename,&write_file,flags)<0){
 		pOLED->show_storry(PSTR("Open write-file failed"),PSTR("Error"),DIALOG_GO_LEFT_1000MS);
 		return -5;
 	}
+
+	// write description first
+	if(!*append_to_write_file){
+		char temp_chars[22];
+		strcpy_P(temp_chars,PSTR("#dAutogenerated POIs\x0a"));
+		if(!write_file.write(temp_chars,21)){
+			pOLED->show_storry(PSTR("Write write-file failed"),PSTR("Error"),DIALOG_GO_LEFT_1000MS);
+			return -6;
+		}
+	}
+
+	// write stuff to file
 	if(!write_file.write(file_write_buffer,33)){
 		pOLED->show_storry(PSTR("Write write-file failed"),PSTR("Error"),DIALOG_GO_LEFT_1000MS);
 		return -6;
 	}
-#ifdef DEBUG_POI_FINDER
-	else {
-		Serial.println("written");
-	}
-#endif
 
+	// close it
 	write_file.close();
 
 	// stuff we have to do in here, cause this might be the emergency catch
-	(*points_to_copy)--; 						// reduces the number of points that should be written "3->2->1"->0 (end)
+	*points_to_copy=*points_to_copy-1;		// reduces the number of points that should be written "3->2->1"->0 (end)
 	*append_to_write_file=true; 			// first writing should be truncate file, every following should append
-	*pointer_of_text_buffer=-1;				// reset buffer
+	*pointer_of_text_buffer=0;				// reset buffer
 	*loaded_latitude=0;						// reset buffer
 	*loaded_longitude=0;					// reset buffer
 	text_buffer[0]='\0';					// reset buffer
 	*state=POI_FINDER_PRECOMMA_LONGITUDE; 	// reset state
 	*n=1; 									// rejoin while loop+
 
-	if(*points_to_copy<1){ // == FINISHED ==
+	// finish file
+	if((*points_to_copy)<1){ // == FINISHED ==
 		read_file->close();
 		bool navi_was_active=false;
 		if(pSensors->m_gps->navi_active){	// inform user that we switched his navi
@@ -388,6 +394,7 @@ int speedo_poi_finder::write_navi_file(int8_t* pointer_of_text_buffer,uint8_t* t
 		}
 		pSensors->m_gps->navi_active=true;
 		pSensors->m_gps->active_file=9;
+		pSensors->m_gps->navi_point=0;
 		pSensors->m_gps->generate_new_order();
 		if(navi_was_active){
 			write_navigation_switch_warning(pSensors->m_gps->active_file,pSensors->m_gps->navi_point);
@@ -397,16 +404,13 @@ int speedo_poi_finder::write_navi_file(int8_t* pointer_of_text_buffer,uint8_t* t
 			pMenu->update_display=true; // redraw screen (draw speedo)
 		}
 #ifdef DEBUG_POI_FINDER
-		Serial.println("FINISHED");
+		Serial.println("FINISHED POI_FINDER");
 #endif
 		return 0;	// == FINISHED ==
 	};
-#ifdef DEBUG_POI_FINDER
-		Serial.println("setting pos");
-#endif
 	read_file->setpos(&best_dist_seek[*points_to_copy-1]);
 #ifdef DEBUG_POI_FINDER
-		Serial.println("done");
+	Serial.println("done");
 #endif
 	return 1; // go on
 }
@@ -422,11 +426,13 @@ void speedo_poi_finder::write_navigation_switch_warning(int file_id, int point_i
 	pOLED->string_P(pSpeedo->default_font,PSTR("switch to POI mode."),0,2);
 
 	pOLED->string_P(pSpeedo->default_font,PSTR("To resume your track"),0,3);
-	char buffer[22];
-	sprintf_P(buffer,PSTR("reopen Navi file %i"),file_id);
-	pOLED->string_P(pSpeedo->default_font,buffer,0,4);
-	sprintf_P(buffer,PSTR("and select point %2i"),file_id,point_id);
-	pOLED->string(pSpeedo->default_font,buffer,0,5);
+	pOLED->string_P(pSpeedo->default_font,PSTR("reopen Navi file"),0,4);
+	pOLED->string_P(pSpeedo->default_font,PSTR("and select point"),0,5);
+	char buffer[3];
+	sprintf_P(buffer,PSTR("%2i"),file_id);
+	pOLED->string_P(pSpeedo->default_font,buffer,17,4);
+	sprintf_P(buffer,PSTR("%2i"),file_id);
+	pOLED->string_P(pSpeedo->default_font,buffer,17,5);
 
 	pOLED->string_P(pSpeedo->default_font,PSTR("\x7E OK"),0,7);
 	pMenu->set_buttons(true,false,false,false); // only left
