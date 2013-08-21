@@ -33,7 +33,10 @@
                                             - Freien Speicher durch POI-Warner reduziert (2388/8192 Byte RAM frei) (187940/256000 Byte Flash genutzt)
 19.08.2013  Speedoino_v2.1-147-g20644d8.hex + Datei-Auswahl-Menü als Vorversion für den POI Finder hinzugefügt 
                                             - Freien Speicher durch POI-Finder reduziert (2376/8192 Byte RAM frei) (190092/256000 Byte Flash genutzt)
-
+21.08.2013  Speedoino_v2.1-160-gb21e7a2.hex + Erste Version des POI Finder
+                                            - Freier Speicher vergrößert da die GPS Configstring in den Flash gewandert sind, RAM 2530 Byte, Flash 195184 Byte
+                                            - DZM Pendeln eventuell gedaempft: Die exakte wird mehr getiefpasst, die extra Pulse werden erst bei einer Abweichung von 1000 gestartet
+                                            
 ================================================================================================================================================================================================
 
 
