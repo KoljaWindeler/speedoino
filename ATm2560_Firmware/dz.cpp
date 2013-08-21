@@ -80,7 +80,7 @@ bool speedo_dz::calc(bool force_calc) { // called by "pull_values" with 10Hz // 
 
         /* values */
         //exact=dz;
-        exact=pSensors->flatIt_shift(dz,&dz_faktor_counter,2,exact);                        // IIR mit Rückführungsfaktor 1 für DZmotor
+        exact=pSensors->flatIt_shift(dz,&dz_faktor_counter,3,exact);       // IIR mit Rückführungsfaktor 1 für DZmotor // changed from 2->3 21.8.2013
         /* values */
 		return true;
         // Stop
