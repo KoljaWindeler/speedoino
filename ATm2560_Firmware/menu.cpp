@@ -523,7 +523,6 @@ void speedo_menu::display(){
 	} else if(floor(state/100)==37){	// some output
 		pOLED->show_storry(PSTR("It will take some time to generate a navi file from this POI. Continue?"),PSTR("POI Navigation"),DIALOG_NO_YES);
 	} else if(floor(state/1000)==37){	// file selection
-		//pPOI_finder->generate_navi_file(state%10); // this should generate the navi file and kick us to the main screen + activate the navi feature + select the created navi file + set navipointer = 0 // Danger!
 		speedo_poi_finder* pPOI_Finder=new speedo_poi_finder();
 		pPOI_Finder->calc(int(floor(state/100))%10);
 	}
