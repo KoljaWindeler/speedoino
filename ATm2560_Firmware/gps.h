@@ -34,7 +34,7 @@ public:
 	void loop();
 	void check_flag();
 	void SendByte(unsigned char data);
-	void SendString(const char Str[]);
+	void SendString(const char *data);
 	bool get_drive_status();
 	void set_gps_mark(int type);
 

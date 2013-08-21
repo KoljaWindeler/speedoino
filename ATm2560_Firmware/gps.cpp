@@ -119,13 +119,13 @@ bool speedo_gps::wait_on_gps(){
 }
 
 void speedo_gps::update_rate_1Hz(){
-	SendString("$PMTK220,1000*1F\r\n");
-	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
+	SendString(PSTR("$PMTK220,1000*1F\r\n"));
+	SendString(PSTR("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"));
 }
 
 void speedo_gps::update_rate_10Hz(){
-	SendString("$PMTK220,100*2F\r\n");
-	SendString("$PMTK314,0,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0*2C\r\n");
+	SendString(PSTR("$PMTK220,100*2F\r\n"));
+	SendString(PSTR("$PMTK314,0,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0*2C\r\n"));
 }
 
 
@@ -136,9 +136,9 @@ void speedo_gps::reconfigure(){
 	UCSR1B |= (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
 	UCSR1A |= (1 <<U2X1); // Double the USART Transmission Speed
 	sei(); // global anschalten, falls sie es nicht ohnehin schon sind
-	SendString("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
+	SendString(PSTR("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"));
 	// set GPS UART datarate to 115200:
-	SendString("$PMTK251,115200*1F\r\n");
+	SendString(PSTR("$PMTK251,115200*1F\r\n"));
 	_delay_ms(100); // time needed to send the last char
 	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_115200,F_CPU);
 	UCSR1B |=	(1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
@@ -843,10 +843,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 		pSD->sd_failed=true;
 		pDebug->sprintlnp(PSTR("open subdir /config failed"));
 	};
-	char *navi_filename;
-	navi_filename = (char*) malloc (13);
-	if (navi_filename==NULL) pDebug->sprintlnp(PSTR("Malloc failed"));
-	else memset(navi_filename,'\0',13);
+	char navi_filename[13];
 
 	sprintf(navi_filename,"NAVI%i.SMF",active_file%100);
 
@@ -872,7 +869,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 		while(!found && !eof){					// solange suchen bis wir entweder den Datensatz oder das ende haben
 			n = file.read(char_buf, 1);			// jeweils nur 1 char lesen
 			if(n==1){							// true, if not end of file
-				if(char_buf[0]=='\n'){			// find end of line
+				if(char_buf[0]==0x0A){			// find end of line
 					if(i<35) buf[i]=0x00;		// if end reach, terminate string
 					i=0;						// reset buf write pointer
 					zeile++;					// increase number of read lines
@@ -888,7 +885,6 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 			};
 		}
 		file.close();							// close it, cause we could call this as loop
-		free(navi_filename);
 		subdir.close();
 		root.close();
 
@@ -899,7 +895,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 #endif
 		//////////// DEBUG /////////////////
 
-		if (found) { 							// is set to true in previous
+		if(found) { 							// is set to true in previous
 			navi_ziel_lati=0;
 			navi_ziel_long=0;
 
@@ -911,7 +907,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 				navi_ziel_long=navi_ziel_long*10+(int(buf[a+10])-48);
 			};
 			// ziel name
-			for(int a=0;a<=9;a++){ // vorwÃ¤rts  -> 128/6=21  : 2.1km g helmholtzs 11 --> 10 buchstaben
+			for(int a=0;a<=9;a++){ // forwards -> 128/6=21  : 2.1km g helmholtzs 11 --> 10 buchstaben
 				navi_ziel_name[a]=buf[a+22];
 			};
 			navi_ziel_name[10]='\0';
@@ -1060,11 +1056,11 @@ void speedo_gps::SendByte(unsigned char data){
  *
  *  \param Str  String to be sent.
  */
-void speedo_gps::SendString(const char Str[])
-{
-	unsigned char n = 0;
-	while(Str[n])
-		SendByte(Str[n++]);
+
+
+void speedo_gps::SendString(const char *Str){//2376 ->  2530
+	while(pgm_read_byte(Str) != 0x00)
+		SendByte(pgm_read_byte(Str++));
 }
 
 bool speedo_gps::get_drive_status(){
