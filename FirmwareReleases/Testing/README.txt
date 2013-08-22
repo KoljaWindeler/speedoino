@@ -36,7 +36,7 @@
 21.08.2013  Speedoino_v2.1-160-gb21e7a2.hex + Erste Version des POI Finder
                                             - Freier Speicher vergrößert da die GPS Configstring in den Flash gewandert sind, RAM 2530 Byte, Flash 195184 Byte
                                             - DZM Pendeln eventuell gedaempft: Die exakte wird mehr getiefpasst, die extra Pulse werden erst bei einer Abweichung von 1000 gestartet
-                                            
+22.08.2013  Speedoino_v2.1-161-g29f1afe.hex + Neue Methode die analoge Drehzahl zu messen um Pendeln zu verhindern, Tiefpasswet wieder reduziert um Verzögerungen zu verhindern
 ================================================================================================================================================================================================
 
 
@@ -45,4 +45,6 @@
                                             - Runden Auswertung in den Google Earth
                                             - Zu jedem Waypoint werden Paths erzeugt
                                             - Alle Upload und Download Dialoge zeigen nun Geschwindigkeit und Restzeit an
-03.08.2013	SpeedoAndroid.apk               + Dekodieren des binären GPS Formats hinzugefügt															
+03.08.2013	SpeedoAndroid.apk               + Dekodieren des binären GPS Formats hinzugefügt	
+22.08.2013	SpeedoAndroid.apk               + Upload von POI über Config Button  hinzugefügt
+														
