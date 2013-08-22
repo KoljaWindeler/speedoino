@@ -64,8 +64,8 @@ void Speedo_aktors::run_reset_on_ATm328(char mode){
 	// show "_R_to_trigger_reset__" only if in "preparation" mode
 	if(mode==RESET_PREPARE){
 		char temp[2];
-        sprintf(temp,"%c",127);
-        pOLED->string(pSpeedo->default_font,temp,1,7);
+		sprintf(temp,"%c",127);
+		pOLED->string(pSpeedo->default_font,temp,1,7);
 		pOLED->string_P(pSpeedo->default_font,PSTR("to trigger reset"),3,7);
 	}
 
@@ -92,24 +92,24 @@ void Speedo_aktors::run_reset_on_ATm328(char mode){
 			max_time=30000;
 		};
 		while(millis()-timeout<max_time){ // time out
-				while(Serial3.available()>0){
-					Serial.print(Serial3.read(),BYTE);
-					timeout=millis();
+			while(Serial3.available()>0){
+				Serial.print(Serial3.read(),BYTE);
+				timeout=millis();
+			}
+			while(Serial.available()>0){
+				Serial3.print(Serial.read(),BYTE);
+				timeout=millis();
+			}
+			if(mode==RESET_PREPARE){
+				if(menu_state_on_enter==((pMenu->state/10))){ // button "right" was pushed
+					run_reset_on_ATm328(RESET_KICK_TO_RESET); // to the reset
+					pMenu->state=menu_state_on_enter; // reset menu state
+				} else if(menu_state_on_enter==((pMenu->state*10)+1)){ // button "left" was pushed
+					pMenu->state=menu_state_on_enter; // reset menu state, because menu->back will otherwise recaluclate two steps back
+					max_time=0;
+					break;
 				}
-				while(Serial.available()>0){
-					Serial3.print(Serial.read(),BYTE);
-					timeout=millis();
-				}
-				if(mode==RESET_PREPARE){
-					if(menu_state_on_enter==((pMenu->state/10))){ // button "right" was pushed
-						run_reset_on_ATm328(RESET_KICK_TO_RESET); // to the reset
-						pMenu->state=menu_state_on_enter; // reset menu state
-					} else if(menu_state_on_enter==((pMenu->state*10)+1)){ // button "left" was pushed
-						pMenu->state=menu_state_on_enter; // reset menu state, because menu->back will otherwise recaluclate two steps back
-						max_time=0;
-						break;
-					}
-				}
+			}
 		}
 		Serial3.end();
 		Serial3.begin(19200);
@@ -221,7 +221,7 @@ void Speedo_aktors::init(){
 
 	// see if its a clock startup or a regular startup
 	if(pSpeedo->startup_by_ignition){
-		set_rbg_active((int)0x0000);
+		set_rbg_active((int)0x0000,false);
 		update_outer_leds(true,true);
 	};
 
@@ -620,7 +620,7 @@ void Speedo_aktors::check_flag(){
 	};
 };
 
-int Speedo_aktors::set_rbg_active(int status){
+int Speedo_aktors::set_rbg_active(int status,bool now){
 	unsigned char shifter[11]={5,6,2,7,4,1,1,2,3,0,0};
 	unsigned char port[11]={1,1,1,1,1,0,1,0,1,0,1};
 	for(int i=0; i<11; i++){
@@ -638,7 +638,12 @@ int Speedo_aktors::set_rbg_active(int status){
 			}
 		}
 	}
-	return set_expander();
+	if(now){
+		return set_expander();
+	}
+
+	expander_outdated=true;
+	return 0;
 }
 
 // at on day the mStepper should be part of the aktor class

@@ -79,7 +79,7 @@ public:
 	void set_active_dimmer(bool state);
 	int set_expander();
 	int set_controll_lights(unsigned char oil,unsigned char flasher_left,unsigned char n_gear,unsigned char flasher_right,unsigned char high_beam, bool now);
-	int set_rbg_active(int status);
+	int set_rbg_active(int status, bool now);
 	speedo_stepper* m_stepper;
 	speedo_oiler* m_oiler;
 	led RGB;

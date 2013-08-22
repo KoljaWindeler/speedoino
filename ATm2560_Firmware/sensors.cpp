@@ -366,11 +366,13 @@ void Speedo_sensors::pull_values(){
 				update_stepper=true;
 			} else if(m_dz->calc(true)){ // returns true if new rpm valus is available // TODO is it wise to have two timers?
 				update_stepper=true;
+
 			};
 
 			if(update_stepper){
 				if(abs(get_RPM(0)-rpm_flatted)>1000){ // heavy change detected // changed from 500 to 1000 21.8.2013
 					pAktors->m_stepper->go_to(get_RPM(0)/11.73);
+					rpm_flatted=get_RPM(0); // added 22.8.
 				};
 			}
 		}
