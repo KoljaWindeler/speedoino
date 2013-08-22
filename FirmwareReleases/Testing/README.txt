@@ -7,7 +7,7 @@
                                             - Blinker reset im stehen
 25.07.2013  Speedoino_v2.1-56-g34d8c55.hex  + Speedo-LapTimer Test Version. Basis Funktion sehen gut aus, GPS logging scheinbar defekt
 28.07.2013  Speedoino_v2.1-64-gd85ae67.hex  + Animationen auf dem Tacho mit der Android App mit einstellbarer Geschwindigkeit abspielen
-31.07.2013  Speedoino_v2.1-78-g4e1625f.hex  + Zeit der letzte runde im Laptimer für 5 sec anzeigen,
+31.07.2013  Speedoino_v2.1-78-g4e1625f.hex  + Zeit der letzte Runde im Laptimer für 5 sec anzeigen,
                                             - Upload/Download von Dateien verbessert (neue Android App nutzen!), 
                                             - Animationen werden auf dem Tacho mit verminderter Helligkeit abgespielt (bessere Graustufen-Unterschiede)
                                             - GPS Logging repariert (dritter Anlauf -> geht jetzt scheinbar)
@@ -31,14 +31,15 @@
                                             - RGB LEDs wechseln auf FlasherFarbe wenn POI nah ist
                                             - Warnung für defekten SpeedSensor hinzugefügt (GPS übernimmt bei fehlendem Sensor die Geschwindigkeit)
                                             - Freien Speicher durch POI-Warner reduziert (2388/8192 Byte RAM frei) (187940/256000 Byte Flash genutzt)
-19.08.2013  Speedoino_v2.1-147-g20644d8.hex + Datei-Auswahl-Menü als Vorversion für den POI Finder hinzugefügt 
+19.08.2013  Speedoino_v2.1-147-g20644d8.hex + Datei-Auswahl-Menü als Vorversion für den POI Finder hinzugefügt
+                                            - Beschleunigter DZM Pendelt .. Ursache unbekannt  
                                             - Freien Speicher durch POI-Finder reduziert (2376/8192 Byte RAM frei) (190092/256000 Byte Flash genutzt)
 21.08.2013  Speedoino_v2.1-160-gb21e7a2.hex + Erste Version des POI Finder
                                             - Freier Speicher vergrößert da die GPS Configstring in den Flash gewandert sind, RAM 2530 Byte, Flash 195184 Byte
                                             - DZM Pendeln eventuell gedaempft: Die exakte wird mehr getiefpasst, die extra Pulse werden erst bei einer Abweichung von 1000 gestartet
-22.08.2013  Speedoino_v2.1-166-g7213ebd.hex + Neue Methode die analoge Drehzahl zu messen um Pendeln zu verhindern, Tiefpasswert wieder reduziert um Verzögerungen zu verhindern
-                                            - Bisher recht gute Ergebnisse mit dem DZM, trotzdem erstmal weiterhin Testing
-                                            - POI Warner an verschiedenen Stellen getestet und sehr zufrieden
+22.08.2013  Speedoino_v2.1-166-g7213ebd.hex + Neue Methode die analoge Drehzahl zu messen um Pendeln zu verhindern (Fehler in der Abtastzeitberechnung gefunden), Tiefpasswert wieder reduziert um Verzögerungen zu verhindern
+                                            - Bisher recht gute Ergebnisse mit dem DZM: Gleiche Reaktionstreu wie Versioin 98 und kein Pendeln mehr, trotzdem erstmal weiterhin Testing, TESTER Bestätigung nötig!
+                                            - POI Warner an verschiedenen Stellen getestet und sehr zufrieden, TESTER Bestätigung nötig!
                                             - GPS Schnittstellengeschwindigkeit auf 9600 Baud reduziert, solange keine 10Hz nötig sind. Vielleicht waren die 3.3V Pegel bei 115k nicht genug für die 5V Logik des ATm2560
 
 ================================================================================================================================================================================================
