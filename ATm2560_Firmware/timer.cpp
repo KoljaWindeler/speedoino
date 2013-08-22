@@ -71,7 +71,8 @@ void speedo_timer::every_sec(configuration* pConfig) {
 
 		// check gps
 		if((millis()/1000)%10==0 && pSensors->m_gps->wait_on_gps()){
-			pSensors->m_gps->reconfigure();
+			pSensors->m_gps->reconfigure(false); // default 9600
+			pSensors->m_gps->update_rate_1Hz();
 		}
 #ifdef TACHO_SMALLDEBUG
 		pDebug->sprintlnp(PSTR("."));
