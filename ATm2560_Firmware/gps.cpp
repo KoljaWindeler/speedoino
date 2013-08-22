@@ -931,7 +931,7 @@ void speedo_gps::generate_new_order(){ // eine neue Order auslesen
 			//////////// DEBUG /////////////////
 
 			navi_point=zeile-2; // set to max
-			if(navi_point<0) navi_point=0;
+			if(navi_point<0) navi_point=0; // hmm reason to stop?
 			generate_new_order(); // das hier ist das zurÃ¼cksetzen, wenn man Ã¼ber den letzten Punkt hinweg klickt
 		};
 

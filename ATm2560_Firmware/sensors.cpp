@@ -315,7 +315,7 @@ void Speedo_sensors::single_read(){
 void Speedo_sensors::pull_values(){
 	// is an update required?
 	boolean update_required=false;
-	if((millis()-fourty_Hz_timer)>=24){ // 100ms
+	if((millis()-fourty_Hz_timer)>=24){ // 25ms
 
 #ifdef TACHO_SMALLDEBUG
 		pDebug->sprintp(PSTR("-s"));
