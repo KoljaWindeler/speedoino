@@ -595,9 +595,14 @@ OnClickListener {
 				filePath = data.getStringExtra(FileDialog.RESULT_PATH);
 				Log.i(TAG, "File open gab diesen Dateinamen aus:" + filePath);
 				_putFileDialog = new putFileDialog(this);
-				_putFileDialog.execute(filePath,
-						"CONFIG" + filePath.substring(filePath.lastIndexOf('/'))); // /mnt/sdcard/Download/bild.sng,
-				// GFX/bild.sng
+				
+				String check_filename_string=filePath.substring(filePath.lastIndexOf('/')+1);
+				String path_adder="POI";
+				if(check_filename_string.equals("BASE.TXT") || check_filename_string.equals("GANG.TXT") || check_filename_string.equals("POI.TXT") || check_filename_string.equals("SPEED_T.TXT") || check_filename_string.equals("SPEEDO.TXT") || check_filename_string.equals("TEMPER.TXT")){
+					path_adder="CONFIG";
+				};
+
+				_putFileDialog.execute(filePath,path_adder + filePath.substring(filePath.lastIndexOf('/'))); // /mnt/sdcard/Download/bild.sng,
 				Log.i(TAG, "Datei wurde hochgeladen");
 				// delete the file
 				// File file = new File(filePath);
