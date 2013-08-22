@@ -370,7 +370,7 @@ void Speedo_sensors::pull_values(){
 			};
 
 			if(update_stepper){
-				if(abs(get_RPM(0)-rpm_flatted)>1000){ // heavy change detected // changed from 500 to 1000 21.8.2013
+				if(abs(get_RPM(0)-rpm_flatted)>500){ // heavy change detected
 					pAktors->m_stepper->go_to(get_RPM(0)/11.73);
 					rpm_flatted=get_RPM(0); // added 22.8.
 				};
