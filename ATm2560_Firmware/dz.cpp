@@ -18,18 +18,14 @@
 #include "global.h"
 
 speedo_dz::speedo_dz(){
-	previous_time=millis();
+	calc_previous_time=millis();
+	peak_last_reception_timestamp=millis();
 	previous_dz=0;
-	rounded=0;                 // to show on display, rounded by 50
 	exact=0;                 // real rotation speed
-	exact_disp=0;
 	peak_count=0;
 	blitz_dz=0;
 	blitz_en=false;
 	dz_faktor_counter=0;
-	dz_disp_faktor_counter=0;
-	previous_peaks=0;
-	dz_flat=0;
 }
 
 void speedo_dz::counter(){
@@ -39,7 +35,8 @@ void speedo_dz::counter(){
 	Serial.print(" ");
 	Serial.println(peak_count);
 #endif
-	peak_count++; // läuft bis 65.536 dann auf 0
+	peak_count++; // lï¿½uft bis 65.536 dann auf 0
+	peak_last_reception_timestamp=millis();
 };
 
 unsigned int speedo_dz::get_dz(bool exact_dz){
@@ -48,46 +45,55 @@ unsigned int speedo_dz::get_dz(bool exact_dz){
 
 bool speedo_dz::calc(bool force_calc) { // called by "pull_values" with 10Hz // new 3.7.2013, previous 5Hz
     ///// DZ BERECHNUNG ////////
-    unsigned long now=millis();                                             // aktuelle zeit
-    unsigned long differ=now-previous_time;                                 // zeit seit dem letzte mal abholen der daten
-    unsigned int  now_peaks=peak_count;                                     // aktueller dz zähler stand, separate var damit der peakcount weiter verndert werden koennte
-    if(now_peaks>4 && (differ>25 || force_calc)){                 // max mit 40Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
-        // am 17.8. von 50 auf 25 geändert ... das sind jetzt 40 Hz, mal sehen ob das noch klappt
-        // am 3.8. von 100 auf 50 geändert
-        // bei 4.000 rpm => 66 pps => 15ms Pro Peak, 4 Peaks in 60 ms
-        // somit kann man mit 50 statt 100 bis 4800 doppelt so schnell reagieren,
-        // mit 100ms war das sehr träge, mal sehen ob das die COM schnittstelle hergibt
-        //now_peaks=now_peaks>>anzahl_shift;                                // könnte ja sein das man weniger umdrehungen als funken hat, hornet hat 2 Funken je Umdrehun
-        // die maximale übertragungsrate zwischen ATm8 und ATm2560 sollte nicht überschritten werden
-        // pro Übertragung werden benötigt: 19200 Baud, 2400 Byte/sek, 7 Byte, 2,916667 ms, machen wir mal 10 ms draus.
-        // bei 15.000 U/min => 250 U/sec
-        // da bei der Hornet 2 Zündungen pro Umdrehung vorkommen
-        // 500 Pulse / sec => 2ms zwischen 2 Pulsen, 5 Pulse in 10 ms
-        //
-        // bei 1.300 U/min => 21,6 U/min
-        // 43 Pulse / sec => 23ms zwischen 2 Pulsen, 5 Pulse in 116,27ms
+    unsigned int  _temp_peak_count=peak_count;                                     // aktueller dz zï¿½hler stand, separate var damit der peakcount weiter verndert werden koennte
+	unsigned long _temp_peak_last_reception_timestamp=peak_last_reception_timestamp;
 
-        unsigned int dz=60000/differ*now_peaks>>1; // Drehzahl berechnet (60.000 weil ms => min)
-        if(dz>15000){ // wenn man über 15000 U/min => Abstand von 2 Zündungen = 60000[ms/min]/15000[U/min] = 4 [ms/U]
+	unsigned long differ=_temp_peak_last_reception_timestamp-calc_previous_time;  // zeit seit dem letzte mal abholen der daten
+    if(_temp_peak_count>4 && (differ>25 || force_calc)){  // max mit 40Hz, bei niedriger drehzahl noch seltener, 1400 rpm => 680 ms
+		/* new concept at 22/08/2013
+         * at 4.000 rpm => 4000/60*2(double ignition) => 133 pps => 7,5ms per Peak, 5 Peaks in 37 ms
+		 * -> The Sensor class calls us ~every 25ms with force_calc=true
+		 * AT t=000.0: 01st pulse -> calls "counter()" -> counter value = 0 | peak_last_reception_timestamp=0
+		 * AT t=007.5: 02nd pulse -> calls "counter()" -> counter value = 1 | peak_last_reception_timestamp=7.5
+		 * AT t=015.0: 03rd pulse -> calls "counter()" -> counter value = 2 | peak_last_reception_timestamp=15
+		 * AT t=022.5: 04th pulse -> calls "counter()" -> counter value = 3 | peak_last_reception_timestamp=22.5
+		 * AT t=025.0: sensor class calls us _temp_peak_count=4 -> no calculation
+		 * AT t=030.0: 05th pulse -> calls "counter()" -> counter value = 4 | peak_last_reception_timestamp=30
+		 * AT t=037.5: 06th pulse -> calls "counter()" -> counter value = 5 | peak_last_reception_timestamp=37.5
+		 * AT t=045.0: 07th pulse -> calls "counter()" -> counter value = 6 | peak_last_reception_timestamp=45
+		 * AT t=050.0: sensor class calls us _temp_peak_count=6 -> differ=45, counter=6 -> dz=((60000>>1)*_temp_peak_count/differ)=((30000)*6/45)=4000 setting counter value=0
+		 * AT t=052.5: 08th pulse -> calls "counter()" -> counter value = 1 | peak_last_reception_timestamp=52.5
+		 * AT t=060.0: 09th pulse -> calls "counter()" -> counter value = 2 | peak_last_reception_timestamp=60
+		 * AT t=067.5: 10th pulse -> calls "counter()" -> counter value = 3 | peak_last_reception_timestamp=67.5
+		 * AT t=075.0: sensor class calls us _temp_peak_count=3 -> no calculation
+		 * AT t=075.0: 11th pulse -> calls "counter()" -> counter value = 4 | peak_last_reception_timestamp=75
+		 * AT t=082.5: 12th pulse -> calls "counter()" -> counter value = 5 | peak_last_reception_timestamp=82.5
+		 * AT t=090.0: 13th pulse -> calls "counter()" -> counter value = 6 | peak_last_reception_timestamp=90
+		 * AT t=097.5: 14th pulse -> calls "counter()" -> counter value = 7 | peak_last_reception_timestamp=97.5
+		 * AT t=100.0: sensor class calls us _temp_peak_count=7 -> differ=97.5-45.0 counter=7 -> dz=((60000>>1)*_temp_peak_count/differ)=((30000)*7/52.5)=4000 -> passt
+		 */
+
+		// am 17.8. von 50 auf 25 geï¿½ndert ... das sind jetzt 40 Hz, mal sehen ob das noch klappt
+        // am 3.8. von 100 auf 50 geï¿½ndert
+
+		peak_count=0;
+		calc_previous_time=_temp_peak_last_reception_timestamp; // save timestamp (of calc() call (!))
+        unsigned int dz=((60000>>1)*_temp_peak_count/differ); // Calc RPM (60.000 for ms => min) // >>1 for doule ignition
+        if(dz>15000){ // wenn man ï¿½ber 15000 U/min => Abstand von 2 Zï¿½ndungen = 60000[ms/min]/15000[U/min] = 4 [ms/U]
             dz=previous_dz; // alten Wert halten, kann nicht sein
-        };
-
-        /* Timing */
-        peak_count=0;
-        previous_time=now; // speichere wann ich zuletzt nachgesehen habe
-        previous_dz=dz; // speichere die aktuelle dz
-        /* Timing */
+        } else {
+			previous_dz=dz; // speichere die aktuelle dz
+		}
 
         /* values */
         //exact=dz;
-        exact=pSensors->flatIt_shift(dz,&dz_faktor_counter,3,exact);       // IIR mit Rückführungsfaktor 1 für DZmotor // changed from 2->3 21.8.2013
+        exact=pSensors->flatIt_shift(dz,&dz_faktor_counter,2,exact);       // IIR mit Rï¿½ckfï¿½hrungsfaktor 4 fï¿½r DZmotor
         /* values */
 		return true;
         // Stop
-    } else if(now-previous_time>500){
-        rounded=0;
+    } else if(_temp_peak_last_reception_timestamp-calc_previous_time>500){
         exact=0;
-        previous_time=now;
+        calc_previous_time=_temp_peak_last_reception_timestamp;
 		return true;
     };
 	return false;
@@ -123,4 +129,3 @@ int speedo_dz::check_vars(){
 	}
 	return 0;
 };
-
