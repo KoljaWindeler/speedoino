@@ -87,11 +87,11 @@ bool speedo_dz::calc(bool force_calc) { // called by "pull_values" with 10Hz // 
 
         /* values */
         //exact=dz;
-        exact=pSensors->flatIt_shift(dz,&dz_faktor_counter,2,exact);       // IIR mit Rï¿½ckfï¿½hrungsfaktor 4 fï¿½r DZmotor
+        exact=pSensors->flatIt_shift(dz,&dz_faktor_counter,2,exact);       // IIR mit faktor 4 for RPMmotor
         /* values */
 		return true;
         // Stop
-    } else if(_temp_peak_last_reception_timestamp-calc_previous_time>500){
+    } else if(millis()-_temp_peak_last_reception_timestamp>500){
         exact=0;
         calc_previous_time=_temp_peak_last_reception_timestamp;
 		return true;
