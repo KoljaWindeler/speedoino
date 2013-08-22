@@ -97,7 +97,8 @@ void speedo_gps::init(){
 #define BAUDRATE_9600 9600
 #define BAUDRATE_115200 115200
 	// set own UART datarate to 115200 @16MHz clock
-	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_115200,F_CPU);
+	//UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_115200,F_CPU);
+	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_9600,F_CPU); // new since 22.8.
 	UCSR1B |=	(1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
 	UCSR1A |= 	(1<<U2X1); // Double the USART Transmission Speed
 	sei();
@@ -129,18 +130,31 @@ void speedo_gps::update_rate_10Hz(){
 }
 
 
-void speedo_gps::reconfigure(){
+void speedo_gps::reconfigure(bool to_fast){
 	//Serial.println("GPS failed, reconfiguring");
 	// Berechnungen
-	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_9600,F_CPU);
+	if(to_fast){ // swtich FROM slow to FAST
+		UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_9600,F_CPU);
+	} else {
+		UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_115200,F_CPU);
+	}
 	UCSR1B |= (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
 	UCSR1A |= (1 <<U2X1); // Double the USART Transmission Speed
 	sei(); // global anschalten, falls sie es nicht ohnehin schon sind
 	SendString(PSTR("$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"));
-	// set GPS UART datarate to 115200:
-	SendString(PSTR("$PMTK251,115200*1F\r\n"));
+	if(to_fast){
+		// set GPS UART datarate to 115200:
+		SendString(PSTR("$PMTK251,115200*1F\r\n"));
+	} else {
+		SendString(PSTR("$PMTK251,9600*17\r\n"));
+	}
 	_delay_ms(100); // time needed to send the last char
-	UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_115200,F_CPU);
+	if(to_fast){ // swtich FROM slow to FAST
+		UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_115200,F_CPU);
+	} else {
+		UBRR1L	=	UART_BAUD_SELECT(BAUDRATE_9600,F_CPU);
+	}
+
 	UCSR1B |=	(1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1); // rx,tx,rx interrupt
 	UCSR1A |= 	(1<<U2X1); // Double the USART Transmission Speed
 	sei();
@@ -1059,8 +1073,11 @@ void speedo_gps::SendByte(unsigned char data){
 
 
 void speedo_gps::SendString(const char *Str){//2376 ->  2530
-	while(pgm_read_byte(Str) != 0x00)
+	while(pgm_read_byte(Str) != 0x00){
+		//Serial.print(pgm_read_byte(Str));
 		SendByte(pgm_read_byte(Str++));
+	}
+
 }
 
 bool speedo_gps::get_drive_status(){

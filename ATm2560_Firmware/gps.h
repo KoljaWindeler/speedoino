@@ -48,7 +48,7 @@ public:
 	void generate_new_order();
 	unsigned long nmea_to_dec(unsigned long nmea);
 	int get_logged_points(char* buffer,int i,int* nbytes);
-	void reconfigure();
+	void reconfigure(bool to_fast);
 	bool wait_on_gps();
 	void update_rate_1Hz();
 	void update_rate_10Hz();
