@@ -74,7 +74,9 @@ public:
 	int  update_outer_leds(bool dimm,bool overwrite);
 	int set_bt_pin();
 	void check_flag();
+	bool check_mac_key();
 	int ask_bt(char *command);
+	int ask_bt(char *buffer, bool answere_needed, int8_t max_length, uint8_t* char_rec);
 	void stop_dimmer();
 	void set_active_dimmer(bool state);
 	int set_expander();

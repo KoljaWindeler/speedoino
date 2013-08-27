@@ -558,18 +558,85 @@ int Speedo_aktors::set_bt_pin(){
 	return -2;
 }
 
+bool Speedo_aktors::check_mac_key(){
+	char at_commands[22];
+	sprintf_P(at_commands,PSTR("ATB?%c"),0x0D);
+	uint8_t returns=0;
+	if(ask_bt(at_commands,true,22,&returns)==0){
+		if(returns>=17){
+			// kick sondernzeichern
+			int char_array_pointer=0;
+			for(uint8_t n=0;n<returns; n++){
+				if((at_commands[n]>='0' && at_commands[n]<='9') || (at_commands[n]>='a' && at_commands[n]<='f')){
+					at_commands[char_array_pointer]=at_commands[n];
+					char_array_pointer++;
+				} else if(at_commands[n]==' ' || char_array_pointer>=12){
+					at_commands[char_array_pointer]=0x00;
+					n=returns;
+					returns=char_array_pointer;
+				}
+			}
+
+			// move it from ascii hex to hex
+			for(uint8_t n=0;n<char_array_pointer; n++){
+				if(at_commands[n]>='0' && at_commands[n]<='9'){
+					at_commands[n]-='0';
+				}
+				if(at_commands[n]>='a' && at_commands[n]<='f'){
+					at_commands[n]-='a'-10;
+				}
+				if(at_commands[n]>='A' && at_commands[n]<='F'){
+					at_commands[n]-='A'-10;
+				}
+			}
+
+			// calc checksum
+			uint8_t temp=0x00;
+			for(uint8_t n=0;n<6;n++){
+				temp+=((at_commands[n*2]&0x0f)<<4)+(at_commands[n*2+1]&0x0f);
+			}
+
+			if(		temp==0xD2 || // Kolja
+					temp==0x8C || // Thomas
+					temp==0xC7 || // Phil
+					temp==0xD3 || // Patrick
+					temp==0xA3 || // Devel-Speedo
+					temp==0xC6){  // Andrej
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
 int Speedo_aktors::ask_bt(char *command){
+	uint8_t temp;
+	return ask_bt(command,false,0,&temp); // by default no answere
+}
+
+int Speedo_aktors::ask_bt(char *buffer, bool answere_needed, int8_t max_length, uint8_t* char_rec){
 	for(int looper=0;looper<3;looper++){
-		Serial.print(command);
+		Serial.print(buffer);
 
 		// A T \r \n O K \r \n = 8
 
 		//warte bis der Buffer nicht voller wird
 		_delay_ms(200);
 
-		char ok_state=0; // 0 teile von "o" "k"
+		uint8_t ok_state=0; // 0 teile von "o" "k"
+		int8_t n=0;
 		while(Serial.available()){
 			char temp = Serial.read();
+			if(answere_needed){
+				*char_rec=*char_rec+1;
+				if(n<(max_length-1)){
+					buffer[n]=temp;
+					n++;
+					buffer[n]=0x00; // EOString, 0x00 will be MAX in (max-length-1)
+				};
+			};
+
 			if(temp=='O'){
 				ok_state=1; // 1. TEIL
 			} else if(temp=='K' && ok_state==1){
