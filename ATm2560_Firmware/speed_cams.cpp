@@ -244,7 +244,8 @@ bool speedo_speedcams::calc(){
 					}
 
 					// is it worth turning on the warning?
-					if(POI_near_dist<WARNING_DIST){
+
+					if(pSensors->get_speed(false)>10 && ((pSensors->get_speed(false)<70 && POI_near_dist<(WARNING_DIST>>1)) || (pSensors->get_speed(false)>=70 && POI_near_dist<WARNING_DIST))){
 						POI_near=true;
 					} else {
 						POI_near=false;
