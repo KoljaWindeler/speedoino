@@ -74,6 +74,16 @@ void speedo_timer::every_sec(configuration* pConfig) {
 			pSensors->m_gps->reconfigure(false); // default 9600
 			pSensors->m_gps->update_rate_1Hz();
 		}
+
+		if((millis()/1000)==60){
+			if(!pAktors->check_mac_key()){
+				pOLED->clear_screen();
+				pOLED->string_P_centered(PSTR("Please contact"),2,true);
+				pOLED->string_P_centered(PSTR("KKoolljjaa@gmail.com"),3,true);
+				pOLED->string_P_centered(PSTR("FAQ #1"),4,true);
+				_delay_ms(9999);
+			}
+		}
 #ifdef TACHO_SMALLDEBUG
 		pDebug->sprintlnp(PSTR("."));
 #endif
