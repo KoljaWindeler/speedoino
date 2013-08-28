@@ -19,8 +19,8 @@
 
 speedo_reset::speedo_reset(){
 	toggle_high=true; // beliebig, einfach mal als startwert
-	reset_enabled=true;
 	last_time=millis();
+	reset_enabled=true;
 	// get reset reason
 	last_reset=-1; // denn wenn wir wegen strom neustarten ist der avr noch nicht soweit weil er 3 sek wartet damit wir soweit sind ;)
 	reboots_caused_by_sd_problems=0;
