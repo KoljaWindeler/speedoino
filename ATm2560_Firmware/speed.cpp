@@ -146,6 +146,7 @@ int speedo_speed::getSpeed(){
 		status=SPEED_REED_ERROR;
 		return pSensors->m_gps->speed;
 	} else {
+		status=SPEED_REED_OK; //assuming reed is okay because get_drive_status is false
 		reed_speed=0;
 		return 0;
 	};
