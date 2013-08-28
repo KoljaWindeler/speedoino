@@ -369,12 +369,14 @@ void Speedo_sensors::pull_values(){
 
 			};
 
-			if(update_stepper){
-				if(abs(get_RPM(0)-rpm_flatted)>500){ // heavy change detected
-					pAktors->m_stepper->go_to(get_RPM(0)/11.73);
-					rpm_flatted=get_RPM(0); // added 22.8.
-				};
-			}
+//			if(update_stepper){
+//				if(abs(get_RPM(0)-rpm_flatted)>500){ // heavy change detected
+//					pAktors->m_stepper->go_to(get_RPM(0)/11.73);
+//					rpm_flatted=get_RPM(0); // added 22.8.
+//				};
+//			}
+			pAktors->m_stepper->go_to(get_RPM(0)/11.73); // einfach mal flatit probieren, sonst
+
 		}
 	}
 
@@ -553,6 +555,16 @@ ISR(PCINT2_vect ){
 		}
 	} else if(pConfig->get_hw_version()>7) { // from version higher than 7, CAN Interrupt is not on this interrupt port
 		pSensors->check_inputs();
+	} else if(pConfig->get_hw_version()==6){
+		if(!(PINK&(1<<PK4))){
+			pSensors->m_reset->reset_enabled=true;
+		}
+		if(pSensors->m_reset->reset_enabled && (PINK&(1<<PK5))){
+			typedef void (*AppPtr_t)(void) __attribute__ ((noreturn));
+			AppPtr_t AppStartPtr = (AppPtr_t)0x0000;
+			_delay_ms(800);
+			AppStartPtr();
+		}
 	}
 }
 
