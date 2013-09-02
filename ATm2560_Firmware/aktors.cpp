@@ -33,7 +33,7 @@ Speedo_aktors::Speedo_aktors(){
 	water_max_value=0;
 
 	led_mode=1;
-
+	pointer_highlight_mode=0;
 	bt_pin=1234;
 	dimm_state=999; //???
 };
@@ -343,20 +343,25 @@ void Speedo_aktors::set_active_dimmer(bool state){
 	colorfade_active=state;
 }
 
-int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){
+int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 	if(!colorfade_active) return 0;
 	if(overwrite) dimm_state=999;
 
 	////////// SHIFT FLASH ////////////////
-	bool attention_required=false;
+	////////// calc it //////////
 	if(pSensors->get_RPM(0)>unsigned(pSensors->m_dz->blitz_dz) && pSensors->m_dz->blitz_en){
 		attention_required=true;
+		set_rbg_active((int)0x0000,false); // activate all led's
 	} else if(pSpeedCams->get_active() && pMenu->state==11){
 		if(pSpeedCams->calc()){
 			attention_required=true;
+			set_rbg_active((int)0x0000,false); // activate all led's
 		}
+	} else {
+		attention_required=false;
 	}
 
+	/////// now show it //////////
 	if(attention_required){
 		if(dimm_state==FLASH_COLOR_REACHED){
 			return 0;
@@ -591,19 +596,22 @@ bool Speedo_aktors::check_mac_key(){
 			}
 
 			// calc checksum
-			uint8_t temp=0x00;
+			uint16_t temp=0x00;
 			for(uint8_t n=0;n<6;n++){
 				temp+=((at_commands[n*2]&0x0f)<<4)+(at_commands[n*2+1]&0x0f);
 			}
+			temp=temp&0xff; // cut it to 8-bit
 
-			if(		temp==0xD2 || // Kolja
-					temp==0x8C || // Thomas
-					temp==0xC7 || // Phil
-					temp==0xD3 || // Patrick
-					temp==0xA3 || // Devel-Speedo
-					temp==0xC6){  // Andrej
+			if(		temp==0xD2 || // Kolja			= 00+12+6F+28+3C+ED
+					temp==0xC8 || // Thomas			= 00+12+6F+28+3C+E3
+					temp==0xC7 || // Phil			= 00+12+6F+28+3C+E2
+					temp==0xD3 || // Patrick		= 00+12+6F+28+3C+EE
+					temp==0xA3 || // Devel-Speedo 	= 00+12+6f+22+45+bb
+					temp==0xC6){  // Andrej			= 00+12+6F+28+3C+E1
 				return true;
 			}
+		} else { // if no answere -> break
+			return true;
 		}
 	}
 	return false;
@@ -675,10 +683,9 @@ int Speedo_aktors::set_controll_lights(unsigned char oil,unsigned char flasher_l
 	};
 	if(now){
 		return set_expander();
-	} else {
-		expander_outdated=true;
-		return 0;
-	};
+	}
+	expander_outdated=true;
+	return 0;
 }
 
 void Speedo_aktors::check_flag(){
@@ -714,3 +721,20 @@ int Speedo_aktors::set_rbg_active(int status,bool now){
 }
 
 // at on day the mStepper should be part of the aktor class
+
+
+void Speedo_aktors::rgb_action(int needle_pos){
+	if(pointer_highlight_mode==1 && !attention_required){
+		int8_t pos=((needle_pos/15)*11)/1000; // 15k rpm on 11 leds
+		int8_t end=pos+1;
+		int8_t start=pos-1;
+		int16_t status=0; // switch all off
+
+		while(start<0){ start++; };
+		while(end>10) { end--; };
+		for(int8_t i=start; i<=end; i++){ // activate only the interesting ones
+			status|=(1<<i);
+		};
+		set_rbg_active(~status,false); // low active
+	}
+}

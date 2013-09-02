@@ -590,6 +590,11 @@ int configuration::write(const char *filename){
 					sprintf(buffer,"%i\n",pSpeedCams->get_active());
 					pSD->writeString(file, buffer);
 
+					strcpy_P(buffer, PSTR("P_highl="));
+					pSD->writeString(file, buffer);
+					sprintf(buffer,"%i\n",pAktors->pointer_highlight_mode);
+					pSD->writeString(file, buffer);
+
 					// ==============================================================================================================//
 
 
@@ -1068,6 +1073,8 @@ int configuration::parse(char* buffer){
 		bool temp;
 		parse_bool(buffer,seperator,&temp);
 		pSpeedCams->set_active(temp);
+	} else if(strcmp_P(name,PSTR("P_highl"))==0){
+		parse_uint8_t(buffer,seperator,(uint8_t*)&pAktors->pointer_highlight_mode);
 	} else {
 		return_value=-2; // ungltiger identifier
 	}
