@@ -41,6 +41,11 @@
                                             - Bisher recht gute Ergebnisse mit dem DZM: Gleiche Reaktionstreu wie Versioin 98 und kein Pendeln mehr, trotzdem erstmal weiterhin Testing, TESTER Bestätigung nötig!
                                             - POI Warner an verschiedenen Stellen getestet und sehr zufrieden, TESTER Bestätigung nötig!
                                             - GPS Schnittstellengeschwindigkeit auf 9600 Baud reduziert, solange keine 10Hz nötig sind. Vielleicht waren die 3.3V Pegel bei 115k nicht genug für die 5V Logik des ATm2560
+01.09.2013  Speedoino_v2.1-188-ge29bf94.hex + DZM hat leichte Schrittverluste daher jetzt mit 25ms dauerfeuer
+                                            - GPS Geschwindigkeit scheint Fehler zu beheben, daher jetzt immer 19200 (10Hz passen auch bei 19200)
+                                            - Neuer Modus zur Beleuchtung des Zeigers: Die RGB LEDs werden nur im Bereich des Zeigers aktiv (per Menü einstellbar, Vorgabe: alle immer aktiv)
+                                            - Abstandschätzer beschleunigt, berechnet nun nach Wunsch die Quadrate des Abstands, dafür keine Wurzel
+                                            - Menü Programmierung optimiert, sollte nicht sichtbar sein
 
 ================================================================================================================================================================================================
 
