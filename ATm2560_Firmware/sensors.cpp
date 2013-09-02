@@ -352,6 +352,7 @@ void Speedo_sensors::pull_values(){
 			/*stepper*/
 			if(pAktors->m_stepper->init_steps_to_go==0){
 				pAktors->m_stepper->go_to(get_RPM(0)/11.73); // einfach mal flatit probieren, sonst
+				pAktors->rgb_action(get_RPM(0));
 			};
 			/*stepper*/
 
@@ -376,6 +377,7 @@ void Speedo_sensors::pull_values(){
 //				};
 //			}
 			pAktors->m_stepper->go_to(get_RPM(0)/11.73); // einfach mal flatit probieren, sonst
+			pAktors->rgb_action(get_RPM(0));
 
 		}
 	}
