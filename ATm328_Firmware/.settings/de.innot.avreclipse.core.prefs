@@ -36,11 +36,11 @@ avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/EEPROM
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/EEPROMFromConfig=true
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/FlashFile=
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/FlashFromConfig=true
-avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/ByteValues=226\:209\:6
+avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/ByteValues=238\:208\:6
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/FileName=
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/MCUid=atmega328p
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/UseFile=false
-avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/Write=false
+avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Fuses/Write=true
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Locks/ByteValues=63
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Locks/FileName=
 avrtarget/de.innot.avreclipse.configuration.app.release.528643736/avrdude/Locks/MCUid=atmega328p

@@ -2560,16 +2560,16 @@
  1429               		.file 3 "/usr/lib/gcc/avr/4.7.0/../../../avr/include/stdint.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 stk500boot.c
-     /tmp/ccbpvWKl.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccbpvWKl.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccbpvWKl.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccbpvWKl.s:5      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccbpvWKl.s:6      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccbpvWKl.s:10     .text:0000000000000000 sendchar
-     /tmp/ccbpvWKl.s:37     .init9:0000000000000000 __jumpMain
-     /tmp/ccbpvWKl.s:47     *ABS*:00000000000008ff __stack
-     /tmp/ccbpvWKl.s:85     .text.startup:0000000000000000 main
-     /tmp/ccbpvWKl.s:1374   .rodata:0000000000000000 CSWTCH.12
+     /tmp/ccnqP53N.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccnqP53N.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccnqP53N.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccnqP53N.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccnqP53N.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccnqP53N.s:10     .text:0000000000000000 sendchar
+     /tmp/ccnqP53N.s:37     .init9:0000000000000000 __jumpMain
+     /tmp/ccnqP53N.s:47     *ABS*:00000000000008ff __stack
+     /tmp/ccnqP53N.s:85     .text.startup:0000000000000000 main
+     /tmp/ccnqP53N.s:1374   .rodata:0000000000000000 CSWTCH.12
 
 UNDEFINED SYMBOLS
 __do_copy_data
