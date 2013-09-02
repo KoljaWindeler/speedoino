@@ -130,7 +130,7 @@ void speedo_speedcams::interface(){
 	int temp=pSensors->m_gps->calc_dist_supported(db_last_calc);
 	if(pSpeedo->disp_zeile_bak[4]!=temp){
 		pSpeedo->disp_zeile_bak[4]=temp;
-		sprintf_P(buffer,PSTR("b2s   %5i m/ ~10 km"),temp);
+		sprintf_P(buffer,PSTR("b2s  %5i m/ ca10 km"),temp);
 		pOLED->string(pSpeedo->default_font,buffer,0,4);
 	}
 
@@ -158,13 +158,11 @@ bool speedo_speedcams::calc(){
 #endif												// DEBUG TIME
 	//////////////////////////////////////// DEBUG ///////////////////////////////////////////////////
 
-
 	///////////////////////////////// break here if we are not active /////////////////////////////////
 	if(!active){
 		return false;
 	}
 	///////////////////////////////// break here if we are not active /////////////////////////////////
-
 
 	//////////////////////// bigdatabase 2 smalldatabase is currently running ////////////////////////
 	if(b2s_status.running){							// let him finish first (fast)
@@ -179,7 +177,7 @@ bool speedo_speedcams::calc(){
 	///////////////////////////////// b2s is not running, trigger b2s/s2r/cn3 /////////////////////////////////
 	else { 											// big2small not running
 		if(gps_outdated){							// updating is only valid if the last gps_sample is outdated
-			if(pSensors->m_gps->calc_gps_goodies()>=0){ 				// we have 4 Points at all, so its worth calc the goodies
+			if(pSensors->m_gps->calc_gps_goodies()>=0){ // we have 4 Points at all, so its worth calc the goodies
 				gps_outdated=false;					// GPS is not longer outdated..
 				bool calc_top_three=true;			// assume that we should recalc the top three
 
@@ -486,78 +484,78 @@ int8_t speedo_speedcams::parse_complete_db(){
 
 
 int8_t speedo_speedcams::parse_small_db(){
-	unsigned char temp[25];
-	simple_coordinate loaded_coordinates;
-	uint16_t distances[3]={64000,64000,64000};
-	uint16_t temp_distance=0;
-	uint8_t points_parsed=0;
-	SdFile poi_n_file;
-	strcpy_P((char *)temp,PSTR("CONFIG/POI_N.TXT")); // static file
+    unsigned char temp[25];
+    simple_coordinate loaded_coordinates;
+    uint32_t distances[3]={-1,-1,-1}; // use overrun
+    uint16_t temp_distance=0;
+    uint8_t points_parsed=0;
+    SdFile poi_n_file;
+    strcpy_P((char *)temp,PSTR("CONFIG/POI_N.TXT")); // static file
 
-	if(pFilemanager_v2->get_file_handle(temp,&poi_n_file,O_READ)<0){	// open it now
-		poi_n_file.close();
+    if(pFilemanager_v2->get_file_handle(temp,&poi_n_file,O_READ)<0){    // open it now
+        poi_n_file.close();
 #if defined(DEBUG_HEAVY_CHANGES)
-		Serial.println("Damn, opening failed!");
+        Serial.println("Damn, opening failed!");
 #endif
-		return -3;
-	} else {
-		bool read_on=true;
-		top_three[0].latitude=0;	// clear points
-		top_three[0].longitude=0;
-		top_three[1].latitude=0;
-		top_three[1].longitude=0;
-		top_three[2].latitude=0;
-		top_three[2].longitude=0;
+        return -3;
+    } else {
+        bool read_on=true;
+        top_three[0].latitude=0;    // clear points
+        top_three[0].longitude=0;
+        top_three[1].latitude=0;
+        top_three[1].longitude=0;
+        top_three[2].latitude=0;
+        top_three[2].longitude=0;
 
-		while(read_on){
-			if(poi_n_file.read(temp, 20)<20){
-				read_on=false;
-			} else {
-				// longitude
-				loaded_coordinates.latitude=0;
-				for(int i=10;i<19;i++){ // 21-11 = 10 Chars
-					if(temp[i]>='0' && temp[i]<='9'){
-						loaded_coordinates.latitude=loaded_coordinates.latitude*10+(temp[i]-'0');
-					}
-				}
+        while(read_on){
+            if(poi_n_file.read(temp, 20)<20){
+                read_on=false;
+            } else {
+                // longitude
+                loaded_coordinates.latitude=0;
+                for(int i=10;i<19;i++){ // 21-11 = 10 Chars
+                    if(temp[i]>='0' && temp[i]<='9'){
+                        loaded_coordinates.latitude=loaded_coordinates.latitude*10+(temp[i]-'0');
+                    }
+                }
 
-				// longitude
-				loaded_coordinates.longitude=0;
-				for(int i=0;i<10;i++){ // 21-11 = 10 Chars
-					if(temp[i]>='0' && temp[i]<='9'){
-						loaded_coordinates.longitude=loaded_coordinates.longitude*10+(temp[i]-'0');
-					}
-				}
+                // longitude
+                loaded_coordinates.longitude=0;
+                for(int i=0;i<10;i++){ // 21-11 = 10 Chars
+                    if(temp[i]>='0' && temp[i]<='9'){
+                        loaded_coordinates.longitude=loaded_coordinates.longitude*10+(temp[i]-'0');
+                    }
+                }
 
-				temp_distance=pSensors->m_gps->calc_dist_supported(loaded_coordinates);
+                temp_distance=pSensors->m_gps->calc_dist_supported(loaded_coordinates,true); // warning this will NOT return the correct distance still the sqrt is missing but its way faster!
 
-				if(temp_distance<distances[0]){ //nearest
-					top_three[2]=top_three[1];
-					top_three[1]=top_three[0];
-					top_three[0]=loaded_coordinates;
-					distances[2]=distances[1];
-					distances[1]=distances[0];
-					distances[0]=temp_distance;
-				} else if(temp_distance<distances[1]){
-					top_three[2]=top_three[1];
-					top_three[1]=loaded_coordinates;
-					distances[2]=distances[1];
-					distances[1]=temp_distance;
-				} else if(temp_distance<distances[2]){ // farest
-					top_three[2]=loaded_coordinates;
-					distances[2]=temp_distance;
-				}
+                if(temp_distance<distances[0]){ //nearest
+                    top_three[2]=top_three[1];
+                    top_three[1]=top_three[0];
+                    top_three[0]=loaded_coordinates;
+                    distances[2]=distances[1];
+                    distances[1]=distances[0];
+                    distances[0]=temp_distance;
+                } else if(temp_distance<distances[1]){
+                    top_three[2]=top_three[1];
+                    top_three[1]=loaded_coordinates;
+                    distances[2]=distances[1];
+                    distances[1]=temp_distance;
+                } else if(temp_distance<distances[2]){ // farest
+                    top_three[2]=loaded_coordinates;
+                    distances[2]=temp_distance;
+                }
 
-				if(points_parsed<3){
-					points_parsed++;
-				}
-			} // read 30 okay
-		} // while read on
-	} // if open file ok
-	poi_n_file.close();
-	//could lead to problems if only one speed-cam is there and we are going straight to it?
-	bestOfThree_retrigger_distance=(3*distances[points_parsed-1])>>2;
-	bestOfThree_last_calc=pSensors->m_gps->gps_goody;	 // save current location
+                if(points_parsed<3){
+                    points_parsed++;
+                }
+            } // read 30 okay
+        } // while read on
+    } // if open file ok
+    poi_n_file.close();
+    //could lead to problems if only one speed-cam is there and we are going straight to it?
+    bestOfThree_retrigger_distance=(3*pSensors->m_gps->calc_dist_supported(top_three[points_parsed-1]))>>2; // calc real distance now
+    bestOfThree_last_calc=pSensors->m_gps->gps_goody;     // save current location
 
-	return 0;
+    return 0;
 };
