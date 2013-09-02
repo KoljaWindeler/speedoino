@@ -41,14 +41,15 @@ public:
 	int calc_gps_goodies();
 	unsigned long calc_dist(unsigned long longitude,unsigned long latitude);
 	unsigned long calc_dist_supported(simple_coordinate A);
-	unsigned long calc_dist_supported(simple_coordinate A,simple_coordinate B,float gps_lati_cos);
+	unsigned long calc_dist_supported(simple_coordinate A,bool return_square);
+	unsigned long calc_dist_supported(simple_coordinate A,simple_coordinate B,float gps_lati_cos,bool return_square);
 
 	unsigned long mod(unsigned long zahl,unsigned long teiler);
 	int get_order(char char_buffer[], int* dist);
 	void generate_new_order();
 	unsigned long nmea_to_dec(unsigned long nmea);
 	int get_logged_points(char* buffer,int i,int* nbytes);
-	void reconfigure(bool to_fast);
+	void reconfigure();
 	bool wait_on_gps();
 	void update_rate_1Hz();
 	void update_rate_10Hz();
