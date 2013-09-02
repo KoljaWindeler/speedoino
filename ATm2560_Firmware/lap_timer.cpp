@@ -194,21 +194,21 @@ void LapTimer::prepare_race_loop(){
 #ifdef LAPTIMER_DEBUG_OUTPUT
 			Serial.println("Setze last_gps_valid=false, da GPS nicht valid ist.");
 #endif
-			last_gps_valid=false; 	// this will help us, jump to the "if(!last_gps_valid){" part of "waiting_on_speed_up()"
-			pMenu->state=411; 		// main loop will call waiting_on_speed_up() in this state
-			pOLED->clear_screen(); 	// draw some fancy screen while we are waiting
+			last_gps_valid=false; 			// this will help us, jump to the "if(!last_gps_valid){" part of "waiting_on_speed_up()"
+			pMenu->state=M_LAP_T*100+11; 	// main loop will call waiting_on_speed_up() in this state
+			pOLED->clear_screen(); 			// draw some fancy screen while we are waiting
 			pOLED->string_P_centered(PSTR("No GPS"),3);
 			pOLED->string_P_centered(PSTR("please wait"),4);
 		} else {								// we have GPS signal
 			if(pSensors->get_speed(false)<=0) { // we are standing, but we are ready to race
-				pMenu->state=411; 			// main loop will call waiting_on_speed_up() in this state
+				pMenu->state=M_LAP_T*100+11; 	// main loop will call waiting_on_speed_up() in this state
 #ifdef LAPTIMER_DEBUG_OUTPUT
 				Serial.println("Setze last_gps_valid=false, da geschwindigkeit<=0 ist.");
 #endif
 				last_gps_valid=false; 		// shortcut: jump to the "if(!last_gps_valid){" part of "waiting_on_speed_up()" eventhough we have gps, show "speed up" on screen
 			} else { 						// we are moving, quick show screen and skip "waiting_on_speed_up()"
 				last_gps_valid=true; 		// this will help us, jump to the "} else if(pSensors->get_speed(false)>0){" part of "waiting_on_speed_up()"
-				pMenu->state=4111;
+				pMenu->state=M_LAP_T*1000+111;
 				init_race_screen(true); 	//draw border elements, reset vars
 				update_race_screen(0xff); 	// draw display values
 			}

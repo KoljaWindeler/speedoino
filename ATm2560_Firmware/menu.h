@@ -19,6 +19,22 @@ class speedo_menu {
 #define menu_button_rechts PINJ6 // 28
 #define menu_button_oben PINJ3 // 24
 
+#define MENU_SPRINT 2
+
+#define M_LAP_T 3
+//#define SM_LAP_T_
+
+#define M_TOUR_ASSISTS 4
+#define SM_TOUR_ASSISTS_ON_OFF 1
+#define SM_TOUR_ASSISTS_POINTER 2
+#define SM_TOUR_ASSISTS_FILE 3
+#define SM_TOUR_ASSISTS_POI_FINDER 4
+#define SM_TOUR_ASSISTS_WRITEN_POINTS_CHECK 7
+#define SM_TOUR_ASSISTS_SPEEDCAM_STATUS 8
+#define SM_TOUR_ASSISTS_SPEEDCAM_ON_OFF 9
+
+
+
 public:
 	speedo_menu(void);
 	~speedo_menu();

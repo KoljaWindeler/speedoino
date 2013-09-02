@@ -158,7 +158,7 @@ int main(void) {
 			pSpeedo->loop(previousMillis);
 		}
 		//////////////////// Sprint Speedo ///////////////////
-		else if( pMenu->state==21 ) {
+		else if( pMenu->state==MENU_SPRINT*10+1 ) {
 			pSprint->loop();
 		}
 		////////////////// Clock Mode ////////////////////////
@@ -166,19 +166,19 @@ int main(void) {
 			pSensors->m_clock->loop();
 		}
 		////////////////// Speed Cam Check - Mode ////////////////////////
-		else if(pMenu->state==381){
+		else if(pMenu->state==M_TOUR_ASSISTS*100+SM_TOUR_ASSISTS_SPEEDCAM_STATUS*10+1){
 			pSpeedCams->calc();
 			pSpeedCams->interface();
 		}
 		////////////////// race mode ////////////////////
-		else if(pMenu->state==411){
+		else if(pMenu->state==M_LAP_T*100+11){
 			pLapTimer->waiting_on_speed_up();
 		}
-		else if(pMenu->state==4111){
+		else if(pMenu->state==M_LAP_T*1000+111){
 			pLapTimer->race_loop();
 		}
 		////////////////// set gps point ////////////////////
-		else if(pMenu->state==43111){
+		else if(pMenu->state==M_LAP_T*10000L+3111){
 			pLapTimer->gps_capture_loop();
 		}
 		//////////////////// voltage mode ///////////////////

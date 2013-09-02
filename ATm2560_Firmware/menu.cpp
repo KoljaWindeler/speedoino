@@ -42,107 +42,107 @@ speedo_menu::~speedo_menu(){
 
 /////////////////////////////// Menus PROGMEM ///////////////////////////////
 ///////////////////// Main Menu /////////////////////
-const char main_m_0[] PROGMEM = "1. Speedoino";   // "String 0" etc are strings to store - change to suit.
-const char main_m_1[] PROGMEM = "2. Sprint-Clock";
-const char main_m_2[] PROGMEM = "3. Tour-Assistent";
-const char main_m_3[] PROGMEM = "4. Lap-Timer";
-const char main_m_4[] PROGMEM = "5. Extended Info";
-const char main_m_5[] PROGMEM = "6. Customize";
-const char main_m_6[] PROGMEM = "7. Basic Setup";
-const char main_m_7[] PROGMEM = "8. Trip Avg Max";
-const char main_m_8[] PROGMEM = "9. Refueling";
+const char main_m_0[] PROGMEM = "Speedoino";   // "String 0" etc are strings to store - change to suit.
+const char main_m_1[] PROGMEM = "Sprint-Clock";
+const char main_m_2[] PROGMEM = "Lap-Timer";
+const char main_m_3[] PROGMEM = "Tour-Assistent";
+const char main_m_4[] PROGMEM = "Extended Info";
+const char main_m_5[] PROGMEM = "Customize";
+const char main_m_6[] PROGMEM = "Basic Setup";
+const char main_m_7[] PROGMEM = "Trip Avg Max";
+const char main_m_8[] PROGMEM = "Refueling";
 const char * const menu_main[9] PROGMEM= { main_m_0,main_m_1,main_m_2,main_m_3,main_m_4,main_m_5,main_m_6,main_m_7,main_m_8 }; 	   // change "string_table" name to suit
 
 ///////////////////// Laptimer /////////////////////
-const char lap_t_m_0[] PROGMEM = "1. Race Mode";
-const char lap_t_m_1[] PROGMEM = "2. Load Sectors";
-const char lap_t_m_2[] PROGMEM = "3. Set new Sectors";
-const char lap_t_m_3[] PROGMEM = "4. Reset besttimes";
-const char lap_t_m_4[] PROGMEM = "5. Evaluation";
-const char lap_t_m_5[] PROGMEM = "6. Best Lap Calc";
-const char lap_t_m_6[] PROGMEM = "7. -";
-const char lap_t_m_7[] PROGMEM = "8. -";
-const char lap_t_m_8[] PROGMEM = "9. -";
+const char lap_t_m_0[] PROGMEM = "Race Mode";
+const char lap_t_m_1[] PROGMEM = "Load Sectors";
+const char lap_t_m_2[] PROGMEM = "Set new Sectors";
+const char lap_t_m_3[] PROGMEM = "Reset besttimes";
+const char lap_t_m_4[] PROGMEM = "Evaluation";
+const char lap_t_m_5[] PROGMEM = "Best Lap Calc";
+const char lap_t_m_6[] PROGMEM = "-";
+const char lap_t_m_7[] PROGMEM = "-";
+const char lap_t_m_8[] PROGMEM = "-";
 const char  * const menu_lap_t[9] PROGMEM= { lap_t_m_0,lap_t_m_1,lap_t_m_2,lap_t_m_3,lap_t_m_4,lap_t_m_5,lap_t_m_6,lap_t_m_7,lap_t_m_8 };
 
 ///////////////////// Setup /////////////////////
-const char setup_m_0[] PROGMEM = "1. Gear calib.";   // "String 0" etc are strings to store - change to suit.
-const char setup_m_1[] PROGMEM = "2. Speed calib.";   // "String 0" etc are strings to store - change to suit.
-const char setup_m_2[] PROGMEM = "3. Display setup";
-const char setup_m_3[] PROGMEM = "4. GPS Format";
-const char setup_m_4[] PROGMEM = "5. Sensor source"; // can or no CAN
-const char setup_m_5[] PROGMEM = "6. BT Reset state";
-const char setup_m_6[] PROGMEM = "7. Water temp warn.";
-const char setup_m_7[] PROGMEM = "8. Oil temp warn.";
-const char setup_m_8[] PROGMEM = "9. Man. update 328";
+const char setup_m_0[] PROGMEM = "Gear calib.";   // "String 0" etc are strings to store - change to suit.
+const char setup_m_1[] PROGMEM = "Speed calib.";   // "String 0" etc are strings to store - change to suit.
+const char setup_m_2[] PROGMEM = "Display setup";
+const char setup_m_3[] PROGMEM = "GPS Format";
+const char setup_m_4[] PROGMEM = "Sensor source"; // can or no CAN
+const char setup_m_5[] PROGMEM = "BT Reset state";
+const char setup_m_6[] PROGMEM = "Water temp warn.";
+const char setup_m_7[] PROGMEM = "Oil temp warn.";
+const char setup_m_8[] PROGMEM = "Man. update 328";
 const char  * const menu_setup[9] PROGMEM= { setup_m_0,setup_m_1,setup_m_2,setup_m_3,setup_m_4,setup_m_5,setup_m_6,setup_m_7,setup_m_8 };
 
 ///////////////////// Customize /////////////////////
-const char custom_m_0[] PROGMEM = "1. Load Skin";
-const char custom_m_1[] PROGMEM = "2. Add info area";
-const char custom_m_2[] PROGMEM = "3. Shift-Light";
-const char custom_m_3[] PROGMEM = "4. Speedo-Color";
-const char custom_m_4[] PROGMEM = "5. -";
-const char custom_m_5[] PROGMEM = "6. -";
-const char custom_m_6[] PROGMEM = "7. Set BT PIN";
-const char custom_m_7[] PROGMEM = "8. -";
-const char custom_m_8[] PROGMEM = "9. -";
+const char custom_m_0[] PROGMEM = "Load Skin";
+const char custom_m_1[] PROGMEM = "Add info area";
+const char custom_m_2[] PROGMEM = "Shift-Light";
+const char custom_m_3[] PROGMEM = "Speedo-Color";
+const char custom_m_4[] PROGMEM = "RGB-Action";
+const char custom_m_5[] PROGMEM = "-";
+const char custom_m_6[] PROGMEM = "Set BT PIN";
+const char custom_m_7[] PROGMEM = "-";
+const char custom_m_8[] PROGMEM = "-";
 const char  * const menu_custom[9] PROGMEM= { custom_m_0,custom_m_1,custom_m_2,custom_m_3,custom_m_4,custom_m_5,custom_m_6,custom_m_7,custom_m_8 };
 
 ///////////////////// Trips /////////////////////
-const char add_info_m_0[] PROGMEM = "1. Distance";
-const char add_info_m_1[] PROGMEM = "2. Time";
-const char add_info_m_2[] PROGMEM = "3. Avg Speed";
-const char add_info_m_3[] PROGMEM = "4. Max Speed";
-const char add_info_m_4[] PROGMEM = "5. Distance & Time";
-const char add_info_m_5[] PROGMEM = "6. Distance & Avg";
-const char add_info_m_6[] PROGMEM = "7. Distance & Max";
-const char add_info_m_7[] PROGMEM = "8. Time & Avg";
-const char add_info_m_8[] PROGMEM = "9. Time & Max";
+const char add_info_m_0[] PROGMEM = "Distance";
+const char add_info_m_1[] PROGMEM = "Time";
+const char add_info_m_2[] PROGMEM = "Avg Speed";
+const char add_info_m_3[] PROGMEM = "Max Speed";
+const char add_info_m_4[] PROGMEM = "Distance & Time";
+const char add_info_m_5[] PROGMEM = "Distance & Avg";
+const char add_info_m_6[] PROGMEM = "Distance & Max";
+const char add_info_m_7[] PROGMEM = "Time & Avg";
+const char add_info_m_8[] PROGMEM = "Time & Max";
 const char  * const menu_add_info[9] PROGMEM= { add_info_m_0,add_info_m_1,add_info_m_2,add_info_m_3,add_info_m_4,add_info_m_5,add_info_m_6,add_info_m_7,add_info_m_8 };
 
 ///////////////////// Customize /////////////////////
-const char fade_m_0[] PROGMEM = "1. Static color";
-const char fade_m_1[] PROGMEM = "2. Speed based";
-const char fade_m_2[] PROGMEM = "3. RPM based";
-const char fade_m_3[] PROGMEM = "4. Oil temp based";
-const char fade_m_4[] PROGMEM = "5. Water temp based";
-const char fade_m_5[] PROGMEM = "6. -";
-const char fade_m_6[] PROGMEM = "7. -";
-const char fade_m_7[] PROGMEM = "8. -";
-const char fade_m_8[] PROGMEM = "9. -";
+const char fade_m_0[] PROGMEM = "Static color";
+const char fade_m_1[] PROGMEM = "Speed based";
+const char fade_m_2[] PROGMEM = "RPM based";
+const char fade_m_3[] PROGMEM = "Oil temp based";
+const char fade_m_4[] PROGMEM = "Water temp based";
+const char fade_m_5[] PROGMEM = "-";
+const char fade_m_6[] PROGMEM = "-";
+const char fade_m_7[] PROGMEM = "-";
+const char fade_m_8[] PROGMEM = "-";
 const char  * const menu_fade[9] PROGMEM= { fade_m_0,fade_m_1,fade_m_2,fade_m_3,fade_m_4,fade_m_5,fade_m_6,fade_m_7,fade_m_8 };
 
 ///////////////////// Extend info /////////////////////
-const char einfo_m_0[] PROGMEM = "1. GPS info";
-const char einfo_m_1[] PROGMEM = "2. CAN-BUS DTCs";
-const char einfo_m_2[] PROGMEM = "3. Sensors";
-const char einfo_m_3[] PROGMEM = "4. Stepper";
-const char einfo_m_4[] PROGMEM = "5. -";
-const char einfo_m_5[] PROGMEM = "6. Test Watchdog";
-const char einfo_m_6[] PROGMEM = "7. Show Animation";
-const char einfo_m_7[] PROGMEM = "8. About";
-const char einfo_m_8[] PROGMEM = "9. Tetris";
+const char einfo_m_0[] PROGMEM = "GPS info";
+const char einfo_m_1[] PROGMEM = "CAN-BUS DTCs";
+const char einfo_m_2[] PROGMEM = "Sensors";
+const char einfo_m_3[] PROGMEM = "Stepper";
+const char einfo_m_4[] PROGMEM = "-";
+const char einfo_m_5[] PROGMEM = "Test Watchdog";
+const char einfo_m_6[] PROGMEM = "Show Animation";
+const char einfo_m_7[] PROGMEM = "About";
+const char einfo_m_8[] PROGMEM = "Tetris";
 const char * const menu_einfo[9] PROGMEM= { einfo_m_0,einfo_m_1,einfo_m_2,einfo_m_3,einfo_m_4,einfo_m_5,einfo_m_6,einfo_m_7,einfo_m_8 };
 
 ///////////////////// Navigation /////////////////////
-const char navi_m_0[] PROGMEM = "1. Show in Speedo";   // "String 0" etc are strings to store - change to suit.
-const char navi_m_1[] PROGMEM = "2. Set pointer";   // "String 0" etc are strings to store - change to suit.
-const char navi_m_2[] PROGMEM = "3. Set file";   // "String 0" etc are strings to store - change to suit.
-const char navi_m_3[] PROGMEM = "4. Check writes"; // hier vielleicht ein: way to ziel: koordinaten aktuell im vergleich zum ziel, aktuellen course
-const char navi_m_4[] PROGMEM = "5. -";
-const char navi_m_5[] PROGMEM = "6. -";
-const char navi_m_6[] PROGMEM = "7. POI finder";
-const char navi_m_7[] PROGMEM = "8. SC_POI status";
-const char navi_m_8[] PROGMEM = "9. SC_POI on/off";
+const char navi_m_0[] PROGMEM = "Navi on/off";   // "String 0" etc are strings to store - change to suit.
+const char navi_m_1[] PROGMEM = "Set pointer";   // "String 0" etc are strings to store - change to suit.
+const char navi_m_2[] PROGMEM = "Set file";   // "String 0" etc are strings to store - change to suit.
+const char navi_m_3[] PROGMEM = "POI finder"; // hier vielleicht ein: way to ziel: koordinaten aktuell im vergleich zum ziel, aktuellen course
+const char navi_m_4[] PROGMEM = "-";
+const char navi_m_5[] PROGMEM = "-";
+const char navi_m_6[] PROGMEM = "GPS writes";
+const char navi_m_7[] PROGMEM = "SC_POI status";
+const char navi_m_8[] PROGMEM = "SC_POI on/off";
 const char  * const menu_navi[9] PROGMEM= {navi_m_0,navi_m_1,navi_m_2,navi_m_3,navi_m_4,navi_m_5,navi_m_6,navi_m_7,navi_m_8};
 
 ///////////////////// Menu title /////////////////////
 const char titel_0[] PROGMEM = "= Main menu =";   // "String 0" etc are strings to store - change to suit.
 const char titel_1[] PROGMEM = ""; // tacho hat keine caption
 const char titel_2[] PROGMEM = ""; // sprint hat keine caption
-const char titel_3[] PROGMEM = "= Navigation =";
-const char titel_4[] PROGMEM = "= Lap-Timer =";
+const char titel_3[] PROGMEM = "= Lap-Timer =";
+const char titel_4[] PROGMEM = "= Navigation =";
 const char titel_5[] PROGMEM = "= Information =";
 const char titel_6[] PROGMEM = "= Customize =";
 const char titel_7[] PROGMEM = "= Setup =";
@@ -179,7 +179,6 @@ int			menu_ende=menu_lines-1;
 
 #define menu_second_wait 100  // spike länge
 int			fuel_added=90; // predefined value "added fuel"
-bool		menu_preload;
 unsigned int addr;
 ///// vars ////////////
 
@@ -260,12 +259,14 @@ void speedo_menu::display(){
 			set_buttons(button_state,!button_state,!button_state,!button_state);
 		};
 	}
+	/********************************************* Menu 1 - SPEEDOINO *********************************************/
+
 	/********************************************* Menu 2 - Sprint Mode *********************************************
 	 * This section only prepares the Sprint mode.
 	 * Based on the main loop, pSprint->loop(); will be called
 	 * So here we just have to prepare the Vars from the Sprintmode
 	 ********************************************* Menu 2 - Sprint Mode *********************************************/
-	else if(floor(state/10)==2){
+	else if(floor(state/10)==MENU_SPRINT){
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 #ifdef MENU_DEBUG
 		Serial.println("Menustate=000002X, Bin jetzt im Sprint Tacho menu");
@@ -275,58 +276,271 @@ void speedo_menu::display(){
 		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
 	/********************************************* Clock mode *********************************************/
-	else if(state==291){ // reused state!
+	else if(state==MENU_SPRINT*100+91){ // reused state!
 		pSensors->m_clock->loop();
 	}
+	/********************************************* Menu 2 - Sprint Mode *********************************************/
 
-
-	/********************************************* Menu 3 - Start of Navigation Menu *********************************************
+	/********************************************* Menu [M_LAP_T], Race mode  *********************************************
 	 * Submenus:
-	 *	31 Switch on and off navigation
-	 *	32 Set current pointer within file
-	 *	33 Select current file of navigation
-	 *	34 Get number of written GPS points
-	 *	35
-	 *	36
-	 *	37 POI finder
-	 *	38 SC_POI status
-	 *	39 SC_POI on/off
-	 ********************************************* Menu 3 -  of Navigation Menu *********************************************/
-	else if(floor(state/10)==3){ // 31/10 = 3
+	 * [M_LAP_T]1 Race Mode";   // "String 0" etc are strings to store - change to suit.
+	 * [M_LAP_T]2 Select file
+	 * [M_LAP_T]3 Set Sectors
+	 * [M_LAP_T]4 Clear Besttimes
+	 * [M_LAP_T]5 Evaluation
+	 * [M_LAP_T]6 Setup (Realtime / theoretical time)
+	 * [M_LAP_T]7 -
+	 * [M_LAP_T]8 -
+	 * [M_LAP_T]9 -
+	 ********************************************* Menu [M_LAP_T], Race mode  *********************************************/
+	else if(floor(state/10)==M_LAP_T){ // (M_LAP_T)1/10 = M_LAP_T
+		// Menu vorbereiten
+		draw(&menu_lap_t[0],sizeof(menu_lap_t)/sizeof(menu_lap_t[0]));
+	}
+	///////////////////// set GPS, move to next state
+	else if(state==M_LAP_T*100+11){
+		set_buttons(button_state,!button_state,!button_state,!button_state); // just back
+		// check GPS handling
+		if(floor(old_state/10)==state){ // comming from menu above
+			pSensors->m_gps->update_rate_1Hz();
+			back();
+			update_display=true;
+		} else {
+			// comming from menu below .. direct by menu -> switch on high speed gps, otherwise it is already active
+			if(old_state*10+1==state){
+				pSensors->m_gps->update_rate_10Hz();
+			}
+			// check moving, if we are moving race_loop will be shown, if not some nice text appears
+			pLapTimer->prepare_race_loop();
+		}
+	}
+	///////////////////// is capture mode, active content is controlled in the LapTimer Class
+	else if(state==M_LAP_T*100+21){
+		set_buttons(button_state,!button_state,!button_state,!button_state); // no up/down
+		pOLED->clear_screen();
+		pOLED->show_storry(PSTR("Right now, only one files is used. Here is some magic needed"),PSTR("TODO"));
+	}
+	///////////////////// ask if you really want to clear all current sectors
+	else if(state==M_LAP_T*100+31){
+		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
+		pOLED->show_storry(PSTR("Do you really want to clear all marks and record new?"),PSTR("GPS Marker"),DIALOG_NO_YES);
+	}
+	///////////////////// state in the middle, switch gps update + clear file OR save finishline coordinates
+	else if(state==M_LAP_T*1000+311){
+		if(old_state*10+1==state){ // comming from menu below
+			// delete that file and switch on high speed GPS
+			pLapTimer->clear_file(pLapTimer->get_active_filename());
+			pSensors->m_gps->update_rate_10Hz();
+			// go to next state that will draw the screen
+			state=state*10+1;
+			update_display=true;
+		} else if(old_state==state*10+1){ // comming from menu above, so obviously we have just reached the FINISH LINE
+			if(pSensors->m_gps->get_info(6)<3){
+				pOLED->clear_screen();
+				pOLED->string_P_centered(PSTR("No GPS"),3,true);
+				pOLED->string_P_centered(PSTR("Nothing saved"),4,true);
+				pSensors->m_gps->update_rate_1Hz();
+				_delay_ms(1500); // show it for a certain time
+				back();
+				back(); // jump back to menu
+				update_display=true;
+			} else {
+				// save point as regualr sector border
+				pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
+
+				// some fancy output
+				pOLED->clear_screen();
+				pOLED->string_P_centered(PSTR("Finish-Line"),3,true);
+				_delay_ms(100); // we will loose one gps points !! wise?
+
+				// switch the state & draw the screen
+				state=411;
+				pLapTimer->prepare_race_loop();
+			}
+		}	else { // coming from elsewhere (431111)
+			// point has been captured, now show capture screen again
+			state=state*10+1;
+			update_display=true;
+		}
+	}
+	///////////////////// is capture mode, active content is controlled in the LapTimer Class
+	else if(state==(unsigned long)(M_LAP_T*10000L+3111)){
+		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
+		pLapTimer->initial_draw_gps_capture_screen();
+	}
+	///////////////////// capture new GPS marker
+	else if(state==M_LAP_T*100000+31111){
+		pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
+		pOLED->clear_screen();
+		pOLED->string_P_centered(PSTR("Saved"),3,true);
+		pSpeedo->reset_bak();
+		_delay_ms(200); // we will loose some gps points !! wise?
+		old_state=state;
+		state=M_LAP_T*1000+311;
+		update_display=true;
+	}
+	///////////// reset times
+	else if(state==M_LAP_T*100+41){
+		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
+		pOLED->show_storry(PSTR("Do you really want to reset all sector times?"),PSTR("Reset record"),DIALOG_NO_YES);
+	}
+	else if(state==M_LAP_T*1000+411){
+		pLapTimer->reset_times(pLapTimer->get_active_filename());
+		pOLED->clear_screen();
+		pOLED->string_P_centered(PSTR("Saved"),3,true);
+		_delay_ms(1000);
+		back();
+		back();
+		update_display=true;
+	}
+	////////// Eval
+	else if(state==M_LAP_T*100+51){
+		set_buttons(button_state,!button_state,!button_state,!button_state); // no up/down
+		pOLED->clear_screen();
+		pOLED->show_storry(PSTR("Evaluation is not yet implemented. Here is some magic needed"),PSTR("TODO"));
+	}
+	////////// Setup of laptimer
+	else if(floor(state/10)==M_LAP_T*10+6) { // 00046X
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+	}
+	// now the "mode" selector
+	else if(floor(state/100)==M_LAP_T*10+6) { // 00046XX
+		if(state%10==9){ // "up" key
+			pLapTimer->use_realtime_not_calculated=true;
+			pConfig->storage_outdated=true;
+		} else if(state%10==2){ // "down" key
+			pLapTimer->use_realtime_not_calculated=false;
+			pConfig->storage_outdated=true;
+		};
+
+		state=M_LAP_T*1000+611;
+
+		// displaying values
+		pOLED->clear_screen();
+		pOLED->string_P(pSpeedo->default_font,PSTR("= Best Time Mode ="),2,0,0,DISP_BRIGHTNESS,0);
+
+		unsigned char fg;
+		unsigned char bg;
+
+		/// real //////////////////////////////
+		if(pLapTimer->use_realtime_not_calculated){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*3,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("Real time"),2,3,bg,fg,0);
+
+		/// theoretical //////////////////////////////
+		if(!pLapTimer->use_realtime_not_calculated){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*4,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("calculated time"),2,4,bg,fg,0);
+
+
+		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E save"),0,7);
+
+		// key settings and corresponding var state changing
+		bool up=button_state;
+		bool down=button_state;
+		if(pLapTimer->use_realtime_not_calculated){
+			up=!button_state;
+		} else if(!pLapTimer->use_realtime_not_calculated){
+			down=!button_state;
+		}
+
+		set_buttons(button_state,up,down,!button_state); // button directions
+	}
+	/********************************************* Menu 3, Race mode  *********************************************/
+
+	/********************************************* Menu 4 - Start of Navigation Menu *********************************************
+	 * Submenus:
+	 *	41 Switch on and off navigation
+	 *	42 Set current pointer within file
+	 *	43 Select current file of navigation
+	 *	44 POI finder
+	 *	45
+	 *	46
+	 *	47 Get number of written GPS points
+	 *	48 SC_POI status
+	 *	49 SC_POI on/off
+	 ********************************************* Menu 4 -  of Navigation Menu *********************************************/
+	else if(floor(state/10)==M_TOUR_ASSISTS){ // x1/10 = x
 		// Menu vorbereiten
 		draw(&menu_navi[0],sizeof(menu_navi)/sizeof(menu_navi[0]));
 	}
 	/////////////////////////////////////////////////// Navigation an/aus schalten //////////////////////////////////////////////////
-	else if(floor(state/10)==31){ // 311
-		set_buttons(button_state,button_state,button_state,!button_state); // no right
-		if((state%10)==9){
-			pSensors->m_gps->navi_active=true;
-			pSensors->m_gps->generate_new_order();
-			pConfig->storage_outdated=true;		// store navipointer to SD Card
-			pConfig->write("BASE.TXT");
-		} else if((state%10)==2){
-			pSensors->m_gps->navi_active=false;
-			pConfig->storage_outdated=true;		// store navipointer to SD Card
-			pConfig->write("BASE.TXT");
-		};
-		state=311;
-		pOLED->clear_screen();
-		if(pSensors->m_gps->navi_active){
-			sprintf(char_buffer," active");
-		} else {
-			sprintf(char_buffer,"inactive");
-		};
-		pOLED->string_P(pSpeedo->default_font,PSTR("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
-		pOLED->highlight_bar(0,8*3-1,128,17); // mit hintergrundfarbe nen kasten malen
-		pOLED->string_P(pSpeedo->default_font,PSTR("Navigation"),4,3,15,0,0);
-		pOLED->string(pSpeedo->default_font,char_buffer,5,4,15,0,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
-	}
-	/////////////////////////////////////////////////// Pointer für die Navigation ///////////////////////////////////////////////////
-	else if(floor(state/10)==32){ // 32[X]
+	else if(floor(state/10)==M_TOUR_ASSISTS*10+1) { // 00041X
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
-	else if(floor(state/100)==32){ // 321[X] change values here
+	// now the "mode" selector
+	else if(floor(state/100)==M_TOUR_ASSISTS*10+1) { // 00041XX
+		if(state%10==9){ // "up" key
+			pSensors->m_gps->navi_active=true;
+			pConfig->storage_outdated=true;
+		} else if(state%10==2){ // "down" key
+			pSensors->m_gps->navi_active=false;
+			pConfig->storage_outdated=true;
+		};
+
+		state=floor(state/10)*10+1;
+
+		// displaying values
+		pOLED->clear_screen();
+		pOLED->string_P(pSpeedo->default_font,PSTR("= Navigation ="),2,0,0,DISP_BRIGHTNESS,0);
+
+		unsigned char fg;
+		unsigned char bg;
+
+		/// navi acitve //////////////////////////////
+		if(pSensors->m_gps->navi_active){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*3,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,3,bg,fg,0);
+
+		/// theoretical //////////////////////////////
+		if(!pSensors->m_gps->navi_active){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*4,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("inactive"),2,4,bg,fg,0);
+
+
+		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E save"),0,7);
+
+		// key settings and corresponding var state changing
+		bool up=button_state;
+		bool down=button_state;
+		if(pSensors->m_gps->navi_active){
+			up=!button_state;
+		} else if(!pSensors->m_gps->navi_active){
+			down=!button_state;
+		}
+
+		set_buttons(button_state,up,down,!button_state); // button directions
+	}
+
+	/////////////////////////////////////////////////// Pointer für die Navigation ///////////////////////////////////////////////////
+	else if(floor(state/10)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_POINTER){ // 32[X]
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+	}
+	else if(floor(state/100)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_POINTER){ // 321[X] change values here
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		if((state%10)==2){ // runter gedrückt
 			pSensors->m_gps->navi_point++;
@@ -350,9 +564,9 @@ void speedo_menu::display(){
 		pOLED->string(pSpeedo->default_font,char_buffer,2,7,0,DISP_BRIGHTNESS,0);
 	}
 	/////////////////////////////////////////////////// Dateien listen und highlighten... irgendwie ///////////////////////////////////////////////////
-	else if(floor(state/10)==33){ // 33[X]
+	else if(floor(state/10)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_FILE){ // 33[X]
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
-	} else if(floor(state/100)==33){ // 331[X]
+	} else if(floor(state/100)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_FILE){ // 331[X]
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		// Umschalten
 		if(int(state%10)==9){ // schalter nach oben, abziehen
@@ -427,17 +641,8 @@ void speedo_menu::display(){
 		subdir.close();
 		root.close();
 	}
-	//////////////////////// ausgeben wieviele points geschrieben wurden //////////////
-	else if(floor(state/10)==34){ //34[X]
-		set_buttons(button_state,button_state,button_state,!button_state); // no right
-		char buffer[10];
-		sprintf(buffer,"%i",pSensors->m_gps->written_gps_points);
-		pOLED->clear_screen();
-		pOLED->string(pSpeedo->default_font,buffer,5,3,0,DISP_BRIGHTNESS,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("Points written"),3,4,0,DISP_BRIGHTNESS,0);
-	}
 	//////////////////////// POI  finder  //////////////
-	else if(floor(state/10)==37){	// file selection
+	else if(floor(state/10)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_POI_FINDER){	// file selection
 		bool build_complete_list=true;
 		bool upper_one=true;	// assume we pressed the "down" button, so we have to refresh to one on top of us
 		if(floor(old_state/10)==floor(state/10)){ // build just a short part of the list, not complee
@@ -467,7 +672,7 @@ void speedo_menu::display(){
 		strcpy_P((char*)filename,PSTR("/POI/"));
 
 
-		if(pFilemanager_v2->get_file_handle((unsigned char*)filename,(unsigned char*)filename,&file_handle,&dir_handle,O_READ|O_CREAT)<0){	// O_CREATE to create dir, if not existing <- TODO check if that is working
+		if(pFilemanager_v2->get_file_handle((unsigned char*)filename,(unsigned char*)filename,&file_handle,&dir_handle,O_READ|O_CREAT)<0){	// works :D
 			pOLED->show_storry(PSTR("Open POI dir failed"),PSTR("Error"),DIALOG_GO_LEFT_1000MS);
 		} else {
 			if(!build_complete_list){ // only "re-read" two items
@@ -520,24 +725,33 @@ void speedo_menu::display(){
 				item++;
 			}
 		}
-	} else if(floor(state/100)==37){	// some output
+	} else if(floor(state/100)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_POI_FINDER){	// some output
 		pOLED->show_storry(PSTR("It will take some time to generate a navi file from this POI. Continue?"),PSTR("POI Navigation"),DIALOG_NO_YES);
-	} else if(floor(state/1000)==37){	// file selection
+	} else if(floor(state/1000)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_POI_FINDER){	// file selection
 		speedo_poi_finder* pPOI_Finder=new speedo_poi_finder();
 		pPOI_Finder->calc(int(floor(state/100))%10);
 	}
+	//////////////////////// ausgeben wieviele points geschrieben wurden //////////////
+	else if(floor(state/10)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_WRITEN_POINTS_CHECK){ //37[X]
+		set_buttons(button_state,button_state,button_state,!button_state); // no right
+		char buffer[10];
+		sprintf(buffer,"%i",pSensors->m_gps->written_gps_points);
+		pOLED->clear_screen();
+		pOLED->string(pSpeedo->default_font,buffer,5,3,0,DISP_BRIGHTNESS,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Points written"),3,4,0,DISP_BRIGHTNESS,0);
+	}
 	////////////////////////  prepare speedoCam status screen //////////////
-	else if(floor(state/10)==38){ //38[X]
+	else if(floor(state/10)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_SPEEDCAM_STATUS){ //38[X]
 		set_buttons(true,false,false,false);
 		pSpeedo->reset_bak();
 		pOLED->clear_screen();
 	}
 	////////// Setup of poi warner
-	else if(floor(state/10)==39) { // 00039X
+	else if(floor(state/10)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_SPEEDCAM_ON_OFF) { // 00039X
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
-	else if(floor(state/100)==39) { // 000461X
+	else if(floor(state/100)==M_TOUR_ASSISTS*10+SM_TOUR_ASSISTS_SPEEDCAM_ON_OFF) { // 000461X
 		if(state%10==9){ // "up" key
 			pSpeedCams->set_active(true);
 			pConfig->storage_outdated=true;
@@ -546,13 +760,11 @@ void speedo_menu::display(){
 			pConfig->storage_outdated=true;
 		};
 
-		state=3911;
+		state=M_TOUR_ASSISTS*1000+SM_TOUR_ASSISTS_SPEEDCAM_ON_OFF*100+11;
 
 		// displaying values
 		pOLED->clear_screen();
-
-		pOLED->highlight_bar(0,0,128,8); // title
-		pOLED->string_P(pSpeedo->default_font,PSTR("POI warning"),2,0,DISP_BRIGHTNESS,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("= POI warning ="),2,0,0,DISP_BRIGHTNESS,0);
 
 		unsigned char fg;
 		unsigned char bg;
@@ -592,187 +804,8 @@ void speedo_menu::display(){
 
 		set_buttons(button_state,up,down,!button_state); // button directions
 	}
-	/********************************************* Menu 3 - End of Navigation Menu *********************************************/
+	/********************************************* Menu 4 - End of Navigation Menu *********************************************/
 
-
-	/********************************************* Menu 4, Race mode  *********************************************
-	 * Submenus:
-	 * 41 Race Mode";   // "String 0" etc are strings to store - change to suit.
-	 * 42 Select file
-	 * 43 Set Sectors
-	 * 44 Clear Besttimes
-	 * 45 Evaluation
-	 * 46 Setup (Realtime / theoretical time)
-	 * 47 -
-	 * 48 -
-	 * 49 -
-	 ********************************************* Menu 4, Race mode  *********************************************/
-	else if(floor(state/10)==4){ // 31/10 = 3
-		// Menu vorbereiten
-		draw(&menu_lap_t[0],sizeof(menu_lap_t)/sizeof(menu_lap_t[0]));
-	}
-	///////////////////// set GPS, move to next state
-	else if(state==411){
-		set_buttons(button_state,!button_state,!button_state,!button_state); // just back
-		// check GPS handling
-		if(floor(old_state/10)==state){ // comming from menu above
-			pSensors->m_gps->update_rate_1Hz();
-			back();
-			update_display=true;
-		} else {
-			// comming from menu below .. direct by menu -> switch on high speed gps, otherwise it is already active
-			if(old_state*10+1==state){
-				pSensors->m_gps->update_rate_10Hz();
-			}
-			// check moving, if we are moving race_loop will be shown, if not some nice text appears
-			pLapTimer->prepare_race_loop();
-		}
-	}
-	///////////////////// is capture mode, active content is controlled in the LapTimer Class
-	else if(state==421){
-		set_buttons(button_state,!button_state,!button_state,!button_state); // no up/down
-		pOLED->clear_screen();
-		pOLED->show_storry(PSTR("Right now, only one files is used. Here is some magic needed"),PSTR("TODO"));
-	}
-	///////////////////// ask if you really want to clear all current sectors
-	else if(state==431){
-		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
-		pOLED->show_storry(PSTR("Do you really want to clear all marks and record new?"),PSTR("GPS Marker"),DIALOG_NO_YES);
-	}
-	///////////////////// state in the middle, switch gps update + clear file OR save finishline coordinates
-	else if(state==4311){
-		if(old_state*10+1==state){ // comming from menu below
-			// delete that file and switch on high speed GPS
-			pLapTimer->clear_file(pLapTimer->get_active_filename());
-			pSensors->m_gps->update_rate_10Hz();
-			// go to next state that will draw the screen
-			state=state*10+1;
-			update_display=true;
-		} else if(old_state==state*10+1){ // comming from menu above, so obviously we have just reached the FINISH LINE
-			if(pSensors->m_gps->get_info(6)<3){
-				pOLED->clear_screen();
-				pOLED->string_P_centered(PSTR("No GPS"),3,true);
-				pOLED->string_P_centered(PSTR("Nothing saved"),4,true);
-				pSensors->m_gps->update_rate_1Hz();
-				_delay_ms(1500); // show it for a certain time
-				back();
-				back(); // jump back to menu
-				update_display=true;
-			} else {
-				// save point as regualr sector border
-				pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
-
-				// some fancy output
-				pOLED->clear_screen();
-				pOLED->string_P_centered(PSTR("Finish-Line"),3,true);
-				_delay_ms(100); // we will loose one gps points !! wise?
-
-				// switch the state & draw the screen
-				state=411;
-				pLapTimer->prepare_race_loop();
-			}
-		}	else { // coming from elsewhere (431111)
-			// point has been captured, now show capture screen again
-			state=state*10+1;
-			update_display=true;
-		}
-	}
-	///////////////////// is capture mode, active content is controlled in the LapTimer Class
-	else if(state==43111){
-		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
-		pLapTimer->initial_draw_gps_capture_screen();
-	}
-	///////////////////// capture new GPS marker
-	else if(state==431111){
-		pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
-		pOLED->clear_screen();
-		pOLED->string_P_centered(PSTR("Saved"),3,true);
-		pSpeedo->reset_bak();
-		_delay_ms(200); // we will loose some gps points !! wise?
-		old_state=state;
-		state=4311;
-		update_display=true;
-	}
-	///////////// reset times
-	else if(state==441){
-		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
-		pOLED->show_storry(PSTR("Do you really want to reset all sector times?"),PSTR("Reset record"),DIALOG_NO_YES);
-	}
-	else if(state==4411){
-		pLapTimer->reset_times(pLapTimer->get_active_filename());
-		pOLED->clear_screen();
-		pOLED->string_P_centered(PSTR("Saved"),3,true);
-		_delay_ms(1000);
-		back();
-		back();
-		update_display=true;
-	}
-	////////// Eval
-	else if(state==451){
-		set_buttons(button_state,!button_state,!button_state,!button_state); // no up/down
-		pOLED->clear_screen();
-		pOLED->show_storry(PSTR("Evaluation is not yet implemented. Here is some magic needed"),PSTR("TODO"));
-	}
-	////////// Setup of laptimer
-	else if(floor(state/10)==46) { // 00046X
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
-	}
-	// now the "mode" selector
-	else if(floor(state/100)==46) { // 000461X
-		if(state%10==9){ // "up" key
-			pLapTimer->use_realtime_not_calculated=true;
-			pConfig->storage_outdated=true;
-		} else if(state%10==2){ // "down" key
-			pLapTimer->use_realtime_not_calculated=false;
-			pConfig->storage_outdated=true;
-		};
-
-		state=4611;
-
-		// displaying values
-		pOLED->clear_screen();
-
-		pOLED->highlight_bar(0,0,128,8); // title
-		pOLED->string_P(pSpeedo->default_font,PSTR("Best Time Mode"),2,0,DISP_BRIGHTNESS,0,0);
-
-		unsigned char fg;
-		unsigned char bg;
-
-		/// theoretical
-		if(!pLapTimer->use_realtime_not_calculated){
-			fg=0x00;
-			bg=DISP_BRIGHTNESS;
-			pOLED->highlight_bar(0,8*3,118,8); // mit hintergrundfarbe nen kasten malen
-		} else {
-			fg=DISP_BRIGHTNESS;
-			bg=0x00;
-		}
-		pOLED->string_P(pSpeedo->default_font,PSTR("calculated time"),2,3,bg,fg,0);
-
-		/// real
-		if(pLapTimer->use_realtime_not_calculated){
-			fg=0x00;
-			bg=DISP_BRIGHTNESS;
-			pOLED->highlight_bar(0,8*4,118,8); // mit hintergrundfarbe nen kasten malen
-		} else {
-			fg=DISP_BRIGHTNESS;
-			bg=0x00;
-		}
-		pOLED->string_P(pSpeedo->default_font,PSTR("Real time"),2,4,bg,fg,0);
-
-		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E save"),0,7);
-
-		// key settings and corresponding var state changing
-		bool up=button_state;
-		bool down=button_state;
-		if(pLapTimer->use_realtime_not_calculated){
-			up=!button_state;
-		} else if(!pLapTimer->use_realtime_not_calculated){
-			down=!button_state;
-		}
-
-		set_buttons(button_state,up,down,!button_state); // button directions
-	}
 
 	/********************************************* Menu 5 - Start of Extend Info Menu *********************************************
 	 * Submenus:
@@ -1026,7 +1059,7 @@ void speedo_menu::display(){
 	 *	62 Select the shown trip
 	 *	63 Adjust the DZ flasher value and color
 	 *	64 Adjust outer RGB LED's, Static, KMH related ...
-	 *	65 -
+	 *	65 RGB-Action Mode
 	 *	66
 	 *	67 Set Bluetooth pin
 	 *	68 -
@@ -1035,7 +1068,6 @@ void speedo_menu::display(){
 	else if(floor(state/10)==6) { //6[X]
 		// Menu vorbereiten
 		draw(&menu_custom[0],sizeof(menu_custom)/sizeof(menu_custom[0]));
-		menu_preload=true;
 		pSpeedo->reset_bak();
 	}
 	///////////////////////// SKIN LADEN ///////////////////////
@@ -1297,9 +1329,13 @@ void speedo_menu::display(){
 	 *
 	 */
 	else if(floor(state/10)==64){
-		// Menu vorbereiten
+		// preset Menu marker
+		if(old_state==floor(state/10)){
+			state=(state+pAktors->led_mode)*10+1;
+			go_left(true);
+		}
+
 		draw(&menu_fade[0],sizeof(menu_fade)/sizeof(menu_fade[0]));
-		menu_preload=true;
 		pSpeedo->reset_bak();
 
 		////////////////////////// static /////////////////
@@ -1322,6 +1358,75 @@ void speedo_menu::display(){
 	} else if(floor(state/10)==645 || floor(state/100)==645 || floor(state/1000)==645){
 		color_select_menu(645,&pAktors->water_start_color,&pAktors->water_end_color,&pAktors->water_min_value,&pAktors->water_max_value,150,button_state, PSTR("Water"),PSTR("TMP"),4,false);
 
+		/////////////////////// RGB-Action //////////////////
+	} else if(floor(state/10)==65){
+		// storage guard
+		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+
+	} else if(floor(state/10)==651){
+		if(state%10==9){ // "up" key
+			pAktors->pointer_highlight_mode--;
+			pConfig->storage_outdated=true;
+		} else if(state%10==2){ // "down" key
+			pAktors->pointer_highlight_mode++;
+			pConfig->storage_outdated=true;
+		};
+
+		state=6511;
+
+		// displaying values
+		pOLED->clear_screen();
+		pOLED->string_P(pSpeedo->default_font,PSTR("= RGB-Action ="),2,0,0,DISP_BRIGHTNESS,0);
+
+		unsigned char fg;
+		unsigned char bg;
+
+		/// all active ///////////////////////
+		if(pAktors->pointer_highlight_mode==0){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*2,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("Static"),2,2,bg,fg,0);
+		/// all active ///////////////////////
+		/// Following ///////////////////////
+		if(pAktors->pointer_highlight_mode==1){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*3,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("Following"),2,3,bg,fg,0);
+		/// Following ///////////////////////
+		/// Reseved ///////////////////////
+		if(pAktors->pointer_highlight_mode==2){
+			fg=0x00;
+			bg=DISP_BRIGHTNESS;
+			pOLED->highlight_bar(0,8*4,118,8); // mit hintergrundfarbe nen kasten malen
+		} else {
+			fg=DISP_BRIGHTNESS;
+			bg=0x00;
+		}
+		pOLED->string_P(pSpeedo->default_font,PSTR("Reseved"),2,4,bg,fg,0);
+		/// Reseved ///////////////////////
+
+		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E save"),0,7);
+
+		// key settings and corresponding var state changing
+		bool up=button_state;
+		bool down=button_state;
+		if(pAktors->pointer_highlight_mode==0){
+			up=!button_state;
+		} else if(pAktors->pointer_highlight_mode==2){
+			down=!button_state;
+		}
+
+		set_buttons(button_state,up,down,!button_state); // button directions
 		///////////////////////// set bt pin ///////////////////////////
 	} else if(floor(state/10)==67){
 		if(old_state>state && pConfig->storage_outdated){
@@ -1409,9 +1514,8 @@ void speedo_menu::display(){
 	else if(floor(state/10)==7) { //00007[X]
 		// Menu vorbereiten
 		draw(&menu_setup[0],sizeof(menu_setup)/sizeof(menu_setup[0]));
-		menu_preload=true;
 	}
-	///////////////////// Gear calibration //////////////////////////
+	//////////////F/////// Gear calibration //////////////////////////
 	else if(floor(state/10)==71) { // 00071[X]
 		if(state%10>6){	// gänge höher als 6
 			state=716;
@@ -1539,9 +1643,7 @@ void speedo_menu::display(){
 
 		// displaying values
 		pOLED->clear_screen();
-
-		pOLED->highlight_bar(0,0,128,8); // title
-		pOLED->string_P(pSpeedo->default_font,PSTR("GPS Format"),2,0,DISP_BRIGHTNESS,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("= GPS Format ="),2,0,0,DISP_BRIGHTNESS,0);
 
 		unsigned char fg;
 		unsigned char bg;
@@ -1606,9 +1708,7 @@ void speedo_menu::display(){
 
 		// displaying values
 		pOLED->clear_screen();
-
-		pOLED->highlight_bar(0,0,128,8); // title
-		pOLED->string_P(pSpeedo->default_font,PSTR("Sensor source mode"),2,0,DISP_BRIGHTNESS,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("= Sensor source ="),2,0,0,DISP_BRIGHTNESS,0);
 
 		unsigned char fg;
 		unsigned char bg;
@@ -1684,9 +1784,7 @@ void speedo_menu::display(){
 
 		// displaying values
 		pOLED->clear_screen();
-
-		pOLED->highlight_bar(0,0,128,8); // title
-		pOLED->string_P(pSpeedo->default_font,PSTR("CAN Bus Type"),2,0,DISP_BRIGHTNESS,0,0);
+		pOLED->string_P(pSpeedo->default_font,PSTR("= CAN Bus Type ="),2,0,0,DISP_BRIGHTNESS,0);
 
 		unsigned char fg;
 		unsigned char bg;
@@ -1907,7 +2005,7 @@ void speedo_menu::display(){
 		// show the title
 		char temp[30];
 		strcpy_P(temp, (char*)pgm_read_word(&(menu_trip_setup[(int(floor(state/1000))%10)-1])));
-		sprintf(char_buffer,"%s.",temp); // hier noch die bezeichnung
+		sprintf(char_buffer,"%s",temp); // hier noch die bezeichnung
 		pOLED->string(pSpeedo->default_font,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
 		pOLED->string(pSpeedo->default_font,"cleared",2,4);
 		_delay_ms(800);
@@ -2096,6 +2194,13 @@ void speedo_menu::draw(const char* const* menu, int entries){
 		// draw maker line
 		pOLED->highlight_bar(0,8*(menu_marker+1),128,8);
 		strcpy_P(buffer, (char*)pgm_read_word(&(menu[menu_start+menu_marker])));
+		// move to the back and insert number
+		for(int i=21;i>1;i--){
+			buffer[i]=buffer[i-3];
+		}
+		buffer[0]=menu_start+menu_marker+'1';
+		buffer[1]='.';
+		buffer[2]=' ';
 		pOLED->string(pSpeedo->default_font,buffer,2,(menu_marker+1),DISP_BRIGHTNESS,0,0);
 
 		// lets see which one is the second: assuming that its the one below so the menu_marker_line + 1
@@ -2107,6 +2212,13 @@ void speedo_menu::draw(const char* const* menu, int entries){
 		//draw it
 		pOLED->filled_rect(0,8*(menu_marker+second_line_switch+1),128,8,0); // mit hintergrundfarbe nen kasten malen
 		strcpy_P(buffer, (char*)pgm_read_word(&(menu[int(menu_start+menu_marker+second_line_switch)])));
+		// move to the back and insert number
+		for(int i=21;i>1;i--){
+			buffer[i]=buffer[i-3];
+		}
+		buffer[0]=int(menu_start+menu_marker+second_line_switch)+'1';
+		buffer[1]='.';
+		buffer[2]=' ';
 		pOLED->string(pSpeedo->default_font,buffer,2,int(menu_marker+second_line_switch+1),0,DISP_BRIGHTNESS,0);
 		just_marker_update=false;
 
@@ -2125,6 +2237,13 @@ void speedo_menu::draw(const char* const* menu, int entries){
 			};
 			// copy string vom flash
 			strcpy_P(buffer, (char*)pgm_read_word(&(menu[k])));
+			// move to the back and insert number
+			for(int i=21;i>1;i--){
+				buffer[i]=buffer[i-3];
+			}
+			buffer[0]=k+'1';
+			buffer[1]='.';
+			buffer[2]=' ';
 			pOLED->string(pSpeedo->default_font,buffer,2,y,hg,fg,0);
 			// copy string vom flash
 			y++; // abstand festlegen
