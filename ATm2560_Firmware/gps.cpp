@@ -589,6 +589,7 @@ long speedo_gps::get_info(unsigned char select){
 #ifdef GPS_FAKE_MODE
 		return 6;
 #endif
+		if(valid>=3){ return 0; };
 		if(long(gps_sats[inner_gps_count])>20) { return 20; }; //höhö
 		if(long(gps_sats[inner_gps_count])<0) { return 0; };
 		return long(gps_sats[inner_gps_count]);
