@@ -356,6 +356,8 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 		if(pSpeedCams->calc()){
 			attention_required=true;
 			set_rbg_active((int)0x0000,false); // activate all led's
+		} else {
+			attention_required=false;
 		}
 	} else {
 		attention_required=false;
