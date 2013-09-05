@@ -46,7 +46,12 @@
                                             - Neuer Modus zur Beleuchtung des Zeigers: Die RGB LEDs werden nur im Bereich des Zeigers aktiv (per Menü einstellbar, Vorgabe: alle immer aktiv)
                                             - Abstandschätzer beschleunigt, berechnet nun nach Wunsch die Quadrate des Abstands, dafür keine Wurzel
                                             - Menü Programmierung optimiert, sollte nicht sichtbar sein
-
+05.09.2013  Speedoino_v2.1-201-g2fb30b1.hex + Hauptsächlich nur Bug fixing und "Änderungen unter der Haube" 
+                                            - Neuer Zeigerbeleuchtungsmodus blieb bei verlassen aktiv: gefixt
+                                            - Schaltblitz ging nicht mehr aus: gefixt
+                                            - Abstand zum Blitzer wurde falsch berechnet und daher war der Warner quasi sinnfrei: gefixt
+                                            - Eine Funktion zum "gleichen design" im Menü hinzugefügt, hauptsächlich um Speicher zu sparen (wurde enger) Möglicherweise gehen ein paar "on/off" oder "auswahl" menüs nicht, hab aber alle getestet
+                                            - 3018 Byte SRAM frei, 195222 Byte Flash belegt
 ================================================================================================================================================================================================
 
 
