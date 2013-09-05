@@ -384,6 +384,7 @@ void speedo_disp::show_storry(char storry[],unsigned int storry_length,char titl
 	//
 	unsigned int current_state=pMenu->state;
 	unsigned long current_timestamp=millis();
+	pMenu->set_buttons(true,false,false,true);
 
 	if(type==DIALOG_NO_YES){
 		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E back        next \x7F"),0,7);
