@@ -689,34 +689,34 @@ unsigned long speedo_gps::calc_dist(unsigned long longitude,unsigned long latitu
 
 // overloaded function  - see below
 unsigned long speedo_gps::calc_dist_supported(simple_coordinate A){
-    return calc_dist_supported(gps_goody,A,gps_lati_cos,false);
+	return calc_dist_supported(gps_goody,A,gps_lati_cos,false);
 }
 
 // overloaded function  - see below
 unsigned long speedo_gps::calc_dist_supported(simple_coordinate A,bool return_square){
-    return calc_dist_supported(gps_goody,A,gps_lati_cos,return_square);
+	return calc_dist_supported(gps_goody,A,gps_lati_cos,return_square);
 }
 
 // 3000 calc = 397ms  ==> 1 calc ~ 132 us == 2112 Ticks
 unsigned long speedo_gps::calc_dist_supported(simple_coordinate A,simple_coordinate B,float gps_lati_cos,bool return_square){
 
-    float dist_y,dist_x; // abstands vars
-    // dont use abs() its unsigned
-    if( B.latitude > A.latitude){
-        dist_y=(float)(B.latitude - A.latitude); // direkt
-    } else {
-        dist_y=(float)(A.latitude - B.latitude); // direkt
-    }
-    // dont use abs() its unsigned
-    if( A.longitude > B.longitude){
-        // hier kommen grad*106 raus
-        dist_x=(((float)(A.longitude - B.longitude))*gps_lati_cos)/100; // gewichtet, GPS_lati_cos is *100
-    } else {
-        dist_x=(((float)(B.longitude - A.longitude))*gps_lati_cos)/100; // gewichtet, GPS_lati_cos is *100
-    }
+	float dist_y,dist_x; // abstands vars
+	// dont use abs() its unsigned
+	if( B.latitude > A.latitude){
+		dist_y=(float)(B.latitude - A.latitude); // direkt
+	} else {
+		dist_y=(float)(A.latitude - B.latitude); // direkt
+	}
+	// dont use abs() its unsigned
+	if( A.longitude > B.longitude){
+		// hier kommen grad*106 raus
+		dist_x=(((float)(A.longitude - B.longitude))*gps_lati_cos)/100; // gewichtet, GPS_lati_cos is *100
+	} else {
+		dist_x=(((float)(B.longitude - A.longitude))*gps_lati_cos)/100; // gewichtet, GPS_lati_cos is *100
+	}
 
 	if(return_square){
-		return round((unsigned long)((dist_x*dist_x)+(dist_y*dist_y)));// berechne distanz ohne *0.111 and without sqrt ... only for comparison
+		return ((unsigned long)(((unsigned long)dist_x*(unsigned long)dist_x)+((unsigned long)dist_y*(unsigned long)dist_y)));// berechne distanz ohne *0.111 and without sqrt ... only for comparison
 	};
 	return round((unsigned long)sqrt((dist_x*dist_x)+(dist_y*dist_y))*0.111);// berechne distanz
 };
