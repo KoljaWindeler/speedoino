@@ -429,6 +429,9 @@ void speedo_menu::display(){
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,1)) { // 00041XX
 		set_value_dialog((int8_t*)&pSensors->m_gps->navi_active,PSTR("= Navigation ="));
+		if(pSensors->m_gps->navi_active && pConfig->storage_outdated){
+			pSensors->m_gps->generate_new_order();
+		}
 	}
 	/////////////////////////////////////////////////// Pointer f?r die Navigation ///////////////////////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POINTER)){ // 32[X]
