@@ -59,7 +59,7 @@ Speedo_CAN::~Speedo_CAN(){
 
 void Speedo_CAN::init(){
 	// Interrupt for CAN Interface active, auf pk4, pcint20
-
+	can_missed_count=0;
 	// Chipselect as output
 	if(pConfig->get_hw_version()==7){
 		// Interrupt as Input with pull up
