@@ -67,10 +67,10 @@ private:
 	bool just_marker_update;
 	void color_select_menu(unsigned long base_state,led_simple *led_from, led_simple *led_to, int *min, int *max, int upper_limit, bool button_state, const char *name, const char *unit, char set_led_mode, bool just_one_line_mode);
 	void storage_update_guard(unsigned long* state, unsigned long old_state,bool storage_outdated, bool* updated_display);
-	void set_value_dialog(uint8_t* value,const char* title,const char* opt0,const char* opt1,const char* opt2,const char* opt3);
-	void set_value_dialog(uint8_t* value,const char* title,const char* opt0,const char* opt1,const char* opt2);
-	void set_value_dialog(uint8_t* value,const char* title,const char* opt0,const char* opt1);
-	void set_value_dialog(uint8_t* value,const char* title);
+	void set_value_dialog(int8_t* value,const char* title,const char* opt0,const char* opt1,const char* opt2,const char* opt3);
+	void set_value_dialog(int8_t* value,const char* title,const char* opt0,const char* opt1,const char* opt2);
+	void set_value_dialog(int8_t* value,const char* title,const char* opt0,const char* opt1);
+	void set_value_dialog(int8_t* value,const char* title);
 };
 extern speedo_menu* pMenu;
 ////////////// menu ///////////////////////

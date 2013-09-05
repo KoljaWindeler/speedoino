@@ -171,18 +171,18 @@ bool       	button_oben_valid=true;
 bool       	button_unten_valid=true;
 
 #define menu_active 0 // low active menues
-#define menu_lines 7 // wieviele lines k�nnen wir darstellen 64 / 8 = 8 | 8-1(f�r die Headline)=7
-int			menu_max=8;   // 9 eintrr�ge aber da das array bei 0 anf�ngt isses 9-1=8
+#define menu_lines 7 // wieviele lines k?nnen wir darstellen 64 / 8 = 8 | 8-1(f?r die Headline)=7
+int			menu_max=8;   // 9 eintrr?ge aber da das array bei 0 anf?ngt isses 9-1=8
 int			menu_marker=0;
 int			menu_start=0;
 int			menu_ende=menu_lines-1;
 
-#define menu_second_wait 100  // spike l�nge
+#define menu_second_wait 100  // spike l?nge
 int			fuel_added=90; // predefined value "added fuel"
 unsigned int addr;
 ///// vars ////////////
 
-////// bei ver�nderung des state => einmaliges zeichen des men�s ///////
+////// bei ver?nderung des state => einmaliges zeichen des men?s ///////
 
 /************************************************************ display menu ************************************************************
  * Menu structure base! This function gets called as soon as the menu_state_machine var "state" gets changed.
@@ -250,7 +250,7 @@ void speedo_menu::display(){
 
 		pSpeedo->initial_draw_screen(); // draw symbols
 
-		// wenn wir nicht in der navigation sind, die tasten f�r hoch und runter deaktiveren
+		// wenn wir nicht in der navigation sind, die tasten f?r hoch und runter deaktiveren
 		if(!pSensors->m_gps->navi_active){
 			set_buttons(button_state,!button_state,!button_state,button_state); // msg only
 		};
@@ -304,7 +304,6 @@ void speedo_menu::display(){
 		if(floor(old_state/10)==state){ // comming from menu above
 			pSensors->m_gps->update_rate_1Hz();
 			back();
-			update_display=true;
 		} else {
 			// comming from menu below .. direct by menu -> switch on high speed gps, otherwise it is already active
 			if(old_state*10+1==state){
@@ -343,7 +342,6 @@ void speedo_menu::display(){
 				_delay_ms(1500); // show it for a certain time
 				back();
 				back(); // jump back to menu
-				update_display=true;
 			} else {
 				// save point as regualr sector border
 				pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
@@ -391,7 +389,6 @@ void speedo_menu::display(){
 		_delay_ms(1000);
 		back();
 		back();
-		update_display=true;
 	}
 	////////// Eval
 	else if(state==BMP(0,0,0,0,M_LAP_T,5,1)){
@@ -405,7 +402,7 @@ void speedo_menu::display(){
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,M_LAP_T,6)) { // 00046XX
-		set_value_dialog((uint8_t*)&pLapTimer->use_realtime_not_calculated,PSTR("= Best Time Mode ="),PSTR("Calculated time"),PSTR("Real time"));
+		set_value_dialog((int8_t*)&pLapTimer->use_realtime_not_calculated,PSTR("= Best Time Mode ="),PSTR("Calculated time"),PSTR("Real time"));
 	}
 	/********************************************* Menu 3, Race mode  *********************************************/
 
@@ -431,33 +428,33 @@ void speedo_menu::display(){
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,1)) { // 00041XX
-		set_value_dialog((uint8_t*)&pSensors->m_gps->navi_active,PSTR("= Navigation ="));
+		set_value_dialog((int8_t*)&pSensors->m_gps->navi_active,PSTR("= Navigation ="));
 	}
-	/////////////////////////////////////////////////// Pointer f�r die Navigation ///////////////////////////////////////////////////
+	/////////////////////////////////////////////////// Pointer f?r die Navigation ///////////////////////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POINTER)){ // 32[X]
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POINTER)){ // 321[X] change values here
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
-		if((state%10)==2){ // runter gedr�ckt
+		if((state%10)==2){ // runter gedr?ckt
 			pSensors->m_gps->navi_point++;
 			pConfig->storage_outdated=true;
-		} else if((state%10)==9){ // hoch gedr�ckt
+		} else if((state%10)==9){ // hoch gedr?ckt
 			pSensors->m_gps->navi_point--;
 			if(pSensors->m_gps->navi_point<1) { pSensors->m_gps->navi_point=0; };
 			pConfig->storage_outdated=true;
 		};
-		state=floor(state/10)*10+1; // zur�ckschuppsen
+		state=floor(state/10)*10+1; // zur?ckschuppsen
 
 		pOLED->clear_screen();
 		pOLED->string_P(pSpeedo->default_font,PSTR("Navi Track Pointer"),0,0,0,DISP_BRIGHTNESS,0);
-		pSensors->m_gps->generate_new_order(); // vor ausgabe von pSensors->m_gps->navi_point, wenn pSensors->m_gps->navi_point nach dem knopfdruck zu hoch war wirds in dieser fkt zur�ck gesetzt
+		pSensors->m_gps->generate_new_order(); // vor ausgabe von pSensors->m_gps->navi_point, wenn pSensors->m_gps->navi_point nach dem knopfdruck zu hoch war wirds in dieser fkt zur?ck gesetzt
 		sprintf(char_buffer,"#%3i:",pSensors->m_gps->navi_point);
 		pOLED->string(pSpeedo->default_font,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
-		pOLED->string(pSpeedo->default_font,pSensors->m_gps->navi_ziel_name,7,2,0,DISP_BRIGHTNESS,0); // stra�e
+		pOLED->string(pSpeedo->default_font,pSensors->m_gps->navi_ziel_name,7,2,0,DISP_BRIGHTNESS,0); // stra?e
 		sprintf_P(char_buffer,PSTR("Long: %05i%04i"),int(floor(pSensors->m_gps->navi_ziel_long/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_long,10000)));
 		pOLED->string(pSpeedo->default_font,char_buffer,2,6,0,DISP_BRIGHTNESS,0);
-		sprintf_P(char_buffer,PSTR("Lati: %05i%04i"),int(floor(pSensors->m_gps->navi_ziel_lati/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_lati,10000))); // typisch 052033224 => 5203,3224 => kann pro feld bis zu 32767 => 3.276.732.767 => 3.276� was quasi 8 mal um die welt geht
+		sprintf_P(char_buffer,PSTR("Lati: %05i%04i"),int(floor(pSensors->m_gps->navi_ziel_lati/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_lati,10000))); // typisch 052033224 => 5203,3224 => kann pro feld bis zu 32767 => 3.276.732.767 => 3.276? was quasi 8 mal um die welt geht
 		pOLED->string(pSpeedo->default_font,char_buffer,2,7,0,DISP_BRIGHTNESS,0);
 	}
 	/////////////////////////////////////////////////// Dateien listen und highlighten... irgendwie ///////////////////////////////////////////////////
@@ -477,7 +474,7 @@ void speedo_menu::display(){
 				pConfig->storage_outdated=true;
 			}
 		};
-		// immer wieder zur�ckschuppsen
+		// immer wieder zur?ckschuppsen
 		state=floor(state/10)*10+1; // (41+2)*10+1
 		pConfig->storage_outdated=true;
 		pConfig->write("BASE.TXT"); // save config
@@ -493,7 +490,7 @@ void speedo_menu::display(){
 		sprintf_P(buffer,PSTR("Navifile Nr: %i"),pSensors->m_gps->active_file);
 		// file exists
 		SdFile file;
-		if (file.open(&subdir, navi_filename, O_READ)){ //kann ich offentsichtlich �ndern, datei auslesen
+		if (file.open(&subdir, navi_filename, O_READ)){ //kann ich offentsichtlich ?ndern, datei auslesen
 			int n=1;
 			int byte_read=0;
 			// reserve buffer space
@@ -650,7 +647,7 @@ void speedo_menu::display(){
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_SPEEDCAM_ON_OFF)) { // 000461X
 		bool temp=pSpeedCams->get_active();
-		set_value_dialog((uint8_t*)&temp,PSTR("= POI warning ="));
+		set_value_dialog((int8_t*)&temp,PSTR("= POI warning ="));
 		if(temp!=pSpeedCams->get_active()){
 			pSpeedCams->set_active(temp);
 		}
@@ -757,18 +754,18 @@ void speedo_menu::display(){
 			if(old_state==BMP(0,0,0,0,0,5,2)){
 				state_helper=0;
 				set_buttons(button_state,!button_state,down,button_state); // no up
-			} else if(state%10==2){ // ein runter gedr�ckt
+			} else if(state%10==2){ // ein runter gedr?ckt
 				state--;
 				set_buttons(button_state,button_state,down,button_state); // all
 				state_helper++;
-			} else if(state%10==9){ // ein hoch gedr�ckt (519)
+			} else if(state%10==9){ // ein hoch gedr?ckt (519)
 				state+=2; // 519 + 2 = 521
 				state_helper--;
 				if(state_helper==0){
 					set_buttons(button_state,!button_state,down,button_state); // no up
 				}
 			}
-			// testen f�r mehr als 3 codes!! TODO
+			// testen f?r mehr als 3 codes!! TODO
 		};
 
 	}
@@ -810,7 +807,6 @@ void speedo_menu::display(){
 		pAktors->m_stepper->go_to(6000/11.73);
 		_delay_ms(3000);
 		back();
-		update_display=true;
 	}
 	//////////////////////// TEST des watchdogs durch absitzen ////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,5,6)){ // 56[X]
@@ -894,7 +890,6 @@ void speedo_menu::display(){
 		delete m_tetris;
 		PCICR |=(1<<PCIE1); // PCINT Activieren
 		back();
-		update_display=true;
 	}
 	/********************************************* End of Extend Info Menu *********************************************/
 
@@ -931,7 +926,7 @@ void speedo_menu::display(){
 
 		// check if file exists
 		SdFile file;
-		if (file.open(&subdir, filename, O_READ)){ //kann ich offentsichtlich �ndern, datei auslesen
+		if (file.open(&subdir, filename, O_READ)){ //kann ich offentsichtlich ?ndern, datei auslesen
 			int n=1;
 			int byte_read=0;
 			// reserve buffer space
@@ -1002,12 +997,12 @@ void speedo_menu::display(){
 		// save,change,restore,and show one preview image
 		unsigned long save_state=state;
 		state=BMP(0,0,0,0,0,1,1);
-		display(); // nicht sch�n, aber das muss sein :D
+		display(); // nicht sch?n, aber das muss sein :D
 		pSpeedo->loop(0);
 		state=save_state;
 	}
 
-	//////////////////////// skin speichern -> zum men�punkt 11 gehen und alles ist gut ////////////////////////////
+	//////////////////////// skin speichern -> zum men?punkt 11 gehen und alles ist gut ////////////////////////////
 	else if(floor(state/1000)==BMP(0,0,0,0,0,6,1)) { // 0061[xyz]
 		pOLED->clear_screen();
 		pConfig->skin_file=(int(floor(state/100))%10)-1;
@@ -1026,50 +1021,40 @@ void speedo_menu::display(){
 	// first select to type of mode by /100
 	// then select the storage by /1000
 	else if(floor(state/10)==BMP(0,0,0,0,0,6,2)) {
-		// sneaky, wir bauen ein "zwischen zustand" ein, um einen �bergang zu erzeugen
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen ?bergang zu erzeugen
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,6,2)) {
-		if(floor(old_state)==BMP(0,0,0,0,0,6,2) || floor(old_state/1000)==BMP(0,0,0,0,0,6,2)){ // wenn wir von unten kommen, waren wir vorher auf 62. wenn wir von oben kommen waren wir auf 62[1][Y][Z] = y ist mode, z ist storage
-			state=10*floor(state/10)+(pSpeedo->m_trip_mode%10); // state muss angepasst werden.
-			if(pSpeedo->m_trip_mode>menu_lines){  // positionierung des Markers
-				menu_marker=menu_lines-1;
-				menu_start=pSpeedo->m_trip_mode-menu_lines;
-				menu_ende=pSpeedo->m_trip_mode-1;
-			}
-			else {
-				menu_marker=pSpeedo->m_trip_mode-1;
-				menu_start=0;
-				menu_ende=menu_lines-1;
-			};
+		if(floor(old_state)==BMP(0,0,0,0,0,6,2)){// || floor(old_state/1000)==BMP(0,0,0,0,0,6,2)){ // wenn wir von unten kommen, waren wir vorher auf 62. wenn wir von oben kommen waren wir auf 62[1][Y][Z] = y ist mode, z ist storage
+			state+=(pSpeedo->m_trip_mode%10)-1; // state muss angepasst werden.
+			state=state*10+1; // moving to one "fake"level high, to run back(). This should repositionate the menu around us
+			back();
+
 		}
 		else { // speichern des neuen Werts
-			pConfig->storage_outdated=true;
-			pSpeedo->m_trip_mode=state%10;
+			if(floor(old_state/1000)!=BMP(0,0,0,0,0,6,2)){
+				pConfig->storage_outdated=true;
+				pSpeedo->m_trip_mode=state%10;
+			}
+			draw(&menu_add_info[0],sizeof(menu_add_info)/sizeof(menu_add_info[0]));
 		};
-		draw(&menu_add_info[0],sizeof(menu_add_info)/sizeof(menu_add_info[0]));
+
 	}
 	// and now select the storage
 	else if(floor(state/1000)==BMP(0,0,0,0,0,6,2)) {
 		if(floor(old_state/100)==BMP(0,0,0,0,0,6,2)){ // wenn wir von unten kommen, waren wir vorher auf 62[1][y]. y ist mode
-			state=10*floor(state/10)+(pSpeedo->m_trip_storage%10); // state muss angepasst werden.
-			if(pSpeedo->m_trip_storage>menu_lines){  // positionierung des Markers
-				menu_marker=menu_lines-1;
-				menu_start=pSpeedo->m_trip_storage-menu_lines;
-				menu_ende=pSpeedo->m_trip_storage-1;
-			}
-			else {
-				menu_marker=pSpeedo->m_trip_storage-1;
-				menu_start=0;
-				menu_ende=menu_lines-1;
-			};
+			state+=(pSpeedo->m_trip_storage%10)-1; // state muss angepasst werden.
+			state=state*10+1;
+			back();
 		}
 		else { // speichern des neuen Werts
-			pSpeedo->m_trip_storage=state%10;
-			pConfig->storage_outdated=true;
+			if(floor(old_state/10000)!=BMP(0,0,0,0,0,6,2)){
+				pSpeedo->m_trip_storage=state%10;
+				pConfig->storage_outdated=true;
+			}
+			draw(&menu_trip_setup[0],sizeof(menu_trip_setup)/sizeof(menu_trip_setup[0]));
 		};
-		draw(&menu_trip_setup[0],sizeof(menu_trip_setup)/sizeof(menu_trip_setup[0]));
 	}
 	///////////////////////////// dz flasher /////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,6,3)) {
@@ -1136,13 +1121,13 @@ void speedo_menu::display(){
 		if(pSensors->m_dz->blitz_en){
 			set_buttons(button_state,button_state,button_state,button_state); // alles aktiv
 
-			sprintf(char_buffer,"%3i00",int(floor(pSensors->m_dz->blitz_dz/100)));// 12500
+			sprintf_P(char_buffer,PSTR("%3i00"),int(floor(pSensors->m_dz->blitz_dz/100)));// 12500
 			pOLED->highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
 			if(floor(state/100)==BMP(0,0,0,0,0,6,3)){
-				pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,5,0,15,0); // joa, unsch�n. Wird flackern, aber naja
+				pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,5,0,15,0); // joa, unsch?n. Wird flackern, aber naja
 				pOLED->string(pSpeedo->default_font,char_buffer,11,5,15,0,0);
 			} else {
-				pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,5,15,0,0);  // joa, unsch�n. Wird flackern, aber naja
+				pOLED->string_P(pSpeedo->default_font,PSTR("active"),2,5,15,0,0);  // joa, unsch?n. Wird flackern, aber naja
 				pOLED->string(pSpeedo->default_font,char_buffer,11,5,0,15,0);
 			}
 
@@ -1151,12 +1136,11 @@ void speedo_menu::display(){
 			set_buttons(button_state,button_state,button_state,!button_state); // no right
 			pOLED->highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
 			pOLED->string_P(pSpeedo->default_font,PSTR("inactive"),5,5,0,15,0);
-
 		};
 
 		//////////////////////// adjust dz alert RGB LED ////////////////////////
 	} else if(floor(state/100)==BMP(0,0,0,6,3,1,1) || floor(state/1000)==BMP(0,0,0,6,3,1,1) ||floor(state/10000)==BMP(0,0,0,6,3,1,1)){
-		color_select_menu(63111L,&pAktors->dz_flasher,0,0,0,0,button_state, PSTR("Shift-Light"),PSTR(""),99,true);
+		color_select_menu(BMP(0,0,6,3,1,1,1),&pAktors->dz_flasher,0,0,0,0,button_state, PSTR("Shift-Light"),PSTR(""),99,true);
 	}
 	//////////////////////// adjust outer RGB LED ////////////////////////
 	/* In this menu, we give the user the chance to choose his own color
@@ -1170,7 +1154,7 @@ void speedo_menu::display(){
 		// preset Menu marker
 		if(old_state==floor(state/10)){
 			state=(state+pAktors->led_mode)*10+1;
-			go_left(true);
+			back();
 		}
 
 		draw(&menu_fade[0],sizeof(menu_fade)/sizeof(menu_fade[0]));
@@ -1202,7 +1186,7 @@ void speedo_menu::display(){
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 
 	} else if(floor(state/10)==BMP(0,0,0,0,6,5,1)){
-		set_value_dialog((uint8_t*)&pAktors->pointer_highlight_mode,PSTR("= RGB-Action ="),PSTR("Static"),PSTR("Following"),PSTR("Reserved"));
+		set_value_dialog((int8_t*)&pAktors->pointer_highlight_mode,PSTR("= RGB-Action ="),PSTR("Static"),PSTR("Following"),PSTR("Reserved"));
 	}
 	///////////////////////// set bt pin ///////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,6,7)){
@@ -1211,7 +1195,7 @@ void speedo_menu::display(){
 				pConfig->storage_outdated=false; // avoid saving if we could not set it
 			}
 		}
-		// sneaky, wir bauen ein "zwischen zustand" ein, um einen �bergang zu erzeugen
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen ?bergang zu erzeugen
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 		pSpeedo->disp_zeile_bak[2]=999; // redraw everything
 	}
@@ -1222,14 +1206,14 @@ void speedo_menu::display(){
 		// handle up down
 		if(state%10==9){ // oben
 			pConfig->storage_outdated=true;
-			state-=8; // zur�ck
+			state-=8; // zur?ck
 			if(floor(state/100)==BMP(0,0,0,0,0,6,7) && pAktors->bt_pin>999)						{	pAktors->bt_pin-=1000;	};
 			if(floor(state/1000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/100))%10)>0)	{	pAktors->bt_pin-=100;	};
 			if(floor(state/10000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/10))%10)>0)	{	pAktors->bt_pin-=10;	};
 			if(floor(state/100000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/1))%10)>0)	{	pAktors->bt_pin-=1;		};
 		} else if(state%10==2){ // unten
 			pConfig->storage_outdated=true;
-			state-=1; // zur�ck
+			state-=1; // zur?ck
 			if(floor(state/100)==BMP(0,0,0,0,0,6,7) && pAktors->bt_pin<9000)					{	pAktors->bt_pin+=1000;	};
 			if(floor(state/1000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/100))%10)<9)	{	pAktors->bt_pin+=100;	};
 			if(floor(state/10000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/10))%10)<9)	{	pAktors->bt_pin+=10;	};
@@ -1294,7 +1278,7 @@ void speedo_menu::display(){
 	}
 	//////////////F/////// Gear calibration //////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,1)) { // 00071[X]
-		if(state%10>6){	// g�nge h�her als 6
+		if(state%10>6){	// g?nge h?her als 6
 			state=BMP(0,0,0,0,7,1,6);
 			update_display=true;
 		} else {		// erstmal ne message
@@ -1406,7 +1390,7 @@ void speedo_menu::display(){
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,7,4)) { // 00074XX
-		set_value_dialog((uint8_t*)&pLapTimer->use_realtime_not_calculated,PSTR("= GPS Format ="),PSTR("Readable"),PSTR("Compressed"));
+		set_value_dialog((int8_t*)&pLapTimer->use_realtime_not_calculated,PSTR("= GPS Format ="),PSTR("Readable"),PSTR("Compressed"));
 	}
 	/////////// Sensor source  //////////
 	// this is our sneaky state in the middle, see if we have to store
@@ -1415,13 +1399,22 @@ void speedo_menu::display(){
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,7,5)) { // 000751X
-		set_value_dialog((uint8_t*)&pSensors->sensor_source,PSTR("= Sensor source ="),PSTR("Analog Sensors"),PSTR("Auto detect"),PSTR("CAN Sensors"));
+		set_value_dialog((int8_t*)&pSensors->sensor_source,PSTR("= Sensor source ="),PSTR("Analog Sensors"),PSTR("Auto detect"),PSTR("CAN Sensors"));
+		if(pSensors->sensor_source==SENSOR_AUTO || pSensors->sensor_source==SENSOR_FORCE_CAN){ // add "submenu"
+			pOLED->string_P(pSpeedo->default_font,PSTR("\x7F to select type"),0,6);
+			set_buttons(button_links_valid,button_oben_valid,button_unten_valid,true);
+		}
 	}
 	// select type
 	else if(floor(state/100)==BMP(0,0,0,0,7,5,1)) { // 0007511X
-		uint8_t temp=pSensors->m_CAN->get_active_can_type()-1; // 0=none, 1=triuph, 2=OBD2 -> map it to 0=triumph, 1=OBD2
+		int8_t temp=0;
+		if(pSensors->m_CAN->get_active_can_type()==CAN_TYPE_OBD2 || pSensors->m_CAN->get_active_can_type()==CAN_TYPE_TRIUMPH){
+			temp=pSensors->m_CAN->get_active_can_type()-1; // 0=none, 1=triuph, 2=OBD2 -> map it to 0=triumph, 1=OBD2
+		}
 		set_value_dialog(&temp,PSTR("= CAN Bus Type ="),PSTR("Triumph"),PSTR("OBD2"));
-		if(temp!=pSensors->m_CAN->get_active_can_type()-1){
+		if(temp+1!=pSensors->m_CAN->get_active_can_type()){
+			Serial.print("Set value to:");
+			Serial.println(temp+1);
 			pSensors->m_CAN->set_active_can_type(temp+1);
 		}
 	}
@@ -1557,7 +1550,7 @@ void speedo_menu::display(){
 		// 892 -> 901
 		if(state>BMP(0,0,0,0,0,0,8)*100)
 			state=BMP(0,0,0,0,8,1,1);
-		update_display=true; 	// m�ssen wir hier nicht display aufrufen?
+		update_display=true; 	// m?ssen wir hier nicht display aufrufen?
 	}
 	else if(floor(state/100)==BMP(0,0,0,0,0,0,8) && state%10==9){ // 8[X]9
 		state-=18; // 949 -> 931
@@ -1565,18 +1558,15 @@ void speedo_menu::display(){
 		// 911 -> 919 -> 901
 		if(state==BMP(0,0,0,0,8,0,1))
 			state=BMP(0,0,0,0,8,9,1);
-		update_display=true; // m�ssen wir hier nicht display aufrufen?
+		update_display=true; // m?ssen wir hier nicht display aufrufen?
 	}
-	/////////////////// l�schen abfrage ////////////////////
+	/////////////////// l?schen abfrage ////////////////////
 	else if(floor(state/1000)==BMP(0,0,0,0,0,0,8)){  // 9[X]11
-		set_buttons(!button_state,button_state,button_state,!button_state); // msg only
 		char temp[22];
 		strcpy_P(temp, (char*)pgm_read_word(&(menu_trip_setup[(int(floor(state/100))%10)-1])));
-
-		int bereich=pMenu->center_me(temp,sizeof(temp)/sizeof(temp[0]));
-		temp[int(floor(bereich/100)-1)]='"';
-		temp[bereich%100+1]='"';
-		yesno("Sure to reset",temp,"       storage");
+		char storry[40];
+		sprintf_P(storry,PSTR("Sure to reset \"%s\" storage"),temp);
+		pOLED->show_storry(storry,strlen(storry),"Reset",6,DIALOG_NO_YES);
 	}
 	// prevent deleting total && board
 	else if(state==BMP(0,0,8,9,1,1,1) || state==BMP(0,0,8,1,1,1,1)){
@@ -1589,7 +1579,7 @@ void speedo_menu::display(){
 		set_buttons(button_state,!button_state,!button_state,!button_state);
 	}
 	////////////////// Tachostand leeren ////////////////////
-	else if(floor(state/10000)==BMP(0,0,0,0,0,0,8)){ // 0008[X]111, jetzt alles l�schen
+	else if(floor(state/10000)==BMP(0,0,0,0,0,0,8)){ // 0008[X]111, jetzt alles l?schen
 		set_buttons(!button_state,!button_state,!button_state,!button_state); // msg only
 		pSpeedo->max_speed[(int(floor(state/1000))%10)-1]=0;
 		pSpeedo->avg_timebase[(int(floor(state/1000))%10)-1]=0;
@@ -1658,7 +1648,7 @@ void speedo_menu::display(){
 		pConfig->storage_outdated=true;
 		pConfig->write("speedo.txt");
 		_delay_ms(500);
-		state=BMP(0,0,0,0,0,1,1); // damit kann man durch rechts/links dr�cken wieder zum tacho springen
+		state=BMP(0,0,0,0,0,1,1); // damit kann man durch rechts/links dr?cken wieder zum tacho springen
 		update_display=true;
 	}
 	/********************************************* End of Trip Menu *********************************************/
@@ -1680,57 +1670,33 @@ void speedo_menu::display(){
 	/*********************************************     End of Backup     *********************************************/
 	/********************************************* End of Menu_display() *********************************************/
 };
-////// bei ver�nderung des state => einmaliges zeichen des men�s ///////
+////// bei ver?nderung des state => einmaliges zeichen des men?s ///////
 
-//// ein r�ckschritt im men� machen ////////
+//// one step back in the menu ////////
 void speedo_menu::back(){
-	unsigned long return_value=floor(state/10);
-	if((return_value%10)>menu_lines){
+	old_state=state;								// to remember where we have been
+	state=floor(state/10);							// new state
+	if((state%10)>menu_lines){						// menu positioning
 		menu_marker=menu_lines-1;
-		menu_start=(return_value%10)-menu_lines;
-		menu_ende=(return_value%10)-1;
+		menu_start=(state%10)-menu_lines;
+		menu_ende=(state%10)-1;
 	}
 	else {
-		menu_marker=(return_value%10)-1;
+		menu_marker=(state%10)-1;
 		menu_start=0;
 		menu_ende=menu_lines-1;
 	};
-	state=return_value;
-	if(floor(state/100)==0 && ((int)floor(state/10))%10 == 0){ // 00X0
+
+	if(floor(state/100)==0 && ((int)floor(state/10))%10 == 0){ // no left in main menu 00X0
 		button_links_valid=false;
 	};
+	just_marker_update=false;						// wasty, but to be sure that the whole screen is redrawn
+	update_display=true;					// set flag for the display() routine to re-enter the statemachine -> react on new state
 };
-//// ein r�ckschritt im men� machen ////////
+//// one step back in the menu ////////
 
-/// eine r�ckfrage: soll ich wirklich l�schen ////
-void speedo_menu::yesno(const char first[30],const char second[30],const char third[30]){
-	// Menu vorbereiten
-	pOLED->clear_screen();
-	pOLED->string(pSpeedo->default_font,first,4,1,0,DISP_BRIGHTNESS,0);
-	pOLED->string(pSpeedo->default_font,second,0,2,0,DISP_BRIGHTNESS,0);
-	pOLED->string(pSpeedo->default_font,third,0,3,0,DISP_BRIGHTNESS,0);
-	pOLED->string_P(pSpeedo->default_font,PSTR("\x7E no            yes \x7F"),0,7,0,DISP_BRIGHTNESS,0);
-	button_links_valid=true;
-	button_oben_valid=false;
-	button_rechts_valid=true;
-	button_unten_valid=false;
 
-};
-/// eine r�ckfrage: soll ich wirklich l�schen ////
-
-/// best�tigen eines l�schens ///
-void speedo_menu::popup(const char *first,const char *second){
-	pOLED->clear_screen();
-	pOLED->string_P(pSpeedo->default_font,first,6,2,0,DISP_BRIGHTNESS,0);
-	pOLED->string_P(pSpeedo->default_font,second,2,4,0,DISP_BRIGHTNESS,0);
-
-	_delay_ms(1300);
-	back();
-	display();
-};
-/// best�tigen eines l�schens ///
-
-///// ein text men� zeichnen ////////////
+///// draw the menu ////////////
 void speedo_menu::draw(const char* const* menu, int entries){
 	//show "main menu" in mainmenu (state < 10 )
 	//otherwise, show caption of the particular menu
@@ -1742,7 +1708,6 @@ void speedo_menu::draw(const char* const* menu, int entries){
 	} else {
 		level_1=0; // main
 	}
-
 
 #ifdef MENU_DEBUG
 	Serial.print("Bin im menue, menu_marker:");
@@ -1840,7 +1805,7 @@ void speedo_menu::draw(const char* const* menu, int entries){
 			y++; // abstand festlegen
 		};
 
-		while(y<8){ // die zeilen unter dem Men� ausmmalen
+		while(y<8){ // die zeilen unter dem Men? ausmmalen
 			pOLED->filled_rect(0,8*y,128,8,0); // mit hintergrundfarbe nen kasten malen
 			y++;
 		}
@@ -1849,29 +1814,15 @@ void speedo_menu::draw(const char* const* menu, int entries){
 	free(buffer);
 	///////// Menu ausgeben ////////////
 };
-///// ein text men� zeichnen ////////////
+///// ein text men? zeichnen ////////////
 // go_left(update_twice)
 // update_twice=true <- false, damit das update_display flag nicht gesetzt wird
 // daher muss die funktion die go_left(false) aufruft, selbst display() aufrufen
-// wenn man es mit go_left(true) aufruft, dann wird display autak ausgef�hrt
+// wenn man es mit go_left(true) aufruft, dann wird display autak ausgef?hrt
 bool speedo_menu::go_left(bool update_twice){
-	old_state=state;
-	just_marker_update=false;
-	state=floor(state/10);
-
-	if((state%10)>menu_lines){ // bei 8,9
-		menu_marker=menu_lines-1;// ganz unten
-		menu_start=(state%10)-menu_lines; // 8 - 7 => 1 bis 8
-		menu_ende=(state%10)-1;
-	}
-	else {
-		menu_marker=(state%10)-1;
-		menu_start=0;
-		menu_ende=menu_lines-1;
-	};
+	back();
 	button_time=millis();
 	pDebug->loop();
-	update_display=update_twice;
 	return true;
 };
 
@@ -1891,12 +1842,12 @@ bool speedo_menu::go_right(bool update_twice){
 
 bool speedo_menu::go_up(bool update_twice){
 	old_state=state;
-	menu_marker--; // grunds�tzlich einfach nur den marker hochschieben
-	if(menu_marker<0){ // wenn der allerdings oben verwinden w�rde
+	menu_marker--; // grunds?tzlich einfach nur den marker hochschieben
+	if(menu_marker<0){ // wenn der allerdings oben verwinden w?rde
 		menu_marker++; // dann wieder auf 0 schieben
-		menu_start--; // daf�r das menu fr�her beginnen lassen
-		menu_ende--; // und fr�her enden lassen
-		if(menu_start<0){ // wenn wir jetzt allerdings nach oben den �bertrag haben
+		menu_start--; // daf?r das menu fr?her beginnen lassen
+		menu_ende--; // und fr?her enden lassen
+		if(menu_start<0){ // wenn wir jetzt allerdings nach oben den ?bertrag haben
 			menu_start=menu_max-(menu_lines-1); // dann ist start ganz unten - wieviele lines wir haben 8-7=1 was menue 2. ist
 			menu_ende=menu_max; // und wir sind ganz unten am ende 8=8
 			menu_marker=menu_lines-1; // und der marker ist ganz unten
@@ -1920,11 +1871,11 @@ bool speedo_menu::go_up(bool update_twice){
 bool speedo_menu::go_down(bool update_twice){
 	old_state=state;
 	menu_marker++; // ganz einfach hochsetzen
-	if(menu_marker>(menu_lines-1)){ // wenn �ber max sind
-		menu_marker--; // zur�ck
+	if(menu_marker>(menu_lines-1)){ // wenn ?ber max sind
+		menu_marker--; // zur?ck
 		menu_start++; // menu hoch
 		menu_ende++; // setzen
-		if(menu_ende>menu_max){ //umsprung nach oben wenn 9 > 8 dann w�ren wir mit dem ende auf dem eintrag der 10 hei�en w�rde ..
+		if(menu_ende>menu_max){ //umsprung nach oben wenn 9 > 8 dann w?ren wir mit dem ende auf dem eintrag der 10 hei?en w?rde ..
 			menu_marker=0;
 			menu_start=0;
 			menu_ende=menu_lines-1;
@@ -1949,7 +1900,7 @@ bool speedo_menu::go_down(bool update_twice){
 ///// zyklisches abfragen der buttons ////////////
 bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	unsigned char n=0; // count loop of "display()" max = 5
-	while(update_display && n<5 && !hw_keys_en){
+	while(update_display && n<5 && !hw_keys_en){ // check if its neccesary to draw anything
 		update_display=false;
 		n++;
 		display();
@@ -1989,10 +1940,10 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	 *  2. the shorter delay is passed (millis()>(menu_button_fast_timeout+button_time)) (0.1sec)
 	 */
 
-	if((hw_keys_en || button_first_push!=0) && pSpeedo->startup_by_ignition){		// hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedr�ckt ist
+	if((hw_keys_en || button_first_push!=0) && pSpeedo->startup_by_ignition){		// hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedr?ckt ist
 		if((millis()>(button_time+menu_button_timeout)) ||
 				((button_first_push>0 && millis()>(button_first_push+menu_button_fast_delay)) && millis()>(menu_button_fast_timeout+button_time)) ){ // halbe sek timeout
-			//////////////////////// rechts ist gedr�ckt ////////////////////////
+			//////////////////////// rechts ist gedr?ckt ////////////////////////
 			if(((PINJ & (1<<menu_button_rechts))==menu_active) && button_rechts_valid){
 				if(button_first_push==0){
 					button_first_push=millis();
@@ -2000,9 +1951,9 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 #ifdef MENU_DEBUG
 				Serial.println("menu_button_rechts");
 #endif
-				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr�cken
+				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr?cken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
-				if((PINJ & (1<<menu_button_rechts))==menu_active){ // wenn nach der Wartezeit der button immernoch gedr�ckt ist
+				if((PINJ & (1<<menu_button_rechts))==menu_active){ // wenn nach der Wartezeit der button immernoch gedr?ckt ist
 					go_right(true); // update display() via menu
 					return true;
 				} else {
@@ -2010,7 +1961,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				};
 			}
 
-			//////////////////////// links ist gedr�ckt ////////////////////////
+			//////////////////////// links ist gedr?ckt ////////////////////////
 			else if(((PINJ & (1<<menu_button_links))==menu_active)  && button_links_valid){
 				if(button_first_push==0){
 					button_first_push=millis();
@@ -2018,9 +1969,9 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 #ifdef MENU_DEBUG
 				Serial.println("menu_button_links");
 #endif
-				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr�cken
+				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr?cken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
-				if((PINJ & (1<<menu_button_links))==menu_active){ // wenn nach der Wartezeit der button immernoch gedr�ckt ist
+				if((PINJ & (1<<menu_button_links))==menu_active){ // wenn nach der Wartezeit der button immernoch gedr?ckt ist
 					go_left(true); // update display() via menu
 					return true;
 					// wenn der pegel doch nicht mehr anliegt ( spike )
@@ -2029,7 +1980,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				};
 			}
 
-			//////////////////////// oben ist gedr�ckt ////////////////////////
+			//////////////////////// oben ist gedr?ckt ////////////////////////
 			else if(((PINJ & (1<<menu_button_oben))==menu_active) && button_oben_valid){
 				if(button_first_push==0){
 					button_first_push=millis();
@@ -2038,9 +1989,9 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				Serial.println("menu_button_oben");
 #endif
 				// move menu
-				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr�cken
+				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr?cken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
-				if((PINJ & (1<<menu_button_oben))==menu_active){ // wenn nach der Wartezeit der button immernoch gedr�ckt ist
+				if((PINJ & (1<<menu_button_oben))==menu_active){ // wenn nach der Wartezeit der button immernoch gedr?ckt ist
 					go_up(true); // update display() via menu
 					return true;
 				} else {
@@ -2048,7 +1999,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				};
 			}
 
-			//////////////////////// unten ist gedr�ckt ////////////////////////
+			//////////////////////// unten ist gedr?ckt ////////////////////////
 			else if(((PINJ & (1<<menu_button_unten))==menu_active) && button_unten_valid){
 				if(button_first_push==0){
 					button_first_push=millis();
@@ -2057,16 +2008,16 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				Serial.println("menu_button_unten");
 #endif
 				// move menu
-				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr�cken
+				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr?cken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
-				if((PINJ & (1<<menu_button_unten))==menu_active){ // wenn nach der Wartezeit der button immernoch gedr�ckt ist
+				if((PINJ & (1<<menu_button_unten))==menu_active){ // wenn nach der Wartezeit der button immernoch gedr?ckt ist
 					go_down(true); // update display() via menu
 					return true;
 				} else {
 					return false;
 				};
 			}
-			//////////////////////// nix ist gedr�ckt ////////////////////////
+			//////////////////////// nix ist gedr?ckt ////////////////////////
 			else {
 				button_first_push=0;
 				return false;
@@ -2078,7 +2029,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	return false;
 };
 
-// h�sslich hier den interrupt eingef�gt ..
+// h?sslich hier den interrupt eingef?gt ..
 ISR(PCINT1_vect ){
 	//	Serial.print("interrupt @");
 	//	Serial.println(millis());
@@ -2089,7 +2040,7 @@ ISR(PCINT1_vect ){
 ///// zyklisches abfragen der buttons ////////////
 
 void speedo_menu::init(){
-	DDRJ &= ~((1<<menu_button_links)|(1<<menu_button_unten)|(1<<menu_button_rechts)|(1<<menu_button_oben)); //alles eing�nge
+	DDRJ &= ~((1<<menu_button_links)|(1<<menu_button_unten)|(1<<menu_button_rechts)|(1<<menu_button_oben)); //alles eing?nge
 	PORTJ |= ((1<<menu_button_links)|(1<<menu_button_unten)|(1<<menu_button_rechts)|(1<<menu_button_oben)); // pullup
 	PCMSK1 |= ((1<<PCINT12)|(1<<PCINT13)|(1<<PCINT14)|(1<<PCINT15));										// PCINT freischalten
 	PCICR |=(1<<PCIE1);																						// PCINT Activieren
@@ -2151,7 +2102,7 @@ int speedo_menu::center_me(char* input,int length){
 
 void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_from, led_simple *led_to, int *min, int *max, int upper_limit,bool button_state, const char *name, const char *unit, char set_led_mode, bool just_one_line_mode){
 	if(floor(state/10)==base_state){
-		// sneaky, wir bauen ein "zwischen zustand" ein, um einen �bergang zu erzeugen
+		// sneaky, wir bauen ein "zwischen zustand" ein, um einen ?bergang zu erzeugen
 		// wenn wir starten bei 652 und gehen rechts, sind wir in 6521, 652 ist base, old_state auch, daher ist dann der neue state 65211
 		if(	old_state==base_state){
 			state=state*10+1;
@@ -2159,11 +2110,11 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			if(just_one_line_mode) state_helper=1;
 			// prevent dimmer from killing our displayed color
 			pAktors->set_active_dimmer(false);
-			// andernfalls wollen wir gerade vom Einstellungsmen� ins Hauptmen�
-			// wir sind nach links, jetzt m�ssen wir checken: sind wir das weil wir zur�ck aus dem Men� wollten, oder
+			// andernfalls wollen wir gerade vom Einstellungsmen? ins Hauptmen?
+			// wir sind nach links, jetzt m?ssen wir checken: sind wir das weil wir zur?ck aus dem Men? wollten, oder
 			// wollten wir nur ein Feld weiter nach links. Die Felder sind numeriert in "state_helper"
 		} else {
-			// wirklich zur�ck ins Hauptmen�
+			// wirklich zur?ck ins Hauptmen?
 			if(state_helper==0 || (state_helper==1 && just_one_line_mode)){
 				back(); // calc menu_state
 
@@ -2221,7 +2172,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 		// neue werte
 		if(state%10==2){ // unten
 			pConfig->storage_outdated=true;
-			state-=1; // zur�ck
+			state-=1; // zur?ck
 
 			if(state_helper==0){			*min-=5;		if(*min<0){*min=0;};
 			} else if(state_helper==1){		r-=5;			if(r<0){r=0;};
@@ -2245,7 +2196,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			}
 		} else if(state%10==9){ // oben
 			pConfig->storage_outdated=true;
-			state-=8; // zur�ck
+			state-=8; // zur?ck
 
 			if(state_helper==0){			*min+=5;	if(*min>upper_limit){*min=upper_limit;};
 			} else if(state_helper==1){		r+=5;		if(r>255){r=255;};
@@ -2440,24 +2391,24 @@ void speedo_menu::storage_update_guard(unsigned long* state, unsigned long old_s
 			center_me(char_buffer,21);
 			pOLED->string(pSpeedo->default_font,char_buffer,0,6);
 
-			_delay_ms(2000);
+			_delay_ms(1200);
 		};
 	};
 	update_display=true;
 };
 
 // overloader, see func below
-void speedo_menu::set_value_dialog(uint8_t* value,const char* title){
+void speedo_menu::set_value_dialog(int8_t* value,const char* title){
 	set_value_dialog(value,title,PSTR("inactive"),PSTR("active"),PSTR(""), PSTR(""));
 }
 
 // overloader, see func below
-void speedo_menu::set_value_dialog(uint8_t* value,const char* title,const char* opt0,const char* opt1){
+void speedo_menu::set_value_dialog(int8_t* value,const char* title,const char* opt0,const char* opt1){
 	set_value_dialog(value,title,opt0,opt1,PSTR(""), PSTR(""));
 }
 
 // overloader, see func below
-void speedo_menu::set_value_dialog(uint8_t* value,const char* title,const char* opt0,const char* opt1,const char* opt2){
+void speedo_menu::set_value_dialog(int8_t* value,const char* title,const char* opt0,const char* opt1,const char* opt2){
 	set_value_dialog(value,title,opt0,opt1,opt2, PSTR(""));
 }
 
@@ -2471,7 +2422,7 @@ void speedo_menu::set_value_dialog(uint8_t* value,const char* title,const char* 
  * Line2: True / 2
  * Line3: True / 3
  *************** set_value_dialog ***********************/
-void speedo_menu::set_value_dialog(uint8_t* value,const char* title,const char* opt0,const char* opt1,const char* opt2,const char* opt3){
+void speedo_menu::set_value_dialog(int8_t* value,const char* title,const char* opt0,const char* opt1,const char* opt2,const char* opt3){
 	// first check how many options we have
 	uint8_t opt_count=2;
 	uint8_t line=3; // line 3+4
@@ -2496,7 +2447,7 @@ void speedo_menu::set_value_dialog(uint8_t* value,const char* title,const char* 
 	if(*value<0){
 		*value=0;
 	} else if(*value>=opt_count){
-		*value=opt_count;
+		*value=opt_count-1;
 	}
 
 	state=floor(state/10)*10+1;
@@ -2508,12 +2459,6 @@ void speedo_menu::set_value_dialog(uint8_t* value,const char* title,const char* 
 	unsigned char fg;
 	unsigned char bg;
 	const char* options[]={opt0,opt1,opt2,opt3};
-	// alternativ
-	// unsigned char options[4][18];
-	// strcpy_P(options[0],opt0);
-	// strcpy_P(options[1],opt1);
-	// strcpy_P(options[2],opt2);
-	// strcpy_P(options[3],opt3);
 
 	/// options //////////////////////////////
 	for(int i=0;i<opt_count; i++){
@@ -2526,7 +2471,6 @@ void speedo_menu::set_value_dialog(uint8_t* value,const char* title,const char* 
 			bg=0x00;
 		}
 		pOLED->string_P(pSpeedo->default_font,options[i],2,line,bg,fg,0);
-		//pOLED->string(pSpeedo->default_font,options[i],2,line,bg,fg,0);
 		line++;
 	}
 	/// options //////////////////////////////
