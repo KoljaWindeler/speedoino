@@ -384,7 +384,11 @@ void speedo_disp::show_storry(char storry[],unsigned int storry_length,char titl
 	//
 	unsigned int current_state=pMenu->state;
 	unsigned long current_timestamp=millis();
-	pMenu->set_buttons(true,false,false,true);
+
+	// set buttons if needed
+	if(type>=DIALOG_NO_YES){
+		pMenu->set_buttons(true,false,false,true);
+	}
 
 	if(type==DIALOG_NO_YES){
 		pOLED->string_P(pSpeedo->default_font,PSTR("\x7E back        next \x7F"),0,7);
@@ -657,13 +661,13 @@ int speedo_disp::animation(int ani_nr){
 
 
 void speedo_disp::init_speedo(){
-    pDebug->sprintp(PSTR("Display init ... "));
-    pinMode(29,INPUT); // interessiert keine sau, aber da der pin jetzt extern auf masse gezogen wird sollte der hier nicht besser kein Pegel treiben
+	pDebug->sprintp(PSTR("Display init ... "));
+	pinMode(29,INPUT); // interessiert keine sau, aber da der pin jetzt extern auf masse gezogen wird sollte der hier nicht besser kein Pegel treiben
 	if(phase==0 && ref==0){
 		phase=0xA8;
 		ref=0x28;
 	}
-    init(phase,ref);
+	init(phase,ref);
 	reinit_display=false;
 	clear_screen();
 
