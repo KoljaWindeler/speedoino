@@ -77,6 +77,7 @@ speedo_gps::speedo_gps(){
 	gps_goody.latitude=0;
 	gps_goody.longitude=0;
 	gps_lati_cos=100;							// current location weight factor
+	checksum=0x00;
 };
 
 speedo_gps::~speedo_gps(){
@@ -159,35 +160,46 @@ void speedo_gps::reconfigure(){
 // wenn ja dann wird get_GPS damit aufgerufen
 void speedo_gps::recv_data(){
 	char byteGPS = UDR1;
-	//Serial.print(byteGPS);
+//	Serial.print(byteGPS);
 	switch(gps_state){
 	case 0:  // hier sitzen wir und warten auf das startzeichen
-		if(byteGPS=='$'){ gps_state=1;	};
+		if(byteGPS=='$'){
+			gps_state=1;
+			checksum=0x00;
+		};
 		break;
 	case 1:  // das wird dann ein "G" sein
 		gps_state=2;
+		checksum^=byteGPS;
 		break;
 	case 2: // ein "P"
 		gps_state=3;
+		checksum^=byteGPS;
 		break;
 	case 3: // hier wirds interessant: isses ein ein R oder G ?
-		if(byteGPS=='R')
+		if(byteGPS=='R'){
 			gps_state=4;
-		else if(byteGPS=='G')
+			checksum^=byteGPS;
+		} else if(byteGPS=='G'){
 			gps_state=14; // hier mal einfach um 10 weiterspringen
-		else
+			checksum^=byteGPS;
+		} else {
 			gps_state=0;
+		};
 		break;
 	case 4: // auch noch interessant, hier müsste auf das R ein M folgen
-		if(byteGPS=='M') // jaha
+		if(byteGPS=='M'){ // jaha
 			gps_state=5;
-		else			// schade, doch nüscht
+			checksum^=byteGPS;
+		} else {			// schade, doch nüscht
 			gps_state=0;
+		}
 		break;
 	case 5: // soweit gut $GPRM fehlt das C
 		if(byteGPS=='C'){// jaha, ab in den "lese modus"
 			ringbuf_counter=0; // position in die geschrieben werden soll
 			gps_state=6;
+			checksum^=byteGPS;
 		} else			// schade, doch nüscht
 			gps_state=0;
 		break;
@@ -195,24 +207,48 @@ void speedo_gps::recv_data(){
 		if(ringbuf_counter>=SERIAL_BUFFER_SIZE-1){ gps_state=0; break; }    // überlauf, kein gps wert ist länger als 75 Byte. Mist
 		gps_buffer1[ringbuf_counter]=byteGPS;   // in den buffer schmei�?en
 		if(byteGPS=='*'){                // * das ist mein end signal dann is ende im gelände und abmarsch
-			gps_ready1=true;
-			gps_state=0;
+			gps_state=7;
 		} else if(byteGPS=='$'){ // damn da haben wir was verpasst
+			checksum=0x00;
 			gps_state=1; // jump start
 		} else { // es scheint also ein ganz normales zeichen zu sein, dann könnte nur noch der hier schief gehen
 			ringbuf_counter++;
+			checksum^=byteGPS;
 		}
 		break;
+	case 7: // checksum
+		if(byteGPS>='A' && byteGPS<='F'){
+			byteGPS=byteGPS-'A'+10;
+		} else {
+			byteGPS=byteGPS-'0';
+		}
+		checksum-=(byteGPS<<4);
+		gps_state=8;
+		break;
+	case 8:
+		if(byteGPS>='A' && byteGPS<='F'){
+			byteGPS=byteGPS-'A'+10;
+		} else {
+			byteGPS=byteGPS-'0';
+		}
+
+		if(byteGPS==checksum){
+			gps_ready1=true;
+		}
+		gps_state=0;
+		break;
 	case 14: // auch noch interessant, hier müsste auf das GPG ein G und dann ein A folgen
-		if(byteGPS=='G') // jaha
+		if(byteGPS=='G'){ // jaha
 			gps_state=15;
-		else			// schade, doch nüscht
+			checksum^=byteGPS;
+		} else			// schade, doch nüscht
 			gps_state=0;
 		break;
 	case 15: // jetzt fehlt nur noch das A
 		if(byteGPS=='A'){ // jaha
 			ringbuf_counter=0; // position in die geschrieben werden soll
 			gps_state=16;
+			checksum^=byteGPS;
 		} else			// schade, doch nüscht
 			gps_state=0;
 		break;
@@ -220,13 +256,35 @@ void speedo_gps::recv_data(){
 		if(ringbuf_counter>=SERIAL_BUFFER_SIZE){ gps_state=0; break; }    // überlauf, kein gps wert ist länger als 75 Byte. Mist
 		gps_buffer2[ringbuf_counter]=byteGPS;   // in den buffer schmei�?en
 		if(byteGPS=='*'){                // * das ist mein end signal dann is ende im gelände und abmarsch
-			gps_ready2=true;
-			gps_state=0;
+			gps_state=17;
 		} else if(byteGPS=='$'){ // damn da haben wir was verpasst
 			gps_state=1; // jump start
+			checksum=0x00;
 		} else { // es scheint also ein ganz normales zeichen zu sein, dann könnte nur noch der hier schief gehen
 			ringbuf_counter++;
+			checksum^=byteGPS;
 		}
+		break;
+	case 17: // checksum
+		if(byteGPS>='A' && byteGPS<='F'){
+			byteGPS=byteGPS-'A'+10;
+		} else {
+			byteGPS=byteGPS-'0';
+		}
+		checksum-=(byteGPS<<4);
+		gps_state=18;
+		break;
+	case 18:
+		if(byteGPS>='A' && byteGPS<='F'){
+			byteGPS=byteGPS-'A'+10;
+		} else {
+			byteGPS=byteGPS-'0';
+		}
+
+		if(byteGPS==checksum){
+			gps_ready2=true;
+		}
+		gps_state=0;
 		break;
 		// end case 
 	}
@@ -716,9 +774,9 @@ unsigned long speedo_gps::calc_dist_supported(simple_coordinate A,simple_coordin
 		dist_x=(((float)(B.longitude - A.longitude))*gps_lati_cos)/100; // gewichtet, GPS_lati_cos is *100
 	}
 
-	if(return_square){
-		return ((unsigned long)(((unsigned long)dist_x*(unsigned long)dist_x)+((unsigned long)dist_y*(unsigned long)dist_y)));// berechne distanz ohne *0.111 and without sqrt ... only for comparison
-	};
+	//	if(return_square){
+	//		return ((unsigned long)(((unsigned long)dist_x*(unsigned long)dist_x)+((unsigned long)dist_y*(unsigned long)dist_y)));// berechne distanz ohne *0.111 and without sqrt ... only for comparison
+	//	};
 	return round((unsigned long)sqrt((dist_x*dist_x)+(dist_y*dist_y))*0.111);// berechne distanz
 };
 

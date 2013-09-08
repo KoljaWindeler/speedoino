@@ -75,6 +75,7 @@ private:
 	long entf; // die entfernung in metern. 32km kÃ¶nnte zuwenig sein, daher long
 	int navi_ziel_rl;//=1;
 	int note_this_place;                          // damit kann man marker auf die strecke setzen
+	uint8_t checksum;
 	// die letzen 30 infos
 	unsigned int gps_speed_arr[30],gps_course[30],gps_sats[30],gps_fix[30],gps_special[30];
 	unsigned int gps_sats_temp,gps_fix_temp;
