@@ -32,19 +32,19 @@ void speedo_stepper::startup(){
 	if(init_steps_to_go!=0){
 		if(init_steps_to_go>=5){
 			if(get_pos()!=0){		//
-				go_to(0,FAST_ACCEL,FAST_SPEED);			// 240*8 = 1920
+				go_to(0,SLOW_ACCEL,FAST_SPEED);			// 240*8 = 1920
 			} else {
 				init_steps_to_go=4; 					// nächsten schritt vorbereiten
 			}
 		} else if(init_steps_to_go==4){
 			if(get_pos()!=MOTOR_OVERWRITE_END_POS){		// motor noch nicht am ende angekommen
-				go_to(MOTOR_OVERWRITE_END_POS,FAST_ACCEL,FAST_SPEED);// weiter dorthin scheuchen
+				go_to(MOTOR_OVERWRITE_END_POS,SLOW_ACCEL,FAST_SPEED);// weiter dorthin scheuchen
 			} else { 														// motor angekommen
 				init_steps_to_go=3; 					// nächsten schritt vorbereiten
 			}
 		} else if(init_steps_to_go==3){
 			if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
-				go_to(0,FAST_ACCEL,FAST_SPEED);			// weiter dorthin scheuchen
+				go_to(0,SLOW_ACCEL,FAST_SPEED);			// weiter dorthin scheuchen
 			} else { 														// motor angekommen
 				init_steps_to_go=2; 					// fertig
 			}
