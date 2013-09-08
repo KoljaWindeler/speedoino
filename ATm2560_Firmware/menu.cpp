@@ -1190,6 +1190,9 @@ void speedo_menu::display(){
 
 	} else if(floor(state/10)==BMP(0,0,0,0,6,5,1)){
 		set_value_dialog((int8_t*)&pAktors->pointer_highlight_mode,PSTR("= RGB-Action ="),PSTR("Static"),PSTR("Following"),PSTR("Reserved"));
+		if(pAktors->pointer_highlight_mode==RGB_ACTION_TYPE_STATIC){
+			pAktors->set_rbg_active((int)0x0000,false); // activate all led's
+		}
 	}
 	///////////////////////// set bt pin ///////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,6,7)){
