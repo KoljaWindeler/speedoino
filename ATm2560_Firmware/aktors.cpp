@@ -673,9 +673,9 @@ int Speedo_aktors::set_expander(){
 	return 0;
 }
 
-int Speedo_aktors::set_controll_lights(unsigned char oil,unsigned char flasher_left,unsigned char n_gear,unsigned char flasher_right,unsigned char high_beam, bool now){
+int Speedo_aktors::set_controll_lights(uint8_t oil,uint8_t flasher_left,uint8_t n_gear,uint8_t flasher_right,uint8_t high_beam, bool now){
 	// light, 0=off, 1==on, x=dontcar
-	unsigned char input[5]={flasher_right,high_beam,n_gear,flasher_left,oil};
+	uint8_t input[5]={flasher_right,high_beam,n_gear,flasher_left,oil};
 	for(int i=3; i<8; i++){ // pins of port extender
 		if(input[i-3]==0){ // offset of 3 between first position (flasher_righ) in array and pin on port extender
 			control_lights&=~(1<<i);
@@ -697,8 +697,11 @@ void Speedo_aktors::check_flag(){
 };
 
 int Speedo_aktors::set_rbg_active(int status,bool now){
-	unsigned char shifter[11]={5,6,2,7,4,1,1,2,3,0,0};
-	unsigned char port[11]={1,1,1,1,1,0,1,0,1,0,1};
+	uint8_t shifter[11]={5,6,2,7,4,1,1,2,3,0,0};
+	uint8_t port[11]={1,1,1,1,1,0,1,0,1,0,1};
+	uint8_t control_lights_old=control_lights;
+	uint8_t led_area_controll_old=led_area_controll;
+
 	for(int i=0; i<11; i++){
 		if(status&(1<<i)){
 			if(port[i]==0){
@@ -714,11 +717,13 @@ int Speedo_aktors::set_rbg_active(int status,bool now){
 			}
 		}
 	}
-	if(now){
-		return set_expander();
-	}
 
-	expander_outdated=true;
+	if(control_lights_old!=control_lights || led_area_controll_old!=led_area_controll){ // check if anything changed
+		if(now){
+			return set_expander();
+		}
+		expander_outdated=true;
+	}
 	return 0;
 }
 
@@ -726,7 +731,7 @@ int Speedo_aktors::set_rbg_active(int status,bool now){
 
 
 void Speedo_aktors::rgb_action(int needle_pos){
-	if(pointer_highlight_mode==1 && !attention_required){
+	if(pointer_highlight_mode==RGB_ACTION_TYPE_FOLLOW && !attention_required){
 		int8_t pos=((needle_pos/15)*11)/1000; // 15k rpm on 11 leds
 		int8_t end=pos+1;
 		int8_t start=pos-1;

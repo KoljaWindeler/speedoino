@@ -8,6 +8,9 @@
 #ifndef AKTORS_H_
 #define AKTORS_H_
 
+#define RGB_ACTION_TYPE_STATIC 0
+#define RGB_ACTION_TYPE_FOLLOW 1
+
 #define RGB_OUT_R 7
 #define RGB_OUT_G 8
 #define RGB_OUT_B 9
@@ -38,15 +41,15 @@
 
 
 typedef struct{
-	unsigned char actual;
-	unsigned char from;
-	unsigned char to;
+	uint8_t actual;
+	uint8_t from;
+	uint8_t to;
 } led_values;
 
 typedef struct{
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
 } led_simple;
 
 typedef struct{
@@ -80,7 +83,7 @@ public:
 	void stop_dimmer();
 	void set_active_dimmer(bool state);
 	int set_expander();
-	int set_controll_lights(unsigned char oil,unsigned char flasher_left,unsigned char n_gear,unsigned char flasher_right,unsigned char high_beam, bool now);
+	int set_controll_lights(uint8_t oil,uint8_t flasher_left,uint8_t n_gear,uint8_t flasher_right,uint8_t high_beam, bool now);
 	int set_rbg_active(int status, bool now);
 	void rgb_action(int needle_pos);
 	speedo_stepper* m_stepper;
@@ -97,8 +100,8 @@ private:
 	short int dimm_state;
 	bool colorfade_active;
 	bool expander_outdated;
-	unsigned char control_lights;
-	unsigned char led_area_controll;
+	uint8_t control_lights;
+	uint8_t led_area_controll;
 
 };
 extern Speedo_aktors* pAktors;
