@@ -10,6 +10,7 @@
 
 #define FAST_SPEED 500
 #define FAST_ACCEL 900
+#define SLOW_ACCEL 600
 
 
 /**************** DZ *******************/
