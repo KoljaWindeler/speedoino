@@ -163,9 +163,9 @@ unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 	}
 
 	// return value based on mode,
-	if(mode==1){
+	if(mode==RPM_TYPE_FLAT){
 		return rpm_flatted;	// will be calculated with 10Hz in pull values
-	} else if(mode==2){
+	} else if(mode==RPM_TYPE_FLAT_ROUNDED){
 		return 50*round(rpm_flatted/50); // will be calculated with 10Hz in pull values
 	};
 
@@ -351,8 +351,8 @@ void Speedo_sensors::pull_values(){
 
 			/*stepper*/
 			if(pAktors->m_stepper->init_steps_to_go==0){
-				pAktors->m_stepper->go_to(get_RPM(0)/11.73); // einfach mal flatit probieren, sonst
-				pAktors->rgb_action(get_RPM(0));
+				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT)/11.73); // einfach mal flatit probieren, sonst
+				pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
 			};
 			/*stepper*/
 
@@ -370,15 +370,11 @@ void Speedo_sensors::pull_values(){
 
 			};
 
-//			if(update_stepper){
-//				if(abs(get_RPM(0)-rpm_flatted)>500){ // heavy change detected
-//					pAktors->m_stepper->go_to(get_RPM(0)/11.73);
-//					rpm_flatted=get_RPM(0); // added 22.8.
-//				};
-//			}
-			pAktors->m_stepper->go_to(get_RPM(0)/11.73); // einfach mal flatit probieren, sonst
-			pAktors->rgb_action(get_RPM(0));
-
+			if(update_stepper){
+				pAktors->m_stepper->go_to(get_RPM(0)/11.73);
+				rpm_flatted=get_RPM(0); // added 22.8.
+				pAktors->rgb_action(get_RPM(0));
+			}
 		}
 	}
 

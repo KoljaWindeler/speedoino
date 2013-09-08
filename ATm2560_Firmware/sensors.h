@@ -21,6 +21,10 @@
 #define SENSOR_SHORT_TO_GND 5
 #define SENSOR_OPEN 9
 
+#define RPM_TYPE_DIRECT 0
+#define RPM_TYPE_FLAT 1
+#define RPM_TYPE_FLAT_ROUNDED 2
+
 class Speedo_sensors{
 public:
 	Speedo_sensors(void);
