@@ -28,8 +28,6 @@ class speedo_disp : public ssd0323 {
 public:
 	unsigned char 	phase;//=0x62;
 	unsigned char 	ref;//=0x3F;
-	bool       		disp_invert;
-	unsigned long 	disp_last_invert;
 	unsigned char startup[35]; // asdfghjk.asd,1234,1234,1234\0 == 28
 	void init_speedo();
 	speedo_disp(void);

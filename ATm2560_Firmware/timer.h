@@ -22,8 +22,6 @@ private:
 	unsigned long every_second_timer;   // Zeitstempel vom letzten ausführen der "every_sec" funktion
 	unsigned long every_qsecond_timer;   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
 	unsigned long every_custom_timer;   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
-	bool blitzer_warning;
-	bool blitzer_warning_visible;
 };
 extern speedo_timer* pTimer;
 ///////////// timer ///////////////

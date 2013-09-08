@@ -19,8 +19,6 @@
 #include <ssd0323.h>
 
 speedo_disp::speedo_disp(void){
-	disp_invert=false;
-	disp_last_invert=0;
 	phase=0;
 	ref=0;
 }

@@ -20,12 +20,11 @@ public:
 	speedo_dz(void);
 	~speedo_dz(void);
 	void counter();
-	bool calc(bool force_calc);
+	void shutdown();
 	void init();
+	bool calc(bool force_calc);
 	int check_vars();
 	unsigned int get_dz(bool exact_dz);
-	void shutdown();
-
 
 	unsigned char dz_faktor_counter;
 	int blitz_dz;

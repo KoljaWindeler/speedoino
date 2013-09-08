@@ -29,7 +29,6 @@ private:
 	volatile unsigned int m_day;
 	volatile unsigned int m_mon;
 	volatile unsigned int m_year;
-	volatile unsigned int m_dayOfWeek;
 	volatile bool wintertime;
 	void inc_hours();
 public:

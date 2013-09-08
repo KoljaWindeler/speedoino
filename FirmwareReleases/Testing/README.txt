@@ -51,7 +51,8 @@
                                             - Schaltblitz ging nicht mehr aus: gefixt
                                             - Abstand zum Blitzer wurde falsch berechnet und daher war der Warner quasi sinnfrei: gefixt
                                             - Eine Funktion zum "gleichen design" im Menü hinzugefügt, hauptsächlich um Speicher zu sparen (wurde enger) Möglicherweise gehen ein paar "on/off" oder "auswahl" menüs nicht, hab aber alle getestet
-                                            - 3018 Byte SRAM frei, 195222 Byte Flash belegt
+                                            - Reduced Stepper Accel from 900 to 600 wegen Schrittverlusten (großen!)
+                                            - 3018 Byte SRAM frei, 195470 Byte Flash belegt
 ================================================================================================================================================================================================
 
 

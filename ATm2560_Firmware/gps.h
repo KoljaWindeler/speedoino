@@ -29,31 +29,34 @@ public:
 	~speedo_gps();
 	void init();
 	int check_vars();
+
 	void recv_data();
-	long get_info(unsigned char select);
 	void loop();
 	void check_flag();
 	void SendByte(unsigned char data);
 	void SendString(const char *data);
-	bool get_drive_status();
 	void set_gps_mark(int type);
+	void generate_new_order();
+	void update_rate_1Hz();
+	void update_rate_10Hz();
+	void set_drive_status(int speed, int ss, int sat, char status);
+	void reconfigure();
+
+	bool get_drive_status();
+	bool wait_on_gps();
 
 	int calc_gps_goodies();
+	int get_order(char char_buffer[], int* dist);
+	int get_logged_points(char* buffer,int i,int* nbytes);
+
+	long get_info(unsigned char select);
+	unsigned long mod(unsigned long zahl,unsigned long teiler);
+	unsigned long nmea_to_dec(unsigned long nmea);
+
 	unsigned long calc_dist(unsigned long longitude,unsigned long latitude);
 	unsigned long calc_dist_supported(simple_coordinate A);
 	unsigned long calc_dist_supported(simple_coordinate A,bool return_square);
 	unsigned long calc_dist_supported(simple_coordinate A,simple_coordinate B,float gps_lati_cos,bool return_square);
-
-	unsigned long mod(unsigned long zahl,unsigned long teiler);
-	int get_order(char char_buffer[], int* dist);
-	void generate_new_order();
-	unsigned long nmea_to_dec(unsigned long nmea);
-	int get_logged_points(char* buffer,int i,int* nbytes);
-	void reconfigure();
-	bool wait_on_gps();
-	void update_rate_1Hz();
-	void update_rate_10Hz();
-	void set_drive_status(int speed, int ss, int sat, char status);
 
 	// die letzen 30 infos
 	unsigned long gps_lati[30],gps_long[30];

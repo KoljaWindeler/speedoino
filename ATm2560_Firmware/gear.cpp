@@ -18,6 +18,9 @@
 
 speedo_gear::speedo_gear(){
 	faktor_counter=0;
+	faktor_flat=0;
+	last_time_executed=0;
+	neutral_set=false;
 	gang=-1;
 
 	for(unsigned int j=0;j<sizeof(n_gang)/sizeof(n_gang[0]);j++){ // 0..6
@@ -32,7 +35,6 @@ void speedo_gear::init(){
 	pinMode(kupplungs_pin,INPUT);
 	digitalWrite(kupplungs_pin,HIGH); // input mit pull up
 	last_time_executed=millis();
-	neutral_set=false;
 }
 
 int speedo_gear::check_vars(){

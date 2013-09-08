@@ -96,7 +96,7 @@ public:
 
 private:
 	int current_sensor_value;
-	int dimm_steps,dimm_step,in_out;
+	int dimm_steps,dimm_step;
 	short int dimm_state;
 	bool colorfade_active;
 	bool expander_outdated;
