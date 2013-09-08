@@ -21,6 +21,7 @@
  */
 
 #include "global.h"
+#include "limits.h"
 
 // init & clean buffer
 speedo_speedcams::speedo_speedcams(){
@@ -496,7 +497,7 @@ int8_t speedo_speedcams::parse_complete_db(){
 int8_t speedo_speedcams::parse_small_db(){
 	unsigned char temp[25];
 	simple_coordinate loaded_coordinates;
-	uint32_t distances[3]={2000000000L,2000000000L,2000000000L}; // use 2000... sqrt(200...)=44km out of small db scope
+	uint32_t distances[3]={LONG_MAX,LONG_MAX,LONG_MAX}; // use 2000... sqrt(200...)=44km out of small db scope
 	uint32_t temp_distance=0;
 	uint8_t points_parsed=0;
 	SdFile poi_n_file;
