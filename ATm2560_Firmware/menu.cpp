@@ -19,8 +19,6 @@
 #include <avr/pgmspace.h>
 #include <ssd0323.h>
 
-#define BMP(a,b,c,d,e,f,g) (a*1000000L+b*100000L+c*10000L+d*1000+e*100+f*10+g)
-
 /////////////////////////////// Menus PROGMEM ///////////////////////////////
 ///////////////////// Main Menu /////////////////////
 const char main_m_0[] PROGMEM = "Speedoino";   // "String 0" etc are strings to store - change to suit.

@@ -49,6 +49,8 @@ typedef struct {
 #define       WELCOME         true    // die frau am start
 /**********************************  working settings ********************************/
 
+#define BMP(a,b,c,d,e,f,g) (a*1000000L+b*100000L+c*10000L+d*1000+e*100+f*10+g)
+
 //#include <WProgram.h>
 #include "wiring.h"
 #include <avr/eeprom.h>

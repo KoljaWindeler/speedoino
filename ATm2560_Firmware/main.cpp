@@ -18,8 +18,6 @@
 #include "global.h"
 
 //** create objects **//
-//speedo_filemanager*		pFilemanager=new speedo_filemanager(); // ob das gut geht weiß ich auch nicht ;)
-
 speedo_filemanager_v2*	pFilemanager_v2=new speedo_filemanager_v2();
 debugging*				pDebug=new debugging();
 speedo_sd*				pSD=new speedo_sd();
@@ -119,6 +117,7 @@ int main(void) {
 	unsigned long lasttime_calc=0;
 #endif
 
+
 	for (;;) {
 		pSensors->m_CAN->check_message();
 		//////////////////////////////////////////////////
@@ -166,7 +165,7 @@ int main(void) {
 			pSensors->m_clock->loop();
 		}
 		////////////////// Speed Cam Check - Mode ////////////////////////
-		else if(pMenu->state==M_TOUR_ASSISTS*100+SM_TOUR_ASSISTS_SPEEDCAM_STATUS*10+1){
+		else if(pMenu->state==BMP(0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_SPEEDCAM_STATUS,1)){
 			pSpeedCams->calc();
 			pSpeedCams->interface();
 		}
