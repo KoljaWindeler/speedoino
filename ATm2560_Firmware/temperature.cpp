@@ -75,7 +75,7 @@ int speedo_temperature::check_vars(){
 
 void speedo_temperature::init(){
 	I2c.begin();
-	I2c.setSpeed(1); /// slow
+	I2c.setSpeed(0); /// fast
 	I2c.timeOut(100); // 100 ms to get Temperature
 	pDebug->sprintlnp(PSTR("Temp init done."));
 }
