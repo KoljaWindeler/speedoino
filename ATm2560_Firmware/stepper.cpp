@@ -16,18 +16,17 @@ speedo_stepper::~speedo_stepper(){
 
 
 void speedo_stepper::init(){
-	// select startup mode
-	if(pSpeedo->startup_by_ignition){
-		init_steps_to_go=5;//5
-	} else {
-		init_steps_to_go=0;//5
-	}
-
 	if(pConfig->get_hw_version()==7){
 		Serial3.begin(19200); // macht eigentlich schon der reset, aber zur sicherheit
 		Serial3.flush();
 		overwrite_pos(200);
 		go_to(0);
+		// select startup mode
+		if(pSpeedo->startup_by_ignition){
+			init_steps_to_go=5;//5
+		} else {
+			init_steps_to_go=0;//5
+		}
 	} else {
 		TTMC222Status TMC222Status;
 		TTMC222Parameters TMC222Parameter;
@@ -41,61 +40,79 @@ void speedo_stepper::init(){
 		TMC222Parameter.SecPosLo=0x0f;	// TRY
 		TMC222Parameter.AccShape=0;		// regular accel
 		TMC222Parameter.StepMode=0b00;	// 1/2 µStepps
-		pAktors->m_stepper->InitTWI();
-		pAktors->m_stepper->GetFullStatus1(&TMC222Status);
-		pAktors->m_stepper->SetMotorParameters(&TMC222Parameter);
-		//int max_pos=13500;
-		pAktors->m_stepper->RunInit(15,7,-100,-120);
+		// select startup mode
+		if(pSpeedo->startup_by_ignition){
+			//InitTWI();
+			GetFullStatus1(&TMC222Status);
+			ResetToDefault();
+			SetMotorParameters(&TMC222Parameter);
+			ResetPosition();
+			//int max_pos=13500;
+			init_steps_to_go=3;//5
+		} else {
+			init_steps_to_go=0;//5
+		}
+
 	}
 };
 
 void speedo_stepper::startup(){
 	if(init_steps_to_go!=0){
-		if(init_steps_to_go>=5){
-			if(get_pos()!=0){		//
-				go_to(0,SLOW_ACCEL,FAST_SPEED);			// 240*8 = 1920
-			} else {
-				init_steps_to_go=4; 					// nächsten schritt vorbereiten
-			}
-		} else if(init_steps_to_go==4){
-			if(pConfig->get_hw_version()!=7){
-				if(get_pos()!=13500){		// motor noch nicht am ende angekommen
-					go_to(13500,0,0);
-				} else {
-					init_steps_to_go=3;
+		if(pConfig->get_hw_version()!=7){ // TMC 222
+			if(init_steps_to_go>=3){
+				Serial.print("Schritt 3 -> ");
+				Serial.println("run init");
+				go_to(13500,0,0);
+				init_steps_to_go=2;
+			} else if(init_steps_to_go==2){
+				Serial.println("Schritt 2");
+				if(get_pos()==13500){		// wait on init done
+					Serial.println("ziel erreicht -> gehe zu schritt 1");
+					init_steps_to_go=1;
 				}
-			} else {
+			} else if(init_steps_to_go==1){
+				Serial.println("Schritt 1");
+				if(get_pos()!=0){ 	// set go back to zero
+					Serial.println("goto -13500");
+					go_to(0,0,0);
+				} else {				// zero reached
+					Serial.println("pos==-13500, done");
+					init_steps_to_go=0;	// ready
+				}
+			}
+		} else {
+			if(init_steps_to_go>=5){
+				if(get_pos()!=0){		//
+					go_to(0,SLOW_ACCEL,FAST_SPEED);			// 240*8 = 1920
+				} else {
+					init_steps_to_go=4; 					// nächsten schritt vorbereiten
+				}
+			} else if(init_steps_to_go==4){
+
 				if(get_pos()!=MOTOR_OVERWRITE_END_POS){		// motor noch nicht am ende angekommen
 					go_to(MOTOR_OVERWRITE_END_POS,SLOW_ACCEL,FAST_SPEED);// weiter dorthin scheuchen
 				} else { 														// motor angekommen
 					init_steps_to_go=3; 					// nächsten schritt vorbereiten
 				}
-			}
-		} else if(init_steps_to_go==3){
-			if(pConfig->get_hw_version()!=7){
+			} else if(init_steps_to_go==3){
 				if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
 					go_to(0,SLOW_ACCEL,FAST_SPEED);			// weiter dorthin scheuchen
+				} else { 														// motor angekommen
+					ResetPosition();
+					init_steps_to_go=0; 					// fertig
+				}
+			} else if(init_steps_to_go==2){
+				if(get_pos()!=80){   						// motor noch nicht am anfang angekommen
+					overwrite_pos(80);
+				} else { 														// motor angekommen
+					init_steps_to_go=1; 					// fertig
+				}
+			} else if(init_steps_to_go==1){
+				if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
+					go_to(0,80,200);
 				} else { 														// motor angekommen
 					init_steps_to_go=0; 					// fertig
 				}
-			} else {
-				if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
-					go_to(0,SLOW_ACCEL,FAST_SPEED);			// weiter dorthin scheuchen
-				} else { 														// motor angekommen
-					init_steps_to_go=2; 					// fertig
-				}
-			}
-		} else if(init_steps_to_go==2){
-			if(get_pos()!=80){   						// motor noch nicht am anfang angekommen
-				overwrite_pos(80);
-			} else { 														// motor angekommen
-				init_steps_to_go=1; 					// fertig
-			}
-		} else if(init_steps_to_go==1){
-			if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
-				go_to(0,80,200);
-			} else { 														// motor angekommen
-				init_steps_to_go=0; 					// fertig
 			}
 		}
 	}
@@ -138,9 +155,15 @@ bool speedo_stepper::go_to(int winkel,int accel,int speed){
 };
 
 bool speedo_stepper::go_to(int winkel){
-	Serial3.print("$m");
-	Serial3.print(winkel);
-	Serial3.print("*");
+	if(pConfig->get_hw_version()==7){
+		Serial3.print("$m");
+		Serial3.print(winkel);
+		Serial3.print("*");
+	} else {
+		pAktors->m_stepper->SetPosition(winkel); // max 13500 -> 1600
+		Serial.print("goto:");
+		Serial.print(winkel);
+	}
 
 #ifdef STEPPER_DEBUG /// DEBUG
 	Serial.print(millis());
@@ -189,7 +212,7 @@ int speedo_stepper::get_pos(){
 		pos=-1;
 	}
 	Serial.print("get pos:");
-	Serial.print(pos);
+	Serial.println(pos);
 
 	return pos;
 };
@@ -471,72 +494,21 @@ void speedo_stepper::InitTWI(void)
           It is also possible to set the parameter to NULL, when only the
           error flags are to be reset without the need to know the status.
  ******************************************************************************/
-void speedo_stepper::GetFullStatus1(TTMC222Status *TMC222Status)
-{
-	unsigned int i;
+void speedo_stepper::GetFullStatus1(TTMC222Status *TMC222Status){
 
-	while(TWIInUse);              //Wait until TWI is free
+	TWCR &= ~(1<<TWINT);
+	uint8_t buffer[20];
 
-	//Send command byte to the TMC222
-	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
-	TWIMasterSendBuffer[1]=0x81;  //Command byte for GetFullStatus1
-	TWIMasterSendCount=2;
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
-	while(TWIInUse);              //and wait until done.
-
-	//Read 8 bytes from the TMC222
-	TWIMasterSendBuffer[0]=TWI_ADDR|0x01;  //Address byte (with read bit set)
-	TWIMasterReceiveCount=8;      //8 bytes are to be read
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
-	while(TWIInUse);              //and wait until done.
+	I2c.write(0x60,0x81);
+	I2c.read(0x60,8,buffer);
 
 	//Copy the data to the TMC222Status structure (if pointer not NULL)
 	if(TMC222Status!=NULL){
-		for(i=0; i<5; i++)
-			*(((unsigned char *) TMC222Status)+i)=TWIMasterReceiveBuffer[i+1];
-
-		for(int i=0; i<8; i++){
-			Serial.print("#");
-			Serial.print(i);
-			Serial.print(":");
-			Serial.println(int(TWIMasterReceiveBuffer[i]));
-		}
-
 		for(int i=0; i<5; i++){
-			*(((unsigned char *) TMC222Status)+i)=TWIMasterReceiveBuffer[i+1];
+			*(((unsigned char *) TMC222Status)+i)=buffer[i+1];
 		}
-
-		Serial.print("SlaveAddr:");
-		Serial.println(int(TWIMasterReceiveBuffer[0]));
-
-		Serial.print("Addr:");
-		Serial.println(int(TWIMasterReceiveBuffer[1]));
-
-		Serial.print("IRun:");
-		Serial.println(int(TMC222Status->IRun));
-
-		Serial.print("IHold:");
-		Serial.println(int(TMC222Status->IHold));
-
-		Serial.print("VMax:");
-		Serial.println(int(TMC222Status->VMax));
-
-		Serial.print("VMin:");
-		Serial.println(int(TMC222Status->VMin));
-
-		Serial.print("Shaft:");
-		Serial.println(int(TMC222Status->Shaft));
-
-		Serial.print("Acc:");
-		Serial.println(int(TMC222Status->Acc));
-
-		Serial.print("StepMode:");
-		Serial.println(int(TMC222Status->StepMode));
-
-		Serial.println("end");
 	}
+
 }
 
 
@@ -554,27 +526,34 @@ void speedo_stepper::GetFullStatus1(TTMC222Status *TMC222Status)
  ******************************************************************************/
 int speedo_stepper::GetFullStatus2(int *TargetPosition, int *SecurePosition)
 {
-	while(TWIInUse);              //Wait until TWI is free
+//	while(TWIInUse);              //Wait until TWI is free
+//
+//	//Send GetFullStatus2 command (0xfc) to the TMC222
+//	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
+//	TWIMasterSendBuffer[1]=0xfc;  //Command byte for GetFullStatus2
+//	TWIMasterSendCount=2;
+//	TWIInUse=TRUE;
+//	TWCR=0xA5;                    //start TWI communication
+//	while(TWIInUse);              //and wait until done.
+//
+//	//Read back 8 bytes from the TMC222
+//	TWIMasterSendBuffer[0]=TWI_ADDR|0x01;  //Address byte (with read bit set)
+//	TWIMasterReceiveCount=8;      //8 bytes are to be read
+//	TWIInUse=TRUE;
+//	TWCR=0xA5;                    //Start TWI communication
+//	while(TWIInUse);              //and wait until done.
+//
+//	//Return the position values
+//	if(TargetPosition!=NULL) *TargetPosition=(TWIMasterReceiveBuffer[3]<<8) | TWIMasterReceiveBuffer[4];
+//	if(SecurePosition!=NULL) *SecurePosition=((TWIMasterReceiveBuffer[6] & 0x06)<<8) | TWIMasterReceiveBuffer[5];
+//	return (TWIMasterReceiveBuffer[1]<<8) | TWIMasterReceiveBuffer[2];
+	uint8_t buffer[20];
 
-	//Send GetFullStatus2 command (0xfc) to the TMC222
-	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
-	TWIMasterSendBuffer[1]=0xfc;  //Command byte for GetFullStatus2
-	TWIMasterSendCount=2;
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //start TWI communication
-	while(TWIInUse);              //and wait until done.
-
-	//Read back 8 bytes from the TMC222
-	TWIMasterSendBuffer[0]=TWI_ADDR|0x01;  //Address byte (with read bit set)
-	TWIMasterReceiveCount=8;      //8 bytes are to be read
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
-	while(TWIInUse);              //and wait until done.
-
-	//Return the position values
-	if(TargetPosition!=NULL) *TargetPosition=(TWIMasterReceiveBuffer[3]<<8) | TWIMasterReceiveBuffer[4];
-	if(SecurePosition!=NULL) *SecurePosition=((TWIMasterReceiveBuffer[6] & 0x06)<<8) | TWIMasterReceiveBuffer[5];
-	return (TWIMasterReceiveBuffer[1]<<8) | TWIMasterReceiveBuffer[2];
+	I2c.write(0x60,0xfc);
+	I2c.read(0x60,8,buffer);
+	if(TargetPosition!=NULL) *TargetPosition=(buffer[3]<<8) | buffer[4];
+	if(SecurePosition!=NULL) *SecurePosition=((buffer[6] & 0x06)<<8) | buffer[5];
+	return (buffer[1]<<8) | buffer[2];
 }
 
 
@@ -589,22 +568,32 @@ int speedo_stepper::GetFullStatus2(int *TargetPosition, int *SecurePosition)
  ******************************************************************************/
 void speedo_stepper::SetMotorParameters(TTMC222Parameters *TMC222Parameters)
 {
-	unsigned char i;
+	//	unsigned char i;
+	//
+	//	while(TWIInUse);              //Wait until TWI is free
+	//
+	//	//Send command 0x89 with the data
+	//	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
+	//	TWIMasterSendBuffer[1]=0x89;  //Command byte for SetMotorParameters (0x89)
+	//	TWIMasterSendBuffer[2]=0xff;
+	//	TWIMasterSendBuffer[3]=0xff;
+	//
+	//	for(i=0; i<5; i++)
+	//		TWIMasterSendBuffer[i+4]=*(((unsigned char *) TMC222Parameters)+i);
+	//
+	//	TWIMasterSendCount=9;
+	//	TWIInUse=TRUE;
+	//	TWCR=0xA5;                    //Start TWI communication
 
-	while(TWIInUse);              //Wait until TWI is free
+	TWCR &= ~(1<<TWINT);
 
-	//Send command 0x89 with the data
-	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
-	TWIMasterSendBuffer[1]=0x89;  //Command byte for SetMotorParameters (0x89)
-	TWIMasterSendBuffer[2]=0xff;
-	TWIMasterSendBuffer[3]=0xff;
-
-	for(i=0; i<5; i++)
-		TWIMasterSendBuffer[i+4]=*(((unsigned char *) TMC222Parameters)+i);
-
-	TWIMasterSendCount=9;
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
+	uint8_t Buffer[7];
+	Buffer[0]=0xff;
+	Buffer[1]=0xff;
+	for(int i=0; i<5; i++){
+		Buffer[i+2]=*(((unsigned char *) TMC222Parameters)+i);
+	}
+	I2c.write(0x60,0x89,Buffer,7);
 }
 
 
@@ -619,18 +608,26 @@ void speedo_stepper::SetMotorParameters(TTMC222Parameters *TMC222Parameters)
  ******************************************************************************/
 void speedo_stepper::SetPosition(int Position)
 {
-	while(TWIInUse);              //Wait until TWI is free
+	//	while(TWIInUse);              //Wait until TWI is free
+	//	Send command 0x8b with the data
+	//	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
+	//	TWIMasterSendBuffer[1]=0x8b;  //Command byte for SetPosition (0x8b)
+	//	TWIMasterSendBuffer[2]=0xff;
+	//	TWIMasterSendBuffer[3]=0xff;
+	//	TWIMasterSendBuffer[4]=Position >> 8;
+	//	TWIMasterSendBuffer[5]=Position & 0xff;
+	//	TWIMasterSendCount=6;
+	//	TWIInUse=TRUE;
+	//	TWCR=0xA5;                    //Start TWI communication
+	TWCR &= ~(1<<TWINT);
 
-	//Send command 0x8b with the data
-	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
-	TWIMasterSendBuffer[1]=0x8b;  //Command byte for SetPosition (0x8b)
-	TWIMasterSendBuffer[2]=0xff;
-	TWIMasterSendBuffer[3]=0xff;
-	TWIMasterSendBuffer[4]=Position >> 8;
-	TWIMasterSendBuffer[5]=Position & 0xff;
-	TWIMasterSendCount=6;
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
+	uint8_t Buffer[6];
+	Buffer[0]=0xff;
+	Buffer[1]=0xff;
+	Buffer[2]=Position >> 8;
+	Buffer[3]=Position & 0xff;
+	I2c.write(0x60,0x8b,Buffer,4);
+	//TWCR |= (1<<TWINT);
 }
 
 
@@ -645,13 +642,14 @@ void speedo_stepper::SetPosition(int Position)
  ******************************************************************************/
 void speedo_stepper::ResetPosition(void)
 {
-	while(TWIInUse);              //Wait until TWI is free
-
-	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
-	TWIMasterSendBuffer[1]=0x86;  //Command byte for ResetPosition (0x86)
-	TWIMasterSendCount=2;
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
+	//	while(TWIInUse);              //Wait until TWI is free
+	//
+	//	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
+	//	TWIMasterSendBuffer[1]=0x86;  //Command byte for ResetPosition (0x86)
+	//	TWIMasterSendCount=2;
+	//	TWIInUse=TRUE;
+	//	TWCR=0xA5;                    //Start TWI communication
+	I2c.write(0x60,0x86);
 }
 
 
@@ -666,13 +664,15 @@ void speedo_stepper::ResetPosition(void)
  ******************************************************************************/
 void speedo_stepper::GotoSecurePosition(void)
 {
-	while(TWIInUse);              //Wait until TWI is free
+	//	while(TWIInUse);              //Wait until TWI is free
+	//
+	//	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
+	//	TWIMasterSendBuffer[1]=0x84;  //Command byte for GotoSecurePosition (0x84)
+	//	TWIMasterSendCount=2;
+	//	TWIInUse=TRUE;
+	//	TWCR=0xA5;                    //Start TWI communication
+	I2c.write(0x60,0x84);
 
-	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
-	TWIMasterSendBuffer[1]=0x84;  //Command byte for GotoSecurePosition (0x84)
-	TWIMasterSendCount=2;
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
 }
 
 
@@ -686,13 +686,14 @@ void speedo_stepper::GotoSecurePosition(void)
  ******************************************************************************/
 void speedo_stepper::ResetToDefault(void)
 {
-	while(TWIInUse);              //Wait until TWI is free
-
-	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
-	TWIMasterSendBuffer[1]=0x87;  //Command byte for ResetToDefault (0x87)
-	TWIMasterSendCount=2;
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
+	//	while(TWIInUse);              //Wait until TWI is free
+	//
+	//	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
+	//	TWIMasterSendBuffer[1]=0x87;  //Command byte for ResetToDefault (0x87)
+	//	TWIMasterSendCount=2;
+	//	TWIInUse=TRUE;
+	//	TWCR=0xA5;                    //Start TWI communication
+	I2c.write(0x60,0x87);
 }
 
 
@@ -710,21 +711,31 @@ void speedo_stepper::ResetToDefault(void)
  ******************************************************************************/
 void speedo_stepper::RunInit(unsigned char VMin, unsigned char VMax, int Position1, int Position2)
 {
-	while(TWIInUse);              //Wait until TWI is free
+//	while(TWIInUse);              //Wait until TWI is free
+//
+//	//Send RunInit command and the data
+//	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
+//	TWIMasterSendBuffer[1]=0x88;  //Command byte for RunInit (0x88)
+//	TWIMasterSendBuffer[2]=0xff;
+//	TWIMasterSendBuffer[3]=0xff;
+//	TWIMasterSendBuffer[4]=(VMax << 4) | (VMin & 0x0f);
+//	TWIMasterSendBuffer[5]=BYTE1(Position1);
+//	TWIMasterSendBuffer[6]=BYTE0(Position1);
+//	TWIMasterSendBuffer[7]=BYTE1(Position2);
+//	TWIMasterSendBuffer[8]=BYTE0(Position2);
+//	TWIMasterSendCount=9;
+//	TWIInUse=TRUE;
+//	TWCR=0xA5;                    //Start TWI communication
 
-	//Send RunInit command and the data
-	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
-	TWIMasterSendBuffer[1]=0x88;  //Command byte for RunInit (0x88)
-	TWIMasterSendBuffer[2]=0xff;
-	TWIMasterSendBuffer[3]=0xff;
-	TWIMasterSendBuffer[4]=(VMax << 4) | (VMin & 0x0f);
-	TWIMasterSendBuffer[5]=BYTE1(Position1);
-	TWIMasterSendBuffer[6]=BYTE0(Position1);
-	TWIMasterSendBuffer[7]=BYTE1(Position2);
-	TWIMasterSendBuffer[8]=BYTE0(Position2);
-	TWIMasterSendCount=9;
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
+	uint8_t Buffer[7];
+	Buffer[0]=0xff;
+	Buffer[1]=0xff;
+	Buffer[2]=(VMax << 4) | (VMin & 0x0f);
+	Buffer[3]=BYTE1(Position1);
+	Buffer[4]=BYTE0(Position1);
+	Buffer[5]=BYTE1(Position2);
+	Buffer[6]=BYTE0(Position2);
+	I2c.write(0x60,0x88,Buffer,7);
 }
 
 
@@ -742,13 +753,14 @@ void speedo_stepper::RunInit(unsigned char VMin, unsigned char VMax, int Positio
  ******************************************************************************/
 void speedo_stepper::HardStop(void)
 {
-	while(TWIInUse);              //Wait until TWI is free
-
-	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
-	TWIMasterSendBuffer[1]=0x85;  //Command byte for HardStop (0x85)
-	TWIMasterSendCount=2;
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
+//	while(TWIInUse);              //Wait until TWI is free
+//
+//	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
+//	TWIMasterSendBuffer[1]=0x85;  //Command byte for HardStop (0x85)
+//	TWIMasterSendCount=2;
+//	TWIInUse=TRUE;
+//	TWCR=0xA5;                    //Start TWI communication
+	I2c.write(0x60,0x85);
 }
 
 
@@ -762,13 +774,14 @@ void speedo_stepper::HardStop(void)
  ******************************************************************************/
 void speedo_stepper::SoftStop(void)
 {
-	while(TWIInUse);              //Wait until TWI is free
-
-	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
-	TWIMasterSendBuffer[1]=0x8f;  //Command byte for SoftStop (0x8f)
-	TWIMasterSendCount=2;
-	TWIInUse=TRUE;
-	TWCR=0xA5;                    //Start TWI communication
+//	while(TWIInUse);              //Wait until TWI is free
+//
+//	TWIMasterSendBuffer[0]=TWI_ADDR;  //Address byte
+//	TWIMasterSendBuffer[1]=0x8f;  //Command byte for SoftStop (0x8f)
+//	TWIMasterSendCount=2;
+//	TWIInUse=TRUE;
+//	TWCR=0xA5;                    //Start TWI communication
+	I2c.write(0x60,0x8f);
 }
 
 
