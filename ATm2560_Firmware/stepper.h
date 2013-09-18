@@ -58,6 +58,7 @@ class speedo_stepper{
 
 public:
 #define MOTOR_OVERWRITE_END_POS 1600
+#define TMC222_DIV_FACTOR 1.45 // rechnerisch 1.48
 	speedo_stepper();
 	~speedo_stepper();
 	void init();

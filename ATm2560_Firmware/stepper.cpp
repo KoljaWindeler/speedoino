@@ -30,24 +30,23 @@ void speedo_stepper::init(){
 	} else {
 		TTMC222Status TMC222Status;
 		TTMC222Parameters TMC222Parameter;
-		TMC222Parameter.IRun=0;			// 59mA
-		TMC222Parameter.IHold=0;		// 59mA
+		TMC222Parameter.IRun=4;			// 100mA, 270||270=135R, 12V/135R=88mA, Motor max 35mA<44.0mA, ok :D
+		TMC222Parameter.IHold=0;		// 59mA, 270||270=135R, 12V/135R=88mA, Motor max 20mA<29.5mA, ok :D
 		TMC222Parameter.VMax=15;		// 15 = 973 FullSteps/sec
 		TMC222Parameter.VMin=3;			// 1/32= 973/32 FullSteps/sec
 		TMC222Parameter.SecPosHi=0b000; // TRY
 		TMC222Parameter.Shaft=0;		// Clockwise
-		TMC222Parameter.Acc=7;			// 473 FS/sec² 7 war super
+		TMC222Parameter.Acc=5;			// 473 FS/sec² 7 war super
 		TMC222Parameter.SecPosLo=0x0f;	// TRY
 		TMC222Parameter.AccShape=0;		// regular accel
-		TMC222Parameter.StepMode=0b00;	// 1/2 µStepps
+		TMC222Parameter.StepMode=0b00;	// 1/2 µStepps .. 1930*n1/n2
 		// select startup mode
-		if(pSpeedo->startup_by_ignition){
+		if(pSpeedo->startup_by_ignition || true){ // TODO
 			//InitTWI();
 			GetFullStatus1(&TMC222Status);
 			ResetToDefault();
 			SetMotorParameters(&TMC222Parameter);
 			ResetPosition();
-			//int max_pos=13500;
 			init_steps_to_go=3;//5
 		} else {
 			init_steps_to_go=0;//5
@@ -62,21 +61,20 @@ void speedo_stepper::startup(){
 			if(init_steps_to_go>=3){
 				Serial.print("Schritt 3 -> ");
 				Serial.println("run init");
-				go_to(13500,0,0);
+				go_to(18550,0,0);
 				init_steps_to_go=2;
 			} else if(init_steps_to_go==2){
 				Serial.println("Schritt 2");
-				if(get_pos()==13500){		// wait on init done
+				if(abs(get_pos()-18550)<10){		// wait on init done
 					Serial.println("ziel erreicht -> gehe zu schritt 1");
 					init_steps_to_go=1;
+					go_to(500,0,0);
 				}
 			} else if(init_steps_to_go==1){
 				Serial.println("Schritt 1");
-				if(get_pos()!=0){ 	// set go back to zero
+				if((get_pos()-500)<10){ 	// set go back to zero
 					Serial.println("goto -13500");
 					go_to(0,0,0);
-				} else {				// zero reached
-					Serial.println("pos==-13500, done");
 					init_steps_to_go=0;	// ready
 				}
 			}
@@ -128,16 +126,16 @@ void speedo_stepper::overwrite_pos(int new_pos){
 bool speedo_stepper::go_to(int winkel,int accel,int speed){
 	if(pConfig->get_hw_version()==7){
 		Serial3.print("$m");
-		Serial3.print(winkel);
+		Serial3.print(winkel/11.73);
 		Serial3.print(",");
 		Serial3.print(accel);
 		Serial3.print(",");
 		Serial3.print(speed);
 		Serial3.print("*");
 	} else {
-		pAktors->m_stepper->SetPosition(winkel); // max 13500 -> 1600
+		pAktors->m_stepper->SetPosition(winkel/TMC222_DIV_FACTOR); // max 13500 -> 1600
 		Serial.print("goto:");
-		Serial.print(winkel);
+		Serial.print(int(winkel/TMC222_DIV_FACTOR));
 	}
 
 	// debug
@@ -157,12 +155,14 @@ bool speedo_stepper::go_to(int winkel,int accel,int speed){
 bool speedo_stepper::go_to(int winkel){
 	if(pConfig->get_hw_version()==7){
 		Serial3.print("$m");
-		Serial3.print(winkel);
+		Serial3.print(winkel/11.73);
 		Serial3.print("*");
 	} else {
-		pAktors->m_stepper->SetPosition(winkel); // max 13500 -> 1600
+		pAktors->m_stepper->SetPosition(winkel/TMC222_DIV_FACTOR); // max 13500 -> 1600
 		Serial.print("goto:");
-		Serial.print(winkel);
+		Serial.println(int(winkel/TMC222_DIV_FACTOR)); // 1.488
+		// goto 10k
+		// 10000/1.488=6720
 	}
 
 #ifdef STEPPER_DEBUG /// DEBUG
@@ -203,9 +203,10 @@ int speedo_stepper::get_pos(){
 				}
 			}
 		}
+		pos*=11.73;
 	} else {
 		int temp,temp2;
-		pos=pAktors->m_stepper->GetFullStatus2(&temp,&temp2);
+		pos=pAktors->m_stepper->GetFullStatus2(&temp,&temp2)*TMC222_DIV_FACTOR;
 	}
 	// if illegal
 	if(pos <0 || pos>=99999){
@@ -601,7 +602,15 @@ void speedo_stepper::SetMotorParameters(TTMC222Parameters *TMC222Parameters)
    Function: SetPosition()
    Parameters: Position: Target position
 
-   Return value: ---
+   Return value:
+   -> 320Steps=1 Rot of magnet.
+   n1: 10/60 = 6
+   n2: 10/72 = 7.2
+   Move pointer 360°=6*7.2*320=13440
+   330,2°=>pos:12680=>rpm:18512
+   rpm->pos :: 20000/13440=1.488
+
+
 
    Purpose: Set the target position. This makes the motor move to the new
             target position (if the motor parameters have been set properly).
