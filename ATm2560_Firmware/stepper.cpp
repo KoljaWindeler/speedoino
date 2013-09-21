@@ -98,9 +98,10 @@ void speedo_stepper::startup(){
 
 					TTMC222Parameters TMC222Parameters;
 					GetMotorParameters(&TMC222Parameters);
-					TMC222Parameters.VMax=15;
+					TMC222Parameters.VMax=8;
 					TMC222Parameters.Shaft=0; // cw
 					TMC222Parameters.IRun=1;
+					TMC222Parameters.Acc=2;
 					SetMotorParameters(&TMC222Parameters);
 					TTMC222Status TMC222Status;
 					GetFullStatus1(&TMC222Status);
