@@ -8,6 +8,18 @@
 #ifndef STEPPER_H_
 #define STEPPER_H_
 
+#define TMC_MAX_POS 13500
+#define TMC_ADDR 0x60
+#define TMC222_COMMAND_GOTO_SECURE 0x84
+#define TMC222_COMMAND_HARDSTOP 0x85
+#define TMC222_COMMAND_RESET_POS 0x86
+#define TMC222_COMMAND_RESET_FULL 0x87
+#define TMC222_COMMAND_SOFTSTOP 0x8f
+#define TMC222_COMMAND_GET_STATUS1 0x81
+#define TMC222_COMMAND_GET_STATUS2 0xfc
+
+#define ATM_DIV_FACTOR 11.73
+
 //Data structure definition for the TMC222 status information.
 	//Use variables of this data type togehter with the GetFullStatus1() function.
 	typedef struct
@@ -67,7 +79,9 @@ public:
 	bool go_to(int winkel);
 	int get_pos();
 	void overwrite_pos(int new_pos);
-	void get_motor_status(int* ist_pos, int* delay, int* status,TTMC222Status *TMC222Status);
+	void get_motor_status(int* ist_pos, int* delay, int* status, TTMC222Status *TMC222Status);
+	void get_motor_status(int* ist_pos, int* delay, int* status);
+	void get_atm_motor_status(int* ist_pos, int* delay, int* status);
 	int init_steps_to_go;
 	void startup();
 
