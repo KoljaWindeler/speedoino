@@ -28,22 +28,17 @@
  *  interrupt running) data is read/updated when calculating a new step_delay
  */
 typedef struct {
-  //! What part of the speed ramp we are in.
-  volatile unsigned char run_state : 3;
-  //! Direction stepper motor should move.
   volatile unsigned char dir : 1;
-  volatile unsigned char dir_next : 1;
-  //! Peroid of next timer delay. At start this value set the accelration rate.
-  volatile unsigned int step_delay;
-  //! What step_pos to start decelaration
-  volatile unsigned int decel_start;
-  //! Sets deceleration rate.
-  volatile signed int decel_steps_neg;
+  volatile unsigned char state : 1;
+  volatile signed int targetPosition;
   //! Minimum time delay (max speed)
   volatile signed int min_delay;
+  //! Peroid of next timer delay. At start this value set the accelration rate.
+  volatile unsigned int step_delay;
+  volatile signed int position;
   //! Counter used when accelerateing/decelerateing to calculate step_delay.
   volatile signed int accel_steps;
-  volatile signed int position;
+  volatile signed int accel;
 } speedRampData;
 
 /*! \Brief Frequency of timer1 in [Hz].
@@ -52,7 +47,7 @@ typedef struct {
  * the timer1 frequency is the clock frequency divided by 8.
  */
 // Timer/Counter 1 running on 8mhz
-#define T1_FREQ 160000 // ? häh ?
+#define T1_FREQ 160000 // ? hÃ¤h ?
 
 //! Number of (full)steps per round on stepper motor in use.
 #define FSPR 781
@@ -72,20 +67,14 @@ typedef struct {
 #endif
 
 // Maths constants. To simplify maths when calculating in speed_cntr_Move().
-#define ALPHA (2*3.14159/SPR)                    // 2*pi/spr || 2*3.1459/(781*2)=0,004028041
-#define A_T_x100 ((long)(ALPHA*T1_FREQ*100))     // (ALPHA / T1_FREQ)*100 || 0,004028041*16000000*100  = 6444865,6
+#define ALPHA (2*3.14159/SPR)                    // 2*pi/spr || 2*3.1459/(781*1)=0,008056082
+#define A_T_x100 ((long)(ALPHA*T1_FREQ*100))     // (ALPHA / T1_FREQ)*100 || 0,008056082*160000*100  = 128897,311139565
 #define T1_FREQ_148 ((int)((T1_FREQ*0.676)/100)) // divided by 100 and scaled by 0.676
-#define A_SQ (long)(ALPHA*2*10000000000)         // ALPHA*2*10000000000
+#define A_SQ (long)(ALPHA*2*10000000000)         // ALPHA*2*10000000000=161121640
 #define A_x20000 (int)(ALPHA*20000)              // ALPHA*20000
 #define MAX_POS 20000/11.73
 #define T1_STOP ~(1<<CS10 | 1<<CS11 | 1<<CS12)	  // 000
-#define T1_RUN ((0<<CS12)|(1<<CS11)|(1<<CS10))	  // 010
-
-// Speed ramp states
-#define STOP  0
-#define ACCEL 1
-#define DECEL 2
-#define RUN   3
+#define T1_RUN ((0<<CS12)|(1<<CS11)|(0<<CS10))	  // 010
 
 void speed_cntr_Move(signed int soll_pos, unsigned int accel, unsigned int max_speed);
 void speed_cntr_Init_Timer1(void);

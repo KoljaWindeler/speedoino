@@ -65,7 +65,7 @@ unsigned int accel=80;
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 void Init(void)
 {
-	wdt_enable(WDTO_8S);
+	wdt_enable(WDTO_1S);
 
 	emergency_shutdown=false;
 	emergency_extra_pos_offset_set=false;
@@ -101,14 +101,37 @@ void Init(void)
 }
 
 
+
 int main(){
 	Init();
+	uart_SendString("startup\n\r");
+	while(1){
+		if(srd.position==0){
+			speed_cntr_Move(400,7,90);
+		}
+
+		if(srd.position==100){
+			speed_cntr_Move(400,7,90);
+		}
+		wdt_reset();
+		if(srd.position==400){
+			speed_cntr_Move(100,7,90);
+		}
+		//		wdt_reset();
+		//		for(int i=0;i<rand()%100;i++){
+		//			_delay_ms(10);
+		//		}
+		//		speed_cntr_Move(rand()/40,20,96);
+	};
+
+
 	while(1) {
 		wdt_reset();
-		check_power_state();
+		//check_power_state();
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
 			/////////////////////////// MOVE /////////////////////////////////////
+			// $m1200* $m0*
 			if(UART_RxBuffer[0] == 'm'){
 				status.cmd = FALSE;
 				int set_pos=UART_RxBuffer[1]-'0';
@@ -146,7 +169,7 @@ int main(){
 				// check if we have troubles
 				if(srd.position>MAX_POS || srd.position<0){
 					srd.position=MAX_POS;
-					srd.run_state=STOP;
+					//					srd.run_state=STOP;
 					speed_cntr_Move(0,80,200);
 				} else {
 					speed_cntr_Move(set_pos,accel,speed);
@@ -176,8 +199,8 @@ int main(){
 				uart_SendInt(srd.position);
 				uart_SendByte(',');
 				uart_SendInt(srd.step_delay);
-				uart_SendByte(',');
-				uart_SendInt(srd.run_state);
+				//				uart_SendByte(',');
+				//				uart_SendInt(srd.run_state);
 				uart_SendByte('*');
 				status.cmd = FALSE;
 				///////////////////// ask for status ///////////////////////////////
@@ -202,9 +225,9 @@ int main(){
 				if(new_position>2000) new_position=2000;
 				if(new_position<0) new_position=0;
 
-				if(srd.run_state==STOP){
-					srd.position=new_position;
-				};
+				//				if(srd.run_state==STOP){
+				//					srd.position=new_position;
+				//				};
 
 			}
 			//////////////////// set pointer offset //////////////////////////////
