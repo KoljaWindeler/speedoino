@@ -82,6 +82,7 @@ unsigned long sqrt_2(unsigned long v);
 unsigned int min(unsigned int x, unsigned int y);
 int get_stopper();
 void set_stopper();
+void motor_cal( unsigned int accel, unsigned int speed);
 
 
 #endif

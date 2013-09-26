@@ -32,6 +32,7 @@
 #include "speed_cntr.h"
 #include "uart.h"
 #include <util/delay.h>
+#include <avr/wdt.h>
 
 //! Cointains data for timer interrupt.
 extern speedRampData srd;
@@ -67,6 +68,28 @@ void speed_cntr_Move(signed int target, unsigned int accel, unsigned int speed){
 		// Run Timer/Counter 1 with prescaler = 8.
 		TCCR1B |= T1_RUN;
 		TCNT1=0;   //reset the counter
+	}
+}
+
+
+void motor_cal( unsigned int accel, unsigned int speed){
+	srd.position=0;
+	speed_cntr_Move(MAX_POS,accel, speed);
+	while(srd.state==1){
+		wdt_reset();
+		_delay_ms(10);
+	}
+	_delay_ms(1000);
+	speed_cntr_Move(0,accel, speed);
+	while(srd.state==1){
+		wdt_reset();
+		_delay_ms(10);
+	}
+	srd.position=100;
+	speed_cntr_Move(0,accel/2, 10);
+	while(srd.state==1){
+		wdt_reset();
+		_delay_ms(10);
 	}
 }
 
