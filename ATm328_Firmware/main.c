@@ -53,7 +53,7 @@
 #include <avr/wdt.h>
 
 speedRampData srd;
-#define ACC 600
+#define ACC 400//600
 #define SPEED 1000
 
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
