@@ -54,16 +54,34 @@ void speed_cntr_Move(signed int target, unsigned int accel, unsigned int speed){
 	if (target > MAX_POS) target = MAX_POS;
 	if(target<=0) target=0;
 	srd.targetPosition = target;
-	if (accel<1) { accel=1; };
-	if (speed<1) { speed=1; };
+	if (accel<1) { accel=1; }
+	else if(accel<108) { accel=108; };
+	if (speed<1) { speed=1; }
+	else if(speed<44){ speed=44; };
 
 	//if((TCCR1B && (~T1_STOP))!=0x00) { // if timer is in stop position -> restart ? geht das ?
 	if(srd.state==0){
 		srd.state=1;
-		srd.min_delay = A_T_x100 / speed; // 3222432,8 / speed =
+		srd.min_delay = A_T_x100 / speed;
+		// 1454439 / speed, wobei  min_delay 0...32767
+		// 1454439/ speed < 32767
+		// speed > 1454439/32767 = 44
 		srd.step_delay = (T1_FREQ_148 * sqrt_2(A_SQ / accel))/240; // changed 5/7/2012 from /100
+		srd.max_step_delay = srd.step_delay;
+		// step_delay@accel=1
+		// (13520 * sqrt_2(145781438,515081206 / accel))/240
+		// 145781438,515081206 / accel< 4294967295
+		// 145781438,515081206 / 4294967295 < accel
+		// 0,3 < accel ...
+		// für accel=1 ...
+		// srd.step_delay ist 0 ⋯ 65535, wobei 65535 auch das max des timer ist
+		// 65535 > (T1_FREQ_148 * sqrt_2(A_SQ / accel))/240
+		// 65535 > (13520 * sqrt_2(145781438,515081206 / accel))/240
+		// 145781438,515081206/(( 65535*240 / 13520 )²) < accel
+		// accel > 108
+
+
 		srd.accel=accel;
-		uart_SendString("t1n\n\r");
 		OCR1A = 10;
 		// Run Timer/Counter 1 with prescaler = 8.
 		TCCR1B |= T1_RUN;
@@ -77,19 +95,15 @@ void motor_cal( unsigned int accel, unsigned int speed){
 	speed_cntr_Move(MAX_POS,accel, speed);
 	while(srd.state==1){
 		wdt_reset();
-		_delay_ms(10);
 	}
-	_delay_ms(1000);
 	speed_cntr_Move(0,accel, speed);
 	while(srd.state==1){
 		wdt_reset();
-		_delay_ms(10);
 	}
 	srd.position=100;
-	speed_cntr_Move(0,accel/2, 10);
+	speed_cntr_Move(0,0, 0);
 	while(srd.state==1){
 		wdt_reset();
-		_delay_ms(10);
 	}
 }
 
@@ -132,7 +146,7 @@ ISR(TIMER1_COMPA_vect){
 	// Holds next delay period.
 	static unsigned int new_step_delay;
 	static unsigned int rest;
-
+//	uart_SendByte('.');
 
 	OCR1A = srd.step_delay;
 
@@ -140,7 +154,6 @@ ISR(TIMER1_COMPA_vect){
 	if (srd.position==srd.targetPosition && srd.accel_steps<=1 && srd.accel_steps>=-1) { // if we have only one three steps to drive pos is 0,1,2 differ is 3,2,1 accel is 1,0,-1
 		// Stop Timer/Counter 1.
 		TCCR1B &= T1_STOP;
-		uart_SendString("off\n\r");
 		srd.state=0;
 		// Reset counter.
 		srd.accel_steps = 0;// Set Timer/Counter to divide clock by 1
@@ -152,20 +165,24 @@ ISR(TIMER1_COMPA_vect){
 			} else {
 				srd.dir=CCW;
 			}
+		} else { // this else is used to have one step pause before changeing the direction
+			sm_driver_StepCounter(srd.dir); // go one step in that direction
 		}
-
-		sm_driver_StepCounter(srd.dir); // go one step in that direction
 
 		// calculate position + remaining steps
 		int delta;
 		if(srd.dir==CW){ // CW -> normal Rotation, target should be bigger than current Position
 			if(srd.position<MAX_POS){
-				srd.position++;
+				if(srd.accel_steps!=0){
+					srd.position++;
+				}
 			}
 			delta=srd.targetPosition-srd.position; // steps to go: normal positiv
 		} else {
 			if(srd.position>0){
-				srd.position--;
+				if(srd.accel_steps!=0){
+					srd.position--;
+				}
 			}
 			delta=srd.position-srd.targetPosition; // CCW
 		}
@@ -173,24 +190,24 @@ ISR(TIMER1_COMPA_vect){
 		if (delta>0) { 	// case 1 : moving towards target (maybe under accel or decel)
 			if (delta < srd.accel_steps) { 	// remaining steps are less than we took to accelerate: its time to declerate
 				srd.accel_steps--;
-				new_step_delay = srd.step_delay + ((2 * (long)srd.step_delay + rest)/(5 * srd.accel_steps + 1));
-				rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_steps + 1);
+				new_step_delay = srd.step_delay + ((2 * (long)srd.step_delay + rest)/(CHANGER * srd.accel_steps + 1));
+				rest = ((2 * (long)srd.step_delay)+rest)%(CHANGER * srd.accel_steps + 1);
 			} else if (srd.min_delay < new_step_delay || srd.accel_steps==0) { // right now we haven't taken enough steps to accell -> go on with the acceleration
 				srd.accel_steps++;
-				new_step_delay = srd.step_delay - ((2 * (long)srd.step_delay + rest)/(5 * srd.accel_steps + 1));
-				rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_steps + 1);
+				new_step_delay = srd.step_delay - ((2 * (long)srd.step_delay + rest)/(CHANGER * srd.accel_steps + 1));
+				rest = ((2 * (long)srd.step_delay)+rest)%(CHANGER * srd.accel_steps + 1);
 			} else {
 				// we are full speed - stay there
 			}
 		} else {
 			// case 2 : at or moving away from target (slow down!)
 			srd.accel_steps--;
-			new_step_delay = srd.step_delay + ((2 * (long)srd.step_delay + rest)/(5 * srd.accel_steps + 1)); // decelerate
-			rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_steps + 1);
+			new_step_delay = srd.step_delay + ((2 * (long)srd.step_delay + rest)/(CHANGER * srd.accel_steps + 1)); // decelerate
+			rest = ((2 * (long)srd.step_delay)+rest)%(CHANGER * srd.accel_steps + 1);
 		}
 
-		if(srd.accel_steps==0){
-			new_step_delay = (T1_FREQ_148 * sqrt_2(A_SQ / srd.accel))/240;
+		if(srd.accel_steps==0){ // reset speed
+			new_step_delay=srd.max_step_delay;
 		}
 	}
 	srd.step_delay = new_step_delay;

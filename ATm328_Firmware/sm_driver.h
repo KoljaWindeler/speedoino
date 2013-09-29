@@ -30,8 +30,8 @@
  * Either halfsteps (HALFSTEPS) or fullsteps (FULLSTEPS) are allowed.
  *
  */
-#define HALFSTEPS
-//#define FULLSTEPS
+//#define HALFSTEPS
+#define FULLSTEPS
 
 /*! \Brief Define IO port and pins
  *
