@@ -14,7 +14,7 @@ void reset_init(){
 	//DDRD 0=eingang, 1=ausgang
 	//PORTD 1=pullup 0=kein pullup
 	DDRD = 0x00 |(1<<PD5) |(1<<PD6) |(1<<PD7); // 3x led AUSGANG,
-	PORTD = 0x00; // kein Pull up, zwei eingänge die getrieben werden, eine RX/TX Leitung und die LEDS werden selbst gesteuert
+	PORTD = 0x00 |(1<<PD2) | (1<<PD3); // kein Pull up, außer an den interrupt eingängen
 	//0xFF & ~((1<<PD7) | (1<<PD6) | (1<<PD5) | (1<<PD3)); // alle LEDs an, alle einguenge auf pullup bis auf D3, 20 - 50 kR => 0.1 - 0.25 mA
 
 	// interrupts aktivieren
@@ -31,7 +31,7 @@ void reset_init(){
 	last_avr_state=0; // 1=letzte flanke war steigend,0=fallend
 	last_bt_state=0;  // 1=letzte flanke war steigend,0=fallend
 	last_rst=0;
-	counter_bt_init=0;
+	counter_bt_init=0; // zählt die pulse am anfang um nicht zu früh ein reset auszulösen wenn die jeweiligen quellen noch starten
 }
 
 // funktion zum ruecksetzen und eventuellen verweilen (spezial_down=1) im bootloader

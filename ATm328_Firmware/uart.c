@@ -153,15 +153,14 @@ ISR(USART_RX_vect){
 	data = UDR0;
 	//uart_SendByte(data);
 	// Put the data into RxBuf
-	if(status.cmd == FALSE || 1 ){
-		if(data=='$'){
-			UART_RxPtr=0;
-		} else if(data=='*') {
-			status.cmd = TRUE;
-		} else {
-			UART_RxBuffer[UART_RxPtr ] = data;
-			UART_RxBuffer[UART_RxPtr+1]=0x00;
-			UART_RxPtr=(UART_RxPtr+1)%(UART_RX_BUFFER_SIZE-1);
-		};
-	}
+	if(data=='$'){
+		UART_RxPtr=0;
+	} else if(data=='*') {
+		status.cmd = TRUE;
+	} else {
+		UART_RxBuffer[UART_RxPtr ] = data;
+		UART_RxBuffer[UART_RxPtr+1]=0x00;
+		UART_RxPtr=(UART_RxPtr+1)%(UART_RX_BUFFER_SIZE-1);
+	};
+
 }
