@@ -597,10 +597,31 @@ OnClickListener {
 				_putFileDialog = new putFileDialog(this);
 				
 				String check_filename_string=filePath.substring(filePath.lastIndexOf('/')+1);
-				String path_adder="POI";
-				if(check_filename_string.equals("BASE.TXT") || check_filename_string.equals("GANG.TXT") || check_filename_string.equals("POI.TXT") || check_filename_string.equals("SPEED_T.TXT") || check_filename_string.equals("SPEEDO.TXT") || check_filename_string.equals("TEMPER.TXT")){
+				String path_adder;
+				boolean this_is_a_config_file=false;
+				
+				
+				if(check_filename_string.substring(0, 4).equals("SKIN")){
+					this_is_a_config_file=true;
+				} else if(check_filename_string.equals("BASE.TXT")){
+					this_is_a_config_file=true;
+				} else if(check_filename_string.equals("GANG.TXT")){
+					this_is_a_config_file=true;
+				} else if(check_filename_string.equals("POI.TXT")){
+					this_is_a_config_file=true;
+				} else if(check_filename_string.equals("SPEED_T.TXT")){
+					this_is_a_config_file=true;
+				} else if(check_filename_string.equals("SPEEDO.TXT")){
+					this_is_a_config_file=true;
+				} else if(check_filename_string.equals("TEMPER.TXT")){
+					this_is_a_config_file=true;
+				}
+				// apply 
+				if(this_is_a_config_file){
 					path_adder="CONFIG";
-				};
+				} else {
+					path_adder="POI";
+				}
 
 				_putFileDialog.execute(filePath,path_adder + filePath.substring(filePath.lastIndexOf('/'))); // /mnt/sdcard/Download/bild.sng,
 				Log.i(TAG, "Datei wurde hochgeladen");
@@ -620,6 +641,7 @@ OnClickListener {
 				startActivityForResult(intent, REQUEST_CONVERT_GFX);
 			};
 			break;
+			
 		case REQUEST_CONVERT_GFX:
 			Log.i(TAG, "Image converter hat was zurueckgegeben ");
 			if (resultCode == RESULT_OK) {
