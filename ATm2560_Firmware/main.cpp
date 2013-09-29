@@ -117,7 +117,6 @@ int main(void) {
 	unsigned long lasttime_calc=0;
 #endif
 
-
 	for (;;) {
 		pSensors->m_CAN->check_message();
 		//////////////////////////////////////////////////

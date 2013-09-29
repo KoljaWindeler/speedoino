@@ -50,6 +50,9 @@ typedef struct {
 /**********************************  working settings ********************************/
 
 #define BMP(a,b,c,d,e,f,g) (a*1000000L+b*100000L+c*10000L+d*1000+e*100+f*10+g)
+//Useful macros for accessing single bytes of int and long variables
+#define BYTE1(var) *((unsigned char *) &var+1)
+#define BYTE0(var) *((unsigned char *) &var)
 
 //#include <WProgram.h>
 #include "wiring.h"
