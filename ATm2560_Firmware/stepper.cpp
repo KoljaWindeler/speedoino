@@ -7,8 +7,6 @@
 
 #include "global.h"
 
-
-
 #define FALSE 0
 #define TRUE 1
 
@@ -23,129 +21,139 @@ speedo_stepper::~speedo_stepper(){
 
 
 void speedo_stepper::init(){
-	if(pConfig->get_hw_version()==7){
+//	if(pConfig->get_hw_version()==7){
 		Serial3.begin(19200); // macht eigentlich schon der reset, aber zur sicherheit
 		Serial3.flush();
 		overwrite_pos(200);
 		go_to(0);
 		// select startup mode
 		if(pSpeedo->startup_by_ignition){
-			init_steps_to_go=5; //5 steps to go
+//			init_steps_to_go=5; //5 steps to go
+			run_calibration();
+			init_steps_to_go=0;
 		} else {
 			init_steps_to_go=0;
 		}
-	} else {
-		TTMC222Status TMC222Status;
-		TTMC222Parameters TMC222Parameter;
-		TMC222Parameter.IRun=4;			// 84mA, 270||270=135R, 12V/135R=88mA, Motor max 35mA<42.0mA, ok :D
-		TMC222Parameter.IHold=0;		// 59mA, 270||270=135R, 12V/135R=88mA, Motor max 20mA<29.5mA, ok :D
-		TMC222Parameter.VMax=15;		// 15 = 973 FullSteps/sec
-		TMC222Parameter.VMin=3;			// 1/32= 973/32 FullSteps/sec
-		TMC222Parameter.SecPosHi=0b000; // TRY
-		TMC222Parameter.Shaft=0;		// Clockwise
-		TMC222Parameter.Acc=5;			// 473 FS/sec² 7 war super
-		TMC222Parameter.SecPosLo=0x0f;	// TRY
-		TMC222Parameter.AccShape=0;		// regular accel
-		TMC222Parameter.StepMode=0b00;	// 1/2 µStepps .. 1930*n1/n2
-		// select startup mode
-		if(pSpeedo->startup_by_ignition || true){ // TODO
-			//InitTWI();
-			GetFullStatus1(&TMC222Status);
-			ResetToDefault();
-			SetMotorParameters(&TMC222Parameter);
-			ResetPosition();
-			init_steps_to_go=4;//5
-		} else {
-			init_steps_to_go=0;//5
-		}
-	}
+//	} else {
+//		TTMC222Status TMC222Status;
+//		TTMC222Parameters TMC222Parameter;
+//		TMC222Parameter.IRun=4;			// 84mA, 270||270=135R, 12V/135R=88mA, Motor max 35mA<42.0mA, ok :D
+//		TMC222Parameter.IHold=0;		// 59mA, 270||270=135R, 12V/135R=88mA, Motor max 20mA<29.5mA, ok :D
+//		TMC222Parameter.VMax=15;		// 15 = 973 FullSteps/sec
+//		TMC222Parameter.VMin=3;			// 1/32= 973/32 FullSteps/sec
+//		TMC222Parameter.SecPosHi=0b000; // TRY
+//		TMC222Parameter.Shaft=0;		// Clockwise
+//		TMC222Parameter.Acc=5;			// 473 FS/sec² 7 war super
+//		TMC222Parameter.SecPosLo=0x0f;	// TRY
+//		TMC222Parameter.AccShape=0;		// regular accel
+//		TMC222Parameter.StepMode=0b00;	// 1/2 µStepps .. 1930*n1/n2
+//		// select startup mode
+//		if(pSpeedo->startup_by_ignition){ // TODO
+//			//InitTWI();
+//			GetFullStatus1(&TMC222Status);
+//			ResetToDefault();
+//			SetMotorParameters(&TMC222Parameter);
+//			ResetPosition();
+//			init_steps_to_go=4;//5
+//		} else {
+//			init_steps_to_go=0;//5
+//		}
+//	}
 };
 
 void speedo_stepper::startup(){
 	if(init_steps_to_go!=0){
-		if(pConfig->get_hw_version()!=7){
-			///////////// TMC 222 /////////////
-			if(init_steps_to_go>=4){
-				Serial.print("Schritt 4 -> ");
-				Serial.println("run init");
-				go_to(18550);
-				init_steps_to_go=3;
-			} else if(init_steps_to_go==3){
-				Serial.println("Schritt 3");
-				if(abs(get_pos()-18550)<10){		// wait on init done
-					Serial.println("ziel erreicht -> gehe zu schritt 1");
-					init_steps_to_go=2;
-					go_to(0);
-				}
-			} else if(init_steps_to_go==2){
-				Serial.println("Schritt 2");
-				if(abs(get_pos())<10){ 	// set go back to zero
-
-					// reduce full speed to 4/15
-					TTMC222Parameters TMC222Parameters;
-					GetMotorParameters(&TMC222Parameters);
-					TMC222Parameters.VMax=3;
-					TMC222Parameters.Shaft=1; // ccw
-					SetMotorParameters(&TMC222Parameters);
-
-					go_to(3000); // against mech stop:ccw
-					init_steps_to_go=1;	// ready
-				}
-			} else if(init_steps_to_go==1){
-				Serial.println("Schritt 1");
-				if(abs(get_pos()-3000)<10){
-					init_steps_to_go=0;
-
-					TTMC222Parameters TMC222Parameters;
-					GetMotorParameters(&TMC222Parameters);
-					TMC222Parameters.VMax=8;
-					TMC222Parameters.Shaft=0; // cw
-					TMC222Parameters.IRun=1;
-					TMC222Parameters.Acc=2;
-					SetMotorParameters(&TMC222Parameters);
-					TTMC222Status TMC222Status;
-					GetFullStatus1(&TMC222Status);
-					ResetPosition();
-				}
+		//		if(pConfig->get_hw_version()!=7){
+		//			///////////// TMC 222 /////////////
+		//			if(init_steps_to_go>=4){
+		//				Serial.print("Schritt 4 -> ");
+		//				Serial.println("run init");
+		//				go_to(18550);
+		//				init_steps_to_go=3;
+		//			} else if(init_steps_to_go==3){
+		//				Serial.println("Schritt 3");
+		//				if(abs(get_pos()-18550)<10){		// wait on init done
+		//					Serial.println("ziel erreicht -> gehe zu schritt 1");
+		//					init_steps_to_go=2;
+		//					go_to(0);
+		//				}
+		//			} else if(init_steps_to_go==2){
+		//				Serial.println("Schritt 2");
+		//				if(abs(get_pos())<10){ 	// set go back to zero
+		//
+		//					// reduce full speed to 4/15
+		//					TTMC222Parameters TMC222Parameters;
+		//					GetMotorParameters(&TMC222Parameters);
+		//					TMC222Parameters.VMax=3;
+		//					TMC222Parameters.Shaft=1; // ccw
+		//					SetMotorParameters(&TMC222Parameters);
+		//
+		//					go_to(3000); // against mech stop:ccw
+		//					init_steps_to_go=1;	// ready
+		//				}
+		//			} else if(init_steps_to_go==1){
+		//				Serial.println("Schritt 1");
+		//				if(abs(get_pos()-3000)<10){
+		//					init_steps_to_go=0;
+		//
+		//					TTMC222Parameters TMC222Parameters;
+		//					GetMotorParameters(&TMC222Parameters);
+		//					// 12V aber geht gar nicht
+		////					TMC222Parameters.VMax=8;
+		////					TMC222Parameters.Shaft=0; // cw
+		////					TMC222Parameters.IRun=1;
+		////					TMC222Parameters.Acc=2;
+		//
+		//					TMC222Parameters.VMax=12;
+		//					TMC222Parameters.Shaft=0; // cw
+		//					TMC222Parameters.IRun=0;
+		//					TMC222Parameters.Acc=5;
+		//
+		//
+		//					SetMotorParameters(&TMC222Parameters);
+		//					TTMC222Status TMC222Status;
+		//					GetFullStatus1(&TMC222Status);
+		//					ResetPosition();
+		//				}
+		//			}
+		//			///////////// TMC 222 /////////////
+		//		} else {
+		///////////// ATM /////////////
+		if(init_steps_to_go>=5){
+			if(get_pos()!=0){		//
+				go_to(0,SLOW_ACCEL,FAST_SPEED);			// 240*8 = 1920
+			} else {
+				init_steps_to_go=4; 					// nächsten schritt vorbereiten
 			}
-			///////////// TMC 222 /////////////
-		} else {
-			///////////// ATM /////////////
-			if(init_steps_to_go>=5){
-				if(get_pos()!=0){		//
-					go_to(0,SLOW_ACCEL,FAST_SPEED);			// 240*8 = 1920
-				} else {
-					init_steps_to_go=4; 					// nächsten schritt vorbereiten
-				}
-			} else if(init_steps_to_go==4){
+		} else if(init_steps_to_go==4){
 
-				if(get_pos()!=MOTOR_OVERWRITE_END_POS){		// motor noch nicht am ende angekommen
-					go_to(MOTOR_OVERWRITE_END_POS,SLOW_ACCEL,FAST_SPEED);// weiter dorthin scheuchen
-				} else { 														// motor angekommen
-					init_steps_to_go=3; 					// nächsten schritt vorbereiten
-				}
-			} else if(init_steps_to_go==3){
-				if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
-					go_to(0,SLOW_ACCEL,FAST_SPEED);			// weiter dorthin scheuchen
-				} else { 														// motor angekommen
-					ResetPosition();
-					init_steps_to_go=0; 					// fertig
-				}
-			} else if(init_steps_to_go==2){
-				if(get_pos()!=80){   						// motor noch nicht am anfang angekommen
-					overwrite_pos(80);
-				} else { 														// motor angekommen
-					init_steps_to_go=1; 					// fertig
-				}
-			} else if(init_steps_to_go==1){
-				if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
-					go_to(0,80,200);
-				} else { 														// motor angekommen
-					init_steps_to_go=0; 					// fertig
-				}
+			if(get_pos()!=MOTOR_OVERWRITE_END_POS){		// motor noch nicht am ende angekommen
+				go_to(MOTOR_OVERWRITE_END_POS,SLOW_ACCEL,FAST_SPEED);// weiter dorthin scheuchen
+			} else { 														// motor angekommen
+				init_steps_to_go=3; 					// nächsten schritt vorbereiten
 			}
-			///////////// ATM /////////////
+		} else if(init_steps_to_go==3){
+			if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
+				go_to(0,SLOW_ACCEL,FAST_SPEED);			// weiter dorthin scheuchen
+			} else { 														// motor angekommen
+				ResetPosition();
+				init_steps_to_go=0; 					// fertig
+			}
+		} else if(init_steps_to_go==2){
+			if(get_pos()!=80){   						// motor noch nicht am anfang angekommen
+				overwrite_pos(80);
+			} else { 														// motor angekommen
+				init_steps_to_go=1; 					// fertig
+			}
+		} else if(init_steps_to_go==1){
+			if(get_pos()!=0){   						// motor noch nicht am anfang angekommen
+				go_to(0,80,200);
+			} else { 														// motor angekommen
+				init_steps_to_go=0; 					// fertig
+			}
 		}
+		///////////// ATM /////////////
+		//		}
 	} // init steps!=0
 }
 
@@ -169,10 +177,10 @@ bool speedo_stepper::go_to(int winkel,int accel,int speed){
 		///////////// ATM /////////////
 		Serial3.print("$m");
 		Serial3.print(winkel/ATM_DIV_FACTOR);
-		Serial3.print(",");
-		Serial3.print(accel);
-		Serial3.print(",");
-		Serial3.print(speed);
+		//		Serial3.print(","); // leave this factor to watchdog firmware (from 28.10.2013)
+		//		Serial3.print(accel);
+		//		Serial3.print(",");
+		//		Serial3.print(speed);
 		Serial3.print("*");
 		///////////// ATM /////////////
 	} else {
@@ -197,12 +205,23 @@ bool speedo_stepper::go_to(int winkel,int accel,int speed){
 	return true;
 };
 
+void speedo_stepper::run_calibration(void){
+	///////////// ATM /////////////
+	Serial3.print("$c*");
+	///////////// ATM /////////////
+}
+
 bool speedo_stepper::go_to(int winkel){
 	if(pConfig->get_hw_version()==7){
 		///////////// ATM /////////////
 		Serial3.print("$m");
-		Serial3.print(winkel/ATM_DIV_FACTOR);
+		Serial3.print(round(winkel/ATM_DIV_FACTOR));
 		Serial3.print("*");
+
+		Serial.print("$m");
+		Serial.print(round(winkel/ATM_DIV_FACTOR));
+		Serial.print("*");
+
 		///////////// ATM /////////////
 	} else {
 		///////////// TCM222 /////////////
@@ -263,8 +282,8 @@ int speedo_stepper::get_pos(){
 	if(pos <0 || pos>=99999){
 		pos=-1;
 	}
-	Serial.print("get pos:");
-	Serial.println(pos);
+//	Serial.print("get pos:");
+//	Serial.println(pos);
 
 	return pos;
 };

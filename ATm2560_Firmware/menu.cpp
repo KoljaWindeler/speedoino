@@ -804,8 +804,8 @@ void speedo_menu::display(){
 		pOLED->clear_screen();
 		pOLED->highlight_bar(0,0,128,8);
 		pOLED->string_P(pSpeedo->default_font,PSTR("Additional info"),2,0,15,0,0);
-		pOLED->string_P(pSpeedo->default_font,PSTR("Kicking to 6k"),2,2,0,15,0);
-		pAktors->m_stepper->go_to(6000/11.73);
+		pOLED->string_P(pSpeedo->default_font,PSTR("Kicking to 10k"),2,2,0,15,0);
+		pAktors->m_stepper->go_to(10000);
 		_delay_ms(3000);
 		back();
 	}
@@ -1187,7 +1187,7 @@ void speedo_menu::display(){
 		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
 
 	} else if(floor(state/10)==BMP(0,0,0,0,6,5,1)){
-		set_value_dialog((int8_t*)&pAktors->pointer_highlight_mode,PSTR("= RGB-Action ="),PSTR("Static"),PSTR("Following"),PSTR("Reserved"));
+		set_value_dialog((int8_t*)&pAktors->pointer_highlight_mode,PSTR("= RGB-Action ="),PSTR("Static"),PSTR("Following"),PSTR("Stack"),PSTR("R-Stack"));
 		if(pAktors->pointer_highlight_mode==RGB_ACTION_TYPE_STATIC){
 			pAktors->set_rbg_active((int)0x0000,false); // activate all led's
 		}

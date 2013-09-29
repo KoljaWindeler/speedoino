@@ -18,7 +18,7 @@
 #define TMC222_COMMAND_GET_STATUS1 0x81
 #define TMC222_COMMAND_GET_STATUS2 0xfc
 
-#define ATM_DIV_FACTOR 11.73
+#define ATM_DIV_FACTOR 23.148148148
 
 //Data structure definition for the TMC222 status information.
 	//Use variables of this data type togehter with the GetFullStatus1() function.
@@ -69,7 +69,7 @@
 class speedo_stepper{
 
 public:
-#define MOTOR_OVERWRITE_END_POS 1600
+#define MOTOR_OVERWRITE_END_POS 864
 #define TMC222_DIV_FACTOR 1.45 // rechnerisch 1.48
 	speedo_stepper();
 	~speedo_stepper();
@@ -82,6 +82,7 @@ public:
 	void get_motor_status(int* ist_pos, int* delay, int* status, TTMC222Status *TMC222Status);
 	void get_motor_status(int* ist_pos, int* delay, int* status);
 	void get_atm_motor_status(int* ist_pos, int* delay, int* status);
+	void run_calibration(void);
 	int init_steps_to_go;
 	void startup();
 
