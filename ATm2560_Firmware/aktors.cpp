@@ -570,15 +570,6 @@ bool Speedo_aktors::check_mac_key(uint8_t* result,bool* comm_error){
 	sprintf_P(at_commands,PSTR("ATB?%c"),0x0D);
 	uint8_t returns=0;
 	if(ask_bt(at_commands,true,22,&returns)==0){
-
-		///
-		pOLED->clear_screen();
-		pOLED->string(pSpeedo->default_font,at_commands,0,1);
-		sprintf(at_commands,"r:%i",returns);
-		pOLED->string(pSpeedo->default_font,at_commands,0,2);
-		_delay_ms(99999);
-		///
-
 		if(returns>=17){
 			*comm_error=false;
 			// kick sondernzeichern
