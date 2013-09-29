@@ -75,12 +75,13 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		}
 
 		if((millis()/1000)==60){
-			if(!pAktors->check_mac_key()){
+			uint8_t result=0xff;
+			bool comm_check;
+			if(!pAktors->check_mac_key(&result,&comm_check)){
 				pOLED->clear_screen();
 				pOLED->string_P_centered(PSTR("Please contact"),2,true);
 				pOLED->string_P_centered(PSTR("KKoolljjaa@gmail.com"),3,true);
 				pOLED->string_P_centered(PSTR("FAQ #1"),4,true);
-				_delay_ms(9999);
 			}
 		}
 #ifdef TACHO_SMALLDEBUG

@@ -565,12 +565,22 @@ int Speedo_aktors::set_bt_pin(){
 	return -2;
 }
 
-bool Speedo_aktors::check_mac_key(){
+bool Speedo_aktors::check_mac_key(uint8_t* result,bool* comm_error){
 	char at_commands[22];
 	sprintf_P(at_commands,PSTR("ATB?%c"),0x0D);
 	uint8_t returns=0;
 	if(ask_bt(at_commands,true,22,&returns)==0){
+
+		///
+		pOLED->clear_screen();
+		pOLED->string(pSpeedo->default_font,at_commands,0,1);
+		sprintf(at_commands,"r:%i",returns);
+		pOLED->string(pSpeedo->default_font,at_commands,0,2);
+		_delay_ms(99999);
+		///
+
 		if(returns>=17){
+			*comm_error=false;
 			// kick sondernzeichern
 			int char_array_pointer=0;
 			for(uint8_t n=0;n<returns; n++){
@@ -610,9 +620,12 @@ bool Speedo_aktors::check_mac_key(){
 					temp==0xD3 || // Patrick		= 00+12+6F+28+3C+EE
 					temp==0xA3 || // Devel-Speedo 	= 00+12+6f+22+45+bb
 					temp==0xC6){  // Andrej			= 00+12+6F+28+3C+E1
+				*result=temp;
 				return true;
 			}
 		} else { // if no answere -> break
+			*result=0x00;
+			*comm_error=true;
 			return true;
 		}
 	}
@@ -626,37 +639,37 @@ int Speedo_aktors::ask_bt(char *command){
 }
 
 int Speedo_aktors::ask_bt(char *buffer, bool answere_needed, int8_t max_length, uint8_t* char_rec){
-	for(int looper=0;looper<3;looper++){
+	for(int looper=0;looper<30;looper++){
 		Serial.print(buffer);
-
 		// A T \r \n O K \r \n = 8
-
 		//warte bis der Buffer nicht voller wird
 		_delay_ms(200);
 
 		uint8_t ok_state=0; // 0 teile von "o" "k"
 		int8_t n=0;
+		*char_rec=0;
+		char answere[20];
 		while(Serial.available()){
 			char temp = Serial.read();
 			if(answere_needed){
 				*char_rec=*char_rec+1;
 				if(n<(max_length-1)){
-					buffer[n]=temp;
+					answere[n]=temp;
 					n++;
-					buffer[n]=0x00; // EOString, 0x00 will be MAX in (max-length-1)
+					answere[n]=0x00; // EOString, 0x00 will be MAX in (max-length-1)
 				};
 			};
 
 			if(temp=='O'){
 				ok_state=1; // 1. TEIL
 			} else if(temp=='K' && ok_state==1){
+				strcpy(buffer,answere);
 				return 0;
 
 			} else {
 				ok_state=0;
 			}
 		};
-
 	};
 	return -1;
 }
@@ -740,6 +753,25 @@ void Speedo_aktors::rgb_action(int needle_pos){
 		while(start<0){ start++; };
 		while(end>10) { end--; };
 		for(int8_t i=start; i<=end; i++){ // activate only the interesting ones
+			status|=(1<<i);
+		};
+		set_rbg_active(~status,false); // low active
+	} else if(pointer_highlight_mode==RGB_ACTION_TYPE_STACK && !attention_required){
+		int8_t pos=((needle_pos/15)*11)/1000; // 15k rpm on 11 leds
+		int16_t status=0; // switch all off
+
+		if(pos>10) { pos=10; };
+		for(int8_t i=0; i<=pos; i++){ // activate only the interesting ones
+			status|=(1<<i);
+		};
+		set_rbg_active(~status,false); // low active
+	} else if(pointer_highlight_mode==RGB_ACTION_TYPE_RSTACK && !attention_required){
+		int8_t pos=((needle_pos/15)*11)/1000; // 15k rpm on 11 leds
+		int16_t status=0; // switch all off
+
+		if(pos>10) { pos=10; };
+		if(pos<0) { pos=0; };
+		for(int8_t i=pos; i<=10; i++){ // activate only the interesting ones
 			status|=(1<<i);
 		};
 		set_rbg_active(~status,false); // low active

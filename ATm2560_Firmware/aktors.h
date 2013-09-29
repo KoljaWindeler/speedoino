@@ -10,6 +10,8 @@
 
 #define RGB_ACTION_TYPE_STATIC 0
 #define RGB_ACTION_TYPE_FOLLOW 1
+#define RGB_ACTION_TYPE_STACK 2
+#define RGB_ACTION_TYPE_RSTACK 3
 
 #define RGB_OUT_R 7
 #define RGB_OUT_G 8
@@ -77,7 +79,7 @@ public:
 	int  update_outer_leds(bool dimm,bool overwrite);
 	int set_bt_pin();
 	void check_flag();
-	bool check_mac_key();
+	bool check_mac_key(uint8_t* result,bool* comm_error);
 	int ask_bt(char *command);
 	int ask_bt(char *buffer, bool answere_needed, int8_t max_length, uint8_t* char_rec);
 	void stop_dimmer();
