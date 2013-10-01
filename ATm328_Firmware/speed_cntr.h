@@ -50,7 +50,8 @@ typedef struct {
 // Timer/Counter 1 running on 2mhz
 #define T1_FREQ 2000000 // Hz
 
-#define M6405
+#define M6403
+
 #if !defined(M6405)
 	#if !defined(M6403)
 		#error "Ein Motor braucht das Volk"
@@ -61,7 +62,7 @@ typedef struct {
 #if defined(M6403)
 #define GEAR_RATIO 43.2
 #elif defined(M6405)
-#define GEAR_RATIO 43.2
+#define GEAR_RATIO 36
 #endif
 #define FRRPR GEAR_RATIO*ROTOR_POL_PAIR*4 // Full steps per Needle Rotation
 // 4 Fullsteps to rotate an "easy rotor" by 360 deg
@@ -72,7 +73,7 @@ typedef struct {
 // the rotation is translated by the gearbox with a ratio of 1:43.2 so it takes 862 FULLsteps
 //( each 90deg of rotor) to rotate the needle 360deg [SPR]
 #ifdef HALFSTEPS
-#define SPR (FRRPR*2)#define M6405
+#define SPR (FRRPR*2)
 #pragma message("[speed_cntr.c] *** Using Halfsteps ***")
 #endif
 #ifdef FULLSTEPS
