@@ -37,6 +37,7 @@ Speedo_sensors::Speedo_sensors(){
 	sensor_source=0;
 	last_highbeam_on=0;
 	last_oil_off=0;
+	rpm_flatted_TESTING=0;
 };
 
 // destructor just for nuts
@@ -166,7 +167,9 @@ unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 	if(mode==RPM_TYPE_FLAT){
 		return rpm_flatted;	// will be calculated with 10Hz in pull values
 	} else if(mode==RPM_TYPE_FLAT_ROUNDED){
-		return 50*round(rpm_flatted/50); // will be calculated with 10Hz in pull values
+		return (rpm_flatted>>6)<<6; // will be calculated with 10Hz in pull values
+	} else if(mode==RPM_TYPE_ROUNDED){
+		return (exact_value>>6)<<6; // will be calculated with 10Hz in pull values
 	};
 
 	return exact_value;
@@ -252,7 +255,7 @@ void Speedo_sensors::single_read(){
 	pDebug->sprintp(PSTR("Done\r\nReading: Oil temp ... "));
 	pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
 	pDebug->sprintp(PSTR("Done\r\nReading: Water temp ... "));
-	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren TODO nur wenn kein CAN
+	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren, useless if we use CAN but no problem
 	pDebug->sprintp(PSTR("Done\r\nReading: Voltages ... "));
 	pSensors->m_voltage->calc(false); // spannungscheck
 	char temp[6];
@@ -351,13 +354,24 @@ void Speedo_sensors::pull_values(){
 
 			/*stepper*/
 			if(pAktors->m_stepper->init_steps_to_go==0){
-				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT)); // einfach mal flatit probieren, sonst
+				//				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT)); // einfach mal flatit probieren, sonst
+				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT));
 				pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
+
+				//				/////////////// debug info output ////////////////// TODO
+				//				char info[30];
+				//				sprintf(info,"%i,%i,%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT),int(round(get_RPM(RPM_TYPE_DIRECT)/ATM_DIV_FACTOR)),rpm_flatted_TESTING);
+				//				Serial.println(info);
+				//				/////////////// debug info output ////////////////// TODO
 			};
 			/*stepper*/
 
 			// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
-			rpm_flatted=pSensors->flatIt(get_RPM(0),&rpm_flatted_counter,4,get_RPM(1));
+			rpm_flatted=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,4,get_RPM(RPM_TYPE_FLAT));
+
+			//			///////////////// debug info output ////////////////// TODO
+			//			rpm_flatted_TESTING=pSensors->flatIt_shift_mask(get_RPM(RPM_TYPE_DIRECT),4,rpm_flatted_TESTING,63); // =D2+RUNDEN((B2-D2)/(16*64))*64
+			//			///////////////// debug info output ////////////////// TODO
 
 		} else if(pAktors->m_stepper->init_steps_to_go==0){
 			// to this with 40hz, 25ms
@@ -367,14 +381,18 @@ void Speedo_sensors::pull_values(){
 				update_stepper=true;
 			} else if(m_dz->calc(true)){ // returns true if new rpm valus is available // TODO is it wise to have two timers?
 				update_stepper=true;
-
 			};
 
 			if(update_stepper){
-				//pAktors->m_stepper->go_to(get_RPM(0)/11.73);
-				pAktors->m_stepper->go_to(get_RPM(0));
-				rpm_flatted=get_RPM(0); // added 22.8.
-				pAktors->rgb_action(get_RPM(0));
+				//				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT)); // einfach mal flatit probieren, sonst
+				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT));
+				pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
+				//				///////////////// debug info output ////////////////// TODO
+				//				char info[30];
+				//				sprintf(info,"%i,%i,%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT),int(round(get_RPM(RPM_TYPE_DIRECT)/ATM_DIV_FACTOR)),rpm_flatted_TESTING);
+				//				Serial.println(info);
+				//				///////////////// debug info output ////////////////// TODO
+				rpm_flatted=get_RPM(RPM_TYPE_FLAT); // added 22.8.
 			}
 		}
 	}
@@ -467,6 +485,12 @@ float Speedo_sensors::flatIt_shift(int actual, uint8_t *counter, uint8_t shift, 
 		*counter=1;
 		return actual;
 	}
+	// hier besteht die gefahr das ein messwert nur [INTmax]/max_counter groß sein darf
+	// bei 20 Werten also nur 3276,8
+}
+
+uint16_t Speedo_sensors::flatIt_shift_mask(uint16_t actual, uint8_t shift, uint16_t old_flat, uint16_t nmask){
+	return old_flat+(((int)(actual-old_flat)>>shift)&~nmask); // e.g. shift = 2, old_flat=1, actual=2, result should be 1.25: (old_flat*3+actual)/4=5/4=1.25 OR BY SHIFT: 1+((2-1)>>2=1+1>>2=1+0.25=1.25
 	// hier besteht die gefahr das ein messwert nur [INTmax]/max_counter groß sein darf
 	// bei 20 Werten also nur 3276,8
 }

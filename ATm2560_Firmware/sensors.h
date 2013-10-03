@@ -24,6 +24,7 @@
 #define RPM_TYPE_DIRECT 0
 #define RPM_TYPE_FLAT 1
 #define RPM_TYPE_FLAT_ROUNDED 2
+#define RPM_TYPE_ROUNDED 3
 
 class Speedo_sensors{
 public:
@@ -37,6 +38,7 @@ public:
 	void check_inputs();
 	float flatIt(int actual,unsigned char *counter, char max_counter, float old_flat);
 	float flatIt_shift(int actual, uint8_t *counter, uint8_t shift, float old_flat);
+	uint16_t flatIt_shift_mask(uint16_t actual, uint8_t shift, uint16_t old_flat, uint16_t nmask);
 	void pull_values();
 
 	unsigned int get_RPM(int mode); // 0=exact, 1=flated, 2=flatted_display_ready
@@ -66,6 +68,7 @@ private:
 	short fourty_Hz_counter;
 
 	unsigned int rpm_flatted;
+	unsigned int rpm_flatted_TESTING;
 	unsigned char rpm_flatted_counter;
 
 	unsigned long last_highbeam_on;

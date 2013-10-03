@@ -176,7 +176,7 @@ bool speedo_stepper::go_to(int winkel,int accel,int speed){
 	if(pConfig->get_hw_version()==7){
 		///////////// ATM /////////////
 		Serial3.print("$m");
-		Serial3.print(winkel/ATM_DIV_FACTOR);
+		Serial3.print(int(round(winkel/ATM_DIV_FACTOR)));
 		//		Serial3.print(","); // leave this factor to watchdog firmware (from 28.10.2013)
 		//		Serial3.print(accel);
 		//		Serial3.print(",");
@@ -215,13 +215,8 @@ bool speedo_stepper::go_to(int winkel){
 	if(pConfig->get_hw_version()==7){
 		///////////// ATM /////////////
 		Serial3.print("$m");
-		Serial3.print(round(winkel/ATM_DIV_FACTOR));
+		Serial3.print(int(round(winkel/ATM_DIV_FACTOR)));
 		Serial3.print("*");
-
-		Serial.print("$m");
-		Serial.print(round(winkel/ATM_DIV_FACTOR));
-		Serial.print("*");
-
 		///////////// ATM /////////////
 	} else {
 		///////////// TCM222 /////////////
