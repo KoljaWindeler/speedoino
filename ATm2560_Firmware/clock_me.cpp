@@ -80,7 +80,7 @@ void speedo_clock::set_date_time(int year,int mon,int day,int hh,int mm,int ss, 
 	if(check_winter){
 		if(!is_winter_time(m_year,m_mon,m_day,m_hh,m_mm,m_ss)){ // is wintertime?
 			wintertime=false;
-		};
+		}
 	};
 
 	inc_hours(); // add gmt and winter/sommer time
@@ -90,8 +90,6 @@ void speedo_clock::inc_hours(){
 	char inc=GMT_TIME_CORRECTION;
 	if(!wintertime){
 		inc++;
-		inc++;
-		inc--;
 	}
 	// nachziehen
 	m_hh+=inc;
@@ -162,7 +160,7 @@ bool speedo_clock::is_winter_time(unsigned int year,unsigned int month,unsigned 
 				winter = true;
 			}
 		} else if (month == 10) {
-			if ((day - weekday >= 25) && (weekday || hour >= 3)) {
+			if (day > weekday && (day - weekday >= 25) && (weekday || hour >= 3)) {
 				winter = true;
 			} else {
 				winter = false;
