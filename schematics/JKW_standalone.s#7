@@ -24070,8 +24070,6 @@ NS Package M08A</description>
 <text x="-289.56" y="162.56" size="1.778" layer="91">RESERVE_SCHMITT</text>
 <text x="-289.56" y="160.02" size="1.778" layer="91">Mccoi</text>
 <text x="-175.26" y="215.9" size="1.778" layer="91">RGB Zeiger</text>
-<text x="-175.26" y="208.28" size="1.778" layer="91">RGB Zeiger</text>
-<text x="-175.26" y="210.82" size="1.778" layer="91">RGB Zeiger</text>
 <text x="-175.26" y="213.36" size="1.778" layer="91">Kupplung</text>
 <text x="165.1" y="152.4" size="1.778" layer="91">Ex_IN(12/5)</text>
 <text x="-168.91" y="101.6" size="1.778" layer="91">SD Power</text>
@@ -26171,22 +26169,12 @@ NS Package M08A</description>
 <pinref part="IC4" gate="1" pin="PK5(ADC13/PCINT21)"/>
 <wire x1="-256.54" y1="147.32" x2="-274.32" y2="147.32" width="0.1524" layer="91"/>
 </segment>
-<segment>
-<wire x1="185.42" y1="-68.58" x2="149.86" y2="-68.58" width="0.1524" layer="91"/>
-<label x="152.4" y="-68.58" size="1.778" layer="95"/>
-<pinref part="U4" gate="&gt;NAME" pin="CS"/>
-</segment>
 </net>
 <net name="A12" class="0">
 <segment>
 <label x="-261.62" y="144.78" size="1.778" layer="95"/>
 <pinref part="IC4" gate="1" pin="PK4(ADC12/PCINT20)"/>
 <wire x1="-256.54" y1="144.78" x2="-274.32" y2="144.78" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<wire x1="218.44" y1="-81.28" x2="246.38" y2="-81.28" width="0.1524" layer="91"/>
-<label x="236.22" y="-81.28" size="1.778" layer="95"/>
-<pinref part="U4" gate="&gt;NAME" pin="INT"/>
 </segment>
 </net>
 <net name="A11" class="0">
@@ -26627,12 +26615,25 @@ NS Package M08A</description>
 <label x="-182.88" y="208.28" size="1.778" layer="95"/>
 <pinref part="IC4" gate="1" pin="(OC2A/PCINT4)PB4"/>
 </segment>
+<segment>
+<wire x1="218.44" y1="-81.28" x2="246.38" y2="-81.28" width="0.1524" layer="91"/>
+<label x="236.22" y="-81.28" size="1.778" layer="95"/>
+<pinref part="U4" gate="&gt;NAME" pin="INT"/>
+</segment>
 </net>
 <net name="D11" class="0">
 <segment>
 <wire x1="-185.42" y1="210.82" x2="-170.18" y2="210.82" width="0.1524" layer="91"/>
 <label x="-182.88" y="210.82" size="1.778" layer="95"/>
 <pinref part="IC4" gate="1" pin="(OC1A/PCINT5)PB5"/>
+</segment>
+<segment>
+<wire x1="154.94" y1="-68.58" x2="149.86" y2="-68.58" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<wire x1="185.42" y1="-68.58" x2="149.86" y2="-68.58" width="0.1524" layer="91"/>
+<label x="152.4" y="-68.58" size="1.778" layer="95"/>
+<pinref part="U4" gate="&gt;NAME" pin="CS"/>
 </segment>
 </net>
 <net name="D12" class="0">
@@ -28596,11 +28597,6 @@ NS Package M08A</description>
 <pinref part="Q12" gate="G$1" pin="1"/>
 <pinref part="U4" gate="&gt;NAME" pin="OSC2"/>
 <pinref part="C16" gate="C" pin="1"/>
-</segment>
-</net>
-<net name="CAN_CS" class="0">
-<segment>
-<wire x1="154.94" y1="-68.58" x2="149.86" y2="-68.58" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="CANH" class="0">

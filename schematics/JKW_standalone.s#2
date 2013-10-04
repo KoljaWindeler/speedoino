@@ -23880,6 +23880,22 @@ Controller / Driver with Two Wire Serial Interface</description>
 <part name="C16" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
 <part name="C20" library="RCLDT" deviceset="C" device="0805" value="100nF"/>
 <part name="IC3" library="tmc" deviceset="TMC222" device=""/>
+<part name="U$24" library="SUPPLY" deviceset="GND" device=""/>
+<part name="C_QUA_1" library="rcl" deviceset="C-EU" device="C0805" value="Tantal 1µF"/>
+<part name="U$25" library="SUPPLY" deviceset="GND" device=""/>
+<part name="C_QUA_2" library="rcl" deviceset="C-EU" device="C0805" value="100nF"/>
+<part name="C_QUA_3" library="rcl" deviceset="C-EU" device="C0805" value="10nF"/>
+<part name="R_L4" library="RCLDT" deviceset="R" device="0805" value="1k"/>
+<part name="U$26" library="SUPPLY" deviceset="GND" device=""/>
+<part name="U$27" library="SUPPLY" deviceset="GND" device=""/>
+<part name="C_QUA_6" library="rcl" deviceset="C-EU" device="C0805" value="220nF"/>
+<part name="C_QUA_7" library="rcl" deviceset="C-EU" device="C0805" value="220nF"/>
+<part name="C_QUA_8" library="rcl" deviceset="C-EU" device="C0805" value="100nF"/>
+<part name="U$28" library="SUPPLY" deviceset="GND" device=""/>
+<part name="C_QUA_9" library="rcl" deviceset="C-EU" device="C0805" value="Tantal 100µF"/>
+<part name="R_L5" library="RCLDT" deviceset="R" device="0805" value="1k"/>
+<part name="C_QUA_10" library="rcl" deviceset="C-EU" device="C0805" value="10nF"/>
+<part name="U$29" library="SUPPLY" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -23930,10 +23946,10 @@ Controller / Driver with Two Wire Serial Interface</description>
 <wire x1="-327.66" y1="-30.48" x2="-327.66" y2="76.2" width="1.27" layer="97"/>
 <wire x1="-259.08" y1="-30.48" x2="-259.08" y2="76.2" width="1.27" layer="97"/>
 <wire x1="-327.66" y1="76.2" x2="-259.08" y2="76.2" width="1.27" layer="97"/>
-<wire x1="322.58" y1="96.52" x2="403.86" y2="96.52" width="1.27" layer="97"/>
-<wire x1="322.58" y1="96.52" x2="322.58" y2="66.04" width="1.27" layer="97"/>
-<wire x1="403.86" y1="96.52" x2="403.86" y2="66.04" width="1.27" layer="97"/>
-<wire x1="322.58" y1="66.04" x2="403.86" y2="66.04" width="1.27" layer="97"/>
+<wire x1="-256.54" y1="-71.12" x2="-114.3" y2="-71.12" width="1.27" layer="97"/>
+<wire x1="-256.54" y1="-71.12" x2="-256.54" y2="-180.34" width="1.27" layer="97"/>
+<wire x1="-114.3" y1="-71.12" x2="-114.3" y2="-180.34" width="1.27" layer="97"/>
+<wire x1="-256.54" y1="-180.34" x2="-114.3" y2="-180.34" width="1.27" layer="97"/>
 <wire x1="193.04" y1="63.5" x2="193.04" y2="40.64" width="1.27" layer="97" style="shortdash"/>
 <wire x1="193.04" y1="40.64" x2="127" y2="40.64" width="1.27" layer="97" style="shortdash"/>
 <wire x1="322.58" y1="254" x2="403.86" y2="254" width="1.27" layer="97"/>
@@ -23977,7 +23993,7 @@ Controller / Driver with Two Wire Serial Interface</description>
 <text x="228.6" y="175.26" size="3.81" layer="95">GPS</text>
 <text x="-175.26" y="157.48" size="1.6764" layer="91">GPS_Recv</text>
 <text x="-309.88" y="68.58" size="3.81" layer="95">Display</text>
-<text x="335.28" y="88.9" size="3.81" layer="95" rot="MR0">DZM</text>
+<text x="-243.84" y="-78.74" size="3.81" layer="95" rot="MR0">DZM</text>
 <text x="-167.64" y="109.22" size="1.778" layer="91">Oil Temp</text>
 <text x="-167.64" y="129.54" size="1.778" layer="91">rx/tx BT</text>
 <text x="-167.64" y="132.08" size="1.778" layer="91">rx/tx BT</text>
@@ -24163,7 +24179,7 @@ Controller / Driver with Two Wire Serial Interface</description>
 <attribute name="VALUE" x="279.4" y="22.86" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="C19" gate="C" x="-17.78" y="106.68" rot="R90"/>
-<instance part="STEPPER" gate="G$1" x="365.76" y="81.28" rot="R270"/>
+<instance part="STEPPER" gate="G$1" x="-134.62" y="-142.24" rot="MR90"/>
 <instance part="U$4" gate="G$1" x="343" y="157"/>
 <instance part="GPS" gate="G$1" x="297.18" y="152.4" rot="R270"/>
 <instance part="R_BL_L" gate="G$1" x="20.32" y="-109.22" smashed="yes" rot="MR0">
@@ -24695,7 +24711,27 @@ Controller / Driver with Two Wire Serial Interface</description>
 <attribute name="NAME" x="91.44" y="193.04" size="2.032" layer="95" rot="MR0"/>
 <attribute name="VALUE" x="96.52" y="198.12" size="1.778" layer="96" rot="MR0"/>
 </instance>
-<instance part="IC3" gate="TMC222" x="-215.9" y="-104.14"/>
+<instance part="IC3" gate="TMC222" x="-180.34" y="-139.7"/>
+<instance part="U$24" gate="G$1" x="-182.88" y="-172.72" rot="MR0"/>
+<instance part="C_QUA_1" gate="G$1" x="-200.66" y="-109.22" rot="R90"/>
+<instance part="U$25" gate="G$1" x="-205.74" y="-116.84" rot="MR0"/>
+<instance part="C_QUA_2" gate="G$1" x="-198.12" y="-101.6" rot="R270"/>
+<instance part="C_QUA_3" gate="G$1" x="-223.52" y="-154.94" rot="R180"/>
+<instance part="R_L4" gate="G$1" x="-215.9" y="-147.32" smashed="yes">
+<attribute name="VALUE" x="-205.74" y="-146.685" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="U$26" gate="G$1" x="-223.52" y="-162.56" rot="MR0"/>
+<instance part="U$27" gate="G$1" x="-228.6" y="-162.56" rot="MR0"/>
+<instance part="C_QUA_6" gate="G$1" x="-162.56" y="-109.22"/>
+<instance part="C_QUA_7" gate="G$1" x="-177.8" y="-109.22" rot="R90"/>
+<instance part="C_QUA_8" gate="G$1" x="-177.8" y="-96.52" rot="R90"/>
+<instance part="U$28" gate="G$1" x="-167.64" y="-101.6" rot="MR0"/>
+<instance part="C_QUA_9" gate="G$1" x="-177.8" y="-83.82" rot="R90"/>
+<instance part="R_L5" gate="G$1" x="-215.9" y="-129.54" smashed="yes">
+<attribute name="VALUE" x="-205.74" y="-128.905" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="C_QUA_10" gate="G$1" x="-223.52" y="-127" rot="R180"/>
+<instance part="U$29" gate="G$1" x="-215.9" y="-121.92" rot="MR0"/>
 </instances>
 <busses>
 </busses>
@@ -25471,6 +25507,76 @@ Controller / Driver with Two Wire Serial Interface</description>
 <wire x1="-147.32" y1="205.74" x2="-149.86" y2="205.74" width="0.1524" layer="91"/>
 <wire x1="-149.86" y1="205.74" x2="-149.86" y2="203.2" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="IC3" gate="TMC222" pin="GND4"/>
+<wire x1="-182.88" y1="-162.56" x2="-182.88" y2="-167.64" width="0.1524" layer="91"/>
+<wire x1="-182.88" y1="-167.64" x2="-180.34" y2="-167.64" width="0.1524" layer="91"/>
+<pinref part="IC3" gate="TMC222" pin="GND3"/>
+<wire x1="-180.34" y1="-167.64" x2="-180.34" y2="-162.56" width="0.1524" layer="91"/>
+<pinref part="IC3" gate="TMC222" pin="GND"/>
+<wire x1="-177.8" y1="-162.56" x2="-177.8" y2="-167.64" width="0.1524" layer="91"/>
+<wire x1="-177.8" y1="-167.64" x2="-180.34" y2="-167.64" width="0.1524" layer="91"/>
+<pinref part="IC3" gate="TMC222" pin="GND2"/>
+<wire x1="-175.26" y1="-162.56" x2="-175.26" y2="-167.64" width="0.1524" layer="91"/>
+<wire x1="-175.26" y1="-167.64" x2="-177.8" y2="-167.64" width="0.1524" layer="91"/>
+<junction x="-180.34" y="-167.64"/>
+<junction x="-177.8" y="-167.64"/>
+<junction x="-182.88" y="-167.64"/>
+<wire x1="-182.88" y1="-167.64" x2="-182.88" y2="-170.18" width="0.1524" layer="91"/>
+<pinref part="U$24" gate="G$1" pin="GND"/>
+<wire x1="-182.88" y1="-167.64" x2="-210.82" y2="-167.64" width="0.1524" layer="91"/>
+<wire x1="-210.82" y1="-167.64" x2="-210.82" y2="-152.4" width="0.1524" layer="91"/>
+<pinref part="IC3" gate="TMC222" pin="TST"/>
+<wire x1="-210.82" y1="-152.4" x2="-205.74" y2="-152.4" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="C_QUA_1" gate="G$1" pin="1"/>
+<wire x1="-203.2" y1="-109.22" x2="-205.74" y2="-109.22" width="0.1524" layer="91"/>
+<wire x1="-205.74" y1="-109.22" x2="-205.74" y2="-114.3" width="0.1524" layer="91"/>
+<pinref part="U$25" gate="G$1" pin="GND"/>
+<wire x1="-205.74" y1="-109.22" x2="-205.74" y2="-101.6" width="0.1524" layer="91"/>
+<pinref part="C_QUA_2" gate="G$1" pin="2"/>
+<wire x1="-205.74" y1="-101.6" x2="-203.2" y2="-101.6" width="0.1524" layer="91"/>
+<junction x="-205.74" y="-109.22"/>
+</segment>
+<segment>
+<pinref part="C_QUA_3" gate="G$1" pin="1"/>
+<pinref part="U$26" gate="G$1" pin="GND"/>
+<wire x1="-223.52" y1="-157.48" x2="-223.52" y2="-160.02" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U$27" gate="G$1" pin="GND"/>
+<wire x1="-228.6" y1="-160.02" x2="-228.6" y2="-147.32" width="0.1524" layer="91"/>
+<pinref part="R_L4" gate="G$1" pin="1"/>
+<pinref part="C_QUA_3" gate="G$1" pin="2"/>
+<wire x1="-220.98" y1="-147.32" x2="-223.52" y2="-147.32" width="0.1524" layer="91"/>
+<wire x1="-223.52" y1="-147.32" x2="-223.52" y2="-149.86" width="0.1524" layer="91"/>
+<wire x1="-228.6" y1="-147.32" x2="-223.52" y2="-147.32" width="0.1524" layer="91"/>
+<junction x="-223.52" y="-147.32"/>
+</segment>
+<segment>
+<pinref part="C_QUA_8" gate="G$1" pin="2"/>
+<pinref part="U$28" gate="G$1" pin="GND"/>
+<wire x1="-172.72" y1="-96.52" x2="-167.64" y2="-96.52" width="0.1524" layer="91"/>
+<wire x1="-167.64" y1="-96.52" x2="-167.64" y2="-99.06" width="0.1524" layer="91"/>
+<pinref part="C_QUA_9" gate="G$1" pin="2"/>
+<wire x1="-172.72" y1="-83.82" x2="-167.64" y2="-83.82" width="0.1524" layer="91"/>
+<wire x1="-167.64" y1="-83.82" x2="-167.64" y2="-96.52" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U$29" gate="G$1" pin="GND"/>
+<wire x1="-215.9" y1="-119.38" x2="-215.9" y2="-116.84" width="0.1524" layer="91"/>
+<wire x1="-215.9" y1="-116.84" x2="-223.52" y2="-116.84" width="0.1524" layer="91"/>
+<pinref part="C_QUA_10" gate="G$1" pin="2"/>
+<wire x1="-223.52" y1="-116.84" x2="-223.52" y2="-121.92" width="0.1524" layer="91"/>
+<pinref part="R_L5" gate="G$1" pin="1"/>
+<pinref part="C_QUA_10" gate="G$1" pin="1"/>
+<wire x1="-220.98" y1="-129.54" x2="-223.52" y2="-129.54" width="0.1524" layer="91"/>
+<wire x1="-223.52" y1="-129.54" x2="-226.06" y2="-129.54" width="0.1524" layer="91"/>
+<wire x1="-226.06" y1="-129.54" x2="-226.06" y2="-116.84" width="0.1524" layer="91"/>
+<wire x1="-226.06" y1="-116.84" x2="-223.52" y2="-116.84" width="0.1524" layer="91"/>
+<junction x="-223.52" y="-129.54"/>
+</segment>
 </net>
 <net name="DZ" class="0">
 <segment>
@@ -25519,6 +25625,28 @@ Controller / Driver with Two Wire Serial Interface</description>
 <wire x1="261.62" y1="5.08" x2="266.7" y2="5.08" width="0.1524" layer="91"/>
 <wire x1="266.7" y1="5.08" x2="266.7" y2="15.24" width="0.1524" layer="91"/>
 <junction x="266.7" y="15.24"/>
+</segment>
+<segment>
+<pinref part="IC3" gate="TMC222" pin="VBAT"/>
+<wire x1="-182.88" y1="-116.84" x2="-182.88" y2="-111.76" width="0.1524" layer="91"/>
+<pinref part="C_QUA_7" gate="G$1" pin="1"/>
+<wire x1="-182.88" y1="-111.76" x2="-182.88" y2="-109.22" width="0.1524" layer="91"/>
+<wire x1="-182.88" y1="-109.22" x2="-182.88" y2="-96.52" width="0.1524" layer="91"/>
+<wire x1="-180.34" y1="-109.22" x2="-182.88" y2="-109.22" width="0.1524" layer="91"/>
+<junction x="-182.88" y="-109.22"/>
+<pinref part="C_QUA_8" gate="G$1" pin="1"/>
+<wire x1="-180.34" y1="-96.52" x2="-182.88" y2="-96.52" width="0.1524" layer="91"/>
+<wire x1="-182.88" y1="-96.52" x2="-182.88" y2="-83.82" width="0.1524" layer="91"/>
+<pinref part="C_QUA_9" gate="G$1" pin="1"/>
+<wire x1="-182.88" y1="-83.82" x2="-182.88" y2="-78.74" width="0.1524" layer="91"/>
+<wire x1="-180.34" y1="-83.82" x2="-182.88" y2="-83.82" width="0.1524" layer="91"/>
+<junction x="-182.88" y="-96.52"/>
+<junction x="-182.88" y="-83.82"/>
+<pinref part="IC3" gate="TMC222" pin="VBAT2"/>
+<wire x1="-180.34" y1="-116.84" x2="-180.34" y2="-111.76" width="0.1524" layer="91"/>
+<wire x1="-180.34" y1="-111.76" x2="-182.88" y2="-111.76" width="0.1524" layer="91"/>
+<junction x="-182.88" y="-111.76"/>
+<label x="-182.88" y="-86.36" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="N$19" class="0">
@@ -25792,6 +25920,17 @@ Controller / Driver with Two Wire Serial Interface</description>
 <pinref part="U4" gate="P" pin="VDD"/>
 <pinref part="SUPPLY23" gate="G$1" pin="VDD"/>
 <pinref part="C14" gate="C" pin="2"/>
+</segment>
+<segment>
+<pinref part="IC3" gate="TMC222" pin="VDD"/>
+<wire x1="-190.5" y1="-116.84" x2="-190.5" y2="-109.22" width="0.1524" layer="91"/>
+<pinref part="C_QUA_1" gate="G$1" pin="2"/>
+<wire x1="-190.5" y1="-109.22" x2="-190.5" y2="-101.6" width="0.1524" layer="91"/>
+<wire x1="-190.5" y1="-101.6" x2="-190.5" y2="-78.74" width="0.1524" layer="91"/>
+<wire x1="-190.5" y1="-109.22" x2="-195.58" y2="-109.22" width="0.1524" layer="91"/>
+<pinref part="C_QUA_2" gate="G$1" pin="1"/>
+<wire x1="-195.58" y1="-101.6" x2="-190.5" y2="-101.6" width="0.1524" layer="91"/>
+<label x="-190.5" y="-86.36" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="CONNECT" class="0">
@@ -27146,22 +27285,12 @@ Controller / Driver with Two Wire Serial Interface</description>
 <pinref part="U$1" gate="G$1" pin="(ADC0/PCINT8)PC0"/>
 <wire x1="-226.06" y1="-20.32" x2="-233.68" y2="-20.32" width="0.1524" layer="91"/>
 </segment>
-<segment>
-<wire x1="347.98" y1="86.36" x2="358.14" y2="86.36" width="0.1524" layer="91"/>
-<label x="350.52" y="86.36" size="1.778" layer="95"/>
-<pinref part="STEPPER" gate="G$1" pin="1+"/>
-</segment>
 </net>
 <net name="M2" class="0">
 <segment>
 <label x="-231.14" y="-22.86" size="1.778" layer="95"/>
 <pinref part="U$1" gate="G$1" pin="(ADC1/PCINT9)PC1"/>
 <wire x1="-226.06" y1="-22.86" x2="-233.68" y2="-22.86" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<wire x1="358.14" y1="83.82" x2="347.98" y2="83.82" width="0.1524" layer="91"/>
-<label x="350.52" y="83.82" size="1.778" layer="95"/>
-<pinref part="STEPPER" gate="G$1" pin="1-"/>
 </segment>
 </net>
 <net name="M3" class="0">
@@ -27170,22 +27299,12 @@ Controller / Driver with Two Wire Serial Interface</description>
 <pinref part="U$1" gate="G$1" pin="(ADC2/PCINT10)PC2"/>
 <wire x1="-226.06" y1="-25.4" x2="-233.68" y2="-25.4" width="0.1524" layer="91"/>
 </segment>
-<segment>
-<wire x1="358.14" y1="78.74" x2="347.98" y2="78.74" width="0.1524" layer="91"/>
-<label x="350.52" y="78.74" size="1.778" layer="95"/>
-<pinref part="STEPPER" gate="G$1" pin="2+"/>
-</segment>
 </net>
 <net name="M4" class="0">
 <segment>
 <label x="-231.14" y="-27.94" size="1.778" layer="95"/>
 <pinref part="U$1" gate="G$1" pin="(ADC3/PCINT11)PC3"/>
 <wire x1="-226.06" y1="-27.94" x2="-233.68" y2="-27.94" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<wire x1="358.14" y1="76.2" x2="347.98" y2="76.2" width="0.1524" layer="91"/>
-<label x="350.52" y="76.2" size="1.778" layer="95"/>
-<pinref part="STEPPER" gate="G$1" pin="2-"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -27405,6 +27524,11 @@ Controller / Driver with Two Wire Serial Interface</description>
 <wire x1="-309.88" y1="144.78" x2="-322.58" y2="144.78" width="0.1524" layer="91"/>
 <label x="-322.58" y="144.78" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="IC3" gate="TMC222" pin="SDA"/>
+<wire x1="-205.74" y1="-134.62" x2="-226.06" y2="-134.62" width="0.1524" layer="91"/>
+<label x="-220.98" y="-134.62" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SCL" class="0">
 <segment>
@@ -27428,6 +27552,11 @@ Controller / Driver with Two Wire Serial Interface</description>
 <pinref part="TX2" gate="A" pin="3"/>
 <wire x1="-309.88" y1="142.24" x2="-322.58" y2="142.24" width="0.1524" layer="91"/>
 <label x="-322.58" y="142.24" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="IC3" gate="TMC222" pin="SCL"/>
+<wire x1="-205.74" y1="-137.16" x2="-226.06" y2="-137.16" width="0.1524" layer="91"/>
+<label x="-220.98" y="-137.16" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$47" class="0">
@@ -28579,6 +28708,76 @@ Controller / Driver with Two Wire Serial Interface</description>
 <wire x1="177.8" y1="-45.72" x2="165.1" y2="-45.72" width="0.1524" layer="91"/>
 <pinref part="U4" gate="&gt;NAME" pin="OSC1"/>
 <label x="167.64" y="-45.72" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$113" class="0">
+<segment>
+<pinref part="IC3" gate="TMC222" pin="HW"/>
+<pinref part="R_L4" gate="G$1" pin="2"/>
+<wire x1="-205.74" y1="-147.32" x2="-210.82" y2="-147.32" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$116" class="0">
+<segment>
+<pinref part="IC3" gate="TMC222" pin="CPP"/>
+<pinref part="C_QUA_6" gate="G$1" pin="2"/>
+<wire x1="-162.56" y1="-116.84" x2="-162.56" y2="-114.3" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$117" class="0">
+<segment>
+<pinref part="IC3" gate="TMC222" pin="CPN"/>
+<wire x1="-167.64" y1="-116.84" x2="-167.64" y2="-106.68" width="0.1524" layer="91"/>
+<pinref part="C_QUA_6" gate="G$1" pin="1"/>
+<wire x1="-167.64" y1="-106.68" x2="-162.56" y2="-106.68" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$118" class="0">
+<segment>
+<pinref part="IC3" gate="TMC222" pin="VCP"/>
+<pinref part="C_QUA_7" gate="G$1" pin="2"/>
+<wire x1="-172.72" y1="-116.84" x2="-172.72" y2="-109.22" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$119" class="0">
+<segment>
+<pinref part="R_L5" gate="G$1" pin="2"/>
+<pinref part="IC3" gate="TMC222" pin="SWI"/>
+<wire x1="-210.82" y1="-129.54" x2="-205.74" y2="-129.54" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$35" class="0">
+<segment>
+<pinref part="STEPPER" gate="G$1" pin="2-"/>
+<wire x1="-142.24" y1="-137.16" x2="-144.78" y2="-137.16" width="0.1524" layer="91"/>
+<wire x1="-144.78" y1="-137.16" x2="-144.78" y2="-134.62" width="0.1524" layer="91"/>
+<pinref part="IC3" gate="TMC222" pin="OA1"/>
+<wire x1="-144.78" y1="-134.62" x2="-152.4" y2="-134.62" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$36" class="0">
+<segment>
+<pinref part="IC3" gate="TMC222" pin="OA2"/>
+<pinref part="STEPPER" gate="G$1" pin="2+"/>
+<wire x1="-152.4" y1="-139.7" x2="-142.24" y2="-139.7" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$48" class="0">
+<segment>
+<pinref part="STEPPER" gate="G$1" pin="1+"/>
+<wire x1="-142.24" y1="-147.32" x2="-144.78" y2="-147.32" width="0.1524" layer="91"/>
+<wire x1="-144.78" y1="-147.32" x2="-144.78" y2="-152.4" width="0.1524" layer="91"/>
+<pinref part="IC3" gate="TMC222" pin="OB2"/>
+<wire x1="-144.78" y1="-152.4" x2="-152.4" y2="-152.4" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$114" class="0">
+<segment>
+<pinref part="IC3" gate="TMC222" pin="OB1"/>
+<wire x1="-152.4" y1="-147.32" x2="-147.32" y2="-147.32" width="0.1524" layer="91"/>
+<wire x1="-147.32" y1="-147.32" x2="-147.32" y2="-144.78" width="0.1524" layer="91"/>
+<pinref part="STEPPER" gate="G$1" pin="1-"/>
+<wire x1="-147.32" y1="-144.78" x2="-142.24" y2="-144.78" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
