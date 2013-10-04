@@ -160,7 +160,7 @@ void speedo_gps::reconfigure(){
 // wenn ja dann wird get_GPS damit aufgerufen
 void speedo_gps::recv_data(){
 	char byteGPS = UDR1;
-//	Serial.print(byteGPS);
+//	Serial.print(byteGPS); // remove me
 	switch(gps_state){
 	case 0:  // hier sitzen wir und warten auf das startzeichen
 		if(byteGPS=='$'){
@@ -406,7 +406,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		}
 
 		if(first_dataset || status=='A'){ // wenn die daten gültig sind oder es der erste datensatz ist
-			if(temp_gps_date>=010100 && temp_gps_date<=311299){
+			if(temp_gps_date>=010100 && temp_gps_date<=311299 && temp_gps_date%100!=180){ // 0X0180 is power up date <- ignore that
 				pSensors->m_clock->set_date_time(
 						int(mod(temp_gps_date,100)),
 						int(floor(temp_gps_date/100))%100,
