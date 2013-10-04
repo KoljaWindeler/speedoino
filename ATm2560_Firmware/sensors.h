@@ -25,6 +25,7 @@
 #define RPM_TYPE_FLAT 1
 #define RPM_TYPE_FLAT_ROUNDED 2
 #define RPM_TYPE_ROUNDED 3
+#define RPM_TYPE_ROUNDED_FLAT 4
 
 class Speedo_sensors{
 public:
@@ -67,9 +68,12 @@ private:
 	unsigned long fourty_Hz_timer;
 	short fourty_Hz_counter;
 
-	unsigned int rpm_flatted;
-	unsigned int rpm_flatted_TESTING;
-	unsigned char rpm_flatted_counter;
+	uint16_t rpm_flatted;
+	uint8_t rpm_flatted_counter;
+
+	uint16_t rpm_flatted_stepper;
+	uint8_t rpm_flatted_stepper_counter;
+
 
 	unsigned long last_highbeam_on;
 	unsigned long last_oil_off;

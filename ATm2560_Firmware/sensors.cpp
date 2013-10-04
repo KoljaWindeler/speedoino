@@ -37,7 +37,9 @@ Speedo_sensors::Speedo_sensors(){
 	sensor_source=0;
 	last_highbeam_on=0;
 	last_oil_off=0;
-	rpm_flatted_TESTING=0;
+	rpm_flatted_stepper=0;
+	rpm_flatted_counter=0;
+	rpm_flatted_stepper_counter=0;
 };
 
 // destructor just for nuts
@@ -169,8 +171,10 @@ unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 	} else if(mode==RPM_TYPE_FLAT_ROUNDED){
 		return (rpm_flatted>>6)<<6; // will be calculated with 10Hz in pull values
 	} else if(mode==RPM_TYPE_ROUNDED){
-		return (exact_value>>6)<<6; // will be calculated with 10Hz in pull values
-	};
+		return (exact_value&~63); // == floor(exact_value/64)*64
+	} else if(mode==RPM_TYPE_ROUNDED_FLAT){
+		return rpm_flatted_stepper;
+	}
 
 	return exact_value;
 };
@@ -354,24 +358,15 @@ void Speedo_sensors::pull_values(){
 
 			/*stepper*/
 			if(pAktors->m_stepper->init_steps_to_go==0){
-				//				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT)); // einfach mal flatit probieren, sonst
-				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT));
+				//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED)); 3.10.2013 ran good
+				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED_FLAT));
 				pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
-
-				//				/////////////// debug info output ////////////////// TODO
-				//				char info[30];
-				//				sprintf(info,"%i,%i,%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT),int(round(get_RPM(RPM_TYPE_DIRECT)/ATM_DIV_FACTOR)),rpm_flatted_TESTING);
-				//				Serial.println(info);
-				//				/////////////// debug info output ////////////////// TODO
 			};
 			/*stepper*/
 
 			// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
 			rpm_flatted=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,4,get_RPM(RPM_TYPE_FLAT));
-
-			//			///////////////// debug info output ////////////////// TODO
-			//			rpm_flatted_TESTING=pSensors->flatIt_shift_mask(get_RPM(RPM_TYPE_DIRECT),4,rpm_flatted_TESTING,63); // =D2+RUNDEN((B2-D2)/(16*64))*64
-			//			///////////////// debug info output ////////////////// TODO
+			rpm_flatted_stepper=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_stepper_counter,2,get_RPM(RPM_TYPE_ROUNDED));
 
 		} else if(pAktors->m_stepper->init_steps_to_go==0){
 			// to this with 40hz, 25ms
@@ -384,14 +379,10 @@ void Speedo_sensors::pull_values(){
 			};
 
 			if(update_stepper){
-				//				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT)); // einfach mal flatit probieren, sonst
-				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT));
+				//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED)); 3.10.2013 ran good
+				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED_FLAT));
+
 				pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
-				//				///////////////// debug info output ////////////////// TODO
-				//				char info[30];
-				//				sprintf(info,"%i,%i,%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT),int(round(get_RPM(RPM_TYPE_DIRECT)/ATM_DIV_FACTOR)),rpm_flatted_TESTING);
-				//				Serial.println(info);
-				//				///////////////// debug info output ////////////////// TODO
 				rpm_flatted=get_RPM(RPM_TYPE_FLAT); // added 22.8.
 			}
 		}
