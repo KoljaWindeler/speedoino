@@ -54,6 +54,11 @@
                                             - Reduced Stepper Accel from 900 to 600 wegen Schrittverlusten (großen!)
                                             - Removed unused vars
                                             - 3018 Byte SRAM frei, 195470 Byte Flash belegt
+02.10.2013 	Speedoino_v2.2-7-g872dc8b.hex	+ Neue Ansteuerung des Schrittmotors daher bitte auch die Watchdog.hex flashen!!!
+											- Gar keine Schrittverluste mehr trotz langer Fahrt durch den Harz, Mehr Info in dem News Artikel auf der Homepage
+											- Bin noch dabei die Dämpfung optimal einzustellen, sieht aber schon ganz gut aus. Reagiert schneller!
+											- Fix der Winterzeit Berechnung
+											- 2919 Byte SRAM frei, 197582 Byte Flash belegt
 ================================================================================================================================================================================================
 
 
@@ -64,4 +69,5 @@
                                             - Alle Upload und Download Dialoge zeigen nun Geschwindigkeit und Restzeit an
 03.08.2013	SpeedoAndroid.apk               + Dekodieren des binären GPS Formats hinzugefügt	
 22.08.2013	SpeedoAndroid.apk               + Upload von POI über Config Button  hinzugefügt
+02.10.2013	SpeedoAndroid.apk               + Fix: Upload von Skins ins Richtige Verzeichniss
 														
