@@ -21,14 +21,12 @@ class speedo_clock  // shell class for the clock
 #define CLOCKMODE_ROW 2
 
 private:
-	char decToBcd(char val);
-	char bcdToDec(char val);
-	volatile unsigned int m_ss;
-	volatile unsigned int m_mm;
-	volatile unsigned int m_hh;
-	volatile unsigned int m_day;
-	volatile unsigned int m_mon;
-	volatile unsigned int m_year;
+	volatile uint8_t m_ss;
+	volatile uint8_t m_mm;
+	volatile uint8_t m_hh;
+	volatile uint8_t m_day;
+	volatile uint8_t m_mon;
+	volatile uint8_t m_year;
 	volatile bool wintertime;
 	void inc_hours();
 public:
@@ -36,15 +34,15 @@ public:
 	~speedo_clock();
 	void init();
 	void loop();
-	int check_vars();
+	int16_t check_vars();
 	void copy(char* buffer);
-	bool changed(int* storage);
+	bool changed(uint8_t* storage);
 	//void store();
-	int getdate();
+	int16_t getdate();
 	unsigned long get_long_date();
-	void set_date_time(int year,int mon,int day,int hh,int mm,int ss, bool check_winter);
-	bool is_winter_time(unsigned int year,unsigned int month,unsigned int day,unsigned int hour,unsigned int minute,unsigned int second);
-	short int get_ss();
+	void set_date_time(uint8_t year,uint8_t mon,uint8_t day,uint8_t hh,uint8_t mm,uint8_t ss, bool check_winter);
+	bool is_winter_time(uint8_t year,uint8_t month,uint8_t day,uint8_t hour,uint8_t minute,uint8_t second);
+	uint8_t get_ss();
 	void inc();
 };
 ////////////// DCF 77 / RTC_DS1307 ///////////////////////
