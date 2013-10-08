@@ -22,19 +22,22 @@ public:
 	void counter();
 	void shutdown();
 	void init();
-	bool calc(bool force_calc);
 	int check_vars();
 	unsigned int get_dz(bool exact_dz);
+	void set_exact(uint16_t i);
 
 	unsigned char dz_faktor_counter;
 	int blitz_dz;
 	bool blitz_en;
+
+	volatile uint8_t overruns;
 private:
 	unsigned int exact;                 // real rotation speed
-	unsigned long calc_previous_time;
-	unsigned int previous_dz;
-	volatile unsigned int peak_count; // max 64k => bei 15krpm sind das 256 sek ... sollte reichen
-	volatile unsigned long peak_last_reception_timestamp;
+
+//	unsigned long calc_previous_time;
+//	unsigned int previous_dz;
+//	volatile unsigned int peak_count; // max 64k => bei 15krpm sind das 256 sek ... sollte reichen
+//	volatile unsigned long peak_last_reception_timestamp;
 };
 /**************** DZ *******************/
 
