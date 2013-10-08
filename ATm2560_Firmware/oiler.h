@@ -9,7 +9,11 @@
 #define OILER_H_
 
 class speedo_oiler{
-#define OILER_PIN 48
+
+#define OILER_PIN PL1
+#define OILER_PORT PORTL
+#define OILER_DIRC DDRL
+
 public:
 	speedo_oiler();
 	~speedo_oiler();

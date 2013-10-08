@@ -25,8 +25,9 @@ speedo_oiler::~speedo_oiler(){
 };
 
 void speedo_oiler::init(){
-	pinMode(OILER_PIN,OUTPUT);
-	digitalWrite(OILER_PIN,LOW);
+	OILER_DIRC|=(1<<PL1); // use as output
+	OILER_PORT&=~(1<<OILER_PIN); // digitalWrite(OILER_PIN,LOW);
+
 	pDebug->sprintlnp(PSTR("Oiler init done"));
 };
 

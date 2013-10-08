@@ -13,10 +13,21 @@
 #define RGB_ACTION_TYPE_STACK 2
 #define RGB_ACTION_TYPE_RSTACK 3
 
-#define RGB_OUT_R 7
-#define RGB_OUT_G 8
-#define RGB_OUT_B 9
-#define RGB_IN_W 13
+#define RGB_OUT_R_PIN PH4		// 7
+#define RGB_OUT_R_PORT PORTH
+#define RGB_OUT_R_DIR DDRH
+
+#define RGB_OUT_G_PIN PH5		// 8
+#define RGB_OUT_G_PORT PORTH
+#define RGB_OUT_G_DIR DDRH
+
+#define RGB_OUT_B_PIN PH6		// 9
+#define RGB_OUT_B_PORT PORTH
+#define RGB_OUT_B_DIR DDRH
+
+#define RGB_IN_W_PIN PB7		// 13
+#define RGB_IN_W_PORT PORTB
+#define RGB_IN_W_DIR DDRB
 
 #define RESET_KICK_TO_RESET 0x01
 #define RESET_COMPLETE 0x02

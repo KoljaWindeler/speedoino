@@ -10,7 +10,11 @@
 
 class speedo_gear{
 
-#define kupplungs_pin 12
+#define KUPPLUNGS_PIN PB6
+#define KUPPLUNGS_PORT PORTB
+#define KUPPLUNGS_DIRC DDRB
+
+#define kupplungs_pin 12 // TODO
 
 public:
 	speedo_gear(void);

@@ -202,25 +202,26 @@ void Speedo_aktors::init(){
 	led_area_controll=0x00;
 	expander_outdated=true;
 
-	// innen
-	pinMode(RGB_IN_W,OUTPUT);
-
-	// see if its a clock startup or a regular startup
-	if(pSpeedo->startup_by_ignition){
-		// beleuchtung
-		analogWrite(RGB_IN_W,255);
-		// beleuchtung
-	}
-
-	// auÃŸen
-	pinMode(RGB_OUT_R,OUTPUT);
-	pinMode(RGB_OUT_G,OUTPUT);
-	pinMode(RGB_OUT_B,OUTPUT);
+	// inner leds
+	RGB_IN_W_DIR  |= (1<<RGB_IN_W_PIN);   //pinMode(RGB_IN_W,OUTPUT);
+	// outer leds
+	RGB_OUT_R_DIR |= (1<<RGB_OUT_R_PIN); //pinMode(RGB_OUT_R,OUTPUT);
+	RGB_OUT_G_DIR |= (1<<RGB_OUT_G_PIN); //pinMode(RGB_OUT_G,OUTPUT);
+	RGB_OUT_B_DIR |= (1<<RGB_OUT_B_PIN); //pinMode(RGB_OUT_B,OUTPUT);
 
 	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
 
 	// see if its a clock startup or a regular startup
 	if(pSpeedo->startup_by_ignition){
+		// beleuchtung
+		TCCR0A|=1<<COM0A1; // RGB_IN_W  13 OCR0A = val;
+		TCCR4A|=1<<COM4B1; // RGB_OUT_R 7  OCR4B = val;
+		TCCR4A|=1<<COM4C1; // RGB_OUT_G 8  OCR4C = val;
+		TCCR2A|=1<<COM2B1; // RGB_OUT_B 9  OCR2B = val;
+
+		OCR0A=255; 	// inner LED full active
+		// beleuchtung
+
 		set_rbg_active((int)0x0000,false);
 		update_outer_leds(true,true);
 	};
@@ -249,9 +250,9 @@ void Speedo_aktors::set_rgb_out(int r,int g,int b,int save){
 	if(g>255) g=255; else if(g<0) g=0;
 	if(b>255) b=255; else if(b<0) b=0;
 
-	analogWrite(RGB_OUT_R,r);
-	analogWrite(RGB_OUT_G,g);
-	analogWrite(RGB_OUT_B,b);
+	OCR4B=r; //analogWrite(RGB_OUT_R,r);
+	OCR4C=g; //analogWrite(RGB_OUT_G,g);
+	OCR2B=b; //analogWrite(RGB_OUT_B,b);
 
 	if(save){
 		RGB.r.actual=r;
