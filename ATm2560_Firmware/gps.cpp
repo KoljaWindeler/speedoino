@@ -395,14 +395,14 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 		// zeit in jedem fall berechnen, auch wenn das sample nicht valid ist, das ist der RTC
 		long temp_gps_time=0;
 		long temp_gps_date=0;
-		for (int j=indices[0]+1;j<(indices[0]+11);j++){ // format 234500.000 für füddelvorzwölf
-			if(linea[j]!='.'){
-				temp_gps_time=temp_gps_time*10+(linea[j]-48);
+		for (int j=indices[0]+1;j<indices[1];j++){ // format 234500.000 für füddelvorzwölf
+			if(linea[j]>='0' && linea[j]<='9'){
+				temp_gps_time=temp_gps_time*10+(linea[j]-'0');
 			}
 		}
 
 		for (int j=indices[8]+1;j<(indices[9]) && linea[j]>='0' && linea[j]<='9';j++){
-			temp_gps_date=temp_gps_date*10+(linea[j]-48); //181102 für 18.Nov 2002
+			temp_gps_date=temp_gps_date*10+(linea[j]-'0'); //181102 für 18.Nov 2002
 		}
 
 		if(first_dataset || status=='A'){ // wenn die daten gültig sind oder es der erste datensatz ist
@@ -411,9 +411,9 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 						int(mod(temp_gps_date,100)),
 						int(floor(temp_gps_date/100))%100,
 						int(floor(temp_gps_date/10000)),
-						int(floor(temp_gps_time/10000000))%24,
-						int(floor(temp_gps_time/100000))%100,
-						int(mod((unsigned long)(floor(temp_gps_time/1000)),100)), // std "%" can be use case 23.48.73 > 32768
+						int(floor(temp_gps_time/10000000))%24, 						// 234512000 für füddelvorzwölf -> 234512000/10000000 = 23 -> 23%24=23
+						int(floor(temp_gps_time/100000))%100,  						// 234512000 für füddelvorzwölf -> 234512000/100000 = 2345 -> 2345%100=45
+						int(mod((unsigned long)(floor(temp_gps_time/1000)),100)), 	// 234512000 für füddelvorzwölf -> 234512000/1000 = 234512 -> 234512 mod 100 = 12 // std "%" can be use case 23.45.12 > 32768
 						first_dataset
 				);
 			};
