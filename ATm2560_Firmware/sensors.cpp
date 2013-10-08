@@ -166,10 +166,10 @@ unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 	}
 
 	// return value based on mode,
-	if(mode==RPM_TYPE_FLAT){
+	if(mode==RPM_TYPE_FLAT){ // used often
 		return rpm_flatted;	// will be calculated with 10Hz in pull values
-	} else if(mode==RPM_TYPE_FLAT_ROUNDED){
-		return (rpm_flatted>>6)<<6; // will be calculated with 10Hz in pull values
+	} else if(mode==RPM_TYPE_FLAT_ROUNDED){ // used in speedo
+		return (rpm_flatted&~15); // will be calculated with 10Hz in pull values
 	} else if(mode==RPM_TYPE_ROUNDED){
 		return (exact_value&~63); // == floor(exact_value/64)*64
 	} else if(mode==RPM_TYPE_ROUNDED_FLAT){
@@ -356,35 +356,24 @@ void Speedo_sensors::pull_values(){
 			pSensors->m_gear->calc();// blockt intern alle aufrufe die vor ablauf von 250 ms kommen
 			/* gear */
 
-			/*stepper*/
-			if(pAktors->m_stepper->init_steps_to_go==0){
-				//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED)); 3.10.2013 ran good
-				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED_FLAT));
-				pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
-			};
-			/*stepper*/
-
 			// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
 			rpm_flatted=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,4,get_RPM(RPM_TYPE_FLAT));
-			rpm_flatted_stepper=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_stepper_counter,2,get_RPM(RPM_TYPE_ROUNDED));
+			rpm_flatted_stepper=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_stepper_counter,2,get_RPM(RPM_TYPE_ROUNDED)); // TODO: useless?
+			pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
+		}
 
-		} else if(pAktors->m_stepper->init_steps_to_go==0){
+		if(pAktors->m_stepper->init_steps_to_go==0){
 			// to this with 40hz, 25ms
 			// in addtion to the message above: handling of RPM and aktor
-			bool update_stepper=false;
-			if(CAN_active && !m_CAN->failed){
-				update_stepper=true;
-			} else if(m_dz->calc(true)){ // returns true if new rpm valus is available // TODO is it wise to have two timers?
-				update_stepper=true;
-			};
 
-			if(update_stepper){
-				//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED)); 3.10.2013 ran good
-				pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED_FLAT));
+			pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED)); //3.10.2013 ran good
+			//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED_FLAT));
 
-				pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
-				rpm_flatted=get_RPM(RPM_TYPE_FLAT); // added 22.8.
-			}
+			////////////// TODO
+			char rpm_buffer[20];
+			sprintf(rpm_buffer,"%i",get_RPM(RPM_TYPE_DIRECT));
+			Serial.println(rpm_buffer);
+			////////////// TODO
 		}
 	}
 
