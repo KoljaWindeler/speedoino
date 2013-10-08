@@ -559,7 +559,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 #endif
 	/********************** Zeitanzeige nur wenn anders  *******************/
 	if((!(clock_widget.x==-1 && clock_widget.y==-1)) && check_no_collision_with_addinfo2(clock_widget.y)){ // only show it if pos != -1/-1
-		if(pSensors->m_clock->changed(disp_zeile_bak+TIME_BAK)){ // coooooool, we need only one adress of the array, so we take the array header address and add the Field
+		if(pSensors->m_clock->changed(((uint8_t*)disp_zeile_bak)+TIME_BAK)){ // coooooool, we need only one adress of the array, so we take the array header address and add the Field
 			pSensors->m_clock->copy(char_buffer);
 			pDebug->speedo_loop(17,0,previousMillis,char_buffer);
 			pOLED->string(clock_widget.font,char_buffer,clock_widget.x+1,clock_widget.y,0,DISP_BRIGHTNESS,2);
