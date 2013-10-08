@@ -585,7 +585,7 @@ void speedo_gps::parse(char linea[SERIAL_BUFFER_SIZE],int datensatz){
 #endif
 
 		gps_write_status=1;
-		if(pSensors->get_RPM(0)>0){
+		if(pSensors->get_RPM(RPM_TYPE_DIRECT)>0){
 			if(store_to_sd()>=0){ //to save 30 datapoints about 70ms SD write time are needed
 				gps_count=-1; // after writing the points to sd => erase them, parse will count up to 0 for us
 			}

@@ -91,7 +91,7 @@ unsigned int speedo_demo::get_speed(){
 		if(pSensors->m_gear->n_gang[i+1]<1){
 			return 222;
 		}
-		return ((unsigned long)(pSensors->get_RPM(1))*10)/pSensors->m_gear->n_gang[i+1];
+		return ((unsigned long)(pSensors->get_RPM(RPM_TYPE_FLAT))*10)/pSensors->m_gear->n_gang[i+1];
 	}
 	return 0;
 }

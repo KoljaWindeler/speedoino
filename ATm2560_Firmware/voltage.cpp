@@ -45,7 +45,7 @@ void speedo_voltage::calc(bool first_start){
 		}
 	} else {
 		if(pSpeedo->startup_by_ignition){
-			if(pSensors->get_RPM(0)>0){
+			if(pSensors->get_RPM(RPM_TYPE_DIRECT)>0){
 				keep_me_alive(true); // balance load
 			} else {
 				keep_me_alive(false); // fast switch off

@@ -18,11 +18,7 @@
 #include "global.h"
 
 speedo_dz::speedo_dz(){
-//	calc_previous_time=millis();
-//	peak_last_reception_timestamp=millis();
-//	previous_dz=0;
 	exact=0;                 // real rotation speed
-//	peak_count=0;
 	blitz_dz=0;
 	blitz_en=false;
 	dz_faktor_counter=0;
@@ -61,7 +57,11 @@ ISR(TIMER5_OVF_vect){
 }
 
 void speedo_dz::set_exact(uint16_t i){
-	exact=i;
+	if(i<15000){
+		exact=i;
+	} else {
+		exact=15000;
+	}
 }
 
 

@@ -350,7 +350,7 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 
 	////////// SHIFT FLASH ////////////////
 	////////// calc it //////////
-	if(pSensors->get_RPM(0)>unsigned(pSensors->m_dz->blitz_dz) && pSensors->m_dz->blitz_en){
+	if(pSensors->get_RPM(RPM_TYPE_DIRECT)>unsigned(pSensors->m_dz->blitz_dz) && pSensors->m_dz->blitz_en){
 		attention_required=true;
 		set_rbg_active((int)0x0000,false); // activate all led's
 	} else if(pSpeedCams->get_active() && pMenu->state==11){
@@ -420,8 +420,8 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 			}
 			break;
 		case 2:
-			if(current_sensor_value!=(signed)(pSensors->get_RPM(0))){
-				current_sensor_value=(signed)(pSensors->get_RPM(0));
+			if(current_sensor_value!=(signed)(pSensors->get_RPM(RPM_TYPE_DIRECT))){
+				current_sensor_value=(signed)(pSensors->get_RPM(RPM_TYPE_DIRECT));
 
 				max_value=dz_max_value*100;
 				min_value=dz_min_value*100;

@@ -360,20 +360,20 @@ void Speedo_sensors::pull_values(){
 			rpm_flatted=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,4,get_RPM(RPM_TYPE_FLAT));
 			rpm_flatted_stepper=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_stepper_counter,2,get_RPM(RPM_TYPE_ROUNDED)); // TODO: useless?
 			pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
+
+			////////////// TODO
+//			char rpm_buffer[20];
+//			sprintf(rpm_buffer,"%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT));
+//			Serial.println(rpm_buffer);
+			////////////// TODO
 		}
 
 		if(pAktors->m_stepper->init_steps_to_go==0){
 			// to this with 40hz, 25ms
 			// in addtion to the message above: handling of RPM and aktor
 
-			pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED)); //3.10.2013 ran good
+			pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_FLAT)); //3.10.2013 ran good
 			//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED_FLAT));
-
-			////////////// TODO
-			char rpm_buffer[20];
-			sprintf(rpm_buffer,"%i",get_RPM(RPM_TYPE_DIRECT));
-			Serial.println(rpm_buffer);
-			////////////// TODO
 		}
 	}
 

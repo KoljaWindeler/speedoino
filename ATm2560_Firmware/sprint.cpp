@@ -86,13 +86,13 @@ void speedo_sprint::loop(){
 
 		// drehzahl
 		if(pSpeedo->disp_zeile_bak[2]==-99){ // wenn es gerade reseted wurde -> alles hinmalen
-			sprintf(char_buffer,"%5u U/min",pSensors->get_RPM(0));
+			sprintf(char_buffer,"%5u U/min",pSensors->get_RPM(RPM_TYPE_DIRECT));
 			pOLED->string(pSpeedo->default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
-		} else if (pSpeedo->disp_zeile_bak[2]!=signed(pSensors->get_RPM(false)+1)){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
-			sprintf(char_buffer,"%5u",pSensors->get_RPM(false));
+		} else if (pSpeedo->disp_zeile_bak[2]!=signed(pSensors->get_RPM(RPM_TYPE_DIRECT)+1)){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
+			sprintf(char_buffer,"%5u",pSensors->get_RPM(RPM_TYPE_DIRECT));
 			pOLED->string(pSpeedo->default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
 		};
-		pSpeedo->disp_zeile_bak[2]=int(pSensors->get_RPM(false)+1); // zustand sichern
+		pSpeedo->disp_zeile_bak[2]=int(pSensors->get_RPM(RPM_TYPE_DIRECT)+1); // zustand sichern
 
 
 		// zeit

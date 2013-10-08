@@ -67,7 +67,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		pDebug->sprintp(PSTR("-a2"));
 #endif
 		/// warnung wegen zu hoher Drehzahl, erstmal checken ob wir von der drehzahl her in betrachtkommen
-		if(pSensors->get_RPM(false)>7000 && ((pSensors->get_oil_temperature()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || // temperatur < 60°C
+		if(pSensors->get_RPM(RPM_TYPE_DIRECT)>7000 && ((pSensors->get_oil_temperature()<600 && pSensors->m_temperature->oil_temp_fail_status==0) || // temperatur < 60°C
 				(pSensors->get_water_temperature()<600 && pSensors->m_temperature->water_temp_fail_status==0))){ // und keine Fehler beim lesen
 			if(disp_zeile_bak[ADD_INFO2]!=101){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=101;
@@ -396,18 +396,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	pDebug->sprintp(PSTR("-dz"));
 #endif
 	if((!(dz_widget.x==-1 && dz_widget.y==-1)) && check_no_collision_with_addinfo2(dz_widget.y)){ // only show it if pos != -1/-1
-		if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->get_RPM(2)+1)){
+		if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->get_RPM(RPM_TYPE_FLAT_ROUNDED)+1)){
 			if(disp_zeile_bak[DZ_VALUE]==-99){ //schreib alles neu, auch die buchstaben
-				sprintf_P(char_buffer,PSTR("%5i U/min"),pSensors->get_RPM(2)); // auf glatte 50er
+				sprintf_P(char_buffer,PSTR("%5i U/min"),pSensors->get_RPM(RPM_TYPE_FLAT_ROUNDED)); // auf glatte 50er
 				pDebug->speedo_loop(5,0,previousMillis," ");
 				// depend on skinsettings
 				pOLED->string(dz_widget.font,char_buffer,dz_widget.x,dz_widget.y,0,DISP_BRIGHTNESS,0);
 			} else { // nur eine Ã€nderung im wert
-				sprintf_P(char_buffer,PSTR("%5i"),pSensors->get_RPM(2));
+				sprintf_P(char_buffer,PSTR("%5i"),pSensors->get_RPM(RPM_TYPE_FLAT_ROUNDED));
 				pDebug->speedo_loop(6,0,previousMillis," ");
 				pOLED->string(dz_widget.font,char_buffer,dz_widget.x,dz_widget.y,0,DISP_BRIGHTNESS,0);
 			};
-			disp_zeile_bak[DZ_VALUE]=int(pSensors->get_RPM(2)+1);
+			disp_zeile_bak[DZ_VALUE]=int(pSensors->get_RPM(RPM_TYPE_FLAT_ROUNDED)+1);
 		};
 	};
 #ifdef TACHO_SMALLDEBUG
