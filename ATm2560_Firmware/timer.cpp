@@ -25,7 +25,6 @@ speedo_timer::speedo_timer(){
 	every_second_timer=millis()+50;   // Zeitstempel vom letzten ausführen der "every_sec" funktion
 	every_qsecond_timer=millis()+125;   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
 	every_custom_timer=millis();   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
-	pinMode(3,INPUT);
 }
 
 speedo_timer::~speedo_timer(){

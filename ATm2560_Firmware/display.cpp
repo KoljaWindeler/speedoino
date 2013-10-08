@@ -660,7 +660,6 @@ int speedo_disp::animation(int ani_nr){
 
 void speedo_disp::init_speedo(){
 	pDebug->sprintp(PSTR("Display init ... "));
-	pinMode(29,INPUT); // interessiert keine sau, aber da der pin jetzt extern auf masse gezogen wird sollte der hier nicht besser kein Pegel treiben
 	if(phase==0 && ref==0){
 		phase=0xA8;
 		ref=0x28;
