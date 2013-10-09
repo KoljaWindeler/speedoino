@@ -170,13 +170,13 @@ void init()
 
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
 	// set timer 3, 4, 5 prescale factor to 64
-	sbi(TCCR3B, CS31);	sbi(TCCR3B, CS30);
+	//sbi(TCCR3B, CS31);	sbi(TCCR3B, CS30); -> use timer 3 for RPM detection
 	sbi(TCCR4B, CS41);	sbi(TCCR4B, CS40);
-	sbi(TCCR5B, CS51);	sbi(TCCR5B, CS50);
+	//sbi(TCCR5B, CS51);	sbi(TCCR5B, CS50); -> use timer 3 in future for fast wheel detection
 	// put timer 3, 4, 5 in 8-bit phase correct pwm mode
-	sbi(TCCR3A, WGM30);
+	//sbi(TCCR3A, WGM30);
 	sbi(TCCR4A, WGM40);
-	sbi(TCCR5A, WGM50);
+	//sbi(TCCR5A, WGM50);
 #endif
 
 	// set a2d prescale factor to 128
