@@ -362,9 +362,9 @@ void Speedo_sensors::pull_values(){
 			pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
 
 			////////////// TODO
-//			char rpm_buffer[20];
-//			sprintf(rpm_buffer,"%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT));
-//			Serial.println(rpm_buffer);
+			char rpm_buffer[20];
+			sprintf(rpm_buffer,"%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT));
+			Serial.println(rpm_buffer);
 			////////////// TODO
 		}
 

@@ -143,11 +143,11 @@ uint32_t Sd2Card::cardSize(void) {
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectHigh(void) {
-	digitalWrite(chipSelectPin_, HIGH);
+	PORTB|=(1<<PB0); //digitalWrite(chipSelectPin_, HIGH);
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectLow(void) {
-	digitalWrite(chipSelectPin_, LOW);
+	PORTB|=(1<<PB0); //digitalWrite(chipSelectPin_, LOW);
 }
 //------------------------------------------------------------------------------
 /** Erase a range of blocks.
@@ -218,15 +218,16 @@ uint8_t Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
 	uint32_t arg;
 
 	// set pin modes
-	pinMode(chipSelectPin_, OUTPUT);
+	DDRB|=(1<<PB0);//pinMode(chipSelectPin_, OUTPUT);
 	chipSelectHigh();
-	pinMode(SPI_MISO_PIN, INPUT);
-	pinMode(SPI_MOSI_PIN, OUTPUT);
-	pinMode(SPI_SCK_PIN, OUTPUT);
+	DDRB&=~(1<<PB3);//pinMode(SPI_MISO_PIN, INPUT);
+	DDRB|=(1<<PB2);//pinMode(SPI_MOSI_PIN, OUTPUT);
+	DDRB|=(1<<PB1);//pinMode(SPI_SCK_PIN, OUTPUT);
 
 #ifndef SOFTWARE_SPI
 	// SS must be in output mode even it is not chip select
-	pinMode(SS_PIN, OUTPUT);
+	//pinMode(SS_PIN, OUTPUT);
+	DDRB|=(1<<PB0);
 	// Enable SPI, Master, clock rate f_osc/128 init the chip .. low speed
 	SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1) | (1 << SPR0);
 	// clear double speed
