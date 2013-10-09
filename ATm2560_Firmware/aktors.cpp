@@ -187,10 +187,10 @@ bool Speedo_aktors::check_vars(){
 
 void Speedo_aktors::init(){
 	/* vier werte paare:
-	 * 1. AuÃŸen -> Ã¤ndert sich Ã¶fters mal, wird mit std werten geladen
-	 * 2. Innen -> Ã¤ndert sich eigentlich nie
-	 * 3. Flasher -> Farbe zu der Ã¼bergeblendet wird wenn die schaltdrehzahl erreicht wird
-	 * 4. out_base -> Farbkopie von AuÃŸen
+	 * 1. Außen -> ändert sich öfters mal, wird mit std werten geladen
+	 * 2. Innen -> ändert sich eigentlich nie
+	 * 3. Flasher -> Farbe zu der übergeblendet wird wenn die schaltdrehzahl erreicht wird
+	 * 4. out_base -> Farbkopie von Außen
 	 */
 
 	dimm_step=0;
@@ -214,12 +214,11 @@ void Speedo_aktors::init(){
 	// see if its a clock startup or a regular startup
 	if(pSpeedo->startup_by_ignition){
 		// beleuchtung
-		TCCR0A|=1<<COM0A1; // RGB_IN_W  13 OCR0A = val;
 		TCCR4A|=1<<COM4B1; // RGB_OUT_R 7  OCR4B = val;
 		TCCR4A|=1<<COM4C1; // RGB_OUT_G 8  OCR4C = val;
 		TCCR2A|=1<<COM2B1; // RGB_OUT_B 9  OCR2B = val;
 
-		OCR0A=255; 	// inner LED full active
+		RGB_IN_W_PORT |= (1<<RGB_IN_W_PIN); // inner LED active
 		// beleuchtung
 
 		set_rbg_active((int)0x0000,false);
@@ -280,7 +279,7 @@ void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps){
 
 	TCCR3A = 0x00;
 	/* ich denke mal alles umzuschalten => 256 schritte in 2,56 sec
-	 * wÃ¤re doch okay, also 256 Timer Schritte in 0,01 sec
+	 * wäre doch okay, also 256 Timer Schritte in 0,01 sec
 	 * ein schritt demnach in 0,01/256=0,000039062
 	 * das sind in der welt von 16 mhz => 1/16000000*x=0,000039062
 	 * x=625 schritte .. das ist doof vorteiler kann 256 oder 1024 sein
@@ -310,8 +309,8 @@ void Speedo_aktors::timer_overflow(){
 
 
 	// sind am ende ? wenn ja, timer aus und to werte in from speichern,
-	// wenn nicht dimm_steps hochzÃ¤hlen und timer wieder vorladen damit er mit 10 ms
-	// lÃ¤uft
+	// wenn nicht dimm_steps hochzählen und timer wieder vorladen damit er mit 10 ms
+	// läuft
 	if(dimm_step<dimm_steps){
 		dimm_step++;
 		// 127 vorladen
@@ -511,7 +510,7 @@ int Speedo_aktors::set_bt_pin(){
 				if(ask_bt(&at_commands[0])==0){
 					sprintf(at_commands,"ATL5%c",0x0D);
 					ask_bt(&at_commands[0]);											// fire && forget
-					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, kÃ¶nnen wir hier nicht testen
+					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, können wir hier nicht testen
 					Serial.end();														// setzte neue serielle Geschwindigkeit
 					pOLED->string_P(pSpeedo->default_font,PSTR("RETRYING"),0,6);		// hat nicht geklappt
 					Serial.begin(115200);
