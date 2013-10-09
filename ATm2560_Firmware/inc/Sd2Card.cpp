@@ -147,7 +147,7 @@ void Sd2Card::chipSelectHigh(void) {
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectLow(void) {
-	PORTB|=(1<<PB0); //digitalWrite(chipSelectPin_, LOW);
+	PORTB&=~(1<<PB0); //digitalWrite(chipSelectPin_, LOW);
 }
 //------------------------------------------------------------------------------
 /** Erase a range of blocks.
