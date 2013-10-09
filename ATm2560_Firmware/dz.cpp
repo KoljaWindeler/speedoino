@@ -15,6 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+ /* timer usage by the speedoino codebase
+  * Timer0 -  8 Bit - Used by the Arduino Base to calc the millis() timestamp
+  * Timer1 - 16 Bit - Used by the RPM capturing module, normal mode, 2MHz
+  * Timer2 -  8 Bit - Used by the Arduino Base to generate Phase correct PWM, 250kHz, Pins: PH6 (outer RGB), PB4 (not used)
+  * Timer3 - 16 Bit - Used by the Aktor Module to switch the color-fade providing PWM values of the outer LEDs at the correct time
+  * Timer4 - 16 Bit - Used by the Arduino Base to generate Phase correct PWM, 250kHz, Pins: PH3 (not used), PH4..5 (outer RGB)
+  * Timer5 - 16 Bit - not in use now, could be used by the correct Wheel speed detection, OCM on "pulse per rotation" and MATCH ISR on trigger
+  */
+
 #include "global.h"
 
 speedo_dz::speedo_dz(){
@@ -33,22 +43,22 @@ ISR(INT4_vect){
 	uint16_t timerValue;
 	sreg = SREG;		/* Save global interrupt flag */
 	cli();				/* Disable interrupts */
-	timerValue = TCNT5;	/* Read TCNTn into i */
-	TCNT5=0;			/* Reset Timer value */
+	timerValue = TCNT1;	/* Read TCNTn into i */
+	TCNT1=0;			/* Reset Timer value */
 	SREG = sreg;		/* Restore global interrupt flag */
 	// timer runs with 2 MHz
 	// if the engine runs with 3.000 rpm we should have 3000/60*2(double ignition)=100 pulses per second
-	// that leads to 10ms per Pulse. Timer5 value will be at 20.000 after 10ms.
+	// that leads to 10ms per Pulse. Timer1 value will be at 20.000 after 10ms.
 	pSensors->m_dz->overruns=0;
 	pSensors->m_dz->set_exact((uint32_t)60000000UL / (((uint32_t)pSensors->m_dz->overruns<<16) + timerValue)); // division 12 cycles
 }
 
 // this overflow will occure after 65536/2000000=0,032768 sec, 0,032768=30/RPM, RPM=30/0,032768=915 min
-ISR(TIMER5_OVF_vect){
+ISR(TIMER1_OVF_vect){
 	uint8_t sreg;
 	sreg = SREG;	/* Save global interrupt flag */
 	cli();			/* Disable interrupts */
-	TCNT5=0;
+	TCNT1=0;
 	SREG = sreg;	/* Restore global interrupt flag */
 	pSensors->m_dz->overruns++;
 	if(pSensors->m_dz->overruns>4){ // no spark for 164ms -> less than 183 rpm
@@ -70,10 +80,10 @@ void speedo_dz::init() {
 	EICRB |= (1<<ISC40) | (1<<ISC41); // rising edge on INT4
 
 	// timer
-	TCNT5=0x00; // reset value
-	TIMSK5=(1<<TOIE5); // <- activate Timer overflow interrupt
-	TCCR5B=(0<<CS52) | (1<<CS51) | (0<<CS50); // selects clock to "/8" => 16Mhz/8=2MHz,
-	TCCR5A=0; // WGM=0 -> normal mode
+	TCNT1=0x00; // reset value
+	TIMSK1=(1<<TOIE1); // <- activate Timer overflow interrupt
+	TCCR1B=(0<<CS12) | (1<<CS11) | (0<<CS10); // selects clock to "/8" => 16Mhz/8=2MHz,
+	TCCR1A=0; // WGM=0 -> normal mode
 
 	pDebug->sprintlnp(PSTR("DZ init done"));
 	blitz_en=false;
