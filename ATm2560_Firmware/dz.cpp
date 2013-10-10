@@ -50,7 +50,13 @@ ISR(INT4_vect){
 	// if the engine runs with 3.000 rpm we should have 3000/60*2(double ignition)=100 pulses per second
 	// that leads to 10ms per Pulse. Timer1 value will be at 20.000 after 10ms.
 	pSensors->m_dz->overruns=0;
-	pSensors->m_dz->set_exact((uint32_t)60000000UL / (((uint32_t)pSensors->m_dz->overruns<<16) + timerValue)); // division 12 cycles
+	pSensors->m_dz->set_exact((uint32_t)60000000UL / (((uint32_t)pSensors->m_dz->overruns<<16) + timerValue));
+
+//	uint16_t rpm=(uint32_t)60000000UL / (((uint32_t)pSensors->m_dz->overruns<<16) + timerValue);
+//	uint16_t last_rpm=pSensors->m_dz->get_dz(true);
+//	uint16_t differ=rpm-last_rpm;
+//
+//	pSensors->m_dz->set_exact(last_rpm+(differ&(~511))+((differ&511)>>4)); // division 12 cycles
 }
 
 // this overflow will occure after 65536/2000000=0,032768 sec, 0,032768=30/RPM, RPM=30/0,032768=915 min
