@@ -26,6 +26,7 @@ void speedo_stepper::init(){
 		Serial3.flush();
 		overwrite_pos(200);
 		go_to(0);
+		shown_mode=RPM_TYPE_DIRECT;
 		// select startup mode
 		if(pSpeedo->startup_by_ignition){
 //			init_steps_to_go=5; //5 steps to go

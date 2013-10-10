@@ -65,7 +65,7 @@ const char custom_m_4[] PROGMEM = "RGB-Action";
 const char custom_m_5[] PROGMEM = "-";
 const char custom_m_6[] PROGMEM = "Set BT PIN";
 const char custom_m_7[] PROGMEM = "-";
-const char custom_m_8[] PROGMEM = "-";
+const char custom_m_8[] PROGMEM = "Dev: Stepper";
 const char  * const menu_custom[9] PROGMEM= { custom_m_0,custom_m_1,custom_m_2,custom_m_3,custom_m_4,custom_m_5,custom_m_6,custom_m_7,custom_m_8 };
 
 ///////////////////// Trips /////////////////////
@@ -906,7 +906,7 @@ void speedo_menu::display(){
 	 *	66
 	 *	67 Set Bluetooth pin
 	 *	68 -
-	 *	69 -
+	 *	69 Development Menu: choose Stepper speed
 	 ********************************************* Menu 6 - Start of Customize Menu *********************************************/
 	else if(floor(state/10)==BMP(0,0,0,0,0,0,6)) { //6[X]
 		// Menu vorbereiten
@@ -1258,6 +1258,11 @@ void speedo_menu::display(){
 		} else {
 			pOLED->string(pSpeedo->default_font,char_buffer,11,2);
 		}
+	}
+
+	/////// development set the shown mode
+	else if(floor(state/10)==BMP(0,0,0,0,0,6,9)){
+		set_value_dialog((int8_t*)&pAktors->m_stepper->shown_mode,PSTR("= Stepper Update ="),PSTR("Direct"),PSTR("Flat"),PSTR("Flat Round"),PSTR("Rounded"));
 	}
 	/********************************************* End of Customize Menu *********************************************/
 

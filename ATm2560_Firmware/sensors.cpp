@@ -372,7 +372,7 @@ void Speedo_sensors::pull_values(){
 			// to this with 40hz, 25ms
 			// in addtion to the message above: handling of RPM and aktor
 
-			pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_FLAT)); //3.10.2013 ran good
+			pAktors->m_stepper->go_to(get_RPM(pAktors->m_stepper->shown_mode)); //3.10.2013 ran good
 			//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED_FLAT));
 		}
 	}

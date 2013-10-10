@@ -86,6 +86,8 @@ public:
 	int init_steps_to_go;
 	void startup();
 
+	int shown_mode;
+
 
 	void InitTWI(void);
 	void GetFullStatus1(TTMC222Status *TMC222Status);
