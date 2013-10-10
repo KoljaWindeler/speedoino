@@ -50,6 +50,7 @@
 #include "sm_driver.h"
 #include "speed_cntr.h"
 #include "reset.h"
+#include "rpm_calc.h"
 #include <avr/wdt.h>
 
 speedRampData srd;
@@ -62,13 +63,14 @@ bool emergency_shutdown;
 bool emergency_extra_pos_offset_set;
 unsigned char voltage_down_counter=0;
 unsigned char voltage_up_counter=0;
-unsigned int speed=SPEED;
-unsigned int accel=ACC;
+
 /////////////////////////// INTERRUPT ROUTINEN /////////////////////////////
 void Init(void)
 {
 	wdt_enable(WDTO_1S);
 
+	speed=SPEED;
+	accel=ACC;
 	emergency_shutdown=false;
 	emergency_extra_pos_offset_set=false;
 
@@ -105,7 +107,6 @@ void Init(void)
 
 int main(){
 	Init();
-//	motor_cal(ACC,SPEED); //should be done by speedoino
 	while(1) {
 		wdt_reset();
 		//check_power_state();
@@ -184,6 +185,12 @@ int main(){
 				};
 				status.cmd = FALSE;
 				//////////////////// (de)activate reset //////////////////////////////
+				///////////////////// self running mode ///////////////////////////////
+			} else if(UART_RxBuffer[0]=='s'){ // self running mode
+				motor_cal(ACC,SPEED);	// run calibration
+				init_rpm_calculation(); // activate timer
+				status.cmd = FALSE;		// mark message as received
+				///////////////////// self running mode ///////////////////////////////
 				//////////////////// set pointer offset //////////////////////////////
 			} else if(UART_RxBuffer[0] == 'o'){ // set offset
 				status.cmd = FALSE;
@@ -204,6 +211,7 @@ int main(){
 			//////////////////// set pointer offset //////////////////////////////
 
 		}
+		check_goto();
 	}//end while(1)
 }
 

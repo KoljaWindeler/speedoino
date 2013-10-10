@@ -25,6 +25,9 @@ volatile short int last_bt_state;  // 1=letzte flanke war steigend,0=fallend
 volatile short int reset_global_active; //1=global aktiv, 0=global aus
 volatile int last_rst;
 
+unsigned int accel;
+unsigned int speed;
+
 #define RST_PIN 5 // port D
 #define RST_LED 6 // rst led=rot, port B
 #define BT_LED 7  // bt=blau, port B
