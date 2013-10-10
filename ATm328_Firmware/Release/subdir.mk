@@ -6,6 +6,7 @@
 C_SRCS += \
 ../main.c \
 ../reset.c \
+../rpm_calc.c \
 ../sm_driver.c \
 ../speed_cntr.c \
 ../uart.c 
@@ -13,6 +14,7 @@ C_SRCS += \
 OBJS += \
 ./main.o \
 ./reset.o \
+./rpm_calc.o \
 ./sm_driver.o \
 ./speed_cntr.o \
 ./uart.o 
@@ -20,6 +22,7 @@ OBJS += \
 C_DEPS += \
 ./main.d \
 ./reset.d \
+./rpm_calc.d \
 ./sm_driver.d \
 ./speed_cntr.d \
 ./uart.d 
