@@ -1162,7 +1162,7 @@ int speedo_gps::calc_gps_goodies(){
 
 
 void speedo_gps::set_drive_status(int speed, int ss, int sat, char status){
-	if(status=='A'){ //measurement valid
+	if(status=='A' && sat>5){ //measurement valid
 		if(speed>=15){ // you are driving faster than 15 kmh
 			if(motion_start==-1){
 				motion_start=(millis()/1000)%32000;
