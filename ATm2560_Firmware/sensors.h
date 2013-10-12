@@ -71,9 +71,6 @@ private:
 	uint16_t rpm_flatted;
 	uint8_t rpm_flatted_counter;
 
-	uint16_t rpm_flatted_stepper;
-	uint8_t rpm_flatted_stepper_counter;
-
 
 	unsigned long last_highbeam_on;
 	unsigned long last_oil_off;

@@ -37,9 +37,7 @@ Speedo_sensors::Speedo_sensors(){
 	sensor_source=0;
 	last_highbeam_on=0;
 	last_oil_off=0;
-	rpm_flatted_stepper=0;
 	rpm_flatted_counter=0;
-	rpm_flatted_stepper_counter=0;
 };
 
 // destructor just for nuts
@@ -162,7 +160,7 @@ unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 	if(CAN_active && !m_CAN->failed){
 		exact_value=m_CAN->get_RPM(); // just get the number, no calculation
 	} else {
-		exact_value=m_dz->get_dz(true); // just get the number, no calculation
+		exact_value=m_dz->get_dz(); // just get the number, no calculation
 	}
 
 	// return value based on mode,
@@ -172,8 +170,6 @@ unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 		return (rpm_flatted&~15); // will be calculated with 10Hz in pull values
 	} else if(mode==RPM_TYPE_ROUNDED){
 		return (exact_value&~63); // == floor(exact_value/64)*64
-	} else if(mode==RPM_TYPE_ROUNDED_FLAT){
-		return rpm_flatted_stepper;
 	}
 
 	return exact_value;
@@ -357,8 +353,7 @@ void Speedo_sensors::pull_values(){
 			/* gear */
 
 			// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
-			rpm_flatted=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,4,get_RPM(RPM_TYPE_FLAT));
-			rpm_flatted_stepper=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_stepper_counter,2,get_RPM(RPM_TYPE_ROUNDED)); // TODO: useless?
+			rpm_flatted=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,2,get_RPM(RPM_TYPE_FLAT));
 			pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
 
 			////////////// TODO
