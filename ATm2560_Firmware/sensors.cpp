@@ -347,28 +347,25 @@ void Speedo_sensors::pull_values(){
 
 		if(fourty_Hz_counter%4==0){			//do this, every 10Hz, 100ms
 			m_blinker->check();    // blinken wir?
+			m_gear->calc();// blockt intern alle aufrufe die vor ablauf von 250 ms kommen
 
-			/* gear */
-			pSensors->m_gear->calc();// blockt intern alle aufrufe die vor ablauf von 250 ms kommen
-			/* gear */
 
 			// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
-			rpm_flatted=pSensors->flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,2,get_RPM(RPM_TYPE_FLAT));
+			rpm_flatted=flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,2,get_RPM(RPM_TYPE_FLAT));
 			pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
 
-			////////////// TODO
-			char rpm_buffer[20];
-			sprintf(rpm_buffer,"%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT));
-			Serial.println(rpm_buffer);
-			////////////// TODO
+//			////////////// TODO
+//			char rpm_buffer[20];
+//			sprintf(rpm_buffer,"%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT));
+//			Serial.println(rpm_buffer);
+//			////////////// TODO
 		}
 
 		if(pAktors->m_stepper->init_steps_to_go==0){
 			// to this with 40hz, 25ms
 			// in addtion to the message above: handling of RPM and aktor
-
 			pAktors->m_stepper->go_to(get_RPM(pAktors->m_stepper->shown_mode)); //3.10.2013 ran good
-			//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_ROUNDED_FLAT));
+			//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT));
 		}
 	}
 
