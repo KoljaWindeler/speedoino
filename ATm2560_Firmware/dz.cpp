@@ -15,26 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
- /* timer usage by the speedoino codebase
-  * Timer0 -  8 Bit - Used by the Arduino Base to calc the millis() timestamp
-  * Timer1 - 16 Bit - Used by the RPM capturing module, normal mode, 2MHz
-  * Timer2 -  8 Bit - Used by the Arduino Base to generate Phase correct PWM, 250kHz, Pins: PH6 (outer RGB), PB4 (not used)
-  * Timer3 - 16 Bit - Used by the Aktor Module to switch the color-fade providing PWM values of the outer LEDs at the correct time
-  * Timer4 - 16 Bit - Used by the Arduino Base to generate Phase correct PWM, 250kHz, Pins: PH3 (not used), PH4..5 (outer RGB)
-  * Timer5 - 16 Bit - not in use now, could be used by the correct Wheel speed detection, OCM on "pulse per rotation" and MATCH ISR on trigger
-  */
-
 #include "global.h"
+/* timer usage by the speedoino codebase
+ * Timer0 -  8 Bit - Used by the Arduino Base to calc the millis() timestamp
+ * Timer1 - 16 Bit - Used by the RPM capturing module, normal mode, 2MHz
+ * Timer2 -  8 Bit - Used by the Arduino Base to generate Phase correct PWM, 250kHz, Pins: PH6 (outer RGB), PB4 (not used)
+ * Timer3 - 16 Bit - Used by the Aktor Module to switch the color-fade providing PWM values of the outer LEDs at the correct time
+ * Timer4 - 16 Bit - Used by the Arduino Base to generate Phase correct PWM, 250kHz, Pins: PH3 (not used), PH4..5 (outer RGB)
+ * Timer5 - 16 Bit - not in use now, could be used by the correct Wheel speed detection, OCM on "pulse per rotation" and MATCH ISR on trigger
+ */
+
 
 speedo_dz::speedo_dz(){
 	exact=0;                 // real rotation speed
 	blitz_dz=0;
 	blitz_en=false;
 	dz_faktor_counter=0;
+	e_sum=0;
+	e_old=0;
 }
 
-unsigned int speedo_dz::get_dz(bool exact_dz){
+uint16_t speedo_dz::get_dz(){
 	return exact;
 }
 
@@ -49,14 +50,8 @@ ISR(INT4_vect){
 	// timer runs with 2 MHz
 	// if the engine runs with 3.000 rpm we should have 3000/60*2(double ignition)=100 pulses per second
 	// that leads to 10ms per Pulse. Timer1 value will be at 20.000 after 10ms.
-	pSensors->m_dz->overruns=0;
 	pSensors->m_dz->set_exact((uint32_t)60000000UL / (((uint32_t)pSensors->m_dz->overruns<<16) + timerValue));
-
-//	uint16_t rpm=(uint32_t)60000000UL / (((uint32_t)pSensors->m_dz->overruns<<16) + timerValue);
-//	uint16_t last_rpm=pSensors->m_dz->get_dz(true);
-//	uint16_t differ=rpm-last_rpm;
-//
-//	pSensors->m_dz->set_exact(last_rpm+(differ&(~511))+((differ&511)>>4)); // division 12 cycles
+	pSensors->m_dz->overruns=0;
 }
 
 // this overflow will occure after 65536/2000000=0,032768 sec, 0,032768=30/RPM, RPM=30/0,032768=915 min
@@ -66,24 +61,48 @@ ISR(TIMER1_OVF_vect){
 	cli();			/* Disable interrupts */
 	TCNT1=0;
 	SREG = sreg;	/* Restore global interrupt flag */
+
 	pSensors->m_dz->overruns++;
 	if(pSensors->m_dz->overruns>4){ // no spark for 164ms -> less than 183 rpm
 		pSensors->m_dz->set_exact(0);
+		pSensors->m_dz->overruns=0;
 	}
 }
 
 void speedo_dz::set_exact(uint16_t i){
-	if(i<15000){
-		exact=i;
-	} else {
+	if(i>15000){
 		exact=15000;
+	} else if(i==0) {
+		exact=0;
+	} else {
+		/* PID - Track
+		 * kp=1/4
+		 * kd=1/2
+		 * ki=1/256
+		 * Ta=4
+		 * --------------------
+		 * esum=esum+differ
+		 * regler_P=int(kp*differ)
+		 * regler_I=int(ki*Ta*esum)
+		 * regler_D=int(kd*(differ-ealt)/Ta)
+		 * ealt=differ
+		 * --------------------
+		 * P=1/4*differ				= differ>>2
+		 * I=(1/256)*4*esum			= 1/64*esum = e_sum>>6
+		 * D=(1/2)/4*(differ-ealt)	= 1/8*(differ-ealt) = (differ-ealt)>>3
+		 */
+		int16_t differ=i-exact;
+		e_sum+=differ;
+		//exact+=(differ>>2)+(e_sum>>6)+((differ-e_old)>>3); // great!! 10.10.2013
+		exact+=(differ>>3)+(e_sum>>7)+((differ-e_old)>>4); // since the above was very fast and a bit bouncy ... lets try to low pass it even more
+		e_old=differ;
 	}
 }
 
 
 void speedo_dz::init() {
 	EIMSK |= (1<<INT4); // Enable Interrupt
-	EICRB |= (1<<ISC40) | (1<<ISC41); // rising edge on INT4
+	EICRB |= (1<<ISC41)|(0<<ISC40); // falling edge on INT4 <- rising edge on RPM pin
 
 	// timer
 	TCNT1=0x00; // reset value
