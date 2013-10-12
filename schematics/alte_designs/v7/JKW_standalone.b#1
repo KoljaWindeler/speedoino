@@ -2216,6 +2216,8 @@ min. Width 0,18mm</description>
 <attribute name="NAME" x="10.095" y="23.195" size="1.27" layer="26" rot="MR180"/>
 <attribute name="VALUE" x="8.995" y="28.475" size="1.27" layer="28" rot="MR180"/>
 </element>
+<element name="GPS_D1" library="semicon-smd-ipc" package="SOT23" value="771-BAV23C,215" x="57.3" y="27.7"/>
+<element name="GPS_D2" library="semicon-smd-ipc" package="SOT23" value="771-BAV23C,215" x="53.7" y="27.8" rot="R180"/>
 <element name="D15" library="diode" package="SOD323-W" value="Mouser 726-BAT60AE6327" x="123.5" y="28.9" rot="MR180"/>
 <element name="D_P_MCCOI" library="diode" package="SOT23" value="78-MMBZ5232B-V" x="19.9" y="42.8" smashed="yes" rot="MR270">
 <attribute name="NAME" x="18.095" y="40.595" size="1.27" layer="26" rot="MR180"/>
@@ -4202,9 +4204,11 @@ min. Width 0,18mm</description>
 </signal>
 <signal name="D24">
 <contactref element="IC4" pad="76"/>
+<contactref element="GPS_D1" pad="1"/>
 <wire x1="54.5" y1="28.36" x2="54.5" y2="27.2" width="0.254" layer="16"/>
 <wire x1="54.5" y1="27.2" x2="55.1" y2="26.6" width="0.254" layer="16"/>
 <via x="55.1" y="26.6" extent="1-16" drill="0.3"/>
+<wire x1="55.1" y1="26.6" x2="56.35" y2="26.6" width="0.254" layer="1"/>
 </signal>
 <signal name="D25">
 <contactref element="IC4" pad="75"/>
@@ -5058,6 +5062,12 @@ min. Width 0,18mm</description>
 <wire x1="67.9" y1="16" x2="66.8" y2="17.1" width="0.254" layer="1"/>
 <via x="66.8" y="17.1" extent="1-16" drill="0.3"/>
 <wire x1="66.8" y1="17.1" x2="66.6" y2="17.3" width="0.254" layer="16"/>
+</signal>
+<signal name="N$47">
+<contactref element="GPS_D2" pad="1"/>
+<contactref element="GPS_D1" pad="3"/>
+<wire x1="57.3" y1="28.8" x2="54.75" y2="28.8" width="0.254" layer="1"/>
+<wire x1="54.75" y1="28.8" x2="54.65" y2="28.9" width="0.254" layer="1"/>
 </signal>
 <signal name="N$11">
 <contactref element="D15" pad="A"/>
@@ -6373,11 +6383,13 @@ min. Width 0,18mm</description>
 </signal>
 <signal name="V_BAT">
 <contactref element="GPS" pad="VBACKUP"/>
+<contactref element="GPS_D2" pad="3"/>
 <contactref element="D15" pad="C"/>
 <contactref element="GPS_C2" pad="1"/>
 <wire x1="92.8489" y1="33.05" x2="87.35" y2="33.05" width="0.254" layer="1"/>
 <via x="87.35" y="33.05" extent="1-16" drill="0.3"/>
 <wire x1="86" y1="33.05" x2="87.35" y2="33.05" width="0.254" layer="16"/>
+<wire x1="53.7" y1="26.1" x2="53.7" y2="26.7" width="0.254" layer="1"/>
 <wire x1="119.7" y1="31.2" x2="119.7" y2="38.6" width="0.254" layer="16"/>
 <wire x1="119.7" y1="38.6" x2="119.2" y2="39.1" width="0.254" layer="16"/>
 <via x="119.2" y="39.1" extent="1-16" drill="0.3"/>
@@ -6388,6 +6400,7 @@ min. Width 0,18mm</description>
 <wire x1="87.3" y1="39.1" x2="87.3" y2="33.1" width="0.254" layer="16"/>
 <wire x1="119.7" y1="31.2" x2="122" y2="28.9" width="0.254" layer="16"/>
 <wire x1="122.05" y1="28.9" x2="122" y2="28.9" width="0.254" layer="16"/>
+<wire x1="50.2" y1="25" x2="53.7" y2="25" width="0" layer="19" extent="1-16"/>
 <via x="62.4" y="25" extent="1-16" drill="0.3"/>
 <wire x1="53.7" y1="25" x2="62.4" y2="25" width="0.254" layer="1"/>
 <wire x1="62.4" y1="25" x2="62.4" y2="32" width="0.254" layer="16"/>
@@ -6396,6 +6409,7 @@ min. Width 0,18mm</description>
 <wire x1="66.8" y1="32" x2="69.6" y2="29.2" width="0.254" layer="1"/>
 <wire x1="69.6" y1="29.2" x2="85" y2="29.2" width="0.254" layer="1"/>
 <via x="85" y="29.2" extent="1-16" drill="0.3"/>
+<wire x1="53.7" y1="26.7" x2="53.7" y2="25" width="0.254" layer="1"/>
 <wire x1="85" y1="29.2" x2="86.7" y2="29.2" width="0.254" layer="16"/>
 <wire x1="86.7" y1="29.2" x2="87.4" y2="29.9" width="0.254" layer="16"/>
 <wire x1="87.4" y1="29.9" x2="87.4" y2="33" width="0.254" layer="16"/>
