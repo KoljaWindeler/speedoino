@@ -281,24 +281,19 @@ void Speedo_sensors::single_read(){
  * 		m_voltage->calc(); // update voltage value, maybe startup (if we started in clock_mode)
  * 		m_temperature->read_oil_temp(); // update analog oil temperature sensor
  *
- * 200ms: Sensors independent on CAN or no CAN, called every 200 ms: (by update_required && ten_Hz_counter%2==0)
+ * 100ms: Sensors independent on CAN or no CAN, called every 200 ms: (by update_required && ten_Hz_counter%2==0)
  * 		m_blinker->check(); // check if the flashers are working
  * 		pSensors->m_gear->calc(); // calculate gear based on speed and rpm
- * 		pAktors->m_stepper->go_to(get_RPM(0)/11.73); // update position
+ * 		rpm_flatted=flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,2,get_RPM(RPM_TYPE_FLAT));
+ * 		pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
  *
- * 100ms:
- * 		rpm_flatted=pSensors->flatIt(get_RPM(0),&rpm_flatted_counter,10,rpm_flatted); // deep pass RPM data with this fixed rate // is that wise?
- *
+ *  25ms:
+ *  	pAktors->m_stepper->go_to(get_RPM(pAktors->m_stepper->shown_mode)); //3.10.2013 ran good
  *
  * ============== ONLY IN NON CAN MODE ========================
  * 	1000ms:
  *		m_temperature->read_air_temp();  // temperaturen aktualisieren
  *		m_temperature->read_water_temp();  // temperaturen aktualisieren
- *
- * 	200ms:
- * 		m_dz->calc(); // calc rpms from non CAN sensors
- *
- *
  *
  * ============== ONLY IN CAN MODE ========================
  * 	1000ms:
@@ -385,7 +380,7 @@ void Speedo_sensors::pull_values(){
 		if(m_CAN->message_available){ // muss hier die pin abfrage rein? dafür gibts doch den interrupt
 			m_CAN->process_incoming_messages();
 		}
-		if(update_required && m_CAN->get_active_can_type()==CAN_TYPE_OBD2){ // 10Hz, request can OBD2 msg
+		if(update_required && m_CAN->get_active_can_type()==CAN_TYPE_OBD2 && fourty_Hz_counter%4==0){ // 10Hz, request can OBD2 msg
 			if(fourty_Hz_counter==0 || fourty_Hz_counter==2 || fourty_Hz_counter==4 || fourty_Hz_counter==6 || fourty_Hz_counter==8){ // 200ms
 				m_CAN->request(CAN_CURRENT_INFO,CAN_RPM);
 			} else if(fourty_Hz_counter==1 || fourty_Hz_counter==5 ){ // 500ms
