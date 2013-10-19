@@ -204,7 +204,7 @@ int main(void) {
 		load_calc++;
 		if(millis()-lasttime_calc>1000){
 			Serial.print(load_calc);
-			Serial.println(" cps");
+			Serial.println(" cps"); // 182 w/o interrupts, 175 w/ interrupts, 172 w/ much interrupts
 			load_calc=0;
 			lasttime_calc=millis();
 		}
