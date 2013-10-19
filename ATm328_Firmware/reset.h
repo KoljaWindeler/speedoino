@@ -8,6 +8,8 @@
 #ifndef RESET_H_
 #define RESET_H_
 
+#undef STAND_ALONE_MODE
+
 void reset(int spezial_down);
 void reset_init();
 void config_timer0();

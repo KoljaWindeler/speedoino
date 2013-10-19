@@ -14,7 +14,7 @@ void init_rpm_calculation(){
 	// timer
 	TCNT2=0x00; 								// reset value
 	TIMSK2=(1<<TOIE2); 							// activate Timer overflow interrupt
-	TCCR2B=(0<<CS22) | (1<<CS21) | (0<<CS20); 	// selects clock to "/8" => 16Mhz/8=2MHz,
+	TCCR2B=(0<<CS22) | (1<<CS21) | (0<<CS20);  	// selects clock to "/8" => 16Mhz/8=2MHz,
 	TCCR2A=0; 									// WGM=0 -> normal mode
 	t2_overruns=0;
 
@@ -22,11 +22,15 @@ void init_rpm_calculation(){
 	DDRB &= ~(1<<PB0); 		// input
 	PCMSK0|=(1<<PCINT0); 	// CAN interrupt pin v7
 	PCICR|=(1<<PCIE0); 		// enable PinChange interrupt
+
+	e_sum=0;
+	e_old=0;
+	exact=0;
 }
 
 // timer runs with 2 MHz
 // if the engine runs with 3.000 rpm we should have 3000/60*2(double ignition)=100 pulses per second
-// that leads to 10ms per Pulse. Timer5 value will be at 20.000 after 10ms. -> 60.000.000/20.000=3.000
+// that leads to 10ms per Pulse. Timer5 value will be at 20000 after 10ms. -> 60.000.000/20.000=3.000
 ISR(PCINT0_vect){
 	if(PINB&(1<<PB0)){ 			/* rising edge */
 		uint8_t sreg;
@@ -41,10 +45,10 @@ ISR(PCINT0_vect){
 	}
 }
 
-// this overflow will occure after 256/2000000=0,000128 sec
+// this overflow will occure after 256/125000=0,002048 sec
 ISR(TIMER2_OVF_vect){
 	t2_overruns++;
-	if(t2_overruns>4*256){ 	// no spark for 4*256*0,128ms=131,072ms -> less than 228 rpm
+	if(t2_overruns>400){ 	// no sparks for a long time: less than 30*125000/(100*256)=146 rpm
 		set_goto(0,0); 		// just save values as quick as possible
 	}
 }
@@ -60,10 +64,17 @@ void set_goto(uint16_t overruns, uint8_t timer){
 // since we call speed_cntr_move (which uses sqrt+...) we shouldn't do it in the interrupt
 void check_goto(){
 	if(goto_flag){
-		//set_exact((uint32_t)60000000UL / (((uint32_t)t0_overruns<<8) + timerValue));
+		int i=(uint32_t)2592000UL / (((uint32_t)goto_overruns<<8) + goto_timer);
+
+		int16_t differ=i-exact;
+		e_sum+=differ;
+		exact+=(differ>>3)+(e_sum>>7)+((differ-e_old)>>4);
+		e_old=differ;
+
+		//set_exact((uint32_t)30*125.000UL / (((uint32_t)t0_overruns<<8) + timerValue));
 		// Pos 864 = RPM 20.000 -> 20000/864=23,148
-		// 60.000.000/23,148148148148148148148148148148 = 2592000
-		speed_cntr_Move((uint32_t)2592000UL / (((uint32_t)goto_overruns<<8) + goto_timer),accel,speed);
+		// 30*125000/23,148148148148148148148148148148 = 162.000
+		speed_cntr_Move(exact,accel,speed);
 		goto_flag=false;
 	}
 }

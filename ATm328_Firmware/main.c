@@ -98,6 +98,7 @@ void Init(void)
 	// reset timer aktivieren
 	config_timer0();
 
+
 	//Just to be sure
 	speed=SPEED;
 	accel=ACC;
@@ -107,8 +108,15 @@ void Init(void)
 
 int main(){
 	Init();
+#ifdef STAND_ALONE_MODE
+	motor_cal(accel,speed);
+	init_rpm_calculation();
+#endif
 	while(1) {
 		wdt_reset();
+#ifdef STAND_ALONE_MODE
+		check_goto();
+#endif
 		//check_power_state();
 		// If a command is received, check the command and act on it.
 		if(status.cmd == TRUE){
@@ -211,7 +219,6 @@ int main(){
 			//////////////////// set pointer offset //////////////////////////////
 
 		}
-		check_goto();
 	}//end while(1)
 }
 
