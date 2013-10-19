@@ -56,11 +56,11 @@
                                             - Reduced Stepper Accel from 900 to 600 wegen Schrittverlusten (großen!)
                                             - Removed unused vars
                                             - 3018 Byte SRAM frei, 195470 Byte Flash belegt
-02.10.2013 	Speedoino_v2.2-7-g872dc8b.hex	+ Neue Ansteuerung des Schrittmotors daher bitte auch die Watchdog.hex flashen!!!
-											- Gar keine Schrittverluste mehr trotz langer Fahrt durch den Harz, Mehr Info in dem News Artikel auf der Homepage
-											- Bin noch dabei die Dämpfung optimal einzustellen, sieht aber schon ganz gut aus. Reagiert schneller!
-											- Fix der Winterzeit Berechnung
-											- 2919 Byte SRAM frei, 197582 Byte Flash belegt
+19.10.2013  Speedoino_v2.2-33-g3fc4807.hex  + Neue Ansteuerung des Schrittmotors daher bitte auch die Watchdog.hex flashen!!!
+					    - Gar keine Schrittverluste mehr trotz langer Fahrt durch den Harz, Mehr Info in dem News Artikel auf der Homepage
+					    - Bin noch dabei die Dämpfung optimal einzustellen, sieht aber schon ganz gut aus. Reagiert schneller!
+				   	    - Fix der Winterzeit Berechnung
+					    - 2919 Byte SRAM frei, 197582 Byte Flash belegt
 ================================================================================================================================================================================================
 
 
