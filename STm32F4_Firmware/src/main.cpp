@@ -1,13 +1,14 @@
 #include <stm32f4xx.h>
 #include <misc.h>			 // I recommend you have a look at these in the ST firmware folder
 #include <stm32f4xx_usart.h> // under Libraries/STM32F4xx_StdPeriph_Driver/inc and src
+#include "global.h"
 
 #define MAX_STRLEN 12 // this is the maximum string length of our string in characters
 char received_string[MAX_STRLEN+1]; // this will hold the recieved string
 
 void Delay(__IO uint32_t nCount) {
-  while(nCount--) {
-  }
+	while(nCount--) {
+	}
 }
 
 /* This funcion initializes the USART1 peripheral
@@ -109,17 +110,55 @@ void USART_puts(USART_TypeDef* USARTx, char *s){
 	}
 }
 
+void init_millis_timer(){
+	/* TIM2 clock enable */
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+
+	/* Enable the TIM2 gloabal Interrupt */
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+
+	/* Time base configuration */
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+	TIM_TimeBaseStructure.TIM_Period = 1; //1000 - 1; // 1 MHz down to 1 KHz (1 ms) ?
+	TIM_TimeBaseStructure.TIM_Prescaler = 42; // TIM should run with 1 MHz  //84 - 1; // 24 MHz Clock down to 1 MHz (adjust per your clock)
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+
+	TIM_SetCompare1(TIM2,1000); // 1MHz -> 1kHz
+	/* TIM IT enable */
+	TIM_ITConfig(TIM2, TIM_IT_COM, ENABLE);
+	/* TIM2 enable counter */
+	TIM_Cmd(TIM2, ENABLE);
+}
+
+void TIM2_IRQHandler(void){
+	volatile static unsigned long millis=0;
+	millis++;
+	if(millis%1000){
+		USART_puts(USART1, "ping");
+	}
+}
+
 int main(void) {
+	init_millis_timer();
 
-  init_USART1(9600); // initialize USART1 @ 9600 baud
 
-  USART_puts(USART1, "Init complete! Hello World!rn"); // just send a message to indicate that it works
+	init_USART1(9600); // initialize USART1 @ 9600 baud
+	LCD_Init();
+	USART_puts(USART1, "Init complete! Hello World!rn"); // just send a message to indicate that it works
 
-  while (1){
-    /*
-     * You can do whatever you want in here
-     */
-  }
+	while (1){
+		/*
+		 * You can do whatever you want in here
+		 */
+	}
 }
 
 // this is the interrupt request handler (IRQ) for ALL USART1 interrupts

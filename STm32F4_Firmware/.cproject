@@ -32,6 +32,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/Device/STM32F4xx/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/Display}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/src}&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.assembler.base.input.852080652" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.assembler.base.input"/>
 							</tool>
@@ -43,8 +45,10 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/Device/STM32F4xx/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/Display}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/src}&quot;"/>
 								</option>
-								<option id="org.eclipse.cdt.cross.arm.gnu.c.compiler.option.preprocessor.def.40628459" name="Defined symbols (-D)" superClass="org.eclipse.cdt.cross.arm.gnu.c.compiler.option.preprocessor.def" valueType="definedSymbols"/>
+								<option id="org.eclipse.cdt.cross.arm.gnu.c.compiler.option.preprocessor.def.40628459" name="Defined symbols (-D)" superClass="org.eclipse.cdt.cross.arm.gnu.c.compiler.option.preprocessor.def"/>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.c.compiler.base.input.1925972044" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.c.compiler.base.input"/>
 							</tool>
 							<tool command="arm-none-eabi-g++" id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.cpp.compiler.debug.2012119324" name="ARM Sourcery Linux GCC C++ Compiler" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.cpp.compiler.debug">
@@ -56,6 +60,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/Device/STM32F4xx/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/Libraries/Display}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F4_Firmware/src}&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.cpp.compiler.base.input.927269931" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.cpp.compiler.base.input"/>
 							</tool>
