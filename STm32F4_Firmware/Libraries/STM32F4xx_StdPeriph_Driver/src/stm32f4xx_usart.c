@@ -561,7 +561,9 @@ void USART_SendData(USART_TypeDef* USARTx, uint16_t Data)
   assert_param(IS_USART_DATA(Data)); 
     
   /* Transmit Data */
+  while((USARTx->SR & (1<<7))==0);
   USARTx->DR = (Data & (uint16_t)0x01FF);
+
 }
 
 /**

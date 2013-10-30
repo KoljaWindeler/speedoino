@@ -151,43 +151,48 @@
 #define R19_VAL		   0x0F00   		//F00
 #define R41_VAL        0x0005
 
-/* Exported functions ------------------------------------------------------- */
-/*----- High layer function -----*/
-void LCD_Init(void);
+class ILI9325 {
 
-void LCD_WriteReg(u8 LCD_Reg, u16 LCD_RegValue);
-u16 LCD_ReadReg(u8 LCD_Reg);
-void LCD_WriteRAM_Prepare(void);
-void LCD_WriteRAM(u8 r, u8 g, u8 b);
-u32 LCD_ReadRAM(void);
-void LCD_Disp_Image(unsigned short *gImage_ptr);
-void LCD_DisplayOn(void);
-void LCD_DisplayOff(void);
-void LCD_Clear(u8 b, u8 g, u8 r);
-void LCD_SetCursor(u8 Xpos, u16 Ypos);
-void LCD_SetColors(u8 text_r, u8 text_g, u8 text_b, u8 back_r, u8 back_g,
-		u8 back_b);
-void LCD_GetColors(u8 *text_r, u8 *text_g, u8 *text_b, u8 *back_r, u8 *back_g,
-		u8 *back_b);
-void LCD_SetTextColor(u8 red, u8 green, u8 blue);
-void LCD_SetBackColor(u8 red, u8 green, u8 blue);
-void LCD_CharSize(__IO uint16_t size);
-void PutPixel(int16_t x, int16_t y);
-void Pixel(int16_t x, int16_t y, u8 r, u8 g, u8 b);
-void LCD_PutChar(int16_t PosX, int16_t PosY, char c);
-void LCD_StringLine(uint16_t PosX, uint16_t PosY, char *str);
-void LCD_DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length,
-		uint8_t Direction);
-void LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width);
-void LCD_DrawSquare(uint16_t Xpos, uint16_t Ypos, uint16_t a);
-void LCD_DrawSquare(uint16_t Xpos, uint16_t Ypos, uint16_t a);
-void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
-void LCD_DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
-void LCD_DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width,
-		uint16_t Height);
-void LCD_DrawFullSquare(uint16_t Xpos, uint16_t Ypos, uint16_t a);
-void LCD_DrawUniLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
-void LCD_GetType(char model[]);
-void LCD_Cross(u16 posX, u16 posY, u8 size);
-void LCD_SetBackLight(unsigned short level);
+private:
+	void CtrlLinesConfig();
+	void FSMCConfig();
+public:
+	/* Exported functions ------------------------------------------------------- */
+	ILI9325();
+	~ILI9325();
+	/*----- High layer function -----*/
+	void init(void);
+
+	void WriteReg(u8 LCD_Reg, u16 LCD_RegValue);
+	u16 ReadReg(u8 LCD_Reg);
+	void WriteRAM_Prepare(void);
+	void WriteRAM(u8 r, u8 g, u8 b);
+	u32 ReadRAM(void);
+	void Disp_Image(unsigned short *gImage_ptr);
+	void DisplayOn(void);
+	void DisplayOff(void);
+	void Clear(u8 b, u8 g, u8 r);
+	void SetCursor(u8 Xpos, u16 Ypos);
+	void SetColors(u8 text_r, u8 text_g, u8 text_b, u8 back_r, u8 back_g,u8 back_b);
+	void GetColors(u8 *text_r, u8 *text_g, u8 *text_b, u8 *back_r, u8 *back_g,u8 *back_b);
+	void SetTextColor(u8 red, u8 green, u8 blue);
+	void SetBackColor(u8 red, u8 green, u8 blue);
+	void CharSize(__IO uint16_t size);
+	void PutPixel(int16_t x, int16_t y);
+	void Pixel(int16_t x, int16_t y, u8 r, u8 g, u8 b);
+	void PutChar(int16_t PosX, int16_t PosY, char c);
+	void StringLine(uint16_t PosX, uint16_t PosY, char *str);
+	void DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length,uint8_t Direction);
+	void DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width);
+	void DrawSquare(uint16_t Xpos, uint16_t Ypos, uint16_t a);
+	void DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
+	void DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
+	void DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width,uint16_t Height);
+	void DrawFullSquare(uint16_t Xpos, uint16_t Ypos, uint16_t a);
+	void DrawUniLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
+	void GetType(char model[]);
+	void Cross(u16 posX, u16 posY, u8 size);
+	void SetBackLight(unsigned short level);
+};
+extern ILI9325 TFT;
 #endif
