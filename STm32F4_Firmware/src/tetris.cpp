@@ -126,13 +126,13 @@ void tetris::new_element(){
 	// copy to display
 	copy_element_to_buffer(next_element);
 
-	pOLED->filled_rect(100,31,12,12,0);
+	OLED.filled_rect(100,31,12,12,0);
 	for(int x=0;x<3;x++){
 		for(int y=0;y<3;y++){
 			if(active_element[x][y]){
-				pOLED->filled_rect(x*4+100,y*4+31,4,4,0x0f);
+				OLED.filled_rect(x*4+100,y*4+31,4,4,0x0f);
 			} else {
-				pOLED->filled_rect(x*4+100,y*4+31,4,4,0x00);
+				OLED.filled_rect(x*4+100,y*4+31,4,4,0x00);
 			}
 		}
 	}
@@ -145,51 +145,51 @@ void tetris::new_element(){
 bool tetris::loop(){
 	char c=0x00;
 	int state=0;
-	while(Serial.available()>0){
+	while(Serial.available(USART1)>0){
 		_delay_ms(5);
 		if(state==0){
-			//pOLED->string(0,"0",0,0);
+			//OLED.string(0,"0",0,0);
 
-			if(Serial.read()==MESSAGE_START){	state=1;	} else {	state=0;	}
+			if(Serial.read(USART1)==MESSAGE_START){	state=1;	} else {	state=0;	}
 		} else if(state==1){
-			//pOLED->string(0,"1",0,0);
+			//OLED.string(0,"1",0,0);
 
-			if(Serial.read()==0x01){	state=2;	} else {	state=0;	}
+			if(Serial.read(USART1)==0x01){	state=2;	} else {	state=0;	}
 		} else if(state==2){
-			//pOLED->string(0,"2",0,0);
+			//OLED.string(0,"2",0,0);
 
-			if(Serial.read()==0x00){	state=3;	} else {	state=0;	}
+			if(Serial.read(USART1)==0x00){	state=3;	} else {	state=0;	}
 		} else if(state==3){
-			//pOLED->string(0,"3",0,0);
+			//OLED.string(0,"3",0,0);
 
-			if(Serial.read()==0x01){	state=4;	} else {	state=0;	}
+			if(Serial.read(USART1)==0x01){	state=4;	} else {	state=0;	}
 		} else if(state==4){
-			//pOLED->string(0,"4",0,0);
+			//OLED.string(0,"4",0,0);
 
-			if(Serial.read()==TOKEN){	state=5;	} else {	state=0;	}
+			if(Serial.read(USART1)==TOKEN){	state=5;	} else {	state=0;	}
 		} else if(state==5){
-			//pOLED->string(0,"5",0,0);
-			char d=Serial.read();
+			//OLED.string(0,"5",0,0);
+			char d=Serial.read(USART1);
 
 			if(d==CMD_GO_LEFT){
-				//pOLED->string(0,"6",0,0);
+				//OLED.string(0,"6",0,0);
 				c=1;
 				state=6;
 			} else if(d==CMD_GO_RIGHT){
-				//pOLED->string(0,"6",0,0);
+				//OLED.string(0,"6",0,0);
 				c=2;
 				state=6;
 			} else if(d==CMD_GO_UP){
-				//pOLED->string(0,"6",0,0);
+				//OLED.string(0,"6",0,0);
 				c=3;
 				state=6;
 			} else if(d==CMD_GO_DOWN){
-				//pOLED->string(0,"6",0,0);
+				//OLED.string(0,"6",0,0);
 				c=4;
 				state=6;
 			} else {	state=0; c=0;	}
 		} else if(state==6){
-			//pOLED->string(0,"7",0,0);
+			//OLED.string(0,"7",0,0);
 
 			state=0;
 			Serial.flush();
@@ -204,7 +204,7 @@ bool tetris::loop(){
 	// check if you are stil in the race
 	if(you_loose){
 		// Nope, you loose show the box once
-		if(pSpeedo->disp_zeile_bak[0]!=123){
+		if(Speedo.disp_zeile_bak[0]!=123){
 			// show a animation depending on line count
 			int ani=1; // simpsons
 			if(lines>50){
@@ -216,25 +216,25 @@ bool tetris::loop(){
 			// dann sicher sein das er keine taste
 			// mehr drückt
 			_delay_ms(1000);
-			while(Serial.available()>0 || 	!(PINJ & (1<<menu_button_links)) || !(PINJ & (1<<menu_button_rechts)) || !(PINJ & (1<<menu_button_oben)) ||	!(PINJ & (1<<menu_button_unten)) ){
+			while(Serial.available(USART1)>0 || 	!(PINJ & (1<<menu_button_links)) || !(PINJ & (1<<menu_button_rechts)) || !(PINJ & (1<<menu_button_oben)) ||	!(PINJ & (1<<menu_button_unten)) ){
 					Serial.flush();
 				_delay_ms(50);
 			}
-			pOLED->animation(ani);
+			OLED.animation(ani);
 			initDrawField(); // draw the field again, to show the line and level counter
 
 			// make sure to draw this box only once
-			pSpeedo->disp_zeile_bak[0]=123;
+			Speedo.disp_zeile_bak[0]=123;
 			// draw box
-			pOLED->highlight_bar(8,8,104,48);
-			pOLED->string_P(pSpeedo->default_font,PSTR("You loose"),5,2,15,0,0);
-			pOLED->string_P(pSpeedo->default_font,PSTR("L Quit"),5,4,15,0,0);
+			OLED.highlight_bar(8,8,104,48);
+			OLED.string(Speedo.default_font,("You loose"),5,2,15,0,0);
+			OLED.string(Speedo.default_font,("L Quit"),5,4,15,0,0);
 			char temp[2];
 			sprintf(temp,"%c",126);
-			pOLED->string(pSpeedo->default_font,temp,5,4,15,0,0);
-			pOLED->string_P(pSpeedo->default_font,PSTR("R Retry"),5,5,15,0,0);
+			OLED.string(Speedo.default_font,temp,5,4,15,0,0);
+			OLED.string(Speedo.default_font,("R Retry"),5,5,15,0,0);
 			sprintf(temp,"%c",127);
-			pOLED->string(pSpeedo->default_font,temp,5,5,15,0,0);
+			OLED.string(Speedo.default_font,temp,5,5,15,0,0);
 			// way at least one second to prevent unnoticed button push
 			_delay_ms(1000);
 			// if you loose and the box has been drawn, way on key down
@@ -244,7 +244,7 @@ bool tetris::loop(){
 				return false;
 			} else if (c==2 || !(PINJ & (1<<menu_button_rechts))){
 				_delay_ms(MIN_SIDE_PUSH_TIME);
-				pOLED->clear_screen();
+				OLED.clear_screen();
 				// ja das ist ungeschickt, init leert uns die line variable, drawfield malt das hin, das problem ist nur
 				// das wir mit drawfield die in init gezeichneten "next" übermalen .. also einfach 2x init .. is ja wurst
 				init();
@@ -316,7 +316,7 @@ bool tetris::loop(){
 
 			////////////////// move element down //////////////////
 		} else if(c==4){
-			if(pSpeedo->disp_zeile_bak[1]!=111){
+			if(Speedo.disp_zeile_bak[1]!=111){
 				active_y++;
 			};
 			updateField();
@@ -433,7 +433,7 @@ void tetris::run(){
 }
 
 void tetris::initDrawField(){
-	pOLED->clear_screen();
+	OLED.clear_screen();
 	// Feld ist (12*4)x(16*4) == 48x64 liegt zwischen 12..54 | 60..64
 	// .. 0
 	// .x 1
@@ -451,40 +451,40 @@ void tetris::initDrawField(){
 	// xx 13
 	// x. 14
 	// x. 15
-	pOLED->filled_rect(0,4,8,64,0x06);
-	pOLED->filled_rect(0,1*4,4,4,0x00);
-	pOLED->filled_rect(0,4*4,4,4,0x00);
-	pOLED->filled_rect(0,6*4,4,12,0x00);
-	pOLED->filled_rect(0,12*4,4,4,0x00);
+	OLED.filled_rect(0,4,8,64,0x06);
+	OLED.filled_rect(0,1*4,4,4,0x00);
+	OLED.filled_rect(0,4*4,4,4,0x00);
+	OLED.filled_rect(0,6*4,4,12,0x00);
+	OLED.filled_rect(0,12*4,4,4,0x00);
 
-	pOLED->filled_rect(4,3*4,4,8,0x00);
-	pOLED->filled_rect(4,8*4,4,8,0x00);
-	pOLED->filled_rect(4,11*4,4,8,0x00);
-	pOLED->filled_rect(4,14*4,4,8,0x00);
+	OLED.filled_rect(4,3*4,4,8,0x00);
+	OLED.filled_rect(4,8*4,4,8,0x00);
+	OLED.filled_rect(4,11*4,4,8,0x00);
+	OLED.filled_rect(4,14*4,4,8,0x00);
 
 
 
 
 	for(int y=0;y<64;y++){
-		pOLED->set2pixels(8,y,0x00,0x0f);
-		pOLED->set2pixels(10,y,0x00,0x0f);
+		OLED.set2pixels(8,y,0x00,0x0f);
+		OLED.set2pixels(10,y,0x00,0x0f);
 
-		pOLED->set2pixels(60,y,0x0f,0x00);
-		pOLED->set2pixels(62,y,0x0f,0x00);
+		OLED.set2pixels(60,y,0x0f,0x00);
+		OLED.set2pixels(62,y,0x0f,0x00);
 	}
 
 
-	pOLED->string_P(pSpeedo->default_font,PSTR("Speedoino"),11,0,0,15,0);
-	pOLED->string_P(pSpeedo->default_font,PSTR("goes "),13,1,0,15,0);
-	pOLED->string_P(pSpeedo->default_font,PSTR("Tetris"),12,2,0,15,0);
-	pOLED->string_P(pSpeedo->default_font,PSTR("Next"),11,4,0,15,0);
-	pOLED->string_P(pSpeedo->default_font,PSTR("Level: "),11,6,0,15,0);
-	pOLED->string_P(pSpeedo->default_font,PSTR("Lines: "),11,7,0,15,0);
+	OLED.string(Speedo.default_font,("Speedoino"),11,0,0,15,0);
+	OLED.string(Speedo.default_font,("goes "),13,1,0,15,0);
+	OLED.string(Speedo.default_font,("Tetris"),12,2,0,15,0);
+	OLED.string(Speedo.default_font,("Next"),11,4,0,15,0);
+	OLED.string(Speedo.default_font,("Level: "),11,6,0,15,0);
+	OLED.string(Speedo.default_font,("Lines: "),11,7,0,15,0);
 	char temp[3];
 	sprintf(temp,"%2i",int(floor(lines/10)));
-	pOLED->string(pSpeedo->default_font,temp,19,6,0,15,0);
+	OLED.string(Speedo.default_font,temp,19,6,0,15,0);
 	sprintf(temp,"%2i",lines);
-	pOLED->string(pSpeedo->default_font,temp,19,7,0,15,0);
+	OLED.string(Speedo.default_font,temp,19,7,0,15,0);
 }
 
 void tetris::updateField(){
@@ -498,7 +498,7 @@ void tetris::updateField(){
 				if(area[internal_y] & (1<<(COLS-internal_x))){
 					color=0x06;
 				}
-				pOLED->filled_rect(4*(internal_x)+12,4*(internal_y),4,4,color);
+				OLED.filled_rect(4*(internal_x)+12,4*(internal_y),4,4,color);
 			};
 		}
 	}
@@ -506,7 +506,7 @@ void tetris::updateField(){
 	for(int x=0;x<3;x++){
 		for(int y=0;y<3;y++){
 			if(active_element[x][y]){
-				pOLED->filled_rect(4*(active_x+x)+12,4*(active_y+y),4,4,15);
+				OLED.filled_rect(4*(active_x+x)+12,4*(active_y+y),4,4,15);
 			}
 		}
 	}
@@ -544,13 +544,13 @@ void tetris::check_stack(){
 				for(int line=0;line<LINES;line++){
 					if(area[line]==8190){
 						// blinken lassen
-						pOLED->filled_rect(12,line*4,12*4,4,0);
+						OLED.filled_rect(12,line*4,12*4,4,0);
 						_delay_ms(125);
-						pOLED->filled_rect(12,line*4,12*4,4,6);
+						OLED.filled_rect(12,line*4,12*4,4,6);
 						_delay_ms(125);
-						pOLED->filled_rect(12,line*4,12*4,4,0);
+						OLED.filled_rect(12,line*4,12*4,4,0);
 						_delay_ms(125);
-						pOLED->filled_rect(12,line*4,12*4,4,6);
+						OLED.filled_rect(12,line*4,12*4,4,6);
 						// felder verschieben
 						for(int upper_line=line;upper_line>0;upper_line--){
 							area[upper_line]=area[upper_line-1];
@@ -560,12 +560,12 @@ void tetris::check_stack(){
 								if(area[upper_line] & (1<<(COLS-copy_x))){
 									color=0x06;
 								}
-								pOLED->filled_rect(12+copy_x*4,upper_line*4,4,4,color);
+								OLED.filled_rect(12+copy_x*4,upper_line*4,4,4,color);
 							}
 						}
 						// letzte feld löschen
 						area[0]=0b0000000000000000;
-						pOLED->filled_rect(12,0,48,4,0);
+						OLED.filled_rect(12,0,48,4,0);
 
 						// lines hochzählen
 						lines++;
@@ -589,9 +589,9 @@ void tetris::check_stack(){
 						}
 						char temp[3];
 						sprintf(temp,"%2i",int(floor(lines/10)));
-						pOLED->string(pSpeedo->default_font,temp,19,6,0,15,0);
+						OLED.string(Speedo.default_font,temp,19,6,0,15,0);
 						sprintf(temp,"%2i",lines);
-						pOLED->string(pSpeedo->default_font,temp,19,7,0,15,0);
+						OLED.string(Speedo.default_font,temp,19,7,0,15,0);
 					}
 				}
 
@@ -616,11 +616,11 @@ void tetris::show_grid_on_serial(){
 	for(int a_y=0;a_y<LINES;a_y++){
 		for(int a_x=0;a_x<COLS;a_x++){
 			if(area[a_y] & (1<<(COLS-a_x)))
-				Serial.print("x");
+				Serial.puts(USART1,"x");
 			else
-				Serial.print(".");
+				Serial.puts(USART1,".");
 		}
-		Serial.println("");
+		Serial.puts_ln(USART1,"");
 	}
 	Serial.puts_ln(USART1,("===== GRID ====="));
 	Serial.puts_ln(USART1,("\n\n"));

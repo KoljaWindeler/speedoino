@@ -24,6 +24,12 @@ extern "C" {
 #include <stddef.h>
 #include "stdlib.h"
 #include "stdio.h"
+#include "version.h"
+
+typedef struct {
+	uint32_t longitude;
+	uint32_t latitude;
+} simple_coordinate;
 
 #include "AsciiLib.h"
 #include "ILI9325.h"
@@ -33,14 +39,22 @@ extern "C" {
 
 #include "uart.h"
 #include "demo.h"
+#include "timer.h"
 #include "millis.h"
 #include "Rpm.h"
 #include "aktors.h"
 #include "speedo.h"
 #include "flasher.h"
 #include "temperature.h"
+#include "gps.h"
+#include "clock.h"
 
 #include "Sensors.h"
+#include "lap_timer.h"
+
+//#include "file_manager_v2.h"
+#include "tetris.h"
+
 
 /**********************************  working settings ********************************/
 // development settings //

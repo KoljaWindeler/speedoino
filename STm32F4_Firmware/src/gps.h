@@ -8,13 +8,13 @@
 #ifndef GPS_H_
 #define GPS_H_
 
-#define    SERIAL_BUFFER_SIZE 75   // grÃ¶Ãe des char buffers fÃ¼r die seriellen gps daten
+#define    SERIAL_BUFFER_SIZE 75   // grÃ¶Ãe des uint8_t buffers fÃ¼r die seriellen gps daten
 #define		INFO_SAT 6
 #define		INFO_VALID 9
 #define		INFO_SPEED 5
 
 /**************** gps *******************/
-class speedo_gps{
+class GPS{
 #define STD_MARK 0
 #define SIMPLE_MARK 1
 #define SECTOR_END_MARK 2
@@ -23,33 +23,32 @@ class speedo_gps{
 #define NAVI_FOLDER "navi"
 
 
-
 public:
-	speedo_gps();
-	~speedo_gps();
+	GPS();
+	~GPS();
 	void init();
 	int check_vars();
 
-	void recv_data();
+	void recv_data(uint8_t byteGPS);
 	void loop();
 	void check_flag();
-	void SendByte(unsigned char data);
-	void SendString(const char *data);
+	void SendByte(uint8_t data);
+	void SendString(const uint8_t *data);
 	void set_gps_mark(int type);
 	void generate_new_order();
 	void update_rate_1Hz();
 	void update_rate_10Hz();
-	void set_drive_status(int speed, int ss, int sat, char status);
+	void set_drive_status(int speed, int ss, int sat, uint8_t status);
 	void reconfigure();
 
 	bool get_drive_status();
 	bool wait_on_gps();
 
 	int calc_gps_goodies();
-	int get_order(char char_buffer[], int* dist);
-	int get_logged_points(char* buffer,int i,int* nbytes);
+	int get_order(uint8_t char_buffer[], int* dist);
+	int get_logged_points(uint8_t* buffer,int i,int* nbytes);
 
-	long get_info(unsigned char select);
+	long get_info(uint8_t select);
 	unsigned long mod(unsigned long zahl,unsigned long teiler);
 	unsigned long nmea_to_dec(unsigned long nmea);
 
@@ -66,7 +65,7 @@ public:
 	int winkel; // 0-359
 	int gps_count; // aktuelle position in der gespeichert wird
 	unsigned int written_gps_points;
-	char navi_ziel_name[14];//= "Helmholtzstr."; //seperate var, muss das lÃ¤nger halten
+	uint8_t navi_ziel_name[14];//= "Helmholtzstr."; //seperate var, muss das lÃ¤nger halten
 	int active_file; //
 	int valid;
 	bool navi_active;
@@ -94,10 +93,10 @@ private:
 	int gps_state;
 	int motion_start;
 	int ringbuf_counter; // position im ring-empfangs-buffer
-	char gps_buffer1[SERIAL_BUFFER_SIZE]; // buffer zum entgegennehmen der seriellen daten
-	char gps_buffer2[SERIAL_BUFFER_SIZE]; // buffer zum entgegennehmen der seriellen daten
+	uint8_t gps_buffer1[SERIAL_BUFFER_SIZE]; // buffer zum entgegennehmen der seriellen daten
+	uint8_t gps_buffer2[SERIAL_BUFFER_SIZE]; // buffer zum entgegennehmen der seriellen daten
 	int store_to_sd();
-	void parse(char linea[SERIAL_BUFFER_SIZE],int datensatz);
+	void parse(uint8_t *linea,int datensatz);
 	void calc_navi();
 	unsigned long GpsTimeToTimeStamp(unsigned long input);
 };

@@ -19,7 +19,7 @@
 /** constructor
  * init time to 00:00:00
  */
-speedo_clock::speedo_clock(){
+clock::clock(){
 	m_year=0;
 	m_mon=0;
 	m_day=0;
@@ -29,7 +29,7 @@ speedo_clock::speedo_clock(){
 	wintertime=true;
 };
 
-speedo_clock::~speedo_clock(){};
+clock::~clock(){};
 
 
 
@@ -39,7 +39,7 @@ speedo_clock::~speedo_clock(){};
  * Input: pointer to var
  * Returns: true, if pointed value != current second
  */
-bool speedo_clock::changed(uint8_t* storage){
+bool clock::changed(uint8_t* storage){
 	if(*storage==uint8_t(m_ss)){
 		return false;
 	}
@@ -48,7 +48,7 @@ bool speedo_clock::changed(uint8_t* storage){
 };
 
 
-void speedo_clock::set_date_time(uint8_t year,uint8_t mon,uint8_t day,uint8_t hh,uint8_t mm,uint8_t ss, bool check_winter){
+void clock::set_date_time(uint8_t year,uint8_t mon,uint8_t day,uint8_t hh,uint8_t mm,uint8_t ss, bool check_winter){
 #ifdef CLOCK_DEBUG // das schon brutal nervige 1hz meldung
 	Serial.println("Setting Clock:");
 	char char_buffer[60];
@@ -82,7 +82,7 @@ void speedo_clock::set_date_time(uint8_t year,uint8_t mon,uint8_t day,uint8_t hh
 /** inc_hours is used to correct the hours, based on daylight_saving + GMT_TIME_CORRECTION
  * any checks if that changes the current day and year
  */
-void speedo_clock::inc_hours(){
+void clock::inc_hours(){
 	char inc=GMT_TIME_CORRECTION;
 	if(!wintertime){
 		inc++;
@@ -108,7 +108,7 @@ void speedo_clock::inc_hours(){
 /** calc daylight_saving
  * calculate once on startup if we have to add one addition hour
  */
-bool speedo_clock::is_winter_time(uint8_t year,uint8_t month,uint8_t day,uint8_t hour,uint8_t minute,uint8_t second){
+bool clock::is_winter_time(uint8_t year,uint8_t month,uint8_t day,uint8_t hour,uint8_t minute,uint8_t second){
 	// note year argument is offset from 1970 (see macros in time.h to convert to other formats)
 	// previous version used full four digit year (or digits since 2000),i.e. 2009 was 2009 or 9
 	bool winter;
@@ -173,12 +173,12 @@ bool speedo_clock::is_winter_time(uint8_t year,uint8_t month,uint8_t day,uint8_t
  * initialize the variables,
  * configure the interrupt behaviour.
  */
-void speedo_clock::init() {
+void clock::init() {
 	Serial.puts_ln(USART1,("Clock init done"));
 }
 
 
-int16_t speedo_clock::check_vars(){
+int16_t clock::check_vars(){
 	return 0;
 };
 
@@ -186,14 +186,14 @@ int16_t speedo_clock::check_vars(){
  * 22.12. will return 1222, so leading month and trailing day.
  * for compatiblity to get_long_date()
  */
-int16_t speedo_clock::getdate(){
+int16_t clock::getdate(){
 	return m_day+m_mon*100;
 };
 
 /** get_long_date returns a integer representation of the date
  * 06.12.2013 will return 131206, so leading year, than month and trailing day.
  */
-unsigned long speedo_clock::get_long_date(){
+unsigned long clock::get_long_date(){
 	if(m_year<99 && m_mon<=12 && m_day<=31){
 		return (unsigned long)((unsigned long)((unsigned long)(m_year*100)+m_mon)*100)+m_day;
 	}
@@ -201,11 +201,11 @@ unsigned long speedo_clock::get_long_date(){
 }
 
 
-uint8_t speedo_clock::get_ss(){
+uint8_t clock::get_ss(){
 	return m_ss;
 }
 
-void speedo_clock::inc(){
+void clock::inc(){
 	m_ss++;
 	if (m_ss>=60) {
 		m_ss=0;
@@ -220,7 +220,7 @@ void speedo_clock::inc(){
 };
 
 
-void speedo_clock::copy(char* buffer){
+void clock::copy(char* buffer){
 	sprintf(buffer,"%02i:%02i:%02i",m_hh%100,m_mm%100,m_ss%100);
 };
 
@@ -230,37 +230,37 @@ void speedo_clock::copy(char* buffer){
  * and the ignition is off. A permanent Voltage supply is
  * required for this clock
  */
-void speedo_clock::loop(){
-	if(pSpeedo->disp_zeile_bak[0]!=1){
-		pSpeedo->disp_zeile_bak[0]=1;
-		pOLED->clear_screen();
+void clock::loop(){
+	if(Speedo.disp_zeile_bak[0]!=1){
+		Speedo.disp_zeile_bak[0]=1;
+		TFT.clear_screen();
 		char temp[9];
 		sprintf(temp,"%02i:%02i:%02i",m_hh,m_mm,m_ss);
-		pOLED->string(VISITOR_SMALL_2X_FONT,temp,CLOCKMODE_COL,CLOCKMODE_ROW);
+		TFT.string(VISITOR_SMALL_2X_FONT,temp,CLOCKMODE_COL,CLOCKMODE_ROW);
 	};
 
 	// hour
-	if((pSpeedo->disp_zeile_bak[1])!=m_hh){
-		pSpeedo->disp_zeile_bak[1]=m_hh;
+	if((Speedo.disp_zeile_bak[1])!=m_hh){
+		Speedo.disp_zeile_bak[1]=m_hh;
 		char temp[3];
 		sprintf(temp,"%02i",m_hh);
-		pOLED->string(VISITOR_SMALL_2X_FONT,temp,CLOCKMODE_COL,CLOCKMODE_ROW);
+		TFT.string(VISITOR_SMALL_2X_FONT,temp,CLOCKMODE_COL,CLOCKMODE_ROW);
 	};
 
 	// min
-	if((pSpeedo->disp_zeile_bak[2])!=m_mm){
-		pSpeedo->disp_zeile_bak[2]=m_mm;
+	if((Speedo.disp_zeile_bak[2])!=m_mm){
+		Speedo.disp_zeile_bak[2]=m_mm;
 		char temp[3];
 		sprintf(temp,"%02i",m_mm);
-		pOLED->string(VISITOR_SMALL_2X_FONT,temp,CLOCKMODE_COL+6,CLOCKMODE_ROW);
+		TFT.string(VISITOR_SMALL_2X_FONT,temp,CLOCKMODE_COL+6,CLOCKMODE_ROW);
 	};
 
 	// sec
-	if((pSpeedo->disp_zeile_bak[3])!=get_ss()){
-		pSpeedo->disp_zeile_bak[3]=get_ss();
+	if((Speedo.disp_zeile_bak[3])!=get_ss()){
+		Speedo.disp_zeile_bak[3]=get_ss();
 		char temp[3];
 		sprintf(temp,"%02i",m_ss);
-		pOLED->string(VISITOR_SMALL_2X_FONT,temp,CLOCKMODE_COL+12,CLOCKMODE_ROW);
+		TFT.string(VISITOR_SMALL_2X_FONT,temp,CLOCKMODE_COL+12,CLOCKMODE_ROW);
 	};
 
 };

@@ -37,7 +37,6 @@ public:
 	virtual ~Speedo_Sensors();
 
 	void init();
-	void clear_vars();
 	void check_vars();
 	void single_read();
 	void addinfo_show_loop();
@@ -59,8 +58,8 @@ public:
 	speedo_temperature mTemperature;
 	flasher mFlasher;
 
-	//	speedo_clock* m_clock;
-	//	speedo_gps* m_gps;
+	clock mClock;
+	GPS mGPS;
 	//	speedo_temperature* m_temperature;
 	//	speedo_fuel* m_fuel;
 	//	speedo_speed* m_speed;

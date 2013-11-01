@@ -169,10 +169,13 @@ public:
 	void WriteRAM(u8 r, u8 g, u8 b);
 	u32 ReadRAM(void);
 	void Disp_Image(unsigned short *gImage_ptr);
+	void setRotation(uint8_t x);
 	void DisplayOn(void);
 	void DisplayOff(void);
-	void Clear(u8 b, u8 g, u8 r);
+	void clear_screen();
+	void clear_screen(u8 b, u8 g, u8 r);
 	void SetCursor(u8 Xpos, u16 Ypos);
+	void SetRotatedCursor(u16 Xpos, u8 Ypos);
 	void SetColors(u8 text_r, u8 text_g, u8 text_b, u8 back_r, u8 back_g,u8 back_b);
 	void GetColors(u8 *text_r, u8 *text_g, u8 *text_b, u8 *back_r, u8 *back_g,u8 *back_b);
 	void SetTextColor(u8 red, u8 green, u8 blue);
@@ -182,6 +185,8 @@ public:
 	void Pixel(int16_t x, int16_t y, u8 r, u8 g, u8 b);
 	void PutChar(int16_t PosX, int16_t PosY, char c);
 	void StringLine(uint16_t PosX, uint16_t PosY, char *str);
+	void string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile);
+	void string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, unsigned char fg, unsigned char bg, int offset);
 	void DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length,uint8_t Direction);
 	void DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width);
 	void DrawSquare(uint16_t Xpos, uint16_t Ypos, uint16_t a);

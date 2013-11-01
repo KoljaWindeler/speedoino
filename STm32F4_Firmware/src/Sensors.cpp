@@ -20,54 +20,52 @@
 
 
 //// check each and every sensor end return result
-//void Speedo_sensors::check_vars(){
-//	int any_failed=0;
-//	// wenn ein test einen fehler meldet wird der return wert "true"
-//	if(sensor_source==SENSOR_AUTO || sensor_source==SENSOR_FORCE_CAN){
-//		if(sensor_source==SENSOR_AUTO){
-//			Serial.puts_ln(USART1,("CAN auto detect"));
-//		} else {
-//			Serial.puts_ln(USART1,("Force CAN mode"));
-//		}
-//		CAN_active=true;
-//		any_failed+=m_CAN->check_vars();
-//		m_speed->shutdown();
-//		m_dz->shutdown();
-//	} else {
-//		Serial.puts_ln(USART1,("Analog sensor mode"));
-//		CAN_active=false;
-//		any_failed+=m_dz->check_vars();
-//		any_failed+=m_speed->check_vars();
-//		m_CAN->shutdown();
-//	}
-//
-//	/* CHECK ALL SENSORS */
-//
-//	any_failed+=m_blinker->check_vars();
-//	any_failed+=m_clock->check_vars();
-//	any_failed+=m_gps->check_vars();
-//	any_failed+=m_temperature->check_vars(); // needed for oiltemp
-//	any_failed+=m_fuel->check_vars();
-//	any_failed+=m_reset->check_vars();
-//	any_failed+=m_gear->check_vars();
-//	any_failed+=m_voltage->check_vars();
-//
-//	if(any_failed){
-//
-//		Serial.puts(USART1,("!!!! WARNING !!!!"));
-//		Serial.puts(USART1,("SD access strange"));
-//		Serial.puts_ln(USART1,("!!!! WARNING !!!!"));
-//
-//		Serial.println(any_failed);
-//		Serial.puts_ln(USART1,(" failures"));
-//
-//		pSD->sd_failed=true;
-//		//_delay_ms(5000);
-//		//pOLED->clear_screen();
-//	}
-//	/* CHECK ALL SENSORS */
-//};
-//
+void Speedo_Sensors::check_vars(){
+	int any_failed=0;
+	// wenn ein test einen fehler meldet wird der return wert "true"
+	//	if(sensor_source==SENSOR_AUTO || sensor_source==SENSOR_FORCE_CAN){
+	//		if(sensor_source==SENSOR_AUTO){
+	//			Serial.puts_ln(USART1,("CAN auto detect"));
+	//		} else {
+	//			Serial.puts_ln(USART1,("Force CAN mode"));
+	//		}
+	//		CAN_active=true;
+	//		any_failed+=m_CAN->check_vars();
+	//		m_speed->shutdown();
+	//		m_dz->shutdown();
+	//	} else {
+	//		Serial.puts_ln(USART1,("Analog sensor mode"));
+	//		CAN_active=false;
+	//		any_failed+=m_dz->check_vars();
+	//		any_failed+=m_speed->check_vars();
+	//		m_CAN->shutdown();
+	//	}
+
+	/* CHECK ALL SENSORS */
+
+	any_failed+=mFlasher.check_vars();
+	any_failed+=mClock.check_vars();
+	any_failed+=mGPS.check_vars();
+	any_failed+=mTemperature.check_vars(); // needed for oiltemp
+	//	any_failed+=m_fuel->check_vars();
+	//	any_failed+=m_reset->check_vars();
+	//	any_failed+=m_gear->check_vars();
+	//	any_failed+=m_voltage->check_vars();
+
+	if(any_failed){
+		Serial.puts_ln(USART1,("!!!! WARNING !!!!"));
+		Serial.puts_ln(USART1,("SD access strange"));
+		Serial.puts_ln(USART1,("!!!! WARNING !!!!"));
+
+		Serial.puts(USART1,any_failed);
+		Serial.puts_ln(USART1,(" failures"));
+		//		pSD->sd_failed=true; // TODO
+		_delay_ms(5000);
+		TFT.clear_screen();
+	}
+	/* CHECK ALL SENSORS */
+};
+
 ///********************************** GET section *************************************
 // * Since the Infomation could be provided by CAN or by
 // * convertional sensors, we have to build wrappers for
@@ -78,30 +76,30 @@
 // * - Air intake Temperature
 // * - Coolant Temparture
 // ********************************** GET section *************************************/
-//unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
-//#ifdef DEMO_MODE
-//	return Demo.get_RPM();
-//#endif
-//	unsigned int exact_value=0;
-//
-//	// get exact value
-//	if(CAN_active && !m_CAN->failed){
-//		exact_value=m_CAN->get_RPM(); // just get the number, no calculation
-//	} else {
-//		exact_value=m_dz->get_dz(); // just get the number, no calculation
-//	}
-//
-//	// return value based on mode,
-//	if(mode==RPM_TYPE_FLAT){ // used often
-//		return rpm_flatted;	// will be calculated with 10Hz in pull values
-//	} else if(mode==RPM_TYPE_FLAT_ROUNDED){ // used in speedo
-//		return (rpm_flatted&~15); // will be calculated with 10Hz in pull values
-//	} else if(mode==RPM_TYPE_ROUNDED){
-//		return (exact_value&~63); // == floor(exact_value/64)*64
-//	}
-//
-//	return exact_value;
-//};
+uint16_t Speedo_Sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
+#ifdef DEMO_MODE
+	return Demo.get_RPM();
+#endif
+	unsigned int exact_value=0;
+
+	//	// get exact value
+	//	if(CAN_active && !m_CAN->failed){
+	//		exact_value=m_CAN->get_RPM(); // just get the number, no calculation
+	//	} else {
+	//		exact_value=mRpm.get_exact(); // just get the number, no calculation
+	//	}
+	//
+	//	// return value based on mode,
+	//	if(mode==RPM_TYPE_FLAT){ // used often
+	//		return rpm_flatted;	// will be calculated with 10Hz in pull values
+	//	} else if(mode==RPM_TYPE_FLAT_ROUNDED){ // used in speedo
+	//		return (rpm_flatted&~15); // will be calculated with 10Hz in pull values
+	//	} else if(mode==RPM_TYPE_ROUNDED){
+	//		return (exact_value&~63); // == floor(exact_value/64)*64
+	//	}
+
+	return exact_value;
+};
 //
 //unsigned int Speedo_sensors::get_speed(bool mag_if_possible){
 //#ifdef DEMO_MODE
@@ -163,185 +161,185 @@
 //	return m_temperature->get_oil_temp();
 //	//	}
 //};
-///********************************** GET section *************************************/
-//
-///********************************** READ section *************************************
-// * The values must be read from the sensors, eighter by reading the analog sensors
-// * or by sending a CAN Bus request
-// * Single_read() should only provide startup Values for the inital screen.
-// * after that, the pull_values() does the work for us
-// ********************************** READ section *************************************/
-//
-//void Speedo_sensors::single_read(){
-//	Serial.puts_ln(USART1,("Sensor single read ... "));
-//	Serial.puts(USART1,("Reading: clock ... "));
-//	pSensors->m_clock->inc();  // sekunden hochzählen
-//	Serial.puts(USART1,("Done\r\nReading: GPS ... "));
-//	pSensors->m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
-//	Serial.puts(USART1,("Done\r\nReading: Air temp ... "));
-//	pSensors->m_temperature->read_air_temp();  // temperaturen aktualisieren
-//	Serial.puts(USART1,("Done\r\nReading: Oil temp ... "));
-//	pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
-//	Serial.puts(USART1,("Done\r\nReading: Water temp ... "));
-//	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren, useless if we use CAN but no problem
-//	Serial.puts(USART1,("Done\r\nReading: Voltages ... "));
-//	pSensors->m_voltage->calc(false); // spannungscheck
-//	char temp[6];
-//	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/100)),int((m_voltage->get()/10)%10));
-//	Serial.print(temp);
-//	Serial.puts(USART1,(" Done\r\nReading: Control lights ... "));
-//	check_inputs();
-//	Serial.puts_ln(USART1,(" Done\r\nSensor single read ... Done"));
-//};
-//
-//
-///***************************************************** PULL values ********************************************************
-// * Pull values is a process, called within every main loop cycle, so we have to decide, based on our own timer ten_Hz_timer
-// *
-// * the bool vars "update_required" becomes true every 100ms. In addition a counter "ten_Hz_counter" tells you if its the
-// * first, second, ..., tenth call within this second
-// *
-// * ============== INDEPENDENT ON CAN MODE ========================
-// *
-// * 1000ms: Sensors independent on CAN or no CAN, called every second just once: (by update_required && ten_Hz_counter==0)
-// * 		m_clock->inc(); // just counts seconds
-// * 		m_gps->valid++; // counts second from last valid data
-// * 		m_voltage->calc(); // update voltage value, maybe startup (if we started in clock_mode)
-// * 		m_temperature->read_oil_temp(); // update analog oil temperature sensor
-// *
-// * 100ms: Sensors independent on CAN or no CAN, called every 200 ms: (by update_required && ten_Hz_counter%2==0)
-// * 		m_blinker->check(); // check if the flashers are working
-// * 		pSensors->m_gear->calc(); // calculate gear based on speed and rpm
-// * 		rpm_flatted=flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,2,get_RPM(RPM_TYPE_FLAT));
-// * 		pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
-// *
-// *  25ms:
-// *  	pAktors->m_stepper->go_to(get_RPM(pAktors->m_stepper->shown_mode)); //3.10.2013 ran good
-// *
-// * ============== ONLY IN NON CAN MODE ========================
-// * 	1000ms:
-// *		m_temperature->read_air_temp();  // temperaturen aktualisieren
-// *		m_temperature->read_water_temp();  // temperaturen aktualisieren
-// *
-// * ============== ONLY IN CAN MODE ========================
-// * 	1000ms:
-// * 		m_CAN->request(CAN_WATER_TEMP); // generate a CAN message to ask for speed
-// *
-// * 	500ms:
-// * 		m_CAN->request(CAN_SPEED); // generate a CAN message to ask for speed
-// *
-// * 	200ms:
-// * 		m_CAN->request(CAN_RPM); // generate a CAN message to ask for RPM
-// *
-// * 	0ms:
-// * 		m_CAN->process_incoming_messages(); // call if the interrupt has set our flag
-// *
-// ***************************************************** PULL values *******************************************************/
-//
-//void Speedo_sensors::pull_values(){
-//	// is an update required?
-//	boolean update_required=false;
-//	if((Millis.get()-fourty_Hz_timer)>=24){ // 25ms
-//
-//#ifdef TACHO_SMALLDEBUG
-//		Serial.puts(USART1,("-s"));
-//#endif
-//		fourty_Hz_timer=Millis.get();
-//		fourty_Hz_counter=(fourty_Hz_counter+1)%40;
-//		update_required=true;
-//
-//		if(fourty_Hz_counter==0){ // 1 Hz
-//			m_voltage->calc(false); // spannungscheck
-//			m_temperature->read_oil_temp();  // temperaturen aktualisieren
-//			m_clock->inc();  // sekunden hochzählen
-//			m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
-//			// auto CAN detection ...
-//			if(sensor_source==SENSOR_AUTO){
-//				if(!m_CAN->init_comm_possible(&CAN_active)){ // returns always true, exept the communcation was NOT possible even if it should
-//					Serial.puts_ln(USART1,("=== CAN timed out ==="));
-//					Serial.puts_ln(USART1,("falling back to analog sensors"));
-//					m_CAN->shutdown();
-//					m_dz->init();
-//					m_speed->init();
-//					Serial.puts_ln(USART1,("=== CAN timed out ==="));
-//				}
-//			};
-//		}
-//
-//		if(fourty_Hz_counter%4==0){			//do this, every 10Hz, 100ms
-//			m_blinker->check();    // blinken wir?
-//			m_gear->calc();// blockt intern alle aufrufe die vor ablauf von 250 ms kommen
-//
-//
-//			// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
-//			rpm_flatted=flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,2,get_RPM(RPM_TYPE_FLAT));
-//			pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
-//
-////			////////////// TODO
-////			char rpm_buffer[20];
-////			sprintf(rpm_buffer,"%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT));
-////			Serial.println(rpm_buffer);
-////			////////////// TODO
-//		}
-//
-//		if(pAktors->m_stepper->init_steps_to_go==0){
-//			// to this with 40hz, 25ms
-//			// in addtion to the message above: handling of RPM and aktor
-//			pAktors->m_stepper->go_to(get_RPM(pAktors->m_stepper->shown_mode)); //3.10.2013 ran good
-//			//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT));
-//		}
-//	}
-//
-//
-//	/********************* CAN **************************
-//	 * we have to deciede from where we receive our infomation,
-//	 * from CAN or from converntianal sensors
-//	 * infos from CAN-Bus, could be:
-//	 * - Engine RPM
-//	 * - Verhicle Speed
-//	 * - Air intake Temperature
-//	 * - Coolant Temparture
-//	 *********************** CAN *************************/
-//	// CAN is present and should be used
-//	if(CAN_active && !m_CAN->failed){
-//		// fetch new message first
-//		if(m_CAN->message_available){ // muss hier die pin abfrage rein? dafür gibts doch den interrupt
-//			m_CAN->process_incoming_messages();
-//		}
-//		if(update_required && m_CAN->get_active_can_type()==CAN_TYPE_OBD2 && fourty_Hz_counter%4==0){ // 10Hz, request can OBD2 msg
-//			if(fourty_Hz_counter==0 || fourty_Hz_counter==2 || fourty_Hz_counter==4 || fourty_Hz_counter==6 || fourty_Hz_counter==8){ // 200ms
-//				m_CAN->request(CAN_CURRENT_INFO,CAN_RPM);
-//			} else if(fourty_Hz_counter==1 || fourty_Hz_counter==5 ){ // 500ms
-//				m_CAN->request(CAN_CURRENT_INFO,CAN_SPEED);
-//			} else if(fourty_Hz_counter==7){ // 1000ms
-//				m_CAN->request(CAN_CURRENT_INFO,CAN_WATER_TEMPERATURE);
-//			} else if(fourty_Hz_counter==9 ){  // 1000ms one free slot
-//				//m_CAN->request(?);
-//			};
-//		}
-//#ifdef TACHO_SMALLDEBUG
-//		Serial.puts_ln(USART1,("."));
-//#endif
-//	}
-//
-//	/***************** no can available, *********************
-//	 * ask analog sensors
-//	 ***************** no can available, *********************/
-//	else {
-//		if(update_required){ // 100ms spacing
-//			// do this, once a second
-//			if(fourty_Hz_counter==0){
-//				m_temperature->read_air_temp();  // temperaturen aktualisieren
-//				m_temperature->read_water_temp();  // temperaturen aktualisieren
-//			}
-//#ifdef TACHO_SMALLDEBUG
-//			Serial.puts_ln(USART1,("."));
-//#endif
-//		}
-//	}
-//}
-///********************************** READ section *************************************/
-//
+/********************************** GET section *************************************/
+
+/********************************** READ section *************************************
+ * The values must be read from the sensors, eighter by reading the analog sensors
+ * or by sending a CAN Bus request
+ * Single_read() should only provide startup Values for the inital screen.
+ * after that, the pull_values() does the work for us
+ ********************************** READ section *************************************/
+
+void Speedo_Sensors::single_read(){
+	Serial.puts_ln(USART1,("Sensor single read ... "));
+	Serial.puts(USART1,("Reading: clock ... "));
+	//	pSensors->mClock.inc();  // sekunden hochzählen
+	Serial.puts(USART1,("Done\r\nReading: GPS ... "));
+	mGPS.valid++;  // vor wievielen sekunden war es das letzte mal gültig
+	//	Serial.puts(USART1,("Done\r\nReading: Air temp ... "));
+	//	pSensors->m_temperature->read_air_temp();  // temperaturen aktualisieren
+	//	Serial.puts(USART1,("Done\r\nReading: Oil temp ... "));
+	//	pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
+	//	Serial.puts(USART1,("Done\r\nReading: Water temp ... "));
+	//	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren, useless if we use CAN but no problem
+	//	Serial.puts(USART1,("Done\r\nReading: Voltages ... "));
+	//	pSensors->m_voltage->calc(false); // spannungscheck
+	//	char temp[6];
+	//	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/100)),int((m_voltage->get()/10)%10));
+	//	Serial.print(temp);
+	//	Serial.puts(USART1,(" Done\r\nReading: Control lights ... "));
+	//	check_inputs();
+	//	Serial.puts_ln(USART1,(" Done\r\nSensor single read ... Done"));
+};
+
+
+/***************************************************** PULL values ********************************************************
+ * Pull values is a process, called within every main loop cycle, so we have to decide, based on our own timer ten_Hz_timer
+ *
+ * the bool vars "update_required" becomes true every 100ms. In addition a counter "ten_Hz_counter" tells you if its the
+ * first, second, ..., tenth call within this second
+ *
+ * ============== INDEPENDENT ON CAN MODE ========================
+ *
+ * 1000ms: Sensors independent on CAN or no CAN, called every second just once: (by update_required && ten_Hz_counter==0)
+ * 		mClock.inc(); // just counts seconds
+ * 		m_gps->valid++; // counts second from last valid data
+ * 		m_voltage->calc(); // update voltage value, maybe startup (if we started in clock_mode)
+ * 		m_temperature->read_oil_temp(); // update analog oil temperature sensor
+ *
+ * 100ms: Sensors independent on CAN or no CAN, called every 200 ms: (by update_required && ten_Hz_counter%2==0)
+ * 		m_blinker->check(); // check if the flashers are working
+ * 		pSensors->m_gear->calc(); // calculate gear based on speed and rpm
+ * 		rpm_flatted=flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,2,get_RPM(RPM_TYPE_FLAT));
+ * 		pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
+ *
+ *  25ms:
+ *  	pAktors->m_stepper->go_to(get_RPM(pAktors->m_stepper->shown_mode)); //3.10.2013 ran good
+ *
+ * ============== ONLY IN NON CAN MODE ========================
+ * 	1000ms:
+ *		m_temperature->read_air_temp();  // temperaturen aktualisieren
+ *		m_temperature->read_water_temp();  // temperaturen aktualisieren
+ *
+ * ============== ONLY IN CAN MODE ========================
+ * 	1000ms:
+ * 		m_CAN->request(CAN_WATER_TEMP); // generate a CAN message to ask for speed
+ *
+ * 	500ms:
+ * 		m_CAN->request(CAN_SPEED); // generate a CAN message to ask for speed
+ *
+ * 	200ms:
+ * 		m_CAN->request(CAN_RPM); // generate a CAN message to ask for RPM
+ *
+ * 	0ms:
+ * 		m_CAN->process_incoming_messages(); // call if the interrupt has set our flag
+ *
+ ***************************************************** PULL values *******************************************************/
+
+void Speedo_Sensors::pull_values(){
+	// is an update required?
+	boolean update_required=false;
+	if((Millis.get()-fourty_Hz_timer)>=24){ // 25ms
+
+#ifdef TACHO_SMALLDEBUG
+		Serial.puts(USART1,("-s"));
+#endif
+		fourty_Hz_timer=Millis.get();
+		fourty_Hz_counter=(fourty_Hz_counter+1)%40;
+		update_required=true;
+
+		if(fourty_Hz_counter==0){ // 1 Hz
+			//			m_voltage->calc(false); // spannungscheck
+			//			m_temperature->read_oil_temp();  // temperaturen aktualisieren
+			//			mClock.inc();  // sekunden hochzählen
+			//			m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
+			//			// auto CAN detection ...
+			//			if(sensor_source==SENSOR_AUTO){
+			//				if(!m_CAN->init_comm_possible(&CAN_active)){ // returns always true, exept the communcation was NOT possible even if it should
+			//					Serial.puts_ln(USART1,("=== CAN timed out ==="));
+			//					Serial.puts_ln(USART1,("falling back to analog sensors"));
+			//					m_CAN->shutdown();
+			//					m_dz->init();
+			//					m_speed->init();
+			//					Serial.puts_ln(USART1,("=== CAN timed out ==="));
+			//				}
+			//			};
+		}
+
+		if(fourty_Hz_counter%4==0){			//do this, every 10Hz, 100ms
+			//			m_blinker->check();    // blinken wir?
+			//			m_gear->calc();// blockt intern alle aufrufe die vor ablauf von 250 ms kommen
+			//
+			//
+			//			// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
+			//			rpm_flatted=flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,2,get_RPM(RPM_TYPE_FLAT));
+			//			pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
+			//
+			////			////////////// TODO
+			////			char rpm_buffer[20];
+			////			sprintf(rpm_buffer,"%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT));
+			////			Serial.println(rpm_buffer);
+			////			////////////// TODO
+		}
+
+		//		if(pAktors->m_stepper->init_steps_to_go==0){
+		//			// to this with 40hz, 25ms
+		//			// in addtion to the message above: handling of RPM and aktor
+		//			pAktors->m_stepper->go_to(get_RPM(pAktors->m_stepper->shown_mode)); //3.10.2013 ran good
+		//			//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT));
+		//		}
+	}
+
+
+	/********************* CAN **************************
+	 * we have to deciede from where we receive our infomation,
+	 * from CAN or from converntianal sensors
+	 * infos from CAN-Bus, could be:
+	 * - Engine RPM
+	 * - Verhicle Speed
+	 * - Air intake Temperature
+	 * - Coolant Temparture
+	 *********************** CAN *************************/
+	// CAN is present and should be used
+	//	if(CAN_active && !m_CAN->failed){
+	//		// fetch new message first
+	//		if(m_CAN->message_available){ // muss hier die pin abfrage rein? dafür gibts doch den interrupt
+	//			m_CAN->process_incoming_messages();
+	//		}
+	//		if(update_required && m_CAN->get_active_can_type()==CAN_TYPE_OBD2 && fourty_Hz_counter%4==0){ // 10Hz, request can OBD2 msg
+	//			if(fourty_Hz_counter==0 || fourty_Hz_counter==2 || fourty_Hz_counter==4 || fourty_Hz_counter==6 || fourty_Hz_counter==8){ // 200ms
+	//				m_CAN->request(CAN_CURRENT_INFO,CAN_RPM);
+	//			} else if(fourty_Hz_counter==1 || fourty_Hz_counter==5 ){ // 500ms
+	//				m_CAN->request(CAN_CURRENT_INFO,CAN_SPEED);
+	//			} else if(fourty_Hz_counter==7){ // 1000ms
+	//				m_CAN->request(CAN_CURRENT_INFO,CAN_WATER_TEMPERATURE);
+	//			} else if(fourty_Hz_counter==9 ){  // 1000ms one free slot
+	//				//m_CAN->request(?);
+	//			};
+	//		}
+	//#ifdef TACHO_SMALLDEBUG
+	//		Serial.puts_ln(USART1,("."));
+	//#endif
+	//	}
+	//
+	//	/***************** no can available, *********************
+	//	 * ask analog sensors
+	//	 ***************** no can available, *********************/
+	//	else {
+	//		if(update_required){ // 100ms spacing
+	//			// do this, once a second
+	//			if(fourty_Hz_counter==0){
+	//				m_temperature->read_air_temp();  // temperaturen aktualisieren
+	//				m_temperature->read_water_temp();  // temperaturen aktualisieren
+	//			}
+	//#ifdef TACHO_SMALLDEBUG
+	//			Serial.puts_ln(USART1,("."));
+	//#endif
+	//		}
+	//}
+}
+/********************************** READ section *************************************/
+
 
 //
 //
@@ -535,13 +533,14 @@ void Speedo_Sensors::init(){
 	mFlasher.init();
 	mTemperature.init();
 
-	//	m_clock->init();
+	//	mClock.init();
 	//	m_fuel->init();
 	//	m_speed->init();
 	//	m_reset->init();
 	//	m_gear->init();
 	//	m_voltage->init();
 	//	m_gps->init();
+	//	m_CAN.init();
 	//	//	m_CAN->init(); // done later in main startup
 	//
 	//	cli(); //  ... unschön, aber gps macht interrupts an
@@ -569,10 +568,6 @@ void Speedo_Sensors::init(){
 	Serial.puts_ln(USART1,("Sensors init done"));
 }
 
-// initialize every var, and write clean blank value to it (base config) ... moved to constructor
-void Speedo_Sensors::clear_vars(){
-	Serial.puts_ln(USART1,("Sensors values clear"));
-};
 
 /************* IIR Tiefpass ***********************
  * WARNING: max_counter is signed char! max 127

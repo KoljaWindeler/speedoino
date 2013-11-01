@@ -40,7 +40,6 @@ public:
 
 private:
 	int air_temp_value;
-	int max_values;
 
 	float oil_temp_value;
 	unsigned char oil_temp_value_counter;

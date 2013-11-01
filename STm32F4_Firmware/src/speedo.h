@@ -23,7 +23,7 @@ typedef struct {
 //111696 - 3715 :D --string in flash
 
 
-class speedo_speedo{
+class speedo{
 
 #define       	OIL_TEMP 0
 #define       	AIR_TEMP 1
@@ -47,7 +47,7 @@ public:
 	int 	  	  m_trip_mode; // welcher mode .. ob zeit, avg oder was auch immer
 	int	  		  m_trip_storage; // welcher wert angezeigt wird, 1= day 2=bla 3=blabla etc
 	int 		  disp_zeile_bak[12];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
-	int           max_speed[9];      // array of the max speed values sollte dem speedo_speedo gehören
+	int           max_speed[9];      // array of the max speed values sollte dem speedo gehören
 	unsigned long avg_timebase[9];
 	unsigned long trip_dist[9]; // 0=Total, 1=Non permanent, 2=Day, 3=Tour, 4=Quick, 5=Fuel, 6=Oiler, 7=Saison, 8=Board
 	int 		  refresh_cycle;
@@ -64,6 +64,6 @@ private:
 	bool addinfo2_currently_shown;
 
 };
-extern speedo_speedo Speedo;
+extern speedo Speedo;
 
 #endif /* SPEEDO_H_ */

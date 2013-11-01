@@ -87,38 +87,34 @@ void uart::init(USART_TypeDef* USARTx,uint32_t baudrate){
 		 * They make our life easier because we don't have to mess around with
 		 * the low level stuff of setting bits in the correct registers
 		 */
-		GPIO_InitTypeDef GPIO_InitStruct; // this is for the GPIO pins used as TX and RX
-		USART_InitTypeDef USART_InitStruct; // this is for the USART3 initilization
 		NVIC_InitTypeDef NVIC_InitStructure; // this is used to configure the NVIC (nested vector interrupt controller)
 
 		RCC_APB2PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 
-		/* enable the peripheral clock for the pins used by USART2, PD5 for TX and pd6 for RX */
-		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+		/* GPIOA clock enable */
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
-		/* This sequence sets up the TX and RX pins so they work correctly with the USART1 peripheral */
-		GPIO_InitStruct.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6; // Pins 5 (TX) and 6 (RX) are used
-		GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF; 			// the pins are configured as alternate function so the USART peripheral has access to them
-		GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;		// this defines the IO speed and has nothing to do with the baudrate!
-		GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;			// this defines the output type as push pull mode (as opposed to open drain)
-		GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;			// this activates the pullup resistors on the IO pins
-		GPIO_Init(GPIOD, &GPIO_InitStruct);					// now all the values are passed to the GPIO_Init() function which sets the GPIO registers
+		/* GPIOA Configuration:  USART2 TX on PA2 */
+		GPIO_InitTypeDef GPIO_InitStructure;
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP ;
+		GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-		/* The RX and TX pins are now connected to their AF so that the USART2 can take over control of the pins */
-		GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART2); //
-		GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART2);
+		/* Connect USART2 pins to AF2 */
+		// TX = PA2
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
 
-		/* Now the USART_InitStruct is used to define the
-		 * properties of USART1
-		 */
-		USART_InitStruct.USART_BaudRate = baudrate;				// the baudrate is set to the value we passed into this init function
-		USART_InitStruct.USART_WordLength = USART_WordLength_8b;// we want the data frame size to be 8 bits (standard)
-		USART_InitStruct.USART_StopBits = USART_StopBits_1;		// we want 1 stop bit (standard)
-		USART_InitStruct.USART_Parity = USART_Parity_No;		// we don't want a parity bit (standard)
-		USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None; // we don't want flow control (standard)
-		USART_InitStruct.USART_Mode = USART_Mode_Tx | USART_Mode_Rx; // we want to enable the transmitter and the receiver
-		USART_Init(USART2, &USART_InitStruct);					// again all the properties are passed to the USART_Init function which takes care of all the bit setting
-
+		USART_InitTypeDef USART_InitStructure; // this is for the USART3 initilization
+		USART_InitStructure.USART_BaudRate = 19600;
+		USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+		USART_InitStructure.USART_StopBits = USART_StopBits_1;
+		USART_InitStructure.USART_Parity = USART_Parity_No;
+		USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+		USART_InitStructure.USART_Mode = USART_Mode_Tx;
+		USART_Init(USART2, &USART_InitStructure);
 
 		/* Here the USART2 receive interrupt is enabled  and the interrupt controller is configured
 		 * to jump to the USART2_IRQHandler() function if the USART1 receive interrupt occurs  */

@@ -9,7 +9,7 @@
 #define CLOCK_ME_H_
 
 ////////////// DCF 77 / RTC_DS1307 ///////////////////////
-class speedo_clock  // shell class for the clock
+class clock  // shell class for the clock
 {
 #define GMT_TIME_CORRECTION 1
 #define SECS_PER_MIN  (60UL)
@@ -30,8 +30,8 @@ private:
 	volatile bool wintertime;
 	void inc_hours();
 public:
-	speedo_clock(void);
-	~speedo_clock();
+	clock(void);
+	~clock();
 	void init();
 	void loop();
 	int16_t check_vars();

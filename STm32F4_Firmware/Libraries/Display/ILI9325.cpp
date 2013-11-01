@@ -60,7 +60,7 @@ void ILI9325::init(void) {
 	WriteReg(R0, 0x0001); /* Start oscillator */
 	WriteReg(R1, 0x0000); /* set SS and SM bit */
 	WriteReg(R2, 0x0200); /* set 1 line inversion */
-	WriteReg(R3, 0xC030 | BRG_Mode); /* 8bits/262K BGR=x. */
+	WriteReg(R3, 0xC028 | BRG_Mode); /* 8bits/262K BGR=x. */
 	WriteReg(R4, 0x0000); /* Resize */
 	WriteReg(R8, 0x0207); /* set the back porch and front porch */
 	WriteReg(R9, 0x0000); /* set non-display area refresh cycle ISC[3:0] */
@@ -132,7 +132,7 @@ void ILI9325::init(void) {
 	/* Clear the LCD */
 	_delay_ms(50);
 
-	Clear(0, 0, 0);
+	clear_screen(0, 0, 0);
 	_delay_ms(50);
 }
 
@@ -143,10 +143,14 @@ void ILI9325::init(void) {
  * Output         : None
  * Return         : None
  *******************************************************************************/
-void ILI9325::Clear(u8 r, u8 g, u8 b) {
+void ILI9325::clear_screen(){
+	clear_screen(0,0,0);
+}
+
+void ILI9325::clear_screen(u8 r, u8 g, u8 b) {
 	u32 index = 0;
 
-	SetCursor(0x00, 0x00);
+	SetRotatedCursor(0x00, 0x00);
 
 	WriteRAM_Prepare(); /* Prepare to write GRAM */
 
@@ -195,7 +199,7 @@ void ILI9325::Disp_Image(unsigned short *gImage_ptr) {
 	u16 green;
 	u16 blue;
 
-	SetCursor(0x00, 0x00);
+	SetRotatedCursor(0x00, 0x00);
 
 	WriteRAM_Prepare(); /* Prepare to write GRAM */
 
@@ -246,19 +250,33 @@ void ILI9325::CharSize(uint16_t size) {
 }
 
 void ILI9325::PutPixel(int16_t x, int16_t y) {
-	if ((x > 239) || (y > 319)){
+	//if ((x > 239) || (y > 319)){
+	if ((x > 319) || (y > 239)){
 		return;
 	}
-	SetCursor(x, y);
+	SetRotatedCursor(x, y);
 	WriteRAM_Prepare();
 	WriteRAM(textRed, textGreen, textBlue);
 }
 
+void ILI9325::setRotation(uint8_t x) {
+	uint16_t t;
+	switch(x) {
+	default: t = 0x0030; break;
+	case 1 : t = 0x0028; break;
+	case 2 : t = 0x0000; break;
+	case 3 : t = 0x0018; break;
+
+	}
+	WriteReg(R3, t ); // MADCTL
+}
+
+
 void ILI9325::Pixel(int16_t x, int16_t y, u8 r, u8 g, u8 b) {
-	if ((x > 239) || (y > 319)){
+	if ((x > 319) || (y > 239)){
 		return;
 	}
-	SetCursor(x, y);
+	SetRotatedCursor(x, y);
 	WriteRAM_Prepare();
 	WriteRAM(r, g, b);
 }
@@ -351,13 +369,22 @@ void ILI9325::PutChar(int16_t PosX, int16_t PosY, char c) {
 	}
 	//----------------------------------------------------------------------------
 }
+
+void ILI9325::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, unsigned char fg, unsigned char bg, int offset){
+	StringLine(spalte*16+offset,zeile*30,str);
+}
+
+void ILI9325::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile){
+	StringLine(spalte*16,zeile*30,str);
+}
+
 void ILI9325::StringLine(uint16_t PosX, uint16_t PosY, char *str) {
 	char TempChar;
 
 	do {
 		TempChar = *str++;
 		PutChar(PosX, PosY, TempChar);
-		if (PosX < 232) {
+		if (PosX < 312) {
 			PosX += 8;
 			if (asciisize == 24) {
 				PosX += 8;
@@ -366,7 +393,7 @@ void ILI9325::StringLine(uint16_t PosX, uint16_t PosY, char *str) {
 			}
 		}
 
-		else if (PosY < 304) {
+		else if (PosY < 214) {
 
 			PosX = 0;
 			PosY += 16;
@@ -380,7 +407,7 @@ void ILI9325::StringLine(uint16_t PosX, uint16_t PosY, char *str) {
 void ILI9325::DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Direction) {
 	uint32_t i = 0;
 
-	SetCursor(Xpos, Ypos);
+	SetRotatedCursor(Xpos, Ypos);
 	if (Direction == Horizontal) {
 		WriteRAM_Prepare(); /* Prepare to write GRAM */
 		for (i = 0; i < Length; i++) {
@@ -391,7 +418,7 @@ void ILI9325::DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Di
 			WriteRAM_Prepare(); /* Prepare to write GRAM */
 			WriteRAM(textRed, textGreen, textBlue);
 			Ypos++;
-			SetCursor(Xpos, Ypos);
+			SetRotatedCursor(Xpos, Ypos);
 		}
 	}
 
@@ -567,12 +594,12 @@ void ILI9325::DrawUniLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
 	}
 }
 
-void ILI9325::Cross(u16 posX, u16 posY, u8 size) {
+void ILI9325::Cross(u16 posX, u16 posY, u8 size) { // TODO zerstört durch drehen!
 	u8 count = 0;
 	if (posX < size || posY < size)
 		return;
 
-	SetCursor(posX - size, posY);
+	SetRotatedCursor(posX - size, posY);
 	WriteRAM_Prepare();
 	for (count = 0; count < (size << 1) + 1; count++) {
 		LCD_RAM = textRed << 8;
@@ -581,7 +608,7 @@ void ILI9325::Cross(u16 posX, u16 posY, u8 size) {
 	}
 
 	for (count = 0; count < (size << 1) + 1; count++) {
-		SetCursor(posX, posY - size + count);
+		SetRotatedCursor(posX, posY - size + count);
 		WriteRAM_Prepare();
 		LCD_RAM = textRed << 8;
 		LCD_RAM = textGreen << 8;
@@ -602,6 +629,12 @@ void ILI9325::SetCursor(u8 Xpos, u16 Ypos) {
 	WriteReg(R33, Ypos);
 }
 
+void ILI9325::SetRotatedCursor(u16 Xpos, u8 Ypos){
+	WriteReg(R32, 240-Ypos);
+	WriteReg(R33, Xpos);
+}
+
+
 /*******************************************************************************
  * Function Name  : WriteReg
  * Description    : Writes to the selected LCD register.
@@ -610,10 +643,11 @@ void ILI9325::SetCursor(u8 Xpos, u16 Ypos) {
  * Output         : None
  * Return         : None
  *******************************************************************************/
-void ILI9325::WriteReg(u8 LCD_Reg, u16 LCD_RegValue){
+void ILI9325::WriteReg(u8 LCD_Rega, u16 LCD_RegValue){
 	LCD_REG = 0x00;
-	LCD_REG = LCD_REG << 8;
-	/* Write 16-bit LCD_REG */LCD_RAM = LCD_RegValue;
+	LCD_REG = LCD_Rega << 8; //  dump?
+	/* Write 16-bit LCD_REG */
+	LCD_RAM = LCD_RegValue;
 	LCD_RAM = LCD_RegValue << 8;
 }
 
@@ -689,8 +723,8 @@ u32 ILI9325::ReadRAM(void) {
 	blue = (val >> 8) & 0xF8; //Keep five highest bits
 	red = (val & 0x1F) << 3; //Keep five highest bits
 #else
-			red = (val >> 8) & 0xF8; //Keep five highest bits
-			blue = (val & 0x1F) << 3;//Keep five highest bits
+	red = (val >> 8) & 0xF8; //Keep five highest bits
+	blue = (val & 0x1F) << 3;//Keep five highest bits
 #endif
 	green = (val >> 3) & 0xFC; //Keep six highest bits
 	val = (red << 16) | (green << 8) | blue;
@@ -711,6 +745,16 @@ void ILI9325::CtrlLinesConfig() {
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_GPIOE,ENABLE);
 
 	// Create GPIO D Init structure for used pins
+	/* Pin configuration
+	 *       ~RD :             -> PD4  [FSMS NOE] (2.32)
+	 *       ~WR :             -> PD5  [FSMS NWE] (2.29) (USB OTG Over Current LED)
+	 *
+	 *       ~CS :             -> PD7  [FSMS NE1] (2.27)
+	 *        D5 : LCD Pin D13 -> PD8  [FSMC D13] (1.40)
+	 *        D6 : LCD Pin D14 -> PD9  [FSMC D14] (1.41)
+	 *        D7 : LCD Pin D15 -> PD10 [FSMC D15] (1.42)
+	 *        RS :     	 	   -> PD11 [FSMS A16] (1.43)
+	 */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
@@ -729,6 +773,16 @@ void ILI9325::CtrlLinesConfig() {
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource10, GPIO_AF_FSMC); // D15 -> D7
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource11, GPIO_AF_FSMC); // A16 -> RS
 
+	/*
+	 *       LED Backlight :   -> PE9  (1.27) (Timer 1 channel 1) // not used, hard wired to 3.3V
+	 *
+	 *        D0 : LCD Pin D8  -> PE11 [FSMC D08] (1.29)
+	 *        D1 : LCD Pin D9  -> PE12 [FSMC D09] (1.30)
+	 *        D2 : LCD Pin D10 -> PE13 [FSMC D10] (1.31)
+	 *        D3 : LCD Pin D11 -> PE14 [FSMC D11] (1.32)
+	 *        D4 : LCD Pin D12 -> PE15 [FSMC D12] (1.33)
+	 */
+
 	/* Create GPIO E Init structure for used pin */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
@@ -745,6 +799,8 @@ void ILI9325::CtrlLinesConfig() {
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource13, GPIO_AF_FSMC); // D10 -> D2
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource14, GPIO_AF_FSMC); // D11 -> D3
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource15, GPIO_AF_FSMC); // D12 -> D4
+
+	/**       ~RST:   		   -> PE10 (1.28) **/
 
 	/* Configure Reset Pin */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
@@ -797,7 +853,7 @@ void ILI9325::FSMCConfig() {
 	FSMC_NORSRAMInitStructure.FSMC_Bank = FSMC_Bank1_NORSRAM1; //Bank1
 	FSMC_NORSRAMInitStructure.FSMC_DataAddressMux = FSMC_DataAddressMux_Disable; //No mux
 	FSMC_NORSRAMInitStructure.FSMC_MemoryType = FSMC_MemoryType_SRAM; //SRAM type
-	FSMC_NORSRAMInitStructure.FSMC_MemoryDataWidth = FSMC_MemoryDataWidth_16b; //16 bits wide
+	FSMC_NORSRAMInitStructure.FSMC_MemoryDataWidth = FSMC_MemoryDataWidth_16b; //16 bits wide ? Why ever
 	FSMC_NORSRAMInitStructure.FSMC_BurstAccessMode = FSMC_BurstAccessMode_Disable; //No Burst
 	FSMC_NORSRAMInitStructure.FSMC_AsynchronousWait = FSMC_AsynchronousWait_Disable; // No wait
 	FSMC_NORSRAMInitStructure.FSMC_WaitSignalPolarity = FSMC_WaitSignalPolarity_Low; //Don'tcare

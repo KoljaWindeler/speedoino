@@ -100,6 +100,6 @@ private:
 	bool reinit_display;
 };
 
-extern ssd0323 OLED;
+//extern ssd0323 OLED;
 #endif
 

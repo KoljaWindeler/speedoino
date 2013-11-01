@@ -240,7 +240,7 @@ void speedo_menu::display(){
 	 * Show all icons and prepare setup
 	 ********************************************* Menu 1 - SPEEDOINO *********************************************/
 	else if(floor(state/10)==1 || state==BMP(7,3,1,1,1,1,1)){
-		OLED.clear_screen();
+		TFT.clear_screen();
 #ifdef MENU_DEBUG
 		Serial.puts_ln(USART1,"Menustate 00001X, Bin jetzt im Tacho menu, zeichne icons");
 #endif
@@ -268,7 +268,7 @@ void speedo_menu::display(){
 #ifdef MENU_DEBUG
 		Serial.puts_ln(USART1,"Menustate=000002X, Bin jetzt im Sprint Tacho menu");
 #endif
-		OLED.clear_screen();
+		TFT.clear_screen();
 		pSprint->prepare_startup();
 		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
@@ -313,13 +313,13 @@ void speedo_menu::display(){
 	///////////////////// is capture mode, active content is controlled in the LapTimer Class
 	else if(state==BMP(0,0,0,0,M_LAP_T,2,1)){
 		set_buttons(button_state,!button_state,!button_state,!button_state); // no up/down
-		OLED.clear_screen();
-		OLED.show_storry(("Right now, only one files is used. Here is some magic needed"),("TODO"));
+		TFT.clear_screen();
+		TFT.show_storry(("Right now, only one files is used. Here is some magic needed"),("TODO"));
 	}
 	///////////////////// ask if you really want to clear all current sectors
 	else if(state==BMP(0,0,0,0,M_LAP_T,3,1)){
 		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
-		OLED.show_storry(("Do you really want to clear all marks and record new?"),("GPS Marker"),DIALOG_NO_YES);
+		TFT.show_storry(("Do you really want to clear all marks and record new?"),("GPS Marker"),DIALOG_NO_YES);
 	}
 	///////////////////// state in the middle, switch gps update + clear file OR save finishline coordinates
 	else if(state==BMP(0,0,0,M_LAP_T,3,1,1)){
@@ -332,9 +332,9 @@ void speedo_menu::display(){
 			update_display=true;
 		} else if(old_state==state*10+1){ // comming from menu above, so obviously we have just reached the FINISH LINE
 			if(pSensors->m_gps->get_info(6)<3){
-				OLED.clear_screen();
-				OLED.string_centered(("No GPS"),3,true);
-				OLED.string_centered(("Nothing saved"),4,true);
+				TFT.clear_screen();
+				TFT.string_centered(("No GPS"),3,true);
+				TFT.string_centered(("Nothing saved"),4,true);
 				pSensors->m_gps->update_rate_1Hz();
 				_delay_ms(1500); // show it for a certain time
 				back();
@@ -344,8 +344,8 @@ void speedo_menu::display(){
 				pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
 
 				// some fancy output
-				OLED.clear_screen();
-				OLED.string_centered(("Finish-Line"),3,true);
+				TFT.clear_screen();
+				TFT.string_centered(("Finish-Line"),3,true);
 				_delay_ms(100); // we will loose one gps points !! wise?
 
 				// switch the state & draw the screen
@@ -366,8 +366,8 @@ void speedo_menu::display(){
 	///////////////////// capture new GPS marker
 	else if(state==BMP(0,M_LAP_T,3,1,1,1,1)){
 		pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
-		OLED.clear_screen();
-		OLED.string_centered(("Saved"),3,true);
+		TFT.clear_screen();
+		TFT.string_centered(("Saved"),3,true);
 		pSpeedo->reset_bak();
 		_delay_ms(200); // we will loose some gps points !! wise?
 		old_state=state;
@@ -377,12 +377,12 @@ void speedo_menu::display(){
 	///////////// reset times
 	else if(state==BMP(0,0,0,0,M_LAP_T,4,1)){
 		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
-		OLED.show_storry(("Do you really want to reset all sector times?"),("Reset record"),DIALOG_NO_YES);
+		TFT.show_storry(("Do you really want to reset all sector times?"),("Reset record"),DIALOG_NO_YES);
 	}
 	else if(state==BMP(0,0,0,M_LAP_T,4,1,1)){
 		pLapTimer->reset_times(pLapTimer->get_active_filename());
-		OLED.clear_screen();
-		OLED.string_centered(("Saved"),3,true);
+		TFT.clear_screen();
+		TFT.string_centered(("Saved"),3,true);
 		_delay_ms(1000);
 		back();
 		back();
@@ -390,8 +390,8 @@ void speedo_menu::display(){
 	////////// Eval
 	else if(state==BMP(0,0,0,0,M_LAP_T,5,1)){
 		set_buttons(button_state,!button_state,!button_state,!button_state); // no up/down
-		OLED.clear_screen();
-		OLED.show_storry(("Evaluation is not yet implemented. Here is some magic needed"),("TODO"));
+		TFT.clear_screen();
+		TFT.show_storry(("Evaluation is not yet implemented. Here is some magic needed"),("TODO"));
 	}
 	////////// Setup of laptimer
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_LAP_T,6)) { // 00046X
@@ -446,16 +446,16 @@ void speedo_menu::display(){
 		};
 		state=floor(state/10)*10+1; // zur?ckschuppsen
 
-		OLED.clear_screen();
-		OLED.string(Speedo.default_font,("Navi Track Pointer"),0,0,0,DISP_BRIGHTNESS,0);
+		TFT.clear_screen();
+		TFT.string(Speedo.default_font,("Navi Track Pointer"),0,0,0,DISP_BRIGHTNESS,0);
 		pSensors->m_gps->generate_new_order(); // vor ausgabe von pSensors->m_gps->navi_point, wenn pSensors->m_gps->navi_point nach dem knopfdruck zu hoch war wirds in dieser fkt zur?ck gesetzt
 		sprintf(char_buffer,"#%3i:",pSensors->m_gps->navi_point);
-		OLED.string(Speedo.default_font,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
-		OLED.string(Speedo.default_font,pSensors->m_gps->navi_ziel_name,7,2,0,DISP_BRIGHTNESS,0); // stra?e
+		TFT.string(Speedo.default_font,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,pSensors->m_gps->navi_ziel_name,7,2,0,DISP_BRIGHTNESS,0); // stra?e
 		sprintf_P(char_buffer,("Long: %05i%04i"),int(floor(pSensors->m_gps->navi_ziel_long/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_long,10000)));
-		OLED.string(Speedo.default_font,char_buffer,2,6,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,char_buffer,2,6,0,DISP_BRIGHTNESS,0);
 		sprintf_P(char_buffer,("Lati: %05i%04i"),int(floor(pSensors->m_gps->navi_ziel_lati/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_lati,10000))); // typisch 052033224 => 5203,3224 => kann pro feld bis zu 32767 => 3.276.732.767 => 3.276? was quasi 8 mal um die welt geht
-		OLED.string(Speedo.default_font,char_buffer,2,7,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,char_buffer,2,7,0,DISP_BRIGHTNESS,0);
 	}
 	/////////////////////////////////////////////////// Dateien listen und highlighten... irgendwie ///////////////////////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_FILE)){ // 33[X]
@@ -517,20 +517,20 @@ void speedo_menu::display(){
 				for(int i=2;i<=byte_read;i++){ // remove "#d" from destriction string
 					buffer_big[i-2]=buffer_big[i];
 				};
-				OLED.show_storry(buffer_big,byte_read,title,sizeof(title)/sizeof(title[0]));
+				TFT.show_storry(buffer_big,byte_read,title,sizeof(title)/sizeof(title[0]));
 			} else {
-				OLED.clear_screen();
-				OLED.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-				OLED.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-				OLED.string(Speedo.default_font,("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
+				TFT.clear_screen();
+				TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+				TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+				TFT.string(Speedo.default_font,("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
 			}
 		} else { // if there is no file with that number
-			OLED.clear_screen();
+			TFT.clear_screen();
 			char title[17];
 			sprintf_P(title,("Navifile Nr: %i/9"),pSensors->m_gps->active_file);
-			OLED.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-			OLED.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-			OLED.string(Speedo.default_font,("File not found"),2,3,0,DISP_BRIGHTNESS,0);
+			TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+			TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+			TFT.string(Speedo.default_font,("File not found"),2,3,0,DISP_BRIGHTNESS,0);
 		};
 		subdir.close();
 		root.close();
@@ -545,9 +545,9 @@ void speedo_menu::display(){
 				upper_one=false;
 			};
 		} else { // first access of this menu -> prepare
-			OLED.clear_screen();
-			OLED.string_centered(("= File selector ="),0,false);
-			OLED.string(Speedo.default_font,("\x7E back      select \x7F"),0,7);
+			TFT.clear_screen();
+			TFT.string_centered(("= File selector ="),0,false);
+			TFT.string(Speedo.default_font,("\x7E back      select \x7F"),0,7);
 		}
 
 		if(state%10==1){ // avoid going up
@@ -567,7 +567,7 @@ void speedo_menu::display(){
 
 
 		if(pFilemanager_v2->get_file_handle((unsigned char*)filename,(unsigned char*)filename,&file_handle,&dir_handle,O_READ|O_CREAT)<0){	// works :D
-			OLED.show_storry(("Open POI dir failed"),("Error"),DIALOG_GO_LEFT_1000MS);
+			TFT.show_storry(("Open POI dir failed"),("Error"),DIALOG_GO_LEFT_1000MS);
 		} else {
 			if(!build_complete_list){ // only "re-read" two items
 				if(upper_one){ // e.G. state == 374, we pushed "down" 3 times (from 371->374), we want to refresh item 3 and the item above (2)
@@ -609,18 +609,18 @@ void speedo_menu::display(){
 				}
 				// print it
 				if((build_complete_list && (unsigned)item==(state%10)-1) || (!build_complete_list && upper_one && item==stop) || (!build_complete_list && !upper_one && item==start)){
-					OLED.highlight_bar(0,(item+1)*8,128,8);
-					OLED.string(Speedo.default_font,filename,2,item+1,0x0f,0x00,0);
+					TFT.highlight_bar(0,(item+1)*8,128,8);
+					TFT.string(Speedo.default_font,filename,2,item+1,0x0f,0x00,0);
 				} else {
-					OLED.filled_rect(0,(item+1)*8,128,8,0x00);
-					OLED.string(Speedo.default_font,filename,2,item+1);
+					TFT.filled_rect(0,(item+1)*8,128,8,0x00);
+					TFT.string(Speedo.default_font,filename,2,item+1);
 				}
 
 				item++;
 			}
 		}
 	} else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POI_FINDER)){	// some output
-		OLED.show_storry(("It will take some time to generate a navi file from this POI. Continue?"),("POI Navigation"),DIALOG_NO_YES);
+		TFT.show_storry(("It will take some time to generate a navi file from this POI. Continue?"),("POI Navigation"),DIALOG_NO_YES);
 	} else if(floor(state/1000)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POI_FINDER)){	// file selection
 		speedo_poi_finder* pPOI_Finder=new speedo_poi_finder();
 		pPOI_Finder->calc(int(floor(state/100))%10);
@@ -630,15 +630,15 @@ void speedo_menu::display(){
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		char buffer[10];
 		sprintf(buffer,"%i",pSensors->m_gps->written_gps_points);
-		OLED.clear_screen();
-		OLED.string(Speedo.default_font,buffer,5,3,0,DISP_BRIGHTNESS,0);
-		OLED.string(Speedo.default_font,("Points written"),3,4,0,DISP_BRIGHTNESS,0);
+		TFT.clear_screen();
+		TFT.string(Speedo.default_font,buffer,5,3,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,("Points written"),3,4,0,DISP_BRIGHTNESS,0);
 	}
 	////////////////////////  prepare speedoCam status screen //////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_SPEEDCAM_STATUS)){ //38[X]
 		set_buttons(true,false,false,false);
 		pSpeedo->reset_bak();
-		OLED.clear_screen();
+		TFT.clear_screen();
 	}
 	////////// Setup of poi warner
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_SPEEDCAM_ON_OFF)) { // 00039X
@@ -675,15 +675,15 @@ void speedo_menu::display(){
 	//////////////////////// Einmaliges Setup des GPS Tacho ////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,5,1)) { // 51[X]
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
-		OLED.clear_screen();
-		OLED.string(Speedo.default_font,("GPS_time"),0,0);
-		OLED.string(Speedo.default_font,("GPS_date"),0,1);
-		OLED.string(Speedo.default_font,("GPS_long"),0,2);
-		OLED.string(Speedo.default_font,("GPS_lati"),0,3);
-		OLED.string(Speedo.default_font,("GPS_alti"),0,4);
-		OLED.string(Speedo.default_font,("GPS_speed"),0,5);
-		OLED.string(Speedo.default_font,("GPS_sats"),0,6);
-		OLED.string(Speedo.default_font,("Counter"),0,7);
+		TFT.clear_screen();
+		TFT.string(Speedo.default_font,("GPS_time"),0,0);
+		TFT.string(Speedo.default_font,("GPS_date"),0,1);
+		TFT.string(Speedo.default_font,("GPS_long"),0,2);
+		TFT.string(Speedo.default_font,("GPS_lati"),0,3);
+		TFT.string(Speedo.default_font,("GPS_alti"),0,4);
+		TFT.string(Speedo.default_font,("GPS_speed"),0,5);
+		TFT.string(Speedo.default_font,("GPS_sats"),0,6);
+		TFT.string(Speedo.default_font,("Counter"),0,7);
 
 		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
@@ -691,19 +691,19 @@ void speedo_menu::display(){
 	else if(floor(state/10)==BMP(0,0,0,0,0,5,2)) {
 		// show info that CAN is offline
 		if(!pSensors->CAN_active){
-			OLED.clear_screen();
-			OLED.string(Speedo.default_font,("CAN is not active"),2,3,0,15,0);
+			TFT.clear_screen();
+			TFT.string(Speedo.default_font,("CAN is not active"),2,3,0,15,0);
 		}
 		// get CAN info and show them
 		else {
 			pSpeedo->reset_bak();
-			OLED.clear_screen();
-			OLED.highlight_bar(0,0,128,8);
-			OLED.string(Speedo.default_font,("CAN DTS Codes"),2,0,15,0,0);
+			TFT.clear_screen();
+			TFT.highlight_bar(0,0,128,8);
+			TFT.string(Speedo.default_font,("CAN DTS Codes"),2,0,15,0,0);
 
 			int dtc_error_count=pSensors->m_CAN->get_dtc_error_count();
 			if(dtc_error_count==0){
-				OLED.string(Speedo.default_font,("No errors :)"),6,4,0,15,0);
+				TFT.string(Speedo.default_font,("No errors :)"),6,4,0,15,0);
 			} else {
 
 #ifdef CAN_DEBUG
@@ -727,13 +727,13 @@ void speedo_menu::display(){
 						}
 
 						sprintf_P(char_buffer,("Error %i/%i:%c%04i"),i+3*state_helper+1,dtc_error_count,region,error_code&0x0fff);
-						OLED.string(Speedo.default_font,char_buffer,0,2*i+1,0,15,0);
+						TFT.string(Speedo.default_font,char_buffer,0,2*i+1,0,15,0);
 						sprintf_P(char_buffer,("%c%04i"),region,error_code&0x0fff);
 						pSensors->m_CAN->decode_dtc(char_buffer,SPEED_TRIPPLE);
 						center_me(char_buffer,21);
-						OLED.string(Speedo.default_font,char_buffer,0,2*i+2,0,7,0);
+						TFT.string(Speedo.default_font,char_buffer,0,2*i+2,0,7,0);
 					} else {
-						OLED.string(Speedo.default_font,("COMM FAILED"),2*i+2,0,15,0,0);
+						TFT.string(Speedo.default_font,("COMM FAILED"),2*i+2,0,15,0,0);
 					}
 				} // for
 			} // error count >0
@@ -749,7 +749,7 @@ void speedo_menu::display(){
 			bool down=!button_state;
 			if((2+3*state_helper)<dtc_error_count){
 				down=button_state;
-				OLED.string(Speedo.default_font,("Press down for more"),0,7,0,15,0);
+				TFT.string(Speedo.default_font,("Press down for more"),0,7,0,15,0);
 			}
 			if(old_state==BMP(0,0,0,0,0,5,2)){
 				state_helper=0;
@@ -774,12 +774,12 @@ void speedo_menu::display(){
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 		// Menu vorbereiten
 		pSpeedo->reset_bak();
-		OLED.clear_screen();
-		OLED.highlight_bar(0,0,128,8);
-		OLED.string(Speedo.default_font,("Additional info"),2,0,15,0,0);
-		OLED.draw_water(10,16);
-		OLED.draw_air(20,24);
-		OLED.draw_oil(10,32);
+		TFT.clear_screen();
+		TFT.highlight_bar(0,0,128,8);
+		TFT.string(Speedo.default_font,("Additional info"),2,0,15,0,0);
+		TFT.draw_water(10,16);
+		TFT.draw_air(20,24);
+		TFT.draw_oil(10,32);
 		// values will be added by "main" loop to have a online-monitoring
 	}
 	//////////////////////// stepper info ////////////////////////////
@@ -787,9 +787,9 @@ void speedo_menu::display(){
 		set_buttons(button_state,!button_state,!button_state,button_state); // left & right only
 		// Menu vorbereiten
 		pSpeedo->reset_bak();
-		OLED.clear_screen();
-		OLED.highlight_bar(0,0,128,8);
-		OLED.string(Speedo.default_font,("Additional info"),2,0,15,0,0);
+		TFT.clear_screen();
+		TFT.highlight_bar(0,0,128,8);
+		TFT.string(Speedo.default_font,("Additional info"),2,0,15,0,0);
 		// this is just the caption,
 		// the loop will fill the screen
 		//		 pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS);
@@ -800,19 +800,19 @@ void speedo_menu::display(){
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left & right only
 		// Menu vorbereiten
 		pSpeedo->reset_bak();
-		OLED.clear_screen();
-		OLED.highlight_bar(0,0,128,8);
-		OLED.string(Speedo.default_font,("Additional info"),2,0,15,0,0);
-		OLED.string(Speedo.default_font,("Kicking to 10k"),2,2,0,15,0);
+		TFT.clear_screen();
+		TFT.highlight_bar(0,0,128,8);
+		TFT.string(Speedo.default_font,("Additional info"),2,0,15,0,0);
+		TFT.string(Speedo.default_font,("Kicking to 10k"),2,2,0,15,0);
 		pAktors->m_stepper->go_to(10000);
 		_delay_ms(3000);
 		back();
 	}
 	//////////////////////// TEST des watchdogs durch absitzen ////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,5,6)){ // 56[X]
-		OLED.clear_screen();
-		OLED.string(Speedo.default_font,("WAIT 30 sec"),3,3);
-		OLED.string(Speedo.default_font, ("for reset"),4,4);
+		TFT.clear_screen();
+		TFT.string(Speedo.default_font,("WAIT 30 sec"),3,3);
+		TFT.string(Speedo.default_font, ("for reset"),4,4);
 		_delay_ms(29999); // knapp 30 sec
 	}
 
@@ -835,14 +835,14 @@ void speedo_menu::display(){
 		};
 
 		state=floor(state/10)*10+3; // move to fixed state, to be sure
-		int status=OLED.animation(state_helper); // <-- RUN ANIMATION
+		int status=TFT.animation(state_helper); // <-- RUN ANIMATION
 		if(status==-1){ //Post work -1: Dir problems, -2: EOF
-			OLED.clear_screen();
-			OLED.string(Speedo.default_font,"Open dir failed",3,2,0,DISP_BRIGHTNESS,0);
+			TFT.clear_screen();
+			TFT.string(Speedo.default_font,"Open dir failed",3,2,0,DISP_BRIGHTNESS,0);
 		} else if(status==-2){ // we reached end of file, restart with the first file
 			if(state_helper==0){ // we were able to open the dir, but we found not one SGF file at all
-				OLED.clear_screen();
-				OLED.string(Speedo.default_font,"no SGF file found",3,2,0,DISP_BRIGHTNESS,0);
+				TFT.clear_screen();
+				TFT.string(Speedo.default_font,"no SGF file found",3,2,0,DISP_BRIGHTNESS,0);
 			} else {
 				state_helper=0;
 				update_display=true; // rerun this loop to show the first animation again
@@ -858,28 +858,28 @@ void speedo_menu::display(){
 	////////////////////////////////// ABOUT //////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,5,8)) { // 00058X
 		set_buttons(button_state,!button_state,!button_state,!button_state); // msg only
-		OLED.clear_screen();
-		OLED.highlight_bar(0,0,128,8);
-		OLED.string(Speedo.default_font,("Speedoino"),2,0,DISP_BRIGHTNESS,0,0);
-		OLED.string(Speedo.default_font,("GNU - Licensed"),0,1,0,DISP_BRIGHTNESS,0);
+		TFT.clear_screen();
+		TFT.highlight_bar(0,0,128,8);
+		TFT.string(Speedo.default_font,("Speedoino"),2,0,DISP_BRIGHTNESS,0,0);
+		TFT.string(Speedo.default_font,("GNU - Licensed"),0,1,0,DISP_BRIGHTNESS,0);
 
-		OLED.string(Speedo.default_font,("HW version:"),0,3,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,("HW version:"),0,3,0,DISP_BRIGHTNESS,0);
 		sprintf(char_buffer,"%03i",pConfig->get_hw_version());
-		OLED.string(Speedo.default_font,char_buffer,11,3);
-		OLED.string(Speedo.default_font,(GIT_REV),0,4,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,char_buffer,11,3);
+		TFT.string(Speedo.default_font,(GIT_REV),0,4,0,DISP_BRIGHTNESS,0);
 
-		OLED.string(Speedo.default_font,("contact me at"),0,6,0,DISP_BRIGHTNESS,0);
-		OLED.string(Speedo.default_font,("KKoolljjaa@gmail.com"),0,7,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,("contact me at"),0,6,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,("KKoolljjaa@gmail.com"),0,7,0,DISP_BRIGHTNESS,0);
 	}
 	/////////////////// TETRIS //////////////////77
 	else if(state==BMP(0,0,0,0,5,9,1)) {
-		OLED.clear_screen();
-		OLED.highlight_bar(0,8,128,8);
-		OLED.string(Speedo.default_font,("Tetris"),6,1,15,0,0);
-		OLED.string(Speedo.default_font,("in tribut to"),2,3,0,15,0);
-		OLED.string(Speedo.default_font,("Alexej Padschitnow"),2,4,0,15,0);
-		OLED.string(Speedo.default_font,("\x7E Quit"),2,5,0,15,0);
-		OLED.string(Speedo.default_font,("\x7F go for it"),2,6,0,15,0);
+		TFT.clear_screen();
+		TFT.highlight_bar(0,8,128,8);
+		TFT.string(Speedo.default_font,("Tetris"),6,1,15,0,0);
+		TFT.string(Speedo.default_font,("in tribut to"),2,3,0,15,0);
+		TFT.string(Speedo.default_font,("Alexej Padschitnow"),2,4,0,15,0);
+		TFT.string(Speedo.default_font,("\x7E Quit"),2,5,0,15,0);
+		TFT.string(Speedo.default_font,("\x7F go for it"),2,6,0,15,0);
 	} else if(state==BMP(0,0,0,5,9,1,1)){
 		update_display=true;
 		state++;
@@ -952,26 +952,26 @@ void speedo_menu::display(){
 			char title[15];
 			sprintf_P(title,("Skinfile Nr: %i/8"),int(state%10)-1);
 			if(buffer[0]=='#'){
-				OLED.show_storry(buffer,byte_read,title,sizeof(title)/sizeof(title[0]));
+				TFT.show_storry(buffer,byte_read,title,sizeof(title)/sizeof(title[0]));
 			} else {
-				OLED.clear_screen();
-				OLED.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-				OLED.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-				OLED.string(Speedo.default_font,("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
+				TFT.clear_screen();
+				TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+				TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+				TFT.string(Speedo.default_font,("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
 			}
 			// noch mal kurz den buffer missbrauchen
 			sprintf_P(buffer,("\x7F Preview - \x7F\x7F Save"));
-			OLED.string(Speedo.default_font,buffer,0,7,0,DISP_BRIGHTNESS,0);
+			TFT.string(Speedo.default_font,buffer,0,7,0,DISP_BRIGHTNESS,0);
 			// free buffer
 			free(buffer);
 			// end of draw to display
 		} else { // if there is no file with that number
-			OLED.clear_screen();
+			TFT.clear_screen();
 			char title[17];
 			sprintf_P(title,("Skinfile Nr: %i/8"),int(state%10)-1);
-			OLED.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-			OLED.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-			OLED.string(Speedo.default_font,("File not found"),2,3,0,DISP_BRIGHTNESS,0);
+			TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+			TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+			TFT.string(Speedo.default_font,("File not found"),2,3,0,DISP_BRIGHTNESS,0);
 			set_buttons(button_state,button_state,button_state,!button_state); // no right
 		};
 		subdir.close();
@@ -987,8 +987,8 @@ void speedo_menu::display(){
 		char filename[10];
 		sprintf_P(filename,("SKIN%i.SSF"),(int(floor(state/10))%10)-1);
 		pConfig->read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
-		OLED.clear_screen();
-		OLED.string(Speedo.default_font,("Preview"),6,3);
+		TFT.clear_screen();
+		TFT.string(Speedo.default_font,("Preview"),6,3);
 		_delay_ms(300);
 
 		// set buttons
@@ -1004,14 +1004,14 @@ void speedo_menu::display(){
 
 	//////////////////////// skin speichern -> zum men?punkt 11 gehen und alles ist gut ////////////////////////////
 	else if(floor(state/1000)==BMP(0,0,0,0,0,6,1)) { // 0061[xyz]
-		OLED.clear_screen();
+		TFT.clear_screen();
 		pConfig->skin_file=(int(floor(state/100))%10)-1;
 		pConfig->storage_outdated=true;
 		pConfig->write("BASE.TXT"); // save config
 
-		OLED.string(Speedo.default_font,("Saved"),7,3);
+		TFT.string(Speedo.default_font,("Saved"),7,3);
 		_delay_ms(300);
-		OLED.clear_screen();
+		TFT.clear_screen();
 
 		state=BMP(0,0,0,0,0,1,1);
 		update_display=true;
@@ -1062,27 +1062,27 @@ void speedo_menu::display(){
 	}
 	else if(floor(state/100)==BMP(0,0,0,0,0,6,3) || floor(state/1000)==BMP(0,0,0,0,0,6,3)){ // 631[X] or 6311[X]
 		if(state!=old_state+1 && state!=old_state+8){ // 632 -> 631, take this since its possible to come from 631 and from 631111
-			OLED.clear_screen();
-			OLED.highlight_bar(0,8*4-1,128,17); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
-			OLED.string(Speedo.default_font,("DZ Flasher"),5,4,15,0,0);
+			TFT.clear_screen();
+			TFT.highlight_bar(0,8*4-1,128,17); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
+			TFT.string(Speedo.default_font,("DZ Flasher"),5,4,15,0,0);
 
 			// bedienelemente anzeigen
 			if(floor(state/1000)==BMP(0,0,0,0,0,0,6)){
-				OLED.filled_rect(0,0,128,20,0x00);
-				OLED.string(Speedo.default_font,("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
-				OLED.string(Speedo.default_font,("Down = inactive"),4,1,0,DISP_BRIGHTNESS,0);
+				TFT.filled_rect(0,0,128,20,0x00);
+				TFT.string(Speedo.default_font,("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
+				TFT.string(Speedo.default_font,("Down = inactive"),4,1,0,DISP_BRIGHTNESS,0);
 
-				OLED.filled_rect(0,56,128,8,0x00);
+				TFT.filled_rect(0,56,128,8,0x00);
 				if(pSensors->m_dz->blitz_en){
-					OLED.string(Speedo.default_font,("\x7F to adjust level"),0,7);
+					TFT.string(Speedo.default_font,("\x7F to adjust level"),0,7);
 				};
 			} else if(floor(state/10000)==6){
-				OLED.filled_rect(0,0,128,20,0x00);
-				OLED.string(Speedo.default_font,("Select the RPM"),4,0,0,DISP_BRIGHTNESS,0);
-				OLED.string(Speedo.default_font,("for Shiftlight"),4,1,0,DISP_BRIGHTNESS,0);
+				TFT.filled_rect(0,0,128,20,0x00);
+				TFT.string(Speedo.default_font,("Select the RPM"),4,0,0,DISP_BRIGHTNESS,0);
+				TFT.string(Speedo.default_font,("for Shiftlight"),4,1,0,DISP_BRIGHTNESS,0);
 
-				OLED.filled_rect(0,56,128,8,0x00);
-				OLED.string(Speedo.default_font,("\x7E to adjust color"),0,7);
+				TFT.filled_rect(0,56,128,8,0x00);
+				TFT.string(Speedo.default_font,("\x7E to adjust color"),0,7);
 			}
 		};
 		// AN AUS schaltung
@@ -1122,20 +1122,20 @@ void speedo_menu::display(){
 			set_buttons(button_state,button_state,button_state,button_state); // alles aktiv
 
 			sprintf_P(char_buffer,("%3i00"),int(floor(pSensors->m_dz->blitz_dz/100)));// 12500
-			OLED.highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
+			TFT.highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
 			if(floor(state/100)==BMP(0,0,0,0,0,6,3)){
-				OLED.string(Speedo.default_font,("active"),2,5,0,15,0); // joa, unsch?n. Wird flackern, aber naja
-				OLED.string(Speedo.default_font,char_buffer,11,5,15,0,0);
+				TFT.string(Speedo.default_font,("active"),2,5,0,15,0); // joa, unsch?n. Wird flackern, aber naja
+				TFT.string(Speedo.default_font,char_buffer,11,5,15,0,0);
 			} else {
-				OLED.string(Speedo.default_font,("active"),2,5,15,0,0);  // joa, unsch?n. Wird flackern, aber naja
-				OLED.string(Speedo.default_font,char_buffer,11,5,0,15,0);
+				TFT.string(Speedo.default_font,("active"),2,5,15,0,0);  // joa, unsch?n. Wird flackern, aber naja
+				TFT.string(Speedo.default_font,char_buffer,11,5,0,15,0);
 			}
 
 			// wenn inactiv mittig "inactive" anzeigen lassen
 		} else {
 			set_buttons(button_state,button_state,button_state,!button_state); // no right
-			OLED.highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
-			OLED.string(Speedo.default_font,("inactive"),5,5,0,15,0);
+			TFT.highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
+			TFT.string(Speedo.default_font,("inactive"),5,5,0,15,0);
 		};
 
 		//////////////////////// adjust dz alert RGB LED ////////////////////////
@@ -1223,39 +1223,39 @@ void speedo_menu::display(){
 			if(floor(state/100000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/1))%10)<9)	{	pAktors->bt_pin+=1;		};
 		}
 		if(Speedo.disp_zeile_bak[2]==999){
-			OLED.clear_screen();
-			OLED.highlight_bar(0,0,128,8);
-			OLED.string(Speedo.default_font,("Change BT PIN"),2,0,15,0,0);
-			OLED.string(Speedo.default_font,("leave menu to save"),1,7);
+			TFT.clear_screen();
+			TFT.highlight_bar(0,0,128,8);
+			TFT.string(Speedo.default_font,("Change BT PIN"),2,0,15,0,0);
+			TFT.string(Speedo.default_font,("leave menu to save"),1,7);
 			Speedo.disp_zeile_bak[2]=123;
 		};
 
 		sprintf_P(char_buffer,(" %01i "),(int)floor(pAktors->bt_pin/1000)%10);
 		if(floor(state/100)==BMP(0,0,0,0,0,6,7)){
-			OLED.string(Speedo.default_font,char_buffer,2,2,15,0,0);
+			TFT.string(Speedo.default_font,char_buffer,2,2,15,0,0);
 		} else {
-			OLED.string(Speedo.default_font,char_buffer,2,2);
+			TFT.string(Speedo.default_font,char_buffer,2,2);
 		}
 
 		sprintf_P(char_buffer,(" %01i "),(int)floor(pAktors->bt_pin/100)%10);
 		if(floor(state/1000)==BMP(0,0,0,0,0,6,7)){
-			OLED.string(Speedo.default_font,char_buffer,5,2,15,0,0);
+			TFT.string(Speedo.default_font,char_buffer,5,2,15,0,0);
 		} else {
-			OLED.string(Speedo.default_font,char_buffer,5,2);
+			TFT.string(Speedo.default_font,char_buffer,5,2);
 		}
 
 		sprintf_P(char_buffer,(" %01i "),(int)floor(pAktors->bt_pin/10)%10);
 		if(floor(state/10000)==BMP(0,0,0,0,0,6,7)){
-			OLED.string(Speedo.default_font,char_buffer,8,2,15,0,0);
+			TFT.string(Speedo.default_font,char_buffer,8,2,15,0,0);
 		} else {
-			OLED.string(Speedo.default_font,char_buffer,8,2);
+			TFT.string(Speedo.default_font,char_buffer,8,2);
 		}
 
 		sprintf_P(char_buffer,(" %01i "),pAktors->bt_pin%10);
 		if(floor(state/100000)==BMP(0,0,0,0,0,6,7)){
-			OLED.string(Speedo.default_font,char_buffer,11,2,15,0,0);
+			TFT.string(Speedo.default_font,char_buffer,11,2,15,0,0);
 		} else {
-			OLED.string(Speedo.default_font,char_buffer,11,2);
+			TFT.string(Speedo.default_font,char_buffer,11,2);
 		}
 	}
 
@@ -1290,22 +1290,22 @@ void speedo_menu::display(){
 			state=BMP(0,0,0,0,7,1,6);
 			update_display=true;
 		} else {		// erstmal ne message
-			OLED.clear_screen();
-			OLED.highlight_bar(0,0,128,8);
-			OLED.string(Speedo.default_font,("Calibrate Gear"),2,0,15,0,0);
+			TFT.clear_screen();
+			TFT.highlight_bar(0,0,128,8);
+			TFT.string(Speedo.default_font,("Calibrate Gear"),2,0,15,0,0);
 			char temp[2];
 			sprintf(temp,"%i",int(state%10));
-			OLED.string(Speedo.default_font,temp,17,0,15,0,0);
-			OLED.string(Speedo.default_font,("Change Gear up/down"),0,3);
-			OLED.string(Speedo.default_font,("!Keep driving!"),3,4);
-			OLED.string(Speedo.default_font,("\x7E continue"),0,7);
+			TFT.string(Speedo.default_font,temp,17,0,15,0,0);
+			TFT.string(Speedo.default_font,("Change Gear up/down"),0,3);
+			TFT.string(Speedo.default_font,("!Keep driving!"),3,4);
+			TFT.string(Speedo.default_font,("\x7E continue"),0,7);
 			pSensors->m_gear->faktor_counter=0;
 		};
 	}
 	//////////////////// calibration start -> reset values, call in loop the gear_calc fkt ///////////////////
 	else if(floor(state/100)==BMP(0,0,0,0,0,7,1)){
 		set_buttons(button_state,!button_state,!button_state,button_state); // left,right only
-		OLED.clear_screen();
+		TFT.clear_screen();
 		pSpeedo->reset_bak();
 	}
 	//////////////////// calibration done, save it now.  ///////////////////
@@ -1317,8 +1317,8 @@ void speedo_menu::display(){
 		pConfig->storage_outdated=true;
 		pConfig->write("GANG.TXT");
 
-		OLED.clear_screen();
-		OLED.string(Speedo.default_font,("Saved"),7,3);
+		TFT.clear_screen();
+		TFT.string(Speedo.default_font,("Saved"),7,3);
 		_delay_ms(300);
 		if(current_gear<6 && current_gear>0){
 			state=BMP(0,0,0,7,1,0,1)+(current_gear+1)*10; // next gear
@@ -1329,17 +1329,17 @@ void speedo_menu::display(){
 	}
 	///////////////////// speed calibration //////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,2)) {
-		OLED.clear_screen();
+		TFT.clear_screen();
 		pSpeedo->reset_bak(); // dadurch wird auch der counter resetet
 	}
 	/////////////// save new value ////////////
 	else if(pMenu->state==BMP(0,0,0,7,2,1,1)){
 		set_buttons(!button_state,!button_state,!button_state,!button_state); // message only
-		OLED.clear_screen();
+		TFT.clear_screen();
 		pSensors->m_speed->reifen_umfang=pSensors->m_speed->flat_value_calibrate_umfang/100;
 		pConfig->storage_outdated=true;
 		pConfig->write("BASE.TXT");
-		OLED.string(Speedo.default_font,("saved"),6,3);
+		TFT.string(Speedo.default_font,("saved"),6,3);
 		_delay_ms(300);
 		state=BMP(0,0,0,0,7,2,1);
 		update_display=true;
@@ -1347,22 +1347,22 @@ void speedo_menu::display(){
 	////////// display phase ////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,3) || floor(state/10)==BMP(0,0,0,0,7,3,1)|| floor(state/10)==BMP(0,0,0,7,3,1,1) || floor(state/10)==BMP(0,0,7,3,1,1,1)) {
 		if(state%10==9){
-			if(floor(state/10)==BMP(0,0,0,0,0,7,3)) { OLED.phase=OLED.phase+16; }
-			else if(floor(state/10)==BMP(0,0,0,0,7,3,1)) {OLED.phase++;}
-			else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {OLED.ref=OLED.ref+16;}
-			else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {OLED.ref++;}
+			if(floor(state/10)==BMP(0,0,0,0,0,7,3)) { TFT.phase=TFT.phase+16; }
+			else if(floor(state/10)==BMP(0,0,0,0,7,3,1)) {TFT.phase++;}
+			else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {TFT.ref=TFT.ref+16;}
+			else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {TFT.ref++;}
 
-			OLED.init(OLED.phase,OLED.ref);
+			TFT.init(TFT.phase,TFT.ref);
 			pConfig->storage_outdated=true;		// store change
 			pConfig->write("BASE.TXT");
 
 		} else if(state%10==2){
-			if(floor(state/10)==BMP(0,0,0,0,0,7,3)) { OLED.phase=OLED.phase-16; }
-			else if(floor(state/10)==BMP(0,0,0,0,7,3,1)) {OLED.phase--;}
-			else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {OLED.ref=OLED.ref-16;}
-			else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {OLED.ref--;}
+			if(floor(state/10)==BMP(0,0,0,0,0,7,3)) { TFT.phase=TFT.phase-16; }
+			else if(floor(state/10)==BMP(0,0,0,0,7,3,1)) {TFT.phase--;}
+			else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {TFT.ref=TFT.ref-16;}
+			else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {TFT.ref--;}
 
-			OLED.init(OLED.phase,OLED.ref);
+			TFT.init(TFT.phase,TFT.ref);
 			pConfig->storage_outdated=true;		// store change
 			pConfig->write("BASE.TXT");
 		};
@@ -1374,22 +1374,22 @@ void speedo_menu::display(){
 		else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {state=BMP(0,0,7,3,1,1,1); olc=0; orc=0; ulc=1; urc=0;}
 		else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {state=BMP(0,7,3,1,1,1,1); olc=0; orc=0; ulc=0; urc=1;};
 
-		OLED.clear_screen();
-		OLED.highlight_bar(0,8*1-1,128,17); // mit hintergrundfarbe nen kasten malen
-		OLED.string(Speedo.default_font,("Choose phase"),4,1,15,0,0);
-		sprintf_P(char_buffer,(" %02i "),int(floor(int(OLED.phase)/16)));
-		OLED.string(Speedo.default_font,char_buffer,4,2,abs(olc-1)*15,olc*15,0);
-		OLED.string(Speedo.default_font," // ",8,2,15,0,0);
-		sprintf_P(char_buffer,(" %02i "),int(int(OLED.phase)%16));
-		OLED.string(Speedo.default_font,char_buffer,12,2,abs(orc-1)*15,orc*15,0);
+		TFT.clear_screen();
+		TFT.highlight_bar(0,8*1-1,128,17); // mit hintergrundfarbe nen kasten malen
+		TFT.string(Speedo.default_font,("Choose phase"),4,1,15,0,0);
+		sprintf_P(char_buffer,(" %02i "),int(floor(int(TFT.phase)/16)));
+		TFT.string(Speedo.default_font,char_buffer,4,2,abs(olc-1)*15,olc*15,0);
+		TFT.string(Speedo.default_font," // ",8,2,15,0,0);
+		sprintf_P(char_buffer,(" %02i "),int(int(TFT.phase)%16));
+		TFT.string(Speedo.default_font,char_buffer,12,2,abs(orc-1)*15,orc*15,0);
 
-		OLED.highlight_bar(0,8*5-1,128,17); // mit hintergrundfarbe nen kasten malen
-		OLED.string(Speedo.default_font,("Choose ref V"),4,5,15,0,0);
-		sprintf_P(char_buffer,(" %02i "),int(floor(int(OLED.ref)/16)));
-		OLED.string(Speedo.default_font,char_buffer,4,6,abs(ulc-1)*15,ulc*15,0);
-		OLED.string(Speedo.default_font," // ",8,6,15,0,0);
-		sprintf_P(char_buffer,(" %02i "),int(int(OLED.ref)%16));
-		OLED.string(Speedo.default_font,char_buffer,12,6,abs(urc-1)*15,urc*15,0);
+		TFT.highlight_bar(0,8*5-1,128,17); // mit hintergrundfarbe nen kasten malen
+		TFT.string(Speedo.default_font,("Choose ref V"),4,5,15,0,0);
+		sprintf_P(char_buffer,(" %02i "),int(floor(int(TFT.ref)/16)));
+		TFT.string(Speedo.default_font,char_buffer,4,6,abs(ulc-1)*15,ulc*15,0);
+		TFT.string(Speedo.default_font," // ",8,6,15,0,0);
+		sprintf_P(char_buffer,(" %02i "),int(int(TFT.ref)%16));
+		TFT.string(Speedo.default_font,char_buffer,12,6,abs(urc-1)*15,urc*15,0);
 
 	}
 	////////// Setup of GPS Log Format
@@ -1409,7 +1409,7 @@ void speedo_menu::display(){
 	else if(floor(state/100)==BMP(0,0,0,0,0,7,5)) { // 000751X
 		set_value_dialog((int8_t*)&pSensors->sensor_source,("= Sensor source ="),("Analog Sensors"),("Auto detect"),("CAN Sensors"));
 		if(pSensors->sensor_source==SENSOR_AUTO || pSensors->sensor_source==SENSOR_FORCE_CAN){ // add "submenu"
-			OLED.string(Speedo.default_font,("\x7F to select type"),0,6);
+			TFT.string(Speedo.default_font,("\x7F to select type"),0,6);
 			set_buttons(button_links_valid,button_oben_valid,button_unten_valid,true);
 		}
 	}
@@ -1435,26 +1435,26 @@ void speedo_menu::display(){
 			pSensors->m_reset->set_deactive(true,true);  // set eeprom,set var
 		};
 		state=BMP(0,0,0,0,7,6,1);
-		OLED.clear_screen();
+		TFT.clear_screen();
 		if(pSensors->m_reset->reset_enabled){
 			strcpy(char_buffer,(" active"));
 		} else {
 			strcpy(char_buffer,("inactive"));
 		};
-		OLED.string(Speedo.default_font,("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
-		OLED.highlight_bar(0,8*3-1,128,17); // mit hintergrundfarbe nen kasten malen
-		OLED.string(Speedo.default_font,("BT-Reset"),5,3,15,0,0);
-		OLED.string(Speedo.default_font,char_buffer,5,4,15,0,0);
-		OLED.string(Speedo.default_font,("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
+		TFT.highlight_bar(0,8*3-1,128,17); // mit hintergrundfarbe nen kasten malen
+		TFT.string(Speedo.default_font,("BT-Reset"),5,3,15,0,0);
+		TFT.string(Speedo.default_font,char_buffer,5,4,15,0,0);
+		TFT.string(Speedo.default_font,("Down = inactive"),4,7,0,DISP_BRIGHTNESS,0);
 
 		// show reason why last reset happend
-		OLED.string(Speedo.default_font,"Last was ",4,1,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,"Last was ",4,1,0,DISP_BRIGHTNESS,0);
 		if(pSensors->m_reset->last_reset==0 || pSensors->m_reset->last_reset==-1){
-			OLED.string(Speedo.default_font,("power"),13,1,0,DISP_BRIGHTNESS,0);
+			TFT.string(Speedo.default_font,("power"),13,1,0,DISP_BRIGHTNESS,0);
 		} else if(pSensors->m_reset->last_reset==1){
-			OLED.string(Speedo.default_font,"avr",13,1,0,DISP_BRIGHTNESS,0);
+			TFT.string(Speedo.default_font,"avr",13,1,0,DISP_BRIGHTNESS,0);
 		} else if(pSensors->m_reset->last_reset==2){
-			OLED.string(Speedo.default_font,"bt",13,1,0,DISP_BRIGHTNESS,0);
+			TFT.string(Speedo.default_font,"bt",13,1,0,DISP_BRIGHTNESS,0);
 		}
 		// show reason why last reset happend
 	}
@@ -1475,15 +1475,15 @@ void speedo_menu::display(){
 		}
 		if(Speedo.disp_zeile_bak[2]!=88){
 			Speedo.disp_zeile_bak[2]=88;
-			OLED.clear_screen();
-			OLED.string(Speedo.default_font,("Setup water"),5,1);
-			OLED.string(Speedo.default_font,("temperature"),5,2);
-			OLED.string(Speedo.default_font,("warning level"),4,3);
+			TFT.clear_screen();
+			TFT.string(Speedo.default_font,("Setup water"),5,1);
+			TFT.string(Speedo.default_font,("temperature"),5,2);
+			TFT.string(Speedo.default_font,("warning level"),4,3);
 		}
 
 		sprintf_P(char_buffer,("%3i,%i{C"),int(floor(pSensors->m_temperature->water_warning_temp/10)),int(pSensors->m_temperature->water_warning_temp%10));
 		center_me(char_buffer,21);
-		OLED.string(Speedo.default_font,char_buffer,0,5);
+		TFT.string(Speedo.default_font,char_buffer,0,5);
 	}
 	////////////////////////////////// water temp premenu //////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,8)) {
@@ -1502,15 +1502,15 @@ void speedo_menu::display(){
 		}
 		if(Speedo.disp_zeile_bak[2]!=87){
 			Speedo.disp_zeile_bak[2]=87;
-			OLED.clear_screen();
-			OLED.string(Speedo.default_font,("Setup oil"),6,1);
-			OLED.string(Speedo.default_font,("temperature"),5,2);
-			OLED.string(Speedo.default_font,("warning level"),4,3);
+			TFT.clear_screen();
+			TFT.string(Speedo.default_font,("Setup oil"),6,1);
+			TFT.string(Speedo.default_font,("temperature"),5,2);
+			TFT.string(Speedo.default_font,("warning level"),4,3);
 		}
 
 		sprintf_P(char_buffer,("%3i,%i{C"),int(floor(pSensors->m_temperature->oil_warning_temp/10)),int(pSensors->m_temperature->oil_warning_temp%10));
 		center_me(char_buffer,21);
-		OLED.string(Speedo.default_font,char_buffer,0,5);
+		TFT.string(Speedo.default_font,char_buffer,0,5);
 	}
 	////////////////////////////////// water temp premenu //////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,9)) {
@@ -1533,24 +1533,24 @@ void speedo_menu::display(){
 	}
 	///////////////////// ansicht eines stands //////////////////////////
 	else if(floor(state/100)==BMP(0,0,0,0,0,0,8) && state%10==1){ // 9[X]1
-		OLED.clear_screen();
+		TFT.clear_screen();
 
 		int speicher=(int(floor(state/10))%10)-1;
 		strcpy(char_buffer, (char*)pgm_read_word(&(menu_trip_setup[(int(floor(state/10))%10)-1])));
 		center_me(char_buffer,13);
-		OLED.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-		OLED.string(Speedo.default_font,char_buffer,4,0,DISP_BRIGHTNESS,0,0);
+		TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+		TFT.string(Speedo.default_font,char_buffer,4,0,DISP_BRIGHTNESS,0,0);
 		sprintf_P(char_buffer,("Avg:%10i km/h"),(int)round(pSpeedo->trip_dist[speicher]*3.6/pSpeedo->avg_timebase[speicher]));
-		OLED.string(Speedo.default_font,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
 
 		sprintf_P(char_buffer,("Time: %02i:%02i:%02i"),(int)round(pSpeedo->avg_timebase[speicher]/3600),(int)round((pSpeedo->avg_timebase[speicher]%3600)/60),(int)round(pSpeedo->avg_timebase[speicher]%60));
-		OLED.string(Speedo.default_font,char_buffer,0,3,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,char_buffer,0,3,0,DISP_BRIGHTNESS,0);
 
 		sprintf_P(char_buffer,("Trip:%6lu,%02i km"),(unsigned long)floor(pSpeedo->trip_dist[speicher]/1000),int(floor((pSpeedo->trip_dist[speicher]%1000)/10)));
-		OLED.string(Speedo.default_font,char_buffer,0,4,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,char_buffer,0,4,0,DISP_BRIGHTNESS,0);
 
 		sprintf_P(char_buffer,("Max:%10i km/h"),(int)pSpeedo->max_speed[speicher]);
-		OLED.string(Speedo.default_font,char_buffer,0,5,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,char_buffer,0,5,0,DISP_BRIGHTNESS,0);
 	}
 	//////////////// quick jump //////////////
 	else if(floor(state/100)==BMP(0,0,0,0,0,0,8) && state%10==2){ // 8[X]2
@@ -1574,16 +1574,16 @@ void speedo_menu::display(){
 		strcpy(temp, (char*)pgm_read_word(&(menu_trip_setup[(int(floor(state/100))%10)-1])));
 		char storry[40];
 		sprintf_P(storry,("Sure to reset \"%s\" storage"),temp);
-		OLED.show_storry(storry,strlen(storry),"Reset",6,DIALOG_NO_YES);
+		TFT.show_storry(storry,strlen(storry),"Reset",6,DIALOG_NO_YES);
 	}
 	// prevent deleting total && board
 	else if(state==BMP(0,0,8,9,1,1,1) || state==BMP(0,0,8,1,1,1,1)){
-		OLED.clear_screen();
-		OLED.highlight_bar(0,0,128,8);
-		OLED.string(Speedo.default_font,"Restriction",2,0,15,0,0);
-		OLED.string(Speedo.default_font,"Delete storages",2,2);
-		OLED.string(Speedo.default_font,"\"Total\" & \"Board\"",2,3);
-		OLED.string(Speedo.default_font,"forbidden",2,4);
+		TFT.clear_screen();
+		TFT.highlight_bar(0,0,128,8);
+		TFT.string(Speedo.default_font,"Restriction",2,0,15,0,0);
+		TFT.string(Speedo.default_font,"Delete storages",2,2);
+		TFT.string(Speedo.default_font,"\"Total\" & \"Board\"",2,3);
+		TFT.string(Speedo.default_font,"forbidden",2,4);
 		set_buttons(button_state,!button_state,!button_state,!button_state);
 	}
 	////////////////// Tachostand leeren ////////////////////
@@ -1596,13 +1596,13 @@ void speedo_menu::display(){
 		pConfig->storage_outdated=true;
 		pConfig->write("speedo.txt");
 
-		OLED.clear_screen();
+		TFT.clear_screen();
 		// show the title
 		char temp[30];
 		strcpy(temp, (char*)pgm_read_word(&(menu_trip_setup[(int(floor(state/1000))%10)-1])));
 		sprintf(char_buffer,"%s",temp); // hier noch die bezeichnung
-		OLED.string(Speedo.default_font,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
-		OLED.string(Speedo.default_font,"cleared",2,4);
+		TFT.string(Speedo.default_font,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,"cleared",2,4);
 		_delay_ms(800);
 		state=floor(state/100);
 		update_display=true;
@@ -1634,22 +1634,22 @@ void speedo_menu::display(){
 			};
 		}
 
-		OLED.clear_screen();
-		OLED.string(Speedo.default_font,("Added fuel amount:"),1,2,0,DISP_BRIGHTNESS,4);
+		TFT.clear_screen();
+		TFT.string(Speedo.default_font,("Added fuel amount:"),1,2,0,DISP_BRIGHTNESS,4);
 		sprintf_P(char_buffer,("%2i,%0i l"),(int)floor(fuel_added/10),(int)fuel_added%10);
-		OLED.string(Speedo.default_font,char_buffer,7,4,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,char_buffer,7,4,0,DISP_BRIGHTNESS,0);
 		if(pSpeedo->trip_dist[5]>0){
 			sprintf_P(char_buffer,("%2i,%0i l/100km"),(int)floor(fuel_added*10/(pSpeedo->trip_dist[5]/1000)),(int)(fuel_added*100/(pSpeedo->trip_dist[5]/1000))%10);
-			OLED.string(Speedo.default_font,char_buffer,5,5,0,DISP_BRIGHTNESS,0);
+			TFT.string(Speedo.default_font,char_buffer,5,5,0,DISP_BRIGHTNESS,0);
 		}
 	}
 
 	///////////// Anzeigen wieviel verbraucht wurde ////////////////
 	else if(floor(state/100)==BMP(0,0,0,0,0,0,9)){  // 8[XX]
 		set_buttons(button_state,!button_state,!button_state,button_state); // msg only
-		OLED.clear_screen();
-		OLED.string(Speedo.default_font,("All Fuel"),7,6,0,DISP_BRIGHTNESS,0);
-		OLED.string(Speedo.default_font,("storeages reseted"),3,7,0,DISP_BRIGHTNESS,0);
+		TFT.clear_screen();
+		TFT.string(Speedo.default_font,("All Fuel"),7,6,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,("storeages reseted"),3,7,0,DISP_BRIGHTNESS,0);
 		pSpeedo->trip_dist[5]=0;
 		pSpeedo->avg_timebase[5]=0;
 		pSpeedo->max_speed[5]=0;
@@ -1726,14 +1726,14 @@ void speedo_menu::draw(const char* const* menu, int entries){
 	Serial.puts_ln(USART1,menu_start);
 #endif
 	////////// Menu Caption /////////////
-	OLED.filled_rect(0,0,128,8,0);
+	TFT.filled_rect(0,0,128,8,0);
 	char char_buffer[22];
 
 	strcpy(char_buffer, (char*)pgm_read_word(&(menu_titel[level_1])));
-	OLED.string(Speedo.default_font,char_buffer,0,0,0,DISP_BRIGHTNESS,0);
+	TFT.string(Speedo.default_font,char_buffer,0,0,0,DISP_BRIGHTNESS,0);
 
 	sprintf(char_buffer,"%04lu",state);
-	OLED.string(Speedo.default_font,char_buffer,16,0,0,DISP_BRIGHTNESS,0);
+	TFT.string(Speedo.default_font,char_buffer,16,0,0,DISP_BRIGHTNESS,0);
 	////////// Menu Caption /////////////
 
 	///////// Menu ausgeben ////////////
@@ -1756,7 +1756,7 @@ void speedo_menu::draw(const char* const* menu, int entries){
 	if(just_marker_update){
 		// we just have to repaint two lines, the actual "menu_marker" line plus the one above/below
 		// draw maker line
-		OLED.highlight_bar(0,8*(menu_marker+1),128,8);
+		TFT.highlight_bar(0,8*(menu_marker+1),128,8);
 		strcpy(buffer, (char*)pgm_read_word(&(menu[menu_start+menu_marker])));
 		// move to the back and insert number
 		for(int i=21;i>1;i--){
@@ -1765,7 +1765,7 @@ void speedo_menu::draw(const char* const* menu, int entries){
 		buffer[0]=menu_start+menu_marker+'1';
 		buffer[1]='.';
 		buffer[2]=' ';
-		OLED.string(Speedo.default_font,buffer,2,(menu_marker+1),DISP_BRIGHTNESS,0,0);
+		TFT.string(Speedo.default_font,buffer,2,(menu_marker+1),DISP_BRIGHTNESS,0,0);
 
 		// lets see which one is the second: assuming that its the one below so the menu_marker_line + 1
 		int second_line_switch=+1;
@@ -1774,7 +1774,7 @@ void speedo_menu::draw(const char* const* menu, int entries){
 			second_line_switch=-1;
 		}
 		//draw it
-		OLED.filled_rect(0,8*(menu_marker+second_line_switch+1),128,8,0); // mit hintergrundfarbe nen kasten malen
+		TFT.filled_rect(0,8*(menu_marker+second_line_switch+1),128,8,0); // mit hintergrundfarbe nen kasten malen
 		strcpy(buffer, (char*)pgm_read_word(&(menu[int(menu_start+menu_marker+second_line_switch)])));
 		// move to the back and insert number
 		for(int i=21;i>1;i--){
@@ -1783,7 +1783,7 @@ void speedo_menu::draw(const char* const* menu, int entries){
 		buffer[0]=int(menu_start+menu_marker+second_line_switch)+'1';
 		buffer[1]='.';
 		buffer[2]=' ';
-		OLED.string(Speedo.default_font,buffer,2,int(menu_marker+second_line_switch+1),0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,buffer,2,int(menu_marker+second_line_switch+1),0,DISP_BRIGHTNESS,0);
 		just_marker_update=false;
 
 	} else {
@@ -1793,11 +1793,11 @@ void speedo_menu::draw(const char* const* menu, int entries){
 			if(y==(menu_marker+1)){
 				fg=0;
 				hg=DISP_BRIGHTNESS;
-				OLED.highlight_bar(0,8*y,128,8); // mit hintergrundfarbe nen kasten malen
+				TFT.highlight_bar(0,8*y,128,8); // mit hintergrundfarbe nen kasten malen
 			} else {
 				fg=DISP_BRIGHTNESS;
 				hg=0;
-				OLED.filled_rect(0,8*y,128,8,0); // mit hintergrundfarbe nen kasten malen
+				TFT.filled_rect(0,8*y,128,8,0); // mit hintergrundfarbe nen kasten malen
 			};
 			// copy string vom flash
 			strcpy(buffer, (char*)pgm_read_word(&(menu[k])));
@@ -1808,13 +1808,13 @@ void speedo_menu::draw(const char* const* menu, int entries){
 			buffer[0]=k+'1';
 			buffer[1]='.';
 			buffer[2]=' ';
-			OLED.string(Speedo.default_font,buffer,2,y,hg,fg,0);
+			TFT.string(Speedo.default_font,buffer,2,y,hg,fg,0);
 			// copy string vom flash
 			y++; // abstand festlegen
 		};
 
 		while(y<8){ // die zeilen unter dem Men? ausmmalen
-			OLED.filled_rect(0,8*y,128,8,0); // mit hintergrundfarbe nen kasten malen
+			TFT.filled_rect(0,8*y,128,8,0); // mit hintergrundfarbe nen kasten malen
 			y++;
 		}
 	}
@@ -2138,12 +2138,12 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 				// store to SD
 				pConfig->storage_outdated=true; //?
 				if(pConfig->storage_outdated){
-					OLED.clear_screen();
+					TFT.clear_screen();
 					if(pConfig->write("BASE.TXT")==0){
-						OLED.string(Speedo.default_font,("Saved"),7,4);
+						TFT.string(Speedo.default_font,("Saved"),7,4);
 						_delay_ms(500);
 					} else {
-						OLED.string(Speedo.default_font,("!SD ERROR!"),5,4);
+						TFT.string(Speedo.default_font,("!SD ERROR!"),5,4);
 						_delay_ms(5000);
 					}
 				};
@@ -2230,30 +2230,30 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 
 		if(Speedo.disp_zeile_bak[0]!=304){
 			// clear screen
-			OLED.clear_screen();
+			TFT.clear_screen();
 			// anzeige der werte
-			OLED.highlight_bar(0,0,128,8);
-			OLED.string(Speedo.default_font,name,2,0,15,0,0);
+			TFT.highlight_bar(0,0,128,8);
+			TFT.string(Speedo.default_font,name,2,0,15,0,0);
 
 
 			if(!just_one_line_mode){
-				OLED.string(Speedo.default_font,("Minimal values"),2,2,0,15,0);
-				OLED.string(Speedo.default_font,("Maximal values"),2,5,0,15,0);
+				TFT.string(Speedo.default_font,("Minimal values"),2,2,0,15,0);
+				TFT.string(Speedo.default_font,("Maximal values"),2,5,0,15,0);
 
 
 				// Red   Green   Blue
 				// 255    255    255
-				OLED.highlight_bar(0,24,128,16);
-				OLED.string(Speedo.default_font,unit,1,3,15,0,0);
-				OLED.string(Speedo.default_font,("Red Green Blue"),6,3,15,0,0);
-				OLED.highlight_bar(0,48,128,16);
-				OLED.string(Speedo.default_font,unit,1,6,15,0,0);
-				OLED.string(Speedo.default_font,("Red Green Blue"),6,6,15,0,0);
+				TFT.highlight_bar(0,24,128,16);
+				TFT.string(Speedo.default_font,unit,1,3,15,0,0);
+				TFT.string(Speedo.default_font,("Red Green Blue"),6,3,15,0,0);
+				TFT.highlight_bar(0,48,128,16);
+				TFT.string(Speedo.default_font,unit,1,6,15,0,0);
+				TFT.string(Speedo.default_font,("Red Green Blue"),6,6,15,0,0);
 			} else {
 				// Red   Green   Blue
 				// 255    255    255
-				OLED.highlight_bar(0,24,128,16);
-				OLED.string(Speedo.default_font,("Red   Green   Blue"),1,3,15,0,0);
+				TFT.highlight_bar(0,24,128,16);
+				TFT.string(Speedo.default_font,("Red   Green   Blue"),1,3,15,0,0);
 			}
 			Speedo.disp_zeile_bak[0]=304;
 		};
@@ -2271,7 +2271,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 				back = 15;
 				front = 0;
 			}
-			OLED.string(Speedo.default_font,temp,1,4,back,front,0);
+			TFT.string(Speedo.default_font,temp,1,4,back,front,0);
 		}
 
 		//// min r ///////
@@ -2283,8 +2283,8 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			back = 15;
 			front = 0;
 		}
-		if(!just_one_line_mode){	OLED.string(Speedo.default_font,temp,6,4,back,front,0); }
-		else { 						OLED.string(Speedo.default_font,temp,1,4,back,front,0); }
+		if(!just_one_line_mode){	TFT.string(Speedo.default_font,temp,6,4,back,front,0); }
+		else { 						TFT.string(Speedo.default_font,temp,1,4,back,front,0); }
 
 		//// min g ///////
 		sprintf(temp,"%3i",int((led_from->g%1000)/2.55)); // to scale from 0..255 to 0..100
@@ -2295,8 +2295,8 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			back = 15;
 			front = 0;
 		}
-		if(!just_one_line_mode){	OLED.string(Speedo.default_font,temp,12,4,back,front,0); }
-		else {	 					OLED.string(Speedo.default_font,temp,8,4,back,front,0);  }
+		if(!just_one_line_mode){	TFT.string(Speedo.default_font,temp,12,4,back,front,0); }
+		else {	 					TFT.string(Speedo.default_font,temp,8,4,back,front,0);  }
 
 		//// min b ///////
 		sprintf(temp,"%3i",int((led_from->b%1000)/2.55)); // to scale from 0..255 to 0..100
@@ -2307,8 +2307,8 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			back = 15;
 			front = 0;
 		}
-		if(!just_one_line_mode){	OLED.string(Speedo.default_font,temp,17,4,back,front,0); }
-		else {						OLED.string(Speedo.default_font,temp,15,4,back,front,0); }
+		if(!just_one_line_mode){	TFT.string(Speedo.default_font,temp,17,4,back,front,0); }
+		else {						TFT.string(Speedo.default_font,temp,15,4,back,front,0); }
 
 		if(!just_one_line_mode){
 			//// max ///////
@@ -2320,7 +2320,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 				back = 15;
 				front = 0;
 			}
-			OLED.string(Speedo.default_font,temp,1,7,back,front,0);
+			TFT.string(Speedo.default_font,temp,1,7,back,front,0);
 
 			//// max r ///////
 			sprintf(temp,"%3i",int((led_to->r%1000)/2.55)); // to scale from 0..255 to 0..100
@@ -2331,7 +2331,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 				back = 15;
 				front = 0;
 			}
-			OLED.string(Speedo.default_font,temp,6,7,back,front,0);
+			TFT.string(Speedo.default_font,temp,6,7,back,front,0);
 
 			//// max g ///////
 			sprintf(temp,"%3i",int((led_to->g%1000)/2.55)); // to scale from 0..255 to 0..100
@@ -2342,7 +2342,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 				back = 15;
 				front = 0;
 			}
-			OLED.string(Speedo.default_font,temp,12,7,back,front,0);
+			TFT.string(Speedo.default_font,temp,12,7,back,front,0);
 
 			//// max b ///////
 			sprintf(temp,"%3i",int((led_to->b%1000)/2.55)); // to scale from 0..255 to 0..100
@@ -2353,7 +2353,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 				back = 15;
 				front = 0;
 			}
-			OLED.string(Speedo.default_font,temp,17,7,back,front,0);
+			TFT.string(Speedo.default_font,temp,17,7,back,front,0);
 		}
 		////////////////// control //////////////////
 	} else if(floor(state/1000)==base_state){
@@ -2383,11 +2383,11 @@ void speedo_menu::storage_update_guard(unsigned long* state, unsigned long old_s
 		back();
 		// store to SD
 		if(storage_outdated){
-			OLED.clear_screen();
+			TFT.clear_screen();
 			char char_buffer[22];
 			strcpy(char_buffer,("Save to SD card"));
 			center_me(char_buffer,21);
-			OLED.string(Speedo.default_font,char_buffer,0,5);
+			TFT.string(Speedo.default_font,char_buffer,0,5);
 			bool remember_CAN_state=pSensors->CAN_active;
 			pSensors->CAN_active=false;
 			if(pConfig->write("BASE.TXT")==0){
@@ -2397,7 +2397,7 @@ void speedo_menu::storage_update_guard(unsigned long* state, unsigned long old_s
 			}
 			pSensors->CAN_active=remember_CAN_state;
 			center_me(char_buffer,21);
-			OLED.string(Speedo.default_font,char_buffer,0,6);
+			TFT.string(Speedo.default_font,char_buffer,0,6);
 
 			_delay_ms(1200);
 		};
@@ -2461,8 +2461,8 @@ void speedo_menu::set_value_dialog(int8_t* value,const char* title,const char* o
 	state=floor(state/10)*10+1;
 
 	// displaying values
-	OLED.clear_screen();
-	OLED.string(Speedo.default_font,title,2,0,0,DISP_BRIGHTNESS,0);
+	TFT.clear_screen();
+	TFT.string(Speedo.default_font,title,2,0,0,DISP_BRIGHTNESS,0);
 
 	unsigned char fg;
 	unsigned char bg;
@@ -2473,18 +2473,18 @@ void speedo_menu::set_value_dialog(int8_t* value,const char* title,const char* o
 		if(*value==i){
 			fg=0x00;
 			bg=DISP_BRIGHTNESS;
-			OLED.highlight_bar(0,8*line,118,8); // mit hintergrundfarbe nen kasten malen
+			TFT.highlight_bar(0,8*line,118,8); // mit hintergrundfarbe nen kasten malen
 		} else {
 			fg=DISP_BRIGHTNESS;
 			bg=0x00;
 		}
-		OLED.string(Speedo.default_font,options[i],2,line,bg,fg,0);
+		TFT.string(Speedo.default_font,options[i],2,line,bg,fg,0);
 		line++;
 	}
 	/// options //////////////////////////////
 
 
-	OLED.string(Speedo.default_font,("\x7E save"),0,7);
+	TFT.string(Speedo.default_font,("\x7E save"),0,7);
 
 	// key settings and corresponding var state changing
 	bool up=true;

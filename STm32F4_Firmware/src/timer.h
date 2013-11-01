@@ -9,12 +9,12 @@
 #define TIMER_H_
 
 ///////////// timer ///////////////
-class speedo_timer{
+class timer{
 public:
-	speedo_timer(void);
-	~speedo_timer();
+	timer(void);
+	~timer();
 	void every_qsec();
-	void every_sec(configuration* pConfig);
+	void every_sec();
 	void every_custom();
 
 	void init_mem (void);
@@ -23,7 +23,7 @@ private:
 	unsigned long every_qsecond_timer;   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
 	unsigned long every_custom_timer;   // Zeitstempel vom letzten ausführen der "every_qsec" funktion
 };
-extern speedo_timer* pTimer;
+extern timer Timer;
 ///////////// timer ///////////////
 
 #endif /* TIMER_H_ */

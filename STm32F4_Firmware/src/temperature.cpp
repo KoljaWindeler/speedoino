@@ -100,14 +100,14 @@ void speedo_temperature::init(){
 	ADC_InitTypeDef ADC_InitStructure;
 	ADC_StructInit(&ADC_InitStructure);
 	ADC_InitStructure.ADC_ScanConvMode = DISABLE;
-	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
 	ADC_Init(ADC1, &ADC_InitStructure);
 
 	// ADC1 regular channel 8 configuration: witch adc, witch channel, groupe sequencer, sample time
 	//(ADC_TypeDef* ADCx, uint8_t ADC_Channel, uint8_t Rank, uint8_t ADC_SampleTime)
-	ADC_RegularChannelConfig(ADC1,ADC_Channel_8,1,ADC_SampleTime_480Cycles);
+	//	ADC_RegularChannelConfig(ADC1,ADC_Channel_8,1,ADC_SampleTime_480Cycles);
 	ADC_Cmd(ADC1, ENABLE);   // Enable ADC1
-	ADC_SoftwareStartConv(ADC1); //Start ADC1 Conversion
+	//	ADC_SoftwareStartConv(ADC1); //Start ADC1 Conversion
 
 
 	//	I2c.begin();
@@ -136,6 +136,10 @@ void speedo_temperature::read_oil_temp() {
 	 *   Widerstandsberechnung *////
 
 	// werte auslesen TODO neuer wertebereich?
+	ADC_RegularChannelConfig(ADC1,ADC_Channel_8,1,ADC_SampleTime_480Cycles);
+	ADC_SoftwareStartConv(ADC1); //Start ADC1 Conversion
+	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+
 	uint16_t oil_value=ADC_GetConversionValue(ADC1);//analogRead(OIL_TEMP_PIN);
 	uint16_t temp=(4096-oil_value)/10; // max 409
 	if(temp>0 && temp<409){
@@ -202,6 +206,10 @@ void speedo_temperature::read_water_temp() {
 #endif
 
 	// werte auslesen // TODO change pin + range warning
+	ADC_RegularChannelConfig(ADC1,ADC_Channel_8,1,ADC_SampleTime_480Cycles);
+	ADC_SoftwareStartConv(ADC1); //Start ADC1 Conversion
+	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+
 	uint16_t water_value=ADC_GetConversionValue(ADC1);//analogRead(WATER_TEMP_PIN);
 	/* kann bis zu 225.060 werden bei 40°C etwa 470 ohm: 470+220=690 Ohm, U/R=I => 5/690=0,007246377A, R*I=U, 1,594202899V, Wert=326
 	 * wenn temp < 102 sein soll, dann ergibt 1020 schon ein error, bei 102=(1024-X)/10 => x <= 4

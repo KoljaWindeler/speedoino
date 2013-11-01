@@ -124,7 +124,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="zzz_trash|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="speedo.cpp|sensors.cpp|voltage.cpp|timer.cpp|tetris.cpp|stepper.cpp|sprint.cpp|speed.cpp|speed_cams.cpp|sd.cpp|reset.cpp|POI_finder.cpp|oiler.cpp|menu.cpp|lap_timer.cpp|gps.cpp|gear.cpp|fuel.cpp|file_manager_v2.cpp|debug.cpp|config.cpp|clock_me.cpp|CAN.cpp|aktors.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="speedo.cpp|sensors.cpp|voltage.cpp|tetris.cpp|stepper.cpp|sprint.cpp|speed.cpp|speed_cams.cpp|sd.cpp|reset.cpp|POI_finder.cpp|oiler.cpp|menu.cpp|lap_timer.cpp|gear.cpp|fuel.cpp|file_manager_v2.cpp|config.cpp|clock_me.cpp|CAN.cpp|aktors.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

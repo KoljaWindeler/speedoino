@@ -63,6 +63,7 @@ extern "C" void USART2_IRQHandler(void){
 		// the character from the USART1 data register is saved in t
 		Serial.recv(USART2,USART2->DR);
 	}
+	//Sensors.mGps.recv_data(USART2->DR);
 }
 
 extern "C" void UART4_IRQHandler(void){

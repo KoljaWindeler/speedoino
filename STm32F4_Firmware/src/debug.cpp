@@ -32,37 +32,27 @@ debugging::~debugging(){
 
 }
 
-void debugging::sprintp(const char *data){
-	while(pgm_read_byte(data) != 0x00)
-		Serial.print(pgm_read_byte(data++));
-}
-
-void debugging::sprintlnp(const char *data){
-	while(pgm_read_byte(data) != 0x00)
-		Serial.print(pgm_read_byte(data++));
-	Serial.println();
-}
 
 void debugging::parse_float(int state,char buffer[],int i,int j,int k){
 #ifdef PARSE_DEBUG
 	if(state==0){
-		Serial.print("parse float gestartet mit buffer: ");
+		Serial.puts(USART1,"parse float gestartet mit buffer: ");
 		Serial.println(buffer);
 	} else if(state==1){
-		Serial.print("aktuelles zeichen:");
+		Serial.puts(USART1,"aktuelles zeichen:");
 		Serial.println(buffer[i]);
 	} else if(state==2){
 		Serial.println("vorzeichen auf - gestellt");
 	} else if(state==3){
-		Serial.print("twert:");
-		Serial.print(i);
-		Serial.print(" decade_counter:");
-		Serial.print(j);
-		Serial.print(" vz:");
-		Serial.print(k);
+		Serial.puts(USART1,"twert:");
+		Serial.puts(USART1,i);
+		Serial.puts(USART1," decade_counter:");
+		Serial.puts(USART1,j);
+		Serial.puts(USART1," vz:");
+		Serial.puts(USART1,k);
 	} else if(state==4){
-		Serial.print("(float)");
-		Serial.print(i);
+		Serial.puts(USART1,"(float)");
+		Serial.puts(USART1,i);
 	}
 #endif
 }
@@ -77,7 +67,7 @@ void debugging::parse_int(){
 void debugging::parse(int state,char buffer[50]){
 #ifdef PARSE_DEBUG
 	if(state==0){
-		Serial.print("config parse: "); Serial.println(buffer);
+		Serial.puts(USART1,"config parse: "); Serial.println(buffer);
 	}
 #endif
 }
@@ -85,7 +75,7 @@ void debugging::parse(int state,char buffer[50]){
 void debugging::parse_a(int state,char buffer[]){
 #ifdef PARSE_DEBUG
 	if(state==0){
-		Serial.print("(char[])"); Serial.println(buffer);
+		Serial.puts(USART1,"(char[])"); Serial.println(buffer);
 	}
 #endif
 }
@@ -93,83 +83,102 @@ void debugging::parse_a(int state,char buffer[]){
 void debugging::parse_ul(int state,unsigned long wert){
 #ifdef PARSE_DEBUG
 	if(state==0){
-		Serial.print("(unsigned long)"); Serial.println(wert);
+		Serial.puts(USART1,"(unsigned long)"); Serial.println(wert);
 	}
 #endif
 }
 
 void debugging::speedo_loop(int state,int intensive,unsigned long previousMillis,const char char_buffer[]){
-#ifdef TACHO_DEBUG
-	if(intensive==0){
-#elseif TACHO_IDEBUG
-	if(intensive==1){
-#else
-	if(false){
+#if defined(TACHO_DEBUG) or defined(TACHO_IDEBUG)
+	if(intensive==
 #endif
+#ifdef TACHO_DEBUG
+			0
+#elif defined(TACHO_IDEBUG)
+			1
+#endif
+#if defined(TACHO_DEBUG) or defined(TACHO_IDEBUG)
+	){
 		int differ_show;
 		if(state==0){
-			sprintlnp(PSTR("Normaler Tacho Durchlauf"));
+			Serial.puts_ln(USART1,("Normaler Tacho Durchlauf"));
 		} else if(state==1){
-			sprintlnp(PSTR("Schreibe Oeltemp"));
+			Serial.puts_ln(USART1,("Schreibe Oeltemp"));
 		} else if(state==2){
-			sprintlnp(PSTR("Schreibe Airtemp"));
+			Serial.puts_ln(USART1,("Schreibe Airtemp"));
 		} else if(state==3){
-			sprintlnp(PSTR("Schreibe 'km/h'"));
+			Serial.puts_ln(USART1,("Schreibe 'km/h'"));
 		} else if(state==4){
-			sprintlnp(PSTR("Schreibe Speed"));
+			Serial.puts_ln(USART1,("Schreibe Speed"));
 		} else if(state==5){
-			sprintlnp(PSTR("Schreibe drehzahl"));
+			Serial.puts_ln(USART1,("Schreibe drehzahl"));
 		} else if(state==6){
-			sprintlnp(PSTR("Schreibe Drehzahl"));
+			Serial.puts_ln(USART1,("Schreibe Drehzahl"));
 		} else if(state==7){
-			sprintlnp(PSTR("Schreibe nen Titel wie Q3 alleine"));
+			Serial.puts_ln(USART1,("Schreibe nen Titel wie Q3 alleine"));
 		} else if(state==8){
-			sprintlnp(PSTR("Schreibe Average + Max"));
+			Serial.puts_ln(USART1,("Schreibe Average + Max"));
 		} else if(state==9){
-			sprintlnp(PSTR("Schreibe zeiten"));
+			Serial.puts_ln(USART1,("Schreibe zeiten"));
 		} else if(state==10){
-			sprintlnp(PSTR("Schreibe Motorwarnung"));
+			Serial.puts_ln(USART1,("Schreibe Motorwarnung"));
 		} else if(state==11){
-			sprintlnp(PSTR("Schreibe Blinkerwarnung"));
+			Serial.puts_ln(USART1,("Schreibe Blinkerwarnung"));
 		} else if(state==12){
-			sprintlnp(PSTR("Schreibe Sicherungswarnung"));
+			Serial.puts_ln(USART1,("Schreibe Sicherungswarnung"));
 		} else if(state==13){
-			sprintlnp(PSTR("Schreibe Navigationsanweisung"));
+			Serial.puts_ln(USART1,("Schreibe Navigationsanweisung"));
 		} else if(state==14){
-			sprintlnp(PSTR("Schreibe SD warnung"));
+			Serial.puts_ln(USART1,("Schreibe SD warnung"));
 		} else if(state==15){
-			sprintlnp(PSTR("Lösche Warnung"));
+			Serial.puts_ln(USART1,("Lösche Warnung"));
 		} else if(state==16){
-			sprintlnp(PSTR("Schreibe trip. Sowas wie day 123.4 km"));
+			Serial.puts_ln(USART1,("Schreibe trip. Sowas wie day 123.4 km"));
 		} else if(state==17){
-			sprintlnp(PSTR("Schreibe Clock: "));
+			Serial.puts_ln(USART1,("Schreibe Clock: "));
 			Serial.println(char_buffer);
 		} else if(state==18){
-			sprintlnp(PSTR("Schreibe Gang"));
+			Serial.puts_ln(USART1,("Schreibe Gang"));
 		} else if(state==19){
-			sprintp(PSTR("Schreibe Fuel:"));
+			Serial.puts(USART1,("Schreibe Fuel:"));
 			Serial.println(char_buffer);
 		} else if(state==20){
 			differ_show=Millis.get()-previousMillis;
-			sprintp(PSTR("Normeler Tacho refresh dauerte "));
-			Serial.print(differ_show);
-			sprintp(PSTR(" ms"));
+			Serial.puts(USART1,("Normeler Tacho refresh dauerte "));
+			Serial.puts(USART1,differ_show);
+			Serial.puts(USART1,(" ms"));
 		} else if(state==21){
-			sprintp(PSTR("Loop Durchlauf, menustate ist "));
-			Serial.print(pMenu->state);
-			sprintp(PSTR("\n"));
+			Serial.puts(USART1,("Loop Durchlauf, menustate ist "));
+			Serial.puts(USART1,pMenu->state);
+			Serial.puts(USART1,("\n"));
 		} else if(state==22){
-			sprintlnp(PSTR("Oel fertig"));
+			Serial.puts_ln(USART1,("Oel fertig"));
 		} else if(state==23){
-			sprintlnp(PSTR("Air fertig"));
+			Serial.puts_ln(USART1,("Air fertig"));
 		}
 	}
+#endif
 }
 
 void debugging::loop(){
 #ifdef TACHO_SDEBUG
-		Serial.print("State changed:");
-		Serial.print(pMenu->state);
-		sprintlnp(PSTR(": Calling menu_disp();"));
+	Serial.puts(USART1,"State changed:");
+	Serial.puts(USART1,pMenu->state);
+	Serial.puts_ln(USART1,(": Calling menu_disp();"));
 #endif
+}
+
+
+void debugging::init(){
+	/* GPIOD Periph clock enable */
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+
+	/* Configure PD12, 13, 14 and PD15 in output pushpull mode */
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOD, &GPIO_InitStructure);
 };
