@@ -54,8 +54,8 @@ private:
 	simple_coordinate db_last_calc;
 	simple_coordinate bestOfThree_last_calc;
 
-	SdFile source_file;
-	SdFile dest_file;
+//	SdFile source_file;	TODO TODO TODO
+//	SdFile dest_file;
 
 	int8_t parse_complete_db();
 	int8_t parse_small_db();

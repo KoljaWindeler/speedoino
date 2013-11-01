@@ -17,26 +17,26 @@
 
 #include "global.h"
 
-speedo_sprint::speedo_sprint(void){
+sprint::sprint(void){
 	status=SPRINT_WAIT_ON_STOP;
 	blink_show=false;                        // anzeigen oder nicht
 	previousMillis=Millis.get();
 }
 
-speedo_sprint::~speedo_sprint(){
+sprint::~sprint(){
 }
 
 
-void speedo_sprint::prepare_startup(){
-	if(pSensors->get_speed(true)>0){ //mag speed if possible
+void sprint::prepare_startup(){
+	if(Sensors.get_speed(true)>0){ //mag speed if possible
 		status=SPRINT_WAIT_ON_STOP;
 	} else {
 		status=SPRINT_READY_TO_GO;
 	}
 }
 
-void speedo_sprint::loop(){
-	int speed=pSensors->get_speed(true);
+void sprint::loop(){
+	int speed=Sensors.get_speed(true);
 
 	// Change status
 	if(status==SPRINT_READY_TO_GO){
@@ -74,25 +74,25 @@ void speedo_sprint::loop(){
 		if (char_buffer==NULL) Serial.puts_ln(USART1,("Malloc failed"));
 
 		// geschwindigkeit
-		if(pSpeedo->disp_zeile_bak[0]==-99){ // wenn es gerade reseted wurde -> alles hinmalen
+		if(Speedo.disp_zeile_bak[0]==-99){ // wenn es gerade reseted wurde -> alles hinmalen
 			sprintf(char_buffer,"%3i km/h",speed);
-			pOLED->string(pSpeedo->default_font+1,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
-		}   else if(pSpeedo->disp_zeile_bak[0]!=speed+1){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
+			TFT.string(Speedo.default_font+1,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
+		}   else if(Speedo.disp_zeile_bak[0]!=speed+1){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
 			sprintf(char_buffer,"%3i",speed);
-			pOLED->string(pSpeedo->default_font+1,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
+			TFT.string(Speedo.default_font+1,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
 		};
-		pSpeedo->disp_zeile_bak[0]=int(speed+1); // zustand sichern
+		Speedo.disp_zeile_bak[0]=int(speed+1); // zustand sichern
 
 
 		// drehzahl
-		if(pSpeedo->disp_zeile_bak[2]==-99){ // wenn es gerade reseted wurde -> alles hinmalen
-			sprintf(char_buffer,"%5u U/min",pSensors->get_RPM(RPM_TYPE_DIRECT));
-			pOLED->string(pSpeedo->default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
-		} else if (pSpeedo->disp_zeile_bak[2]!=signed(pSensors->get_RPM(RPM_TYPE_DIRECT)+1)){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
-			sprintf(char_buffer,"%5u",pSensors->get_RPM(RPM_TYPE_DIRECT));
-			pOLED->string(pSpeedo->default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
+		if(Speedo.disp_zeile_bak[2]==-99){ // wenn es gerade reseted wurde -> alles hinmalen
+			sprintf(char_buffer,"%5u U/min",Sensors.get_RPM(RPM_TYPE_DIRECT));
+			TFT.string(Speedo.default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
+		} else if (Speedo.disp_zeile_bak[2]!=signed(Sensors.get_RPM(RPM_TYPE_DIRECT)+1)){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
+			sprintf(char_buffer,"%5u",Sensors.get_RPM(RPM_TYPE_DIRECT));
+			TFT.string(Speedo.default_font,char_buffer,5,0,0,DISP_BRIGHTNESS,0);
 		};
-		pSpeedo->disp_zeile_bak[2]=int(pSensors->get_RPM(RPM_TYPE_DIRECT)+1); // zustand sichern
+		Speedo.disp_zeile_bak[2]=int(Sensors.get_RPM(RPM_TYPE_DIRECT)+1); // zustand sichern
 
 
 		// zeit
@@ -110,22 +110,22 @@ void speedo_sprint::loop(){
 			sprint_time=0;
 		};
 
-		if(pSpeedo->disp_zeile_bak[1]!=signed(sprint_time+1+status+int(blink_show))){
-			pSpeedo->disp_zeile_bak[1]=int(sprint_time+1+status+int(blink_show));
+		if(Speedo.disp_zeile_bak[1]!=signed(sprint_time+1+status+int(blink_show))){
+			Speedo.disp_zeile_bak[1]=int(sprint_time+1+status+int(blink_show));
 			if(blink_show){
 				if(status==SPRINT_WAIT_ON_STOP){
-					strcpy_P(char_buffer, PSTR("Wait on stop"));
+					strcpy(char_buffer, ("Wait on stop"));
 				} else if(status==SPRINT_READY_TO_GO){
-					strcpy_P(char_buffer, PSTR("READY"));
+					strcpy(char_buffer, ("READY"));
 				} else if(status==SPRINT_ACCEL || status==SPRINT_DONE){
 					sprintf(char_buffer,"%02i,%03i sec",(int)floor(sprint_time/1000),(int)floor((sprint_time%1000)));
 				}
 			} else {
-				strcpy_P(char_buffer, PSTR("          "));
+				strcpy(char_buffer, ("          "));
 			}
-			pMenu->center_me(char_buffer,22);
-			Serial.println(char_buffer);
-			pOLED->string(pSpeedo->default_font,char_buffer,0,6,0,DISP_BRIGHTNESS,0);
+			Menu.center_me(char_buffer,22);
+			Serial.puts_ln(USART1,char_buffer);
+			TFT.string(Speedo.default_font,char_buffer,0,6,0,DISP_BRIGHTNESS,0);
 
 		};
 		// sichere zeitstempel

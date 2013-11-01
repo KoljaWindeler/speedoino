@@ -8,12 +8,12 @@
 #ifndef FUEL_H_
 #define FUEL_H_
 
-class speedo_fuel{
+class fuel{
 private:
 	unsigned long last_time;
 public:
-	speedo_fuel();
-	~speedo_fuel();
+	fuel();
+	~fuel();
 	float get_fuel(char char_buffer[]);
 	void init();
 	int check_vars();

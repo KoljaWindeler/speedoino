@@ -7,10 +7,10 @@
 
 #ifndef LAP_TIMER_H_
 #define LAP_TIMER_H_
-class LapTimer{
+class LapTime{
 public:
-	LapTimer();
-	~LapTimer();
+	LapTime();
+	~LapTime();
 	void race_loop();
 	void waiting_on_speed_up();
 	void prepare_race_loop();
@@ -47,5 +47,5 @@ private:
 	void update_race_screen(uint8_t level);
 	void init_race_screen(bool reset_vars);
 };
-extern LapTimer* pLapTimer;
-#endif /* LapTimer */
+extern LapTime LapTimer;
+#endif /* LapTime */

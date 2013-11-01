@@ -23,23 +23,23 @@
 void Speedo_Sensors::check_vars(){
 	int any_failed=0;
 	// wenn ein test einen fehler meldet wird der return wert "true"
-	//	if(sensor_source==SENSOR_AUTO || sensor_source==SENSOR_FORCE_CAN){
-	//		if(sensor_source==SENSOR_AUTO){
-	//			Serial.puts_ln(USART1,("CAN auto detect"));
-	//		} else {
-	//			Serial.puts_ln(USART1,("Force CAN mode"));
-	//		}
-	//		CAN_active=true;
-	//		any_failed+=m_CAN->check_vars();
-	//		m_speed->shutdown();
-	//		m_dz->shutdown();
-	//	} else {
-	//		Serial.puts_ln(USART1,("Analog sensor mode"));
-	//		CAN_active=false;
-	//		any_failed+=m_dz->check_vars();
-	//		any_failed+=m_speed->check_vars();
-	//		m_CAN->shutdown();
-	//	}
+	if(sensor_source==SENSOR_AUTO || sensor_source==SENSOR_FORCE_CAN){
+		if(sensor_source==SENSOR_AUTO){
+			Serial.puts_ln(USART1,("CAN auto detect"));
+		} else {
+			Serial.puts_ln(USART1,("Force CAN mode"));
+		}
+		CAN_active=true;
+		any_failed+=mCAN.check_vars();
+		mSpeed.shutdown();
+		mRpm.shutdown();
+	} else {
+		Serial.puts_ln(USART1,("Analog sensor mode"));
+		CAN_active=false;
+		any_failed+=mRpm.check_vars();
+		any_failed+=mSpeed.check_vars();
+		mCAN.shutdown();
+	}
 
 	/* CHECK ALL SENSORS */
 
@@ -47,10 +47,10 @@ void Speedo_Sensors::check_vars(){
 	any_failed+=mClock.check_vars();
 	any_failed+=mGPS.check_vars();
 	any_failed+=mTemperature.check_vars(); // needed for oiltemp
-	//	any_failed+=m_fuel->check_vars();
-	//	any_failed+=m_reset->check_vars();
-	//	any_failed+=m_gear->check_vars();
-	//	any_failed+=m_voltage->check_vars();
+	//	any_failed+=m_fuel->check_vars(); TODO
+	any_failed+=mReset.check_vars();
+	//	any_failed+=m_gear->check_vars(); TODO
+	//	any_failed+=m_voltage->check_vars(); TODO
 
 	if(any_failed){
 		Serial.puts_ln(USART1,("!!!! WARNING !!!!"));
@@ -82,85 +82,85 @@ uint16_t Speedo_Sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 #endif
 	unsigned int exact_value=0;
 
-	//	// get exact value
-	//	if(CAN_active && !m_CAN->failed){
-	//		exact_value=m_CAN->get_RPM(); // just get the number, no calculation
-	//	} else {
-	//		exact_value=mRpm.get_exact(); // just get the number, no calculation
-	//	}
-	//
-	//	// return value based on mode,
-	//	if(mode==RPM_TYPE_FLAT){ // used often
-	//		return rpm_flatted;	// will be calculated with 10Hz in pull values
-	//	} else if(mode==RPM_TYPE_FLAT_ROUNDED){ // used in speedo
-	//		return (rpm_flatted&~15); // will be calculated with 10Hz in pull values
-	//	} else if(mode==RPM_TYPE_ROUNDED){
-	//		return (exact_value&~63); // == floor(exact_value/64)*64
-	//	}
+	// get exact value
+	if(CAN_active && !mCAN.failed){
+		exact_value=mCAN.get_RPM(); // just get the number, no calculation
+	} else {
+		exact_value=mRpm.get_exact(); // just get the number, no calculation
+	}
+
+	// return value based on mode,
+	if(mode==RPM_TYPE_FLAT){ // used often
+		return rpm_flatted;	// will be calculated with 10Hz in pull values
+	} else if(mode==RPM_TYPE_FLAT_ROUNDED){ // used in speedo
+		return (rpm_flatted&~15); // will be calculated with 10Hz in pull values
+	} else if(mode==RPM_TYPE_ROUNDED){
+		return (exact_value&~63); // == floor(exact_value/64)*64
+	}
 
 	return exact_value;
 };
 //
-//unsigned int Speedo_sensors::get_speed(bool mag_if_possible){
-//#ifdef DEMO_MODE
-//	return Demo.get_speed();
-//#endif
-//	unsigned int return_value;
-//	if(CAN_active && !m_CAN->failed){
-//		return_value=m_CAN->get_Speed();
-//	} else {
-//		if(mag_if_possible){
-//			return_value=(unsigned)m_speed->get_mag_speed();
-//		}else {
-//			return_value=(unsigned)m_speed->getSpeed();
-//		};
-//	}
-//	return return_value;
-//};
-//
-//int Speedo_sensors::get_water_temperature(){
-//#ifdef DEMO_MODE
-//	return Demo.get_water_temperature();
-//#endif
-//	if(CAN_active && !m_CAN->failed){
-//		return m_CAN->get_water_temp();
-//	} else {
-//		return m_temperature->get_water_temp();
-//	}
-//};
-//
-//// 0 if everything allright
-//// return 5 on short to gnd
-//// 9 on no sensor value (no responses on CAN)
-//int Speedo_sensors::get_water_temperature_fail_status(){
-//#ifdef DEMO_MODE
-//	return 0;
-//#endif
-//	if(CAN_active && !m_CAN->failed){
-//		return m_CAN->get_CAN_missed_count();
-//	} else {
-//		return m_temperature->water_temp_fail_status;
-//	}
-//};
-//
-//int Speedo_sensors::get_air_temperature(){
-//	//	if(CAN_active && !m_CAN->failed){ // CAN airintake is much to warm
-//	//		return m_CAN->get_air_temp();
-//	//	} else {
-//	return m_temperature->get_air_temp();
-//	//	}
-//};
-//
-//int Speedo_sensors::get_oil_temperature(){
-//#ifdef DEMO_MODE
-//	return Demo.get_oil_temperature();
-//#endif
-//	//	if(CAN_active && !m_CAN->failed){ // no can sensor available
-//	//		return m_CAN->get_oil_temp();
-//	//	} else {
-//	return m_temperature->get_oil_temp();
-//	//	}
-//};
+uint16_t Speedo_Sensors::get_speed(bool mag_if_possible){
+#ifdef DEMO_MODE
+	return Demo.get_speed();
+#endif
+	unsigned int return_value;
+	if(CAN_active && !mCAN.failed){
+		return_value=mCAN.get_Speed();
+	} else {
+		if(mag_if_possible){
+			return_value=(unsigned)mSpeed.get_mag_speed();
+		}else {
+			return_value=(unsigned)mSpeed.getSpeed();
+		};
+	}
+	return return_value;
+};
+
+int16_t Speedo_Sensors::get_water_temperature(){
+#ifdef DEMO_MODE
+	return Demo.get_water_temperature();
+#endif
+	if(CAN_active && !mCAN.failed){
+		return mCAN.get_water_temp();
+	} else {
+		return mTemperature.get_water_temp();
+	}
+};
+
+// 0 if everything allright
+// return 5 on short to gnd
+// 9 on no sensor value (no responses on CAN)
+int16_t Speedo_Sensors::get_water_temperature_fail_status(){
+#ifdef DEMO_MODE
+	return 0;
+#endif
+	if(CAN_active && !mCAN.failed){
+		return mCAN.get_CAN_missed_count();
+	} else {
+		return mTemperature.water_temp_fail_status;
+	}
+};
+
+int16_t Speedo_Sensors::get_air_temperature(){
+	//	if(CAN_active && !mCAN.failed){ // CAN airintake is much to warm NOTODO
+	//		return mCAN.get_air_temp();
+	//	} else {
+	return mTemperature.get_air_temp();
+	//	}
+};
+
+int16_t Speedo_Sensors::get_oil_temperature(){
+#ifdef DEMO_MODE
+	return Demo.get_oil_temperature();
+#endif
+	//	if(CAN_active && !mCAN.failed){ // no can sensor available  NOTODO
+	//		return mCAN.get_oil_temp();
+	//	} else {
+	return mTemperature.get_oil_temp();
+	//	}
+};
 /********************************** GET section *************************************/
 
 /********************************** READ section *************************************
@@ -173,17 +173,17 @@ uint16_t Speedo_Sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 void Speedo_Sensors::single_read(){
 	Serial.puts_ln(USART1,("Sensor single read ... "));
 	Serial.puts(USART1,("Reading: clock ... "));
-	//	pSensors->mClock.inc();  // sekunden hochzählen
+	Sensors.mClock.inc();  // sekunden hochzählen
 	Serial.puts(USART1,("Done\r\nReading: GPS ... "));
 	mGPS.valid++;  // vor wievielen sekunden war es das letzte mal gültig
-	//	Serial.puts(USART1,("Done\r\nReading: Air temp ... "));
-	//	pSensors->m_temperature->read_air_temp();  // temperaturen aktualisieren
-	//	Serial.puts(USART1,("Done\r\nReading: Oil temp ... "));
-	//	pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
-	//	Serial.puts(USART1,("Done\r\nReading: Water temp ... "));
-	//	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren, useless if we use CAN but no problem
-	//	Serial.puts(USART1,("Done\r\nReading: Voltages ... "));
-	//	pSensors->m_voltage->calc(false); // spannungscheck
+	Serial.puts(USART1,("Done\r\nReading: Air temp ... "));
+	Sensors.mTemperature.read_air_temp();  // temperaturen aktualisieren
+	Serial.puts(USART1,("Done\r\nReading: Oil temp ... "));
+	Sensors.mTemperature.read_oil_temp();  // temperaturen aktualisieren
+	Serial.puts(USART1,("Done\r\nReading: Water temp ... "));
+	Sensors.mTemperature.read_water_temp();  // temperaturen aktualisieren, useless if we use CAN but no problem
+	Serial.puts(USART1,("Done\r\nReading: Voltages ... "));
+	//	pSensors->m_voltage->calc(false); // spannungscheck TODO
 	//	char temp[6];
 	//	sprintf(temp,"%2i,%iV",int(floor(m_voltage->get()/100)),int((m_voltage->get()/10)%10));
 	//	Serial.print(temp);
@@ -205,7 +205,7 @@ void Speedo_Sensors::single_read(){
  * 		mClock.inc(); // just counts seconds
  * 		m_gps->valid++; // counts second from last valid data
  * 		m_voltage->calc(); // update voltage value, maybe startup (if we started in clock_mode)
- * 		m_temperature->read_oil_temp(); // update analog oil temperature sensor
+ * 		mTemperature.read_oil_temp(); // update analog oil temperature sensor
  *
  * 100ms: Sensors independent on CAN or no CAN, called every 200 ms: (by update_required && ten_Hz_counter%2==0)
  * 		m_blinker->check(); // check if the flashers are working
@@ -218,21 +218,21 @@ void Speedo_Sensors::single_read(){
  *
  * ============== ONLY IN NON CAN MODE ========================
  * 	1000ms:
- *		m_temperature->read_air_temp();  // temperaturen aktualisieren
- *		m_temperature->read_water_temp();  // temperaturen aktualisieren
+ *		mTemperature.read_air_temp();  // temperaturen aktualisieren
+ *		mTemperature.read_water_temp();  // temperaturen aktualisieren
  *
  * ============== ONLY IN CAN MODE ========================
  * 	1000ms:
- * 		m_CAN->request(CAN_WATER_TEMP); // generate a CAN message to ask for speed
+ * 		mCAN.request(CAN_WATER_TEMP); // generate a CAN message to ask for speed
  *
  * 	500ms:
- * 		m_CAN->request(CAN_SPEED); // generate a CAN message to ask for speed
+ * 		mCAN.request(CAN_SPEED); // generate a CAN message to ask for speed
  *
  * 	200ms:
- * 		m_CAN->request(CAN_RPM); // generate a CAN message to ask for RPM
+ * 		mCAN.request(CAN_RPM); // generate a CAN message to ask for RPM
  *
  * 	0ms:
- * 		m_CAN->process_incoming_messages(); // call if the interrupt has set our flag
+ * 		mCAN.process_incoming_messages(); // call if the interrupt has set our flag
  *
  ***************************************************** PULL values *******************************************************/
 
@@ -249,25 +249,25 @@ void Speedo_Sensors::pull_values(){
 		update_required=true;
 
 		if(fourty_Hz_counter==0){ // 1 Hz
-			//			m_voltage->calc(false); // spannungscheck
-			//			m_temperature->read_oil_temp();  // temperaturen aktualisieren
+			//			m_voltage->calc(false); // spannungscheck	TODO
+			//			mTemperature.read_oil_temp();  // temperaturen aktualisieren
 			//			mClock.inc();  // sekunden hochzählen
 			//			m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
 			//			// auto CAN detection ...
 			//			if(sensor_source==SENSOR_AUTO){
-			//				if(!m_CAN->init_comm_possible(&CAN_active)){ // returns always true, exept the communcation was NOT possible even if it should
+			//				if(!mCAN.init_comm_possible(&CAN_active)){ // returns always true, exept the communcation was NOT possible even if it should
 			//					Serial.puts_ln(USART1,("=== CAN timed out ==="));
 			//					Serial.puts_ln(USART1,("falling back to analog sensors"));
-			//					m_CAN->shutdown();
+			//					mCAN.shutdown();
 			//					m_dz->init();
-			//					m_speed->init();
+			//					mSpeed.init();
 			//					Serial.puts_ln(USART1,("=== CAN timed out ==="));
 			//				}
 			//			};
 		}
 
 		if(fourty_Hz_counter%4==0){			//do this, every 10Hz, 100ms
-			//			m_blinker->check();    // blinken wir?
+			//			m_blinker->check();    // blinken wir? TODO
 			//			m_gear->calc();// blockt intern alle aufrufe die vor ablauf von 250 ms kommen
 			//
 			//
@@ -282,7 +282,7 @@ void Speedo_Sensors::pull_values(){
 			////			////////////// TODO
 		}
 
-		//		if(pAktors->m_stepper->init_steps_to_go==0){
+		//		if(pAktors->m_stepper->init_steps_to_go==0){	TODO
 		//			// to this with 40hz, 25ms
 		//			// in addtion to the message above: handling of RPM and aktor
 		//			pAktors->m_stepper->go_to(get_RPM(pAktors->m_stepper->shown_mode)); //3.10.2013 ran good
@@ -300,50 +300,50 @@ void Speedo_Sensors::pull_values(){
 	 * - Air intake Temperature
 	 * - Coolant Temparture
 	 *********************** CAN *************************/
-	// CAN is present and should be used
-	//	if(CAN_active && !m_CAN->failed){
-	//		// fetch new message first
-	//		if(m_CAN->message_available){ // muss hier die pin abfrage rein? dafür gibts doch den interrupt
-	//			m_CAN->process_incoming_messages();
-	//		}
-	//		if(update_required && m_CAN->get_active_can_type()==CAN_TYPE_OBD2 && fourty_Hz_counter%4==0){ // 10Hz, request can OBD2 msg
-	//			if(fourty_Hz_counter==0 || fourty_Hz_counter==2 || fourty_Hz_counter==4 || fourty_Hz_counter==6 || fourty_Hz_counter==8){ // 200ms
-	//				m_CAN->request(CAN_CURRENT_INFO,CAN_RPM);
-	//			} else if(fourty_Hz_counter==1 || fourty_Hz_counter==5 ){ // 500ms
-	//				m_CAN->request(CAN_CURRENT_INFO,CAN_SPEED);
-	//			} else if(fourty_Hz_counter==7){ // 1000ms
-	//				m_CAN->request(CAN_CURRENT_INFO,CAN_WATER_TEMPERATURE);
-	//			} else if(fourty_Hz_counter==9 ){  // 1000ms one free slot
-	//				//m_CAN->request(?);
-	//			};
-	//		}
-	//#ifdef TACHO_SMALLDEBUG
-	//		Serial.puts_ln(USART1,("."));
-	//#endif
-	//	}
-	//
-	//	/***************** no can available, *********************
-	//	 * ask analog sensors
-	//	 ***************** no can available, *********************/
-	//	else {
-	//		if(update_required){ // 100ms spacing
-	//			// do this, once a second
-	//			if(fourty_Hz_counter==0){
-	//				m_temperature->read_air_temp();  // temperaturen aktualisieren
-	//				m_temperature->read_water_temp();  // temperaturen aktualisieren
-	//			}
-	//#ifdef TACHO_SMALLDEBUG
-	//			Serial.puts_ln(USART1,("."));
-	//#endif
-	//		}
-	//}
+	//	 CAN is present and should be used
+	if(CAN_active && !mCAN.failed){
+		// fetch new message first
+		if(mCAN.message_available){ // muss hier die pin abfrage rein? dafür gibts doch den interrupt
+			mCAN.process_incoming_messages();
+		}
+		if(update_required && mCAN.get_active_can_type()==CAN_TYPE_OBD2 && fourty_Hz_counter%4==0){ // 10Hz, request can OBD2 msg
+			if(fourty_Hz_counter==0 || fourty_Hz_counter==2 || fourty_Hz_counter==4 || fourty_Hz_counter==6 || fourty_Hz_counter==8){ // 200ms
+				mCAN.request(CAN_CURRENT_INFO,CAN_RPM);
+			} else if(fourty_Hz_counter==1 || fourty_Hz_counter==5 ){ // 500ms
+				mCAN.request(CAN_CURRENT_INFO,CAN_SPEED);
+			} else if(fourty_Hz_counter==7){ // 1000ms
+				mCAN.request(CAN_CURRENT_INFO,CAN_WATER_TEMPERATURE);
+			} else if(fourty_Hz_counter==9 ){  // 1000ms one free slot
+				//mCAN.request(?);
+			};
+		}
+#ifdef TACHO_SMALLDEBUG
+		Serial.puts_ln(USART1,("."));
+#endif
+	}
+
+	/***************** no can available, *********************
+	 * ask analog sensors
+	 ***************** no can available, *********************/
+	else {
+		if(update_required){ // 100ms spacing
+			// do this, once a second
+			if(fourty_Hz_counter==0){
+				mTemperature.read_air_temp();  // temperaturen aktualisieren
+				mTemperature.read_water_temp();  // temperaturen aktualisieren
+			}
+#ifdef TACHO_SMALLDEBUG
+			Serial.puts_ln(USART1,("."));
+#endif
+		}
+	}
 }
 /********************************** READ section *************************************/
 
 
+//		TODO
 //
-//
-//void Speedo_sensors::addinfo_show_loop(){
+//void Speedo_Sensors::addinfo_show_loop(){
 //	char *char_buffer;
 //	char_buffer = (char*)malloc(22);
 //	////////////////////// water //////////////
@@ -418,9 +418,9 @@ void Speedo_Sensors::pull_values(){
 //ISR(PCINT2_vect ){
 //	// check if its the right version before test the pin
 //	if(pConfig->get_hw_version()==7){
-//		if(pSensors->m_CAN->check_message()){
+//		if(pSensors->mCAN.check_message()){
 //			// processing is in CAN class
-//		} else if(pSensors->m_CAN->get_active_can_type()!=CAN_TYPE_TRIUMPH){ // if version 7, but not triumpf check light, tritumpf is way to heavy traffic
+//		} else if(pSensors->mCAN.get_active_can_type()!=CAN_TYPE_TRIUMPH){ // if version 7, but not triumpf check light, tritumpf is way to heavy traffic
 //			pSensors->check_inputs();
 //		}
 //	} else if(pConfig->get_hw_version()>7) { // from version higher than 7, CAN Interrupt is not on this interrupt port
@@ -433,7 +433,7 @@ void Speedo_Sensors::pull_values(){
 ////	if(pConfig->get_hw_version()>7){
 ////		if(!(CAN_INTERRUPT_PIN_PORT_V8&(1<<CAN_INTERRUPT_PIN_FROM_V8))){	 // if the CAN pin is low, low active interrupt
 ////			if(pSensors->CAN_active){		 // is the CAN mode active
-////				pSensors->m_CAN->message_available=true;
+////				pSensors->mCAN.message_available=true;
 ////#ifdef CAN_DEBUG
 ////				Serial.println("Interrupt: Msg available");
 ////#endif
@@ -442,7 +442,7 @@ void Speedo_Sensors::pull_values(){
 ////	}
 ////}
 //
-//void Speedo_sensors::check_inputs(){
+//void Speedo_Sensors::check_inputs(){
 //	unsigned char high_beam=0x00;
 //	unsigned char flasher_left=0x00;
 //	unsigned char flasher_right=0x00;
@@ -450,7 +450,7 @@ void Speedo_Sensors::pull_values(){
 //	unsigned char neutral_gear=0x01; // low active
 //
 //	if(PINK&(1<<HIGH_BEAM_PIN)){  // pin is high
-//		if(m_CAN->get_active_can_type()!=CAN_TYPE_TRIUMPH){ // on "non triumph" -> on means on :D
+//		if(mCAN.get_active_can_type()!=CAN_TYPE_TRIUMPH){ // on "non triumph" -> on means on :D
 //			high_beam=0x01;
 //		} else if(last_highbeam_on==0){ // addition keep off for triumph
 //			last_highbeam_on=Millis.get();
@@ -476,8 +476,8 @@ void Speedo_Sensors::pull_values(){
 //	}
 //
 //	// depending on CAN or non CAN mode ... and if CAN on CAN TYPE
-//	if(CAN_active && m_CAN->get_active_can_type()==CAN_TYPE_TRIUMPH){
-//		neutral_gear=m_CAN->get_neutral_gear_state();
+//	if(CAN_active && mCAN.get_active_can_type()==CAN_TYPE_TRIUMPH){
+//		neutral_gear=mCAN.get_neutral_gear_state();
 //		pSensors->m_gear->set_neutral(neutral_gear);
 //	} else {
 //		if(PINK&(1<<NEUTRAL_GEAR_PIN)){	 // if the pin is still high, the pulldown is not active, signal is not active
@@ -518,6 +518,8 @@ Speedo_Sensors::Speedo_Sensors() {
 	Rpm mRpm;
 	flasher mFlasher;
 	speedo_temperature mTemperature;
+	Speed mSpeed;
+	oiler mOiler;
 }
 
 Speedo_Sensors::~Speedo_Sensors() {
@@ -532,18 +534,16 @@ void Speedo_Sensors::init(){
 	mRpm.init();
 	mFlasher.init();
 	mTemperature.init();
-
-	//	mClock.init();
-	//	m_fuel->init();
-	//	m_speed->init();
-	//	m_reset->init();
-	//	m_gear->init();
+	mClock.init();
+	mFuel.init();
+	mSpeed.init();
+	//	mReset.init(); TODO blödes uart
+	mGear.init();
 	//	m_voltage->init();
-	//	m_gps->init();
-	//	m_CAN.init();
-	//	//	m_CAN->init(); // done later in main startup
+	//	mGPS.init();	// Blödes UART1 .. TODO
+	mCAN.init();  // done later in main startup
 	//
-	//	cli(); //  ... unschön, aber gps macht interrupts an
+	//	cli(); //  ... unschön, aber gps macht interrupts an	 TODO
 	//	// Blinker LINKS Interrupt
 	//	EIMSK |= (1<<INT6); // Enable Interrupt
 	//	EICRB |= (1<<ISC60); // any change on INT5

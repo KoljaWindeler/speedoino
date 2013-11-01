@@ -187,6 +187,8 @@ public:
 	void StringLine(uint16_t PosX, uint16_t PosY, char *str);
 	void string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile);
 	void string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, unsigned char fg, unsigned char bg, int offset);
+	void string(char *str,uint8_t spalte, uint8_t zeile, unsigned char fg, unsigned char bg, int offset);
+	void string(char *str,uint8_t spalte, uint8_t zeile);
 	void DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length,uint8_t Direction);
 	void DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width);
 	void DrawSquare(uint16_t Xpos, uint16_t Ypos, uint16_t a);
@@ -198,6 +200,27 @@ public:
 	void GetType(char model[]);
 	void Cross(u16 posX, u16 posY, u8 size);
 	void SetBackLight(unsigned short level);
+	void show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length);
+	void show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length, uint8_t type);
+	void show_storry(const char* storry,const char* title);
+	void show_storry(const char* storry,const char* title, uint8_t type);
+	void string_centered(const char* text, uint8_t line);
+	void string_centered(const char* text, uint8_t line, bool inverted);
+	void highlight_bar(unsigned char x,unsigned char y,unsigned char width,unsigned char height);
+	int animation(int a);
+
+	void draw_oil(unsigned char x,unsigned char y);
+	void draw_water(unsigned char x,unsigned char y);
+	void draw_air(unsigned char x,unsigned char y);
+	void draw_fuel(unsigned char x,unsigned char y);
+	void draw_clock(unsigned char x,unsigned char y);
+	void draw_gps(unsigned char x,unsigned char y, unsigned char sats);
+	void draw_blitzer(unsigned char x,unsigned char y);
+	void draw_arrow(int arrow, int spalte, int zeile);
+
+	void filled_rect(unsigned char x,unsigned char y,unsigned char width,unsigned char height,unsigned char color);
+
+	unsigned char startup[35]; // asdfghjk.asd,1234,1234,1234\0 == 28
 };
 extern ILI9325 TFT;
 #endif

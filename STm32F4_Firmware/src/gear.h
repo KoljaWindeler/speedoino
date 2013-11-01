@@ -8,7 +8,7 @@
 #ifndef GEAR_H_
 #define GEAR_H_
 
-class speedo_gear{
+class gear{
 
 #define KUPPLUNGS_PIN PB6
 #define KUPPLUNGS_PORT PORTB
@@ -17,8 +17,8 @@ class speedo_gear{
 #define kupplungs_pin 12 // TODO
 
 public:
-	speedo_gear(void);
-	~speedo_gear();
+	gear(void);
+	~gear();
 	void init();
 	int get();
 	void set_neutral(bool is_neutral);

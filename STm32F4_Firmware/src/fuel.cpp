@@ -21,24 +21,24 @@
 //int fuel_out; // preload (liter * 10) verbraucht
 //int fuel_max; // max
 /////////////// vars ///////////////////
-speedo_fuel::speedo_fuel(){
+fuel::fuel(){
 	last_time=0;
 	blink_freq=0;	 // default value, überschreibt config
 	blink_start=0; // default value, überschreibt config
 };
 
-speedo_fuel::~speedo_fuel(){
+fuel::~fuel(){
 };
 
 
-float speedo_fuel::get_fuel(char char_buffer[]){
+float fuel::get_fuel(char char_buffer[]){
 	char local_buffer[6];
 	bool should_blink=false;
-	float fuel_diff=(float)round(pSpeedo->trip_dist[5]/1000);
+	float fuel_diff=(float)round(Speedo.trip_dist[5]/1000);
 
 
-	if(pSensors->CAN_active && pSensors->m_CAN->get_active_can_type()==CAN_TYPE_TRIUMPH){
-		should_blink=pSensors->m_CAN->get_fuel_blink();
+	if(Sensors.CAN_active && Sensors.mCAN.get_active_can_type()==CAN_TYPE_TRIUMPH){
+		should_blink=Sensors.mCAN.get_fuel_blink();
 	} else if(fuel_diff>=blink_start){
 		should_blink=true;
 	}
@@ -63,12 +63,12 @@ float speedo_fuel::get_fuel(char char_buffer[]){
 	return fuel_diff;
 };
 //
-void speedo_fuel::init(){
+void fuel::init(){
 
 }
 
 
-int speedo_fuel::check_vars(){
+int fuel::check_vars(){
 	if(blink_freq==0 || blink_start==0){
 		blink_freq=500; // blinkt mit 500ms Periodenlaenge
 		blink_start=140; // bei mehr als 140 km auf der Tankuhr fngt die an zu blinken

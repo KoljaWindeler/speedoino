@@ -370,6 +370,14 @@ void ILI9325::PutChar(int16_t PosX, int16_t PosY, char c) {
 	//----------------------------------------------------------------------------
 }
 
+void ILI9325::string(char *str,uint8_t spalte, uint8_t zeile){
+	StringLine(spalte*16,zeile*30,str);
+}
+
+void ILI9325::string(char *str,uint8_t spalte, uint8_t zeile, unsigned char fg, unsigned char bg, int offset){
+	StringLine(spalte*16+offset,zeile*30,str);
+}
+
 void ILI9325::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, unsigned char fg, unsigned char bg, int offset){
 	StringLine(spalte*16+offset,zeile*30,str);
 }
@@ -953,3 +961,237 @@ void ILI9325::SetBackLight(unsigned short level) {
 	TIM_Cmd(TIM1, ENABLE);
 	TIM_CtrlPWMOutputs(TIM1, ENABLE);
 }
+
+
+void ILI9325::show_storry(const char* storry,const char* title){
+    show_storry(storry,title,0x00);
+}
+
+void ILI9325::show_storry(const char* storry,const char* title, uint8_t type){
+    char storry_char[strlen(storry)+1];
+    char title_char[strlen(title)+1];
+
+    strcpy(storry_char,storry);
+    strcpy(title_char,title);
+
+    show_storry(storry_char,strlen(storry),title_char,strlen(title),type);
+}
+
+void ILI9325::show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length){
+    show_storry(storry,storry_length,title, title_length, 0x00);
+}
+
+//void ILI9325::show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length, uint8_t type){
+//    // show title
+//    OLED.clear_screen();
+//    OLED.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+//    OLED.string(pSpeedo->default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+//
+//    // Generate borders
+//    unsigned int fill_line=0; // actual line
+//    unsigned int char_in_line=0; // count char in this line
+//    int von[4]={0,0,0,0}; // nutzen um zu bestimmten wo wir den "\0" setzen
+//    int bis[4]={0,0,0,0}; // nutzen um zu bestimmten wo wir den "\0" setzen
+//
+//    for(unsigned int i=0; i<storry_length;i++){
+//        if(char_in_line>10){ // mindestesn mal 10 zeichen aufnehmen
+//            if((storry[i]==' ' || char_in_line==21) && (fill_line+1<(sizeof(bis)/sizeof(bis[0])))){
+//                bis[fill_line]=i; // damit haben wir das ende dieser Zeile gefunden
+//                fill_line++;
+//                von[fill_line]=i;// und den anfang der nächsten, wobei das noch nicht save ost
+//                if(storry[i]==' '){ // wir haben hier ein freizeichen, hätten wir sinnvoll weitergucken können?
+//                    von[fill_line]++; // das freizeichen brauchen wie eh nicht mehr
+//                    //haben ein volles wort, mal sehen ob ncoh was geht
+//                    //aktuell sind char_in_line chars im puffer
+//                    int onemoreword=0; // wieviele chars gehts denn weiter, falls sinnvoll
+//                    for(unsigned int k=char_in_line; k<21; k++){
+//                        if(storry[i+k-char_in_line]==' ') onemoreword=k-char_in_line;
+//                    }
+//                    if(onemoreword>0){
+//                        // es scheint sinnig noch onemoreword buchstaben zu nutzen
+//                        i+=onemoreword;
+//                        von[fill_line]+=onemoreword;
+//                        bis[fill_line-1]+=onemoreword;
+//                    }
+//                }
+//                char_in_line=-1; // wird gleich inc -> dann sind wir fertig und der counter bei 0
+//            }
+//        }
+//        char_in_line++;
+//    };
+//    if(bis[fill_line]==0){ // letztes array ding
+//        bis[fill_line]=storry_length;
+//    };
+//    // we got the borders
+//
+//    // draw to display
+//    for(unsigned int i=0; i<4; i++){ // nur 4 zeilen
+//        if(von[i]!=bis[i]){
+//            // reserve buffer
+//            char *buffer2;
+//            buffer2 = (char*) malloc (22);
+//            if (buffer2==NULL) Serial.puts_ln(USART1,("Malloc failed"));
+//            else memset(buffer2,'\0',sizeof(buffer2)/sizeof(buffer2[0]));
+//
+//            int k=0;
+//            for(int j=von[i]; j<bis[i] && k<22; j++){
+//                if(!(i==0 && storry[j]=='#')){ // in der ersten zeile, das erste "#" an stelle 0 überlesen
+//                    buffer2[k]=storry[j];
+//                    k++;
+//                };
+//            };
+//            buffer2[k]='\0';
+//            OLED.string(pSpeedo->default_font,buffer2,0,i+2,0,DISP_BRIGHTNESS,0);
+//
+//            //delete buffer
+//            free(buffer2);
+//        };
+//    }
+//
+//    //
+//    unsigned int current_state=pMenu->state;
+//    unsigned long current_timestamp=Millis.get();
+//
+//    // set buttons if needed
+//    if(type>=DIALOG_NO_YES){
+//        pMenu->set_buttons(true,false,false,true);
+//    }
+//
+//    if(type==DIALOG_NO_YES){
+//        OLED.string(pSpeedo->default_font,("\x7E back        next \x7F"),0,7);
+//    }
+//    else if(type==DIALOG_GO_RIGHT_200MS){
+//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<200){
+//            _delay_ms(1);
+//        }
+//        if(current_state==pMenu->state){
+//            pMenu->go_right(true);
+//        }
+//    } else if(type==DIALOG_GO_LEFT_200MS){
+//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<200){
+//            _delay_ms(1);
+//        }
+//        if(current_state==pMenu->state){
+//            pMenu->go_left(true);
+//        }
+//    } else if(type==DIALOG_GO_RIGHT_500MS){
+//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<500){
+//            _delay_ms(1);
+//        }
+//        if(current_state==pMenu->state){
+//            pMenu->go_right(true);
+//        }
+//    } else if(type==DIALOG_GO_LEFT_500MS){
+//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<500){
+//            _delay_ms(1);
+//        }
+//        if(current_state==pMenu->state){
+//            pMenu->go_left(true);
+//        }
+//    } else if(type==DIALOG_GO_RIGHT_1000MS){
+//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<1000){
+//            _delay_ms(1);
+//        }
+//        if(current_state==pMenu->state){
+//            pMenu->go_right(true);
+//        }
+//    } else if(type==DIALOG_GO_LEFT_1000MS){
+//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<1000){
+//            _delay_ms(1);
+//        }
+//        if(current_state==pMenu->state){
+//            pMenu->go_left(true);
+//        }
+//    } else if(type==DIALOG_GO_RIGHT_2000MS){
+//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<2000){
+//            _delay_ms(1);
+//        }
+//        if(current_state==pMenu->state){
+//            pMenu->go_right(true);
+//        }
+//    } else if(type==DIALOG_GO_LEFT_2000MS){
+//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<2000){
+//            _delay_ms(1);
+//        }
+//        if(current_state==pMenu->state){
+//            pMenu->go_left(true);
+//        }
+//    } else if(type==DIALOG_GO_RIGHT_5000MS){
+//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<5000){
+//            _delay_ms(1);
+//        }
+//        if(current_state==pMenu->state){
+//            pMenu->go_right(true);
+//        }
+//    } else if(type==DIALOG_GO_LEFT_5000MS){
+//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<5000){
+//            _delay_ms(1);
+//        }
+//        if(current_state==pMenu->state){
+//            pMenu->go_left(true);
+//        }
+//    } else if(type==DIALOG_SHOW_500MS){
+//        _delay_ms(500);
+//    }
+//}
+
+void ssd0323::string_centered(const char* text, uint8_t line){
+    string_centered(text,line,false);
+}
+
+//void ssd0323::string_centered(const char* text, uint8_t line, bool inverted){
+//    if(strlen(text)>20){
+//        return;
+//    };
+//
+//    uint16_t front_color=0x0f;
+//    uint16_t back_color=0x00;
+//    uint16_t start_pos=0;
+//    uint16_t length_of_char=22;
+//
+//    if(inverted){
+//        front_color=0x00;
+//        back_color=0x0f;
+//        if(strlen(text)<=17){ // 6*2pixel == 2 chars. 21 Chars - 2*2 = 17chars max
+//            length_of_char=17;
+//            start_pos=2;
+//            OLED.highlight_bar(0,line*8,128,8);
+//        } else {
+//            OLED.filled_rect(0,line*8,128,8,0x0f);
+//        }
+//    }
+//    char text_char[length_of_char]; // full display width +1
+//    strcpy(text_char,text);
+//    Menu.center_me(text_char,length_of_char); // full display width
+//    OLED.string(pSpeedo->default_font,text_char,start_pos,line,back_color,front_color,0);
+//}
+
+
+//void ssd0323::highlight_bar(unsigned char x,unsigned char y,unsigned char width,unsigned char height){
+//	x=floor(x/2)*2;
+//	width=floor(width/2)*2;
+//
+//	send_command(0x15);
+//	send_command(floor(x/2));
+//	send_command(floor((width-1+x)/2));
+//	send_command(0x75);
+//	send_command(y);
+//	send_command(height+y);
+//
+//	for(int j=0;j<height;j++){
+//		unsigned char b=0x34;
+//		for(int i=0;i<6;i++){
+//			send_char(b);
+//			b+=34;
+//		}
+//		b=0xff;
+//		for(int a=0;a<(width/2)-12;a++){
+//			send_char(b);
+//		};
+//		b=0xED;
+//		for(int i=0;i<6;i++){
+//			send_char(b);
+//			b-=34;
+//		}
+//	};
+//};

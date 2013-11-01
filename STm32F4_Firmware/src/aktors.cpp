@@ -44,36 +44,36 @@ Speedo_aktors::~Speedo_aktors(){
 
 // run reset could be called in three ways,
 // convertional by the bluetooth command
-// -> that should write "Running Update", reconfigure serial speed and reset the ATm328
+// . that should write "Running Update", reconfigure serial speed and reset the ATm328
 // second from the menu
-// -> thereby only the "running update" should be written and the serial speed should be reconfigured
+// . thereby only the "running update" should be written and the serial speed should be reconfigured
 // third: from the state (2) if the user pushed "right" button to trigger reset
-// -> only reset ATm328 and return to last state
+// . only reset ATm328 and return to last state
 void Speedo_aktors::run_reset_on_ATm328(char mode){
 	// serial setup and "klickibunti"-"show some msg"
 	if(mode==RESET_COMPLETE || mode==RESET_PREPARE){
-		Sensors->m_reset->set_deactive(false,false);
+		Sensors.mReset.set_deactive(false,false);
 		_delay_ms(100);// give serial 3 some time to send the messeage
 //		Serial3.end();
-		Serial3.begin(115200);
-		OLED.clear_screen();
-		OLED.string("Running Update",3,2);
-		OLED.string("on AT328P",5,3);
+		Serial.init(USART3,115200);
+		TFT.clear_screen();
+		TFT.string("Running Update",3,2);
+		TFT.string("on AT328P",5,3);
 	};
 
 	// show "_R_to_trigger_reset__" only if in "preparation" mode
 	if(mode==RESET_PREPARE){
 		char temp[2];
 		sprintf(temp,"%c",127);
-		OLED.string(temp,1,7);
-		OLED.string("to trigger reset",3,7);
+		TFT.string(temp,1,7);
+		TFT.string("to trigger reset",3,7);
 	}
 
 	// run the reset
 	if(mode==RESET_COMPLETE || mode==RESET_KICK_TO_RESET){
 		// pin as output
 		DDRD |= (1<<ATM328RESETPIN);
-		// set low -> low active
+		// set low . low active
 		PORTD &= ~(1<<ATM328RESETPIN);
 		_delay_ms(50);
 		PORTD |= (1<<ATM328RESETPIN);
@@ -86,26 +86,26 @@ void Speedo_aktors::run_reset_on_ATm328(char mode){
 	if(mode==RESET_COMPLETE || mode==RESET_PREPARE){
 		// tunnel mode
 		unsigned long timeout=Millis.get();
-		unsigned long menu_state_on_enter=pMenu->state; // save the menu state, to detect button pushes
+		unsigned long menu_state_on_enter=pMenu.state; // save the menu state, to detect button pushes
 		unsigned int max_time=5000; // should be enough if in android mode
 		if(mode==RESET_PREPARE){ // longer timeout if in "menu-mode"
 			max_time=30000;
 		};
 		while(Millis.get()-timeout<max_time){ // time out
 			while(Serial3.available()>0){
-				Serial.print(Serial3.read(),BYTE);
+				Serial.puts(USART1,Serial3.read(),BYTE);
 				timeout=Millis.get();
 			}
-			while(Serial.available()>0){
-				Serial3.print(Serial.read(),BYTE);
+			while(Serial.available(USART1)>0){
+				Serial3.print(Serial.read(USART1),BYTE);
 				timeout=Millis.get();
 			}
 			if(mode==RESET_PREPARE){
-				if(menu_state_on_enter==((pMenu->state/10))){ // button "right" was pushed
+				if(menu_state_on_enter==((pMenu.state/10))){ // button "right" was pushed
 					run_reset_on_ATm328(RESET_KICK_TO_RESET); // to the reset
-					pMenu->state=menu_state_on_enter; // reset menu state
-				} else if(menu_state_on_enter==((pMenu->state*10)+1)){ // button "left" was pushed
-					pMenu->state=menu_state_on_enter; // reset menu state, because menu->back will otherwise recaluclate two steps back
+					pMenu.state=menu_state_on_enter; // reset menu state
+				} else if(menu_state_on_enter==((pMenu.state*10)+1)){ // button "left" was pushed
+					pMenu.state=menu_state_on_enter; // reset menu state, because menu.back will otherwise recaluclate two steps back
 					max_time=0;
 					break;
 				}
@@ -113,8 +113,8 @@ void Speedo_aktors::run_reset_on_ATm328(char mode){
 		}
 		Serial3.end();
 		Serial3.begin(19200);
-		pSensors->m_reset->set_active(false,false);
-		pMenu->back();
+		pSensors.m_reset.set_active(false,false);
+		pMenu.back();
 	};
 
 }
@@ -177,7 +177,7 @@ bool Speedo_aktors::check_vars(){
 		return true;
 	}
 
-	if(m_oiler->check_vars()){
+	if(mOiler.check_vars()){
 		return true;
 	};
 
@@ -187,10 +187,10 @@ bool Speedo_aktors::check_vars(){
 
 void Speedo_aktors::init(){
 	/* vier werte paare:
-	 * 1. Außen -> ändert sich öfters mal, wird mit std werten geladen
-	 * 2. Innen -> ändert sich eigentlich nie
-	 * 3. Flasher -> Farbe zu der übergeblendet wird wenn die schaltdrehzahl erreicht wird
-	 * 4. out_base -> Farbkopie von Außen
+	 * 1. Außen . ändert sich öfters mal, wird mit std werten geladen
+	 * 2. Innen . ändert sich eigentlich nie
+	 * 3. Flasher . Farbe zu der übergeblendet wird wenn die schaltdrehzahl erreicht wird
+	 * 4. out_base . Farbkopie von Außen
 	 */
 
 	dimm_step=0;
@@ -212,7 +212,7 @@ void Speedo_aktors::init(){
 	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
 
 	// see if its a clock startup or a regular startup
-	if(pSpeedo->startup_by_ignition){
+	if(Speedo.startup_by_ignition){
 		// beleuchtung
 		TCCR4A|=1<<COM4B1; // RGB_OUT_R 7  OCR4B = val;
 		TCCR4A|=1<<COM4C1; // RGB_OUT_G 8  OCR4C = val;
@@ -226,8 +226,8 @@ void Speedo_aktors::init(){
 	};
 
 	// stepper drehen
-	m_stepper->init();
-	m_oiler->init();
+	m_stepper.init();
+	m_oiler.init();
 
 	// init port rep
 	//	  Wire.beginTransmission(0x20);
@@ -259,7 +259,7 @@ void Speedo_aktors::set_rgb_out(int r,int g,int b,int save){
 		RGB.b.actual=b;
 	};
 };
-/* 10ms pro schritt -> 0 to 256 = 2,56 sec */
+/* 10ms pro schritt . 0 to 256 = 2,56 sec */
 void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps){
 
 	if(r>255) r=255;
@@ -283,9 +283,9 @@ void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps){
 	 * ein schritt demnach in 0,01/256=0,000039062
 	 * das sind in der welt von 16 mhz => 1/16000000*x=0,000039062
 	 * x=625 schritte .. das ist doof vorteiler kann 256 oder 1024 sein
-	 * 16000000/256/256 = 244 hz -> nur ne gute sekunde
-	 * 16000000/1024/256 = 61 hz -> mehr als 4 sekunde, dazu dann mit
-	 * 256/2-1 vorladen = 127 -> zack 2 sek
+	 * 16000000/256/256 = 244 hz . nur ne gute sekunde
+	 * 16000000/1024/256 = 61 hz . mehr als 4 sekunde, dazu dann mit
+	 * 256/2-1 vorladen = 127 . zack 2 sek
 	 */
 	// prescale 1024
 	TCCR3B |= (1<<CS32) | (1<<CS30);
@@ -299,7 +299,7 @@ void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps){
 };
 
 ISR(TIMER3_OVF_vect){
-	pAktors->timer_overflow();
+	pAktors.timer_overflow();
 }
 void Speedo_aktors::timer_overflow(){
 	int r=int(round((float(int(RGB.r.to)-int(RGB.r.from))*dimm_step)/dimm_steps))+int(RGB.r.from);
@@ -349,11 +349,11 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 
 	////////// SHIFT FLASH ////////////////
 	////////// calc it //////////
-	if(pSensors->get_RPM(RPM_TYPE_DIRECT)>unsigned(pSensors->m_dz->blitz_dz) && pSensors->m_dz->blitz_en){
+	if(pSensors.get_RPM(RPM_TYPE_DIRECT)>unsigned(pSensors.m_dz.blitz_dz) && pSensors.m_dz.blitz_en){
 		attention_required=true;
 		set_rbg_active((int)0x0000,false); // activate all led's
-	} else if(pSpeedCams->get_active() && pMenu->state==11){
-		if(pSpeedCams->calc()){
+	} else if(pSpeedCams.get_active() && pMenu.state==11){
+		if(pSpeedCams.calc()){
 			attention_required=true;
 			set_rbg_active((int)0x0000,false); // activate all led's
 		} else {
@@ -368,17 +368,17 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 		if(dimm_state==FLASH_COLOR_REACHED){
 			return 0;
 		} else if(dimm_state==DIMM_TO_FLASH_COLOR){
-			if(pAktors->dimm_available()){
+			if(pAktors.dimm_available()){
 				dimm_state=FLASH_COLOR_REACHED;
 			}
 		} else if(dimm_state==DIMM_TO_DARK){
-			if(pAktors->dimm_available()){
-				pAktors->dimm_rgb_to(pAktors->dz_flasher.r,pAktors->dz_flasher.g,pAktors->dz_flasher.b,15); // 15*10ms = 150 ms
+			if(pAktors.dimm_available()){
+				pAktors.dimm_rgb_to(pAktors.dz_flasher.r,pAktors.dz_flasher.g,pAktors.dz_flasher.b,15); // 15*10ms = 150 ms
 				dimm_state=DIMM_TO_FLASH_COLOR;
 			}
 		} else {
-			if(pAktors->dimm_available()){
-				pAktors->dimm_rgb_to(5,5,5,15); // 15*10ms = 150 ms
+			if(pAktors.dimm_available()){
+				pAktors.dimm_rgb_to(5,5,5,15); // 15*10ms = 150 ms
 				dimm_state=DIMM_TO_DARK;
 			}
 		}
@@ -387,11 +387,11 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 		if(dimm_state==STATIC_COLOR_REACHED){
 			return 0;
 		} else if(dimm_state==DIMM_TO_STATIC_COLOR){
-			if(pAktors->dimm_available()){
+			if(pAktors.dimm_available()){
 				dimm_state=STATIC_COLOR_REACHED;
 			};
 		} else {
-			pAktors->dimm_rgb_to(pAktors->static_color.r,pAktors->static_color.g,pAktors->static_color.b,25); // 25*10ms = 250 ms
+			pAktors.dimm_rgb_to(pAktors.static_color.r,pAktors.static_color.g,pAktors.static_color.b,25); // 25*10ms = 250 ms
 			dimm_state=DIMM_TO_STATIC_COLOR;
 		};
 		return 0;
@@ -407,8 +407,8 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 		///////// kmh ////////////////
 		switch(led_mode){
 		case 1:
-			if(current_sensor_value!=(signed)(pSensors->get_speed(false))){
-				current_sensor_value=(signed)(pSensors->get_speed(false));
+			if(current_sensor_value!=(signed)(pSensors.get_speed(false))){
+				current_sensor_value=(signed)(pSensors.get_speed(false));
 
 				max_value=kmh_max_value;
 				min_value=kmh_min_value;
@@ -419,8 +419,8 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 			}
 			break;
 		case 2:
-			if(current_sensor_value!=(signed)(pSensors->get_RPM(RPM_TYPE_DIRECT))){
-				current_sensor_value=(signed)(pSensors->get_RPM(RPM_TYPE_DIRECT));
+			if(current_sensor_value!=(signed)(pSensors.get_RPM(RPM_TYPE_DIRECT))){
+				current_sensor_value=(signed)(pSensors.get_RPM(RPM_TYPE_DIRECT));
 
 				max_value=dz_max_value*100;
 				min_value=dz_min_value*100;
@@ -431,8 +431,8 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 			}
 			break;
 		case 3:
-			if(current_sensor_value!=pSensors->get_oil_temperature()){
-				current_sensor_value=pSensors->get_oil_temperature();
+			if(current_sensor_value!=pSensors.get_oil_temperature()){
+				current_sensor_value=pSensors.get_oil_temperature();
 
 				max_value=oil_max_value*10;
 				min_value=oil_min_value*10;
@@ -443,8 +443,8 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 			}
 			break;
 		case 4:
-			if(current_sensor_value!=pSensors->get_water_temperature()){
-				current_sensor_value=pSensors->get_water_temperature();
+			if(current_sensor_value!=pSensors.get_water_temperature()){
+				current_sensor_value=pSensors.get_water_temperature();
 
 				max_value=water_max_value*10;
 				min_value=water_min_value*10;
@@ -474,7 +474,7 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 				temp_b = float(to_color.b-from_color.b)/float(differ)*(current_sensor_value-min_value)+from_color.b;
 			};
 
-			pAktors->dimm_rgb_to(temp_r,temp_g,temp_b,25); // 25*10ms = 250 ms
+			pAktors.dimm_rgb_to(temp_r,temp_g,temp_b,25); // 25*10ms = 250 ms
 			dimm_state=DIMM_TO_STATIC_COLOR;
 			///////// dimm now end ///////////
 		}
@@ -484,49 +484,49 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 };
 
 int Speedo_aktors::set_bt_pin(){
-	pOLED->clear_screen();
+	TFT.clear_screen();
 	char at_commands[22];
 	bool connection_established=true;
 
 	// check connection
-	pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
+	TFT.string(Speedo.default_font,("Checking connection"),0,0);
 
 	sprintf(at_commands,"ATQ0%c",0x0D);
 	if(ask_bt(&at_commands[0])!=0){														// fehler aufgetreten
 		connection_established=false;
-		pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,1);								// hat nicht geklappt
+		TFT.string(Speedo.default_font,("FAILED"),14,1);								// hat nicht geklappt
 		Serial.end();																	// setzte neue serielle Geschwindigkeit
 		_delay_ms(500);
-		pOLED->string_P(pSpeedo->default_font,PSTR("TRYING 19200 BAUD"),0,2);					// hat nicht geklappt
+		TFT.string(Speedo.default_font,("TRYING 19200 BAUD"),0,2);					// hat nicht geklappt
 		Serial.begin(19200);
 		_delay_ms(2000);
 		if(ask_bt(&at_commands[0])==0){
-			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
+			TFT.string(Speedo.default_font,("OK"),14,3);
 			_delay_ms(500);
-			pOLED->string_P(pSpeedo->default_font,PSTR("BASIC SETUP"),0,4);
+			TFT.string(Speedo.default_font,("BASIC SETUP"),0,4);
 			sprintf(at_commands,"ATE0%c",0x0D);
 			if(ask_bt(&at_commands[0])==0){
 				sprintf(at_commands,"ATN=SPEEDOINO%c",0x0D);
 				if(ask_bt(&at_commands[0])==0){
 					sprintf(at_commands,"ATL5%c",0x0D);
 					ask_bt(&at_commands[0]);											// fire && forget
-					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, können wir hier nicht testen
+					TFT.string(Speedo.default_font,("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, können wir hier nicht testen
 					Serial.end();														// setzte neue serielle Geschwindigkeit
-					pOLED->string_P(pSpeedo->default_font,PSTR("RETRYING"),0,6);		// hat nicht geklappt
+					TFT.string(Speedo.default_font,("RETRYING"),0,6);		// hat nicht geklappt
 					Serial.begin(115200);
 					_delay_ms(2000);
-					pOLED->clear_screen();
-					pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
+					TFT.clear_screen();
+					TFT.string(Speedo.default_font,("Checking connection"),0,0);
 					sprintf(at_commands,"AT%c",0x0D);									// gleich neu testen
 					if(ask_bt(&at_commands[0])==0){
 						connection_established=true;
-						pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,1);
+						TFT.string(Speedo.default_font,("OK"),14,1);
 					};
 				}
 			}
 		} else {
-			pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,3);
-			pOLED->string_P(pSpeedo->default_font,PSTR("DAMN"),14,4); // add message to make sure no active bt connection disturbs TODO
+			TFT.string(Speedo.default_font,("FAILED"),14,3);
+			TFT.string(Speedo.default_font,("DAMN"),14,4); // add message to make sure no active bt connection disturbs TODO
 			_delay_ms(4000);
 			Serial.end();
 			Serial.begin(115200);
@@ -535,22 +535,22 @@ int Speedo_aktors::set_bt_pin(){
 	}
 
 	if(connection_established){
-		pOLED->filled_rect(0,8,128,56,0x00); // clear the lower lines
-		pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,1);
-		pOLED->string_P(pSpeedo->default_font,PSTR("Activating responses"),0,2);
+		TFT.filled_rect(0,8,128,56,0x00); // clear the lower lines
+		TFT.string(Speedo.default_font,("OK"),14,1);
+		TFT.string(Speedo.default_font,("Activating responses"),0,2);
 		sprintf(at_commands,"ATQ0%c",0x0D); // schaltet result codes ein				// jetzt richtig
 		if(ask_bt(&at_commands[0])==0){
-			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
-			pOLED->string_P(pSpeedo->default_font,PSTR("Setting PIN Code"),0,4);
+			TFT.string(Speedo.default_font,("OK"),14,3);
+			TFT.string(Speedo.default_font,("Setting PIN Code"),0,4);
 			sprintf(at_commands,"ATP=%04i%c",bt_pin,13);
 
 			if(ask_bt(&at_commands[0])==0){
-				pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);
-				pOLED->string_P(pSpeedo->default_font,PSTR("Deactivating response"),0,6);
+				TFT.string(Speedo.default_font,("OK"),14,5);
+				TFT.string(Speedo.default_font,("Deactivating response"),0,6);
 				sprintf(at_commands,"ATQ0%c",13); // schaltet result codes ein
 
 				if(ask_bt(&at_commands[0])==0){
-					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,7);
+					TFT.string(Speedo.default_font,("OK"),14,7);
 					_delay_ms(2000);
 					return 0;
 				}
@@ -558,7 +558,7 @@ int Speedo_aktors::set_bt_pin(){
 		}
 	} else {
 		ask_bt(&at_commands[0]);
-		pOLED->string_P(pSpeedo->default_font,PSTR("failed, hmmm"),0,1);
+		TFT.string(Speedo.default_font,("failed, hmmm"),0,1);
 		_delay_ms(5000);
 	}
 	_delay_ms(2000);
@@ -567,7 +567,7 @@ int Speedo_aktors::set_bt_pin(){
 
 bool Speedo_aktors::check_mac_key(uint8_t* result,bool* comm_error){
 	char at_commands[22];
-	sprintf_P(at_commands,PSTR("ATB?%c"),0x0D);
+	sprintf(at_commands,("ATB?%c"),0x0D);
 	uint8_t returns=0;
 	if(ask_bt(at_commands,true,22,&returns)==0){
 		if(returns>=17){
@@ -631,7 +631,7 @@ int Speedo_aktors::ask_bt(char *command){
 
 int Speedo_aktors::ask_bt(char *buffer, bool answere_needed, int8_t max_length, uint8_t* char_rec){
 	for(int looper=0;looper<30;looper++){
-		Serial.print(buffer);
+		Serial.puts(USART1,buffer);
 		// A T \r \n O K \r \n = 8
 		//warte bis der Buffer nicht voller wird
 		_delay_ms(200);
@@ -640,8 +640,8 @@ int Speedo_aktors::ask_bt(char *buffer, bool answere_needed, int8_t max_length, 
 		int8_t n=0;
 		*char_rec=0;
 		char answere[20];
-		while(Serial.available()){
-			char temp = Serial.read();
+		while(Serial.available(USART1)){
+			char temp = Serial.read(USART1);
 			if(answere_needed){
 				*char_rec=*char_rec+1;
 				if(n<(max_length-1)){
@@ -671,7 +671,7 @@ int Speedo_aktors::set_expander(){
 	data[1]=(uint8_t)led_area_controll;
 	//	char data2[20];
 	//	Sprint(data2,"Setze auf %i:%i",data[0],data[1]);
-	//	Serial.println(data2);
+	//	Serial.puts_ln(USART1,data2);
 	I2c.write(PORT_REP_ADDR,PORT_REP_ADDR_GPIO_A,data,2);
 	expander_outdated=false; // update done
 	return 0;

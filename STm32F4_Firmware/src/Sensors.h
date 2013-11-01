@@ -1,24 +1,4 @@
 
-//
-//#define HIGH_BEAM_PIN PK2
-//#define NEUTRAL_GEAR_PIN PK1
-//#define OIL_PRESSURE_PIN PK0
-//
-//#define FLASHER_LEFT_PIN PE6
-//#define FLASHER_RIGHT_PIN PE7
-//
-//#define SENSOR_AUTO 1
-//#define SENSOR_FORCE_CAN 2
-//
-//#define SENSOR_SHORT_TO_GND 5
-//#define SENSOR_OPEN 9
-//
-//#define RPM_TYPE_DIRECT 0
-//#define RPM_TYPE_FLAT 1
-//#define RPM_TYPE_FLAT_ROUNDED 2
-//#define RPM_TYPE_ROUNDED 3
-//#define RPM_TYPE_ROUNDED_FLAT 4
-//
 
 
 /*
@@ -30,6 +10,25 @@
 
 #ifndef SPEEDOSENSORS_H_
 #define SPEEDOSENSORS_H_
+
+#define HIGH_BEAM_PIN PK2
+#define NEUTRAL_GEAR_PIN PK1
+#define OIL_PRESSURE_PIN PK0
+
+#define FLASHER_LEFT_PIN PE6
+#define FLASHER_RIGHT_PIN PE7
+
+#define SENSOR_AUTO 1
+#define SENSOR_FORCE_CAN 2
+
+#define SENSOR_SHORT_TO_GND 5
+#define SENSOR_OPEN 9
+
+#define RPM_TYPE_DIRECT 0
+#define RPM_TYPE_FLAT 1
+#define RPM_TYPE_FLAT_ROUNDED 2
+#define RPM_TYPE_ROUNDED 3
+#define RPM_TYPE_ROUNDED_FLAT 4
 
 class Speedo_Sensors {
 public:
@@ -61,12 +60,12 @@ public:
 	clock mClock;
 	GPS mGPS;
 	//	speedo_temperature* m_temperature;
-	//	speedo_fuel* m_fuel;
-	//	speedo_speed* m_speed;
-	//	speedo_reset* m_reset;
-	//	speedo_gear* m_gear;
+	fuel mFuel;
+	Speed mSpeed;
+	reset mReset;
+	gear mGear;
 	//	speedo_voltage* m_voltage;
-	//	Speedo_CAN* m_CAN;
+	CAN mCAN;
 	int8_t sensor_source;
 	bool CAN_active;
 

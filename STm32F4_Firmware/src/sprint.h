@@ -9,7 +9,7 @@
 #define SPRINT_H_
 
 ///////////// sprint ///////////////////////////////////
-class speedo_sprint{
+class sprint{
 
 #define SPRINT_WAIT_ON_STOP 0x00
 #define SPRINT_READY_TO_GO 0x01
@@ -19,8 +19,8 @@ class speedo_sprint{
 
 
 public:
-	speedo_sprint(void);
-	~speedo_sprint();
+	sprint(void);
+	~sprint();
 	void loop();
 	void prepare_startup();
 private:
@@ -30,7 +30,7 @@ private:
 	unsigned long end;                                     // ende des sprints
 	unsigned long previousMillis;
 };
-extern speedo_sprint* pSprint;
+extern sprint Sprint;
 ///////////// sprint ///////////////////////////////////
 
 #endif /* SPRINT_H_ */

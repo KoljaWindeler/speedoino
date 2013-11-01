@@ -17,7 +17,7 @@
 
 #include "global.h"
 
-speedo_reset::speedo_reset(){
+reset::reset(){
 	toggle_high=true; // beliebig, einfach mal als startwert
 	last_time=Millis.get();
 	reset_enabled=true;
@@ -26,22 +26,22 @@ speedo_reset::speedo_reset(){
 	reboots_caused_by_sd_problems=0;
 };
 
-speedo_reset::~speedo_reset(){};
+reset::~reset(){};
 
-int speedo_reset::check_vars(){
+int reset::check_vars(){
 	return 0;
 };
 
 
-void speedo_reset::init(){
+void reset::init(){
 	Serial.init(USART3,19200);
-	pinMode(reset_toogle_pin,OUTPUT);
-
-	if(eeprom_read_byte((const uint8_t *)149)==1){ // glatte 1 heisst ist an, alle andere heisst ist aus
-		set_active(false,true); // eeprom is set,set var
-	} else {
-		set_deactive(false,true); // eeprom is set,set var
-	}
+//	pinMode(reset_toogle_pin,OUTPUT);		// TODO
+//
+//	if(eeprom_read_byte((const uint8_t *)149)==1){ // glatte 1 heisst ist an, alle andere heisst ist aus
+//		set_active(false,true); // eeprom is set,set var
+//	} else {
+//		set_deactive(false,true); // eeprom is set,set var
+//	}
 	Serial.puts(USART1,("Reset init done. Status: "));
 	ask_reset();
 	if(last_reset==0){
@@ -55,21 +55,21 @@ void speedo_reset::init(){
 	}
 
 	// watchdog einschalten um ihn dann zu deaktivieren ... strange aber muss wohl so
-	wdt_enable(WDTO_8S);
-	MCUSR &= ~(1<<WDRF);
-	WDTCSR |= (1<<WDCE) | (1<<WDE);
-	WDTCSR = 0x00;
+//	wdt_enable(WDTO_8S);	TODO
+//	MCUSR &= ~(1<<WDRF);
+//	WDTCSR |= (1<<WDCE) | (1<<WDE);
+//	WDTCSR = 0x00;
 };
 
-void speedo_reset::set_active(bool save_to_eeprom,bool save_to_var){
+void reset::set_active(bool save_to_eeprom,bool save_to_var){
 	Serial.puts(USART3,"$r1*");
 	if(save_to_var){
 		reset_enabled=true;
 	}
-	if(save_to_eeprom){
-		byte tempByte = (1 & 0xFF);
-		eeprom_write_byte((uint8_t *)149,tempByte);
-	}
+//	if(save_to_eeprom){						TODO
+//		byte tempByte = (1 & 0xFF);
+//		eeprom_write_byte((uint8_t *)149,tempByte);
+//	}
 #ifdef RESET_DEBUG
 	Serial.puts_ln(USART1,("Reset enabled"));
 	if(save_to_eeprom){
@@ -78,15 +78,15 @@ void speedo_reset::set_active(bool save_to_eeprom,bool save_to_var){
 #endif
 };
 
-void speedo_reset::set_deactive(bool save_to_eeprom,bool save_to_var){
+void reset::set_deactive(bool save_to_eeprom,bool save_to_var){
 	Serial.puts(USART3,"$r0*");
 	if(save_to_var){
 		reset_enabled=false;
 	}
-	if(save_to_eeprom){
-		byte tempByte = (0 & 0xFF);
-		eeprom_write_byte((uint8_t *)149,tempByte);
-	};
+//	if(save_to_eeprom){						TODO
+//		byte tempByte = (0 & 0xFF);
+//		eeprom_write_byte((uint8_t *)149,tempByte);
+//	};
 
 #ifdef RESET_DEBUG
 	Serial.puts_ln(USART1,("Reset disabled"));
@@ -96,7 +96,7 @@ void speedo_reset::set_deactive(bool save_to_eeprom,bool save_to_var){
 #endif
 };
 
-void speedo_reset::restore(){
+void reset::restore(){
 	if(reset_enabled){
 		set_active(false,false);
 	} else {
@@ -104,22 +104,22 @@ void speedo_reset::restore(){
 	}
 }
 
-void speedo_reset::toggle(){
-	wdt_reset();
-	if(reset_enabled){
-		if(Millis.get()-last_time>rst_blink_freq){
-			if(toggle_high) {
-				digitalWrite(reset_toogle_pin,LOW);
-			} else {
-				digitalWrite(reset_toogle_pin,HIGH);
-			}
-			toggle_high=!toggle_high;
-			last_time=Millis.get();
-		}
-	}
+void reset::toggle(){
+//	wdt_reset();								TODO
+//	if(reset_enabled){
+//		if(Millis.get()-last_time>rst_blink_freq){
+//			if(toggle_high) {
+//				digitalWrite(reset_toogle_pin,LOW);
+//			} else {
+//				digitalWrite(reset_toogle_pin,HIGH);
+//			}
+//			toggle_high=!toggle_high;
+//			last_time=Millis.get();
+//		}
+//	}
 }
 
-void speedo_reset::ask_reset(){
+void reset::ask_reset(){
 	if(last_reset==-1){
 		Serial.puts(USART3,"$y*");
 		unsigned long time=Millis.get();

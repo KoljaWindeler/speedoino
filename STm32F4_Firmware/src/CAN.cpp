@@ -29,7 +29,7 @@
  *************************************************** Strategy *******************************************************/
 
 
-Speedo_CAN::Speedo_CAN(){
+CAN::CAN(){
 	failed=false;
 	message_available=false; // init with true, may be its one there
 	last_request=0;
@@ -49,7 +49,7 @@ Speedo_CAN::Speedo_CAN(){
 	can_neutral_gear_lamp_active=false;
 };
 
-Speedo_CAN::~Speedo_CAN(){
+CAN::~CAN(){
 };
 
 // Already in use in sensor class...
@@ -57,261 +57,261 @@ Speedo_CAN::~Speedo_CAN(){
 //	pSensors->check_inputs();
 //}
 
-void Speedo_CAN::init(){
-	// Interrupt for CAN Interface active, auf pk4, pcint20
-	can_missed_count=0;
-	// Chipselect as output
-	if(pConfig->get_hw_version()==7){
-		// Interrupt as Input with pull up
-		CAN_DDR_CS_TILL_V7 &= ~(1<<CAN_INTERRUPT_PIN_V7); // input
-		CAN_PORT_CS_TILL_V7 |= (1<<CAN_INTERRUPT_PIN_V7); //  active low => pull up
-		// CS as output
-		CAN_DDR_CS_TILL_V7 |= (1<<CAN_PIN_CS_TILL_V7);
-		PCMSK2|=(1<<PCINT20); // CAN interrupt pin v7
-	} else if(pConfig->get_hw_version()>7){
-		// CS Input with pull up
-		CAN_DDR_CS_FROM_V8 &= ~(1<<CAN_INTERRUPT_PIN_FROM_V8); // input
-		CAN_PORT_CS_FROM_V8 |= (1<<CAN_INTERRUPT_PIN_FROM_V8); //  active low => pull up
-		// CS as output
-		CAN_DDR_CS_FROM_V8 |= (1<<CAN_PIN_CS_FROM_V8);
-		PCMSK0|=(1<<PCINT4); // CAN interrupt pin v(>7)
-		PCICR |=(1<<PCIE0); //new interrupt just for CAN
-	};
-
-
-	/********************************************* MCP2515 SETUP ***********************************/
-	// MCP2515 per Software Reset zuruecksetzten,
-	// danach ist der MCP2515 im Configuration Mode
-	set_cs_high(false); //CS low
-	spi_putc( SPI_CMD_RESET );
-	_delay_ms(1);
-	set_cs_high(true); //CS high
-
-	// etwas warten bis sich der MCP2515 zurueckgesetzt hat
-	_delay_ms(10);
-	/******************** BAUD Rate ************************************************
-	 *  Einstellen des Bit Timings
-	 *
-	 *  Fosc       = 16MHz
-	 *  Bus Speed  = 500 kHz
-	 *
-	 *  Sync Seg   = 1TQ
-	 *  Prop Seg   = (PRSEG + 1) * TQ  = 1 TQ
-	 *  Phase Seg1 = (PHSEG1 + 1) * TQ = 3 TQ
-	 *  Phase Seg2 = (PHSEG2 + 1) * TQ = 3 TQ
-	 *
-	 *  Bus speed  = 1 / (Total # of TQ) * TQ
-	 *  500kHz= 1 / (8 * TQ)
-	 * 	TQ = 1/(500kHz*8)
-	 *  TQ = 2 * (BRP + 1) / Fosc
-	 *  1/(500kHz*8) = 2 * (BRP + 1) / Fosc
-	 *  1/(500kHz*8) = 2 * (BRP + 1) / 16000kHz
-	 *  16000kHz/(500kHz*8*2) - 1 = BRP
-	 *
-	 *  BRP        = 1
-	 ******************** BAUD Rate ************************************************/
-
-	// BRP = 1
-	mcp2515_write_register( CNF1, (1<<BRP0));
-	// Prop Seg und Phase Seg1 einstellen
-	mcp2515_write_register( CNF2, (1<<BTLMODE)|(1<<PHSEG11) );
-	// Wake-up Filter deaktivieren, Phase Seg2 einstellen
-	mcp2515_write_register( CNF3, (1<<PHSEG21) );
-	// Aktivieren der Rx Buffer Interrupts
-	mcp2515_write_register( CANINTE, (1<<RX1IE)|(1<<RX0IE) );
-
-	/******************** FILTER ************************************************
-	 * There are two input buffer: RXB0/1
-	 * RXB0 has two Filters RXF0 / REF1
-	 * RXB1 has four Filters RXF2 / REF3 / REF4 / REF5
-	 *
-	 * BUKT
-	 * Additionally, the RXB0CTRL register can be configured
-	 * such that, if RXB0 contains a valid message and
-	 * another valid message is received, an overflow error
-	 * will not occur and the new message will be moved into
-	 * RXB1, regardless of the acceptance criteria of RXB1.
-	 *
-	 * RXBnCTRL.FILHITm determines if the Filter m is in use for buffer n
-	 *
-	 ******************** FILTER ************************************************/
-
-	// BUKT: RXB0 message will rollover and be written to RXB1 if RXB0 is full
-	// RXM0: Only accept messages with standard identifiers that meet filter criteria
-	mcp2515_write_register( RXB0CTRL, (1<<BUKT)|(1<<RXM0)); // use 11bit with filter + rollover
-	mcp2515_write_register( RXB1CTRL, (1<<RXM0)); // use 11bit with filter
-
-	/************************************************** Filter definition **************************************************
-	 * CAN Filter: We have two Buffers. Each has a Mask RXM0SIDH/RXM0SIDL, RXM1SIDH/RXM1SIDL.
-	 * Buffer0 has two Filters RXF0 and RXF1
-	 * Buffer1 has three addition Filters RXF2,RXF3,RXF4 and RXF5
-	 *
-	 ***************************************************** TRIUMPH CAN *****************************************************
-	 * If we are using the Triumph CAN, we have to Catch the IDs: 530,540,568,570 and avoid 518,519,550
-	 * in addition 568 has a very high priority! Thus 568 should be accepted in buffer 0 to be rollover activ to buffer1
-	 *
-	 * 568	= 0b 101 0110 1000
-	 * Mask0     111 1111 1111
-	 * Filter0   101 0110 1000 <- accept only 568
-	 * Filter1   101 0110 1000 <- just a copy
-	 *
-	 * Buffer1 should catch 530,540,570
-	 * 530 = 0b 101 0011 0000
-	 * 570 = 0b 101 0111 0000
-	 * 540 = 0b 101 0100 0000
-	 * Mask     111 1111 1111
-	 * Filter2  101 0011 0000 <- 530 RPM/Speed
-	 * Filter3  101 0111 0000 <- 570 Temp
-	 * Filter4  101 0100 0000 <- 540 Status
-	 * Filter5  101 0100 0000 <- just a copy
-	 *
-	 *
-	 ***************************************************** OBD2 *****************************************************
-	 * We have to catch all IDs from 780-7FF, easy very low traffic compared to Triumph
-	 *
-	 * Mask0     111 1000 0000
-	 * Mask1     111 1000 0000
-	 * Filter0   111 1XXX XXXX
-	 * Filter1   111 1XXX XXXX
-	 * Filter2   111 1XXX XXXX
-	 * Filter3   111 1XXX XXXX
-	 * Filter4   111 1XXX XXXX
-	 * Filter5   111 1XXX XXXX
-	 *
-	 ************************************************** Filter definition **************************************************/
-	can_filter_t filter;
-
-	if(can_bus_type==CAN_TYPE_TRIUMPH){
-		// Mask0     111 1111 1111
-		filter.id=0x568;
-		filter.mask=0xffff;
-		mcp2515_set_filter(0,&filter);
-		mcp2515_set_filter(1,&filter);
-
-		//Mask1     111 1000 1111
-		// Filter2  101 0011 0000 <- 530
-		// Filter3  101 0111 0000 <- 570
-		// Filter4  101 0100 0000 <- 540
-		// Filter5  101 0100 0000 <- just a copy
-		filter.mask=0xffff;
-		filter.id=0x530;
-		mcp2515_set_filter(2,&filter);
-		filter.id=0x540;
-		mcp2515_set_filter(3,&filter);
-		filter.id=0x570;
-		mcp2515_set_filter(4,&filter);
-		filter.id=0x570;
-		mcp2515_set_filter(5,&filter);
-
-		high_prio_processing=true;
-
-	} else { // assume OBD2 as fallback
-		// Mask0:   111 1000 0000
-		// Filter0 111 1000 0000
-		// Filter1 111 1000 0000
-		filter.mask=0b11110000000;
-		filter.id=0b11110000000;
-		mcp2515_set_filter(0,&filter);
-		mcp2515_set_filter(1,&filter);
-
-		// Mask1:   111 1000 0000
-		// Filter2 111 1000 0000
-		// Filter3 111 1000 0000
-		// Filter4 111 1000 0000
-		// Filter5 111 1000 0000
-		filter.mask=0b11110000000;
-		filter.id=0b11110000000;
-		mcp2515_set_filter(2,&filter);
-		mcp2515_set_filter(3,&filter);
-		mcp2515_set_filter(4,&filter);
-		mcp2515_set_filter(5,&filter);
-
-		high_prio_processing=false;
-	}
-
-
-	/*
-	 *  Einstellen der Pin Funktionen
-	 */
-	// Deaktivieren der Pins RXnBF Pins (High Impedance State)
-	mcp2515_write_register( BFPCTRL, 0 );
-	// TXnRTS Bits als Inputs schalten
-	mcp2515_write_register( TXRTSCTRL, 0 );
-	// Device zurueck in den normalen Modus versetzten
-	mcp2515_bit_modify( CANCTRL, 0xE0, 0);
-	/********************************************* MCP2515 SETUP ***********************************/
-	_delay_ms(1);
-
-	// to check if obd2 can is present, triumph talks alone
-	if(can_bus_type==CAN_TYPE_OBD2){
-		request(CAN_CURRENT_INFO,CAN_RPM);
-	};
+void CAN::init(){
+//	// Interrupt for CAN Interface active, auf pk4, pcint20
+//	can_missed_count=0;
+//	// Chipselect as output
+//	if(pConfig->get_hw_version()==7){
+//		// Interrupt as Input with pull up
+//		CAN_DDR_CS_TILL_V7 &= ~(1<<CAN_INTERRUPT_PIN_V7); // input
+//		CAN_PORT_CS_TILL_V7 |= (1<<CAN_INTERRUPT_PIN_V7); //  active low => pull up
+//		// CS as output
+//		CAN_DDR_CS_TILL_V7 |= (1<<CAN_PIN_CS_TILL_V7);
+//		PCMSK2|=(1<<PCINT20); // CAN interrupt pin v7
+//	} else if(pConfig->get_hw_version()>7){
+//		// CS Input with pull up
+//		CAN_DDR_CS_FROM_V8 &= ~(1<<CAN_INTERRUPT_PIN_FROM_V8); // input
+//		CAN_PORT_CS_FROM_V8 |= (1<<CAN_INTERRUPT_PIN_FROM_V8); //  active low => pull up
+//		// CS as output
+//		CAN_DDR_CS_FROM_V8 |= (1<<CAN_PIN_CS_FROM_V8);
+//		PCMSK0|=(1<<PCINT4); // CAN interrupt pin v(>7)
+//		PCICR |=(1<<PCIE0); //new interrupt just for CAN
+//	};
+//
+//
+//	/********************************************* MCP2515 SETUP ***********************************/
+//	// MCP2515 per Software Reset zuruecksetzten,
+//	// danach ist der MCP2515 im Configuration Mode
+//	set_cs_high(false); //CS low
+//	spi_putc( SPI_CMD_RESET );
+//	_delay_ms(1);
+//	set_cs_high(true); //CS high
+//
+//	// etwas warten bis sich der MCP2515 zurueckgesetzt hat
+//	_delay_ms(10);
+//	/******************** BAUD Rate ************************************************
+//	 *  Einstellen des Bit Timings
+//	 *
+//	 *  Fosc       = 16MHz
+//	 *  Bus Speed  = 500 kHz
+//	 *
+//	 *  Sync Seg   = 1TQ
+//	 *  Prop Seg   = (PRSEG + 1) * TQ  = 1 TQ
+//	 *  Phase Seg1 = (PHSEG1 + 1) * TQ = 3 TQ
+//	 *  Phase Seg2 = (PHSEG2 + 1) * TQ = 3 TQ
+//	 *
+//	 *  Bus speed  = 1 / (Total # of TQ) * TQ
+//	 *  500kHz= 1 / (8 * TQ)
+//	 * 	TQ = 1/(500kHz*8)
+//	 *  TQ = 2 * (BRP + 1) / Fosc
+//	 *  1/(500kHz*8) = 2 * (BRP + 1) / Fosc
+//	 *  1/(500kHz*8) = 2 * (BRP + 1) / 16000kHz
+//	 *  16000kHz/(500kHz*8*2) - 1 = BRP
+//	 *
+//	 *  BRP        = 1
+//	 ******************** BAUD Rate ************************************************/
+//
+//	// BRP = 1
+//	mcp2515_write_register( CNF1, (1<<BRP0));
+//	// Prop Seg und Phase Seg1 einstellen
+//	mcp2515_write_register( CNF2, (1<<BTLMODE)|(1<<PHSEG11) );
+//	// Wake-up Filter deaktivieren, Phase Seg2 einstellen
+//	mcp2515_write_register( CNF3, (1<<PHSEG21) );
+//	// Aktivieren der Rx Buffer Interrupts
+//	mcp2515_write_register( CANINTE, (1<<RX1IE)|(1<<RX0IE) );
+//
+//	/******************** FILTER ************************************************
+//	 * There are two input buffer: RXB0/1
+//	 * RXB0 has two Filters RXF0 / REF1
+//	 * RXB1 has four Filters RXF2 / REF3 / REF4 / REF5
+//	 *
+//	 * BUKT
+//	 * Additionally, the RXB0CTRL register can be configured
+//	 * such that, if RXB0 contains a valid message and
+//	 * another valid message is received, an overflow error
+//	 * will not occur and the new message will be moved into
+//	 * RXB1, regardless of the acceptance criteria of RXB1.
+//	 *
+//	 * RXBnCTRL.FILHITm determines if the Filter m is in use for buffer n
+//	 *
+//	 ******************** FILTER ************************************************/
+//
+//	// BUKT: RXB0 message will rollover and be written to RXB1 if RXB0 is full
+//	// RXM0: Only accept messages with standard identifiers that meet filter criteria
+//	mcp2515_write_register( RXB0CTRL, (1<<BUKT)|(1<<RXM0)); // use 11bit with filter + rollover
+//	mcp2515_write_register( RXB1CTRL, (1<<RXM0)); // use 11bit with filter
+//
+//	/************************************************** Filter definition **************************************************
+//	 * CAN Filter: We have two Buffers. Each has a Mask RXM0SIDH/RXM0SIDL, RXM1SIDH/RXM1SIDL.
+//	 * Buffer0 has two Filters RXF0 and RXF1
+//	 * Buffer1 has three addition Filters RXF2,RXF3,RXF4 and RXF5
+//	 *
+//	 ***************************************************** TRIUMPH CAN *****************************************************
+//	 * If we are using the Triumph CAN, we have to Catch the IDs: 530,540,568,570 and avoid 518,519,550
+//	 * in addition 568 has a very high priority! Thus 568 should be accepted in buffer 0 to be rollover activ to buffer1
+//	 *
+//	 * 568	= 0b 101 0110 1000
+//	 * Mask0     111 1111 1111
+//	 * Filter0   101 0110 1000 <- accept only 568
+//	 * Filter1   101 0110 1000 <- just a copy
+//	 *
+//	 * Buffer1 should catch 530,540,570
+//	 * 530 = 0b 101 0011 0000
+//	 * 570 = 0b 101 0111 0000
+//	 * 540 = 0b 101 0100 0000
+//	 * Mask     111 1111 1111
+//	 * Filter2  101 0011 0000 <- 530 RPM/Speed
+//	 * Filter3  101 0111 0000 <- 570 Temp
+//	 * Filter4  101 0100 0000 <- 540 Status
+//	 * Filter5  101 0100 0000 <- just a copy
+//	 *
+//	 *
+//	 ***************************************************** OBD2 *****************************************************
+//	 * We have to catch all IDs from 780-7FF, easy very low traffic compared to Triumph
+//	 *
+//	 * Mask0     111 1000 0000
+//	 * Mask1     111 1000 0000
+//	 * Filter0   111 1XXX XXXX
+//	 * Filter1   111 1XXX XXXX
+//	 * Filter2   111 1XXX XXXX
+//	 * Filter3   111 1XXX XXXX
+//	 * Filter4   111 1XXX XXXX
+//	 * Filter5   111 1XXX XXXX
+//	 *
+//	 ************************************************** Filter definition **************************************************/
+//	can_filter_t filter;
+//
+//	if(can_bus_type==CAN_TYPE_TRIUMPH){
+//		// Mask0     111 1111 1111
+//		filter.id=0x568;
+//		filter.mask=0xffff;
+//		mcp2515_set_filter(0,&filter);
+//		mcp2515_set_filter(1,&filter);
+//
+//		//Mask1     111 1000 1111
+//		// Filter2  101 0011 0000 <- 530
+//		// Filter3  101 0111 0000 <- 570
+//		// Filter4  101 0100 0000 <- 540
+//		// Filter5  101 0100 0000 <- just a copy
+//		filter.mask=0xffff;
+//		filter.id=0x530;
+//		mcp2515_set_filter(2,&filter);
+//		filter.id=0x540;
+//		mcp2515_set_filter(3,&filter);
+//		filter.id=0x570;
+//		mcp2515_set_filter(4,&filter);
+//		filter.id=0x570;
+//		mcp2515_set_filter(5,&filter);
+//
+//		high_prio_processing=true;
+//
+//	} else { // assume OBD2 as fallback
+//		// Mask0:   111 1000 0000
+//		// Filter0 111 1000 0000
+//		// Filter1 111 1000 0000
+//		filter.mask=0b11110000000;
+//		filter.id=0b11110000000;
+//		mcp2515_set_filter(0,&filter);
+//		mcp2515_set_filter(1,&filter);
+//
+//		// Mask1:   111 1000 0000
+//		// Filter2 111 1000 0000
+//		// Filter3 111 1000 0000
+//		// Filter4 111 1000 0000
+//		// Filter5 111 1000 0000
+//		filter.mask=0b11110000000;
+//		filter.id=0b11110000000;
+//		mcp2515_set_filter(2,&filter);
+//		mcp2515_set_filter(3,&filter);
+//		mcp2515_set_filter(4,&filter);
+//		mcp2515_set_filter(5,&filter);
+//
+//		high_prio_processing=false;
+//	}
+//
+//
+//	/*
+//	 *  Einstellen der Pin Funktionen
+//	 */
+//	// Deaktivieren der Pins RXnBF Pins (High Impedance State)
+//	mcp2515_write_register( BFPCTRL, 0 );
+//	// TXnRTS Bits als Inputs schalten
+//	mcp2515_write_register( TXRTSCTRL, 0 );
+//	// Device zurueck in den normalen Modus versetzten
+//	mcp2515_bit_modify( CANCTRL, 0xE0, 0);
+//	/********************************************* MCP2515 SETUP ***********************************/
+//	_delay_ms(1);
+//
+//	// to check if obd2 can is present, triumph talks alone
+//	if(can_bus_type==CAN_TYPE_OBD2){
+//		request(CAN_CURRENT_INFO,CAN_RPM);
+//	};
 };
 
-bool Speedo_CAN::check_message(){
-	if(pSensors->CAN_active){		 // is the CAN mode active
-		if(!(CAN_INTERRUPT_PIN_PORT_V7&(1<<CAN_INTERRUPT_PIN_V7))){	 // if the CAN pin is low, low active interrupt
-			pSensors->m_CAN->message_available=true;
-
-			// if we are in the mode, forcing us to answere fast .. to it! :D
-			if(pSensors->m_CAN->high_prio_processing){
-				if(PINB&(1<<PB0)){ // SD CS pin has to be high to access Bus
-					cli(); // stop interrupts
-					pSensors->m_CAN->process_incoming_messages();
-					sei(); // activate them again
-				}
-			}
-#ifdef CAN_DEBUG
-			Serial.println("Interrupt: Msg available");
-#endif
-			return true;
-		};
-
-	}
+bool CAN::check_message(){
+//	if(pSensors->CAN_active){		 // is the CAN mode active
+//		if(!(CAN_INTERRUPT_PIN_PORT_V7&(1<<CAN_INTERRUPT_PIN_V7))){	 // if the CAN pin is low, low active interrupt
+//			pSensors->m_CAN->message_available=true;
+//
+//			// if we are in the mode, forcing us to answere fast .. to it! :D
+//			if(pSensors->m_CAN->high_prio_processing){
+//				if(PINB&(1<<PB0)){ // SD CS pin has to be high to access Bus
+//					cli(); // stop interrupts
+//					pSensors->m_CAN->process_incoming_messages();
+//					sei(); // activate them again
+//				}
+//			}
+//#ifdef CAN_DEBUG
+//			Serial.println("Interrupt: Msg available");
+//#endif
+//			return true;
+//		};
+//
+//	}
 	return false;
 }
 
-void Speedo_CAN::shutdown(){
+void CAN::shutdown(){
 
 };
 
-int Speedo_CAN::check_vars(){
+int CAN::check_vars(){
 	return 0; // return error code .. 1=failed, 0=ok
 };
 
-bool Speedo_CAN::init_comm_possible(bool* CAN_active){
-	if(last_received==0){ // we have never ever received a pecket from CAN
-		// starthilfe, nicht schön mit den zwei versionen ..
-		if(pConfig->get_hw_version()==7){
-			if(!CAN_INTERRUPT_PIN_PORT_V7&(1<<CAN_INTERRUPT_PIN_V7)){	 // if the CAN pin is low, low active interrupt
-				message_available=true; // init with true, may be its one there
-			}
-		} else if(pConfig->get_hw_version()>7){
-			if(!CAN_INTERRUPT_PIN_PORT_V8&(1<<CAN_INTERRUPT_PIN_FROM_V8)){	 // if the CAN pin is low, low active interrupt
-				message_available=true; // init with true, may be its one there
-			}
-		}
-		if(can_missed_count>10){ // see "strategy", in auto 10 lost frames indicates CAN offline, TODO: increase nr?
-			*CAN_active=false;
-			last_received=-1; // overrun, so it will never be possible to reactivate CAN.. wise?
-			return false;
-		} else {
-			*CAN_active=true;
-		}
-	}
+bool CAN::init_comm_possible(bool* CAN_active){
+//	if(last_received==0){ // we have never ever received a pecket from CAN
+//		// starthilfe, nicht schön mit den zwei versionen ..
+//		if(pConfig->get_hw_version()==7){
+//			if(!CAN_INTERRUPT_PIN_PORT_V7&(1<<CAN_INTERRUPT_PIN_V7)){	 // if the CAN pin is low, low active interrupt
+//				message_available=true; // init with true, may be its one there
+//			}
+//		} else if(pConfig->get_hw_version()>7){
+//			if(!CAN_INTERRUPT_PIN_PORT_V8&(1<<CAN_INTERRUPT_PIN_FROM_V8)){	 // if the CAN pin is low, low active interrupt
+//				message_available=true; // init with true, may be its one there
+//			}
+//		}
+//		if(can_missed_count>10){ // see "strategy", in auto 10 lost frames indicates CAN offline, TODO: increase nr?
+//			*CAN_active=false;
+//			last_received=-1; // overrun, so it will never be possible to reactivate CAN.. wise?
+//			return false;
+//		} else {
+//			*CAN_active=true;
+//		}
+//	}
 	return true;
 }
 
 /********************************************* CAN VALUE GETTER ***********************************/
-int Speedo_CAN::get_air_temp(){
+int CAN::get_air_temp(){
 	return 0;
 };
 
-int Speedo_CAN::get_oil_temp(){
+int CAN::get_oil_temp(){
 	return 0; // not in use
 };
 
-int Speedo_CAN::get_water_temp(){
+int CAN::get_water_temp(){
 	if(Millis.get()-last_received<5000){
 		return can_water_temp;
 	} else {
@@ -320,14 +320,14 @@ int Speedo_CAN::get_water_temp(){
 	return 0;
 };
 
-int Speedo_CAN::get_CAN_missed_count(){
+int CAN::get_CAN_missed_count(){
 	if(can_missed_count>5){
 		return SENSOR_OPEN;
 	}
 	return 0;
 }
 
-unsigned int Speedo_CAN::get_Speed(){
+unsigned int CAN::get_Speed(){
 	if(Millis.get()-last_received<1000){
 		if(get_active_can_type()==CAN_TYPE_TRIUMPH){
 			if(can_speed<=5){ // triumph
@@ -339,7 +339,7 @@ unsigned int Speedo_CAN::get_Speed(){
 	return 0;
 };
 
-unsigned int Speedo_CAN::get_RPM(){
+unsigned int CAN::get_RPM(){
 	if(Millis.get()-last_received<500){
 		return can_rpm;
 	}
@@ -347,15 +347,15 @@ unsigned int Speedo_CAN::get_RPM(){
 };
 
 
-bool Speedo_CAN::get_mil_active(){
+bool CAN::get_mil_active(){
 	return can_mil_active;
 }
 
-int Speedo_CAN::get_dtc_error_count(){
+int CAN::get_dtc_error_count(){
 	return can_dtc_error_count;
 }
 
-int Speedo_CAN::get_dtc_error(int nr){
+int CAN::get_dtc_error(int nr){
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
 	Serial.print("gimme error nr");
 	Serial.println(nr);
@@ -385,17 +385,17 @@ int Speedo_CAN::get_dtc_error(int nr){
 	return -1;
 }
 
-unsigned char Speedo_CAN::get_neutral_gear_state(){
+unsigned char CAN::get_neutral_gear_state(){
 	return can_neutral_gear_lamp_active;
 }
 
-bool Speedo_CAN::get_fuel_blink(){
+bool CAN::get_fuel_blink(){
 	return can_fuel_lamp_active;
 }
 /********************************************* CAN VALUE GETTER ***********************************/
 
 /********************************************* CAN FUNCTIONS ***********************************/
-void Speedo_CAN::request(char mode,char PID){
+void CAN::request(char mode,char PID){
 	byte can_first_byte=0x02; //frame im Datenstrom
 
 	//check valid msg
@@ -433,7 +433,7 @@ void Speedo_CAN::request(char mode,char PID){
 	return;
 };
 
-void Speedo_CAN::process_incoming_messages(){
+void CAN::process_incoming_messages(){
 	while(can_get_message(&message)!=0xff){ //0xff=no more frames available
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
 		Serial.print("*");
@@ -462,7 +462,7 @@ void Speedo_CAN::process_incoming_messages(){
 		////////////////////////////////////////////////////////////////////////////////
 		else if(message.id==0x530){ // Triumph Daytone 675 Tacho request
 			can_rpm=(message.data[1]<<6)|(message.data[0]>>2);
-			can_speed=round(pSensors->flatIt((int)(((message.data[3]<<8)|(message.data[2]))/10),&can_speed_counter,4,can_speed)); // IIR 4 Tabs
+			can_speed=round(Sensors.flatIt((int)(((message.data[3]<<8)|(message.data[2]))/10),&can_speed_counter,4,can_speed)); // IIR 4 Tabs
 			//can_speed=(((message.data[3]<<8)|(message.data[2]))/10); // raw
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
 			Serial.print("RPM:");
@@ -598,247 +598,247 @@ void Speedo_CAN::process_incoming_messages(){
 	return;
 }
 
-bool Speedo_CAN::decode_dtc(char* char_buffer,char ECU_type){
-	if(ECU_type==SPEED_TRIPPLE){
-		if(pConfig->read(CONFIG_FOLDER,"SPEED_T.TXT",READ_MODE_TEXTREPLACEMENT,char_buffer)!=0){ // char_buffer serves two ways, incoming is "error code i'm looking for", outgoing "cleartext of error"
-			sprintf(char_buffer,"Errortext not found");
-			return false;
-		};
-	};
+bool CAN::decode_dtc(char* char_buffer,char ECU_type){
+//	if(ECU_type==SPEED_TRIPPLE){
+//		if(pConfig->read(CONFIG_FOLDER,"SPEED_T.TXT",READ_MODE_TEXTREPLACEMENT,char_buffer)!=0){ // char_buffer serves two ways, incoming is "error code i'm looking for", outgoing "cleartext of error"
+//			sprintf(char_buffer,"Errortext not found");
+//			return false;
+//		};
+//	};
 	return true;
 }
 
 
-uint8_t Speedo_CAN::spi_putc( uint8_t data ){
-	// Sendet ein Byte
-	SPDR = data;
-	// Wartet bis Byte gesendet wurde
-	while( !( SPSR & (1<<SPIF) ) ){};
-
-	return SPDR;
+uint8_t CAN::spi_putc( uint8_t data ){
+//	// Sendet ein Byte
+//	SPDR = data;
+//	// Wartet bis Byte gesendet wurde
+//	while( !( SPSR & (1<<SPIF) ) ){};
+//
+//	return SPDR;
 }
 
-void Speedo_CAN::mcp2515_write_register( uint8_t adress, uint8_t data ){
-	// /CS des MCP2515 auf Low ziehen
-	set_cs_high(false); //CS low
-
-	spi_putc(SPI_CMD_WRITE);
-	spi_putc(adress);
-	spi_putc(data);
-
-	// /CS Leitung wieder freigeben
-	set_cs_high(true); //CS high
+void CAN::mcp2515_write_register( uint8_t adress, uint8_t data ){
+//	// /CS des MCP2515 auf Low ziehen
+//	set_cs_high(false); //CS low
+//
+//	spi_putc(SPI_CMD_WRITE);
+//	spi_putc(adress);
+//	spi_putc(data);
+//
+//	// /CS Leitung wieder freigeben
+//	set_cs_high(true); //CS high
 }
 
-uint8_t Speedo_CAN::mcp2515_read_register(uint8_t adress){
+uint8_t CAN::mcp2515_read_register(uint8_t adress){
 	uint8_t data;
 
-	// /CS des MCP2515 auf Low ziehen
-	set_cs_high(false); //CS low
-
-	spi_putc(SPI_CMD_READ);
-	spi_putc(adress);
-
-	data = spi_putc(0xff);
-
-	// /CS Leitung wieder freigeben
-	set_cs_high(true); //CS high
+//	// /CS des MCP2515 auf Low ziehen
+//	set_cs_high(false); //CS low
+//
+//	spi_putc(SPI_CMD_READ);
+//	spi_putc(adress);
+//
+//	data = spi_putc(0xff);
+//
+//	// /CS Leitung wieder freigeben
+//	set_cs_high(true); //CS high
 
 	return data;
 }
 
-void Speedo_CAN::mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data){
+void CAN::mcp2515_bit_modify(uint8_t adress, uint8_t mask, uint8_t data){
 	// /CS des MCP2515 auf Low ziehen
-	set_cs_high(false); //CS low
-
-	spi_putc(SPI_CMD_BIT_MODIFY);
-	spi_putc(adress);
-	spi_putc(mask);
-	spi_putc(data);
-
-	// /CS Leitung wieder freigeben
-	set_cs_high(true); //CS high
+//	set_cs_high(false); //CS low
+//
+//	spi_putc(SPI_CMD_BIT_MODIFY);
+//	spi_putc(adress);
+//	spi_putc(mask);
+//	spi_putc(data);
+//
+//	// /CS Leitung wieder freigeben
+//	set_cs_high(true); //CS high
 }
 
 
-uint8_t Speedo_CAN::can_send_message(CANMessage *p_message){
-	uint8_t status, address;
-	if(can_missed_count<100){
-		can_missed_count++;
-	};
-
-	// Status des MCP2515 auslesen
-	set_cs_high(false); //CS low
-	spi_putc(SPI_CMD_READ_STATUS);
-	status = spi_putc(0xff);
-	spi_putc(0xff); // read dummy
-	set_cs_high(true); //CS high
-
-	/* Statusbyte:
-	 *
-	 * Bit  Funktion
-	 *  2   TXB0CNTRL.TXREQ
-	 *  4   TXB1CNTRL.TXREQ
-	 *  6   TXB2CNTRL.TXREQ
-	 */
-
-	if (bit_is_clear(status, 2)) {
-		address = 0x00;
-	}
-	else if (bit_is_clear(status, 4)) {
-		address = 0x02;
-	}
-	else if (bit_is_clear(status, 6)) {
-		address = 0x04;
-	}
-	else {
-		/* Alle Puffer sind belegt,
-           Nachricht kann nicht verschickt werden */
-		return 0;
-	}
-
-
-	set_cs_high(false); //CS low
-
-	spi_putc(SPI_CMD_WRITE_TX | address);
-
-	// Standard ID einstellen
-	spi_putc((uint8_t) (p_message->id>>3));
-	spi_putc((uint8_t) (p_message->id<<5));
-
-	// Extended ID
-	spi_putc(0x00);
-	spi_putc(0x00);
-
-	uint8_t length = p_message->length;
-
-	if (length > 8) {
-		length = 8;
-	}
-
-	// Ist die Nachricht ein "Remote Transmit Request" ?
-	if (p_message->rtr)
-	{
-		/* Ein RTR hat zwar eine Laenge,
-           aber enthaelt keine Daten */
-
-		// Nachrichten Laenge + RTR einstellen
-		spi_putc((1<<RTR) | length);
-	}
-	else
-	{
-		// Nachrichten Laenge einstellen
-		spi_putc(length);
-
-		// Daten
-		for (uint8_t i=0;i<length;i++) {
-			spi_putc(p_message->data[i]);
-		}
-	}
-	set_cs_high(true); //CS high
-
-	asm volatile ("nop");
-
-	/* CAN Nachricht verschicken
-       die letzten drei Bit im RTS Kommando geben an welcher
-       Puffer gesendet werden soll */
-
-	set_cs_high(false); //CS low
-	if (address == 0x00) {
-		spi_putc(SPI_CMD_RTS | 0x01);
-	} else {
-		spi_putc(SPI_CMD_RTS | address);
-	}
-	set_cs_high(true); //CS high
+uint8_t CAN::can_send_message(CANMessage *p_message){
+//	uint8_t status, address;
+//	if(can_missed_count<100){
+//		can_missed_count++;
+//	};
+//
+//	// Status des MCP2515 auslesen
+//	set_cs_high(false); //CS low
+//	spi_putc(SPI_CMD_READ_STATUS);
+//	status = spi_putc(0xff);
+//	spi_putc(0xff); // read dummy
+//	set_cs_high(true); //CS high
+//
+//	/* Statusbyte:
+//	 *
+//	 * Bit  Funktion
+//	 *  2   TXB0CNTRL.TXREQ
+//	 *  4   TXB1CNTRL.TXREQ
+//	 *  6   TXB2CNTRL.TXREQ
+//	 */
+//
+//	if (bit_is_clear(status, 2)) {
+//		address = 0x00;
+//	}
+//	else if (bit_is_clear(status, 4)) {
+//		address = 0x02;
+//	}
+//	else if (bit_is_clear(status, 6)) {
+//		address = 0x04;
+//	}
+//	else {
+//		/* Alle Puffer sind belegt,
+//           Nachricht kann nicht verschickt werden */
+//		return 0;
+//	}
+//
+//
+//	set_cs_high(false); //CS low
+//
+//	spi_putc(SPI_CMD_WRITE_TX | address);
+//
+//	// Standard ID einstellen
+//	spi_putc((uint8_t) (p_message->id>>3));
+//	spi_putc((uint8_t) (p_message->id<<5));
+//
+//	// Extended ID
+//	spi_putc(0x00);
+//	spi_putc(0x00);
+//
+//	uint8_t length = p_message->length;
+//
+//	if (length > 8) {
+//		length = 8;
+//	}
+//
+//	// Ist die Nachricht ein "Remote Transmit Request" ?
+//	if (p_message->rtr)
+//	{
+//		/* Ein RTR hat zwar eine Laenge,
+//           aber enthaelt keine Daten */
+//
+//		// Nachrichten Laenge + RTR einstellen
+//		spi_putc((1<<RTR) | length);
+//	}
+//	else
+//	{
+//		// Nachrichten Laenge einstellen
+//		spi_putc(length);
+//
+//		// Daten
+//		for (uint8_t i=0;i<length;i++) {
+//			spi_putc(p_message->data[i]);
+//		}
+//	}
+//	set_cs_high(true); //CS high
+//
+//	asm volatile ("nop");
+//
+//	/* CAN Nachricht verschicken
+//       die letzten drei Bit im RTS Kommando geben an welcher
+//       Puffer gesendet werden soll */
+//
+//	set_cs_high(false); //CS low
+//	if (address == 0x00) {
+//		spi_putc(SPI_CMD_RTS | 0x01);
+//	} else {
+//		spi_putc(SPI_CMD_RTS | address);
+//	}
+//	set_cs_high(true); //CS high
 
 	return 1;
 }
 
-uint8_t Speedo_CAN::mcp2515_read_rx_status(void){
+uint8_t CAN::mcp2515_read_rx_status(void){
 	uint8_t data;
-
-	// /CS des MCP2515 auf Low ziehen
-	set_cs_high(false); //CS low
-
-	spi_putc(SPI_CMD_RX_STATUS);
-	data = spi_putc(0xff);
-
-	// Die Daten werden noch einmal wiederholt gesendet,
-	// man braucht also nur eins der beiden Bytes auswerten.
-	spi_putc(0xff);
-
-	// /CS Leitung wieder freigeben
-	set_cs_high(true); //CS high
+//
+//	// /CS des MCP2515 auf Low ziehen
+//	set_cs_high(false); //CS low
+//
+//	spi_putc(SPI_CMD_RX_STATUS);
+//	data = spi_putc(0xff);
+//
+//	// Die Daten werden noch einmal wiederholt gesendet,
+//	// man braucht also nur eins der beiden Bytes auswerten.
+//	spi_putc(0xff);
+//
+//	// /CS Leitung wieder freigeben
+//	set_cs_high(true); //CS high
 
 	return data;
 }
 
-uint8_t Speedo_CAN::can_get_message(CANMessage *p_message){ //dauert so etwa 72µS
+uint8_t CAN::can_get_message(CANMessage *p_message){ //dauert so etwa 72µS
 
-	// Status auslesen
-	uint8_t status = mcp2515_read_rx_status();
-
-	if (bit_is_set(status,6))
-	{
-		// Nachricht in Puffer 0
-
-		set_cs_high(false); //CS low
-		spi_putc(SPI_CMD_READ_RX);
-	}
-	else if (bit_is_set(status,7))
-	{
-		// Nachricht in Puffer 1
-
-		set_cs_high(false); //CS low
-		spi_putc(SPI_CMD_READ_RX | 0x04);
-	}
-	else {
-		/* Fehler: Keine neue Nachricht vorhanden */
-		return 0xff;
-	}
-
-	// Standard ID auslesen
-	p_message->id =  (uint16_t) spi_putc(0xff) << 3; // 11 bit adressen
-	p_message->id |= (uint16_t) spi_putc(0xff) >> 5;
-
-	spi_putc(0xff);
-	spi_putc(0xff);
-
-	// Laenge auslesen
-	uint8_t length = spi_putc(0xff) & 0x0f;
-	if(length>8) length=8; // to avoid buffer overrun
-	p_message->length = length;
-
-	// Daten auslesen
-	for (uint8_t i=0;i<length;i++) {
-		p_message->data[i] = spi_putc(0xff);
-	}
-
-	set_cs_high(true); //CS high
-
-	if (bit_is_set(status,3)) {
-		p_message->rtr = 1;
-	} else {
-		p_message->rtr = 0;
-	}
-
-	// Interrupt Flag loeschen
-	if (bit_is_set(status,6)) {
-		mcp2515_bit_modify(CANINTF, (1<<RX0IF), 0);
-	} else {
-		mcp2515_bit_modify(CANINTF, (1<<RX1IF), 0);
-	}
-	return (status & 0x07);
+//	// Status auslesen
+//	uint8_t status = mcp2515_read_rx_status();
+//
+//	if (bit_is_set(status,6))
+//	{
+//		// Nachricht in Puffer 0
+//
+//		set_cs_high(false); //CS low
+//		spi_putc(SPI_CMD_READ_RX);
+//	}
+//	else if (bit_is_set(status,7))
+//	{
+//		// Nachricht in Puffer 1
+//
+//		set_cs_high(false); //CS low
+//		spi_putc(SPI_CMD_READ_RX | 0x04);
+//	}
+//	else {
+//		/* Fehler: Keine neue Nachricht vorhanden */
+//		return 0xff;
+//	}
+//
+//	// Standard ID auslesen
+//	p_message->id =  (uint16_t) spi_putc(0xff) << 3; // 11 bit adressen
+//	p_message->id |= (uint16_t) spi_putc(0xff) >> 5;
+//
+//	spi_putc(0xff);
+//	spi_putc(0xff);
+//
+//	// Laenge auslesen
+//	uint8_t length = spi_putc(0xff) & 0x0f;
+//	if(length>8) length=8; // to avoid buffer overrun
+//	p_message->length = length;
+//
+//	// Daten auslesen
+//	for (uint8_t i=0;i<length;i++) {
+//		p_message->data[i] = spi_putc(0xff);
+//	}
+//
+//	set_cs_high(true); //CS high
+//
+//	if (bit_is_set(status,3)) {
+//		p_message->rtr = 1;
+//	} else {
+//		p_message->rtr = 0;
+//	}
+//
+//	// Interrupt Flag loeschen
+//	if (bit_is_set(status,6)) {
+//		mcp2515_bit_modify(CANINTF, (1<<RX0IF), 0);
+//	} else {
+//		mcp2515_bit_modify(CANINTF, (1<<RX1IF), 0);
+//	}
+//	return (status & 0x07);
 }
 
-unsigned char Speedo_CAN::get_active_can_type(){
-	if(!pSensors->CAN_active){
+unsigned char CAN::get_active_can_type(){
+	if(!Sensors.CAN_active){
 		return CAN_TYPE_NONE;
 	}
 	return can_bus_type;
 }
 
-void Speedo_CAN::set_active_can_type(unsigned char new_type){
+void CAN::set_active_can_type(unsigned char new_type){
 	if(new_type==CAN_TYPE_OBD2 || new_type==CAN_TYPE_TRIUMPH){
 		can_bus_type=new_type;
 		init();
@@ -847,86 +847,86 @@ void Speedo_CAN::set_active_can_type(unsigned char new_type){
 
 
 // version depending pin settings
-void Speedo_CAN::set_cs_high(bool high){
-	if(high){
-		// CS high
-		if(pConfig->get_hw_version()==7){
-			CAN_PORT_CS_TILL_V7 |= (1<<CAN_PIN_CS_TILL_V7);
-		} else {
-			CAN_PORT_CS_FROM_V8 |= (1<<CAN_PIN_CS_FROM_V8);
-		}
-	} else {
-		// CS Low
-		if(pConfig->get_hw_version()==7){
-			CAN_PORT_CS_TILL_V7 &= ~(1<<CAN_PIN_CS_TILL_V7);
-		} else {
-			CAN_PORT_CS_FROM_V8 &= ~(1<<CAN_PIN_CS_FROM_V8);
-		}
-	}
+void CAN::set_cs_high(bool high){
+//	if(high){
+//		// CS high
+//		if(pConfig->get_hw_version()==7){
+//			CAN_PORT_CS_TILL_V7 |= (1<<CAN_PIN_CS_TILL_V7);
+//		} else {
+//			CAN_PORT_CS_FROM_V8 |= (1<<CAN_PIN_CS_FROM_V8);
+//		}
+//	} else {
+//		// CS Low
+//		if(pConfig->get_hw_version()==7){
+//			CAN_PORT_CS_TILL_V7 &= ~(1<<CAN_PIN_CS_TILL_V7);
+//		} else {
+//			CAN_PORT_CS_FROM_V8 &= ~(1<<CAN_PIN_CS_FROM_V8);
+//		}
+//	}
 }
 /********************************************* CAN FUNCTIONS ***********************************/
 
 
 
-bool Speedo_CAN::mcp2515_set_filter(uint8_t number, const can_filter_t *filter)
+bool CAN::mcp2515_set_filter(uint8_t number, const can_filter_t *filter)
 {
-	uint8_t mask_address = 0;
-
-	if (number > 5)
-		return false;
-
-	// set filter mask
-	if (number == 0)
-	{
-		mask_address = RXM0SIDH;
-		// Buffer 0: Empfangen aller Nachrichten mit Standard Identifier
-		// die den Filter Kriterien gengen
-		mcp2515_write_register(RXB0CTRL, (1<<RXM0));
-
-	}
-	else if (number == 2)
-	{
-		mask_address = RXM1SIDH;
-		// Buffer 1: Empfangen aller Nachrichten mit Standard Identifier
-		// die den Filter Kriterien gengen
-		mcp2515_write_register(RXB1CTRL, (1<<RXM0));
-
-	}
-
-	if (mask_address)
-	{
-		set_cs_high(false);
-		spi_putc(SPI_CMD_WRITE);
-		spi_putc(mask_address);
-		mcp2515_write_id(&filter->mask);
-		set_cs_high(true);
-
-		_delay_us(1);
-	}
-
-	// write filter
-	uint8_t filter_address;
-	if (number >= 3) {
-		number -= 3;
-		filter_address = RXF3SIDH;
-	}
-	else {
-		filter_address = RXF0SIDH;
-	}
-
-	set_cs_high(false);
-	spi_putc(SPI_CMD_WRITE);
-	spi_putc(filter_address | (number * 4));
-	mcp2515_write_id(&filter->id);
-	set_cs_high(true);
-
-	_delay_us(1);
-
+//	uint8_t mask_address = 0;
+//
+//	if (number > 5)
+//		return false;
+//
+//	// set filter mask
+//	if (number == 0)
+//	{
+//		mask_address = RXM0SIDH;
+//		// Buffer 0: Empfangen aller Nachrichten mit Standard Identifier
+//		// die den Filter Kriterien gengen
+//		mcp2515_write_register(RXB0CTRL, (1<<RXM0));
+//
+//	}
+//	else if (number == 2)
+//	{
+//		mask_address = RXM1SIDH;
+//		// Buffer 1: Empfangen aller Nachrichten mit Standard Identifier
+//		// die den Filter Kriterien gengen
+//		mcp2515_write_register(RXB1CTRL, (1<<RXM0));
+//
+//	}
+//
+//	if (mask_address)
+//	{
+//		set_cs_high(false);
+//		spi_putc(SPI_CMD_WRITE);
+//		spi_putc(mask_address);
+//		mcp2515_write_id(&filter->mask);
+//		set_cs_high(true);
+//
+//		_delay_us(1);
+//	}
+//
+//	// write filter
+//	uint8_t filter_address;
+//	if (number >= 3) {
+//		number -= 3;
+//		filter_address = RXF3SIDH;
+//	}
+//	else {
+//		filter_address = RXF0SIDH;
+//	}
+//
+//	set_cs_high(false);
+//	spi_putc(SPI_CMD_WRITE);
+//	spi_putc(filter_address | (number * 4));
+//	mcp2515_write_id(&filter->id);
+//	set_cs_high(true);
+//
+//	_delay_us(1);
+//
 
 	return true;
 }
 
-void Speedo_CAN::mcp2515_write_id(const uint16_t *id)
+void CAN::mcp2515_write_id(const uint16_t *id)
 {
 	uint8_t tmp;
 

@@ -188,15 +188,15 @@ unsigned int addr;
  ************************************************************ display menu ************************************************************/
 void speedo_menu::display(){
 #ifdef MENU_DEBUG
-	Serial.print("menu.display() called; at ");
+	Serial.puts(USART1,("menu.display() called; at ");
 	Serial.puts_ln(USART1,Millis.get());
-	Serial.print("state: ");
+	Serial.puts(USART1,("state: ");
 	Serial.puts_ln(USART1,state);
-	Serial.print("menu_marker,menu_end,menu_start:");
-	Serial.print(menu_marker);
-	Serial.print(",");
-	Serial.print(menu_ende);
-	Serial.print(",");
+	Serial.puts(USART1,("menu_marker,menu_end,menu_start:");
+	Serial.puts(USART1,(menu_marker);
+	Serial.puts(USART1,(",");
+	Serial.puts(USART1,(menu_ende);
+	Serial.puts(USART1,(",");
 	Serial.puts_ln(USART1,menu_start);
 #endif
 
@@ -231,7 +231,7 @@ void speedo_menu::display(){
 #ifdef MENU_DEBUG
 		Serial.puts_ln(USART1,"Menustate war 111, daher biege ich ihn auf 11 um");
 #endif
-		pSensors->m_gps->set_gps_mark(SIMPLE_MARK);
+		Sensors.mGPS.set_gps_mark(SIMPLE_MARK);
 		state=BMP(0,0,0,0,0,1,1);
 	}
 	/********************************************* Menu 1 - SPEEDOINO *********************************************
@@ -245,10 +245,10 @@ void speedo_menu::display(){
 		Serial.puts_ln(USART1,"Menustate 00001X, Bin jetzt im Tacho menu, zeichne icons");
 #endif
 
-		pSpeedo->initial_draw_screen(); // draw symbols
+		Speedo.initial_draw_screen(); // draw symbols
 
 		// wenn wir nicht in der navigation sind, die tasten f?r hoch und runter deaktiveren
-		if(!pSensors->m_gps->navi_active){
+		if(!Sensors.mGPS.navi_active){
 			set_buttons(button_state,!button_state,!button_state,button_state); // msg only
 		};
 		// preview of display settings, phase and Vref
@@ -260,7 +260,7 @@ void speedo_menu::display(){
 
 	/********************************************* Menu 2 - Sprint Mode *********************************************
 	 * This section only prepares the Sprint mode.
-	 * Based on the main loop, pSprint->loop(); will be called
+	 * Based on the main loop, pSprint.loop(); will be called
 	 * So here we just have to prepare the Vars from the Sprintmode
 	 ********************************************* Menu 2 - Sprint Mode *********************************************/
 	else if(floor(state/10)==BMP(0,0,0,0,0,0,MENU_SPRINT)){
@@ -269,12 +269,12 @@ void speedo_menu::display(){
 		Serial.puts_ln(USART1,"Menustate=000002X, Bin jetzt im Sprint Tacho menu");
 #endif
 		TFT.clear_screen();
-		pSprint->prepare_startup();
-		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
+		Sprint.prepare_startup();
+		Speedo.reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
 	/********************************************* Clock mode *********************************************/
 	else if(state==BMP(0,0,0,0,MENU_SPRINT,9,1)){ // reused state!
-		pSensors->m_clock->loop();
+		Sensors.mClock.loop();
 	}
 	/********************************************* Menu 2 - Sprint Mode *********************************************/
 
@@ -299,15 +299,15 @@ void speedo_menu::display(){
 		set_buttons(button_state,!button_state,!button_state,!button_state); // just back
 		// check GPS handling
 		if(floor(old_state/10)==state){ // comming from menu above
-			pSensors->m_gps->update_rate_1Hz();
+			Sensors.mGPS.update_rate_1Hz();
 			back();
 		} else {
-			// comming from menu below .. direct by menu -> switch on high speed gps, otherwise it is already active
+			// comming from menu below .. direct by menu . switch on high speed gps, otherwise it is already active
 			if(old_state*10+1==state){
-				pSensors->m_gps->update_rate_10Hz();
+				Sensors.mGPS.update_rate_10Hz();
 			}
 			// check moving, if we are moving race_loop will be shown, if not some nice text appears
-			pLapTimer->prepare_race_loop();
+			LapTimer.prepare_race_loop();
 		}
 	}
 	///////////////////// is capture mode, active content is controlled in the LapTimer Class
@@ -325,23 +325,23 @@ void speedo_menu::display(){
 	else if(state==BMP(0,0,0,M_LAP_T,3,1,1)){
 		if(old_state*10+1==state){ // comming from menu below
 			// delete that file and switch on high speed GPS
-			pLapTimer->clear_file(pLapTimer->get_active_filename());
-			pSensors->m_gps->update_rate_10Hz();
+			LapTimer.clear_file(LapTimer.get_active_filename());
+			Sensors.mGPS.update_rate_10Hz();
 			// go to next state that will draw the screen
 			state=state*10+1;
 			update_display=true;
 		} else if(old_state==state*10+1){ // comming from menu above, so obviously we have just reached the FINISH LINE
-			if(pSensors->m_gps->get_info(6)<3){
+			if(Sensors.mGPS.get_info(6)<3){
 				TFT.clear_screen();
 				TFT.string_centered(("No GPS"),3,true);
 				TFT.string_centered(("Nothing saved"),4,true);
-				pSensors->m_gps->update_rate_1Hz();
+				Sensors.mGPS.update_rate_1Hz();
 				_delay_ms(1500); // show it for a certain time
 				back();
 				back(); // jump back to menu
 			} else {
 				// save point as regualr sector border
-				pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
+				LapTimer.add_sector(Sensors.mGPS.get_info(3),Sensors.mGPS.get_info(2),LapTimer.get_active_filename());
 
 				// some fancy output
 				TFT.clear_screen();
@@ -350,7 +350,7 @@ void speedo_menu::display(){
 
 				// switch the state & draw the screen
 				state=BMP(0,0,0,0,M_LAP_T,1,1);
-				pLapTimer->prepare_race_loop();
+				LapTimer.prepare_race_loop();
 			}
 		}	else { // coming from elsewhere (431111)
 			// point has been captured, now show capture screen again
@@ -361,14 +361,14 @@ void speedo_menu::display(){
 	///////////////////// is capture mode, active content is controlled in the LapTimer Class
 	else if(state==BMP(0,0,M_LAP_T,3,1,1,1)){
 		set_buttons(button_state,!button_state,!button_state,button_state); // no up/down
-		pLapTimer->initial_draw_gps_capture_screen();
+		LapTimer.initial_draw_gps_capture_screen();
 	}
 	///////////////////// capture new GPS marker
 	else if(state==BMP(0,M_LAP_T,3,1,1,1,1)){
-		pLapTimer->add_sector(pSensors->m_gps->get_info(3),pSensors->m_gps->get_info(2),pLapTimer->get_active_filename());
+		LapTimer.add_sector(Sensors.mGPS.get_info(3),Sensors.mGPS.get_info(2),LapTimer.get_active_filename());
 		TFT.clear_screen();
 		TFT.string_centered(("Saved"),3,true);
-		pSpeedo->reset_bak();
+		Speedo.reset_bak();
 		_delay_ms(200); // we will loose some gps points !! wise?
 		old_state=state;
 		state=BMP(0,0,0,M_LAP_T,3,1,1);
@@ -380,7 +380,7 @@ void speedo_menu::display(){
 		TFT.show_storry(("Do you really want to reset all sector times?"),("Reset record"),DIALOG_NO_YES);
 	}
 	else if(state==BMP(0,0,0,M_LAP_T,4,1,1)){
-		pLapTimer->reset_times(pLapTimer->get_active_filename());
+		LapTimer.reset_times(LapTimer.get_active_filename());
 		TFT.clear_screen();
 		TFT.string_centered(("Saved"),3,true);
 		_delay_ms(1000);
@@ -395,11 +395,11 @@ void speedo_menu::display(){
 	}
 	////////// Setup of laptimer
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_LAP_T,6)) { // 00046X
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,M_LAP_T,6)) { // 00046XX
-		set_value_dialog((int8_t*)&pLapTimer->use_realtime_not_calculated,("= Best Time Mode ="),("Calculated time"),("Real time"));
+		set_value_dialog((int8_t*)&LapTimer.use_realtime_not_calculated,("= Best Time Mode ="),("Calculated time"),("Real time"));
 	}
 	/********************************************* Menu 3, Race mode  *********************************************/
 
@@ -421,215 +421,215 @@ void speedo_menu::display(){
 	}
 	/////////////////////////////////////////////////// Navigation an/aus schalten //////////////////////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,1)) { // 00041X
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,1)) { // 00041XX
-		set_value_dialog((int8_t*)&pSensors->m_gps->navi_active,("= Navigation ="));
-		if(pSensors->m_gps->navi_active && pConfig->storage_outdated){
-			pSensors->m_gps->generate_new_order();
+		set_value_dialog((int8_t*)&Sensors.mGPS.navi_active,("= Navigation ="));
+		if(Sensors.mGPS.navi_active && pConfig.storage_outdated){
+			Sensors.mGPS.generate_new_order();
 		}
 	}
 	/////////////////////////////////////////////////// Pointer f?r die Navigation ///////////////////////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POINTER)){ // 32[X]
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POINTER)){ // 321[X] change values here
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		if((state%10)==2){ // runter gedr?ckt
-			pSensors->m_gps->navi_point++;
-			pConfig->storage_outdated=true;
+			Sensors.mGPS.navi_point++;
+			pConfig.storage_outdated=true;
 		} else if((state%10)==9){ // hoch gedr?ckt
-			pSensors->m_gps->navi_point--;
-			if(pSensors->m_gps->navi_point<1) { pSensors->m_gps->navi_point=0; };
-			pConfig->storage_outdated=true;
+			Sensors.mGPS.navi_point--;
+			if(Sensors.mGPS.navi_point<1) { Sensors.mGPS.navi_point=0; };
+			pConfig.storage_outdated=true;
 		};
 		state=floor(state/10)*10+1; // zur?ckschuppsen
 
 		TFT.clear_screen();
 		TFT.string(Speedo.default_font,("Navi Track Pointer"),0,0,0,DISP_BRIGHTNESS,0);
-		pSensors->m_gps->generate_new_order(); // vor ausgabe von pSensors->m_gps->navi_point, wenn pSensors->m_gps->navi_point nach dem knopfdruck zu hoch war wirds in dieser fkt zur?ck gesetzt
-		sprintf(char_buffer,"#%3i:",pSensors->m_gps->navi_point);
+		Sensors.mGPS.generate_new_order(); // vor ausgabe von Sensors.mGPS.navi_point, wenn Sensors.mGPS.navi_point nach dem knopfdruck zu hoch war wirds in dieser fkt zur?ck gesetzt
+		sprintf(char_buffer,"#%3i:",Sensors.mGPS.navi_point);
 		TFT.string(Speedo.default_font,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
-		TFT.string(Speedo.default_font,pSensors->m_gps->navi_ziel_name,7,2,0,DISP_BRIGHTNESS,0); // stra?e
-		sprintf_P(char_buffer,("Long: %05i%04i"),int(floor(pSensors->m_gps->navi_ziel_long/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_long,10000)));
+		TFT.string(Speedo.default_font,(char*)Sensors.mGPS.navi_ziel_name,7,2,0,DISP_BRIGHTNESS,0); // stra?e
+		sprintf(char_buffer,("Long: %05i%04i"),int(floor(Sensors.mGPS.navi_ziel_long/10000)),int(Sensors.mGPS.mod(Sensors.mGPS.navi_ziel_long,10000)));
 		TFT.string(Speedo.default_font,char_buffer,2,6,0,DISP_BRIGHTNESS,0);
-		sprintf_P(char_buffer,("Lati: %05i%04i"),int(floor(pSensors->m_gps->navi_ziel_lati/10000)),int(pSensors->m_gps->mod(pSensors->m_gps->navi_ziel_lati,10000))); // typisch 052033224 => 5203,3224 => kann pro feld bis zu 32767 => 3.276.732.767 => 3.276? was quasi 8 mal um die welt geht
+		sprintf(char_buffer,("Lati: %05i%04i"),int(floor(Sensors.mGPS.navi_ziel_lati/10000)),int(Sensors.mGPS.mod(Sensors.mGPS.navi_ziel_lati,10000))); // typisch 052033224 => 5203,3224 => kann pro feld bis zu 32767 => 3.276.732.767 => 3.276? was quasi 8 mal um die welt geht
 		TFT.string(Speedo.default_font,char_buffer,2,7,0,DISP_BRIGHTNESS,0);
 	}
 	/////////////////////////////////////////////////// Dateien listen und highlighten... irgendwie ///////////////////////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_FILE)){ // 33[X]
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 	} else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_FILE)){ // 331[X]
-		set_buttons(button_state,button_state,button_state,!button_state); // no right
-		// Umschalten
-		if(int(state%10)==9){ // schalter nach oben, abziehen
-			if(pSensors->m_gps->active_file>0){
-				pSensors->m_gps->active_file--;
-				pConfig->storage_outdated=true;
-			}
-		} else  if(int(state%10)==2){
-			if(pSensors->m_gps->active_file < 9){ // wir haben 0,1,2,3,4,5,6,7,8,9 ... max 10 Files
-				pSensors->m_gps->active_file++;
-				pConfig->storage_outdated=true;
-			}
-		};
-		// immer wieder zur?ckschuppsen
-		state=floor(state/10)*10+1; // (41+2)*10+1
-		pConfig->storage_outdated=true;
-		pConfig->write("BASE.TXT"); // save config
-		// open SD
-		SdFile root;
-		root.openRoot(&pSD->volume);
-		SdFile subdir;
-		if(!subdir.open(&root, NAVI_FOLDER, O_READ)) {  Serial.puts_ln(USART1,("open subdir /config failed")); };
-		// generate filename
-		char navi_filename[13];
-		sprintf_P(navi_filename,("NAVI%i.SMF"),pSensors->m_gps->active_file);
-		char buffer[22]; // 21 zeichen + \0
-		sprintf_P(buffer,("Navifile Nr: %i"),pSensors->m_gps->active_file);
-		// file exists
-		SdFile file;
-		if (file.open(&subdir, navi_filename, O_READ)){ //kann ich offentsichtlich ?ndern, datei auslesen
-			int n=1;
-			int byte_read=0;
-			// reserve buffer space
-			char buffer_big[65];
-
-			while (n > 0 && byte_read<63) { // n=wieviele byte gelesen wurden
-				char buf[2];
-				n = file.read(buf, 1);
-
-				if(buf[0]!='\n'){
-					buffer_big[byte_read]=buf[0];
-					byte_read=byte_read+n;
-				} else { // wenn '\n' break machen
-					n=0;
-					buffer_big[byte_read]='\0';
-					break;
-				}
-			};
-			// close file
-			file.close();
-			char title[17];
-			sprintf_P(title,("Navifile Nr: %i/9"),pSensors->m_gps->active_file);
-			if(buffer_big[0]=='#' && buffer_big[1]=='d'){
-				for(int i=2;i<=byte_read;i++){ // remove "#d" from destriction string
-					buffer_big[i-2]=buffer_big[i];
-				};
-				TFT.show_storry(buffer_big,byte_read,title,sizeof(title)/sizeof(title[0]));
-			} else {
-				TFT.clear_screen();
-				TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-				TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-				TFT.string(Speedo.default_font,("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
-			}
-		} else { // if there is no file with that number
-			TFT.clear_screen();
-			char title[17];
-			sprintf_P(title,("Navifile Nr: %i/9"),pSensors->m_gps->active_file);
-			TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-			TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-			TFT.string(Speedo.default_font,("File not found"),2,3,0,DISP_BRIGHTNESS,0);
-		};
-		subdir.close();
-		root.close();
+//		set_buttons(button_state,button_state,button_state,!button_state); // no right // TODO
+//		// Umschalten
+//		if(int(state%10)==9){ // schalter nach oben, abziehen
+//			if(Sensors.mGPS.active_file>0){
+//				Sensors.mGPS.active_file--;
+//				pConfig.storage_outdated=true;
+//			}
+//		} else  if(int(state%10)==2){
+//			if(Sensors.mGPS.active_file < 9){ // wir haben 0,1,2,3,4,5,6,7,8,9 ... max 10 Files
+//				Sensors.mGPS.active_file++;
+//				pConfig.storage_outdated=true;
+//			}
+//		};
+//		// immer wieder zur?ckschuppsen
+//		state=floor(state/10)*10+1; // (41+2)*10+1
+//		pConfig.storage_outdated=true;
+//		pConfig.write("BASE.TXT"); // save config
+//		// open SD
+//		SdFile root;
+//		root.openRoot(&pSD.volume);
+//		SdFile subdir;
+//		if(!subdir.open(&root, NAVI_FOLDER, O_READ)) {  Serial.puts_ln(USART1,("open subdir /config failed")); };
+//		// generate filename
+//		char navi_filename[13];
+//		sprintf(navi_filename,("NAVI%i.SMF"),Sensors.mGPS.active_file);
+//		char buffer[22]; // 21 zeichen + \0
+//		sprintf(buffer,("Navifile Nr: %i"),Sensors.mGPS.active_file);
+//		// file exists
+//		SdFile file;
+//		if (file.open(&subdir, navi_filename, O_READ)){ //kann ich offentsichtlich ?ndern, datei auslesen
+//			int n=1;
+//			int byte_read=0;
+//			// reserve buffer space
+//			char buffer_big[65];
+//
+//			while (n > 0 && byte_read<63) { // n=wieviele byte gelesen wurden
+//				char buf[2];
+//				n = file.read(buf, 1);
+//
+//				if(buf[0]!='\n'){
+//					buffer_big[byte_read]=buf[0];
+//					byte_read=byte_read+n;
+//				} else { // wenn '\n' break machen
+//					n=0;
+//					buffer_big[byte_read]='\0';
+//					break;
+//				}
+//			};
+//			// close file
+//			file.close();
+//			char title[17];
+//			sprintf(title,("Navifile Nr: %i/9"),Sensors.mGPS.active_file);
+//			if(buffer_big[0]=='#' && buffer_big[1]=='d'){
+//				for(int i=2;i<=byte_read;i++){ // remove "#d" from destriction string
+//					buffer_big[i-2]=buffer_big[i];
+//				};
+//				TFT.show_storry(buffer_big,byte_read,title,sizeof(title)/sizeof(title[0]));
+//			} else {
+//				TFT.clear_screen();
+//				TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+//				TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+//				TFT.string(Speedo.default_font,("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
+//			}
+//		} else { // if there is no file with that number
+//			TFT.clear_screen();
+//			char title[17];
+//			sprintf(title,("Navifile Nr: %i/9"),Sensors.mGPS.active_file);
+//			TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+//			TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+//			TFT.string(Speedo.default_font,("File not found"),2,3,0,DISP_BRIGHTNESS,0);
+//		};
+//		subdir.close();
+//		root.close();
 	}
 	//////////////////////// POI  finder  //////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POI_FINDER)){	// file selection
-		bool build_complete_list=true;
-		bool upper_one=true;	// assume we pressed the "down" button, so we have to refresh to one on top of us
-		if(floor(old_state/10)==floor(state/10)){ // build just a short part of the list, not complee
-			build_complete_list=false;
-			if(old_state-1==state){ // we pressed the "up" button, so we have to refresh to one below
-				upper_one=false;
-			};
-		} else { // first access of this menu -> prepare
-			TFT.clear_screen();
-			TFT.string_centered(("= File selector ="),0,false);
-			TFT.string(Speedo.default_font,("\x7E back      select \x7F"),0,7);
-		}
-
-		if(state%10==1){ // avoid going up
-			set_buttons(button_state,!button_state,button_state,button_state);
-		} else if(state%10==6){	// avoid going down
-			set_buttons(button_state,button_state,!button_state,button_state);
-		}
-
-		SdFile dir_handle;
-		SdFile file_handle;
-		int item=0; // filecounter
-		unsigned int file_count=0;
-		int start=0;
-		int stop=4; // 0..4 = 5 file + line on top + line on buttom = 7 lines of display
-		char filename[22];
-		strcpy((char*)filename,("/POI/"));
-
-
-		if(pFilemanager_v2->get_file_handle((unsigned char*)filename,(unsigned char*)filename,&file_handle,&dir_handle,O_READ|O_CREAT)<0){	// works :D
-			TFT.show_storry(("Open POI dir failed"),("Error"),DIALOG_GO_LEFT_1000MS);
-		} else {
-			if(!build_complete_list){ // only "re-read" two items
-				if(upper_one){ // e.G. state == 374, we pushed "down" 3 times (from 371->374), we want to refresh item 3 and the item above (2)
-					start=(state%10)-2;
-					stop=(state%10)-1;
-				} else { // e.G. state == 374, we pushed "down" 4 times (from 371->375), and than "up" once (375->374) we want to refresh item 3 and the item below (4)
-					start=(state%10)-1;
-					stop=(state%10);
-				}
-			} else { // build complete list
-				start=0;
-				stop=5;
-			}
-
-			item=start;
-			while(item<=stop && item<=5){
-				// status: 0=EOF, 1=FILE, 2=FOLDER
-				unsigned long size;
-				if(dir_handle.lsJKWNext((unsigned char*)filename,item,&size)){ // <- returns the filename of the file nr "item"
-					file_count++;
-					// check resulting filename
-					if(strlen(filename)>=15){
-						filename[15]='\0'; // short it
-					};
-					char temp[21];
-					sprintf(temp,"%i.%s",item+1,filename); // <-- "gas.txt"->"4.GAS.TXT"
-					// fill up
-
-					strcpy(filename,temp);
-					for(int i=strlen(filename);i<17;i++){
-						filename[i]=' ';
-					}
-					filename[17]='\0';
-				} else {
-					sprintf(filename,"%i.-",item+1);
-					if((state%10)>file_count){ // if we are explicit on this item
-						set_buttons(button_links_valid,button_oben_valid,button_unten_valid,!button_state); // avoid go right
-					}
-				}
-				// print it
-				if((build_complete_list && (unsigned)item==(state%10)-1) || (!build_complete_list && upper_one && item==stop) || (!build_complete_list && !upper_one && item==start)){
-					TFT.highlight_bar(0,(item+1)*8,128,8);
-					TFT.string(Speedo.default_font,filename,2,item+1,0x0f,0x00,0);
-				} else {
-					TFT.filled_rect(0,(item+1)*8,128,8,0x00);
-					TFT.string(Speedo.default_font,filename,2,item+1);
-				}
-
-				item++;
-			}
-		}
+//		bool build_complete_list=true; // TODO
+//		bool upper_one=true;	// assume we pressed the "down" button, so we have to refresh to one on top of us
+//		if(floor(old_state/10)==floor(state/10)){ // build just a short part of the list, not complee
+//			build_complete_list=false;
+//			if(old_state-1==state){ // we pressed the "up" button, so we have to refresh to one below
+//				upper_one=false;
+//			};
+//		} else { // first access of this menu . prepare
+//			TFT.clear_screen();
+//			TFT.string_centered(("= File selector ="),0,false);
+//			TFT.string(Speedo.default_font,("\x7E back      select \x7F"),0,7);
+//		}
+//
+//		if(state%10==1){ // avoid going up
+//			set_buttons(button_state,!button_state,button_state,button_state);
+//		} else if(state%10==6){	// avoid going down
+//			set_buttons(button_state,button_state,!button_state,button_state);
+//		}
+//
+//		SdFile dir_handle;
+//		SdFile file_handle;
+//		int item=0; // filecounter
+//		unsigned int file_count=0;
+//		int start=0;
+//		int stop=4; // 0..4 = 5 file + line on top + line on buttom = 7 lines of display
+//		char filename[22];
+//		strcpy((char*)filename,("/POI/"));
+//
+//
+//		if(pFilemanager_v2.get_file_handle((unsigned char*)filename,(unsigned char*)filename,&file_handle,&dir_handle,O_READ|O_CREAT)<0){	// works :D
+//			TFT.show_storry(("Open POI dir failed"),("Error"),DIALOG_GO_LEFT_1000MS);
+//		} else {
+//			if(!build_complete_list){ // only "re-read" two items
+//				if(upper_one){ // e.G. state == 374, we pushed "down" 3 times (from 371.374), we want to refresh item 3 and the item above (2)
+//					start=(state%10)-2;
+//					stop=(state%10)-1;
+//				} else { // e.G. state == 374, we pushed "down" 4 times (from 371.375), and than "up" once (375.374) we want to refresh item 3 and the item below (4)
+//					start=(state%10)-1;
+//					stop=(state%10);
+//				}
+//			} else { // build complete list
+//				start=0;
+//				stop=5;
+//			}
+//
+//			item=start;
+//			while(item<=stop && item<=5){
+//				// status: 0=EOF, 1=FILE, 2=FOLDER
+//				unsigned long size;
+//				if(dir_handle.lsJKWNext((unsigned char*)filename,item,&size)){ // <- returns the filename of the file nr "item"
+//					file_count++;
+//					// check resulting filename
+//					if(strlen(filename)>=15){
+//						filename[15]='\0'; // short it
+//					};
+//					char temp[21];
+//					sprintf(temp,"%i.%s",item+1,filename); // <-- "gas.txt"."4.GAS.TXT"
+//					// fill up
+//
+//					strcpy(filename,temp);
+//					for(int i=strlen(filename);i<17;i++){
+//						filename[i]=' ';
+//					}
+//					filename[17]='\0';
+//				} else {
+//					sprintf(filename,"%i.-",item+1);
+//					if((state%10)>file_count){ // if we are explicit on this item
+//						set_buttons(button_links_valid,button_oben_valid,button_unten_valid,!button_state); // avoid go right
+//					}
+//				}
+//				// print it
+//				if((build_complete_list && (unsigned)item==(state%10)-1) || (!build_complete_list && upper_one && item==stop) || (!build_complete_list && !upper_one && item==start)){
+//					TFT.highlight_bar(0,(item+1)*8,128,8);
+//					TFT.string(Speedo.default_font,filename,2,item+1,0x0f,0x00,0);
+//				} else {
+//					TFT.filled_rect(0,(item+1)*8,128,8,0x00);
+//					TFT.string(Speedo.default_font,filename,2,item+1);
+//				}
+//
+//				item++;
+//			}
+//		}
 	} else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POI_FINDER)){	// some output
 		TFT.show_storry(("It will take some time to generate a navi file from this POI. Continue?"),("POI Navigation"),DIALOG_NO_YES);
 	} else if(floor(state/1000)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POI_FINDER)){	// file selection
 		speedo_poi_finder* pPOI_Finder=new speedo_poi_finder();
-		pPOI_Finder->calc(int(floor(state/100))%10);
+		pPOI_Finder.calc(int(floor(state/100))%10);
 	}
 	//////////////////////// ausgeben wieviele points geschrieben wurden //////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_WRITEN_POINTS_CHECK)){ //37[X]
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		char buffer[10];
-		sprintf(buffer,"%i",pSensors->m_gps->written_gps_points);
+		sprintf(buffer,"%i",Sensors.mGPS.written_gps_points);
 		TFT.clear_screen();
 		TFT.string(Speedo.default_font,buffer,5,3,0,DISP_BRIGHTNESS,0);
 		TFT.string(Speedo.default_font,("Points written"),3,4,0,DISP_BRIGHTNESS,0);
@@ -637,19 +637,19 @@ void speedo_menu::display(){
 	////////////////////////  prepare speedoCam status screen //////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_SPEEDCAM_STATUS)){ //38[X]
 		set_buttons(true,false,false,false);
-		pSpeedo->reset_bak();
+		Speedo.reset_bak();
 		TFT.clear_screen();
 	}
 	////////// Setup of poi warner
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_SPEEDCAM_ON_OFF)) { // 00039X
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_SPEEDCAM_ON_OFF)) { // 000461X
-		bool temp=pSpeedCams->get_active();
+		bool temp=pSpeedCams.get_active();
 		set_value_dialog((int8_t*)&temp,("= POI warning ="));
-		if(temp!=pSpeedCams->get_active()){
-			pSpeedCams->set_active(temp);
+		if(temp!=pSpeedCams.get_active()){
+			pSpeedCams.set_active(temp);
 		}
 	}
 
@@ -685,95 +685,95 @@ void speedo_menu::display(){
 		TFT.string(Speedo.default_font,("GPS_sats"),0,6);
 		TFT.string(Speedo.default_font,("Counter"),0,7);
 
-		pSpeedo->reset_bak(); // alle disp_zeile_bak auf -99 setzen
+		Speedo.reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
 	//////////////////////// CAN info ////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,5,2)) {
-		// show info that CAN is offline
-		if(!pSensors->CAN_active){
-			TFT.clear_screen();
-			TFT.string(Speedo.default_font,("CAN is not active"),2,3,0,15,0);
-		}
-		// get CAN info and show them
-		else {
-			pSpeedo->reset_bak();
-			TFT.clear_screen();
-			TFT.highlight_bar(0,0,128,8);
-			TFT.string(Speedo.default_font,("CAN DTS Codes"),2,0,15,0,0);
-
-			int dtc_error_count=pSensors->m_CAN->get_dtc_error_count();
-			if(dtc_error_count==0){
-				TFT.string(Speedo.default_font,("No errors :)"),6,4,0,15,0);
-			} else {
-
-#ifdef CAN_DEBUG
-				Serial.print(dtc_error_count);
-				Serial.puts_ln(USART1," Fehler gefunden");
-#endif
-
-				for(int i=0; i<dtc_error_count && i<3;i++){
-					int error_code=pSensors->m_CAN->get_dtc_error(i+3*state_helper);
-					if(error_code!=-1){
-						// char P=00, C=01, 10=B, 11=U
-						char region=(error_code&0x3000)>>12;
-						if(region==0){
-							region='P';
-						} else if(region==1){
-							region='C';
-						} else if(region==2){
-							region='B';
-						} else if(region==3){
-							region='U';
-						}
-
-						sprintf_P(char_buffer,("Error %i/%i:%c%04i"),i+3*state_helper+1,dtc_error_count,region,error_code&0x0fff);
-						TFT.string(Speedo.default_font,char_buffer,0,2*i+1,0,15,0);
-						sprintf_P(char_buffer,("%c%04i"),region,error_code&0x0fff);
-						pSensors->m_CAN->decode_dtc(char_buffer,SPEED_TRIPPLE);
-						center_me(char_buffer,21);
-						TFT.string(Speedo.default_font,char_buffer,0,2*i+2,0,7,0);
-					} else {
-						TFT.string(Speedo.default_font,("COMM FAILED"),2*i+2,0,15,0,0);
-					}
-				} // for
-			} // error count >0
-
-			/* idea: as soon as we enter this menu, we reset the state_helper
-			 * after that: every "down" push will just increase the state_helper
-			 * the state should return to 521
-			 * "up" is viceversa until the helper reaches 0 again
-			 * Within processing we'll use the state_helper as a multiplier
-			 *
-			 * In addition, only activate "down" if there are more errors
-			 */
-			bool down=!button_state;
-			if((2+3*state_helper)<dtc_error_count){
-				down=button_state;
-				TFT.string(Speedo.default_font,("Press down for more"),0,7,0,15,0);
-			}
-			if(old_state==BMP(0,0,0,0,0,5,2)){
-				state_helper=0;
-				set_buttons(button_state,!button_state,down,button_state); // no up
-			} else if(state%10==2){ // ein runter gedr?ckt
-				state--;
-				set_buttons(button_state,button_state,down,button_state); // all
-				state_helper++;
-			} else if(state%10==9){ // ein hoch gedr?ckt (519)
-				state+=2; // 519 + 2 = 521
-				state_helper--;
-				if(state_helper==0){
-					set_buttons(button_state,!button_state,down,button_state); // no up
-				}
-			}
-			// testen f?r mehr als 3 codes!! TODO
-		};
+//		// show info that CAN is offline		// TODO
+//		if(!Sensors.CAN_active){
+//			TFT.clear_screen();
+//			TFT.string(Speedo.default_font,("CAN is not active"),2,3,0,15,0);
+//		}
+//		// get CAN info and show them
+//		else {
+//			Speedo.reset_bak();
+//			TFT.clear_screen();
+//			TFT.highlight_bar(0,0,128,8);
+//			TFT.string(Speedo.default_font,("CAN DTS Codes"),2,0,15,0,0);
+//
+//			int dtc_error_count=Sensors.mCAN.get_dtc_error_count();
+//			if(dtc_error_count==0){
+//				TFT.string(Speedo.default_font,("No errors :)"),6,4,0,15,0);
+//			} else {
+//
+//#ifdef CAN_DEBUG
+//				Serial.puts(USART1,(dtc_error_count);
+//				Serial.puts_ln(USART1," Fehler gefunden");
+//#endif
+//
+//				for(int i=0; i<dtc_error_count && i<3;i++){
+//					int error_code=Sensors.mCAN.get_dtc_error(i+3*state_helper);
+//					if(error_code!=-1){
+//						// char P=00, C=01, 10=B, 11=U
+//						char region=(error_code&0x3000)>>12;
+//						if(region==0){
+//							region='P';
+//						} else if(region==1){
+//							region='C';
+//						} else if(region==2){
+//							region='B';
+//						} else if(region==3){
+//							region='U';
+//						}
+//
+//						sprintf(char_buffer,("Error %i/%i:%c%04i"),i+3*state_helper+1,dtc_error_count,region,error_code&0x0fff);
+//						TFT.string(Speedo.default_font,char_buffer,0,2*i+1,0,15,0);
+//						sprintf(char_buffer,("%c%04i"),region,error_code&0x0fff);
+//						Sensors.mCAN.decode_dtc(char_buffer,SPEED_TRIPPLE);
+//						center_me(char_buffer,21);
+//						TFT.string(Speedo.default_font,char_buffer,0,2*i+2,0,7,0);
+//					} else {
+//						TFT.string(Speedo.default_font,("COMM FAILED"),2*i+2,0,15,0,0);
+//					}
+//				} // for
+//			} // error count >0
+//
+//			/* idea: as soon as we enter this menu, we reset the state_helper
+//			 * after that: every "down" push will just increase the state_helper
+//			 * the state should return to 521
+//			 * "up" is viceversa until the helper reaches 0 again
+//			 * Within processing we'll use the state_helper as a multiplier
+//			 *
+//			 * In addition, only activate "down" if there are more errors
+//			 */
+//			bool down=!button_state;
+//			if((2+3*state_helper)<dtc_error_count){
+//				down=button_state;
+//				TFT.string(Speedo.default_font,("Press down for more"),0,7,0,15,0);
+//			}
+//			if(old_state==BMP(0,0,0,0,0,5,2)){
+//				state_helper=0;
+//				set_buttons(button_state,!button_state,down,button_state); // no up
+//			} else if(state%10==2){ // ein runter gedr?ckt
+//				state--;
+//				set_buttons(button_state,button_state,down,button_state); // all
+//				state_helper++;
+//			} else if(state%10==9){ // ein hoch gedr?ckt (519)
+//				state+=2; // 519 + 2 = 521
+//				state_helper--;
+//				if(state_helper==0){
+//					set_buttons(button_state,!button_state,down,button_state); // no up
+//				}
+//			}
+//			// testen f?r mehr als 3 codes!! TODO
+//		};
 
 	}
 	//////////////////////// extend sensor info ////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,5,3)) {
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 		// Menu vorbereiten
-		pSpeedo->reset_bak();
+		Speedo.reset_bak();
 		TFT.clear_screen();
 		TFT.highlight_bar(0,0,128,8);
 		TFT.string(Speedo.default_font,("Additional info"),2,0,15,0,0);
@@ -786,27 +786,27 @@ void speedo_menu::display(){
 	else if(floor(state/10)==BMP(0,0,0,0,0,5,4)) {
 		set_buttons(button_state,!button_state,!button_state,button_state); // left & right only
 		// Menu vorbereiten
-		pSpeedo->reset_bak();
+		Speedo.reset_bak();
 		TFT.clear_screen();
 		TFT.highlight_bar(0,0,128,8);
 		TFT.string(Speedo.default_font,("Additional info"),2,0,15,0,0);
 		// this is just the caption,
 		// the loop will fill the screen
-		//		 pAktors->m_stepper->go_to(MOTOR_OVERWRITE_END_POS);
+		//		 pAktors.m_stepper.go_to(MOTOR_OVERWRITE_END_POS);
 	}
 	//////////////////////// stepper test ////////////////////////////
 	// this will kick to needle to 6k ... thats all
 	else if(floor(state/100)==BMP(0,0,0,0,0,5,4)) {
-		set_buttons(button_state,!button_state,!button_state,!button_state); // left & right only
-		// Menu vorbereiten
-		pSpeedo->reset_bak();
-		TFT.clear_screen();
-		TFT.highlight_bar(0,0,128,8);
-		TFT.string(Speedo.default_font,("Additional info"),2,0,15,0,0);
-		TFT.string(Speedo.default_font,("Kicking to 10k"),2,2,0,15,0);
-		pAktors->m_stepper->go_to(10000);
-		_delay_ms(3000);
-		back();
+//		set_buttons(button_state,!button_state,!button_state,!button_state); // left & right only // TODO
+//		// Menu vorbereiten
+//		Speedo.reset_bak();
+//		TFT.clear_screen();
+//		TFT.highlight_bar(0,0,128,8);
+//		TFT.string(Speedo.default_font,("Additional info"),2,0,15,0,0);
+//		TFT.string(Speedo.default_font,("Kicking to 10k"),2,2,0,15,0);
+//		pAktors.m_stepper.go_to(10000);
+//		_delay_ms(3000);
+//		back();
 	}
 	//////////////////////// TEST des watchdogs durch absitzen ////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,5,6)){ // 56[X]
@@ -864,7 +864,7 @@ void speedo_menu::display(){
 		TFT.string(Speedo.default_font,("GNU - Licensed"),0,1,0,DISP_BRIGHTNESS,0);
 
 		TFT.string(Speedo.default_font,("HW version:"),0,3,0,DISP_BRIGHTNESS,0);
-		sprintf(char_buffer,"%03i",pConfig->get_hw_version());
+		sprintf(char_buffer,"%03i",pConfig.get_hw_version());
 		TFT.string(Speedo.default_font,char_buffer,11,3);
 		TFT.string(Speedo.default_font,(GIT_REV),0,4,0,DISP_BRIGHTNESS,0);
 
@@ -884,12 +884,12 @@ void speedo_menu::display(){
 		update_display=true;
 		state++;
 	} else if(state==BMP(0,0,0,5,9,1,2)){
-		PCICR &=~(1<<PCIE1); // PCINT DEactivieren
-		tetris* m_tetris=new tetris;
-		m_tetris->run();
-		delete m_tetris;
-		PCICR |=(1<<PCIE1); // PCINT Activieren
-		back();
+//		PCICR &=~(1<<PCIE1); // PCINT DEactivieren //TODO
+//		tetris* m_tetris=new tetris;
+//		m_tetris.run();
+//		delete m_tetris;
+//		PCICR |=(1<<PCIE1); // PCINT Activieren
+//		back();
 	}
 	/********************************************* End of Extend Info Menu *********************************************/
 
@@ -910,104 +910,104 @@ void speedo_menu::display(){
 	else if(floor(state/10)==BMP(0,0,0,0,0,0,6)) { //6[X]
 		// Menu vorbereiten
 		draw(&menu_custom[0],sizeof(menu_custom)/sizeof(menu_custom[0]));
-		pSpeedo->reset_bak();
+		Speedo.reset_bak();
 	}
 	///////////////////////// SKIN LADEN ///////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,6,1)){ //61[X]
-		// open SD
-		SdFile root;
-		root.openRoot(&pSD->volume);
-		SdFile subdir;
-		if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  Serial.puts_ln(USART1,("open subdir /config failed")); };
-
-		// generate filename
-		char filename[10];
-		sprintf_P(filename,("SKIN%i.SSF"),int((state%10)-1));
-
-		// check if file exists
-		SdFile file;
-		if (file.open(&subdir, filename, O_READ)){ //kann ich offentsichtlich ?ndern, datei auslesen
-			int n=1;
-			int byte_read=0;
-			// reserve buffer space
-			char *buffer;
-			buffer = (char*) malloc (65);
-			if (buffer==NULL) Serial.puts_ln(USART1,("Malloc failed 1"));
-			else memset(buffer,'\0',65);
-
-			while (n > 0 && byte_read<63) { // n=wieviele byte gelesen wurden
-				char buf[2];
-				n = file.read(buf, 1);
-
-				if(buf[0]!='\n'){
-					buffer[byte_read]=buf[0];
-					byte_read=byte_read+n;
-				} else { // wenn '\n' break machen
-					break;
-				}
-			};
-			// close file
-			file.close();
-
-			char title[15];
-			sprintf_P(title,("Skinfile Nr: %i/8"),int(state%10)-1);
-			if(buffer[0]=='#'){
-				TFT.show_storry(buffer,byte_read,title,sizeof(title)/sizeof(title[0]));
-			} else {
-				TFT.clear_screen();
-				TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-				TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-				TFT.string(Speedo.default_font,("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
-			}
-			// noch mal kurz den buffer missbrauchen
-			sprintf_P(buffer,("\x7F Preview - \x7F\x7F Save"));
-			TFT.string(Speedo.default_font,buffer,0,7,0,DISP_BRIGHTNESS,0);
-			// free buffer
-			free(buffer);
-			// end of draw to display
-		} else { // if there is no file with that number
-			TFT.clear_screen();
-			char title[17];
-			sprintf_P(title,("Skinfile Nr: %i/8"),int(state%10)-1);
-			TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-			TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-			TFT.string(Speedo.default_font,("File not found"),2,3,0,DISP_BRIGHTNESS,0);
-			set_buttons(button_state,button_state,button_state,!button_state); // no right
-		};
-		subdir.close();
-		root.close();
-
-		// keep loading current skinfile, because without changing
-		sprintf_P(filename,("SKIN%i.TXT"),(pConfig->skin_file+10)%10);
-		pConfig->read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
+//		// open SD		// TODO
+//		SdFile root;
+//		root.openRoot(&pSD.volume);
+//		SdFile subdir;
+//		if(!subdir.open(&root, CONFIG_FOLDER, O_READ)) {  Serial.puts_ln(USART1,("open subdir /config failed")); };
+//
+//		// generate filename
+//		char filename[10];
+//		sprintf(filename,("SKIN%i.SSF"),int((state%10)-1));
+//
+//		// check if file exists
+//		SdFile file;
+//		if (file.open(&subdir, filename, O_READ)){ //kann ich offentsichtlich ?ndern, datei auslesen
+//			int n=1;
+//			int byte_read=0;
+//			// reserve buffer space
+//			char *buffer;
+//			buffer = (char*) malloc (65);
+//			if (buffer==NULL) Serial.puts_ln(USART1,("Malloc failed 1"));
+//			else memset(buffer,'\0',65);
+//
+//			while (n > 0 && byte_read<63) { // n=wieviele byte gelesen wurden
+//				char buf[2];
+//				n = file.read(buf, 1);
+//
+//				if(buf[0]!='\n'){
+//					buffer[byte_read]=buf[0];
+//					byte_read=byte_read+n;
+//				} else { // wenn '\n' break machen
+//					break;
+//				}
+//			};
+//			// close file
+//			file.close();
+//
+//			char title[15];
+//			sprintf(title,("Skinfile Nr: %i/8"),int(state%10)-1);
+//			if(buffer[0]=='#'){
+//				TFT.show_storry(buffer,byte_read,title,sizeof(title)/sizeof(title[0]));
+//			} else {
+//				TFT.clear_screen();
+//				TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+//				TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+//				TFT.string(Speedo.default_font,("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
+//			}
+//			// noch mal kurz den buffer missbrauchen
+//			sprintf(buffer,("\x7F Preview - \x7F\x7F Save"));
+//			TFT.string(Speedo.default_font,buffer,0,7,0,DISP_BRIGHTNESS,0);
+//			// free buffer
+//			free(buffer);
+//			// end of draw to display
+//		} else { // if there is no file with that number
+//			TFT.clear_screen();
+//			char title[17];
+//			sprintf(title,("Skinfile Nr: %i/8"),int(state%10)-1);
+//			TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+//			TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+//			TFT.string(Speedo.default_font,("File not found"),2,3,0,DISP_BRIGHTNESS,0);
+//			set_buttons(button_state,button_state,button_state,!button_state); // no right
+//		};
+//		subdir.close();
+//		root.close();
+//
+//		// keep loading current skinfile, because without changing
+//		sprintf(filename,("SKIN%i.TXT"),(pConfig.skin_file+10)%10);
+//		pConfig.read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
 	}
 	//////////////////////// skin laden ////////////////////////////
 	else if(floor(state/100)==BMP(0,0,0,0,0,6,1)) { // 0061[X]1
-		// load this skinfile
-		char filename[10];
-		sprintf_P(filename,("SKIN%i.SSF"),(int(floor(state/10))%10)-1);
-		pConfig->read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
-		TFT.clear_screen();
-		TFT.string(Speedo.default_font,("Preview"),6,3);
-		_delay_ms(300);
-
-		// set buttons
-		set_buttons(button_state,!button_state,!button_state,button_state); // lr only
-
-		// save,change,restore,and show one preview image
-		unsigned long save_state=state;
-		state=BMP(0,0,0,0,0,1,1);
-		display(); // nicht sch?n, aber das muss sein :D
-		pSpeedo->loop(0);
-		state=save_state;
+//		// load this skinfile			// TODO
+//		char filename[10];
+//		sprintf(filename,("SKIN%i.SSF"),(int(floor(state/10))%10)-1);
+//		pConfig.read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
+//		TFT.clear_screen();
+//		TFT.string(Speedo.default_font,("Preview"),6,3);
+//		_delay_ms(300);
+//
+//		// set buttons
+//		set_buttons(button_state,!button_state,!button_state,button_state); // lr only
+//
+//		// save,change,restore,and show one preview image
+//		unsigned long save_state=state;
+//		state=BMP(0,0,0,0,0,1,1);
+//		display(); // nicht sch?n, aber das muss sein :D
+//		Speedo.loop(0);
+//		state=save_state;
 	}
 
-	//////////////////////// skin speichern -> zum men?punkt 11 gehen und alles ist gut ////////////////////////////
+	//////////////////////// skin speichern . zum men?punkt 11 gehen und alles ist gut ////////////////////////////
 	else if(floor(state/1000)==BMP(0,0,0,0,0,6,1)) { // 0061[xyz]
 		TFT.clear_screen();
-		pConfig->skin_file=(int(floor(state/100))%10)-1;
-		pConfig->storage_outdated=true;
-		pConfig->write("BASE.TXT"); // save config
+		pConfig.skin_file=(int(floor(state/100))%10)-1;
+		pConfig.storage_outdated=true;
+		pConfig.write("BASE.TXT"); // save config
 
 		TFT.string(Speedo.default_font,("Saved"),7,3);
 		_delay_ms(300);
@@ -1022,20 +1022,20 @@ void speedo_menu::display(){
 	// then select the storage by /1000
 	else if(floor(state/10)==BMP(0,0,0,0,0,6,2)) {
 		// sneaky, wir bauen ein "zwischen zustand" ein, um einen ?bergang zu erzeugen
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,6,2)) {
 		if(floor(old_state)==BMP(0,0,0,0,0,6,2)){// || floor(old_state/1000)==BMP(0,0,0,0,0,6,2)){ // wenn wir von unten kommen, waren wir vorher auf 62. wenn wir von oben kommen waren wir auf 62[1][Y][Z] = y ist mode, z ist storage
-			state+=(pSpeedo->m_trip_mode%10)-1; // state muss angepasst werden.
+			state+=(Speedo.m_trip_mode%10)-1; // state muss angepasst werden.
 			state=state*10+1; // moving to one "fake"level high, to run back(). This should repositionate the menu around us
 			back();
 
 		}
 		else { // speichern des neuen Werts
 			if(floor(old_state/1000)!=BMP(0,0,0,0,0,6,2)){
-				pConfig->storage_outdated=true;
-				pSpeedo->m_trip_mode=state%10;
+				pConfig.storage_outdated=true;
+				Speedo.m_trip_mode=state%10;
 			}
 			draw(&menu_add_info[0],sizeof(menu_add_info)/sizeof(menu_add_info[0]));
 		};
@@ -1044,24 +1044,24 @@ void speedo_menu::display(){
 	// and now select the storage
 	else if(floor(state/1000)==BMP(0,0,0,0,0,6,2)) {
 		if(floor(old_state/100)==BMP(0,0,0,0,0,6,2)){ // wenn wir von unten kommen, waren wir vorher auf 62[1][y]. y ist mode
-			state+=(pSpeedo->m_trip_storage%10)-1; // state muss angepasst werden.
+			state+=(Speedo.m_trip_storage%10)-1; // state muss angepasst werden.
 			state=state*10+1;
 			back();
 		}
 		else { // speichern des neuen Werts
 			if(floor(old_state/10000)!=BMP(0,0,0,0,0,6,2)){
-				pSpeedo->m_trip_storage=state%10;
-				pConfig->storage_outdated=true;
+				Speedo.m_trip_storage=state%10;
+				pConfig.storage_outdated=true;
 			}
 			draw(&menu_trip_setup[0],sizeof(menu_trip_setup)/sizeof(menu_trip_setup[0]));
 		};
 	}
 	///////////////////////////// dz flasher /////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,6,3)) {
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	else if(floor(state/100)==BMP(0,0,0,0,0,6,3) || floor(state/1000)==BMP(0,0,0,0,0,6,3)){ // 631[X] or 6311[X]
-		if(state!=old_state+1 && state!=old_state+8){ // 632 -> 631, take this since its possible to come from 631 and from 631111
+		if(state!=old_state+1 && state!=old_state+8){ // 632 . 631, take this since its possible to come from 631 and from 631111
 			TFT.clear_screen();
 			TFT.highlight_bar(0,8*4-1,128,17); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
 			TFT.string(Speedo.default_font,("DZ Flasher"),5,4,15,0,0);
@@ -1073,7 +1073,7 @@ void speedo_menu::display(){
 				TFT.string(Speedo.default_font,("Down = inactive"),4,1,0,DISP_BRIGHTNESS,0);
 
 				TFT.filled_rect(0,56,128,8,0x00);
-				if(pSensors->m_dz->blitz_en){
+				if(Sensors.mRpm.blitz_en){
 					TFT.string(Speedo.default_font,("\x7F to adjust level"),0,7);
 				};
 			} else if(floor(state/10000)==6){
@@ -1088,40 +1088,40 @@ void speedo_menu::display(){
 		// AN AUS schaltung
 		if(floor(state/100)==BMP(0,0,0,0,0,6,3)){ // 631[x]
 			if(state%10==9){
-				pSensors->m_dz->blitz_en=true;
-				pConfig->storage_outdated=true;
+				Sensors.mRpm.blitz_en=true;
+				pConfig.storage_outdated=true;
 				state-=8;
 			} else if(state%10==2){
-				pSensors->m_dz->blitz_en=false;
-				pConfig->storage_outdated=true;
+				Sensors.mRpm.blitz_en=false;
+				pConfig.storage_outdated=true;
 				state-=1;
 			};
 			// schaltdrehzahl einstellen
 		} else if(floor(state/1000)==BMP(0,0,0,0,0,6,3)){
 			// Wert anpassen
 			if(state%10==9){
-				pSensors->m_dz->blitz_dz+=100;
-				if(pSensors->m_dz->blitz_dz>20000){
-					pSensors->m_dz->blitz_dz=20000;
+				Sensors.mRpm.blitz_dz+=100;
+				if(Sensors.mRpm.blitz_dz>20000){
+					Sensors.mRpm.blitz_dz=20000;
 				}
 				state-=8;
-				pConfig->storage_outdated=true;
+				pConfig.storage_outdated=true;
 			} else if(state%10==2){
-				pSensors->m_dz->blitz_dz-=100;
-				if(pSensors->m_dz->blitz_dz<100){
-					pSensors->m_dz->blitz_dz=100;
+				Sensors.mRpm.blitz_dz-=100;
+				if(Sensors.mRpm.blitz_dz<100){
+					Sensors.mRpm.blitz_dz=100;
 				}
 				state-=1;
-				pConfig->storage_outdated=true;
+				pConfig.storage_outdated=true;
 			};
 		}
 
 
 		// wenn der blitzer an ist dann drehzahl mit anzeigen
-		if(pSensors->m_dz->blitz_en){
+		if(Sensors.mRpm.blitz_en){
 			set_buttons(button_state,button_state,button_state,button_state); // alles aktiv
 
-			sprintf_P(char_buffer,("%3i00"),int(floor(pSensors->m_dz->blitz_dz/100)));// 12500
+			sprintf(char_buffer,("%3i00"),int(floor(Sensors.mRpm.blitz_dz/100)));// 12500
 			TFT.highlight_bar(0,8*5-1,128,9); // mit hintergrundfarbe nen kasten malen. zeile 3 und 4
 			if(floor(state/100)==BMP(0,0,0,0,0,6,3)){
 				TFT.string(Speedo.default_font,("active"),2,5,0,15,0); // joa, unsch?n. Wird flackern, aber naja
@@ -1140,67 +1140,67 @@ void speedo_menu::display(){
 
 		//////////////////////// adjust dz alert RGB LED ////////////////////////
 	} else if(floor(state/100)==BMP(0,0,0,6,3,1,1) || floor(state/1000)==BMP(0,0,0,6,3,1,1) ||floor(state/10000)==BMP(0,0,0,6,3,1,1)){
-		color_select_menu(BMP(0,0,6,3,1,1,1),&pAktors->dz_flasher,0,0,0,0,button_state, ("Shift-Light"),(""),99,true);
+//	TODO	color_select_menu(BMP(0,0,6,3,1,1,1),&pAktors.dz_flasher,0,0,0,0,button_state, ("Shift-Light"),(""),99,true);
 	}
 	//////////////////////// adjust outer RGB LED ////////////////////////
 	/* In this menu, we give the user the chance to choose his own color
 	 * first of all we start with an selection model
 	 * 1. Static color - just one fix color
-	 * 2. Speed based color fade -> setup the minimum speed and color for the speed below this border
+	 * 2. Speed based color fade . setup the minimum speed and color for the speed below this border
 	 * 								and the max, plus the color above the top speed. between these limits, the color will be faded
 	 *
 	 */
 	else if(floor(state/10)==BMP(0,0,0,0,0,6,4)){
-		// preset Menu marker
-		if(old_state==floor(state/10)){
-			state=(state+pAktors->led_mode)*10+1;
-			back();
-		}
-
-		draw(&menu_fade[0],sizeof(menu_fade)/sizeof(menu_fade[0]));
-		pSpeedo->reset_bak();
-
-		////////////////////////// static /////////////////
-	} else if(floor(state/10)==BMP(0,0,0,0,6,4,1) || floor(state/100)==BMP(0,0,0,0,6,4,1) ||floor(state/1000)==BMP(0,0,0,0,6,4,1)){
-		color_select_menu(BMP(0,0,0,0,6,4,1),&pAktors->static_color,0,0,0,0,button_state, ("Static color"),(""),0,true);
-
-		/////////////////////// speed based color fade ///////////////////
-	} else if(floor(state/10)==BMP(0,0,0,0,6,4,2) || floor(state/100)==BMP(0,0,0,0,6,4,2) ||floor(state/1000)==BMP(0,0,0,0,6,4,2)){
-		color_select_menu(BMP(0,0,0,0,6,4,2),&pAktors->kmh_start_color,&pAktors->kmh_end_color,&pAktors->kmh_min_value,&pAktors->kmh_max_value,300,button_state, ("Speed"),("km\\h"),1,false);
-
-		/////////////////////// rpm based color fade ///////////////////
-	} else if(floor(state/10)==BMP(0,0,0,0,6,4,3) || floor(state/100)==BMP(0,0,0,0,6,4,3) || floor(state/1000)==BMP(0,0,0,0,6,4,3)){
-		color_select_menu(BMP(0,0,0,0,6,4,3),&pAktors->dz_start_color,&pAktors->dz_end_color,&pAktors->dz_min_value,&pAktors->dz_max_value,150,button_state,("RPM*100"), ("RPM"),2,false);
-
-		/////////////////////// oil based color fade ///////////////////
-	} else if(floor(state/10)==BMP(0,0,0,0,6,4,4) || floor(state/100)==BMP(0,0,0,0,6,4,4) || floor(state/1000)==BMP(0,0,0,0,6,4,4)){
-		color_select_menu(BMP(0,0,0,0,6,4,4),&pAktors->oil_start_color,&pAktors->oil_end_color,&pAktors->oil_min_value,&pAktors->oil_max_value,150,button_state, ("Oil"),("TMP"),3,false);
-
-		/////////////////////// water based color fade ///////////////////
-	} else if(floor(state/10)==BMP(0,0,0,0,6,4,5) || floor(state/100)==BMP(0,0,0,0,6,4,5) || floor(state/1000)==BMP(0,0,0,0,6,4,5)){
-		color_select_menu(BMP(0,0,0,0,6,4,5),&pAktors->water_start_color,&pAktors->water_end_color,&pAktors->water_min_value,&pAktors->water_max_value,150,button_state, ("Water"),("TMP"),4,false);
-
-		/////////////////////// RGB-Action //////////////////
-	} else if(floor(state/10)==BMP(0,0,0,0,0,6,5)){
-		// storage guard
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
-
-	} else if(floor(state/10)==BMP(0,0,0,0,6,5,1)){
-		set_value_dialog((int8_t*)&pAktors->pointer_highlight_mode,("= RGB-Action ="),("Static"),("Following"),("Stack"),("R-Stack"));
-		if(pAktors->pointer_highlight_mode==RGB_ACTION_TYPE_STATIC){
-			pAktors->set_rbg_active((int)0x0000,false); // activate all led's
-		}
-	}
-	///////////////////////// set bt pin ///////////////////////////
-	else if(floor(state/10)==BMP(0,0,0,0,0,6,7)){
-		if(old_state>state && pConfig->storage_outdated){
-			if(pAktors->set_bt_pin()!=0){
-				pConfig->storage_outdated=false; // avoid saving if we could not set it
-			}
-		}
-		// sneaky, wir bauen ein "zwischen zustand" ein, um einen ?bergang zu erzeugen
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
-		Speedo.disp_zeile_bak[2]=999; // redraw everything
+//		// preset Menu marker//	TODO
+//		if(old_state==floor(state/10)){
+//			state=(state+pAktors.led_mode)*10+1;
+//			back();
+//		}
+//
+//		draw(&menu_fade[0],sizeof(menu_fade)/sizeof(menu_fade[0]));
+//		Speedo.reset_bak();
+//
+//		////////////////////////// static /////////////////
+//	} else if(floor(state/10)==BMP(0,0,0,0,6,4,1) || floor(state/100)==BMP(0,0,0,0,6,4,1) ||floor(state/1000)==BMP(0,0,0,0,6,4,1)){
+//		color_select_menu(BMP(0,0,0,0,6,4,1),&pAktors.static_color,0,0,0,0,button_state, ("Static color"),(""),0,true);
+//
+//		/////////////////////// speed based color fade ///////////////////
+//	} else if(floor(state/10)==BMP(0,0,0,0,6,4,2) || floor(state/100)==BMP(0,0,0,0,6,4,2) ||floor(state/1000)==BMP(0,0,0,0,6,4,2)){
+//		color_select_menu(BMP(0,0,0,0,6,4,2),&pAktors.kmh_start_color,&pAktors.kmh_end_color,&pAktors.kmh_min_value,&pAktors.kmh_max_value,300,button_state, ("Speed"),("km\\h"),1,false);
+//
+//		/////////////////////// rpm based color fade ///////////////////
+//	} else if(floor(state/10)==BMP(0,0,0,0,6,4,3) || floor(state/100)==BMP(0,0,0,0,6,4,3) || floor(state/1000)==BMP(0,0,0,0,6,4,3)){
+//		color_select_menu(BMP(0,0,0,0,6,4,3),&pAktors.dz_start_color,&pAktors.dz_end_color,&pAktors.dz_min_value,&pAktors.dz_max_value,150,button_state,("RPM*100"), ("RPM"),2,false);
+//
+//		/////////////////////// oil based color fade ///////////////////
+//	} else if(floor(state/10)==BMP(0,0,0,0,6,4,4) || floor(state/100)==BMP(0,0,0,0,6,4,4) || floor(state/1000)==BMP(0,0,0,0,6,4,4)){
+//		color_select_menu(BMP(0,0,0,0,6,4,4),&pAktors.oil_start_color,&pAktors.oil_end_color,&pAktors.oil_min_value,&pAktors.oil_max_value,150,button_state, ("Oil"),("TMP"),3,false);
+//
+//		/////////////////////// water based color fade ///////////////////
+//	} else if(floor(state/10)==BMP(0,0,0,0,6,4,5) || floor(state/100)==BMP(0,0,0,0,6,4,5) || floor(state/1000)==BMP(0,0,0,0,6,4,5)){
+//		color_select_menu(BMP(0,0,0,0,6,4,5),&pAktors.water_start_color,&pAktors.water_end_color,&pAktors.water_min_value,&pAktors.water_max_value,150,button_state, ("Water"),("TMP"),4,false);
+//
+//		/////////////////////// RGB-Action //////////////////
+//	} else if(floor(state/10)==BMP(0,0,0,0,0,6,5)){
+//		// storage guard
+//		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
+//
+//	} else if(floor(state/10)==BMP(0,0,0,0,6,5,1)){
+//		set_value_dialog((int8_t*)&pAktors.pointer_highlight_mode,("= RGB-Action ="),("Static"),("Following"),("Stack"),("R-Stack"));
+//		if(pAktors.pointer_highlight_mode==RGB_ACTION_TYPE_STATIC){
+//			pAktors.set_rbg_active((int)0x0000,false); // activate all led's
+//		}
+//	}
+//	///////////////////////// set bt pin ///////////////////////////
+//	else if(floor(state/10)==BMP(0,0,0,0,0,6,7)){
+//		if(old_state>state && pConfig.storage_outdated){
+//			if(pAktors.set_bt_pin()!=0){
+//				pConfig.storage_outdated=false; // avoid saving if we could not set it
+//			}
+//		}
+//		// sneaky, wir bauen ein "zwischen zustand" ein, um einen ?bergang zu erzeugen
+//		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
+//		Speedo.disp_zeile_bak[2]=999; // redraw everything
 	}
 	else if((floor(state/100)==BMP(0,0,0,0,0,6,7)) | (floor(state/1000)==BMP(0,0,0,0,0,6,7)) | (floor(state/10000)==BMP(0,0,0,0,0,6,7)) | (floor(state/100000)==BMP(0,0,0,0,0,6,7))){ //67[x][x][x][x][1]
 		if(floor(state/100000)==BMP(0,0,0,0,0,6,7)){
@@ -1208,19 +1208,19 @@ void speedo_menu::display(){
 		}
 		// handle up down
 		if(state%10==9){ // oben
-			pConfig->storage_outdated=true;
+			pConfig.storage_outdated=true;
 			state-=8; // zur?ck
-			if(floor(state/100)==BMP(0,0,0,0,0,6,7) && pAktors->bt_pin>999)						{	pAktors->bt_pin-=1000;	};
-			if(floor(state/1000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/100))%10)>0)	{	pAktors->bt_pin-=100;	};
-			if(floor(state/10000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/10))%10)>0)	{	pAktors->bt_pin-=10;	};
-			if(floor(state/100000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/1))%10)>0)	{	pAktors->bt_pin-=1;		};
+			if(floor(state/100)==BMP(0,0,0,0,0,6,7) && pAktors.bt_pin>999)						{	pAktors.bt_pin-=1000;	};
+			if(floor(state/1000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors.bt_pin/100))%10)>0)	{	pAktors.bt_pin-=100;	};
+			if(floor(state/10000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors.bt_pin/10))%10)>0)	{	pAktors.bt_pin-=10;	};
+			if(floor(state/100000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors.bt_pin/1))%10)>0)	{	pAktors.bt_pin-=1;		};
 		} else if(state%10==2){ // unten
-			pConfig->storage_outdated=true;
+			pConfig.storage_outdated=true;
 			state-=1; // zur?ck
-			if(floor(state/100)==BMP(0,0,0,0,0,6,7) && pAktors->bt_pin<9000)					{	pAktors->bt_pin+=1000;	};
-			if(floor(state/1000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/100))%10)<9)	{	pAktors->bt_pin+=100;	};
-			if(floor(state/10000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/10))%10)<9)	{	pAktors->bt_pin+=10;	};
-			if(floor(state/100000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors->bt_pin/1))%10)<9)	{	pAktors->bt_pin+=1;		};
+			if(floor(state/100)==BMP(0,0,0,0,0,6,7) && pAktors.bt_pin<9000)					{	pAktors.bt_pin+=1000;	};
+			if(floor(state/1000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors.bt_pin/100))%10)<9)	{	pAktors.bt_pin+=100;	};
+			if(floor(state/10000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors.bt_pin/10))%10)<9)	{	pAktors.bt_pin+=10;	};
+			if(floor(state/100000)==BMP(0,0,0,0,0,6,7) && (int(floor(pAktors.bt_pin/1))%10)<9)	{	pAktors.bt_pin+=1;		};
 		}
 		if(Speedo.disp_zeile_bak[2]==999){
 			TFT.clear_screen();
@@ -1230,28 +1230,28 @@ void speedo_menu::display(){
 			Speedo.disp_zeile_bak[2]=123;
 		};
 
-		sprintf_P(char_buffer,(" %01i "),(int)floor(pAktors->bt_pin/1000)%10);
+		sprintf(char_buffer,(" %01i "),(int)floor(pAktors.bt_pin/1000)%10);
 		if(floor(state/100)==BMP(0,0,0,0,0,6,7)){
 			TFT.string(Speedo.default_font,char_buffer,2,2,15,0,0);
 		} else {
 			TFT.string(Speedo.default_font,char_buffer,2,2);
 		}
 
-		sprintf_P(char_buffer,(" %01i "),(int)floor(pAktors->bt_pin/100)%10);
+		sprintf(char_buffer,(" %01i "),(int)floor(pAktors.bt_pin/100)%10);
 		if(floor(state/1000)==BMP(0,0,0,0,0,6,7)){
 			TFT.string(Speedo.default_font,char_buffer,5,2,15,0,0);
 		} else {
 			TFT.string(Speedo.default_font,char_buffer,5,2);
 		}
 
-		sprintf_P(char_buffer,(" %01i "),(int)floor(pAktors->bt_pin/10)%10);
+		sprintf(char_buffer,(" %01i "),(int)floor(pAktors.bt_pin/10)%10);
 		if(floor(state/10000)==BMP(0,0,0,0,0,6,7)){
 			TFT.string(Speedo.default_font,char_buffer,8,2,15,0,0);
 		} else {
 			TFT.string(Speedo.default_font,char_buffer,8,2);
 		}
 
-		sprintf_P(char_buffer,(" %01i "),pAktors->bt_pin%10);
+		sprintf(char_buffer,(" %01i "),pAktors.bt_pin%10);
 		if(floor(state/100000)==BMP(0,0,0,0,0,6,7)){
 			TFT.string(Speedo.default_font,char_buffer,11,2,15,0,0);
 		} else {
@@ -1261,7 +1261,7 @@ void speedo_menu::display(){
 
 	/////// development set the shown mode
 	else if(floor(state/10)==BMP(0,0,0,0,0,6,9)){
-		set_value_dialog((int8_t*)&pAktors->m_stepper->shown_mode,("= Stepper Update ="),("Direct"),("Flat"),("Flat Round"),("Rounded"));
+		set_value_dialog((int8_t*)&pAktors.m_stepper.shown_mode,("= Stepper Update ="),("Direct"),("Flat"),("Flat Round"),("Rounded"));
 	}
 	/********************************************* End of Customize Menu *********************************************/
 
@@ -1299,23 +1299,23 @@ void speedo_menu::display(){
 			TFT.string(Speedo.default_font,("Change Gear up/down"),0,3);
 			TFT.string(Speedo.default_font,("!Keep driving!"),3,4);
 			TFT.string(Speedo.default_font,("\x7E continue"),0,7);
-			pSensors->m_gear->faktor_counter=0;
+			pSensors.m_gear.faktor_counter=0;
 		};
 	}
-	//////////////////// calibration start -> reset values, call in loop the gear_calc fkt ///////////////////
+	//////////////////// calibration start . reset values, call in loop the gear_calc fkt ///////////////////
 	else if(floor(state/100)==BMP(0,0,0,0,0,7,1)){
 		set_buttons(button_state,!button_state,!button_state,button_state); // left,right only
 		TFT.clear_screen();
-		pSpeedo->reset_bak();
+		Speedo.reset_bak();
 	}
 	//////////////////// calibration done, save it now.  ///////////////////
 	else if(floor(state/1000)==BMP(0,0,0,0,0,7,1)){
 		set_buttons(!button_state,!button_state,!button_state,!button_state); // message only
-		int current_gear=int(pSensors->m_gps->mod(pMenu->state,1000))/100;
+		int current_gear=int(Sensors.mGPS.mod(state,1000))/100;
 
-		pSensors->m_gear->n_gang[current_gear]=pSensors->m_gear->faktor_flat;
-		pConfig->storage_outdated=true;
-		pConfig->write("GANG.TXT");
+		pSensors.m_gear.n_gang[current_gear]=pSensors.m_gear.faktor_flat;
+		pConfig.storage_outdated=true;
+		pConfig.write("GANG.TXT");
 
 		TFT.clear_screen();
 		TFT.string(Speedo.default_font,("Saved"),7,3);
@@ -1330,15 +1330,15 @@ void speedo_menu::display(){
 	///////////////////// speed calibration //////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,2)) {
 		TFT.clear_screen();
-		pSpeedo->reset_bak(); // dadurch wird auch der counter resetet
+		Speedo.reset_bak(); // dadurch wird auch der counter resetet
 	}
 	/////////////// save new value ////////////
-	else if(pMenu->state==BMP(0,0,0,7,2,1,1)){
+	else if(state==BMP(0,0,0,7,2,1,1)){
 		set_buttons(!button_state,!button_state,!button_state,!button_state); // message only
 		TFT.clear_screen();
-		pSensors->m_speed->reifen_umfang=pSensors->m_speed->flat_value_calibrate_umfang/100;
-		pConfig->storage_outdated=true;
-		pConfig->write("BASE.TXT");
+		Sensors.mSpeed.reifen_umfang=Sensors.mSpeed.flat_value_calibrate_umfang/100;
+		pConfig.storage_outdated=true;
+		pConfig.write("BASE.TXT");
 		TFT.string(Speedo.default_font,("saved"),6,3);
 		_delay_ms(300);
 		state=BMP(0,0,0,0,7,2,1);
@@ -1346,69 +1346,69 @@ void speedo_menu::display(){
 	}
 	////////// display phase ////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,3) || floor(state/10)==BMP(0,0,0,0,7,3,1)|| floor(state/10)==BMP(0,0,0,7,3,1,1) || floor(state/10)==BMP(0,0,7,3,1,1,1)) {
-		if(state%10==9){
-			if(floor(state/10)==BMP(0,0,0,0,0,7,3)) { TFT.phase=TFT.phase+16; }
-			else if(floor(state/10)==BMP(0,0,0,0,7,3,1)) {TFT.phase++;}
-			else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {TFT.ref=TFT.ref+16;}
-			else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {TFT.ref++;}
-
-			TFT.init(TFT.phase,TFT.ref);
-			pConfig->storage_outdated=true;		// store change
-			pConfig->write("BASE.TXT");
-
-		} else if(state%10==2){
-			if(floor(state/10)==BMP(0,0,0,0,0,7,3)) { TFT.phase=TFT.phase-16; }
-			else if(floor(state/10)==BMP(0,0,0,0,7,3,1)) {TFT.phase--;}
-			else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {TFT.ref=TFT.ref-16;}
-			else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {TFT.ref--;}
-
-			TFT.init(TFT.phase,TFT.ref);
-			pConfig->storage_outdated=true;		// store change
-			pConfig->write("BASE.TXT");
-		};
-
-		int olc=0,orc=0;
-		int ulc=0,urc=0;
-		if(floor(state/10)==BMP(0,0,0,0,0,7,3))      {state=BMP(0,0,0,0,7,3,1); olc=1; orc=0; ulc=0; urc=0;}
-		else if(floor(state/10)==BMP(0,0,0,0,7,3,1)) {state=BMP(0,0,0,7,3,1,1); olc=0; orc=1; ulc=0; urc=0;}
-		else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {state=BMP(0,0,7,3,1,1,1); olc=0; orc=0; ulc=1; urc=0;}
-		else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {state=BMP(0,7,3,1,1,1,1); olc=0; orc=0; ulc=0; urc=1;};
-
-		TFT.clear_screen();
-		TFT.highlight_bar(0,8*1-1,128,17); // mit hintergrundfarbe nen kasten malen
-		TFT.string(Speedo.default_font,("Choose phase"),4,1,15,0,0);
-		sprintf_P(char_buffer,(" %02i "),int(floor(int(TFT.phase)/16)));
-		TFT.string(Speedo.default_font,char_buffer,4,2,abs(olc-1)*15,olc*15,0);
-		TFT.string(Speedo.default_font," // ",8,2,15,0,0);
-		sprintf_P(char_buffer,(" %02i "),int(int(TFT.phase)%16));
-		TFT.string(Speedo.default_font,char_buffer,12,2,abs(orc-1)*15,orc*15,0);
-
-		TFT.highlight_bar(0,8*5-1,128,17); // mit hintergrundfarbe nen kasten malen
-		TFT.string(Speedo.default_font,("Choose ref V"),4,5,15,0,0);
-		sprintf_P(char_buffer,(" %02i "),int(floor(int(TFT.ref)/16)));
-		TFT.string(Speedo.default_font,char_buffer,4,6,abs(ulc-1)*15,ulc*15,0);
-		TFT.string(Speedo.default_font," // ",8,6,15,0,0);
-		sprintf_P(char_buffer,(" %02i "),int(int(TFT.ref)%16));
-		TFT.string(Speedo.default_font,char_buffer,12,6,abs(urc-1)*15,urc*15,0);
+//		if(state%10==9){
+//			if(floor(state/10)==BMP(0,0,0,0,0,7,3)) { TFT.phase=TFT.phase+16; }
+//			else if(floor(state/10)==BMP(0,0,0,0,7,3,1)) {TFT.phase++;}
+//			else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {TFT.ref=TFT.ref+16;}
+//			else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {TFT.ref++;}
+//
+//			TFT.init(TFT.phase,TFT.ref);
+//			pConfig.storage_outdated=true;		// store change
+//			pConfig.write("BASE.TXT");
+//
+//		} else if(state%10==2){
+//			if(floor(state/10)==BMP(0,0,0,0,0,7,3)) { TFT.phase=TFT.phase-16; }
+//			else if(floor(state/10)==BMP(0,0,0,0,7,3,1)) {TFT.phase--;}
+//			else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {TFT.ref=TFT.ref-16;}
+//			else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {TFT.ref--;}
+//
+//			TFT.init(TFT.phase,TFT.ref);
+//			pConfig.storage_outdated=true;		// store change
+//			pConfig.write("BASE.TXT");
+//		};
+//
+//		int olc=0,orc=0;
+//		int ulc=0,urc=0;
+//		if(floor(state/10)==BMP(0,0,0,0,0,7,3))      {state=BMP(0,0,0,0,7,3,1); olc=1; orc=0; ulc=0; urc=0;}
+//		else if(floor(state/10)==BMP(0,0,0,0,7,3,1)) {state=BMP(0,0,0,7,3,1,1); olc=0; orc=1; ulc=0; urc=0;}
+//		else if(floor(state/10)==BMP(0,0,0,7,3,1,1)) {state=BMP(0,0,7,3,1,1,1); olc=0; orc=0; ulc=1; urc=0;}
+//		else if(floor(state/10)==BMP(0,0,7,3,1,1,1)) {state=BMP(0,7,3,1,1,1,1); olc=0; orc=0; ulc=0; urc=1;};
+//
+//		TFT.clear_screen();
+//		TFT.highlight_bar(0,8*1-1,128,17); // mit hintergrundfarbe nen kasten malen
+//		TFT.string(Speedo.default_font,("Choose phase"),4,1,15,0,0);
+//		sprintf(char_buffer,(" %02i "),int(floor(int(TFT.phase)/16)));
+//		TFT.string(Speedo.default_font,char_buffer,4,2,abs(olc-1)*15,olc*15,0);
+//		TFT.string(Speedo.default_font," // ",8,2,15,0,0);
+//		sprintf(char_buffer,(" %02i "),int(int(TFT.phase)%16));
+//		TFT.string(Speedo.default_font,char_buffer,12,2,abs(orc-1)*15,orc*15,0);
+//
+//		TFT.highlight_bar(0,8*5-1,128,17); // mit hintergrundfarbe nen kasten malen
+//		TFT.string(Speedo.default_font,("Choose ref V"),4,5,15,0,0);
+//		sprintf(char_buffer,(" %02i "),int(floor(int(TFT.ref)/16)));
+//		TFT.string(Speedo.default_font,char_buffer,4,6,abs(ulc-1)*15,ulc*15,0);
+//		TFT.string(Speedo.default_font," // ",8,6,15,0,0);
+//		sprintf(char_buffer,(" %02i "),int(int(TFT.ref)%16));
+//		TFT.string(Speedo.default_font,char_buffer,12,6,abs(urc-1)*15,urc*15,0);
 
 	}
 	////////// Setup of GPS Log Format
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,4)) { // 00074X
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,7,4)) { // 00074XX
-		set_value_dialog((int8_t*)&pLapTimer->use_realtime_not_calculated,("= GPS Format ="),("Readable"),("Compressed"));
+		set_value_dialog((int8_t*)&LapTimer.use_realtime_not_calculated,("= GPS Format ="),("Readable"),("Compressed"));
 	}
 	/////////// Sensor source  //////////
 	// this is our sneaky state in the middle, see if we have to store
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,5)) { // 00075X
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 	}
 	// now the "mode" selector
 	else if(floor(state/100)==BMP(0,0,0,0,0,7,5)) { // 000751X
-		set_value_dialog((int8_t*)&pSensors->sensor_source,("= Sensor source ="),("Analog Sensors"),("Auto detect"),("CAN Sensors"));
-		if(pSensors->sensor_source==SENSOR_AUTO || pSensors->sensor_source==SENSOR_FORCE_CAN){ // add "submenu"
+		set_value_dialog((int8_t*)&pSensors.sensor_source,("= Sensor source ="),("Analog Sensors"),("Auto detect"),("CAN Sensors"));
+		if(pSensors.sensor_source==SENSOR_AUTO || pSensors.sensor_source==SENSOR_FORCE_CAN){ // add "submenu"
 			TFT.string(Speedo.default_font,("\x7F to select type"),0,6);
 			set_buttons(button_links_valid,button_oben_valid,button_unten_valid,true);
 		}
@@ -1416,27 +1416,27 @@ void speedo_menu::display(){
 	// select type
 	else if(floor(state/100)==BMP(0,0,0,0,7,5,1)) { // 0007511X
 		int8_t temp=0;
-		if(pSensors->m_CAN->get_active_can_type()==CAN_TYPE_OBD2 || pSensors->m_CAN->get_active_can_type()==CAN_TYPE_TRIUMPH){
-			temp=pSensors->m_CAN->get_active_can_type()-1; // 0=none, 1=triuph, 2=OBD2 -> map it to 0=triumph, 1=OBD2
+		if(Sensors.mCAN.get_active_can_type()==CAN_TYPE_OBD2 || Sensors.mCAN.get_active_can_type()==CAN_TYPE_TRIUMPH){
+			temp=Sensors.mCAN.get_active_can_type()-1; // 0=none, 1=triuph, 2=OBD2 . map it to 0=triumph, 1=OBD2
 		}
 		set_value_dialog(&temp,("= CAN Bus Type ="),("Triumph"),("OBD2"));
-		if(temp+1!=pSensors->m_CAN->get_active_can_type()){
-			Serial.print("Set value to:");
+		if(temp+1!=Sensors.mCAN.get_active_can_type()){
+			Serial.puts(USART1,("Set value to:");
 			Serial.puts_ln(USART1,temp+1);
-			pSensors->m_CAN->set_active_can_type(temp+1);
+			Sensors.mCAN.set_active_can_type(temp+1);
 		}
 	}
 	/////////// bt reset state  //////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,6)) { // 00089X
 		set_buttons(button_state,button_state,button_state,!button_state); // sackgasse
 		if(state%10==9){
-			pSensors->m_reset->set_active(true,true); // set eeprom,set var
+			pSensors.m_reset.set_active(true,true); // set eeprom,set var
 		} else if(state%10==2){
-			pSensors->m_reset->set_deactive(true,true);  // set eeprom,set var
+			pSensors.m_reset.set_deactive(true,true);  // set eeprom,set var
 		};
 		state=BMP(0,0,0,0,7,6,1);
 		TFT.clear_screen();
-		if(pSensors->m_reset->reset_enabled){
+		if(pSensors.m_reset.reset_enabled){
 			strcpy(char_buffer,(" active"));
 		} else {
 			strcpy(char_buffer,("inactive"));
@@ -1449,29 +1449,29 @@ void speedo_menu::display(){
 
 		// show reason why last reset happend
 		TFT.string(Speedo.default_font,"Last was ",4,1,0,DISP_BRIGHTNESS,0);
-		if(pSensors->m_reset->last_reset==0 || pSensors->m_reset->last_reset==-1){
+		if(pSensors.m_reset.last_reset==0 || pSensors.m_reset.last_reset==-1){
 			TFT.string(Speedo.default_font,("power"),13,1,0,DISP_BRIGHTNESS,0);
-		} else if(pSensors->m_reset->last_reset==1){
+		} else if(pSensors.m_reset.last_reset==1){
 			TFT.string(Speedo.default_font,"avr",13,1,0,DISP_BRIGHTNESS,0);
-		} else if(pSensors->m_reset->last_reset==2){
+		} else if(pSensors.m_reset.last_reset==2){
 			TFT.string(Speedo.default_font,"bt",13,1,0,DISP_BRIGHTNESS,0);
 		}
 		// show reason why last reset happend
 	}
 	////////////////////////////////// water temp premenu //////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,7)) {
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 		////////////////////////////////// water temp setup //////////////////////////////////
 	} else if(floor(state/100)==BMP(0,0,0,0,0,7,7)) {
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		if(state%10==9){
-			pSensors->m_temperature->water_warning_temp+=10;
+			pSensors.m_temperature.water_warning_temp+=10;
 			state-=8;
-			pConfig->storage_outdated=true;
+			pConfig.storage_outdated=true;
 		} else if(state%10==2){
-			pSensors->m_temperature->water_warning_temp-=10;
+			pSensors.m_temperature.water_warning_temp-=10;
 			state--;
-			pConfig->storage_outdated=true;
+			pConfig.storage_outdated=true;
 		}
 		if(Speedo.disp_zeile_bak[2]!=88){
 			Speedo.disp_zeile_bak[2]=88;
@@ -1481,24 +1481,24 @@ void speedo_menu::display(){
 			TFT.string(Speedo.default_font,("warning level"),4,3);
 		}
 
-		sprintf_P(char_buffer,("%3i,%i{C"),int(floor(pSensors->m_temperature->water_warning_temp/10)),int(pSensors->m_temperature->water_warning_temp%10));
+		sprintf(char_buffer,("%3i,%i{C"),int(floor(pSensors.m_temperature.water_warning_temp/10)),int(pSensors.m_temperature.water_warning_temp%10));
 		center_me(char_buffer,21);
 		TFT.string(Speedo.default_font,char_buffer,0,5);
 	}
 	////////////////////////////////// water temp premenu //////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,8)) {
-		storage_update_guard(&state, old_state, pConfig->storage_outdated, &update_display); // remember to create a new value changing else if!
+		storage_update_guard(&state, old_state, pConfig.storage_outdated, &update_display); // remember to create a new value changing else if!
 		////////////////////////////////// oil temp setup //////////////////////////////////
 	} else if(floor(state/100)==BMP(0,0,0,0,0,7,8)) {
 		set_buttons(button_state,button_state,button_state,!button_state); // no right
 		if(state%10==9){
-			pSensors->m_temperature->oil_warning_temp+=10;
+			pSensors.m_temperature.oil_warning_temp+=10;
 			state-=8;
-			pConfig->storage_outdated=true;
+			pConfig.storage_outdated=true;
 		} else if(state%10==2){
-			pSensors->m_temperature->oil_warning_temp-=10;
+			pSensors.m_temperature.oil_warning_temp-=10;
 			state--;
-			pConfig->storage_outdated=true;
+			pConfig.storage_outdated=true;
 		}
 		if(Speedo.disp_zeile_bak[2]!=87){
 			Speedo.disp_zeile_bak[2]=87;
@@ -1508,14 +1508,14 @@ void speedo_menu::display(){
 			TFT.string(Speedo.default_font,("warning level"),4,3);
 		}
 
-		sprintf_P(char_buffer,("%3i,%i{C"),int(floor(pSensors->m_temperature->oil_warning_temp/10)),int(pSensors->m_temperature->oil_warning_temp%10));
+		sprintf(char_buffer,("%3i,%i{C"),int(floor(pSensors.m_temperature.oil_warning_temp/10)),int(pSensors.m_temperature.oil_warning_temp%10));
 		center_me(char_buffer,21);
 		TFT.string(Speedo.default_font,char_buffer,0,5);
 	}
 	////////////////////////////////// water temp premenu //////////////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,9)) {
 		set_buttons(button_state,!button_state,!button_state,button_state); // no right
-		pAktors->run_reset_on_ATm328(RESET_PREPARE);
+		pAktors.run_reset_on_ATm328(RESET_PREPARE);
 	}
 	/********************************************* End of Setup Menu *********************************************/
 
@@ -1540,30 +1540,30 @@ void speedo_menu::display(){
 		center_me(char_buffer,13);
 		TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
 		TFT.string(Speedo.default_font,char_buffer,4,0,DISP_BRIGHTNESS,0,0);
-		sprintf_P(char_buffer,("Avg:%10i km/h"),(int)round(pSpeedo->trip_dist[speicher]*3.6/pSpeedo->avg_timebase[speicher]));
+		sprintf(char_buffer,("Avg:%10i km/h"),(int)round(Speedo.trip_dist[speicher]*3.6/Speedo.avg_timebase[speicher]));
 		TFT.string(Speedo.default_font,char_buffer,0,2,0,DISP_BRIGHTNESS,0);
 
-		sprintf_P(char_buffer,("Time: %02i:%02i:%02i"),(int)round(pSpeedo->avg_timebase[speicher]/3600),(int)round((pSpeedo->avg_timebase[speicher]%3600)/60),(int)round(pSpeedo->avg_timebase[speicher]%60));
+		sprintf(char_buffer,("Time: %02i:%02i:%02i"),(int)round(Speedo.avg_timebase[speicher]/3600),(int)round((Speedo.avg_timebase[speicher]%3600)/60),(int)round(Speedo.avg_timebase[speicher]%60));
 		TFT.string(Speedo.default_font,char_buffer,0,3,0,DISP_BRIGHTNESS,0);
 
-		sprintf_P(char_buffer,("Trip:%6lu,%02i km"),(unsigned long)floor(pSpeedo->trip_dist[speicher]/1000),int(floor((pSpeedo->trip_dist[speicher]%1000)/10)));
+		sprintf(char_buffer,("Trip:%6lu,%02i km"),(unsigned long)floor(Speedo.trip_dist[speicher]/1000),int(floor((Speedo.trip_dist[speicher]%1000)/10)));
 		TFT.string(Speedo.default_font,char_buffer,0,4,0,DISP_BRIGHTNESS,0);
 
-		sprintf_P(char_buffer,("Max:%10i km/h"),(int)pSpeedo->max_speed[speicher]);
+		sprintf(char_buffer,("Max:%10i km/h"),(int)Speedo.max_speed[speicher]);
 		TFT.string(Speedo.default_font,char_buffer,0,5,0,DISP_BRIGHTNESS,0);
 	}
 	//////////////// quick jump //////////////
 	else if(floor(state/100)==BMP(0,0,0,0,0,0,8) && state%10==2){ // 8[X]2
-		state+=9; // macht aus 812 -> 821
-		// 892 -> 901
+		state+=9; // macht aus 812 . 821
+		// 892 . 901
 		if(state>BMP(0,0,0,0,0,0,8)*100)
 			state=BMP(0,0,0,0,8,1,1);
 		update_display=true; 	// m?ssen wir hier nicht display aufrufen?
 	}
 	else if(floor(state/100)==BMP(0,0,0,0,0,0,8) && state%10==9){ // 8[X]9
-		state-=18; // 949 -> 931
-		// 921 -> 929 -> 911
-		// 911 -> 919 -> 901
+		state-=18; // 949 . 931
+		// 921 . 929 . 911
+		// 911 . 919 . 901
 		if(state==BMP(0,0,0,0,8,0,1))
 			state=BMP(0,0,0,0,8,9,1);
 		update_display=true; // m?ssen wir hier nicht display aufrufen?
@@ -1573,7 +1573,7 @@ void speedo_menu::display(){
 		char temp[22];
 		strcpy(temp, (char*)pgm_read_word(&(menu_trip_setup[(int(floor(state/100))%10)-1])));
 		char storry[40];
-		sprintf_P(storry,("Sure to reset \"%s\" storage"),temp);
+		sprintf(storry,("Sure to reset \"%s\" storage"),temp);
 		TFT.show_storry(storry,strlen(storry),"Reset",6,DIALOG_NO_YES);
 	}
 	// prevent deleting total && board
@@ -1589,12 +1589,12 @@ void speedo_menu::display(){
 	////////////////// Tachostand leeren ////////////////////
 	else if(floor(state/10000)==BMP(0,0,0,0,0,0,8)){ // 0008[X]111, jetzt alles l?schen
 		set_buttons(!button_state,!button_state,!button_state,!button_state); // msg only
-		pSpeedo->max_speed[(int(floor(state/1000))%10)-1]=0;
-		pSpeedo->avg_timebase[(int(floor(state/1000))%10)-1]=0;
-		pSpeedo->trip_dist[(int(floor(state/1000))%10)-1]=0;
+		Speedo.max_speed[(int(floor(state/1000))%10)-1]=0;
+		Speedo.avg_timebase[(int(floor(state/1000))%10)-1]=0;
+		Speedo.trip_dist[(int(floor(state/1000))%10)-1]=0;
 		// prepare save
-		pConfig->storage_outdated=true;
-		pConfig->write("speedo.txt");
+		pConfig.storage_outdated=true;
+		pConfig.write("speedo.txt");
 
 		TFT.clear_screen();
 		// show the title
@@ -1621,10 +1621,10 @@ void speedo_menu::display(){
 		if(state%10==2 || state%10==9){ // 9[2/9]
 			if(state%10==9) {
 				fuel_added++;
-				state-=8; // 99 -> 91
+				state-=8; // 99 . 91
 			} else if(state%10==2) {
 				fuel_added--;
-				state-=1; // 92 -> 91
+				state-=1; // 92 . 91
 			};
 			if(fuel_added<1){
 				fuel_added=1;
@@ -1636,10 +1636,10 @@ void speedo_menu::display(){
 
 		TFT.clear_screen();
 		TFT.string(Speedo.default_font,("Added fuel amount:"),1,2,0,DISP_BRIGHTNESS,4);
-		sprintf_P(char_buffer,("%2i,%0i l"),(int)floor(fuel_added/10),(int)fuel_added%10);
+		sprintf(char_buffer,("%2i,%0i l"),(int)floor(fuel_added/10),(int)fuel_added%10);
 		TFT.string(Speedo.default_font,char_buffer,7,4,0,DISP_BRIGHTNESS,0);
-		if(pSpeedo->trip_dist[5]>0){
-			sprintf_P(char_buffer,("%2i,%0i l/100km"),(int)floor(fuel_added*10/(pSpeedo->trip_dist[5]/1000)),(int)(fuel_added*100/(pSpeedo->trip_dist[5]/1000))%10);
+		if(Speedo.trip_dist[5]>0){
+			sprintf(char_buffer,("%2i,%0i l/100km"),(int)floor(fuel_added*10/(Speedo.trip_dist[5]/1000)),(int)(fuel_added*100/(Speedo.trip_dist[5]/1000))%10);
 			TFT.string(Speedo.default_font,char_buffer,5,5,0,DISP_BRIGHTNESS,0);
 		}
 	}
@@ -1650,11 +1650,11 @@ void speedo_menu::display(){
 		TFT.clear_screen();
 		TFT.string(Speedo.default_font,("All Fuel"),7,6,0,DISP_BRIGHTNESS,0);
 		TFT.string(Speedo.default_font,("storeages reseted"),3,7,0,DISP_BRIGHTNESS,0);
-		pSpeedo->trip_dist[5]=0;
-		pSpeedo->avg_timebase[5]=0;
-		pSpeedo->max_speed[5]=0;
-		pConfig->storage_outdated=true;
-		pConfig->write("speedo.txt");
+		Speedo.trip_dist[5]=0;
+		Speedo.avg_timebase[5]=0;
+		Speedo.max_speed[5]=0;
+		pConfig.storage_outdated=true;
+		pConfig.write("speedo.txt");
 		_delay_ms(500);
 		state=BMP(0,0,0,0,0,1,1); // damit kann man durch rechts/links dr?cken wieder zum tacho springen
 		update_display=true;
@@ -1699,7 +1699,7 @@ void speedo_menu::back(){
 		button_links_valid=false;
 	};
 	just_marker_update=false;						// wasty, but to be sure that the whole screen is redrawn
-	update_display=true;					// set flag for the display() routine to re-enter the statemachine -> react on new state
+	update_display=true;					// set flag for the display() routine to re-enter the statemachine . react on new state
 };
 //// one step back in the menu ////////
 
@@ -1718,11 +1718,11 @@ void speedo_menu::draw(const char* const* menu, int entries){
 	}
 
 #ifdef MENU_DEBUG
-	Serial.print("Bin im menue, menu_marker:");
-	Serial.print(menu_marker);
-	Serial.print(", menu_ende:");
-	Serial.print(menu_ende);
-	Serial.print(", menu_start:");
+	Serial.puts(USART1,("Bin im menue, menu_marker:");
+	Serial.puts(USART1,(menu_marker);
+	Serial.puts(USART1,(", menu_ende:");
+	Serial.puts(USART1,(menu_ende);
+	Serial.puts(USART1,(", menu_start:");
 	Serial.puts_ln(USART1,menu_start);
 #endif
 	////////// Menu Caption /////////////
@@ -1830,7 +1830,7 @@ void speedo_menu::draw(const char* const* menu, int entries){
 bool speedo_menu::go_left(bool update_twice){
 	back();
 	button_time=Millis.get();
-	pDebug->loop();
+	Debug.loop();
 	return true;
 };
 
@@ -1838,12 +1838,12 @@ bool speedo_menu::go_right(bool update_twice){
 	// menu var umsetzen
 	old_state=state;
 	just_marker_update=false;
-	menu_start=0; // rechts -> leeres menu
+	menu_start=0; // rechts . leeres menu
 	menu_ende=menu_lines-1;
 	menu_marker=0;
 	state=(state*10)+1;
 	button_time=Millis.get();
-	pDebug->loop();
+	Debug.loop();
 	update_display=update_twice;
 	return true;
 };
@@ -1865,13 +1865,13 @@ bool speedo_menu::go_up(bool update_twice){
 	}
 
 	//recalc level
-	// z.b. 00061 -> 00060 => 60%10=0 -> soll 69
+	// z.b. 00061 . 00060 => 60%10=0 . soll 69
 	state--;
 	if(state%10==0){
 		state+=menu_max+1; // macht aus 0 dann 9 => 8+1
 	};
 	button_time=Millis.get();
-	pDebug->loop();
+	Debug.loop();
 	update_display=update_twice;
 	return true;
 };
@@ -1895,12 +1895,12 @@ bool speedo_menu::go_down(bool update_twice){
 	//recalc level
 	state++;
 	// wenn wir bei xxx9 sind und ++ machen landen wir bei xx10
-	// xx10%10 == 0, -> xx01
+	// xx10%10 == 0, . xx01
 	if(state%10==0){
 		state-=9; // macht aus [xx10] => 1
 	};
 	button_time=Millis.get();
-	pDebug->loop();
+	Debug.loop();
 	update_display=update_twice;
 	return true;
 };
@@ -1918,11 +1918,11 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	}
 
 	if(bt_keys_en){	// set to false if you need the serial interface
-		if(Serial.available()>100){ // wenns zuviele sind flushen
+		if(Serial.available(USART1)>100){ // wenns zuviele sind flushen
 			Serial.flush();
-		} else if(Serial.available()>0){ // an sonsten gern
-			if(Serial.read()==MESSAGE_START){
-				pFilemanager_v2->parse_command();
+		} else if(Serial.available(USART1)>0){ // an sonsten gern
+			if(Serial.read(USART1)==MESSAGE_START){
+				pFilemanager_v2.parse_command();
 			};
 		};
 	};
@@ -1948,7 +1948,7 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	 *  2. the shorter delay is passed (Millis.get()>(menu_button_fast_timeout+button_time)) (0.1sec)
 	 */
 
-	if((hw_keys_en || button_first_push!=0) && pSpeedo->startup_by_ignition){		// hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedr?ckt ist
+	if((hw_keys_en || button_first_push!=0) && Speedo.startup_by_ignition){		// hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedr?ckt ist
 		if((Millis.get()>(button_time+menu_button_timeout)) ||
 				((button_first_push>0 && Millis.get()>(button_first_push+menu_button_fast_delay)) && Millis.get()>(menu_button_fast_timeout+button_time)) ){ // halbe sek timeout
 			//////////////////////// rechts ist gedr?ckt ////////////////////////
@@ -2039,9 +2039,9 @@ bool speedo_menu::button_test(bool bt_keys_en, bool hw_keys_en){
 
 // h?sslich hier den interrupt eingef?gt ..
 ISR(PCINT1_vect ){
-	//	Serial.print("interrupt @");
+	//	Serial.puts(USART1,("interrupt @");
 	//	Serial.puts_ln(USART1,Millis.get());
-	pMenu->button_test(false,true);
+	pMenu.button_test(false,true);
 };
 
 
@@ -2054,7 +2054,7 @@ void speedo_menu::init(){
 	PCICR |=(1<<PCIE1);																						// PCINT Activieren
 
 	// see if its a clock startup or a regular startup
-	if(pSpeedo->startup_by_ignition){
+	if(Speedo.startup_by_ignition){
 		state=BMP(0,0,0,0,0,1,1);
 	} else {
 		state=BMP(0,0,0,0,2,9,1); // clock mode
@@ -2117,7 +2117,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			state_helper=0;
 			if(just_one_line_mode) state_helper=1;
 			// prevent dimmer from killing our displayed color
-			pAktors->set_active_dimmer(false);
+			pAktors.set_active_dimmer(false);
 			// andernfalls wollen wir gerade vom Einstellungsmen? ins Hauptmen?
 			// wir sind nach links, jetzt m?ssen wir checken: sind wir das weil wir zur?ck aus dem Men? wollten, oder
 			// wollten wir nur ein Feld weiter nach links. Die Felder sind numeriert in "state_helper"
@@ -2129,17 +2129,17 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 				Speedo.disp_zeile_bak[0]=999;
 				// save it, if you want it
 				if(set_led_mode!=99){
-					pAktors->led_mode=set_led_mode;
+					pAktors.led_mode=set_led_mode;
 				}
 				// refresh LED color
-				pAktors->set_active_dimmer(true);
-				pAktors->update_outer_leds(true,true);
+				pAktors.set_active_dimmer(true);
+				pAktors.update_outer_leds(true,true);
 
 				// store to SD
-				pConfig->storage_outdated=true; //?
-				if(pConfig->storage_outdated){
+				pConfig.storage_outdated=true; //?
+				if(pConfig.storage_outdated){
 					TFT.clear_screen();
-					if(pConfig->write("BASE.TXT")==0){
+					if(pConfig.write("BASE.TXT")==0){
 						TFT.string(Speedo.default_font,("Saved"),7,4);
 						_delay_ms(500);
 					} else {
@@ -2164,22 +2164,22 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 		// show actual selected color "on screen"
 		int r,g,b;
 		if(state_helper<4){
-			r=led_from->r;
-			g=led_from->g;
-			b=led_from->b;
+			r=led_from.r;
+			g=led_from.g;
+			b=led_from.b;
 		} else {
-			r=led_to->r;
-			g=led_to->g;
-			b=led_to->b;
+			r=led_to.r;
+			g=led_to.g;
+			b=led_to.b;
 		}
 
 		// show selected color immidiently on screen, stop any dimming process
-		pAktors->stop_dimmer();
-		pAktors->set_rgb_out(r,g,b);
+		pAktors.stop_dimmer();
+		pAktors.set_rgb_out(r,g,b);
 
 		// neue werte
 		if(state%10==2){ // unten
-			pConfig->storage_outdated=true;
+			pConfig.storage_outdated=true;
 			state-=1; // zur?ck
 
 			if(state_helper==0){			*min-=5;		if(*min<0){*min=0;};
@@ -2194,16 +2194,16 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 
 			// save the new value to var
 			if(state_helper<4){
-				led_from->r=r;
-				led_from->g=g;
-				led_from->b=b;
+				led_from.r=r;
+				led_from.g=g;
+				led_from.b=b;
 			} else {
-				led_to->r=r;
-				led_to->g=g;
-				led_to->b=b;
+				led_to.r=r;
+				led_to.g=g;
+				led_to.b=b;
 			}
 		} else if(state%10==9){ // oben
-			pConfig->storage_outdated=true;
+			pConfig.storage_outdated=true;
 			state-=8; // zur?ck
 
 			if(state_helper==0){			*min+=5;	if(*min>upper_limit){*min=upper_limit;};
@@ -2218,13 +2218,13 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 
 			// save the new value to var
 			if(state_helper<4){
-				led_from->r=r;
-				led_from->g=g;
-				led_from->b=b;
+				led_from.r=r;
+				led_from.g=g;
+				led_from.b=b;
 			} else {
-				led_to->r=r;
-				led_to->g=g;
-				led_to->b=b;
+				led_to.r=r;
+				led_to.g=g;
+				led_to.b=b;
 			}
 		}
 
@@ -2275,7 +2275,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 		}
 
 		//// min r ///////
-		sprintf(temp,"%3i",int((led_from->r%1000)/2.55)); // to scale from 0..255 to 0..100
+		sprintf(temp,"%3i",int((led_from.r%1000)/2.55)); // to scale from 0..255 to 0..100
 		if(state_helper==1){
 			back = 0;
 			front = 15;
@@ -2287,7 +2287,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 		else { 						TFT.string(Speedo.default_font,temp,1,4,back,front,0); }
 
 		//// min g ///////
-		sprintf(temp,"%3i",int((led_from->g%1000)/2.55)); // to scale from 0..255 to 0..100
+		sprintf(temp,"%3i",int((led_from.g%1000)/2.55)); // to scale from 0..255 to 0..100
 		if(state_helper==2){
 			back = 0;
 			front = 15;
@@ -2299,7 +2299,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 		else {	 					TFT.string(Speedo.default_font,temp,8,4,back,front,0);  }
 
 		//// min b ///////
-		sprintf(temp,"%3i",int((led_from->b%1000)/2.55)); // to scale from 0..255 to 0..100
+		sprintf(temp,"%3i",int((led_from.b%1000)/2.55)); // to scale from 0..255 to 0..100
 		if(state_helper==3){
 			back = 0;
 			front = 15;
@@ -2323,7 +2323,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			TFT.string(Speedo.default_font,temp,1,7,back,front,0);
 
 			//// max r ///////
-			sprintf(temp,"%3i",int((led_to->r%1000)/2.55)); // to scale from 0..255 to 0..100
+			sprintf(temp,"%3i",int((led_to.r%1000)/2.55)); // to scale from 0..255 to 0..100
 			if(state_helper==5){
 				back = 0;
 				front = 15;
@@ -2334,7 +2334,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			TFT.string(Speedo.default_font,temp,6,7,back,front,0);
 
 			//// max g ///////
-			sprintf(temp,"%3i",int((led_to->g%1000)/2.55)); // to scale from 0..255 to 0..100
+			sprintf(temp,"%3i",int((led_to.g%1000)/2.55)); // to scale from 0..255 to 0..100
 			if(state_helper==6){
 				back = 0;
 				front = 15;
@@ -2345,7 +2345,7 @@ void speedo_menu::color_select_menu(unsigned long base_state,led_simple *led_fro
 			TFT.string(Speedo.default_font,temp,12,7,back,front,0);
 
 			//// max b ///////
-			sprintf(temp,"%3i",int((led_to->b%1000)/2.55)); // to scale from 0..255 to 0..100
+			sprintf(temp,"%3i",int((led_to.b%1000)/2.55)); // to scale from 0..255 to 0..100
 			if(state_helper==7){
 				back = 0;
 				front = 15;
@@ -2377,7 +2377,7 @@ void speedo_menu::copy_storagename_to_chararray(int id,char* array){
  * class and show the user that his values are now saved on the SD card (or show an error)
  ********************************** storage_update_guard **********************************/
 void speedo_menu::storage_update_guard(unsigned long* state, unsigned long old_state,bool storage_outdated, bool* updated_display){
-	if(old_state*10+1==*state){ // coming from menu -> shift us
+	if(old_state*10+1==*state){ // coming from menu . shift us
 		*state=(*state)*10+1;
 	} else { // coming from selection, store value?
 		back();
@@ -2388,14 +2388,14 @@ void speedo_menu::storage_update_guard(unsigned long* state, unsigned long old_s
 			strcpy(char_buffer,("Save to SD card"));
 			center_me(char_buffer,21);
 			TFT.string(Speedo.default_font,char_buffer,0,5);
-			bool remember_CAN_state=pSensors->CAN_active;
-			pSensors->CAN_active=false;
-			if(pConfig->write("BASE.TXT")==0){
+			bool remember_CAN_state=Sensors.CAN_active;
+			Sensors.CAN_active=false;
+			if(pConfig.write("BASE.TXT")==0){
 				strcpy(char_buffer,("OK"));
 			} else {
 				strcpy(char_buffer,("FAILED !!"));
 			}
-			pSensors->CAN_active=remember_CAN_state;
+			Sensors.CAN_active=remember_CAN_state;
 			center_me(char_buffer,21);
 			TFT.string(Speedo.default_font,char_buffer,0,6);
 
@@ -2447,10 +2447,10 @@ void speedo_menu::set_value_dialog(int8_t* value,const char* title,const char* o
 	// handle button press
 	if(state%10==9){ // "up" key
 		*value=*value-1; // from true to false, or simply --
-		pConfig->storage_outdated=true;
+		pConfig.storage_outdated=true;
 	} else if(state%10==2){ // "down" key
 		*value=*value+1; // from false to true, or simply ++
-		pConfig->storage_outdated=true;
+		pConfig.storage_outdated=true;
 	};
 	if(*value<0){
 		*value=0;

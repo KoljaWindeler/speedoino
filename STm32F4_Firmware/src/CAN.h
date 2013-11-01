@@ -60,10 +60,10 @@ typedef struct
 	} flags;
 } can_filter_t;
 
-class Speedo_CAN{
+class CAN{
 public:
-	Speedo_CAN(void);
-	~Speedo_CAN();
+	CAN(void);
+	~CAN();
 	void init();
 	int check_vars();
 	int get_air_temp();
@@ -123,6 +123,5 @@ private:
 	bool can_mil_active;
 	unsigned char can_bus_type;
 };
-extern Speedo_CAN* pCAN;
 
 #endif /* CAN_H_ */

@@ -17,7 +17,7 @@
 
 #include "global.h"
 
-speedo_speed::speedo_speed(){
+Speed::Speed(){
 	last_time=Millis.get();
 	reed_speed=0;
 	speed_peaks=1; // avoid speed at startup
@@ -27,16 +27,16 @@ speedo_speed::speedo_speed(){
 	flat_value_calibrate_umfang=2.00;
 
 	// erstmal alle zwischenspeicher loeschen
-	for(unsigned int i=0; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
-		pSpeedo->trip_dist[i]=0;
-		pSpeedo->avg_timebase[i]=0;
-		pSpeedo->max_speed[i]=-99;
+	for(unsigned int i=0; i<sizeof(Speedo.max_speed)/sizeof(Speedo.max_speed[0]); i++){
+		Speedo.trip_dist[i]=0;
+		Speedo.avg_timebase[i]=0;
+		Speedo.max_speed[i]=-99;
 	};
 };
-speedo_speed::~speedo_speed(){
+Speed::~Speed(){
 };
 
-void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==HIGH){ // außen drum herum
+void Speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==HIGH){ // außen drum herum
 	unsigned long jetzt=Millis.get();
 	unsigned long differ=jetzt-last_time;
 	status=SPEED_REED_OK;
@@ -64,32 +64,32 @@ void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==
 		speed_peaks++;
 		prevent_double_count=jetzt; // wir bekommen immer 2 peaks zur gleichen Millis.get(), daher diese prevent_double_count
 	};
-	pSensors->m_gps->set_drive_status(0,0,10,'A'); // tell gps that we are aware of the moving, reset motion_start
+	Sensors.mGPS.set_drive_status(0,0,10,'A'); // tell gps that we are aware of the moving, reset motion_start
 };
 
 
-ISR(INT5_vect){
-	pSensors->m_speed->calc();
-} // der eingentliche
+//ISR(INT5_vect){
+//	calc();
+//} // der eingentliche
 
-void speedo_speed::init (){
-	//DDRE  &=~(1<<SPEED_PIN); // interrupt 5 eingang
-	last_time=Millis.get(); //prevent calculation of rpm
-	EIMSK |= (1<<INT5); // Enable Interrupt
-	EICRB |= (1<<ISC50) | (1<<ISC51); // rising edge on INT5
-	speed_peaks=0; // clear
-
-	status=SPEED_REED_OK; // alles gut
+void Speed::init (){
+//	//DDRE  &=~(1<<SPEED_PIN); // interrupt 5 eingang
+//	last_time=Millis.get(); //prevent calculation of rpm
+//	EIMSK |= (1<<INT5); // Enable Interrupt
+//	EICRB |= (1<<ISC50) | (1<<ISC51); // rising edge on INT5
+//	speed_peaks=0; // clear
+//
+//	status=SPEED_REED_OK; // alles gut
 	Serial.puts_ln(USART1,("Speed init done"));
 };
 
-void speedo_speed::shutdown(){
-	EIMSK &= ~(1<<INT5); // DISABLE Interrupt
-	EICRB &= ~((1<<ISC50) | (1<<ISC51)); // no edge on INT5
+void Speed::shutdown(){
+//	EIMSK &= ~(1<<INT5); // DISABLE Interrupt
+//	EICRB &= ~((1<<ISC50) | (1<<ISC51)); // no edge on INT5
 }
 
 
-int speedo_speed::check_vars(){
+int Speed::check_vars(){
 	/********** check values ********************
 	 * zumindest in den trip, max und avg nachsehen ob werte
 	 * drinstehen. Falls die sd karte nicht gelesen werden konnte
@@ -99,13 +99,13 @@ int speedo_speed::check_vars(){
 	 ********** check values ********************/
 
 	int nulls=0;
-	for(unsigned int i=2; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
-		if(pSpeedo->max_speed[i]==-99){
+	for(unsigned int i=2; i<sizeof(Speedo.max_speed)/sizeof(Speedo.max_speed[0]); i++){
+		if(Speedo.max_speed[i]==-99){
 			nulls++;
 		}
 	};
 
-	if((nulls == (sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]))-2) || reifen_umfang==0){
+	if((nulls == (sizeof(Speedo.max_speed)/sizeof(Speedo.max_speed[0]))-2) || reifen_umfang==0){
 		reifen_umfang=1.99; // Reifenumfang in metern
 		gps_takeover=120; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
 		Serial.puts(USART1,("speedo failed"));
@@ -115,8 +115,8 @@ int speedo_speed::check_vars(){
 	return 0;
 };
 
-int speedo_speed::getSpeed(){
-	if(GPS_SPEED_ONLY) { return pSensors->m_gps->speed; };
+int Speed::getSpeed(){
+	if(GPS_SPEED_ONLY) { return Sensors.mGPS.speed; };
 
 	unsigned long jetzt=Millis.get();
 	unsigned long differ=jetzt-last_time; // last_time <= is set by ISR
@@ -134,17 +134,17 @@ int speedo_speed::getSpeed(){
 
 	if(differ<1000){
 		if(	reed_speed > gps_takeover &&
-			signed(pSensors->m_gps->speed) > gps_takeover &&
-			pSensors->m_gps->valid<=2 &&
-			abs(reed_speed-pSensors->m_gps->speed)<unsigned((reed_speed>>3))
+			signed(Sensors.mGPS.speed) > gps_takeover &&
+			Sensors.mGPS.valid<=2 &&
+			abs(reed_speed-Sensors.mGPS.speed)<unsigned((reed_speed>>3))
 					){ // gps valid innerhalb der letzten 3 sek und über 80 kmh, das 1sek rumdümpeln raus
-			return pSensors->m_gps->speed;
+			return Sensors.mGPS.speed;
 		} else {
 			return reed_speed;
 		};
-	} else if(pSensors->m_gps->get_drive_status()) { // wir haben lange nichts mehr vom reed gehört, gps sagt wir fahren
+	} else if(Sensors.mGPS.get_drive_status()) { // wir haben lange nichts mehr vom reed gehört, gps sagt wir fahren
 		status=SPEED_REED_ERROR;
-		return pSensors->m_gps->speed;
+		return Sensors.mGPS.speed;
 	} else {
 		status=SPEED_REED_OK; //assuming reed is okay because get_drive_status is false
 		reed_speed=0;
@@ -153,48 +153,48 @@ int speedo_speed::getSpeed(){
 	return -1;
 };
 
-int speedo_speed::get_sat_speed(){
-	if(pSensors->m_gps->get_info(6)<3){
+int Speed::get_sat_speed(){
+	if(Sensors.mGPS.get_info(6)<3){
 		return -1;
 	}
-	return pSensors->m_gps->get_info(5);
+	return Sensors.mGPS.get_info(5);
 }
 
 // für die gang berechnung ist der speed am magnet geiler als der vom gps weil beim beschleunigen sonst fehler kommen
-int speedo_speed::get_mag_speed(){
+int Speed::get_mag_speed(){
 	return reed_speed;
 };
 
-void speedo_speed::check_umfang(){
+void Speed::check_umfang(){
 	int gps_speed=get_sat_speed();
-	int mag_speed=pSensors->get_speed(true);
-	if(pSensors->m_gps->get_info(6)<3 && pSpeedo->disp_zeile_bak[0]!=2){
-		pSpeedo->disp_zeile_bak[0]=2;
-		pOLED->highlight_bar(0,0,128,8);
-		pOLED->string_P(pSpeedo->default_font,PSTR("No GPS!"),5,0,15,0,0);
+	int mag_speed=Sensors.get_speed(true);
+	if(Sensors.mGPS.get_info(6)<3 && Speedo.disp_zeile_bak[0]!=2){
+		Speedo.disp_zeile_bak[0]=2;
+		TFT.highlight_bar(0,0,128,8);
+		TFT.string(Speedo.default_font,("No GPS!"),5,0,15,0,0);
 		flat_counter_calibrate_umfang=0;
-	} else if(gps_speed<round(pSensors->m_speed->gps_takeover/0.6) && pSpeedo->disp_zeile_bak[0]!=1 && pSensors->m_gps->get_info(6)>=2){
-		pSpeedo->disp_zeile_bak[0]=1;
-		pOLED->highlight_bar(0,0,128,8);
-		pOLED->string_P(pSpeedo->default_font,PSTR("Speed up!"),5,0,15,0,0);
+	} else if(gps_speed<round(gps_takeover/0.6) && Speedo.disp_zeile_bak[0]!=1 && Sensors.mGPS.get_info(6)>=2){
+		Speedo.disp_zeile_bak[0]=1;
+		TFT.highlight_bar(0,0,128,8);
+		TFT.string(Speedo.default_font,("Speed up!"),5,0,15,0,0);
 		flat_counter_calibrate_umfang=0;
-	} else if(gps_speed>pSensors->m_speed->gps_takeover && pSpeedo->disp_zeile_bak[0]==1){
-		pOLED->filled_rect(0,0,128,8,0);
-		pSpeedo->disp_zeile_bak[0]=0;
+	} else if(gps_speed>gps_takeover && Speedo.disp_zeile_bak[0]==1){
+		TFT.filled_rect(0,0,128,8,0);
+		Speedo.disp_zeile_bak[0]=0;
 	}
 
-	if(gps_speed!=pSpeedo->disp_zeile_bak[1]){
-		pSpeedo->disp_zeile_bak[1]=gps_speed;
+	if(gps_speed!=Speedo.disp_zeile_bak[1]){
+		Speedo.disp_zeile_bak[1]=gps_speed;
 		char speed_a[13];
 		sprintf(speed_a,"GPS %3i km/h",gps_speed);
-		pOLED->string(pSpeedo->default_font,speed_a,5,2);
+		TFT.string(Speedo.default_font,speed_a,5,2);
 	}
 
-	if(mag_speed!=pSpeedo->disp_zeile_bak[2]){
-		pSpeedo->disp_zeile_bak[2]=mag_speed;
+	if(mag_speed!=Speedo.disp_zeile_bak[2]){
+		Speedo.disp_zeile_bak[2]=mag_speed;
 		char speed_a[13];
 		sprintf(speed_a,"MAG %3i km/h",mag_speed);
-		pOLED->string(pSpeedo->default_font,speed_a,5,3);
+		TFT.string(Speedo.default_font,speed_a,5,3);
 	}
 
 	//gps_geschwindigkeit/realer_reifenumfang = mag_speed/aktueller_umfang
@@ -202,20 +202,20 @@ void speedo_speed::check_umfang(){
 	// (196km/h) / (196cm/tick) = (98km/h) / (98cm/tick)
 	// also gps / ( mag / aktuell ) = realer umfang = gps * aktuell / mag
 	_delay_ms(150);
-	int new_length=(int)((unsigned long)(gps_speed*(int(pSensors->m_speed->reifen_umfang*100))/mag_speed));
-	flat_value_calibrate_umfang=pSensors->flatIt(new_length,&flat_counter_calibrate_umfang,64,flat_value_calibrate_umfang);
+	int new_length=(int)((unsigned long)(gps_speed*(int(reifen_umfang*100))/mag_speed));
+	flat_value_calibrate_umfang=Sensors.flatIt(new_length,&flat_counter_calibrate_umfang,64,flat_value_calibrate_umfang);
 
-	if(flat_value_calibrate_umfang!=pSpeedo->disp_zeile_bak[3]){
-		pSpeedo->disp_zeile_bak[2]=flat_value_calibrate_umfang;
+	if(flat_value_calibrate_umfang!=Speedo.disp_zeile_bak[3]){
+		Speedo.disp_zeile_bak[2]=flat_value_calibrate_umfang;
 		char speed_a[13];
 		sprintf(speed_a,"outline now %3i cm",int(round(flat_value_calibrate_umfang)));
-		pOLED->string(pSpeedo->default_font,speed_a,1,6);
+		TFT.string(Speedo.default_font,speed_a,1,6);
 	}
 
-	if(int(pSensors->m_speed->reifen_umfang*100)!=pSpeedo->disp_zeile_bak[4]){
-		pSpeedo->disp_zeile_bak[4]=int(pSensors->m_speed->reifen_umfang*100);
+	if(int(reifen_umfang*100)!=Speedo.disp_zeile_bak[4]){
+		Speedo.disp_zeile_bak[4]=int(reifen_umfang*100);
 		char speed_a[13];
-		sprintf(speed_a,"from file   %3i cm",int(pSensors->m_speed->reifen_umfang*100));
-		pOLED->string(pSpeedo->default_font,speed_a,1,7);
+		sprintf(speed_a,"from file   %3i cm",int(reifen_umfang*100));
+		TFT.string(Speedo.default_font,speed_a,1,7);
 	}
 }

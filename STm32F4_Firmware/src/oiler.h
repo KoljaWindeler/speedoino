@@ -8,15 +8,15 @@
 #ifndef OILER_H_
 #define OILER_H_
 
-class speedo_oiler{
+class oiler{
 
 #define OILER_PIN PL1
 #define OILER_PORT PORTL
 #define OILER_DIRC DDRL
 
 public:
-	speedo_oiler();
-	~speedo_oiler();
+	oiler();
+	~oiler();
 	void init();
 	void clear_vars();
 	bool check_vars();

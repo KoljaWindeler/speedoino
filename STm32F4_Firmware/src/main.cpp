@@ -13,9 +13,9 @@ speedo  		Speedo;
 //configuration	Config;
 //menu         	Menu;        // pins aktivieren, sonst nix
 
-//sprint      	Sprint;
+sprint      	Sprint;
 //aktors      	Aktors;
-//LapTimer  		LapTimer;
+LapTime  		LapTimer;
 //speedcams   	SpeedCams;
 #ifdef DEMO_MODE
 speedo_demo Demo;
@@ -133,9 +133,108 @@ int main(void) {
 		TFT.DrawUniLine(x_from,y_from,x_to,y_to);
 	}
 
+	while(1);
 
-	while (1) {
-		_delay_ms(1000);
+	/******************** setup procedure ********************************************
+	 * all initialisations must been made before the main loop, before THIS
+	 ******************** setup procedure ********************************************/
+	unsigned long   previousMillis = 0;
+#ifdef LOAD_CALC
+	unsigned long load_calc=0;
+	unsigned long lasttime_calc=0;
+#endif
 
-	}
+	for (;;) {
+		Sensors.mCAN.check_message();
+		//////////////////////////////////////////////////
+		//		Sensors.m_reset->set_deactive(false,false);
+		//		Serial3.end();
+		//		Serial3.begin(115200);
+		//		while(true){
+		//			while(Serial3.available()>0){
+		//				Serial.print(Serial3.read(),BYTE);
+		//			}
+		//			while(Serial.available()>0){
+		//				Serial3.print(Serial.read(),BYTE);
+		//			}
+		//		}
+		//////////////////////////////////////////////////
+
+		Sensors.mReset.toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog<
+		Debug.speedo_loop(21,1,0," "); 	// intensive debug= EVERY loop access reports the Menustate
+		Sensors.mGPS.check_flag();    	// check if a GPS sentence is ready
+		pAktors.check_flag(); 				// updated expander
+		Sensors.pull_values();			// very important, updates all the sensor values
+
+		/************************* timer *********************/
+		Timer.every_sec();		// 1000 ms
+		Timer.every_qsec();			// 250  ms
+		Timer.every_custom();  		// one custom timer, redrawing the speedo, time is defined by "refresh_cycle" in the base.txt
+		/************************* push buttons *********************
+		 * using true as argument, this will activate bluetooth input as well
+		 ************************* push buttons*********************/
+		Menu.button_test(true,false);     // important!! if we have a pushed button we will draw something, depending on the menustate
+		/************************ every deamon activity is clear, now draw speedo ********************
+		 * we are round about 0000[1]1 - 0000[1]9
+		 ************************ every deamon activity is clear, now draw speedo ********************/
+		Sensors.mCAN.check_message();
+
+		if((Menu.state/10)==1 || Menu.state==7311111)  {
+			Speedo.loop(previousMillis);
+		}
+		//////////////////// Sprint Speedo ///////////////////
+		else if( Menu.state==MENU_SPRINT*10+1 ) {
+			Sprint.loop();
+		}
+		////////////////// Clock Mode ////////////////////////
+		else if(Menu.state==291){
+			Sensors.mClock.loop();
+		}
+		////////////////// Speed Cam Check - Mode ////////////////////////
+		else if(Menu.state==BMP(0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_SPEEDCAM_STATUS,1)){
+//			SpeedCams.calc();
+//			SpeedCams.interface();
+		}
+		////////////////// race mode ////////////////////
+		else if(Menu.state==M_LAP_T*100+11){
+			LapTimer.waiting_on_speed_up();
+		}
+		else if(Menu.state==M_LAP_T*1000+111){
+			LapTimer.race_loop();
+		}
+		////////////////// set gps point ////////////////////
+		else if(Menu.state==M_LAP_T*10000L+3111){
+			LapTimer.gps_capture_loop();
+		}
+		//////////////////// voltage mode ///////////////////
+		else if(Menu.state==531){
+			Sensors.addinfo_show_loop();
+		}
+		//////////////////// stepper mode ///////////////////
+		else if(Menu.state==541){
+//			Aktors.mStepper.loop();
+		}
+		//////////////////// gps scan ///////////////////
+		else if(Menu.state==511){
+			Sensors.mGPS.loop();
+		}
+		//////////////////// outline scan ///////////////////
+		else if(Menu.state==721){
+			Sensors.mSpeed.check_umfang();
+		}
+		////////////////// gear scan ///////////////
+		else if(floor(Menu.state/100)==71){
+			Sensors.mGear.calibrate();
+		}
+
+#ifdef LOAD_CALC
+		load_calc++;
+		if(millis()-lasttime_calc>1000){
+			Serial.print(load_calc);
+			Serial.println(" cps"); // 182 w/o interrupts, 175 w/ interrupts, 172 w/ much interrupts
+			load_calc=0;
+			lasttime_calc=millis();
+		}
+#endif
+	} // end for
 }

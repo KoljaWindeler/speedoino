@@ -100,7 +100,7 @@ public:
 	int set_rbg_active(int status, bool now);
 	void rgb_action(int needle_pos);
 //	speedo_stepper m_stepper;
-//	speedo_oiler m_oiler;
+//	oiler mOiler;
 	led RGB;
 	led_simple dz_flasher,oil_start_color,oil_end_color,water_start_color,water_end_color,kmh_start_color,kmh_end_color,dz_start_color,dz_end_color,static_color;
 	int8_t led_mode,pointer_highlight_mode;

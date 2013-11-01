@@ -16,7 +16,7 @@
  */
 #include "global.h"
 
-speedo_gear::speedo_gear(){
+gear::gear(){
 	faktor_counter=0;
 	faktor_flat=0;
 	last_time_executed=0;
@@ -28,16 +28,16 @@ speedo_gear::speedo_gear(){
 	};
 };
 
-speedo_gear::~speedo_gear(){
+gear::~gear(){
 };
 
-void speedo_gear::init(){
-	KUPPLUNGS_DIRC&=~(1<<KUPPLUNGS_PIN); //ensure that its defined as input, pinMode(kupplungs_pin,INPUT);
-	KUPPLUNGS_PORT|=1<<KUPPLUNGS_PIN;// digitalWrite(kupplungs_pin,HIGH); // input mit pull up
+void gear::init(){ // TODO TODO
+//	KUPPLUNGS_DIRC&=~(1<<KUPPLUNGS_PIN); //ensure that its defined as input, pinMode(kupplungs_pin,INPUT);
+//	KUPPLUNGS_PORT|=1<<KUPPLUNGS_PIN;// digitalWrite(kupplungs_pin,HIGH); // input mit pull up
 	last_time_executed=Millis.get();
 }
 
-int speedo_gear::check_vars(){
+int gear::check_vars(){
 	if(n_gang[1]+n_gang[2]==0){
 		// gaenge einlesen
 		int temp[7]={160,120,90,73,60,53,45};
@@ -53,44 +53,44 @@ int speedo_gear::check_vars(){
 
 
 /* prozedure wird alle 250 ms aufgerufen und ermittelt den gang, packt ihn in ein tiefpass und stellt das ergebniss zur verfügung */
-void speedo_gear::calc(){
+void gear::calc(){
 	if(Millis.get()-last_time_executed>250){
 		last_time_executed=Millis.get();
 
 		// faktor berechnen
-		if(Sensors.get_speed(true)>0){ // ich fahre also mit min 4 km/h .. dadurch wird der faktor max 15000/4=3500 .. das mal 16 ist noch im INT bereich
-			if(!digitalRead(kupplungs_pin) && faktor_counter!=0){//Kupplung gezogen, einmalig laut geben was seit dem letzten mal so an min und max und flat ausgekommen ist
-				faktor_counter=0; // damit nach dem kuppeln die alten werte verworfen werden
-			} else if(digitalRead(kupplungs_pin)) { // Kupplung nicht gezogen, also gang berechnen
-				int faktor=Sensors.get_RPM(RPM_TYPE_DIRECT)/Sensors.get_speed(true); // wie ist denn wohl der faktor
-				// changed from 8 to 4, to reduce delay while calculation //1.8.2012
-				faktor_flat=Sensors.flatIt(faktor*10,&faktor_counter,4,faktor_flat); // mal sehen ob man so eine art tiefpass faktor sinnvoll nutzen kann
-
-
-				//n_gang[1]=1350 // übersetzung gang 1
-				//n_gang[2]=900  // übersetzung gang 2
-				//n_gang[3]=725  // übersetzung gang 3
-				//n_gang[4]=600  // übersetzung gang 4
-				//n_gang[5]=518  // übersetzung gang 5
-				//n_gang[6]=442  // übersetzung gang 6
-
-				if(faktor_flat>=n_gang[6]*0.9 && faktor_flat<=n_gang[1]*1.3){ // 1755 - 397
-					unsigned int abstand=n_gang[1]; // 1350
-					for(int a=1; a<=6; a++){
-						if( abs(faktor_flat-n_gang[a]) < abstand ){
-							abstand=abs(faktor_flat-n_gang[a]);
-							gang=a;
-						}
-					}
-				};
-			}
-		} else { // wenn ich gar nicht fahre ..
-			gang=-1;  // hier 0 einsetzen für "N" bei 0 km/h oder -1 für keine Ausgabe bei 0 km/h
-		};
+//		if(Sensors.get_speed(true)>0){ // ich fahre also mit min 4 km/h .. dadurch wird der faktor max 15000/4=3500 .. das mal 16 ist noch im INT bereich
+//			if(!digitalRead(kupplungs_pin) && faktor_counter!=0){//Kupplung gezogen, einmalig laut geben was seit dem letzten mal so an min und max und flat ausgekommen ist
+//				faktor_counter=0; // damit nach dem kuppeln die alten werte verworfen werden
+//			} else if(digitalRead(kupplungs_pin)) { // Kupplung nicht gezogen, also gang berechnen
+//				int faktor=Sensors.get_RPM(RPM_TYPE_DIRECT)/Sensors.get_speed(true); // wie ist denn wohl der faktor
+//				// changed from 8 to 4, to reduce delay while calculation //1.8.2012
+//				faktor_flat=Sensors.flatIt(faktor*10,&faktor_counter,4,faktor_flat); // mal sehen ob man so eine art tiefpass faktor sinnvoll nutzen kann
+//
+//
+//				//n_gang[1]=1350 // übersetzung gang 1
+//				//n_gang[2]=900  // übersetzung gang 2
+//				//n_gang[3]=725  // übersetzung gang 3
+//				//n_gang[4]=600  // übersetzung gang 4
+//				//n_gang[5]=518  // übersetzung gang 5
+//				//n_gang[6]=442  // übersetzung gang 6
+//
+//				if(faktor_flat>=n_gang[6]*0.9 && faktor_flat<=n_gang[1]*1.3){ // 1755 - 397
+//					unsigned int abstand=n_gang[1]; // 1350
+//					for(int a=1; a<=6; a++){
+//						if( abs(faktor_flat-n_gang[a]) < abstand ){
+//							abstand=abs(faktor_flat-n_gang[a]);
+//							gang=a;
+//						}
+//					}
+//				};
+//			}
+//		} else { // wenn ich gar nicht fahre ..
+//			gang=-1;  // hier 0 einsetzen für "N" bei 0 km/h oder -1 für keine Ausgabe bei 0 km/h
+//		};
 	};
 }
 
-int speedo_gear::get(){
+int gear::get(){
 	if(neutral_set){
 		return 0; // show as "N" in speedo
 	} else if(gang>=-1 && gang<=6){
@@ -99,44 +99,44 @@ int speedo_gear::get(){
 	return -1; // clears output -> failsave
 }
 
-void speedo_gear::set_neutral(bool is_neutral){
+void gear::set_neutral(bool is_neutral){
 	neutral_set=is_neutral;
 }
 
-void speedo_gear::calibrate(){
-	if(pSpeedo->disp_zeile_bak[0]!=2){ // just once
-		pSpeedo->disp_zeile_bak[0]=2;
+void gear::calibrate(){
+	if(Speedo.disp_zeile_bak[0]!=2){ // just once
+		Speedo.disp_zeile_bak[0]=2;
 
 		// title bar
-		OLED.highlight_bar(0,0,128,8);
-		OLED.string(("Gear"),5,0,15,0,0);
+		TFT.highlight_bar(0,0,128,8);
+		TFT.string(("Gear"),5,0,15,0,0);
 		char temp[6];
-		sprintf(temp,"%i",int(floor(pMenu->state/10))%10);
-		OLED.string(temp,10,0,15,0,0);
+		sprintf(temp,"%i",int(floor(Menu.state/10))%10);
+		TFT.string(temp,10,0,15,0,0);
 
 		// draw old value
-		OLED.string(("Old Value:"),0,3);
-		sprintf(temp,"%4i",n_gang[int(Sensors.m_gps.mod(pMenu->state,100))/10]);
-		OLED.string(temp,11,3);
+		TFT.string(("Old Value:"),0,3);
+		sprintf(temp,"%4i",n_gang[int(Sensors.mGPS.mod(Menu.state,100))/10]);
+		TFT.string(temp,11,3);
 
 		// some text
-		OLED.string(("Dont shift!! Drive"),0,5);
-		OLED.string(("faster and slower"),0,6);
-		OLED.string(("~ cancel        save"),0,7);
+		TFT.string(("Dont shift!! Drive"),0,5);
+		TFT.string(("faster and slower"),0,6);
+		TFT.string(("~ cancel        save"),0,7);
 		sprintf(temp,"%c",127);
-		OLED.string(temp,14,7);
+		TFT.string(temp,14,7);
 	}
 
 	_delay_ms(150); // 128 values for LP, 150ms per Value + calc time ~> 22sec
 	faktor_flat=Sensors.flatIt(int((unsigned long)(10*Sensors.get_RPM(RPM_TYPE_DIRECT))/Sensors.get_speed(true)),&faktor_counter,127,faktor_flat);
-	if(faktor_flat!=pSpeedo->disp_zeile_bak[1]){
-		pSpeedo->disp_zeile_bak[1]=faktor_flat;
+	if(faktor_flat!=Speedo.disp_zeile_bak[1]){
+		Speedo.disp_zeile_bak[1]=faktor_flat;
 
 		// draw it
-		OLED.string(("Value:"),0,2);
+		TFT.string("Value:",0,2);
 		char temp[5];
 		sprintf(temp,"%4i",int(faktor_flat));
-		OLED.string(temp,11,2);
+		TFT.string(temp,11,2);
 	}
 };
 

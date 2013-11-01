@@ -22,13 +22,13 @@ speedo_stepper::~speedo_stepper(){
 
 void speedo_stepper::init(){
 	//	if(pConfig->get_hw_version()==7){
-	Serial3.begin(19200); // macht eigentlich schon der reset, aber zur sicherheit
-	Serial3.flush();
+	Serial.init(USART3,19200); // macht eigentlich schon der reset, aber zur sicherheit
+//	//Serial3.flush();
 	overwrite_pos(200);
 	go_to(0);
 	shown_mode=RPM_TYPE_DIRECT;
 	// select startup mode
-	if(pSpeedo->startup_by_ignition){
+	if(Speedo.startup_by_ignition){
 		//			init_steps_to_go=5; //5 steps to go
 		run_calibration();
 		init_steps_to_go=0;
@@ -89,23 +89,23 @@ void speedo_stepper::startup(){
  ******************************************************************************/
 bool speedo_stepper::go_to(int winkel,int accel,int speed){
 	///////////// ATM /////////////
-	Serial3.print("$m");
-	Serial3.print(int(round(winkel/ATM_DIV_FACTOR)));
-	//		Serial3.print(","); // leave this factor to watchdog firmware (from 28.10.2013)
-	//		Serial3.print(accel);
-	//		Serial3.print(",");
-	//		Serial3.print(speed);
-	Serial3.print("*");
+	Serial.puts(USART3,"$m");
+	Serial.puts(USART3,int(round(winkel/ATM_DIV_FACTOR)));
+	//		Serial.puts(USART3,","); // leave this factor to watchdog firmware (from 28.10.2013)
+	//		Serial.puts(USART3,accel);
+	//		Serial.puts(USART3,",");
+	//		Serial.puts(USART3,speed);
+	Serial.puts(USART3,"*");
 	///////////// ATM /////////////
 	// debug
 #ifdef STEPPER_DEBUG /// DEBUG
-	Serial.print("$m");
-	Serial.print(winkel);
-	Serial.print(",");
-	Serial.print(accel);
-	Serial.print(",");
-	Serial.print(speed);
-	Serial.print("*");
+	Serial.puts(USART3,"$m");
+	Serial.puts(USART3,winkel);
+	Serial.puts(USART3,",");
+	Serial.puts(USART3,accel);
+	Serial.puts(USART3,",");
+	Serial.puts(USART3,speed);
+	Serial.puts(USART3,"*");
 #endif
 
 	return true;
@@ -113,17 +113,17 @@ bool speedo_stepper::go_to(int winkel,int accel,int speed){
 
 void speedo_stepper::run_calibration(void){
 	///////////// ATM /////////////
-	Serial3.print("$c*");
+	Serial.puts(USART3,"$c*");
 	///////////// ATM /////////////
 }
 
 bool speedo_stepper::go_to(int winkel){
-	Serial3.print("$m");
-	Serial3.print(int(round(winkel/ATM_DIV_FACTOR)));
-	Serial3.print("*");
+	Serial.puts(USART3,"$m");
+	Serial.puts(USART3,int(round(winkel/ATM_DIV_FACTOR)));
+	Serial.puts(USART3,"*");
 #ifdef STEPPER_DEBUG /// DEBUG
-	Serial.print(Millis.get());
-	Serial.print(",");
+	Serial.puts(USART3,Millis.get());
+	Serial.puts(USART3,",");
 	Serial.println(winkel);
 #endif
 	return true;
@@ -134,25 +134,25 @@ bool speedo_stepper::go_to(int winkel){
 int speedo_stepper::get_pos(){
 	int pos=0;
 	///////////// ATM /////////////
-	Serial3.flush();
-	Serial3.print("$p*"); // send request
+	//Serial3.flush();
+	Serial.puts(USART3,"$p*"); // send request
 
-	if(pSensors->m_reset->last_reset==-1) return -1; // ATm328 down
+//	if(Sensors.mReset.last_reset==-1) return -1; // ATm328 down TODO TODO
 
 	unsigned long start_time=Millis.get();
 	unsigned int recv=0;
 
 
 	while(start_time+200>Millis.get() && recv<8){ // max 200ms und $p20000* = 8 chars
-		while(Serial3.available()>0){
-			unsigned char buffer = Serial3.read();
+		while(Serial.available(USART3)>0){
+			unsigned char buffer = Serial.read(USART3);
 			if(buffer=='$'){
 				recv++;
 			} else if(buffer=='p'){
 				recv++;
 			} else if(buffer=='*'){
 				recv=99;
-				Serial3.flush();
+				//Serial3.flush();
 			} else {
 				recv++;
 				pos=pos*10+(buffer-'0');
@@ -166,7 +166,7 @@ int speedo_stepper::get_pos(){
 	if(pos <0 || pos>=99999){
 		pos=-1;
 	}
-	//	Serial.print("get pos:");
+	//	Serial.puts(USART3,"get pos:");
 	//	Serial.println(pos);
 
 	return pos;
@@ -180,41 +180,41 @@ void speedo_stepper::get_motor_status(int* ist_pos, int* delay, int* status){
 
 void speedo_stepper::loop(){
 
-	if(pSpeedo->disp_zeile_bak[0]!=99){
-		pSpeedo->disp_zeile_bak[0]=99;
-		pOLED->clear_screen();
-		pOLED->string_P(pSpeedo->default_font,PSTR("POS:"),0,1);
-		pOLED->string_P(pSpeedo->default_font,PSTR("DELAY:"),0,2);
-		pOLED->string_P(pSpeedo->default_font,PSTR("STATE:"),0,3);
+	if(Speedo.disp_zeile_bak[0]!=99){
+		Speedo.disp_zeile_bak[0]=99;
+		TFT.clear_screen();
+		TFT.string(Speedo.default_font,("POS:"),0,1);
+		TFT.string(Speedo.default_font,("DELAY:"),0,2);
+		TFT.string(Speedo.default_font,("STATE:"),0,3);
 	};
 
-	if(pSpeedo->disp_zeile_bak[1]!=pSensors->m_clock->get_ss()){
-		pSpeedo->disp_zeile_bak[1]=pSensors->m_clock->get_ss();
+	if(Speedo.disp_zeile_bak[1]!=Sensors.mClock.get_ss()){
+		Speedo.disp_zeile_bak[1]=Sensors.mClock.get_ss();
 		int ist_pos,delay,status;
 
 		get_motor_status(&ist_pos,&delay,&status);
 		char buffer[20];
 		sprintf(buffer,"%06i",ist_pos);
-		pOLED->string(pSpeedo->default_font,buffer,7,1);
+		TFT.string(Speedo.default_font,buffer,7,1);
 		sprintf(buffer,"%06i",delay);
-		pOLED->string(pSpeedo->default_font,buffer,7,2);
+		TFT.string(Speedo.default_font,buffer,7,2);
 		sprintf(buffer,"%06i",status);
-		pOLED->string(pSpeedo->default_font,buffer,7,3);
+		TFT.string(Speedo.default_font,buffer,7,3);
 	};
 };
 
 ///////////////////////////////////////// ATM /////////////////////////////////////////
 void speedo_stepper::overwrite_pos(int new_pos){
-	Serial3.flush();
-	Serial3.print("$o");
-	Serial3.print(new_pos);
-	Serial3.print("*");
+	//Serial3.flush();
+		("$o");
+	Serial.puts(USART3,new_pos);
+	Serial.puts(USART3,"*");
 }
 
 
 void speedo_stepper::get_atm_motor_status(int* ist_pos, int* delay, int* status){
-	Serial3.flush();
-	Serial3.print("$g*");
+	//Serial3.flush();
+	Serial.puts(USART3,"$g*");
 
 	unsigned long start_time=Millis.get();
 	unsigned char recv=0;
@@ -225,16 +225,16 @@ void speedo_stepper::get_atm_motor_status(int* ist_pos, int* delay, int* status)
 
 
 	while(start_time+200>Millis.get() && recv<40){ // max 200ms und $p20000* = 8 chars
-		while(Serial3.available()>0){
-			unsigned char buffer = Serial3.read();
-			Serial.print(buffer);
+		while(Serial.available(USART3)>0){
+			unsigned char buffer = Serial.read(USART3);
+			Serial.puts(USART3,buffer);
 			if(buffer=='$'){
 				recv++;
 			} else if(buffer=='g'){
 				recv++;
 			} else if(buffer=='*'){
 				recv=99;
-				Serial3.flush();
+				//Serial3.flush();
 			} else if(buffer==','){
 				recv++;
 				field++;

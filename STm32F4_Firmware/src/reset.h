@@ -7,12 +7,12 @@
 
 #ifndef RESET_H_
 #define RESET_H_
-class speedo_reset{
+class reset{
 #define reset_toogle_pin 6
 #define rst_blink_freq 330
 public:
-	speedo_reset(void);
-	~speedo_reset();
+	reset(void);
+	~reset();
 	void init();
 	int check_vars();
 	void set_active(bool save_to_eeprom,bool save_to_var);

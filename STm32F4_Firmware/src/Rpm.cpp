@@ -16,6 +16,16 @@ Rpm::~Rpm() {
 	// TODO Auto-generated destructor stub
 }
 
+uint16_t Rpm::check_vars(){
+	if(blitz_dz==0){
+		Serial.puts_ln(USART1,"DZ failed");
+		blitz_dz=12500; // hornet maessig
+		blitz_en=true; // gehen wir mal von "an" aus
+		return 1;
+	}
+	return 0;
+};
+
 void Rpm::init(){
 	// Clock enable (GPIO)
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
@@ -112,3 +122,7 @@ void Rpm::set_exact(int16_t i){
 uint16_t Rpm::get_exact(){
 	return exact;
 }
+
+void Rpm::shutdown(){
+
+};
