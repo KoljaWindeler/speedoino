@@ -110,7 +110,20 @@ int main(void) {
 	Serial.puts_ln(USART1,buffer);
 	//		Serial.puts_ln(USART2,buffer);
 
-	Sensors.mTemperature.read_oil_temp();
+//	Sensors.mTemperature.read_oil_temp();
+
+	Serial.puts(USART1,"go");
+
+	Serial.init(USART3,115200);
+	Serial.puts(USART3,"asd");
+
+	Serial.puts(USART1,"done1");
+
+	Serial.init(USART2,115200);
+	Serial.puts(USART2,"asd");
+
+	Serial.puts(USART1,"done2");
+
 
 	TFT.CharSize(24);
 	TFT.StringLine(60,100,"Speedoino 2.0");
@@ -133,7 +146,52 @@ int main(void) {
 		TFT.DrawUniLine(x_from,y_from,x_to,y_to);
 	}
 
-	while(1);
+	int l_1=0;
+	bool inc_l_1=true;
+	int c_1=0;
+	int c_2=0;
+	int c_3=0;
+	bool inc_c_1=true;
+
+	while(1){
+		TFT.SetTextColor(c_1,c_2,c_3);
+		if(inc_c_1){
+			c_1++;
+			if(c_1>=200){
+				c_2+=50;
+				if(c_2>200){
+					c_2=0;
+					c_3+=30;
+				}
+				c_1--;
+				inc_c_1=false;
+			}
+		} else {
+			c_1--;
+			if(c_1<0){
+				c_1++;
+				inc_c_1=true;
+			}
+		}
+
+		if(inc_l_1){
+			l_1++;
+			if(l_1>=50){
+				l_1--;
+				inc_l_1=false;
+			}
+		} else {
+			l_1--;
+			if(l_1<10){
+				l_1++;
+				inc_l_1=true;
+			}
+		}
+
+//		TFT.DrawCircle(60,60,l_1);
+		TFT.DrawRect(260-l_1,185-l_1,2*l_1,2*l_1);
+		_delay_ms(10);
+	}
 
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop, before THIS
@@ -192,8 +250,8 @@ int main(void) {
 		}
 		////////////////// Speed Cam Check - Mode ////////////////////////
 		else if(Menu.state==BMP(0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_SPEEDCAM_STATUS,1)){
-//			SpeedCams.calc();
-//			SpeedCams.interface();
+			//			SpeedCams.calc();
+			//			SpeedCams.interface();
 		}
 		////////////////// race mode ////////////////////
 		else if(Menu.state==M_LAP_T*100+11){
@@ -212,7 +270,7 @@ int main(void) {
 		}
 		//////////////////// stepper mode ///////////////////
 		else if(Menu.state==541){
-//			Aktors.mStepper.loop();
+			//			Aktors.mStepper.loop();
 		}
 		//////////////////// gps scan ///////////////////
 		else if(Menu.state==511){

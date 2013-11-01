@@ -537,10 +537,10 @@ void Speedo_Sensors::init(){
 	mClock.init();
 	mFuel.init();
 	mSpeed.init();
-	//	mReset.init(); TODO blödes uart
+	mReset.init();
 	mGear.init();
 	//	m_voltage->init();
-	//	mGPS.init();	// Blödes UART1 .. TODO
+	mGPS.init();
 	mCAN.init();  // done later in main startup
 	//
 	//	cli(); //  ... unschön, aber gps macht interrupts an	 TODO
