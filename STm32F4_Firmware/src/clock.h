@@ -36,7 +36,7 @@ public:
 	void loop();
 	int16_t check_vars();
 	void copy(char* buffer);
-	bool changed(uint8_t* storage);
+	bool changed(int16_t* storage);
 	//void store();
 	int16_t getdate();
 	unsigned long get_long_date();

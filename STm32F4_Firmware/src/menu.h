@@ -9,7 +9,7 @@
 #define MENU_H_
 #include "aktors.h"
 ////////////// menu ///////////////////////
-class speedo_menu {
+class menu {
 
 #define	 menu_button_timeout		300                        // wartezeit zwischen 2 steps
 #define menu_button_fast_delay		menu_button_timeout*4   // wartezeit bis schneller
@@ -36,8 +36,8 @@ class speedo_menu {
 
 
 public:
-	speedo_menu(void);
-	~speedo_menu();
+	menu(void);
+	~menu();
 	void init();
 	void display();
 	bool button_test(bool bt_keys_en, bool hw_keys_en);
@@ -72,6 +72,6 @@ private:
 	void set_value_dialog(int8_t* value,const char* title,const char* opt0,const char* opt1);
 	void set_value_dialog(int8_t* value,const char* title);
 };
-extern speedo_menu Menu;
+extern menu Menu;
 ////////////// menu ///////////////////////
 #endif /* MENU_H_ */

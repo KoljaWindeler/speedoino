@@ -16,6 +16,7 @@ public:
 	void init(USART_TypeDef* USARTx,uint32_t baudrate);
 	void puts(USART_TypeDef* USARTx, char *s);
 	void puts(USART_TypeDef* USARTx, int s);
+	void puts(USART_TypeDef* USARTx, char s);
 	void puts_ln(USART_TypeDef* USARTx, char *s);
 	void puts_ln(USART_TypeDef* USARTx, int s);
 	void recv(USART_TypeDef* USARTx,char t);
@@ -27,9 +28,9 @@ private:
 	int head1;
 	int tail1;
 
-	unsigned char buffer2[MAX_STRLEN];
-	int head2;
-	int tail2;
+//	unsigned char buffer2[MAX_STRLEN];	// GPS has its own buffer
+//	int head2;
+//	int tail2;
 
 	unsigned char buffer4[MAX_STRLEN];
 	int head4;

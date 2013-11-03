@@ -61,9 +61,10 @@ extern "C" void USART2_IRQHandler(void){
 	// check if the USART1 receive interrupt flag was set
 	if( USART_GetITStatus(USART2, USART_IT_RXNE) ){
 		// the character from the USART1 data register is saved in t
-		Serial.recv(USART2,USART2->DR);
+//		Serial.recv(USART2,USART2->DR);
+		Sensors.mGPS.recv_data(USART2->DR);
 	}
-	//Sensors.mGps.recv_data(USART2->DR);
+
 }
 
 extern "C" void UART4_IRQHandler(void){

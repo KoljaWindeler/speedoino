@@ -8,12 +8,12 @@
 #ifndef VOLTAGE_H_
 #define VOLTAGE_H_
 
-class speedo_voltage{
+class voltage{
 #define VOLTAGE_PIN 2
 #define CLOCK_UP_TIME 5
 public:
-	speedo_voltage();
-	~speedo_voltage();
+	voltage();
+	~voltage();
 	void init();
 	int check_vars();
 	int get();

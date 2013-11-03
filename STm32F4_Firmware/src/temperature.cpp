@@ -79,7 +79,7 @@ void speedo_temperature::init(){
 	GPIO_InitTypeDef GPIO_InitStructure; // create new datatype
 	/* Configure PB0 (ADC Channel ADC12_IN8) as analog input */
 	/* ADC12_IN8 means channel 8 for ADC1 OR ADC2 */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
@@ -206,7 +206,7 @@ void speedo_temperature::read_water_temp() {
 #endif
 
 	// werte auslesen // TODO change pin + range warning
-	ADC_RegularChannelConfig(ADC1,ADC_Channel_8,1,ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADC1,ADC_Channel_9,1,ADC_SampleTime_480Cycles);
 	ADC_SoftwareStartConv(ADC1); //Start ADC1 Conversion
 	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
 

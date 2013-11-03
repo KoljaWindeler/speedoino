@@ -108,7 +108,7 @@ int Speed::check_vars(){
 	if((nulls == (sizeof(Speedo.max_speed)/sizeof(Speedo.max_speed[0]))-2) || reifen_umfang==0){
 		reifen_umfang=1.99; // Reifenumfang in metern
 		gps_takeover=120; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
-		Serial.puts(USART1,("speedo failed"));
+		Serial.puts_ln(USART1,("Speed failed"));
 		return 1;
 	};
 

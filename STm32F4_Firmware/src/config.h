@@ -48,7 +48,7 @@ private:
 	int last_speed_value;
 	char hw_version;
 };
-extern configuration *pConfig;
+extern configuration Config;
 ///////////// CONFIG /////////////////////////
 
 #endif /* CONFIG_H_ */

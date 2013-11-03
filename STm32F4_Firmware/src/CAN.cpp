@@ -434,6 +434,9 @@ void CAN::request(char mode,char PID){
 };
 
 void CAN::process_incoming_messages(){
+	return;
+
+
 	while(can_get_message(&message)!=0xff){ //0xff=no more frames available
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
 		Serial.print("*");

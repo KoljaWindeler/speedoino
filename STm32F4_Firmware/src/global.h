@@ -32,6 +32,7 @@ typedef struct {
 } simple_coordinate;
 
 #include "AsciiLib.h"
+#include "schrift.h"
 #include "ILI9325.h"
 #include "ssd0323.h"
 #include "debug.h"
@@ -54,10 +55,13 @@ typedef struct {
 #include "gear.h"
 #include "oiler.h"
 #include "fuel.h"
+#include "voltage.h"
 
+#include "config.h"
 #include "aktors.h"
 #include "Sensors.h"
 #include "lap_timer.h"
+#include "menu.h"
 
 #include "speed_cams.h"
 #include "sprint.h"

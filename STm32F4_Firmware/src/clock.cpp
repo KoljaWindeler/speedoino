@@ -39,8 +39,8 @@ clock::~clock(){};
  * Input: pointer to var
  * Returns: true, if pointed value != current second
  */
-bool clock::changed(uint8_t* storage){
-	if(*storage==uint8_t(m_ss)){
+bool clock::changed(int16_t* storage){
+	if(*storage==int16_t(m_ss)){
 		return false;
 	}
 	*storage=m_ss;

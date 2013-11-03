@@ -44,23 +44,23 @@ public:
 	void clear_vars();
 	void check_vars();
 	void initial_draw_screen();
-	int 	  	  m_trip_mode; // welcher mode .. ob zeit, avg oder was auch immer
-	int	  		  m_trip_storage; // welcher wert angezeigt wird, 1= day 2=bla 3=blabla etc
-	int 		  disp_zeile_bak[12];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
-	int           max_speed[9];      // array of the max speed values sollte dem speedo gehören
-	unsigned long avg_timebase[9];
-	unsigned long trip_dist[9]; // 0=Total, 1=Non permanent, 2=Day, 3=Tour, 4=Quick, 5=Fuel, 6=Oiler, 7=Saison, 8=Board
-	int 		  refresh_cycle;
+	int16_t 	  	  m_trip_mode; // welcher mode .. ob zeit, avg oder was auch immer
+	int16_t	  		  m_trip_storage; // welcher wert angezeigt wird, 1= day 2=bla 3=blabla etc
+	int16_t		  disp_zeile_bak[12];// backup bestimmter werte um abzuschätzen ob die Zeile geupdated werden sollte
+	int16_t           max_speed[9];      // array of the max speed values sollte dem speedo gehören
+	uint32_t avg_timebase[9];
+	uint32_t trip_dist[9]; // 0=Total, 1=Non permanent, 2=Day, 3=Tour, 4=Quick, 5=Fuel, 6=Oiler, 7=Saison, 8=Board
+	int16_t 		  refresh_cycle;
 	bool 		  startup_by_ignition;
 
-	int maximum;
-	int minimum;
+	int16_t maximum;
+	int16_t minimum;
 
 	widget		kmhchar_widget,oil_widget,water_widget,air_widget,arrow_widget,kmh_widget,dz_widget;
 	widget		fuel_widget,gear_widget,addinfo_widget,addinfo2_widget,clock_widget,gps_widget;
 	int8_t default_font;
 private:
-	bool check_no_collision_with_addinfo2(int current_widget_y);
+	bool check_no_collision_with_addinfo2(int16_t current_widget_y);
 	bool addinfo2_currently_shown;
 
 };

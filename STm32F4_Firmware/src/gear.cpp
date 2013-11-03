@@ -44,7 +44,7 @@ int gear::check_vars(){
 		for(unsigned int j=0;j<sizeof(temp)/sizeof(temp[0]);j++){ // 0..6
 			n_gang[j]=temp[j];
 		};
-		Serial.puts(USART1,("gear failed"));
+		Serial.puts_ln(USART1,("gear failed"));
 		return 1;
 	}
 	return 0;
@@ -108,11 +108,11 @@ void gear::calibrate(){
 		Speedo.disp_zeile_bak[0]=2;
 
 		// title bar
-		TFT.highlight_bar(0,0,128,8);
-		TFT.string(("Gear"),5,0,15,0,0);
+		TFT.highlight_bar(0,0,320,30);
+		TFT.string(Speedo.default_font,"Gear",5,0,15,0,0);
 		char temp[6];
 		sprintf(temp,"%i",int(floor(Menu.state/10))%10);
-		TFT.string(temp,10,0,15,0,0);
+		TFT.string(Speedo.default_font,temp,10,0,15,0,0);
 
 		// draw old value
 		TFT.string(("Old Value:"),0,3);

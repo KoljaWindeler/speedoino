@@ -124,7 +124,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="Libraries/Display/ssd1325.cpp|zzz_trash|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="sensors.cpp|voltage.cpp|tetris.cpp|sd.cpp|POI_finder.cpp|menu.cpp|file_manager_v2.cpp|config.cpp|clock_me.cpp|aktors.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="sensors.cpp|tetris.cpp|sd.cpp|POI_finder.cpp|file_manager_v2.cpp|clock_me.cpp|aktors.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -165,4 +165,5 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

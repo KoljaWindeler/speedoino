@@ -70,51 +70,50 @@ void Speedo_aktors::run_reset_on_ATm328(char mode){
 	}
 
 	// run the reset
-	if(mode==RESET_COMPLETE || mode==RESET_KICK_TO_RESET){
-		// pin as output
-		DDRD |= (1<<ATM328RESETPIN);
-		// set low . low active
-		PORTD &= ~(1<<ATM328RESETPIN);
-		_delay_ms(50);
-		PORTD |= (1<<ATM328RESETPIN);
-		// set high, as pull up
-		DDRD |= (1<<ATM328RESETPIN);
-		PORTD |= (1<<ATM328RESETPIN);
-	}
+//	if(mode==RESET_COMPLETE || mode==RESET_KICK_TO_RESET){
+//		// pin as output
+//		DDRD |= (1<<ATM328RESETPIN);
+//		// set low . low active
+//		PORTD &= ~(1<<ATM328RESETPIN);
+//		_delay_ms(50);
+//		PORTD |= (1<<ATM328RESETPIN);
+//		// set high, as pull up
+//		DDRD |= (1<<ATM328RESETPIN);
+//		PORTD |= (1<<ATM328RESETPIN);
+//	}
 
 	// tunnel connection
 	if(mode==RESET_COMPLETE || mode==RESET_PREPARE){
 		// tunnel mode
 		unsigned long timeout=Millis.get();
-		unsigned long menu_state_on_enter=pMenu.state; // save the menu state, to detect button pushes
+		unsigned long menu_state_on_enter=Menu.state; // save the menu state, to detect button pushes
 		unsigned int max_time=5000; // should be enough if in android mode
 		if(mode==RESET_PREPARE){ // longer timeout if in "menu-mode"
 			max_time=30000;
 		};
 		while(Millis.get()-timeout<max_time){ // time out
-			while(Serial3.available()>0){
-				Serial.puts(USART1,Serial3.read(),BYTE);
+			while(Serial.available(USART3)()>0){
+				Serial.puts(USART1,Serial.read(USART3));
 				timeout=Millis.get();
 			}
 			while(Serial.available(USART1)>0){
-				Serial3.print(Serial.read(USART1),BYTE);
+				Serial.puts(USART3,Serial.read(USART1));
 				timeout=Millis.get();
 			}
 			if(mode==RESET_PREPARE){
-				if(menu_state_on_enter==((pMenu.state/10))){ // button "right" was pushed
+				if(menu_state_on_enter==((Menu.state/10))){ // button "right" was pushed
 					run_reset_on_ATm328(RESET_KICK_TO_RESET); // to the reset
-					pMenu.state=menu_state_on_enter; // reset menu state
-				} else if(menu_state_on_enter==((pMenu.state*10)+1)){ // button "left" was pushed
-					pMenu.state=menu_state_on_enter; // reset menu state, because menu.back will otherwise recaluclate two steps back
+					Menu.state=menu_state_on_enter; // reset menu state
+				} else if(menu_state_on_enter==((Menu.state*10)+1)){ // button "left" was pushed
+					Menu.state=menu_state_on_enter; // reset menu state, because menu.back will otherwise recaluclate two steps back
 					max_time=0;
 					break;
 				}
 			}
 		}
-		Serial3.end();
-		Serial3.begin(19200);
-		pSensors.m_reset.set_active(false,false);
-		pMenu.back();
+		Serial.init(USART3,19200);
+		Sensors.mReset.set_active(false,false);
+		Menu.back();
 	};
 
 }
@@ -349,10 +348,10 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 
 	////////// SHIFT FLASH ////////////////
 	////////// calc it //////////
-	if(pSensors.get_RPM(RPM_TYPE_DIRECT)>unsigned(pSensors.m_dz.blitz_dz) && pSensors.m_dz.blitz_en){
+	if(Sensors.get_RPM(RPM_TYPE_DIRECT)>unsigned(Sensors.m_dz.blitz_dz) && Sensors.m_dz.blitz_en){
 		attention_required=true;
 		set_rbg_active((int)0x0000,false); // activate all led's
-	} else if(pSpeedCams.get_active() && pMenu.state==11){
+	} else if(pSpeedCams.get_active() && Menu.state==11){
 		if(pSpeedCams.calc()){
 			attention_required=true;
 			set_rbg_active((int)0x0000,false); // activate all led's
@@ -407,8 +406,8 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 		///////// kmh ////////////////
 		switch(led_mode){
 		case 1:
-			if(current_sensor_value!=(signed)(pSensors.get_speed(false))){
-				current_sensor_value=(signed)(pSensors.get_speed(false));
+			if(current_sensor_value!=(signed)(Sensors.get_speed(false))){
+				current_sensor_value=(signed)(Sensors.get_speed(false));
 
 				max_value=kmh_max_value;
 				min_value=kmh_min_value;
@@ -419,8 +418,8 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 			}
 			break;
 		case 2:
-			if(current_sensor_value!=(signed)(pSensors.get_RPM(RPM_TYPE_DIRECT))){
-				current_sensor_value=(signed)(pSensors.get_RPM(RPM_TYPE_DIRECT));
+			if(current_sensor_value!=(signed)(Sensors.get_RPM(RPM_TYPE_DIRECT))){
+				current_sensor_value=(signed)(Sensors.get_RPM(RPM_TYPE_DIRECT));
 
 				max_value=dz_max_value*100;
 				min_value=dz_min_value*100;
@@ -431,8 +430,8 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 			}
 			break;
 		case 3:
-			if(current_sensor_value!=pSensors.get_oil_temperature()){
-				current_sensor_value=pSensors.get_oil_temperature();
+			if(current_sensor_value!=Sensors.get_oil_temperature()){
+				current_sensor_value=Sensors.get_oil_temperature();
 
 				max_value=oil_max_value*10;
 				min_value=oil_min_value*10;
@@ -443,8 +442,8 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 			}
 			break;
 		case 4:
-			if(current_sensor_value!=pSensors.get_water_temperature()){
-				current_sensor_value=pSensors.get_water_temperature();
+			if(current_sensor_value!=Sensors.get_water_temperature()){
+				current_sensor_value=Sensors.get_water_temperature();
 
 				max_value=water_max_value*10;
 				min_value=water_min_value*10;
@@ -495,10 +494,9 @@ int Speedo_aktors::set_bt_pin(){
 	if(ask_bt(&at_commands[0])!=0){														// fehler aufgetreten
 		connection_established=false;
 		TFT.string(Speedo.default_font,("FAILED"),14,1);								// hat nicht geklappt
-		Serial.end();																	// setzte neue serielle Geschwindigkeit
 		_delay_ms(500);
 		TFT.string(Speedo.default_font,("TRYING 19200 BAUD"),0,2);					// hat nicht geklappt
-		Serial.begin(19200);
+		Serial.init(USART1,19200);
 		_delay_ms(2000);
 		if(ask_bt(&at_commands[0])==0){
 			TFT.string(Speedo.default_font,("OK"),14,3);
@@ -511,9 +509,9 @@ int Speedo_aktors::set_bt_pin(){
 					sprintf(at_commands,"ATL5%c",0x0D);
 					ask_bt(&at_commands[0]);											// fire && forget
 					TFT.string(Speedo.default_font,("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, können wir hier nicht testen
-					Serial.end();														// setzte neue serielle Geschwindigkeit
+					// setzte neue serielle Geschwindigkeit
 					TFT.string(Speedo.default_font,("RETRYING"),0,6);		// hat nicht geklappt
-					Serial.begin(115200);
+					Serial.init(USART1,115200);
 					_delay_ms(2000);
 					TFT.clear_screen();
 					TFT.string(Speedo.default_font,("Checking connection"),0,0);
@@ -528,8 +526,7 @@ int Speedo_aktors::set_bt_pin(){
 			TFT.string(Speedo.default_font,("FAILED"),14,3);
 			TFT.string(Speedo.default_font,("DAMN"),14,4); // add message to make sure no active bt connection disturbs TODO
 			_delay_ms(4000);
-			Serial.end();
-			Serial.begin(115200);
+			Serial.init(USART1,115200);
 			return -9;
 		}
 	}

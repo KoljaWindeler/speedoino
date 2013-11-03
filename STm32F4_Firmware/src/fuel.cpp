@@ -72,7 +72,7 @@ int fuel::check_vars(){
 	if(blink_freq==0 || blink_start==0){
 		blink_freq=500; // blinkt mit 500ms Periodenlaenge
 		blink_start=140; // bei mehr als 140 km auf der Tankuhr fngt die an zu blinken
-		Serial.puts(USART1,("fuel failed"));
+		Serial.puts_ln(USART1,("fuel failed"));
 		return 1;
 	}
 	return 0;

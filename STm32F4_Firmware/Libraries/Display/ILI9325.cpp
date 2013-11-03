@@ -22,6 +22,7 @@
 #include "global.h"
 
 
+
 #define LCD_REG      (*((volatile short *) 0x60000000))
 #define LCD_RAM      (*((volatile short *) 0x60020000))
 
@@ -244,10 +245,6 @@ void ILI9325::SetBackColor(u8 red, u8 green, u8 blue) {
 	backBlue = blue;
 }
 
-/* 8x8=8 12x12=12 8x16=16 12x12=14 16x24=24 */
-void ILI9325::CharSize(uint16_t size) {
-	asciisize = size;
-}
 
 void ILI9325::PutPixel(int16_t x, int16_t y) {
 	//if ((x > 239) || (y > 319)){
@@ -281,135 +278,137 @@ void ILI9325::Pixel(int16_t x, int16_t y, u8 r, u8 g, u8 b) {
 	WriteRAM(r, g, b);
 }
 
-void ILI9325::PutChar(int16_t PosX, int16_t PosY, char c) {
-	uint8_t i = 0;
-	uint8_t j = 0;
-	if (asciisize == 8) {
-		char Buffer[8];
-		uint8_t TmpChar = 0;
+void ILI9325::zeichen_small_1x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
+	zeichen_small_scale(1,font,z,spalte,zeile,offset);
+}
+void ILI9325::zeichen_small_2x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
+	zeichen_small_scale(2,font,z,spalte,zeile,offset);
+}
+void ILI9325::zeichen_small_3x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
+	zeichen_small_scale(3,font,z,spalte,zeile,offset);
+}
+void ILI9325::zeichen_small_4x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
+	zeichen_small_scale(4,font,z,spalte,zeile,offset);
+}
+void ILI9325::zeichen_small_5x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
+	zeichen_small_scale(5,font,z,spalte,zeile,offset);
+}
+void ILI9325::zeichen_small_6x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
+	zeichen_small_scale(6,font,z,spalte,zeile,offset);
+}
 
-		GetASCIICode1(Buffer, c);
-		for (i = 0; i < 8; i++) {
-			TmpChar = Buffer[i];
-			for (j = 0; j < 8; j++) {
-				if (((TmpChar >> (7 - j)) & 0x01) == 0x01) {
-					Pixel(PosX + j, PosY + i, textRed, textGreen, textBlue);
-				} else {
-					Pixel(PosX + j, PosY + i, backRed, backGreen, backBlue);
-				}
-			}
-		}
-	}
-	//----------------------------------------------------------------------------
-	if (asciisize == 12) {
-		char Buffer[12];
-		uint8_t TmpChar = 0;
+void ILI9325::zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
+	unsigned int stelle;
+	if((z<0x20)||(z>0x7f))z=0x20;
+	stelle = 8*(z-0x20);
 
-		GetASCIICode2(Buffer, c);
-		for (i = 0; i < 12; i++) {
-			TmpChar = Buffer[i];
-			for (j = 0; j < 8; j++) {
-				if (((TmpChar >> (7 - j)) & 0x01) == 0x01) {
-					Pixel(PosX + j, PosY + i, textRed, textGreen, textBlue);
+	for(int y_i=0;y_i<8;y_i++){ // oder <=8?
+		char a = font[stelle];/* 8 px */
+		for(int repeat_y=0;repeat_y<scale;repeat_y++){
+			uint8_t mask=0x80;
+			for(int x_i=0;x_i<7;x_i++){ // oder <8?
+				if(a&mask){
+					for(int repeat_x=0;repeat_x<scale;repeat_x++){
+						Pixel(spalte*6 + scale*x_i+repeat_x, zeile*7 + scale*y_i+repeat_y, textRed, textGreen, textBlue);
+					}
 				} else {
-					Pixel(PosX + j, PosY + i, backRed, backGreen, backBlue);
+					for(int repeat_x=0;repeat_x<scale;repeat_x++){
+						Pixel(spalte*6 + scale*x_i+repeat_x, zeile*7 + scale*y_i+repeat_y, backRed, backGreen, backBlue);
+					}
 				}
+				mask=mask>>1;
 			}
 		}
+		stelle++;
 	}
-	//----------------------------------------------------------------------------
-	if (asciisize == 16) {
-		char Buffer[16];
-		uint8_t TmpChar = 0;
-
-		GetASCIICode4(Buffer, c);
-		for (i = 0; i < 16; i++) {
-			TmpChar = Buffer[i];
-			for (j = 0; j < 8; j++) {
-				if (((TmpChar >> (7 - j)) & 0x01) == 0x01) {
-					Pixel(PosX + j, PosY + i, textRed, textGreen, textBlue);
-				} else {
-					Pixel(PosX + j, PosY + i, backRed, backGreen, backBlue);
-				}
-			}
-		}
-	}
-	//----------------------------------------------------------------------------
-	if (asciisize == 14) {
-		char Buffer[12];
-		uint16_t TmpChar = 0;
-
-		GetASCIICode3((char*) Buffer, c);
-		for (i = 0; i < 12; i++) {
-			TmpChar = Buffer[i];
-			for (j = 0; j < 12; j++) {
-				if (((TmpChar >> j) & (0x01)) == 0x01) {
-					Pixel(PosX + j, PosY + i, textRed, textGreen, textBlue);
-				} else {
-					Pixel(PosX + j, PosY + i, backRed, backGreen, backBlue);
-				}
-			}
-		}
-	}
-	//----------------------------------------------------------------------------
-	if (asciisize == 24) {
-		uint16_t Buffer[24];
-		uint16_t TmpChar = 0;
-		GetASCIICode5((char*) Buffer, c);
-		for (i = 0; i < 24; i++) {
-			TmpChar = Buffer[i];
-			for (j = 0; j < 16; j++) {
-				if (((TmpChar >> j) & (0x01)) == 0x01) {
-					Pixel(PosX + j, PosY + i, textRed, textGreen, textBlue);
-				} else {
-					Pixel(PosX + j, PosY + i, backRed, backGreen, backBlue);
-				}
-			}
-		}
-	}
-	//----------------------------------------------------------------------------
 }
 
 void ILI9325::string(char *str,uint8_t spalte, uint8_t zeile){
-	StringLine(spalte*16,zeile*30,str);
-}
-
-void ILI9325::string(char *str,uint8_t spalte, uint8_t zeile, unsigned char fg, unsigned char bg, int offset){
-	StringLine(spalte*16+offset,zeile*30,str);
-}
-
-void ILI9325::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, unsigned char fg, unsigned char bg, int offset){
-	StringLine(spalte*16+offset,zeile*30,str);
+	string(Speedo.default_font,str,spalte,zeile,0,0,0,255,255,255,0);
 }
 
 void ILI9325::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile){
-	StringLine(spalte*16,zeile*30,str);
+	string(font,str,spalte,zeile,255,255,255,0,0,0,0);
 }
 
-void ILI9325::StringLine(uint16_t PosX, uint16_t PosY, char *str) {
-	char TempChar;
+void ILI9325::string(char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text){
+	string(Speedo.default_font,str,spalte,zeile,text*15,text*15,text*15,back*15,0,0,0);
+}
 
-	do {
-		TempChar = *str++;
-		PutChar(PosX, PosY, TempChar);
-		if (PosX < 312) {
-			PosX += 8;
-			if (asciisize == 24) {
-				PosX += 8;
-			} else if (asciisize == 14) {
-				PosX += 4;
-			}
-		}
+void ILI9325::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text, uint8_t offset){
+	string(font,str,spalte,zeile,text*15,text*15,text*15,back*15,0,0,offset);
+}
 
-		else if (PosY < 214) {
+void ILI9325::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8_t text_r, uint8_t text_g, uint8_t text_b, uint8_t back_r, uint8_t back_g, uint8_t back_b, uint8_t offset){
+	SetColors(text_r,text_g,text_b,back_r,back_g,back_b);
 
-			PosX = 0;
-			PosY += 16;
-		} else {
-			PosX = 0;
-			PosY = 0;
-		}
-	} while (*str != 0);
+	switch(font){
+	case SANS_SMALL_4X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_4x(&dejaVuSans5ptBitmaps[0],str[i],(spalte+i*4),zeile,offset);
+		};
+		break;
+	case SANS_SMALL_3X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_3x(&dejaVuSans5ptBitmaps[0],str[i],(spalte+i*3),zeile,offset);
+		};
+		break;
+	case SANS_SMALL_2X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_2x(&dejaVuSans5ptBitmaps[0],str[i],(spalte+i*2),zeile,offset);
+		};
+		break;
+	case SANS_SMALL_1X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_1x(&dejaVuSans5ptBitmaps[0],str[i],(spalte+i),zeile,offset);
+		};
+		break;
+	case VISITOR_SMALL_4X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_4x(&visitor_code[0],str[i],(spalte+i*4),zeile,offset);
+		};
+		break;
+	case VISITOR_SMALL_3X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_3x(&visitor_code[0],str[i],(spalte+i*3),zeile,offset);
+		};
+		break;
+	case VISITOR_SMALL_2X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_2x(&visitor_code[0],str[i],(spalte+i*2),zeile,offset);
+		};
+		break;
+	case VISITOR_SMALL_1X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_1x(&visitor_code[0],str[i],(spalte+i),zeile,offset);
+		};
+		break;
+		//	case SANS_BIG_1X_FONT:
+		//		for(unsigned int i=0;i<strlen(str);i++){
+		//			zeichen_big_1x(&sans_big[0],str[i],(spalte+i*4),zeile,offset);
+		//		};
+		//		break;
+	case STD_SMALL_2X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_2x(&std_small[0],str[i],(spalte+i*2),zeile,offset);
+		};
+		break;
+	case STD_SMALL_3X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_3x(&std_small[0],str[i],(spalte+i*3),zeile,offset);
+		};
+		break;
+	case STD_SMALL_4X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_4x(&std_small[0],str[i],(spalte+i*4),zeile,offset);
+		};
+		break;
+	default: // das hier ist eigentlich STD_SMALL_1X_FONT
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_1x(&std_small[0],str[i],(spalte+i),zeile,offset);
+		};
+		break;
+	};
 }
 
 void ILI9325::DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Direction) {
@@ -964,234 +963,430 @@ void ILI9325::SetBackLight(unsigned short level) {
 
 
 void ILI9325::show_storry(const char* storry,const char* title){
-    show_storry(storry,title,0x00);
+	show_storry(storry,title,0x00);
 }
 
 void ILI9325::show_storry(const char* storry,const char* title, uint8_t type){
-    char storry_char[strlen(storry)+1];
-    char title_char[strlen(title)+1];
+	char storry_char[strlen(storry)+1];
+	char title_char[strlen(title)+1];
 
-    strcpy(storry_char,storry);
-    strcpy(title_char,title);
+	strcpy(storry_char,storry);
+	strcpy(title_char,title);
 
-    show_storry(storry_char,strlen(storry),title_char,strlen(title),type);
+	show_storry(storry_char,strlen(storry),title_char,strlen(title),type);
 }
 
-void ILI9325::show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length){
-    show_storry(storry,storry_length,title, title_length, 0x00);
+void ILI9325::show_storry(const char* storry,unsigned int storry_length,char title[],unsigned int title_length){
+	show_storry(storry,storry_length,title, title_length, 0x00);
 }
 
-//void ILI9325::show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length, uint8_t type){
-//    // show title
-//    OLED.clear_screen();
-//    OLED.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-//    OLED.string(pSpeedo->default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-//
-//    // Generate borders
-//    unsigned int fill_line=0; // actual line
-//    unsigned int char_in_line=0; // count char in this line
-//    int von[4]={0,0,0,0}; // nutzen um zu bestimmten wo wir den "\0" setzen
-//    int bis[4]={0,0,0,0}; // nutzen um zu bestimmten wo wir den "\0" setzen
-//
-//    for(unsigned int i=0; i<storry_length;i++){
-//        if(char_in_line>10){ // mindestesn mal 10 zeichen aufnehmen
-//            if((storry[i]==' ' || char_in_line==21) && (fill_line+1<(sizeof(bis)/sizeof(bis[0])))){
-//                bis[fill_line]=i; // damit haben wir das ende dieser Zeile gefunden
-//                fill_line++;
-//                von[fill_line]=i;// und den anfang der nächsten, wobei das noch nicht save ost
-//                if(storry[i]==' '){ // wir haben hier ein freizeichen, hätten wir sinnvoll weitergucken können?
-//                    von[fill_line]++; // das freizeichen brauchen wie eh nicht mehr
-//                    //haben ein volles wort, mal sehen ob ncoh was geht
-//                    //aktuell sind char_in_line chars im puffer
-//                    int onemoreword=0; // wieviele chars gehts denn weiter, falls sinnvoll
-//                    for(unsigned int k=char_in_line; k<21; k++){
-//                        if(storry[i+k-char_in_line]==' ') onemoreword=k-char_in_line;
-//                    }
-//                    if(onemoreword>0){
-//                        // es scheint sinnig noch onemoreword buchstaben zu nutzen
-//                        i+=onemoreword;
-//                        von[fill_line]+=onemoreword;
-//                        bis[fill_line-1]+=onemoreword;
-//                    }
-//                }
-//                char_in_line=-1; // wird gleich inc -> dann sind wir fertig und der counter bei 0
-//            }
-//        }
-//        char_in_line++;
-//    };
-//    if(bis[fill_line]==0){ // letztes array ding
-//        bis[fill_line]=storry_length;
-//    };
-//    // we got the borders
-//
-//    // draw to display
-//    for(unsigned int i=0; i<4; i++){ // nur 4 zeilen
-//        if(von[i]!=bis[i]){
-//            // reserve buffer
-//            char *buffer2;
-//            buffer2 = (char*) malloc (22);
-//            if (buffer2==NULL) Serial.puts_ln(USART1,("Malloc failed"));
-//            else memset(buffer2,'\0',sizeof(buffer2)/sizeof(buffer2[0]));
-//
-//            int k=0;
-//            for(int j=von[i]; j<bis[i] && k<22; j++){
-//                if(!(i==0 && storry[j]=='#')){ // in der ersten zeile, das erste "#" an stelle 0 überlesen
-//                    buffer2[k]=storry[j];
-//                    k++;
-//                };
-//            };
-//            buffer2[k]='\0';
-//            OLED.string(pSpeedo->default_font,buffer2,0,i+2,0,DISP_BRIGHTNESS,0);
-//
-//            //delete buffer
-//            free(buffer2);
-//        };
-//    }
-//
-//    //
-//    unsigned int current_state=pMenu->state;
-//    unsigned long current_timestamp=Millis.get();
-//
-//    // set buttons if needed
-//    if(type>=DIALOG_NO_YES){
-//        pMenu->set_buttons(true,false,false,true);
-//    }
-//
-//    if(type==DIALOG_NO_YES){
-//        OLED.string(pSpeedo->default_font,("\x7E back        next \x7F"),0,7);
-//    }
-//    else if(type==DIALOG_GO_RIGHT_200MS){
-//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<200){
-//            _delay_ms(1);
-//        }
-//        if(current_state==pMenu->state){
-//            pMenu->go_right(true);
-//        }
-//    } else if(type==DIALOG_GO_LEFT_200MS){
-//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<200){
-//            _delay_ms(1);
-//        }
-//        if(current_state==pMenu->state){
-//            pMenu->go_left(true);
-//        }
-//    } else if(type==DIALOG_GO_RIGHT_500MS){
-//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<500){
-//            _delay_ms(1);
-//        }
-//        if(current_state==pMenu->state){
-//            pMenu->go_right(true);
-//        }
-//    } else if(type==DIALOG_GO_LEFT_500MS){
-//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<500){
-//            _delay_ms(1);
-//        }
-//        if(current_state==pMenu->state){
-//            pMenu->go_left(true);
-//        }
-//    } else if(type==DIALOG_GO_RIGHT_1000MS){
-//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<1000){
-//            _delay_ms(1);
-//        }
-//        if(current_state==pMenu->state){
-//            pMenu->go_right(true);
-//        }
-//    } else if(type==DIALOG_GO_LEFT_1000MS){
-//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<1000){
-//            _delay_ms(1);
-//        }
-//        if(current_state==pMenu->state){
-//            pMenu->go_left(true);
-//        }
-//    } else if(type==DIALOG_GO_RIGHT_2000MS){
-//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<2000){
-//            _delay_ms(1);
-//        }
-//        if(current_state==pMenu->state){
-//            pMenu->go_right(true);
-//        }
-//    } else if(type==DIALOG_GO_LEFT_2000MS){
-//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<2000){
-//            _delay_ms(1);
-//        }
-//        if(current_state==pMenu->state){
-//            pMenu->go_left(true);
-//        }
-//    } else if(type==DIALOG_GO_RIGHT_5000MS){
-//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<5000){
-//            _delay_ms(1);
-//        }
-//        if(current_state==pMenu->state){
-//            pMenu->go_right(true);
-//        }
-//    } else if(type==DIALOG_GO_LEFT_5000MS){
-//        while(current_state==pMenu->state && (Millis.get()-current_timestamp)<5000){
-//            _delay_ms(1);
-//        }
-//        if(current_state==pMenu->state){
-//            pMenu->go_left(true);
-//        }
-//    } else if(type==DIALOG_SHOW_500MS){
-//        _delay_ms(500);
-//    }
-//}
+void ILI9325::show_storry(const char* storry,unsigned int storry_length,char title[],unsigned int title_length, uint8_t type){
+	// show title
+	clear_screen();
+	highlight_bar(0,0,320,24); // mit hintergrundfarbe nen kasten malen
+	string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
 
-void ssd0323::string_centered(const char* text, uint8_t line){
-    string_centered(text,line,false);
+	// Generate borders
+	unsigned int fill_line=0; // actual line
+	unsigned int char_in_line=0; // count char in this line
+	int von[4]={0,0,0,0}; // nutzen um zu bestimmten wo wir den "\0" setzen
+	int bis[4]={0,0,0,0}; // nutzen um zu bestimmten wo wir den "\0" setzen
+
+	for(unsigned int i=0; i<storry_length;i++){
+		if(char_in_line>10){ // mindestesn mal 10 zeichen aufnehmen
+			if((storry[i]==' ' || char_in_line==21) && (fill_line+1<(sizeof(bis)/sizeof(bis[0])))){
+				bis[fill_line]=i; // damit haben wir das ende dieser Zeile gefunden
+				fill_line++;
+				von[fill_line]=i;// und den anfang der nächsten, wobei das noch nicht save ost
+				if(storry[i]==' '){ // wir haben hier ein freizeichen, hätten wir sinnvoll weitergucken können?
+					von[fill_line]++; // das freizeichen brauchen wie eh nicht mehr
+					//haben ein volles wort, mal sehen ob ncoh was geht
+					//aktuell sind char_in_line chars im puffer
+					int onemoreword=0; // wieviele chars gehts denn weiter, falls sinnvoll
+					for(unsigned int k=char_in_line; k<21; k++){
+						if(storry[i+k-char_in_line]==' ') onemoreword=k-char_in_line;
+					}
+					if(onemoreword>0){
+						// es scheint sinnig noch onemoreword buchstaben zu nutzen
+						i+=onemoreword;
+						von[fill_line]+=onemoreword;
+						bis[fill_line-1]+=onemoreword;
+					}
+				}
+				char_in_line=-1; // wird gleich inc -> dann sind wir fertig und der counter bei 0
+			}
+		}
+		char_in_line++;
+	};
+	if(bis[fill_line]==0){ // letztes array ding
+		bis[fill_line]=storry_length;
+	};
+	// we got the borders
+
+	// draw to display
+	for(unsigned int i=0; i<4; i++){ // nur 4 zeilen
+		if(von[i]!=bis[i]){
+			// reserve buffer
+			char *buffer2;
+			buffer2 = (char*) malloc (22);
+			if (buffer2==NULL) Serial.puts_ln(USART1,("Malloc failed"));
+			else memset(buffer2,'\0',sizeof(buffer2)/sizeof(buffer2[0]));
+
+			int k=0;
+			for(int j=von[i]; j<bis[i] && k<22; j++){
+				if(!(i==0 && storry[j]=='#')){ // in der ersten zeile, das erste "#" an stelle 0 überlesen
+					buffer2[k]=storry[j];
+					k++;
+				};
+			};
+			buffer2[k]='\0';
+			string(Speedo.default_font,buffer2,0,i+2,0,DISP_BRIGHTNESS,0);
+
+			//delete buffer
+			free(buffer2);
+		};
+	}
+
+	//
+	unsigned int current_state=Menu.state;
+	unsigned long current_timestamp=Millis.get();
+
+	// set buttons if needed
+	if(type>=DIALOG_NO_YES){
+		Menu.set_buttons(true,false,false,true);
+	}
+
+	if(type==DIALOG_NO_YES){
+		string(Speedo.default_font,("\x7E back        next \x7F"),0,7);
+	}
+	else if(type==DIALOG_GO_RIGHT_200MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<200){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_200MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<200){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_500MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<500){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_500MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<500){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_1000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<1000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_1000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<1000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_2000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<2000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_2000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<2000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_5000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<5000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_5000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<5000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_left(true);
+		}
+	} else if(type==DIALOG_SHOW_500MS){
+		_delay_ms(500);
+	}
 }
 
-//void ssd0323::string_centered(const char* text, uint8_t line, bool inverted){
-//    if(strlen(text)>20){
-//        return;
-//    };
-//
-//    uint16_t front_color=0x0f;
-//    uint16_t back_color=0x00;
-//    uint16_t start_pos=0;
-//    uint16_t length_of_char=22;
-//
-//    if(inverted){
-//        front_color=0x00;
-//        back_color=0x0f;
-//        if(strlen(text)<=17){ // 6*2pixel == 2 chars. 21 Chars - 2*2 = 17chars max
-//            length_of_char=17;
-//            start_pos=2;
-//            OLED.highlight_bar(0,line*8,128,8);
-//        } else {
-//            OLED.filled_rect(0,line*8,128,8,0x0f);
-//        }
-//    }
-//    char text_char[length_of_char]; // full display width +1
-//    strcpy(text_char,text);
-//    Menu.center_me(text_char,length_of_char); // full display width
-//    OLED.string(pSpeedo->default_font,text_char,start_pos,line,back_color,front_color,0);
-//}
+void ILI9325::string_centered(const char* text, uint8_t line){
+	string_centered(text,line,false);
+}
+
+void ILI9325::string_centered(const char* text, uint8_t line, bool inverted){
+	//    if(strlen(text)>20){
+	//        return;
+	//    };
+	//
+	//    uint16_t front_color=0x0f;
+	//    uint16_t back_color=0x00;
+	//    uint16_t start_pos=0;
+	//    uint16_t length_of_char=22;
+	//
+	//    if(inverted){
+	//        front_color=0x00;
+	//        back_color=0x0f;
+	//        if(strlen(text)<=17){ // 6*2pixel == 2 chars. 21 Chars - 2*2 = 17chars max
+	//            length_of_char=17;
+	//            start_pos=2;
+	//            highlight_bar(0,line*8,128,8);
+	//        } else {
+	//            filled_rect(0,line*8,128,8,0x0f);
+	//        }
+	//    }
+	//    char text_char[length_of_char]; // full display width +1
+	//    strcpy(text_char,text);
+	//    Menu.center_me(text_char,length_of_char); // full display width
+	//    string(Speedo.default_font,text_char,start_pos,line,back_color,front_color,0);
+}
 
 
-//void ssd0323::highlight_bar(unsigned char x,unsigned char y,unsigned char width,unsigned char height){
-//	x=floor(x/2)*2;
-//	width=floor(width/2)*2;
-//
-//	send_command(0x15);
-//	send_command(floor(x/2));
-//	send_command(floor((width-1+x)/2));
-//	send_command(0x75);
-//	send_command(y);
-//	send_command(height+y);
-//
-//	for(int j=0;j<height;j++){
-//		unsigned char b=0x34;
-//		for(int i=0;i<6;i++){
-//			send_char(b);
-//			b+=34;
-//		}
-//		b=0xff;
-//		for(int a=0;a<(width/2)-12;a++){
-//			send_char(b);
-//		};
-//		b=0xED;
-//		for(int i=0;i<6;i++){
-//			send_char(b);
-//			b-=34;
-//		}
-//	};
-//};
+void ILI9325::highlight_bar(uint16_t x,uint16_t y,uint16_t width,uint16_t height){
+	for(int i=0;i<16;i++){
+		SetTextColor(15*i,0,0);
+		DrawLine(x+i,y,height,Vertical);
+		DrawLine(x+width-i,y,height,Vertical);
+	}
+
+	SetTextColor(255,0,0);
+	DrawFullRect(x+16,y,width-31,height);
+	SetTextColor(0,0,0);
+	//	x=floor(x/2)*2;
+	//	width=floor(width/2)*2;
+	//
+	//	send_command(0x15);
+	//	send_command(floor(x/2));
+	//	send_command(floor((width-1+x)/2));
+	//	send_command(0x75);
+	//	send_command(y);
+	//	send_command(height+y);
+	//
+	//	for(int j=0;j<height;j++){
+	//		unsigned char b=0x34;
+	//		for(int i=0;i<6;i++){
+	//			send_char(b);
+	//			b+=34;
+	//		}
+	//		b=0xff;
+	//		for(int a=0;a<(width/2)-12;a++){
+	//			send_char(b);
+	//		};
+	//		b=0xED;
+	//		for(int i=0;i<6;i++){
+	//			send_char(b);
+	//			b-=34;
+	//		}
+	//	};
+};
+
+void ILI9325::filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,unsigned char color){
+	if(color==0x00){
+		SetTextColor(0,0,0);
+	} else {
+		SetTextColor(255,0,0);
+	}
+	DrawFullRect(x,y,width,height);
+}
+
+
+void ILI9325::draw_gps(uint16_t x,uint16_t y, unsigned char sats){
+	//    send_command(0x15);
+	//    send_command(x);
+	//    send_command(x+3);
+	//    send_command(0x75);
+	//    send_command(y);
+	//    send_command(y+7);
+	//    char xy[2][4];
+	//    xy[0][0]=0x00;
+	//    xy[1][0]=0x00;
+	//    xy[0][1]=0x00;
+	//    xy[1][1]=0x00;
+	//    xy[0][2]=0x00;
+	//    xy[1][2]=0x00;
+	//    xy[0][3]=0x00;
+	//    xy[1][3]=0x00;
+	//
+	//    // 4 symbols:
+	//    // 0 GPS => cross
+	//    // 3 GPS => empty (indicating minimal signal)
+	//    // 4 GPS => single bow (indicating poor signal)
+	//    // 5-X GPS => dual bow (indicating strong signal)
+	//
+	//    if(sats==0){
+	//        xy[0][0]=0x0F;        //     X X
+	//        xy[1][0]=0x0F;        //      X
+	//        //xy[0][1]=0x00;    //     X X
+	//        xy[1][1]=0xF0;        //
+	//        xy[0][2]=0x0F;        //
+	//        xy[1][2]=0x0F;        //
+	//        //xy[0][3]=0x00;    //
+	//        //xy[1][3]=0x00;    //
+	//    } else if(sats==4){
+	//        //xy[0][0]=0x00;    //
+	//        //xy[1][0]=0x00;    //
+	//        //xy[0][1]=0x00;    //    X
+	//        //xy[1][1]=0x00;    //     X
+	//        xy[0][2]=0xF0;        //
+	//        //xy[1][2]=0x00;    //
+	//        xy[0][3]=0x0F;        //
+	//        //xy[1][3]=0x00;    //
+	//    } else if(sats>4){
+	//        xy[0][0]=0xFF;        //    XX
+	//        //xy[1][0]=0x00;    //      X
+	//        //xy[0][1]=0x00;    //    X  X
+	//        xy[1][1]=0xF0;        //     X X
+	//        xy[0][2]=0xF0;        //
+	//        xy[1][2]=0x0F;        //
+	//        xy[0][3]=0x0F;        //
+	//        xy[1][3]=0x0F;        //
+	//    };
+	//
+	//
+	//    send_char(0x00);  send_char(0x00);  send_char(xy[0][0]);  send_char(xy[1][0]);    //
+	//    send_char(0x00);  send_char(0x00);  send_char(xy[0][1]);  send_char(xy[1][1]);    //
+	//    send_char(0x0F);  send_char(0x00);  send_char(xy[0][2]);  send_char(xy[1][2]);    // x
+	//    send_char(0xF0);  send_char(0xF0);  send_char(xy[0][3]);  send_char(xy[1][3]);    //x x
+	//    send_char(0xF0);  send_char(0x0F);  send_char(0x00);        send_char(0x00);        //x  x
+	//    send_char(0xF0);  send_char(0x00);  send_char(0xF0);      send_char(0x00);        //x   x
+	//    send_char(0x0F);  send_char(0x00);  send_char(0x0F);      send_char(0x00);        // x   x
+	//    send_char(0x00);  send_char(0xFF);  send_char(0xF0);      send_char(0x00);        //  xxx
+};
+
+void ILI9325::draw_oil(uint16_t x,uint16_t y){
+	//    send_command(0x15);
+	//    send_command(x);
+	//    send_command(x+9);
+	//    send_command(0x75);
+	//    send_command(y);
+	//    send_command(y+7);
+	//    send_char(0xFF); send_char(0xF0); send_char(0x0F); send_char(0xFF); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00);
+	//    send_char(0xF0); send_char(0x0F); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xFF); send_char(0xF0); send_char(0x00);
+	//    send_char(0xF0); send_char(0x0F); send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0x0F); send_char(0xF0); send_char(0xF0); send_char(0x00); send_char(0x00);
+	//    send_char(0x0F); send_char(0x0F); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x0F); send_char(0x00); send_char(0xF0); send_char(0x00);
+	//    send_char(0x00); send_char(0xFF); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x0F); send_char(0xFF); send_char(0x00);
+	//    send_char(0x00); send_char(0x0F); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0x00); send_char(0xFF); send_char(0x70); send_char(0xF0);
+	//    send_char(0x00); send_char(0x00); send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0xF0); send_char(0x00); send_char(0xFF); send_char(0x77); send_char(0xF0);
+	//    send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xFF); send_char(0x00);
+};
+
+void ILI9325::draw_water(uint16_t x,uint16_t y){
+	//    send_command(0x15);
+	//    send_command(x);
+	//    send_command(x+9);
+	//    send_command(0x75);
+	//    send_command(y);
+	//    send_command(y+7);
+	//    send_char(0x00);  send_char(0x77);  send_char(0x00);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);  send_char(0x00);  send_char(0x00);
+	//    send_char(0x00);  send_char(0x77);  send_char(0x00);  send_char(0x00);  send_char(0x0F);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);
+	//    send_char(0x00);  send_char(0x77);  send_char(0xF0);  send_char(0x0F);  send_char(0xFF);  send_char(0xFF);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);
+	//    send_char(0x00);  send_char(0x77);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0x00);  send_char(0x00);
+	//    send_char(0x00);  send_char(0x77);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);
+	//    send_char(0x00);  send_char(0x77);  send_char(0xF0);  send_char(0x0F);  send_char(0xFF);  send_char(0xFF);  send_char(0x00);  send_char(0x0F);  send_char(0xF0);  send_char(0x00);
+	//    send_char(0x00);  send_char(0x77);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x0F);  send_char(0xF0);  send_char(0x00);
+	//    send_char(0x00);  send_char(0x77);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);
+};
+
+void ILI9325::draw_air(uint16_t x,uint16_t y){
+	//    send_command(0x15);
+	//    send_command(x);
+	//    send_command(x+2);
+	//    send_command(0x75);
+	//    send_command(y);
+	//    send_command(y+7);
+	//    send_char(0x00);  send_char(0xF0);  send_char(0x00);
+	//    send_char(0x00);  send_char(0xFF);  send_char(0xF0);
+	//    send_char(0x00);  send_char(0xF0);  send_char(0x00);
+	//    send_char(0x00);  send_char(0xFF);  send_char(0xF0);
+	//    send_char(0x00);  send_char(0xF0);  send_char(0x00);
+	//    send_char(0x0F);  send_char(0xFF);  send_char(0x00);
+	//    send_char(0xFF);  send_char(0xFF);  send_char(0xF0);
+	//    send_char(0x0F);  send_char(0xFF);  send_char(0x00);
+};
+
+void ILI9325::draw_fuel(uint16_t x,uint16_t y){
+	//    send_command(0x15);
+	//    send_command(x);
+	//    send_command(x+3);
+	//    send_command(0x75);
+	//    send_command(y);
+	//    send_command(y+6);
+	//    send_char(0x0F);  send_char(0xFF);  send_char(0xF0);  send_char(0x0F);
+	//    send_char(0x0F);  send_char(0x00);  send_char(0xF0);  send_char(0xF0);
+	//    send_char(0x0F);  send_char(0x00);  send_char(0xF0);  send_char(0xF0);
+	//    send_char(0x0F);  send_char(0xFF);  send_char(0xF0);  send_char(0xF0);
+	//    send_char(0x0F);  send_char(0xFF);  send_char(0xFF);  send_char(0x00);
+	//    send_char(0x0F);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);
+	//    send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0x00);
+};
+
+void ILI9325::draw_clock(uint16_t x,uint16_t y){
+	//    send_command(0x15);
+	//    send_command(x);
+	//    send_command(x+3);
+	//    send_command(0x75);
+	//    send_command(y);
+	//    send_command(y+7);
+	//    send_char(0x00);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);
+	//    send_char(0x0F);  send_char(0x0F);  send_char(0x0F);  send_char(0x00);
+	//    send_char(0xF0);  send_char(0x0F);  send_char(0x00);  send_char(0xF0);
+	//    send_char(0xF0);  send_char(0x0F);  send_char(0xF0);  send_char(0xF0);
+	//    send_char(0xF0);  send_char(0x00);  send_char(0x00);  send_char(0xF0);
+	//    send_char(0x0F);  send_char(0x00);  send_char(0x0F);  send_char(0x00);
+	//    send_char(0x00);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);
+};
+
+void ILI9325::draw_blitzer(uint16_t x,uint16_t y){
+	//    send_command(0x15);
+	//    send_command(x);
+	//    send_command(x+4);
+	//    send_command(0x75);
+	//    send_command(y);
+	//    send_command(y+14);
+	//    send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0xF0);
+	//    send_char(0xFF); send_char(0xF0); send_char(0x00); send_char(0xFF); send_char(0xF0);
+	//    send_char(0xFF); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xF0);
+	//    send_char(0xFF); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xF0);
+	//    send_char(0xFF); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xF0);
+	//    send_char(0xFF); send_char(0xF0); send_char(0x00); send_char(0xFF); send_char(0xF0);
+	//    send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0xF0);
+	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
+	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
+	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
+	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
+	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
+	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
+	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
+}
+
+int ILI9325::animation(int a){
+	return 0;
+};
+
+void ILI9325::draw_arrow(int arrow, int spalte, int zeile){
+
+}

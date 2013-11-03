@@ -184,11 +184,22 @@ public:
 	void PutPixel(int16_t x, int16_t y);
 	void Pixel(int16_t x, int16_t y, u8 r, u8 g, u8 b);
 	void PutChar(int16_t PosX, int16_t PosY, char c);
-	void StringLine(uint16_t PosX, uint16_t PosY, char *str);
-	void string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile);
-	void string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, unsigned char fg, unsigned char bg, int offset);
-	void string(char *str,uint8_t spalte, uint8_t zeile, unsigned char fg, unsigned char bg, int offset);
+
+	void zeichen_small_1x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void zeichen_small_2x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void zeichen_small_3x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void zeichen_small_4x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void zeichen_small_5x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void zeichen_small_6x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+
 	void string(char *str,uint8_t spalte, uint8_t zeile);
+	void string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile);
+	void string(char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text);
+	void string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text, uint8_t offset);
+	void string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8_t text_r, uint8_t text_g, uint8_t text_b, uint8_t back_r, uint8_t back_g, uint8_t back_b, uint8_t offset);
+
+
 	void DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length,uint8_t Direction);
 	void DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width);
 	void DrawSquare(uint16_t Xpos, uint16_t Ypos, uint16_t a);
@@ -200,25 +211,25 @@ public:
 	void GetType(char model[]);
 	void Cross(u16 posX, u16 posY, u8 size);
 	void SetBackLight(unsigned short level);
-	void show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length);
-	void show_storry(char storry[],unsigned int storry_length,char title[],unsigned int title_length, uint8_t type);
 	void show_storry(const char* storry,const char* title);
+	void show_storry(const char* storry,unsigned int storry_length,char title[],unsigned int title_length, uint8_t type);
+	void show_storry(const char* storry,unsigned int storry_length,char title[],unsigned int title_length);
 	void show_storry(const char* storry,const char* title, uint8_t type);
 	void string_centered(const char* text, uint8_t line);
 	void string_centered(const char* text, uint8_t line, bool inverted);
-	void highlight_bar(unsigned char x,unsigned char y,unsigned char width,unsigned char height);
+	void highlight_bar(uint16_t x,uint16_t y,uint16_t width,uint16_t height);
 	int animation(int a);
 
-	void draw_oil(unsigned char x,unsigned char y);
-	void draw_water(unsigned char x,unsigned char y);
-	void draw_air(unsigned char x,unsigned char y);
-	void draw_fuel(unsigned char x,unsigned char y);
-	void draw_clock(unsigned char x,unsigned char y);
-	void draw_gps(unsigned char x,unsigned char y, unsigned char sats);
-	void draw_blitzer(unsigned char x,unsigned char y);
+	void draw_oil(uint16_t x,uint16_t y);
+	void draw_water(uint16_t x,uint16_t y);
+	void draw_air(uint16_t x,uint16_t y);
+	void draw_fuel(uint16_t x,uint16_t y);
+	void draw_clock(uint16_t x,uint16_t y);
+	void draw_gps(uint16_t x,uint16_t y, unsigned char sats);
+	void draw_blitzer(uint16_t x,uint16_t y);
 	void draw_arrow(int arrow, int spalte, int zeile);
 
-	void filled_rect(unsigned char x,unsigned char y,unsigned char width,unsigned char height,unsigned char color);
+	void filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,unsigned char color);
 
 	unsigned char startup[35]; // asdfghjk.asd,1234,1234,1234\0 == 28
 };

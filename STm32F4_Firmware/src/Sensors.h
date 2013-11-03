@@ -64,7 +64,7 @@ public:
 	Speed mSpeed;
 	reset mReset;
 	gear mGear;
-	//	speedo_voltage* m_voltage;
+	voltage mVoltage;
 	CAN mCAN;
 	int8_t sensor_source;
 	bool CAN_active;

@@ -3,8 +3,8 @@
 uart::uart(){
 	tail1=0;
 	head1=0;
-	head2=0;
-	tail2=0;
+//	head2=0;
+//	tail2=0;
 	head4=0;
 	tail4=0;
 };
@@ -78,7 +78,7 @@ void uart::init(USART_TypeDef* USARTx,uint32_t baudrate){
 		NVIC_Init(&NVIC_InitStructure);							 // the properties are passed to the NVIC_Init function which takes care of the low level stuff
 
 
-	} else if(USARTx==USART2){
+	} else if(USARTx==USART2){ // used for GPS
 		/* This is a concept that has to do with the libraries provided by ST
 		 * to make development easier the have made up something similar to
 		 * classes, called TypeDefs, which actually just define the common
@@ -96,7 +96,7 @@ void uart::init(USART_TypeDef* USARTx,uint32_t baudrate){
 
 		/* GPIOA Configuration:  USART2 TX on PA2 */
 		GPIO_InitTypeDef GPIO_InitStructure;
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -104,8 +104,9 @@ void uart::init(USART_TypeDef* USARTx,uint32_t baudrate){
 		GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 		/* Connect USART2 pins to AF2 */
-		// TX = PA2
+		// TX = PA2, RX=PA3
 		GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 
 		USART_InitTypeDef USART_InitStructure; // this is for the USART3 initilization
 		USART_InitStructure.USART_BaudRate = 19600;
@@ -113,7 +114,7 @@ void uart::init(USART_TypeDef* USARTx,uint32_t baudrate){
 		USART_InitStructure.USART_StopBits = USART_StopBits_1;
 		USART_InitStructure.USART_Parity = USART_Parity_No;
 		USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-		USART_InitStructure.USART_Mode = USART_Mode_Tx;
+		USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 		USART_Init(USART2, &USART_InitStructure);
 
 		/* Here the USART2 receive interrupt is enabled  and the interrupt controller is configured
@@ -126,7 +127,8 @@ void uart::init(USART_TypeDef* USARTx,uint32_t baudrate){
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;				// the USART1 interrupts are globally enabled
 		NVIC_Init(&NVIC_InitStructure);								// the properties are passed to the NVIC_Init function which takes care of the low level stuff
 
-	} else if(USARTx==USART3){
+	} else if(USARTx==USART3){ // inter controller comm
+		//PB10/11
 		USART_InitTypeDef USART_InitStructure; // this is for the USART3 initilization
 		USART_InitStructure.USART_BaudRate = baudrate;
 		USART_InitStructure.USART_WordLength = USART_WordLength_8b;
@@ -140,8 +142,8 @@ void uart::init(USART_TypeDef* USARTx,uint32_t baudrate){
 		//configure clock for GPIO
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 		//configure AF
-		GPIO_PinAFConfig(GPIOC,GPIO_PinSource10,GPIO_AF_USART3);
-		GPIO_PinAFConfig(GPIOC,GPIO_PinSource11,GPIO_AF_USART3);
+		GPIO_PinAFConfig(GPIOB,GPIO_PinSource10,GPIO_AF_USART3);
+		GPIO_PinAFConfig(GPIOB,GPIO_PinSource11,GPIO_AF_USART3);
 
 		//configure ports, &GPIO_InitStructure);
 		GPIO_InitTypeDef GPIO_InitStructure;
@@ -150,7 +152,7 @@ void uart::init(USART_TypeDef* USARTx,uint32_t baudrate){
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
 		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-		GPIO_Init(GPIOC, &GPIO_InitStructure);
+		GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 
 		USART_Init(USART3, &USART_InitStructure);
@@ -235,6 +237,11 @@ void uart::puts(USART_TypeDef* USARTx, char *s){
 	}
 }
 
+void uart::puts(USART_TypeDef* USARTx, char s){
+		// wait until data register is empty
+		USART_SendData(USARTx, s);
+}
+
 void uart::puts(USART_TypeDef* USARTx, int s){
 	char buffer[8];
 	sprintf(buffer,"%i",s);
@@ -283,12 +290,12 @@ void uart::recv(USART_TypeDef* USARTx,char t){
 		//			cnt = 0;
 		//			puts(USART1, received_string);
 		//		}
-	} else if(USARTx==USART2){
-		int i = (head2 + 1) % MAX_STRLEN;
-		if (i != tail2) {
-			buffer2[head2] = t;
-			head2 = i;
-		}
+//	} else if(USARTx==USART2){
+//		int i = (head2 + 1) % MAX_STRLEN;
+//		if (i != tail2) {
+//			buffer2[head2] = t;
+//			head2 = i;
+//		}
 	} else if(USARTx==UART4){
 		int i = (head4 + 1) % MAX_STRLEN;
 		if (i != tail4) {
@@ -301,8 +308,8 @@ void uart::recv(USART_TypeDef* USARTx,char t){
 int uart::available(USART_TypeDef* USARTx){
 	if(USARTx==USART1){
 		return (MAX_STRLEN + head1 - tail1) % MAX_STRLEN;
-	} else if(USARTx==USART2){
-		return (MAX_STRLEN + head2 - tail2) % MAX_STRLEN;
+//	} else if(USARTx==USART2){
+//		return (MAX_STRLEN + head2 - tail2) % MAX_STRLEN;
 	} else if(USARTx==UART4){
 		return (MAX_STRLEN + head4 - tail4) % MAX_STRLEN;
 	} else {
@@ -320,15 +327,15 @@ int uart::read(USART_TypeDef* USARTx){
 			tail1 = (tail1 + 1) % MAX_STRLEN;
 			return c;
 		}
-	} else if(USARTx==USART2){
-		// if the head isn't ahead of the tail, we don't have any characters
-		if (head2 == tail2) {
-			return -1;
-		} else {
-			unsigned char c = buffer2[tail2];
-			tail2 = (tail2 + 1) % MAX_STRLEN;
-			return c;
-		}
+//	} else if(USARTx==USART2){
+//		// if the head isn't ahead of the tail, we don't have any characters
+//		if (head2 == tail2) {
+//			return -1;
+//		} else {
+//			unsigned char c = buffer2[tail2];
+//			tail2 = (tail2 + 1) % MAX_STRLEN;
+//			return c;
+//		}
 	} else if(USARTx==UART4){
 		// if the head isn't ahead of the tail, we don't have any characters
 		if (head4 == tail4) {
