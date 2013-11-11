@@ -1,15 +1,12 @@
-
-
-
 /*
- * SpeedoSensors.h
+ * Speedosensing.h
  *
  *  Created on: 25.10.2013
  *      Author: jkw
  */
 
-#ifndef SPEEDOSENSORS_H_
-#define SPEEDOSENSORS_H_
+#ifndef SPEEDOsensing_H_
+#define SPEEDOsensing_H_
 
 #define HIGH_BEAM_PIN PK2
 #define NEUTRAL_GEAR_PIN PK1
@@ -30,10 +27,10 @@
 #define RPM_TYPE_ROUNDED 3
 #define RPM_TYPE_ROUNDED_FLAT 4
 
-class Speedo_Sensors {
+class sensing {
 public:
-	Speedo_Sensors();
-	virtual ~Speedo_Sensors();
+	sensing();
+	virtual ~sensing();
 
 	void init();
 	void check_vars();
@@ -54,21 +51,19 @@ public:
 
 
 	Rpm mRpm;
-	speedo_temperature mTemperature;
+	temperature mTemperature;
 	flasher mFlasher;
-
 	clock mClock;
 	GPS mGPS;
-	//	speedo_temperature* m_temperature;
 	fuel mFuel;
 	Speed mSpeed;
 	reset mReset;
 	gear mGear;
 	voltage mVoltage;
 	CAN mCAN;
+
 	int8_t sensor_source;
 	bool CAN_active;
-
 	uint8_t last_int_state;
 private:
 	uint32_t fourty_Hz_timer;
@@ -80,6 +75,6 @@ private:
 	uint32_t last_highbeam_on;
 	uint32_t last_oil_off;
 };
-extern Speedo_Sensors Sensors;
+extern sensing Sensors;
 
-#endif /* SPEEDOSENSORS_H_ */
+#endif /* SPEEDOsensing_H_ */

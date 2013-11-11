@@ -19,8 +19,8 @@ public:
 	void pin_toogled();
 	void check();
 	bool warn(unsigned long dist);
-	int dist_to_warn;
-	int high_speed_add;
+	int16_t dist_to_warn;
+	int16_t high_speed_add;
 private:
 	void set_start(unsigned long dist,int kmh);
 	bool      		flasher_active;  // wir sind der meinung der flasher ist an/aus

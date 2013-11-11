@@ -24,7 +24,7 @@
 #include "limits.h"
 
 // init & clean buffer
-speedo_speedcams::speedo_speedcams(){
+speedcams::speedcams(){
 	b2s_status.dest_file_seek=0;			// this is the position in the write file, as indicator if we have written to the file
 	b2s_status.state=SPEEDCAM_STATE_INIT; 	// state= init -> read_file_open -> read_error/read_start
 	b2s_status.dest_file_open=false;		// var to remember if we have opened the write file, important to remember closing it
@@ -52,28 +52,28 @@ speedo_speedcams::speedo_speedcams(){
 	bestOfThree_retrigger_distance=0;		// how far must the distance between our current coordinates and "bestOfThree_last_calc" be until we retrigger it
 }
 
-bool speedo_speedcams::get_active(){
+bool speedcams::get_active(){
 	return active;
 }
 
-uint16_t speedo_speedcams::get_dist_to_next_point(){
+uint16_t speedcams::get_dist_to_next_point(){
 	return POI_near_dist;
 }
 
-void speedo_speedcams::set_active(bool outer_active){
+void speedcams::set_active(bool outer_active){
 	active=outer_active;
 }
 
-void speedo_speedcams::set_gps_outdated(){
+void speedcams::set_gps_outdated(){
 	gps_outdated=true;
 }
 
-void speedo_speedcams::override_start(){
+void speedcams::override_start(){
 	b2s_status.running=true;				// trigger db read process
 	b2s_status.state=SPEEDCAM_STATE_START; 	// this will trigger all file open processings
 }
 
-void speedo_speedcams::interface(){
+void speedcams::interface(){
 	char buffer[22];
 	if(!active){
 		TFT.string_centered(("inactive"),3);
@@ -151,7 +151,7 @@ void speedo_speedcams::interface(){
 	}
 }
 
-bool speedo_speedcams::calc(){
+bool speedcams::calc(){
 	//////////////////////////////////////// DEBUG ///////////////////////////////////////////////////
 #if defined(DEBUG_EXECUTION_TIME)					// DEBUG TIME
 	uint32_t time=Millis.get();							// DEBUG TIME
@@ -301,23 +301,23 @@ bool speedo_speedcams::calc(){
 }
 
 
-int8_t speedo_speedcams::parse_complete_db(){
-//	unsigned char temp[25];
-//	uint32_t loaded_latitude;
-//	uint32_t loaded_longitude;
-//	uint32_t lati_diff;
-//	uint32_t long_diff;
-//
+int8_t speedcams::parse_complete_db(){
+	unsigned char temp[25];
+	uint32_t loaded_latitude;
+	uint32_t loaded_longitude;
+	uint32_t lati_diff;
+	uint32_t long_diff;
+
 //	////////////////// open database ////////////////////////////
 //	if(b2s_status.state<=SPEEDCAM_STATE_START){ // nothing has been done yet or an error happend
 //#if defined(DEBUG_HEAVY_CHANGES)
 //		Serial.println("opening sourcefile");
 //#endif
 //		unsigned char source_filename[20]; //
-//		strcpy_P((char *)source_filename,("CONFIG/POI.TXT")); // static file
+//		strcpy((char *)source_filename,("CONFIG/POI.TXT")); // static file
 //		b2s_status.POIs_parsed=0;
 //		source_file.close();	// should fail very often because the file should already be close, but thats not interessting
-//		if(pFilemanager_v2->get_file_handle(source_filename,&source_file,O_READ)<0){	// open it now
+//		if(Filemanager_v2.get_file_handle(source_filename,&source_file,O_READ)<0){	// open it now
 //			source_file.close();
 //#if defined(DEBUG_HEAVY_CHANGES)
 //			Serial.println("Damn, opening failed!");
@@ -414,12 +414,12 @@ int8_t speedo_speedcams::parse_complete_db(){
 //						////////////////// OPEN WRITE FILE  ////////////////////////////
 //						dest_file.close(); 																				// just to be sure
 //						unsigned char dest_filename[20]; //
-//						strcpy_P((char *)dest_filename,("CONFIG/POI_N.TXT")); // static file
+//						strcpy((char *)dest_filename,("CONFIG/POI_N.TXT")); // static file
 //						if(b2s_status.dest_file_seek>0){																	// but we HAVE written to it in the past
 //#if defined(DEBUG_HEAVY_CHANGES)
 //							Serial.println("Dest file should have content, open in append mode");
 //#endif
-//							if(pFilemanager_v2->get_file_handle(dest_filename,&dest_file,O_RDWR|O_CREAT|O_APPEND)<0){	// so open it to append further lines
+//							if(Filemanager_v2.get_file_handle(dest_filename,&dest_file,O_RDWR|O_CREAT|O_APPEND)<0){	// so open it to append further lines
 //								dest_file.close();
 //								b2s_status.dest_file_open=false;
 //								b2s_status.state=SPEEDCAM_STATE_ERROR_OPEN_WRITEFILE;
@@ -429,7 +429,7 @@ int8_t speedo_speedcams::parse_complete_db(){
 //								read_on=false;
 //							}																							// end of reopen file
 //						} else {																						// this is the first time we open this file
-//							if(pFilemanager_v2->get_file_handle(dest_filename,&dest_file,O_RDWR|O_CREAT|O_TRUNC)<0){	// reset it
+//							if(Filemanager_v2.get_file_handle(dest_filename,&dest_file,O_RDWR|O_CREAT|O_TRUNC)<0){	// reset it
 //								dest_file.close();
 //								b2s_status.dest_file_open=false;
 //								b2s_status.state=SPEEDCAM_STATE_ERROR_OPEN_WRITEFILE;
@@ -489,21 +489,21 @@ int8_t speedo_speedcams::parse_complete_db(){
 //			}
 //		}
 //	}
-//	////////////////// parse database ////////////////////////////
+	////////////////// parse database ////////////////////////////
 	return b2s_status.state;
 };
 
 
-int8_t speedo_speedcams::parse_small_db(){
+int8_t speedcams::parse_small_db(){
 //	unsigned char temp[25];
 //	simple_coordinate loaded_coordinates;
 //	uint32_t distances[3]={LONG_MAX,LONG_MAX,LONG_MAX}; // use 2000... sqrt(200...)=44km out of small db scope
 //	uint32_t temp_distance=0;
 //	uint8_t points_parsed=0;
 //	SdFile poi_n_file;
-//	strcpy_P((char *)temp,("CONFIG/POI_N.TXT")); // static file
+//	strcpy((char *)temp,("CONFIG/POI_N.TXT")); // static file
 //
-//	if(pFilemanager_v2->get_file_handle(temp,&poi_n_file,O_READ)<0){    // open it now
+//	if(Filemanager_v2.get_file_handle(temp,&poi_n_file,O_READ)<0){    // open it now
 //		poi_n_file.close();
 //#if defined(DEBUG_HEAVY_CHANGES)
 //		Serial.println("Damn, opening failed!");

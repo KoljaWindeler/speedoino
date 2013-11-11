@@ -16,9 +16,9 @@
  */
 #include "global.h"
 
-Speedo_aktors::Speedo_aktors(){
-//	m_stepper=new speedo_stepper();
-//	m_oiler=new speedo_oiler();
+akting::akting(){
+	stepper mStepper;
+	oiler mOiler;
 
 	kmh_min_value=0;
 	kmh_max_value=0;
@@ -38,7 +38,7 @@ Speedo_aktors::Speedo_aktors(){
 	dimm_state=999; //???
 };
 
-Speedo_aktors::~Speedo_aktors(){
+akting::~akting(){
 };
 
 
@@ -49,7 +49,7 @@ Speedo_aktors::~Speedo_aktors(){
 // . thereby only the "running update" should be written and the serial speed should be reconfigured
 // third: from the state (2) if the user pushed "right" button to trigger reset
 // . only reset ATm328 and return to last state
-void Speedo_aktors::run_reset_on_ATm328(char mode){
+void akting::run_reset_on_ATm328(char mode){
 	// serial setup and "klickibunti"-"show some msg"
 	if(mode==RESET_COMPLETE || mode==RESET_PREPARE){
 		Sensors.mReset.set_deactive(false,false);
@@ -92,7 +92,7 @@ void Speedo_aktors::run_reset_on_ATm328(char mode){
 			max_time=30000;
 		};
 		while(Millis.get()-timeout<max_time){ // time out
-			while(Serial.available(USART3)()>0){
+			while(Serial.available(USART3)>0){
 				Serial.puts(USART1,Serial.read(USART3));
 				timeout=Millis.get();
 			}
@@ -119,7 +119,7 @@ void Speedo_aktors::run_reset_on_ATm328(char mode){
 }
 
 
-bool Speedo_aktors::check_vars(){
+bool akting::check_vars(){
 	if(kmh_min_value+kmh_max_value+dz_min_value+dz_max_value+oil_min_value+oil_max_value+water_min_value+water_max_value==0){
 		static_color.r=0;
 		static_color.g=0;
@@ -184,7 +184,7 @@ bool Speedo_aktors::check_vars(){
 	return false;
 };
 
-void Speedo_aktors::init(){
+void akting::init(){
 	/* vier werte paare:
 	 * 1. Außen . ändert sich öfters mal, wird mit std werten geladen
 	 * 2. Innen . ändert sich eigentlich nie
@@ -201,56 +201,52 @@ void Speedo_aktors::init(){
 	led_area_controll=0x00;
 	expander_outdated=true;
 
-	// inner leds
-	RGB_IN_W_DIR  |= (1<<RGB_IN_W_PIN);   //pinMode(RGB_IN_W,OUTPUT);
-	// outer leds
-	RGB_OUT_R_DIR |= (1<<RGB_OUT_R_PIN); //pinMode(RGB_OUT_R,OUTPUT);
-	RGB_OUT_G_DIR |= (1<<RGB_OUT_G_PIN); //pinMode(RGB_OUT_G,OUTPUT);
-	RGB_OUT_B_DIR |= (1<<RGB_OUT_B_PIN); //pinMode(RGB_OUT_B,OUTPUT);
-
-	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
-
-	// see if its a clock startup or a regular startup
-	if(Speedo.startup_by_ignition){
-		// beleuchtung
-		TCCR4A|=1<<COM4B1; // RGB_OUT_R 7  OCR4B = val;
-		TCCR4A|=1<<COM4C1; // RGB_OUT_G 8  OCR4C = val;
-		TCCR2A|=1<<COM2B1; // RGB_OUT_B 9  OCR2B = val;
-
-		RGB_IN_W_PORT |= (1<<RGB_IN_W_PIN); // inner LED active
-		// beleuchtung
-
-		set_rbg_active((int)0x0000,false);
-		update_outer_leds(true,true);
-	};
+//	// inner leds
+//	RGB_IN_W_DIR  |= (1<<RGB_IN_W_PIN);   //pinMode(RGB_IN_W,OUTPUT);  TODO
+//	// outer leds
+//	RGB_OUT_R_DIR |= (1<<RGB_OUT_R_PIN); //pinMode(RGB_OUT_R,OUTPUT);
+//	RGB_OUT_G_DIR |= (1<<RGB_OUT_G_PIN); //pinMode(RGB_OUT_G,OUTPUT);
+//	RGB_OUT_B_DIR |= (1<<RGB_OUT_B_PIN); //pinMode(RGB_OUT_B,OUTPUT);
+//
+//	set_rgb_out(0,0,0); // dimm ich in main ein .. hmm
+//
+//	// see if its a clock startup or a regular startup
+//	if(Speedo.startup_by_ignition){
+//		// beleuchtung
+//		TCCR4A|=1<<COM4B1; // RGB_OUT_R 7  OCR4B = val;
+//		TCCR4A|=1<<COM4C1; // RGB_OUT_G 8  OCR4C = val;
+//		TCCR2A|=1<<COM2B1; // RGB_OUT_B 9  OCR2B = val;
+//
+//		RGB_IN_W_PORT |= (1<<RGB_IN_W_PIN); // inner LED active
+//		// beleuchtung
+//
+//		set_rbg_active((int)0x0000,false);
+//		update_outer_leds(true,true);
+//	};
 
 	// stepper drehen
-	m_stepper.init();
-	m_oiler.init();
+	mStepper.init();
+	mOiler.init();
 
 	// init port rep
-	//	  Wire.beginTransmission(0x20);
-	//	  Wire.write(0x12);
-	//	  Wire.write(gpio);
-	//	  Wire.endTransmission();
-	I2c.write(PORT_REP_ADDR,0x00,0x00);
-	I2c.write(PORT_REP_ADDR,0x01,0x00);
+//	I2c.write(PORT_REP_ADDR,0x00,0x00); TODO
+//	I2c.write(PORT_REP_ADDR,0x01,0x00);
 
 	Serial.puts_ln(USART1,("Aktoren init ... Done"));
 };
 
-void Speedo_aktors::set_rgb_out(int r,int g,int b){
+void akting::set_rgb_out(int r,int g,int b){
 	set_rgb_out(r,g,b,1);
 }
 
-void Speedo_aktors::set_rgb_out(int r,int g,int b,int save){
+void akting::set_rgb_out(int r,int g,int b,int save){
 	if(r>255) r=255; else if(r<0) r=0;
 	if(g>255) g=255; else if(g<0) g=0;
 	if(b>255) b=255; else if(b<0) b=0;
 
-	OCR4B=r; //analogWrite(RGB_OUT_R,r);
-	OCR4C=g; //analogWrite(RGB_OUT_G,g);
-	OCR2B=b; //analogWrite(RGB_OUT_B,b);
+//	OCR4B=r; //analogWrite(RGB_OUT_R,r);	 TODO
+//	OCR4C=g; //analogWrite(RGB_OUT_G,g);
+//	OCR2B=b; //analogWrite(RGB_OUT_B,b);
 
 	if(save){
 		RGB.r.actual=r;
@@ -259,7 +255,7 @@ void Speedo_aktors::set_rgb_out(int r,int g,int b,int save){
 	};
 };
 /* 10ms pro schritt . 0 to 256 = 2,56 sec */
-void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps){
+void akting::dimm_rgb_to(int r,int g,int b,int max_dimm_steps){
 
 	if(r>255) r=255;
 	if(g>255) g=255;
@@ -276,31 +272,32 @@ void Speedo_aktors::dimm_rgb_to(int r,int g,int b,int max_dimm_steps){
 	dimm_step=0; // wir beginnen bei 0 bis max dimm_steps
 
 
-	TCCR3A = 0x00;
-	/* ich denke mal alles umzuschalten => 256 schritte in 2,56 sec
-	 * wäre doch okay, also 256 Timer Schritte in 0,01 sec
-	 * ein schritt demnach in 0,01/256=0,000039062
-	 * das sind in der welt von 16 mhz => 1/16000000*x=0,000039062
-	 * x=625 schritte .. das ist doof vorteiler kann 256 oder 1024 sein
-	 * 16000000/256/256 = 244 hz . nur ne gute sekunde
-	 * 16000000/1024/256 = 61 hz . mehr als 4 sekunde, dazu dann mit
-	 * 256/2-1 vorladen = 127 . zack 2 sek
-	 */
-	// prescale 1024
-	TCCR3B |= (1<<CS32) | (1<<CS30);
-	TCCR3B &= ~(1<<CS31);
-	// 98 vorladen, 157 schritte
-	TCNT3H = 0xFF;
-	TCNT3L = 0x62;
-	// interrupts aktivieren
-	TIMSK3 |= (1<<TOIE3);
-	TIFR3  |= (1<<TOV3);
+//	TCCR3A = 0x00;  TODO
+//	/* ich denke mal alles umzuschalten => 256 schritte in 2,56 sec
+//	 * wäre doch okay, also 256 Timer Schritte in 0,01 sec
+//	 * ein schritt demnach in 0,01/256=0,000039062
+//	 * das sind in der welt von 16 mhz => 1/16000000*x=0,000039062
+//	 * x=625 schritte .. das ist doof vorteiler kann 256 oder 1024 sein
+//	 * 16000000/256/256 = 244 hz . nur ne gute sekunde
+//	 * 16000000/1024/256 = 61 hz . mehr als 4 sekunde, dazu dann mit
+//	 * 256/2-1 vorladen = 127 . zack 2 sek
+//	 */
+//	// prescale 1024
+//	TCCR3B |= (1<<CS32) | (1<<CS30);
+//	TCCR3B &= ~(1<<CS31);
+//	// 98 vorladen, 157 schritte
+//	TCNT3H = 0xFF;
+//	TCNT3L = 0x62;
+//	// interrupts aktivieren
+//	TIMSK3 |= (1<<TOIE3);
+//	TIFR3  |= (1<<TOV3);
 };
 
-ISR(TIMER3_OVF_vect){
-	pAktors.timer_overflow();
-}
-void Speedo_aktors::timer_overflow(){
+//ISR(TIMER3_OVF_vect){
+//	timer_overflow();
+//}
+
+void akting::timer_overflow(){
 	int r=int(round((float(int(RGB.r.to)-int(RGB.r.from))*dimm_step)/dimm_steps))+int(RGB.r.from);
 	int g=int(round((float(int(RGB.g.to)-int(RGB.g.from))*dimm_step)/dimm_steps))+int(RGB.g.from);
 	int b=int(round((float(int(RGB.b.to)-int(RGB.b.from))*dimm_step)/dimm_steps))+int(RGB.b.from);
@@ -310,27 +307,27 @@ void Speedo_aktors::timer_overflow(){
 	// sind am ende ? wenn ja, timer aus und to werte in from speichern,
 	// wenn nicht dimm_steps hochzählen und timer wieder vorladen damit er mit 10 ms
 	// läuft
-	if(dimm_step<dimm_steps){
-		dimm_step++;
-		// 127 vorladen
-		TCNT3H = 0xFF;
-		TCNT3L = 0x62;
-	} else {
-		// timer aus
-		TCCR3B &= ~((1<<CS32) | (1<<CS31) | (1<<CS30));
-		// aktueller und from wert sind damit der to wert
-		RGB.r.from=RGB.r.to;
-		RGB.g.from=RGB.g.to;
-		RGB.b.from=RGB.b.to;
-	};
+//	if(dimm_step<dimm_steps){ TODO
+//		dimm_step++;
+//		// 127 vorladen
+//		TCNT3H = 0xFF;
+//		TCNT3L = 0x62;
+//	} else {
+//		// timer aus
+//		TCCR3B &= ~((1<<CS32) | (1<<CS31) | (1<<CS30));
+//		// aktueller und from wert sind damit der to wert
+//		RGB.r.from=RGB.r.to;
+//		RGB.g.from=RGB.g.to;
+//		RGB.b.from=RGB.b.to;
+//	};
 };
 
-void Speedo_aktors::stop_dimmer(){
+void akting::stop_dimmer(){
 	// timer aus
-	TCCR3B &= ~((1<<CS32) | (1<<CS31) | (1<<CS30));
+//	TCCR3B &= ~((1<<CS32) | (1<<CS31) | (1<<CS30)); TODO
 }
 
-bool Speedo_aktors::dimm_available(){
+bool akting::dimm_available(){
 	if(dimm_step==dimm_steps)
 		return true;
 	else
@@ -338,21 +335,21 @@ bool Speedo_aktors::dimm_available(){
 };
 
 
-void Speedo_aktors::set_active_dimmer(bool state){
+void akting::set_active_dimmer(bool state){
 	colorfade_active=state;
 }
 
-int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
+int akting::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 	if(!colorfade_active) return 0;
 	if(overwrite) dimm_state=999;
 
 	////////// SHIFT FLASH ////////////////
 	////////// calc it //////////
-	if(Sensors.get_RPM(RPM_TYPE_DIRECT)>unsigned(Sensors.m_dz.blitz_dz) && Sensors.m_dz.blitz_en){
+	if(Sensors.get_RPM(RPM_TYPE_DIRECT)>unsigned(Sensors.mRpm.blitz_dz) && Sensors.mRpm.blitz_en){
 		attention_required=true;
 		set_rbg_active((int)0x0000,false); // activate all led's
-	} else if(pSpeedCams.get_active() && Menu.state==11){
-		if(pSpeedCams.calc()){
+	} else if(SpeedCams.get_active() && Menu.state==11){
+		if(SpeedCams.calc()){
 			attention_required=true;
 			set_rbg_active((int)0x0000,false); // activate all led's
 		} else {
@@ -367,17 +364,17 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 		if(dimm_state==FLASH_COLOR_REACHED){
 			return 0;
 		} else if(dimm_state==DIMM_TO_FLASH_COLOR){
-			if(pAktors.dimm_available()){
+			if(dimm_available()){
 				dimm_state=FLASH_COLOR_REACHED;
 			}
 		} else if(dimm_state==DIMM_TO_DARK){
-			if(pAktors.dimm_available()){
-				pAktors.dimm_rgb_to(pAktors.dz_flasher.r,pAktors.dz_flasher.g,pAktors.dz_flasher.b,15); // 15*10ms = 150 ms
+			if(dimm_available()){
+				dimm_rgb_to(dz_flasher.r,dz_flasher.g,dz_flasher.b,15); // 15*10ms = 150 ms
 				dimm_state=DIMM_TO_FLASH_COLOR;
 			}
 		} else {
-			if(pAktors.dimm_available()){
-				pAktors.dimm_rgb_to(5,5,5,15); // 15*10ms = 150 ms
+			if(dimm_available()){
+				dimm_rgb_to(5,5,5,15); // 15*10ms = 150 ms
 				dimm_state=DIMM_TO_DARK;
 			}
 		}
@@ -386,11 +383,11 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 		if(dimm_state==STATIC_COLOR_REACHED){
 			return 0;
 		} else if(dimm_state==DIMM_TO_STATIC_COLOR){
-			if(pAktors.dimm_available()){
+			if(dimm_available()){
 				dimm_state=STATIC_COLOR_REACHED;
 			};
 		} else {
-			pAktors.dimm_rgb_to(pAktors.static_color.r,pAktors.static_color.g,pAktors.static_color.b,25); // 25*10ms = 250 ms
+			dimm_rgb_to(static_color.r,static_color.g,static_color.b,25); // 25*10ms = 250 ms
 			dimm_state=DIMM_TO_STATIC_COLOR;
 		};
 		return 0;
@@ -473,7 +470,7 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 				temp_b = float(to_color.b-from_color.b)/float(differ)*(current_sensor_value-min_value)+from_color.b;
 			};
 
-			pAktors.dimm_rgb_to(temp_r,temp_g,temp_b,25); // 25*10ms = 250 ms
+			dimm_rgb_to(temp_r,temp_g,temp_b,25); // 25*10ms = 250 ms
 			dimm_state=DIMM_TO_STATIC_COLOR;
 			///////// dimm now end ///////////
 		}
@@ -482,7 +479,7 @@ int Speedo_aktors::update_outer_leds(bool dimm,bool overwrite){ // 250ms
 	return 1;
 };
 
-int Speedo_aktors::set_bt_pin(){
+int akting::set_bt_pin(){
 	TFT.clear_screen();
 	char at_commands[22];
 	bool connection_established=true;
@@ -562,7 +559,7 @@ int Speedo_aktors::set_bt_pin(){
 	return -2;
 }
 
-bool Speedo_aktors::check_mac_key(uint8_t* result,bool* comm_error){
+bool akting::check_mac_key(uint8_t* result,bool* comm_error){
 	char at_commands[22];
 	sprintf(at_commands,("ATB?%c"),0x0D);
 	uint8_t returns=0;
@@ -621,12 +618,12 @@ bool Speedo_aktors::check_mac_key(uint8_t* result,bool* comm_error){
 }
 
 
-int Speedo_aktors::ask_bt(char *command){
+int akting::ask_bt(char *command){
 	uint8_t temp;
 	return ask_bt(command,false,0,&temp); // by default no answere
 }
 
-int Speedo_aktors::ask_bt(char *buffer, bool answere_needed, int8_t max_length, uint8_t* char_rec){
+int akting::ask_bt(char *buffer, bool answere_needed, int8_t max_length, uint8_t* char_rec){
 	for(int looper=0;looper<30;looper++){
 		Serial.puts(USART1,buffer);
 		// A T \r \n O K \r \n = 8
@@ -662,19 +659,16 @@ int Speedo_aktors::ask_bt(char *buffer, bool answere_needed, int8_t max_length, 
 	return -1;
 }
 
-int Speedo_aktors::set_expander(){
+int akting::set_expander(){
 	uint8_t data[2];
 	data[0]=(uint8_t)control_lights;
 	data[1]=(uint8_t)led_area_controll;
-	//	char data2[20];
-	//	Sprint(data2,"Setze auf %i:%i",data[0],data[1]);
-	//	Serial.puts_ln(USART1,data2);
-	I2c.write(PORT_REP_ADDR,PORT_REP_ADDR_GPIO_A,data,2);
+//	I2c.write(PORT_REP_ADDR,PORT_REP_ADDR_GPIO_A,data,2); TODO
 	expander_outdated=false; // update done
 	return 0;
 }
 
-int Speedo_aktors::set_controll_lights(uint8_t oil,uint8_t flasher_left,uint8_t n_gear,uint8_t flasher_right,uint8_t high_beam, bool now){
+int akting::set_controll_lights(uint8_t oil,uint8_t flasher_left,uint8_t n_gear,uint8_t flasher_right,uint8_t high_beam, bool now){
 	// light, 0=off, 1==on, x=dontcar
 	uint8_t input[5]={flasher_right,high_beam,n_gear,flasher_left,oil};
 	for(int i=3; i<8; i++){ // pins of port extender
@@ -691,13 +685,13 @@ int Speedo_aktors::set_controll_lights(uint8_t oil,uint8_t flasher_left,uint8_t 
 	return 0;
 }
 
-void Speedo_aktors::check_flag(){
+void akting::check_flag(){
 	if(expander_outdated){
 		set_expander();
 	};
 };
 
-int Speedo_aktors::set_rbg_active(int status,bool now){
+int akting::set_rbg_active(int status,bool now){
 	uint8_t shifter[11]={5,6,2,7,4,1,1,2,3,0,0};
 	uint8_t port[11]={1,1,1,1,1,0,1,0,1,0,1};
 	uint8_t control_lights_old=control_lights;
@@ -731,7 +725,7 @@ int Speedo_aktors::set_rbg_active(int status,bool now){
 // at on day the mStepper should be part of the aktor class
 
 
-void Speedo_aktors::rgb_action(int needle_pos){
+void akting::rgb_action(int needle_pos){
 	if(pointer_highlight_mode==RGB_ACTION_TYPE_FOLLOW && !attention_required){
 		int8_t pos=((needle_pos/15)*11)/1000; // 15k rpm on 11 leds
 		int8_t end=pos+1;

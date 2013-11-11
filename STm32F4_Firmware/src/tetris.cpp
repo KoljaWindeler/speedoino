@@ -27,7 +27,7 @@ void tetris::init(){
 	new_element();
 	// load this element
 	new_element();
-	pSpeedo->reset_bak();
+	Speedo.reset_bak();
 };
 
 // this function creats the stones
@@ -126,13 +126,13 @@ void tetris::new_element(){
 	// copy to display
 	copy_element_to_buffer(next_element);
 
-	OLED.filled_rect(100,31,12,12,0);
+	TFT.filled_rect(100,31,12,12,0);
 	for(int x=0;x<3;x++){
 		for(int y=0;y<3;y++){
 			if(active_element[x][y]){
-				OLED.filled_rect(x*4+100,y*4+31,4,4,0x0f);
+				TFT.filled_rect(x*4+100,y*4+31,4,4,0x0f);
 			} else {
-				OLED.filled_rect(x*4+100,y*4+31,4,4,0x00);
+				TFT.filled_rect(x*4+100,y*4+31,4,4,0x00);
 			}
 		}
 	}
@@ -148,51 +148,49 @@ bool tetris::loop(){
 	while(Serial.available(USART1)>0){
 		_delay_ms(5);
 		if(state==0){
-			//OLED.string(0,"0",0,0);
+			//TFT.string(0,"0",0,0);
 
 			if(Serial.read(USART1)==MESSAGE_START){	state=1;	} else {	state=0;	}
 		} else if(state==1){
-			//OLED.string(0,"1",0,0);
+			//TFT.string(0,"1",0,0);
 
 			if(Serial.read(USART1)==0x01){	state=2;	} else {	state=0;	}
 		} else if(state==2){
-			//OLED.string(0,"2",0,0);
+			//TFT.string(0,"2",0,0);
 
 			if(Serial.read(USART1)==0x00){	state=3;	} else {	state=0;	}
 		} else if(state==3){
-			//OLED.string(0,"3",0,0);
+			//TFT.string(0,"3",0,0);
 
 			if(Serial.read(USART1)==0x01){	state=4;	} else {	state=0;	}
 		} else if(state==4){
-			//OLED.string(0,"4",0,0);
+			//TFT.string(0,"4",0,0);
 
 			if(Serial.read(USART1)==TOKEN){	state=5;	} else {	state=0;	}
 		} else if(state==5){
-			//OLED.string(0,"5",0,0);
+			//TFT.string(0,"5",0,0);
 			char d=Serial.read(USART1);
 
 			if(d==CMD_GO_LEFT){
-				//OLED.string(0,"6",0,0);
+				//TFT.string(0,"6",0,0);
 				c=1;
 				state=6;
 			} else if(d==CMD_GO_RIGHT){
-				//OLED.string(0,"6",0,0);
+				//TFT.string(0,"6",0,0);
 				c=2;
 				state=6;
 			} else if(d==CMD_GO_UP){
-				//OLED.string(0,"6",0,0);
+				//TFT.string(0,"6",0,0);
 				c=3;
 				state=6;
 			} else if(d==CMD_GO_DOWN){
-				//OLED.string(0,"6",0,0);
+				//TFT.string(0,"6",0,0);
 				c=4;
 				state=6;
 			} else {	state=0; c=0;	}
 		} else if(state==6){
-			//OLED.string(0,"7",0,0);
-
 			state=0;
-			Serial.flush();
+//			Serial.flush();
 			break;
 		}
 		// left
@@ -220,21 +218,21 @@ bool tetris::loop(){
 					Serial.flush();
 				_delay_ms(50);
 			}
-			OLED.animation(ani);
+			TFT.animation(ani);
 			initDrawField(); // draw the field again, to show the line and level counter
 
 			// make sure to draw this box only once
 			Speedo.disp_zeile_bak[0]=123;
 			// draw box
-			OLED.highlight_bar(8,8,104,48);
-			OLED.string(Speedo.default_font,("You loose"),5,2,15,0,0);
-			OLED.string(Speedo.default_font,("L Quit"),5,4,15,0,0);
+			TFT.highlight_bar(8,8,104,48);
+			TFT.string(Speedo.default_font,("You loose"),5,2,15,0,0);
+			TFT.string(Speedo.default_font,("L Quit"),5,4,15,0,0);
 			char temp[2];
 			sprintf(temp,"%c",126);
-			OLED.string(Speedo.default_font,temp,5,4,15,0,0);
-			OLED.string(Speedo.default_font,("R Retry"),5,5,15,0,0);
+			TFT.string(Speedo.default_font,temp,5,4,15,0,0);
+			TFT.string(Speedo.default_font,("R Retry"),5,5,15,0,0);
 			sprintf(temp,"%c",127);
-			OLED.string(Speedo.default_font,temp,5,5,15,0,0);
+			TFT.string(Speedo.default_font,temp,5,5,15,0,0);
 			// way at least one second to prevent unnoticed button push
 			_delay_ms(1000);
 			// if you loose and the box has been drawn, way on key down
@@ -244,7 +242,7 @@ bool tetris::loop(){
 				return false;
 			} else if (c==2 || !(PINJ & (1<<menu_button_rechts))){
 				_delay_ms(MIN_SIDE_PUSH_TIME);
-				OLED.clear_screen();
+				TFT.clear_screen();
 				// ja das ist ungeschickt, init leert uns die line variable, drawfield malt das hin, das problem ist nur
 				// das wir mit drawfield die in init gezeichneten "next" übermalen .. also einfach 2x init .. is ja wurst
 				init();
@@ -433,7 +431,7 @@ void tetris::run(){
 }
 
 void tetris::initDrawField(){
-	OLED.clear_screen();
+	TFT.clear_screen();
 	// Feld ist (12*4)x(16*4) == 48x64 liegt zwischen 12..54 | 60..64
 	// .. 0
 	// .x 1
@@ -451,40 +449,40 @@ void tetris::initDrawField(){
 	// xx 13
 	// x. 14
 	// x. 15
-	OLED.filled_rect(0,4,8,64,0x06);
-	OLED.filled_rect(0,1*4,4,4,0x00);
-	OLED.filled_rect(0,4*4,4,4,0x00);
-	OLED.filled_rect(0,6*4,4,12,0x00);
-	OLED.filled_rect(0,12*4,4,4,0x00);
+	TFT.filled_rect(0,4,8,64,0x06);
+	TFT.filled_rect(0,1*4,4,4,0x00);
+	TFT.filled_rect(0,4*4,4,4,0x00);
+	TFT.filled_rect(0,6*4,4,12,0x00);
+	TFT.filled_rect(0,12*4,4,4,0x00);
 
-	OLED.filled_rect(4,3*4,4,8,0x00);
-	OLED.filled_rect(4,8*4,4,8,0x00);
-	OLED.filled_rect(4,11*4,4,8,0x00);
-	OLED.filled_rect(4,14*4,4,8,0x00);
+	TFT.filled_rect(4,3*4,4,8,0x00);
+	TFT.filled_rect(4,8*4,4,8,0x00);
+	TFT.filled_rect(4,11*4,4,8,0x00);
+	TFT.filled_rect(4,14*4,4,8,0x00);
 
 
 
 
 	for(int y=0;y<64;y++){
-		OLED.set2pixels(8,y,0x00,0x0f);
-		OLED.set2pixels(10,y,0x00,0x0f);
+		TFT.set2pixels(8,y,0x00,0x0f);
+		TFT.set2pixels(10,y,0x00,0x0f);
 
-		OLED.set2pixels(60,y,0x0f,0x00);
-		OLED.set2pixels(62,y,0x0f,0x00);
+		TFT.set2pixels(60,y,0x0f,0x00);
+		TFT.set2pixels(62,y,0x0f,0x00);
 	}
 
 
-	OLED.string(Speedo.default_font,("Speedoino"),11,0,0,15,0);
-	OLED.string(Speedo.default_font,("goes "),13,1,0,15,0);
-	OLED.string(Speedo.default_font,("Tetris"),12,2,0,15,0);
-	OLED.string(Speedo.default_font,("Next"),11,4,0,15,0);
-	OLED.string(Speedo.default_font,("Level: "),11,6,0,15,0);
-	OLED.string(Speedo.default_font,("Lines: "),11,7,0,15,0);
+	TFT.string(Speedo.default_font,("Speedoino"),11,0,0,15,0);
+	TFT.string(Speedo.default_font,("goes "),13,1,0,15,0);
+	TFT.string(Speedo.default_font,("Tetris"),12,2,0,15,0);
+	TFT.string(Speedo.default_font,("Next"),11,4,0,15,0);
+	TFT.string(Speedo.default_font,("Level: "),11,6,0,15,0);
+	TFT.string(Speedo.default_font,("Lines: "),11,7,0,15,0);
 	char temp[3];
 	sprintf(temp,"%2i",int(floor(lines/10)));
-	OLED.string(Speedo.default_font,temp,19,6,0,15,0);
+	TFT.string(Speedo.default_font,temp,19,6,0,15,0);
 	sprintf(temp,"%2i",lines);
-	OLED.string(Speedo.default_font,temp,19,7,0,15,0);
+	TFT.string(Speedo.default_font,temp,19,7,0,15,0);
 }
 
 void tetris::updateField(){
@@ -498,7 +496,7 @@ void tetris::updateField(){
 				if(area[internal_y] & (1<<(COLS-internal_x))){
 					color=0x06;
 				}
-				OLED.filled_rect(4*(internal_x)+12,4*(internal_y),4,4,color);
+				TFT.filled_rect(4*(internal_x)+12,4*(internal_y),4,4,color);
 			};
 		}
 	}
@@ -506,7 +504,7 @@ void tetris::updateField(){
 	for(int x=0;x<3;x++){
 		for(int y=0;y<3;y++){
 			if(active_element[x][y]){
-				OLED.filled_rect(4*(active_x+x)+12,4*(active_y+y),4,4,15);
+				TFT.filled_rect(4*(active_x+x)+12,4*(active_y+y),4,4,15);
 			}
 		}
 	}
@@ -544,13 +542,13 @@ void tetris::check_stack(){
 				for(int line=0;line<LINES;line++){
 					if(area[line]==8190){
 						// blinken lassen
-						OLED.filled_rect(12,line*4,12*4,4,0);
+						TFT.filled_rect(12,line*4,12*4,4,0);
 						_delay_ms(125);
-						OLED.filled_rect(12,line*4,12*4,4,6);
+						TFT.filled_rect(12,line*4,12*4,4,6);
 						_delay_ms(125);
-						OLED.filled_rect(12,line*4,12*4,4,0);
+						TFT.filled_rect(12,line*4,12*4,4,0);
 						_delay_ms(125);
-						OLED.filled_rect(12,line*4,12*4,4,6);
+						TFT.filled_rect(12,line*4,12*4,4,6);
 						// felder verschieben
 						for(int upper_line=line;upper_line>0;upper_line--){
 							area[upper_line]=area[upper_line-1];
@@ -560,12 +558,12 @@ void tetris::check_stack(){
 								if(area[upper_line] & (1<<(COLS-copy_x))){
 									color=0x06;
 								}
-								OLED.filled_rect(12+copy_x*4,upper_line*4,4,4,color);
+								TFT.filled_rect(12+copy_x*4,upper_line*4,4,4,color);
 							}
 						}
 						// letzte feld löschen
 						area[0]=0b0000000000000000;
-						OLED.filled_rect(12,0,48,4,0);
+						TFT.filled_rect(12,0,48,4,0);
 
 						// lines hochzählen
 						lines++;
@@ -589,9 +587,9 @@ void tetris::check_stack(){
 						}
 						char temp[3];
 						sprintf(temp,"%2i",int(floor(lines/10)));
-						OLED.string(Speedo.default_font,temp,19,6,0,15,0);
+						TFT.string(Speedo.default_font,temp,19,6,0,15,0);
 						sprintf(temp,"%2i",lines);
-						OLED.string(Speedo.default_font,temp,19,7,0,15,0);
+						TFT.string(Speedo.default_font,temp,19,7,0,15,0);
 					}
 				}
 

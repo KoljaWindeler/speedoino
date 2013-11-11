@@ -22,7 +22,7 @@ public:
 	bool check_vars();
 	int send_impulse();
 	void check_value();
-	int grenze;
+	int16_t grenze;
 private:
 };
 

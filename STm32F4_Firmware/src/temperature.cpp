@@ -17,7 +17,7 @@
 
 #include "global.h"
 
-speedo_temperature::speedo_temperature(){
+temperature::temperature(){
 	oil_temp_value_counter=0;
 	oil_temp_value=0;
 	oil_temp_fail_status=0; // 0 = no failed read, 1-5 = Number of shorts read, 6-9 = Number of open read
@@ -40,10 +40,10 @@ speedo_temperature::speedo_temperature(){
 	};
 };
 
-speedo_temperature::~speedo_temperature(){
+temperature::~temperature(){
 };
 
-int speedo_temperature::check_vars(){
+int temperature::check_vars(){
 	if(water_r_werte[0]==0 || water_t_werte[0]==0 || oil_t_werte[0]==0 || oil_r_werte[0]==0){
 		// Temperatur und Widerstands LookUp
 		// OIL
@@ -56,7 +56,6 @@ int speedo_temperature::check_vars(){
 		};
 
 		// Water
-		//TODO
 		int r_werte2[19]={354,323,241,198,157,135,111,93,80,64,52,43,37,30, 23, 18, 15, 10,  9}; // widerstandswerte
 		int t_werte2[19]={ 30, 35, 40, 45, 50, 55, 60,65,70,75,80,85,90,95,100,105,110,115,116}; // passender Temperaturwert
 		for(unsigned int j=0; j<sizeof(water_r_werte)/sizeof(water_r_werte[0]); j++){
@@ -73,7 +72,7 @@ int speedo_temperature::check_vars(){
 	return 0;
 }
 
-void speedo_temperature::init(){
+void temperature::init(){
 	// configure analog input B0 for water and C1 oil
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 	GPIO_InitTypeDef GPIO_InitStructure; // create new datatype
@@ -116,7 +115,7 @@ void speedo_temperature::init(){
 	Serial.puts_ln(USART1,("Temp init done."));
 }
 
-void speedo_temperature::read_oil_temp() {
+void temperature::read_oil_temp() {
 	// werte in array speichern in °C*10 für Nachkommastelle
 #ifdef TEMP_DEBUG
 	Serial.puts_ln(USART1,"\n\rTemp: Beginne Öl zu lesen");
@@ -199,7 +198,7 @@ void speedo_temperature::read_oil_temp() {
 	}
 };
 
-void speedo_temperature::read_water_temp() {
+void temperature::read_water_temp() {
 	// werte in array speichern in °C*10 für Nachkommastelle
 #ifdef TEMP_DEBUG
 	Serial.puts_ln(USART1,"\n\rTemp: Beginne Water zu lesen");
@@ -264,7 +263,7 @@ void speedo_temperature::read_water_temp() {
 	}
 };
 
-void speedo_temperature::read_air_temp() {
+void temperature::read_air_temp() {
 	return;
 
 	/*
@@ -302,21 +301,21 @@ void speedo_temperature::read_air_temp() {
 };
 
 
-int speedo_temperature::get_air_temp(){
+int temperature::get_air_temp(){
 	if(air_temp_value>999) // notfall
 		return 0;
 	else
 		return air_temp_value;
 }
 
-int speedo_temperature::get_oil_temp(){
+int temperature::get_oil_temp(){
 	if(Speedo.trip_dist[2]==0 && get_air_temp()!=999 && oil_temp_value!=8888 && oil_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
 		return get_air_temp()-1;
 	else
 		return int(round(oil_temp_value));
 }
 
-int speedo_temperature::get_water_temp(){
+int temperature::get_water_temp(){
 	if(Speedo.trip_dist[2]==0  && get_air_temp()!=999 && water_temp_value!=8888 && water_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
 		return get_air_temp()-1;
 	else

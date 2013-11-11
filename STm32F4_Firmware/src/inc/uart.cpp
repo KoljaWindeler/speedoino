@@ -3,8 +3,10 @@
 uart::uart(){
 	tail1=0;
 	head1=0;
-//	head2=0;
-//	tail2=0;
+	//	head2=0;
+	//	tail2=0;
+	head3=0;
+	tail3=0;
 	head4=0;
 	tail4=0;
 };
@@ -238,8 +240,8 @@ void uart::puts(USART_TypeDef* USARTx, char *s){
 }
 
 void uart::puts(USART_TypeDef* USARTx, char s){
-		// wait until data register is empty
-		USART_SendData(USARTx, s);
+	// wait until data register is empty
+	USART_SendData(USARTx, s);
 }
 
 void uart::puts(USART_TypeDef* USARTx, int s){
@@ -290,12 +292,18 @@ void uart::recv(USART_TypeDef* USARTx,char t){
 		//			cnt = 0;
 		//			puts(USART1, received_string);
 		//		}
-//	} else if(USARTx==USART2){
-//		int i = (head2 + 1) % MAX_STRLEN;
-//		if (i != tail2) {
-//			buffer2[head2] = t;
-//			head2 = i;
-//		}
+		//	} else if(USARTx==USART2){
+		//		int i = (head2 + 1) % MAX_STRLEN;
+		//		if (i != tail2) {
+		//			buffer2[head2] = t;
+		//			head2 = i;
+		//		}
+	} else if(USARTx==USART3){
+		int i = (head3 + 1) % MAX_STRLEN;
+		if (i != tail3) {
+			buffer3[head3] = t;
+			head3 = i;
+		}
 	} else if(USARTx==UART4){
 		int i = (head4 + 1) % MAX_STRLEN;
 		if (i != tail4) {
@@ -308,14 +316,32 @@ void uart::recv(USART_TypeDef* USARTx,char t){
 int uart::available(USART_TypeDef* USARTx){
 	if(USARTx==USART1){
 		return (MAX_STRLEN + head1 - tail1) % MAX_STRLEN;
-//	} else if(USARTx==USART2){
-//		return (MAX_STRLEN + head2 - tail2) % MAX_STRLEN;
+		//	} else if(USARTx==USART2){
+		//		return (MAX_STRLEN + head2 - tail2) % MAX_STRLEN;
+	} else if(USARTx==USART3){
+		return (MAX_STRLEN + head3 - tail3) % MAX_STRLEN;
 	} else if(USARTx==UART4){
 		return (MAX_STRLEN + head4 - tail4) % MAX_STRLEN;
 	} else {
 		return -1;
 	}
 }
+
+void uart::flush(USART_TypeDef* USARTx){
+	if(USARTx==USART1){
+		head1=0;
+		tail1=0;
+		//	} else if(USARTx==USART2){
+		//		return (MAX_STRLEN + head2 - tail2) % MAX_STRLEN;
+	} else if(USARTx==USART3){
+		head3=0;
+		tail3=0;
+	} else if(USARTx==UART4){
+		head4=0;
+		tail4=0;
+	}
+}
+
 
 int uart::read(USART_TypeDef* USARTx){
 	if(USARTx==USART1){
@@ -327,15 +353,15 @@ int uart::read(USART_TypeDef* USARTx){
 			tail1 = (tail1 + 1) % MAX_STRLEN;
 			return c;
 		}
-//	} else if(USARTx==USART2){
-//		// if the head isn't ahead of the tail, we don't have any characters
-//		if (head2 == tail2) {
-//			return -1;
-//		} else {
-//			unsigned char c = buffer2[tail2];
-//			tail2 = (tail2 + 1) % MAX_STRLEN;
-//			return c;
-//		}
+		//	} else if(USARTx==USART2){
+		//		// if the head isn't ahead of the tail, we don't have any characters
+		//		if (head2 == tail2) {
+		//			return -1;
+		//		} else {
+		//			unsigned char c = buffer2[tail2];
+		//			tail2 = (tail2 + 1) % MAX_STRLEN;
+		//			return c;
+		//		}
 	} else if(USARTx==UART4){
 		// if the head isn't ahead of the tail, we don't have any characters
 		if (head4 == tail4) {

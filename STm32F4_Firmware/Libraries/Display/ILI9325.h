@@ -191,6 +191,8 @@ public:
 	void zeichen_small_4x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
 	void zeichen_small_5x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
 	void zeichen_small_6x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void zeichen_small_7x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void zeichen_small_8x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
 	void zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
 
 	void string(char *str,uint8_t spalte, uint8_t zeile);
@@ -230,6 +232,8 @@ public:
 	void draw_arrow(int arrow, int spalte, int zeile);
 
 	void filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,unsigned char color);
+	void glow(int16_t x_start,int16_t y_start,int16_t xend,int16_t y_end,uint8_t r,uint8_t g,uint8_t b,uint8_t loss);
+	void check_coordinates(int16_t* x,int16_t* y);
 
 	unsigned char startup[35]; // asdfghjk.asd,1234,1234,1234\0 == 28
 };

@@ -37,6 +37,10 @@ typedef uint8_t byte;
 #define VISITOR_SMALL_2X_FONT	11
 #define VISITOR_SMALL_3X_FONT	12
 #define VISITOR_SMALL_4X_FONT	13
+#define VISITOR_SMALL_5X_FONT	14
+#define VISITOR_SMALL_6X_FONT	15
+#define VISITOR_SMALL_7X_FONT	16
+#define VISITOR_SMALL_8X_FONT	17
 
 
 class ssd0323  // shell class for ssd0323 glcd code

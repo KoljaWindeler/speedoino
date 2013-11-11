@@ -10,13 +10,13 @@
 
 #define ATM_DIV_FACTOR 23.148148148
 
-class speedo_stepper{
+class stepper{
 
 public:
 #define MOTOR_OVERWRITE_END_POS 864
 #define TMC222_DIV_FACTOR 1.45 // rechnerisch 1.48
-	speedo_stepper();
-	~speedo_stepper();
+	stepper();
+	~stepper();
 	void init();
 	void loop();
 	bool go_to(int winkel,int accel,int speed);

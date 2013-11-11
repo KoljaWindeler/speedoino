@@ -35,11 +35,11 @@ public:
 	void day_trip_check();
 	void ram_info();
 	bool storage_outdated;
-	int skin_file;
+	int16_t skin_file;
 private:
 	int parse(char buffer[]);
 	int parse_float(char buffer[],int i,float *wert);
-	int parse_int(char buffer[],int i,int *wert);
+	int parse_int16_t(char buffer[],int i,int16_t* wert);
 	int parse_uint8_t(char* buffer,int i,uint8_t* wert);
 	int parse_bool(char* buffer,int i,bool* wert);
 	int parse_a(char* buffer,int i,char* wert,int max_length);

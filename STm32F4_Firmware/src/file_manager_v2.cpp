@@ -18,9 +18,9 @@
 #include "global.h"
 
 
-speedo_filemanager_v2::speedo_filemanager_v2(){};
+filemanager_v2::filemanager_v2(){};
 
-speedo_filemanager_v2::~speedo_filemanager_v2(){};
+filemanager_v2::~filemanager_v2(){};
 
 
 // hier kommt man rein, wenn in der hauptschleife festgestellt wurde
@@ -29,7 +29,7 @@ speedo_filemanager_v2::~speedo_filemanager_v2(){};
 // b) quatsch
 // nach "links" geht er mit isLeave=1 raus
 
-void speedo_filemanager_v2::parse_command(){
+void filemanager_v2::parse_command(){
 	// Direct start in, cause start was already fetched //msgParseState	=	ST_START;
 	unsigned char	msgParseState	=	ST_GET_SEQ_NUM;
 	unsigned int	ii				=	0;
@@ -44,7 +44,7 @@ void speedo_filemanager_v2::parse_command(){
 	unsigned char 	last_file[22];
 	unsigned long last_file_seek=-1; // max
 	bool 			answere_transmitted=false;
-	pSensors->m_reset->set_deactive(false,true);
+	Sensors.mReset.set_deactive(false,true);
 
 	//*	main loop
 	while (!isLeave){
@@ -57,7 +57,7 @@ void speedo_filemanager_v2::parse_command(){
 
 			// solange keine Daten an der Schnittstelle anliegen
 			// und wir auch noch keine WAIT_MS_FOR_DATA gewartet haben
-			while(Serial.available()==0 && timeout<WAIT_MS_FOR_DATA){
+			while(Serial.available(USART1)==0 && timeout<WAIT_MS_FOR_DATA){
 				timeout++;
 				if(timeout>=WAIT_MS_FOR_DATA){
 					isLeave=1;					// exit the while loop on tops
@@ -70,22 +70,22 @@ void speedo_filemanager_v2::parse_command(){
 			if(isLeave!=1){
 				//////////////////
 #ifdef DEBUG_TRANSFER
-				pOLED->string(0,"-",0,1);
+				TFT.string(0,"-",0,1);
 				_delay_ms(500);
 #endif
 				//////////////////
-				c = Serial.read();
+				c = Serial.read(USART1);
 				timeout = 0;
 
 				switch (msgParseState){
 				case ST_START:
-					//					pOLED->animation(3);
-					//					pOLED->string(VISITOR_SMALL_1X_FONT,"LOADING...",5,0);
+					//					TFT.animation(3);
+					//					TFT.string(VISITOR_SMALL_1X_FONT,"LOADING...",5,0);
 
 					if ( c == MESSAGE_START ){
 						//////////////////
 #ifdef DEBUG_TRANSFER
-						pOLED->string(0,"1",0,1);
+						TFT.string(0,"1",0,1);
 						_delay_ms(500);
 #endif
 #ifdef DEBUG_TRANSFER_INTENSIV
@@ -109,12 +109,12 @@ void speedo_filemanager_v2::parse_command(){
 					if ((c == 1) || (c == seqNum)){
 						//////////////////
 #ifdef DEBUG_TRANSFER
-						pOLED->string(0,"2",0,1);
+						TFT.string(0,"2",0,1);
 						_delay_ms(500);
 #endif
 #ifdef DEBUG_TRANSFER_INTENSIV
-						Serial.print("seq nr: ");
-						Serial.print(c,DEC);
+						Serial.puts(USART1,"seq nr: ");
+						Serial.puts(USART1,c,DEC);
 						Serial.println(" erhalten");
 #endif
 						//////////////////
@@ -129,11 +129,11 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_MSG_SIZE:
 					//////////////////
 #ifdef DEBUG_TRANSFER
-					pOLED->string(0,"3",0,1);
+					TFT.string(0,"3",0,1);
 					_delay_ms(500);
 #endif
 #ifdef DEBUG_TRANSFER_INTENSIV
-					Serial.print("MSG size:");
+					Serial.puts(USART1,"MSG size:");
 					Serial.println(c,DEC);
 #endif
 					//////////////////
@@ -145,11 +145,11 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_MSG_SIZE_2:
 					//////////////////
 #ifdef DEBUG_TRANSFER
-					pOLED->string(0,"4",0,1);
+					TFT.string(0,"4",0,1);
 					_delay_ms(500);
 #endif
 #ifdef DEBUG_TRANSFER_INTENSIV
-					Serial.print("MSG size:");
+					Serial.puts(USART1,"MSG size:");
 					Serial.println(c,DEC);
 #endif
 					//////////////////
@@ -162,7 +162,7 @@ void speedo_filemanager_v2::parse_command(){
 					if ( c == TOKEN ){
 						//////////////////
 #ifdef DEBUG_TRANSFER
-						pOLED->string(0,"5",0,1);
+						TFT.string(0,"5",0,1);
 						_delay_ms(500);
 #endif
 #ifdef DEBUG_TRANSFER_INTENSIV
@@ -180,7 +180,7 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_GET_DATA:
 					//////////////////
 #ifdef DEBUG_TRANSFER
-					pOLED->string(0,"6",0,1);
+					TFT.string(0,"6",0,1);
 					_delay_ms(500);
 #endif
 #ifdef DEBUG_TRANSFER_INTENSIV
@@ -197,13 +197,13 @@ void speedo_filemanager_v2::parse_command(){
 				case ST_GET_CHECK:
 					//					char buffer[15];
 					//					sprintf(buffer,"ist %i",c);
-					//					pOLED->string(0,buffer,0,3);
+					//					TFT.string(0,buffer,0,3);
 					//					sprintf(buffer,"soll %i",checksum);
-					//					pOLED->string(0,buffer,0,4);
+					//					TFT.string(0,buffer,0,4);
 					if ( c == checksum){
 						//////////////////
 #ifdef DEBUG_TRANSFER
-						pOLED->string(0,"7",0,1);
+						TFT.string(0,"7",0,1);
 						_delay_ms(500);
 #endif
 #ifdef DEBUG_TRANSFER_INTENSIV
@@ -245,7 +245,7 @@ void speedo_filemanager_v2::parse_command(){
 				buffer[1]='0'+(msgBuffer[0]%16);
 			}
 			buffer[2]='\0';
-			pOLED->string(0,buffer,0,1);
+			TFT.string(0,buffer,0,1);
 #endif
 
 			/////////////////////////// SIGN ON ///////////////////////////////////////
@@ -269,8 +269,8 @@ void speedo_filemanager_v2::parse_command(){
 				////////////////////////// UP DOWN LEFT RIGHT /////////////////////////////
 
 			} else if(msgBuffer[0]==CMD_GO_LEFT){
-				if(pMenu->button_links_valid){
-					pMenu->go_left(true); // i wait on main loop, i won't update it myself
+				if(Menu.button_links_valid){
+					Menu.go_left(true); // i wait on main loop, i won't update it myself
 				}
 				isLeave	=	1;
 				msgLength		=	2;
@@ -278,8 +278,8 @@ void speedo_filemanager_v2::parse_command(){
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_RIGHT){
-				if(pMenu->button_rechts_valid){
-					pMenu->go_right(true); // i wait on main loop, i won't update it myself
+				if(Menu.button_rechts_valid){
+					Menu.go_right(true); // i wait on main loop, i won't update it myself
 				}
 				isLeave	=	1;
 				msgLength		=	2;
@@ -287,8 +287,8 @@ void speedo_filemanager_v2::parse_command(){
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_UP){
-				if(pMenu->button_oben_valid){
-					pMenu->go_up(true); // i wait on main loop, i won't update it myself
+				if(Menu.button_oben_valid){
+					Menu.go_up(true); // i wait on main loop, i won't update it myself
 				}
 				isLeave	=	1;
 				msgLength		=	2;
@@ -296,8 +296,8 @@ void speedo_filemanager_v2::parse_command(){
 				msgBuffer[1] 	=	STATUS_CMD_OK;
 
 			} else if(msgBuffer[0]==CMD_GO_DOWN){
-				if(pMenu->button_unten_valid){
-					pMenu->go_down(true); // i wait on main loop, i won't update it myself
+				if(Menu.button_unten_valid){
+					Menu.go_down(true); // i wait on main loop, i won't update it myself
 				}
 				isLeave	=	1;
 				msgLength		=	2;
@@ -341,7 +341,7 @@ void speedo_filemanager_v2::parse_command(){
 				int item=(msgBuffer[1]<<8)|msgBuffer[2];
 
 				// open root and maybe go on
-				SdFile fm_handle;
+//				SdFile fm_handle; TODO
 				int status=0;
 				unsigned long size=0;
 				// get filename and type of item
@@ -350,13 +350,14 @@ void speedo_filemanager_v2::parse_command(){
 				msgBuffer[0]=CMD_DIR;
 				msgBuffer[1]=STATUS_CMD_OK;
 
-				if(get_file_handle(dir,last_file,&fm_file,&fm_handle,O_READ)<0){
+				if(SD.get_file_handle(dir,last_file,&fm_file,FA_READ)<0){
 					status=-1;
 				} else {
 					last_file[0]='\0';// remove from cache to avoid reuse
 
-					status=fm_handle.lsJKWNext(name,item,&size);
-					fm_handle.close();
+					//status=fm_handle.lsJKWNext(name,item,&size); BIG TODO
+					f_close(&fm_file);
+					f_closedir(&fm_dir);
 				}
 
 				if(status>0) {
@@ -393,266 +394,266 @@ void speedo_filemanager_v2::parse_command(){
 				 */
 
 			} else if(msgBuffer[0]==CMD_GET_FILE){
-				/* hinweg:
-				 * msgBuffer[0]=CMD_GET_FILE
-				 * msgBUffer[1]=length of filename
-				 * msgBuffer[2..1+length_of_filename]=filename  ... datei.txt oder folder/datei.txt
-				 * msgBuffer[length_of_filename+2]=high_nibble of cluster nr
-				 * msgBuffer[length_of_filename+3]=low_nibble of cluster nr
-				 *
-				 * e.G.
-				 * msgBuffer[0]=CMD_GET_FILE
-				 * msgBuffer[1]=3
-				 * msgBuffer[2]='A'
-				 * msgBuffer[3]='S'
-				 * msgBuffer[4]='D'
-				 * msgBuffer[5]= high
-				 * msgBuffer[6]= low
-				 *
-				 * rueckweg:
-				 * msgBuffer[0]=CMD_GET_FILE
-				 * msgBuffer[1]=COMMAND_OK
-				 * msgBuffer[2..]=DATA
-				 */
-
-				// 1. checken: haben wir im t2a_file noch was offen
-				// 2. checken: ist der dateiname noch der gleiche wie der, den wir bekommen haben?
-				// 3. wenn nicht: t2a_dir soll erst root oeffnen und dann eventuell unterverzeichnisse
-				// 4. dann setseek()
-				// 5. while() bla bla copy inhalt zur msg
-
-				bool file_already_open=true;
-				bool file_open_failed=false;
-				bool file_seek_failed=false;
-				unsigned int length_of_filename=msgBuffer[1];
-
-				// move filename
-				for(unsigned int i=0;i<length_of_filename;i++){
-					msgBuffer[i]=msgBuffer[i+2]; // make it openable for get_file_handle
-				}
-				msgBuffer[length_of_filename]='\0';
-
-				if(fm_file.isFile()){
-					for(unsigned int i=0;i<length_of_filename;i++){
-						if(last_file[i]!=msgBuffer[i]){
-							file_already_open=false;
-						}
-					}
-				} else {
-					file_already_open=false;
-				};
-
-				// wenn die datei noch nicht geoeffnet ist,
-				// muessen wir
-				// 1. checken ob sie in einem unterverzeichniss liegt
-				// 1.1. wenn ja verzeichniss namen auslesen
-				// 1.2. subverzeichniss oeffnen
-				// 2. Dateiname auslesen
-				// 3. Dateihandle oeffnen
-				// jetzt noch verschieben an die richtige stelle im buffer
-
-
-				if(!file_already_open){
-					if(get_file_handle(msgBuffer,last_file,&fm_file,&fm_handle,O_CREAT| O_READ)<0){
-						file_open_failed=true;
-					}
-				} // file already open
-
-				// setze pointer
-				if(!file_open_failed){
-					unsigned long pos;
-					pos=msgBuffer[length_of_filename+2]<<8;
-					pos|=msgBuffer[length_of_filename+3];
-					pos*=250;
-
-					if(last_file_seek!=pos){
-						if(!fm_file.seekSet(pos)){
-							file_seek_failed=true;
-							last_file_seek=pos;
-						}
-					};
-				};
-
-				// wenn immer noch alles gut, dann konnten wir die Datei oeffnen und auch den Filepointer dahin setzten wo er hin soll
-				if(!file_open_failed && !file_seek_failed){
-					//Serial.println("file_seek OK");
-					int n=fm_file.read(msgBuffer, sizeof(byte)*250); // 250
-
-					if(n >= 0) { // read okay
-						// jetzt noch verschieben an die richtige stelle im buffer
-						for(int i=n-1; i>=0; i--){
-							msgBuffer[i+2]=msgBuffer[i];
-						};
-						msgLength=n+2; // n buchstaben + cmd + status ok = 252 im besten Fall
-						msgBuffer[0]=CMD_GET_FILE;
-
-						if(n==250){
-							msgBuffer[1]=STATUS_CMD_OK; // full buffer read -> read on
-						} else {
-							msgBuffer[1]=STATUS_EOF; // last bit of file read
-						}
-					} else {
-						msgLength=3; // n buchstaben + cmd + status eof
-						msgBuffer[0]=CMD_GET_FILE;
-						msgBuffer[1]=STATUS_CMD_FAILED;
-						msgBuffer[2]=FAILURE_FILE_READ;
-						last_file[0]='\0'; // damit er nicht denkt das haette geklappt
-					}
-				} else if(file_seek_failed){
-					msgLength=3; // n buchstaben + cmd + status failed
-					msgBuffer[0]=CMD_GET_FILE;
-					msgBuffer[1]=STATUS_CMD_FAILED;
-					msgBuffer[2]=FAILURE_FILE_SEEK;
-					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
-				} else {
-					msgLength=3; // n buchstaben + cmd + status failed
-					msgBuffer[0]=CMD_GET_FILE;
-					msgBuffer[1]=STATUS_CMD_FAILED;
-					msgBuffer[2]=FAILURE_FILE_OPEN;
-					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
-				}
+//				/* hinweg:
+//				 * msgBuffer[0]=CMD_GET_FILE
+//				 * msgBUffer[1]=length of filename
+//				 * msgBuffer[2..1+length_of_filename]=filename  ... datei.txt oder folder/datei.txt
+//				 * msgBuffer[length_of_filename+2]=high_nibble of cluster nr
+//				 * msgBuffer[length_of_filename+3]=low_nibble of cluster nr
+//				 *
+//				 * e.G.
+//				 * msgBuffer[0]=CMD_GET_FILE
+//				 * msgBuffer[1]=3
+//				 * msgBuffer[2]='A'
+//				 * msgBuffer[3]='S'
+//				 * msgBuffer[4]='D'
+//				 * msgBuffer[5]= high
+//				 * msgBuffer[6]= low
+//				 *
+//				 * rueckweg:
+//				 * msgBuffer[0]=CMD_GET_FILE
+//				 * msgBuffer[1]=COMMAND_OK
+//				 * msgBuffer[2..]=DATA
+//				 */
+//
+//				// 1. checken: haben wir im t2a_file noch was offen
+//				// 2. checken: ist der dateiname noch der gleiche wie der, den wir bekommen haben?
+//				// 3. wenn nicht: t2a_dir soll erst root oeffnen und dann eventuell unterverzeichnisse
+//				// 4. dann setseek()
+//				// 5. while() bla bla copy inhalt zur msg
+//
+//				bool file_already_open=true;
+//				bool file_open_failed=false;
+//				bool file_seek_failed=false;
+//				unsigned int length_of_filename=msgBuffer[1];
+//
+//				// move filename
+//				for(unsigned int i=0;i<length_of_filename;i++){
+//					msgBuffer[i]=msgBuffer[i+2]; // make it openable for get_file_handle
+//				}
+//				msgBuffer[length_of_filename]='\0';
+//
+//				if(fm_file.isFile()){
+//					for(unsigned int i=0;i<length_of_filename;i++){
+//						if(last_file[i]!=msgBuffer[i]){
+//							file_already_open=false;
+//						}
+//					}
+//				} else {
+//					file_already_open=false;
+//				};
+//
+//				// wenn die datei noch nicht geoeffnet ist,
+//				// muessen wir
+//				// 1. checken ob sie in einem unterverzeichniss liegt
+//				// 1.1. wenn ja verzeichniss namen auslesen
+//				// 1.2. subverzeichniss oeffnen
+//				// 2. Dateiname auslesen
+//				// 3. Dateihandle oeffnen
+//				// jetzt noch verschieben an die richtige stelle im buffer
+//
+//
+//				if(!file_already_open){
+//					if(get_file_handle(msgBuffer,last_file,&fm_file,&fm_handle,O_CREAT| O_READ)<0){
+//						file_open_failed=true;
+//					}
+//				} // file already open
+//
+//				// setze pointer
+//				if(!file_open_failed){
+//					unsigned long pos;
+//					pos=msgBuffer[length_of_filename+2]<<8;
+//					pos|=msgBuffer[length_of_filename+3];
+//					pos*=250;
+//
+//					if(last_file_seek!=pos){
+//						if(!fm_file.seekSet(pos)){
+//							file_seek_failed=true;
+//							last_file_seek=pos;
+//						}
+//					};
+//				};
+//
+//				// wenn immer noch alles gut, dann konnten wir die Datei oeffnen und auch den Filepointer dahin setzten wo er hin soll
+//				if(!file_open_failed && !file_seek_failed){
+//					//Serial.println("file_seek OK");
+//					int n=fm_file.read(msgBuffer, sizeof(byte)*250); // 250
+//
+//					if(n >= 0) { // read okay
+//						// jetzt noch verschieben an die richtige stelle im buffer
+//						for(int i=n-1; i>=0; i--){
+//							msgBuffer[i+2]=msgBuffer[i];
+//						};
+//						msgLength=n+2; // n buchstaben + cmd + status ok = 252 im besten Fall
+//						msgBuffer[0]=CMD_GET_FILE;
+//
+//						if(n==250){
+//							msgBuffer[1]=STATUS_CMD_OK; // full buffer read . read on
+//						} else {
+//							msgBuffer[1]=STATUS_EOF; // last bit of file read
+//						}
+//					} else {
+//						msgLength=3; // n buchstaben + cmd + status eof
+//						msgBuffer[0]=CMD_GET_FILE;
+//						msgBuffer[1]=STATUS_CMD_FAILED;
+//						msgBuffer[2]=FAILURE_FILE_READ;
+//						last_file[0]='\0'; // damit er nicht denkt das haette geklappt
+//					}
+//				} else if(file_seek_failed){
+//					msgLength=3; // n buchstaben + cmd + status failed
+//					msgBuffer[0]=CMD_GET_FILE;
+//					msgBuffer[1]=STATUS_CMD_FAILED;
+//					msgBuffer[2]=FAILURE_FILE_SEEK;
+//					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
+//				} else {
+//					msgLength=3; // n buchstaben + cmd + status failed
+//					msgBuffer[0]=CMD_GET_FILE;
+//					msgBuffer[1]=STATUS_CMD_FAILED;
+//					msgBuffer[2]=FAILURE_FILE_OPEN;
+//					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
+//				}
 
 				////////////////////////////// GET FILE /////////////////////////////////
 				////////////////////////////// PUT FILE /////////////////////////////////
 
-				// TRANSFER VOM HANDY ZUM TACHO
-				/* hinweg:
-				 * msgBuffer[0]=CMD_PUT_FILE
-				 * msgBuffer[1]=length of filename = X
-				 * msgBuffer[2..1+X]=filename  ... datei.txt oder folder/datei.txt
-				 * msgBuffer[x+2]=high_nibble of cluster nr
-				 * msgBuffer[x+3]=low_nibble of cluster nr
-				 * msgBuffer[X+4..250]=Content
-				 *
-				 * rueckweg:
-				 * msgBuffer[0]=CMD_PUT_FILE
-				 * msgBuffer[1]=COMMAND_OK
-				 */
-			} else if(msgBuffer[0]==CMD_PUT_FILE && !((msgLength==2) && (msgBuffer[1]==STATUS_EOF))){
-				bool file_already_open=true;
-				bool file_open_failed=false;
-				bool file_seek_failed=false;
-				uint16_t filename_length=msgBuffer[1];
-				int start_of_payload=filename_length+4;
-				for(unsigned int i=0;i<filename_length;i++){
-					msgBuffer[i]=msgBuffer[i+2]; // make it suiteable for get_file_handle
-					if(last_file[i]!=msgBuffer[i]){
-						file_already_open=false;
-					}
-				}
-				msgBuffer[filename_length]='\0';
-
-				if(fm_file.isFile()){
-					for(unsigned int i=0;i<filename_length;i++){
-						if(last_file[i]!=msgBuffer[i]){
-							file_already_open=false;
-						}
-					}
-				} else {
-					file_already_open=false;
-				};
-
-
-				// wenn die datei noch nicht geoeffnet ist,
-				// muessen wir
-				// 1. checken ob sie in einem unterverzeichniss liegt
-				// 1.1. wenn ja verzeichniss namen auslesen
-				// 1.2. subverzeichniss oeffnen
-				// 2. Dateiname auslesen
-				// 3. Dateihandle oeffnen
-
-				if(!file_already_open){
-					if(get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle, O_CREAT| O_RDWR | O_SYNC | O_APPEND)<0){
-						file_open_failed=true;
-					}
-				}
-
-				// setze pointer
-				if(!file_open_failed){
-					int pos;
-					pos=msgBuffer[filename_length+2]<<8;
-					pos|=msgBuffer[filename_length+3];
-					//					if(!fm_file.seekSet(pos*(msgLength-offset))){ // das ist noch totaler mist, das hier kein Seeken moeglich ist
-					//						file_seek_failed=true;
-					//					} else {
-					//						//////////
-					//						sprintf(buf,"fs:%i,pos:%i ",(int)fm_file.fileSize(),pos*(msgLength-offset));
-					//						pOLED->string(0,buf,0,6);
-					//						_delay_ms(1000);
-					//					}
-					//					////////
-				};
-
-				// wenn immer noch alles gut, dann konnten wir die Datei oeffnen und auch den Filepointer dahin setzten wo er hin soll
-				if(!file_open_failed && !file_seek_failed){
-					//Serial.println("file_seek OK");
-					for(unsigned int i=0;i<msgLength-start_of_payload;i++){ // start_of_payload wird -2 weil noch 2 byte seek info
-						msgBuffer[i]=msgBuffer[i+start_of_payload]; // msgBuffer[233]=msgBuffer[253]
-					}
-
-					int n=fm_file.write(msgBuffer, msgLength-start_of_payload); // 254 - 20
-
-					if(n > 0) { // 250 Byte happen
-						msgLength=2; // cmd + status ok
-						msgBuffer[0]=CMD_PUT_FILE;
-						msgBuffer[1]=STATUS_CMD_OK;
-					} else {
-						msgLength=2; // n buchstaben + cmd + status eof
-						msgBuffer[0]=CMD_PUT_FILE;
-						msgBuffer[1]=STATUS_EOF;
-						last_file[0]='\0'; // damit er nicht denkt das haette geklappt
-					}
-				} else if(file_seek_failed){
-					msgLength=3; // n buchstaben + cmd + status failed
-					msgBuffer[0]=CMD_PUT_FILE;
-					msgBuffer[1]=STATUS_CMD_FAILED;
-					msgBuffer[2]='1';
-					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
-				} else {
-					msgLength=3; // n buchstaben + cmd + status failed
-					msgBuffer[0]=CMD_PUT_FILE;
-					msgBuffer[1]=STATUS_CMD_FAILED;
-					msgBuffer[2]='2';
-					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
-				}
-			} else if(msgBuffer[0]==CMD_PUT_FILE && ((msgLength==2) && (msgBuffer[1]==STATUS_EOF))){
-				fm_file.sync();
-				fm_file.close();
-				fm_handle.sync();
-				fm_handle.close();
-				msgLength=2; // n buchstaben + cmd + status eof
-				msgBuffer[0]=CMD_PUT_FILE;
-				msgBuffer[1]=STATUS_EOF;
-				last_file[0]='\0'; // damit er nicht denkt das haette geklappt
-				////////////////////////////// PUT FILE /////////////////////////////////
-				////////////////////////////// DEL FILE /////////////////////////////////
-			} else if(msgBuffer[0]==CMD_DEL_FILE){
-				/* hinweg:
-				 * msgBuffer[0]=CMD_DEL_FILE
-				 * msgBuffer[1]=length of filename
-				 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
-				 *
-				 * rueckweg:
-				 * msgBuffer[0]=CMD_PUT_FILE
-				 * msgBuffer[1]=COMMAND_OK
-				 */
-				unsigned int length_of_filename=msgBuffer[1];
-				for(unsigned int i=0; i<length_of_filename; i++){ // move it for get_file_handle
-					msgBuffer[i]=msgBuffer[i+2];
-				}
-				msgBuffer[length_of_filename]='\0';
-				get_file_handle(msgBuffer,&last_file[0],&fm_file,&fm_handle, O_CREAT| O_WRITE);
-				if(fm_file.remove()){
-					fm_file.close();
-					fm_handle.close();
-					msgLength=2; // cmd + status ok
-					msgBuffer[0]=CMD_DEL_FILE;
-					msgBuffer[1]=STATUS_CMD_OK;
-				} else {
-					msgLength=2; // cmd + status ok
-					msgBuffer[0]=CMD_DEL_FILE;
-					msgBuffer[1]=STATUS_CMD_FAILED;
-				}
+//				// TRANSFER VOM HANDY ZUM TACHO
+//				/* hinweg:
+//				 * msgBuffer[0]=CMD_PUT_FILE
+//				 * msgBuffer[1]=length of filename = X
+//				 * msgBuffer[2..1+X]=filename  ... datei.txt oder folder/datei.txt
+//				 * msgBuffer[x+2]=high_nibble of cluster nr
+//				 * msgBuffer[x+3]=low_nibble of cluster nr
+//				 * msgBuffer[X+4..250]=Content
+//				 *
+//				 * rueckweg:
+//				 * msgBuffer[0]=CMD_PUT_FILE
+//				 * msgBuffer[1]=COMMAND_OK
+//				 */
+//			} else if(msgBuffer[0]==CMD_PUT_FILE && !((msgLength==2) && (msgBuffer[1]==STATUS_EOF))){
+//				bool file_already_open=true;
+//				bool file_open_failed=false;
+//				bool file_seek_failed=false;
+//				uint16_t filename_length=msgBuffer[1];
+//				int start_of_payload=filename_length+4;
+//				for(unsigned int i=0;i<filename_length;i++){
+//					msgBuffer[i]=msgBuffer[i+2]; // make it suiteable for get_file_handle
+//					if(last_file[i]!=msgBuffer[i]){
+//						file_already_open=false;
+//					}
+//				}
+//				msgBuffer[filename_length]='\0';
+//
+//				if(fm_file.isFile()){
+//					for(unsigned int i=0;i<filename_length;i++){
+//						if(last_file[i]!=msgBuffer[i]){
+//							file_already_open=false;
+//						}
+//					}
+//				} else {
+//					file_already_open=false;
+//				};
+//
+//
+//				// wenn die datei noch nicht geoeffnet ist,
+//				// muessen wir
+//				// 1. checken ob sie in einem unterverzeichniss liegt
+//				// 1.1. wenn ja verzeichniss namen auslesen
+//				// 1.2. subverzeichniss oeffnen
+//				// 2. Dateiname auslesen
+//				// 3. Dateihandle oeffnen
+//
+//				if(!file_already_open){
+//					if(get_file_handle(&msgBuffer[0],&last_file[0],&fm_file,&fm_handle, O_CREAT| O_RDWR | O_SYNC | O_APPEND)<0){
+//						file_open_failed=true;
+//					}
+//				}
+//
+//				// setze pointer
+//				if(!file_open_failed){
+//					int pos;
+//					pos=msgBuffer[filename_length+2]<<8;
+//					pos|=msgBuffer[filename_length+3];
+//					//					if(!fm_file.seekSet(pos*(msgLength-offset))){ // das ist noch totaler mist, das hier kein Seeken moeglich ist
+//					//						file_seek_failed=true;
+//					//					} else {
+//					//						//////////
+//					//						sprintf(buf,"fs:%i,pos:%i ",(int)fm_file.fileSize(),pos*(msgLength-offset));
+//					//						TFT.string(0,buf,0,6);
+//					//						_delay_ms(1000);
+//					//					}
+//					//					////////
+//				};
+//
+//				// wenn immer noch alles gut, dann konnten wir die Datei oeffnen und auch den Filepointer dahin setzten wo er hin soll
+//				if(!file_open_failed && !file_seek_failed){
+//					//Serial.println("file_seek OK");
+//					for(unsigned int i=0;i<msgLength-start_of_payload;i++){ // start_of_payload wird -2 weil noch 2 byte seek info
+//						msgBuffer[i]=msgBuffer[i+start_of_payload]; // msgBuffer[233]=msgBuffer[253]
+//					}
+//
+//					int n=fm_file.write(msgBuffer, msgLength-start_of_payload); // 254 - 20
+//
+//					if(n > 0) { // 250 Byte happen
+//						msgLength=2; // cmd + status ok
+//						msgBuffer[0]=CMD_PUT_FILE;
+//						msgBuffer[1]=STATUS_CMD_OK;
+//					} else {
+//						msgLength=2; // n buchstaben + cmd + status eof
+//						msgBuffer[0]=CMD_PUT_FILE;
+//						msgBuffer[1]=STATUS_EOF;
+//						last_file[0]='\0'; // damit er nicht denkt das haette geklappt
+//					}
+//				} else if(file_seek_failed){
+//					msgLength=3; // n buchstaben + cmd + status failed
+//					msgBuffer[0]=CMD_PUT_FILE;
+//					msgBuffer[1]=STATUS_CMD_FAILED;
+//					msgBuffer[2]='1';
+//					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
+//				} else {
+//					msgLength=3; // n buchstaben + cmd + status failed
+//					msgBuffer[0]=CMD_PUT_FILE;
+//					msgBuffer[1]=STATUS_CMD_FAILED;
+//					msgBuffer[2]='2';
+//					last_file[0]='\0'; // damit er nicht denkt das haette geklappt
+//				}
+//			} else if(msgBuffer[0]==CMD_PUT_FILE && ((msgLength==2) && (msgBuffer[1]==STATUS_EOF))){
+//				fm_file.sync();
+//				fm_file.close();
+//				fm_handle.sync();
+//				fm_handle.close();
+//				msgLength=2; // n buchstaben + cmd + status eof
+//				msgBuffer[0]=CMD_PUT_FILE;
+//				msgBuffer[1]=STATUS_EOF;
+//				last_file[0]='\0'; // damit er nicht denkt das haette geklappt
+//				////////////////////////////// PUT FILE /////////////////////////////////
+//				////////////////////////////// DEL FILE /////////////////////////////////
+//			} else if(msgBuffer[0]==CMD_DEL_FILE){
+//				/* hinweg:
+//				 * msgBuffer[0]=CMD_DEL_FILE
+//				 * msgBuffer[1]=length of filename
+//				 * msgBuffer[2..X]=filename  ... datei.txt oder folder/datei.txt
+//				 *
+//				 * rueckweg:
+//				 * msgBuffer[0]=CMD_PUT_FILE
+//				 * msgBuffer[1]=COMMAND_OK
+//				 */
+//				unsigned int length_of_filename=msgBuffer[1];
+//				for(unsigned int i=0; i<length_of_filename; i++){ // move it for get_file_handle
+//					msgBuffer[i]=msgBuffer[i+2];
+//				}
+//				msgBuffer[length_of_filename]='\0';
+//				get_file_handle(msgBuffer,&last_file[0],&fm_file,&fm_handle, O_CREAT| O_WRITE);
+//				if(fm_file.remove()){
+//					fm_file.close();
+//					fm_handle.close();
+//					msgLength=2; // cmd + status ok
+//					msgBuffer[0]=CMD_DEL_FILE;
+//					msgBuffer[1]=STATUS_CMD_OK;
+//				} else {
+//					msgLength=2; // cmd + status ok
+//					msgBuffer[0]=CMD_DEL_FILE;
+//					msgBuffer[1]=STATUS_CMD_FAILED;
+//				}
 				////////////////////////////// DEL FILE /////////////////////////////////
 				////////////////////////////// SHOW GFX /////////////////////////////////
 				// TRANSFER VOM HANDY ZUM TACHO
@@ -669,7 +670,7 @@ void speedo_filemanager_v2::parse_command(){
 				msgBuffer[msgLength-1]=0x00; // set stopper
 
 				//assume that its alright
-				pMenu->state=57111; // 11 will refresh the speedo every second
+				Menu.state=57111; // 11 will refresh the speedo every second
 				unsigned char fast_reply_buffer[3];
 				msgLength=2; // cmd + status ok
 				fast_reply_buffer[0]=CMD_SHOW_GFX;
@@ -678,7 +679,7 @@ void speedo_filemanager_v2::parse_command(){
 				answere_transmitted=true;
 
 				// show gif/jpg
-				pOLED->show_animation(msgBuffer);
+//				TFT.show_animation(msgBuffer); TODO
 				////////////////////////////// SHOW GFX /////////////////////////////////
 				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
 			} else if(msgBuffer[0]==CMD_RESET_SMALL_AVR){
@@ -688,9 +689,9 @@ void speedo_filemanager_v2::parse_command(){
 				send_answere(msgBuffer,msgLength,&seqNum,&msgParseState);
 				answere_transmitted=true;
 
-				pAktors->run_reset_on_ATm328(RESET_COMPLETE); //
-				pMenu->state=11; // speedo
-				pMenu->display();
+				Aktors.run_reset_on_ATm328(RESET_COMPLETE); //
+				Menu.state=11; // speedo
+				Menu.display();
 				////////////////////////// SEND SMALL AVR TO BOOTLOADER /////////////////
 				////////////////////////// USE THIS AS STARTUP ANIMATION /////////////////
 			} else if(msgBuffer[0]==CMD_SET_STARTUP){
@@ -700,15 +701,15 @@ void speedo_filemanager_v2::parse_command(){
 				// outgoing
 				// [0]CMD_SET_STARTUP
 				// [1]STATUS
-				for(unsigned int i=1;i<msgLength && i<sizeof(pOLED->startup)/sizeof(pOLED->startup[0]);i++){
-					pOLED->startup[i-1]=msgBuffer[i];
+				for(unsigned int i=1;i<msgLength && i<sizeof(TFT.startup)/sizeof(TFT.startup[0]);i++){
+					TFT.startup[i-1]=msgBuffer[i];
 				}
-				pOLED->startup[msgLength]=0x00; // set stopper
+				TFT.startup[msgLength]=0x00; // set stopper
 
 				msgLength=2;
 				msgBuffer[1]=STATUS_CMD_FAILED;
-				pConfig->storage_outdated=true;
-				if(pConfig->write("BASE.TXT")==0){
+				Config.storage_outdated=true;
+				if(Config.write("BASE.TXT")==0){
 					msgBuffer[1]=STATUS_CMD_OK;
 				}
 				////////////////////////// USE THIS AS STARTUP ANIMATION /////////////////
@@ -735,128 +736,43 @@ void speedo_filemanager_v2::parse_command(){
 
 		}; // if isleave!=1
 	}; // while isLeave!=1
-	//	pMenu->display();
-	// t2a_file.close();
-	fm_file.close();
-	fm_handle.close();
-	pSensors->m_reset->set_active(false,true);
+	//	Menu.display();
+	f_close(&fm_file);
+	f_closedir(&fm_dir);
+	Sensors.mReset.set_active(false,true);
 }; // fkt ende
 
 
 // fkt to reply on incoming messages
-int speedo_filemanager_v2::send_answere(unsigned char *msgBuffer,unsigned int msgLength,unsigned char *seqNum, unsigned char *msgParseState){
-	Serial.print((char)MESSAGE_START);
+int filemanager_v2::send_answere(unsigned char *msgBuffer,unsigned int msgLength,unsigned char *seqNum, unsigned char *msgParseState){
+	Serial.puts(USART1,(char)MESSAGE_START);
 	unsigned char	checksum	=	MESSAGE_START^0;
 	unsigned char	c, *p;
 
-	Serial.print((char)*seqNum);
+	Serial.puts(USART1,(char)*seqNum);
 	checksum	^=	*seqNum;
 
 	//c			=	msgLength&0x00FF;
-	Serial.print((char)(msgLength>>8));
+	Serial.puts(USART1,(char)(msgLength>>8));
 	checksum ^= (msgLength>>8);
 
-	Serial.print((char)(msgLength&0xff));
+	Serial.puts(USART1,(char)(msgLength&0xff));
 	checksum ^= (msgLength&0xff);
 
-	Serial.print((char)TOKEN);
+	Serial.puts(USART1,(char)TOKEN);
 	checksum ^= TOKEN;
 
 	p	=	msgBuffer;
 	while(msgLength){
 		c	=	*p++;
-		Serial.print((char)c);
+		Serial.puts(USART1,(char)c);
 		checksum ^=c;
 		msgLength--;
 	}
-	Serial.print((char)checksum);
+	Serial.puts(USART1,(char)checksum);
 
 	*seqNum=*seqNum+1;
 	*msgParseState = ST_START;
 	return 0;
 }
 
-int speedo_filemanager_v2::get_file_handle(unsigned char *pathToFile, SdFile *fm_file, uint8_t flags){
-	unsigned char last_filename_buffer[strlen((char*)pathToFile)];
-	SdFile temp_dir;
-	return get_file_handle(pathToFile,last_filename_buffer,fm_file,&temp_dir,flags);
-}
-
-int speedo_filemanager_v2::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,SdFile *fm_file,SdFile *fm_handle,uint8_t flags){
-	/* msgBuffer[0..X] =Filename
-	 */
-	// gibt den pointer auf die datei -> FM_FILE
-	// und das zugehörigen Verzeichniss -> FM_HANDLE
-	// zurück
-
-	unsigned int start_of_real_filename=0;		// pos of the "FILE"name
-	unsigned int length_of_filename=strlen((char*)msgBuffer);
-	char filename[13];
-	char subdir[13];
-	subdir[0]='\0';
-	unsigned char subdir_pointer=0;
-
-	fm_handle->close();
-	fm_file->close();
-	fm_handle->openRoot(&pSD->volume);
-
-	// check filename for subdirs and open them one by one
-	for(unsigned int i=0;i<length_of_filename;i++){
-		// we have to destinguish between normal chars and the '/'
-		if(msgBuffer[i]=='/'){ // open actual subdir
-			//Serial.print("Opening subdir:");
-			//Serial.println(subdir);
-			start_of_real_filename=i+1;
-			if(subdir[0]!='\0'){ // check if we have something .. just error prevention
-				SdFile returner;
-				//				Serial.print("open dir:");
-				//				Serial.println(subdir);
-				if(!returner.open(fm_handle, subdir, O_READ)){ // create it, if it is not existing
-					//Serial.println("Failed");
-					if((flags && O_CREAT)==0){
-						return -2;
-					}
-					//Serial.println("creating");
-					if(!returner.mkdir(fm_handle,subdir,true)){
-						//Serial.println("Failed!");
-						return -1; // could not create it
-					}
-
-				}
-				//Serial.println("passing on");
-				*fm_handle=returner; // pass on handle
-				subdir[0]='\0';
-				subdir_pointer=0;
-			}
-		} else { // regular char
-			subdir[subdir_pointer]=msgBuffer[i];
-			if(subdir_pointer<10) subdir_pointer++; // dir should be max 8 chars ..
-			subdir[subdir_pointer]='\0';
-		}
-	}
-
-	if(msgBuffer[length_of_filename-1]!='/'){ // if the very last char in the filename NOT equals "/" --> then its a file
-		// dateinamen auslesen
-		for(unsigned int i=start_of_real_filename;i<length_of_filename;i++){
-			filename[i-start_of_real_filename]=msgBuffer[i];
-			last_file[i-start_of_real_filename]=msgBuffer[i];
-			if(i==(length_of_filename-1)){
-				filename[i-start_of_real_filename+1]='\0';
-				last_file[i-start_of_real_filename+1]='\0';
-			};
-		};
-
-		SdFile temp_f;
-		// datei oeffnen
-		//		Serial.print("open file:");
-		//		Serial.println(filename);
-		if (!temp_f.open(fm_handle, filename,flags)){
-			//			Serial.println("failed");
-			return -1;
-		} else {
-			//			Serial.println("passed");
-			*fm_file=temp_f;
-		}
-	}
-	return length_of_filename;
-}

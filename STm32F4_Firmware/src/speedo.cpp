@@ -76,19 +76,19 @@ void speedo::loop(unsigned long previousMillis){
 			};
 		}
 
-		///// SPEEDCAM - BABOOM /////
-		//		else if(pSpeedCams->calc()){ // returns true, if a speedcam is next to us
-		//			unsigned long dist=pSpeedCams->get_dist_to_next_point();
-		//			if(disp_zeile_bak[ADD_INFO2]!=(int)floor(dist/10)){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
-		//				disp_zeile_bak[ADD_INFO2]=(int)floor(dist/10);
-		//				Debug.speedo_loop(14,0,previousMillis," ");
-		//				TFT.highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
-		//				if(dist>999) dist=999; // should never happen
-		//				sprintf(char_buffer,("POI warning %3im"),(int)floor(dist/5)*5); // round to 5
-		//				Menu.center_me(char_buffer,17);
-		//				TFT.string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
-		//			};
-		//		}
+		/// SPEEDCAM - BABOOM /////
+		else if(SpeedCams.calc()){ // returns true, if a speedcam is next to us
+			unsigned long dist=SpeedCams.get_dist_to_next_point();
+			if(disp_zeile_bak[ADD_INFO2]!=(int)floor(dist/10)){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=(int)floor(dist/10);
+				Debug.speedo_loop(14,0,previousMillis," ");
+				TFT.highlight_bar(0,8*addinfo2_widget.y,128,8); // mit hintergrundfarbe nen kasten malen
+				if(dist>999) dist=999; // should never happen
+				sprintf(char_buffer,("POI warning %3im"),(int)floor(dist/5)*5); // round to 5
+				Menu.center_me(char_buffer,17);
+				TFT.string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+			};
+		}
 
 		///// Temp to high /////
 		else if(Sensors.get_oil_temperature()>=Sensors.mTemperature.oil_warning_temp && Sensors.get_oil_temperature()<8888 && (Sensors.mTemperature.oil_temp_fail_status!=SENSOR_OPEN || Sensors.mTemperature.oil_temp_fail_status!=SENSOR_SHORT_TO_GND)){
@@ -116,15 +116,15 @@ void speedo::loop(unsigned long previousMillis){
 			};
 
 		}
-		//		///// Voltage ////
-		//		else if(Sensors.m_voltage->get()<1100){ // less than 11.0 Volts
-		//			if(disp_zeile_bak[ADD_INFO2]!=111 && Millis.get()>20000){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
-		//				disp_zeile_bak[ADD_INFO2]=111;
-		//				Debug.speedo_loop(11,0,previousMillis," ");
-		//				TFT.string_centered(("Voltage below 11V"),addinfo2_widget.y,true);
-		//			};
-		//
-		//		}
+		///// Voltage ////
+		else if(Sensors.mVoltage.get()<1100){ // less than 11.0 Volts
+			if(disp_zeile_bak[ADD_INFO2]!=111 && Millis.get()>20000){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=111;
+				Debug.speedo_loop(11,0,previousMillis," ");
+				TFT.string_centered(("Voltage below 11V"),addinfo2_widget.y,true);
+			};
+
+		}
 		////// CAN MIL ////////
 		else if(Sensors.CAN_active && Sensors.mCAN.get_mil_active()){
 			if(disp_zeile_bak[ADD_INFO2]!=112){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
@@ -133,25 +133,25 @@ void speedo::loop(unsigned long previousMillis){
 				TFT.string_centered(("CAN warning"),addinfo2_widget.y,true);
 			};
 		}
-		//		///// Navi ////
-		//		else if(Sensors.mGPS.navi_active){
-		//			int dist=0;
-		//			int result_value=Sensors.mGPS.get_order(char_buffer,&dist); // result value ist der zahlen wert bis zur nÃ€chsten aktion, 11km => 11 | 900m => 900 (10m Schritte)
-		//			if(disp_zeile_bak[ADD_INFO2]!=dist){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh! // wird also einmal pro sek geschrieben
-		//				disp_zeile_bak[ADD_INFO2]=int(dist);
-		//				Debug.speedo_loop(13,0,previousMillis," ");
-		//				if(result_value>-1){ // -1 => no gps
-		//					TFT.filled_rect(0,8*addinfo2_widget.y,128,8,15); // den bereich am ende der Zeile leeren ??
-		//					TFT.string(addinfo2_widget.font,char_buffer,addinfo2_widget.x,addinfo2_widget.y,15,0,1); // die Ziel ausgabe
-		//				} else {
-		//					TFT.highlight_bar(0,8*addinfo2_widget.y,128,8);
-		//					strcpy_P(char_buffer,("No GPS"));
-		//					Menu->center_me(char_buffer,17);
-		//					TFT.string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
-		//					TFT.draw_arrow(-1,arrow_widget.x,arrow_widget.y); // clears arrow
-		//				};
-		//			};
-		//		}
+		///// Navi ////
+		else if(Sensors.mGPS.navi_active){
+			int dist=0;
+			int result_value=Sensors.mGPS.get_order((uint8_t*)char_buffer,&dist); // result value ist der zahlen wert bis zur nÃ€chsten aktion, 11km => 11 | 900m => 900 (10m Schritte)
+			if(disp_zeile_bak[ADD_INFO2]!=dist){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh! // wird also einmal pro sek geschrieben
+				disp_zeile_bak[ADD_INFO2]=int(dist);
+				Debug.speedo_loop(13,0,previousMillis," ");
+				if(result_value>-1){ // -1 => no gps
+					TFT.filled_rect(0,8*addinfo2_widget.y,128,8,15); // den bereich am ende der Zeile leeren ??
+					TFT.string(addinfo2_widget.font,char_buffer,addinfo2_widget.x,addinfo2_widget.y,15,0,1); // die Ziel ausgabe
+				} else {
+					TFT.highlight_bar(0,8*addinfo2_widget.y,128,8);
+					strcpy(char_buffer,("No GPS"));
+					Menu.center_me(char_buffer,17);
+					TFT.string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
+					TFT.draw_arrow(-1,arrow_widget.x,arrow_widget.y); // clears arrow
+				};
+			};
+		}
 		///// Sensor in use but not found ///
 		else if(oil_widget.x!=-1 && oil_widget.y!=-1 && (Sensors.get_oil_temperature()==8888 || Sensors.get_oil_temperature()==9999)){
 			if(disp_zeile_bak[ADD_INFO2]!=106){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
@@ -177,16 +177,16 @@ void speedo::loop(unsigned long previousMillis){
 			};
 
 		}
-		//		///// SD card ////
-		//		else if(pSD->sd_failed){
-		//			if(disp_zeile_bak[ADD_INFO2]!=104){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
-		//				disp_zeile_bak[ADD_INFO2]=104;
-		//				Debug.speedo_loop(14,0,previousMillis," ");
-		//				TFT.string_centered(("SD access failed"),addinfo2_widget.y,true);
-		//			};
-		//
-		//		}
-		//// delete
+		///// SD card ////
+		else if(SD.sd_failed){
+			if(disp_zeile_bak[ADD_INFO2]!=104){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
+				disp_zeile_bak[ADD_INFO2]=104;
+				Debug.speedo_loop(14,0,previousMillis," ");
+				TFT.string_centered(("SD access failed"),addinfo2_widget.y,true);
+			};
+
+		}
+		// delete
 		else{
 			addinfo2_currently_shown=false;
 			if(disp_zeile_bak[ADD_INFO2]!=105){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
@@ -629,20 +629,20 @@ void speedo::loop(unsigned long previousMillis){
 	 * if the navigation is active, but the menu_state is !=1 than the up/down button has been pushed
 	 * during navigation mode => so change the Navipointer!! to jump in the points
 	 **************************************************************/
-	//	if(Sensors.mGPS.navi_active && (Menu->state%10)==2){ // button down
-	//		Sensors.mGPS.navi_point++;
-	//		pConfig->storage_outdated=true;		// store change
-	//		pConfig->write("BASE.TXT");
-	//		Menu->state=11; 					// reset state
-	//		Sensors.mGPS.generate_new_order();
-	//	} else if(Sensors.mGPS.navi_active && (Menu->state%10)==9){ // button up
-	//		Sensors.mGPS.navi_point--;
-	//		if(Sensors.mGPS.navi_point<1) { Sensors.mGPS.navi_point=0; };
-	//		pConfig->storage_outdated=true;		// store change
-	//		pConfig->write("BASE.TXT");
-	//		Menu->state=11; 					// reset state
-	//		Sensors.mGPS.generate_new_order();
-	//	}
+	if(Sensors.mGPS.navi_active && (Menu.state%10)==2){ // button down
+		Sensors.mGPS.navi_point++;
+		Config.storage_outdated=true;		// store change
+		Config.write("BASE.TXT");
+		Menu.state=11; 					// reset state
+		Sensors.mGPS.generate_new_order();
+	} else if(Sensors.mGPS.navi_active && (Menu.state%10)==9){ // button up
+		Sensors.mGPS.navi_point--;
+		if(Sensors.mGPS.navi_point<1) { Sensors.mGPS.navi_point=0; };
+		Config.storage_outdated=true;		// store change
+		Config.write("BASE.TXT");
+		Menu.state=11; 					// reset state
+		Sensors.mGPS.generate_new_order();
+	}
 	/*************** jump navigation points **********************/
 	Debug.speedo_loop(20,1,previousMillis," ");
 	free(char_buffer);
@@ -668,6 +668,10 @@ void speedo::initial_draw_screen(){
 		TFT.draw_gps(gps_widget.x*3,gps_widget.y*8,Sensors.mGPS.get_info(6));
 
 	reset_bak(); // alle disp_zeile_bak auf -99 setzen
+
+	TFT.SetColors(255,0,0,0,0,0);
+	TFT.DrawUniLine(0,28,320,28);
+	TFT.DrawUniLine(0,212,320,212);
 }
 
 void speedo::clear_vars(){
@@ -687,67 +691,67 @@ void speedo::clear_vars(){
 }
 
 void speedo::check_vars(){
-	//	if(pSD->sd_failed==true){ TODO
-	//		// skinning
-	water_widget.x=0;
-	water_widget.y=0;
-	water_widget.symbol=true;
-	water_widget.font=VISITOR_SMALL_2X_FONT;
+	if(SD.sd_failed==true){
+		//		// skinning
+		water_widget.x=0;
+		water_widget.y=0;
+		water_widget.symbol=true;
+		water_widget.font=VISITOR_SMALL_3X_FONT;
 
-	oil_widget.x=-1;
-	oil_widget.y=-1;
-	oil_widget.symbol=true;
-	oil_widget.font=VISITOR_SMALL_2X_FONT;
+		oil_widget.x=-1;
+		oil_widget.y=-1;
+		oil_widget.symbol=true;
+		oil_widget.font=VISITOR_SMALL_2X_FONT;
 
-	air_widget.x=14;
-	air_widget.y=0;
-	air_widget.symbol=true;
-	air_widget.font=VISITOR_SMALL_2X_FONT;
+		air_widget.x=35;
+		air_widget.y=0;
+		air_widget.symbol=true;
+		air_widget.font=VISITOR_SMALL_3X_FONT;
 
-	arrow_widget.x=0;
-	arrow_widget.y=1;
+		arrow_widget.x=0;
+		arrow_widget.y=1;
 
-	kmh_widget.x=6;
-	kmh_widget.y=2;
-	kmh_widget.font=VISITOR_SMALL_3X_FONT;
+		kmh_widget.x=11;
+		kmh_widget.y=12;
+		kmh_widget.font=VISITOR_SMALL_8X_FONT;
 
-	kmhchar_widget.x=15;
-	kmhchar_widget.y=4;
-	kmhchar_widget.font=VISITOR_SMALL_2X_FONT;
+		kmhchar_widget.x=35;
+		kmhchar_widget.y=17;
+		kmhchar_widget.font=VISITOR_SMALL_1X_FONT;
 
-	dz_widget.x=-1;
-	dz_widget.y=-1;
-	dz_widget.font=VISITOR_SMALL_2X_FONT;
+		dz_widget.x=-1;
+		dz_widget.y=-1;
+		dz_widget.font=VISITOR_SMALL_2X_FONT;
 
-	gps_widget.x=8;
-	gps_widget.y=5;
-	gps_widget.font=VISITOR_SMALL_2X_FONT;
+		gps_widget.x=-1;
+		gps_widget.y=-1;
+		gps_widget.font=VISITOR_SMALL_2X_FONT;
 
-	addinfo_widget.x=-1;
-	addinfo_widget.y=-1;
-	addinfo_widget.font=VISITOR_SMALL_2X_FONT;
+		addinfo_widget.x=-1;
+		addinfo_widget.y=-1;
+		addinfo_widget.font=VISITOR_SMALL_2X_FONT;
 
-	addinfo2_widget.x=0;
-	addinfo2_widget.y=6;
-	addinfo2_widget.font=VISITOR_SMALL_2X_FONT;
+		addinfo2_widget.x=3;
+		addinfo2_widget.y=22;
+		addinfo2_widget.font=VISITOR_SMALL_2X_FONT;
 
-	clock_widget.x=0;
-	clock_widget.y=7;
-	clock_widget.symbol=true;
-	clock_widget.font=VISITOR_SMALL_2X_FONT;
+		clock_widget.x=1;
+		clock_widget.y=31;
+		clock_widget.symbol=true;
+		clock_widget.font=VISITOR_SMALL_3X_FONT;
 
-	gear_widget.x=11;
-	gear_widget.y=7;
-	gear_widget.font=VISITOR_SMALL_2X_FONT;
+		gear_widget.x=25;
+		gear_widget.y=31;
+		gear_widget.font=VISITOR_SMALL_3X_FONT;
 
-	fuel_widget.x=14;
-	fuel_widget.y=7;
-	fuel_widget.symbol=true;
-	fuel_widget.font=VISITOR_SMALL_2X_FONT;
+		fuel_widget.x=36;
+		fuel_widget.y=31;
+		fuel_widget.symbol=true;
+		fuel_widget.font=VISITOR_SMALL_3X_FONT;
 
-	default_font=VISITOR_SMALL_2X_FONT;
-	// skinning
-	//	} TODO
+		default_font=VISITOR_SMALL_2X_FONT;
+		// skinning
+	}
 
 	// fix trip vars if needed
 	if(m_trip_mode<0){

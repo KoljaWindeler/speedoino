@@ -16,9 +16,10 @@ extern "C" {
 #include "delay.h"
 #include "stdlib.h"
 #include <misc.h>			 // I recommend you have a look at these in the ST firmware folder
-#include "stm32_ub_fatfs.h"
+//#include "stm32_ub_fatfs.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_conf.h"
+#include "stm32f4xx_spi.h"
 }
 
 #include <stddef.h>
@@ -56,17 +57,22 @@ typedef struct {
 #include "oiler.h"
 #include "fuel.h"
 #include "voltage.h"
+#include "oiler.h"
+#include "sd.h"
+
 
 #include "config.h"
-#include "aktors.h"
 #include "Sensors.h"
 #include "lap_timer.h"
+#include "aktors.h"
+#include "file_manager_v2.h"
+#include "POI_finder.h"
 #include "menu.h"
 
 #include "speed_cams.h"
 #include "sprint.h"
-//#include "file_manager_v2.h"
 #include "tetris.h"
+#include "POI_finder.h"
 
 
 /**********************************  working settings ********************************/

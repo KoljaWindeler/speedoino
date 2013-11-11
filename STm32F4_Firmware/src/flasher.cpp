@@ -28,13 +28,13 @@ flasher::flasher(){
 flasher::~flasher(){};
 
 
-//void flasher::pin_toogled(){
-//	last_toggle_time=Millis.get();
-//	if(!flasher_active){ // first time called, note actual trip
-//		set_start(pSpeedo->trip_dist[8],Sensors.get_speed(false));
-//	}
-//	flasher_active=true;
-//};
+void flasher::pin_toogled(){
+	last_toggle_time=Millis.get();
+	if(!flasher_active){ // first time called, note actual trip
+		set_start(Speedo.trip_dist[8],Sensors.get_speed(false));
+	}
+	flasher_active=true;
+};
 
 
 void flasher::check(){ // called every 100ms from pSensors->pull_values()

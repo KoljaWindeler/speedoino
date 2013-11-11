@@ -14,26 +14,33 @@
 
 #define SD_EN 4
 
-#include      <SdFat.h>
-#include      <SdFatUtil.h>
+#include "ff.h"
 
-class speedo_sd{
+class sd{
 #define       CONFIG_FOLDER "config"
-#define       error(s)   error_P(PSTR(s))
 public:
-	speedo_sd(void);
-	~speedo_sd();
+	sd(void);
+	~sd();
 	void init();
 	void EEPROM_init();
-	int writeString(SdFile& f, char *str);
+	int8_t writeString(FIL* f, uint8_t* str);
+	int8_t writeString(FIL* f, char* str);
+	int8_t append_string(uint8_t* filename,uint8_t* buffer);
+
+	int8_t remove_file(uint8_t* path);
+	int16_t get_line_n(int16_t line_nr,uint8_t* filename,uint8_t* buffer,uint16_t max_length);
+	int16_t get_line_n(int16_t line_nr,uint8_t* filename,uint8_t* buffer,uint16_t max_length, uint16_t* lines_in_file);
 	void power_up(unsigned char tries);
 	void power_down();
-	void error_P(const char* str);
-	void writeCRLF(SdFile& f);
+	void writeCRLF(FIL* f);
+
+	int get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,FIL *file_handle,uint8_t flags);
+	int get_file_handle(unsigned char *pathToFile,FIL *file_handle,uint8_t flags);
+
 	bool 		  sd_failed;
-	Sd2Card       card;
-	SdVolume      volume;
+	DIR sd_dir;
+	FIL sd_file;
 };
-extern speedo_sd* pSD;
+extern sd SD;
 
 #endif /* SH_H_ */

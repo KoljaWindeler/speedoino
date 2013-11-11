@@ -29,10 +29,10 @@ typedef struct {
 } speed_cam_state;
 
 
-class speedo_speedcams{
+class speedcams{
 
 public:
-	speedo_speedcams();
+	speedcams();
 	bool calc();
 	void set_gps_outdated();
 	bool get_active();
@@ -54,13 +54,13 @@ private:
 	simple_coordinate db_last_calc;
 	simple_coordinate bestOfThree_last_calc;
 
-//	SdFile source_file;	TODO TODO TODO
-//	SdFile dest_file;
+	FIL source_file;
+	FIL dest_file;
 
 	int8_t parse_complete_db();
 	int8_t parse_small_db();
 
 };
-extern speedo_speedcams* pSpeedCams;
+extern speedcams SpeedCams;
 
 #endif /* SPEEDCAMS_H_ */

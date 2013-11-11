@@ -21,6 +21,7 @@ public:
 	void puts_ln(USART_TypeDef* USARTx, int s);
 	void recv(USART_TypeDef* USARTx,char t);
 	int available(USART_TypeDef* USARTx);
+	void flush(USART_TypeDef* USARTx);
 	int read(USART_TypeDef* USARTx);
 	bool getS(USART_TypeDef* USARTx,char* buffer);
 private:
@@ -28,9 +29,13 @@ private:
 	int head1;
 	int tail1;
 
-//	unsigned char buffer2[MAX_STRLEN];	// GPS has its own buffer
-//	int head2;
-//	int tail2;
+	//	unsigned char buffer2[MAX_STRLEN];	// GPS has its own buffer
+	//	int head2;
+	//	int tail2;
+
+	unsigned char buffer3[MAX_STRLEN];
+	int head3;
+	int tail3;
 
 	unsigned char buffer4[MAX_STRLEN];
 	int head4;

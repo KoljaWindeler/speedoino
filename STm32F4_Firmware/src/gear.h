@@ -26,7 +26,7 @@ public:
 	int check_vars();
 	void calibrate();
 
-	int n_gang[7];
+	int16_t n_gang[7];
 	int gang;
 	bool neutral_set;
 	// used to calibration mode && to calc to gear in speedo mode

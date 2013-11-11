@@ -61,7 +61,7 @@ extern "C" void USART2_IRQHandler(void){
 	// check if the USART1 receive interrupt flag was set
 	if( USART_GetITStatus(USART2, USART_IT_RXNE) ){
 		// the character from the USART1 data register is saved in t
-//		Serial.recv(USART2,USART2->DR);
+		//		Serial.recv(USART2,USART2->DR);
 		Sensors.mGPS.recv_data(USART2->DR);
 	}
 
@@ -73,6 +73,15 @@ extern "C" void UART4_IRQHandler(void){
 		// the character from the USART1 data register is saved in t
 		Serial.recv(UART4,UART4->DR);
 	}
+}
+
+// buttons on D12..D15
+extern "C" void EXTI15_10_IRQHandler(void){
+	EXTI_ClearITPendingBit(EXTI_Line15);
+	EXTI_ClearITPendingBit(EXTI_Line14);
+	EXTI_ClearITPendingBit(EXTI_Line13);
+	EXTI_ClearITPendingBit(EXTI_Line12);
+	Menu.button_test(false,true);
 }
 
 //// aka PORTA PIN0 // todo: if timer capture runs, this isn't used anymore

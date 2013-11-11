@@ -23,7 +23,7 @@ public:
 	void check_umfang();
 	int get_sat_speed();
 	int get_mag_speed();
-	int 		  gps_takeover;
+	int16_t  gps_takeover;
 	unsigned char status;
 	float 		  reifen_umfang;
 	// für die kalibrierung

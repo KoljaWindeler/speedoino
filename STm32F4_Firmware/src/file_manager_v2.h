@@ -8,7 +8,7 @@
 #ifndef FILE_MANAGER_V2_H_
 #define FILE_MANAGER_V2_H_
 
-class speedo_filemanager_v2{
+class filemanager_v2{
 
 #define ST_START		0
 #define ST_GET_SEQ_NUM	1
@@ -64,13 +64,11 @@ class speedo_filemanager_v2{
 	//#define CMD_LOAD_ADDRESS                    0x06
 	//#define CMD_FIRMWARE_UPGRADE                0x07
 public:
-	speedo_filemanager_v2();
-	~speedo_filemanager_v2();
-	//void get_filename(char* buffer);
+	filemanager_v2();
+	~filemanager_v2();
+	void get_filename(char* buffer);
 	void run();
 	void parse_command();
-	int get_file_handle(unsigned char *pathToFile, SdFile *fm_file, uint8_t flags);
-	int get_file_handle(unsigned char *msgBuffer,unsigned char *last_file, SdFile *fm_file, SdFile *fm_handle,uint8_t flags);
 private:
 	int send_answere(unsigned char *msgBuffer,unsigned int msgLength,unsigned char *seqNum, unsigned char *msgParseState);
 	bool cd(char dir[20]);
@@ -80,10 +78,10 @@ private:
 	bool mkdir(char dir[20]);
 	bool rm(char filename[13]);
 	bool rmdir();
-	SdFile fm_handle;
-	SdFile fm_file;
+	DIR fm_dir;
+	FIL fm_file;
 };
-extern speedo_filemanager_v2* pFilemanager_v2;
+extern filemanager_v2 Filemanager_v2;
 
 
 #endif /* FILE_MANAGER_V2_H_ */

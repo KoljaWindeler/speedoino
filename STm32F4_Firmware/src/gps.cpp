@@ -140,7 +140,7 @@ void GPS::reconfigure(){
 // prüft ob daten da sind, die valid sind
 // wenn ja dann wird get_GPS damit aufgerufen
 void GPS::recv_data(uint8_t byteGPS){
-//	Serial.puts(USART1,(char)byteGPS); // remove me
+	//	Serial.puts(USART1,(char)byteGPS); // remove me
 	switch(gps_state){
 	case 0:  // hier sitzen wir und warten auf das startzeichen
 		if(byteGPS=='$'){
@@ -400,7 +400,7 @@ void GPS::parse(uint8_t *linea,int datensatz){
 
 			if(first_dataset){
 				//Serial.puts_ln(USART1,"GPS connected, configuring data");
-				//				pConfig->day_trip_check(); // TODO
+				Config.day_trip_check();
 				//configure GPS
 				update_rate_1Hz();
 				first_dataset=false;
@@ -454,11 +454,11 @@ void GPS::parse(uint8_t *linea,int datensatz){
 			gps_fix[gps_count]=gps_fix_temp;
 
 			// notify other modules
-			//			if(pMenu->state==11 || pMenu->state==M_TOUR_ASSISTS*100+SM_TOUR_ASSISTS_SPEEDCAM_STATUS*10+1){ // regular speedo or "show" mode
-			//				if(pSpeedCams->get_active()){
-			//					pSpeedCams->set_gps_outdated();
-			//				}
-			//			} TODO
+			if(Menu.state==11 || Menu.state==M_TOUR_ASSISTS*100+SM_TOUR_ASSISTS_SPEEDCAM_STATUS*10+1){ // regular speedo or "show" mode
+				if(SpeedCams.get_active()){
+					SpeedCams.set_gps_outdated();
+				}
+			}
 
 
 			// debug
@@ -682,7 +682,7 @@ int GPS::store_to_sd(){
 
 	gps_write_status=2;
 	// das kann auch ruhig alle 30 sec gemacht werden
-	//	pConfig->storage_outdated=true; // damit geschrieben werden darf // TODO
+	Config.storage_outdated=true; // damit geschrieben werden darf
 	//	gps_write_status=3;
 	//	pConfig->write(filename); // schreiben
 
@@ -876,127 +876,81 @@ void GPS::set_gps_mark(int type){
 
 // die globalen variablen neu befüllen, auf basis des zuvor gesetzten navi_point
 void GPS::generate_new_order(){ // eine neue Order auslesen
-	//	// da diese funktion nur aufgerufen wird wenn vorher der navi_pointer geändert wurde speichern wir hier den pointer um das so selten wie nötig zu machen
-	//	byte tempByte = (navi_point & 0xFF);
+	// da diese funktion nur aufgerufen wird wenn vorher der navi_pointer geändert wurde speichern wir hier den pointer um das so selten wie nötig zu machen
+	byte tempByte = (navi_point & 0xFF);
 	//	eeprom_write_byte((uint8_t *)147,tempByte);
-	//
-	//	//////////// DEBUG /////////////////
-	//#ifdef NAVI_DEBUG
-	//	Serial.puts_ln(USART1,("Versuche NAVI.SMF zu oeffnen"));
-	//	pConfig->ram_info();
-	//#endif
-	//	//////////// DEBUG /////////////////
-	//
-	//	SdFile root;
-	//	SdFile file;
-	//	SdFile subdir;
-	//	root.openRoot(&pSD->volume);
-	//
-	//	if(!subdir.open(&root, NAVI_FOLDER, O_READ)) {
-	//		pSD->sd_failed=true;
-	//		Serial.puts_ln(USART1,("open subdir /config failed"));
-	//	};
-	//	uint8_t navi_filename[13];
-	//
-	//	sprintf(navi_filename,"NAVI%i.SMF",active_file%100);
-	//
-	//	//////////// DEBUG /////////////////
-	//#ifdef NAVI_DEBUG
-	//	Serial.puts_ln(USART1,navi_filename);
-	//	Serial.puts(USART1,("Punkt:"));
-	//	Serial.puts_ln(USART1,navi_point);
-	//#endif
-	//	//////////// DEBUG /////////////////
-	//
-	//	if(file.open(&subdir, navi_filename, O_READ)) {
-	//		int16_t n,i;
-	//		uint8_t buf[36];// immer 35 byte lesen, das ist genau eine anweisung (wobei das array wieder ein Feld grö�?er sein muss)
-	//		// die ersten bytes sind sowas wie der titel, die können wir zur navigation nicht nutzen, weglesen
-	//		// suche den ersten zeilen umbruch
-	//		bool found=false;
-	//		bool eof=false;
-	//		int zeile=0;
-	//		i=0;
-	//		uint8_t char_buf[1]={0x00};
-	//		////////// suche den anfang der richtigen zeile
-	//		while(!found && !eof){					// solange suchen bis wir entweder den Datensatz oder das ende haben
-	//			n = file.read(char_buf, 1);			// jeweils nur 1 uint8_t lesen
-	//			if(n==1){							// true, if not end of file
-	//				if(char_buf[0]==0x0A){			// find end of line
-	//					if(i<35) buf[i]=0x00;		// if end reach, terminate string
-	//					i=0;						// reset buf write pointer
-	//					zeile++;					// increase number of read lines
-	//					if(zeile==navi_point+2){	// if the NEXT line nr equels nevi_point+1, EDIT +1+1=+2, cause of "skip first line" -> point 0 is found as soon as you find line nr 2!
-	//						found=true;				// we found the right line
-	//					};
-	//				} else {						// its not \n
-	//					buf[i]=char_buf[0];			// so store it in the buffer
-	//					if(i<35) i++;				// and increase the pointer until max
-	//				};
-	//			} else {							// if we were unable to read one further uint8_t
-	//				eof=true;						// we have reached the eof before reading the target line
-	//			};
-	//		}
-	//		file.close();							// close it, cause we could call this as loop
-	//		subdir.close();
-	//		root.close();
-	//
-	//		//////////// DEBUG /////////////////
-	//#ifdef NAVI_DEBUG
-	//		Serial.puts(USART1,zeile);
-	//		Serial.puts_ln(USART1,(" Datensaetze durchsucht."));
-	//#endif
-	//		//////////// DEBUG /////////////////
-	//
-	//		if(found) { 							// is set to true in previous
-	//			navi_ziel_lati=0;
-	//			navi_ziel_long=0;
-	//
-	//			// lati/long einlesen
-	//			for(int a=0;a<=8;a++){ // vorwärts
-	//				//sprintf(serialbuffer,"Ich lese ein: %c und mache daraus %i",buf[a],buf[a]-48);
-	//				//Serial.puts_ln(USART1,serialbuffer);
-	//				navi_ziel_lati=navi_ziel_lati*10+(int(buf[a])-48);
-	//				navi_ziel_long=navi_ziel_long*10+(int(buf[a+10])-48);
-	//			};
-	//			// ziel name
-	//			for(int a=0;a<=9;a++){ // forwards -> 128/6=21  : 2.1km g helmholtzs 11 --> 10 buchstaben
-	//				navi_ziel_name[a]=buf[a+22];
-	//			};
-	//			navi_ziel_name[10]='\0';
-	//
-	//			// r oder l oder g
-	//			navi_ziel_rl=int(buf[20])-48; // gradeaus(93+0x20=125),links,rechts: g=125+('0'-48),l=125+('1'-48)
-	//
-	//			//////////// DEBUG /////////////////
-	//#ifdef NAVI_DEBUG
-	//			Serial.puts(USART1,("Long: ")); Serial.puts(USART1,navi_ziel_long); Serial.puts(USART1,(" lati: ")); Serial.puts(USART1,navi_ziel_lati);
-	//			Serial.puts(USART1,(" name: ")); Serial.puts(USART1,navi_ziel_name);
-	//			Serial.puts(USART1,(" rlg: ")); Serial.puts_ln(USART1,navi_ziel_rl);
-	//#endif
-	//			//////////// DEBUG /////////////////
-	//		} else {			// cool file handle
-	//
-	//			//////////// DEBUG /////////////////
-	//#ifdef NAVI_DEBUG
-	//			Serial.puts_ln(USART1,("soviele punkte gibbet nicht"));
-	//#endif
-	//			//////////// DEBUG /////////////////
-	//
-	//			navi_point=zeile-2; // set to max
-	//			if(navi_point<0) navi_point=0; // hmm reason to stop?
-	//			generate_new_order(); // das hier ist das zurücksetzen, wenn man über den letzten Punkt hinweg klickt
-	//		};
-	//
-	//	} else { // sd datei nicht gefunden
-	//		sprintf(navi_ziel_name,"SD failed!");
-	//
-	//		//////////// DEBUG /////////////////
-	//#ifdef SD_DEBUG
-	//		Serial.puts_ln(USART1,("Konnte Navigations Daten nicht laden"));
-	//#endif
-	//		//////////// DEBUG /////////////////
-	//	};
+
+	//////////// DEBUG /////////////////
+#ifdef NAVI_DEBUG
+	Serial.puts_ln(USART1,("Versuche NAVI.SMF zu oeffnen"));
+	pConfig->ram_info();
+#endif
+	//////////// DEBUG /////////////////
+
+
+	uint8_t navi_filename[13];
+	sprintf((char*)navi_filename,"/%s/NAVI%i.SMF",NAVI_FOLDER,active_file%100);
+
+	//////////// DEBUG /////////////////
+#ifdef NAVI_DEBUG
+	Serial.puts_ln(USART1,navi_filename);
+	Serial.puts(USART1,("Punkt:"));
+	Serial.puts_ln(USART1,navi_point);
+#endif
+	//////////// DEBUG /////////////////
+
+	uint8_t buf[36];// immer 35 byte lesen, das ist genau eine anweisung (wobei das array wieder ein Feld grö�?er sein muss)
+	// die ersten bytes sind sowas wie der titel, die können wir zur navigation nicht nutzen, weglesen
+	uint16_t zeilen;
+	int16_t result=SD.get_line_n(navi_point+1,navi_filename,buf,sizeof(buf),&zeilen);
+	if(result>=0){ // 0=found
+		navi_ziel_lati=0;
+		navi_ziel_long=0;
+
+		// lati/long einlesen
+		for(int a=0;a<=8;a++){ // vorwärts
+			//sprintf(serialbuffer,"Ich lese ein: %c und mache daraus %i",buf[a],buf[a]-48);
+			//Serial.puts_ln(USART1,serialbuffer);
+			navi_ziel_lati=navi_ziel_lati*10+(int(buf[a])-48);
+			navi_ziel_long=navi_ziel_long*10+(int(buf[a+10])-48);
+		};
+		// ziel name
+		for(int a=0;a<=9;a++){ // forwards -> 128/6=21  : 2.1km g helmholtzs 11 --> 10 buchstaben
+			navi_ziel_name[a]=buf[a+22];
+		};
+		navi_ziel_name[10]='\0';
+
+		// r oder l oder g
+		navi_ziel_rl=int(buf[20])-48; // gradeaus(93+0x20=125),links,rechts: g=125+('0'-48),l=125+('1'-48)
+
+		//////////// DEBUG /////////////////
+#ifdef NAVI_DEBUG
+		Serial.puts(USART1,("Long: ")); Serial.puts(USART1,navi_ziel_long); Serial.puts(USART1,(" lati: ")); Serial.puts(USART1,navi_ziel_lati);
+		Serial.puts(USART1,(" name: ")); Serial.puts(USART1,navi_ziel_name);
+		Serial.puts(USART1,(" rlg: ")); Serial.puts_ln(USART1,navi_ziel_rl);
+#endif
+		//////////// DEBUG /////////////////
+	}else if(result==1){ // 1=less lines in file than you think my dear
+
+		//////////// DEBUG /////////////////
+#ifdef NAVI_DEBUG
+		Serial.puts_ln(USART1,("soviele punkte gibbet nicht"));
+#endif
+		//////////// DEBUG /////////////////
+
+		navi_point=zeilen-2; // set to max
+		if(navi_point<0) navi_point=0; // hmm reason to stop?
+		generate_new_order(); // das hier ist das zurücksetzen, wenn man über den letzten Punkt hinweg klickt
+
+	} else { // sd datei nicht gefunden
+		sprintf((char*)navi_ziel_name,"SD failed!");
+
+		//////////// DEBUG /////////////////
+#ifdef SD_DEBUG
+		Serial.puts_ln(USART1,("Konnte Navigations Daten nicht laden"));
+#endif
+		//////////// DEBUG /////////////////
+	};
 };
 
 /****************************************************************

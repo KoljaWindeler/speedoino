@@ -25,9 +25,14 @@ oiler::~oiler(){
 };
 
 void oiler::init(){
-//	OILER_DIRC|=(1<<PL1); // use as output
-//	OILER_PORT&=~(1<<OILER_PIN); // digitalWrite(OILER_PIN,LOW);
-
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_11;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT; 			// the pins are configured as alternate function so the USART peripheral has access to them
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;		// this defines the IO speed and has nothing to do with the baudrate!
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;			// this defines the output type as push pull mode (as opposed to open drain)
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;			// this activates the pullup resistors on the IO pins
+	//GPIO_Init(GPIOD, &GPIO_InitStruct); TODO pin ok?
+	//GPIO_WriteBit(GPIOD,GPIO_Pin_11,Bit_RESET); TODO pin ok?
 	Serial.puts_ln(USART1,("Oiler init done"));
 };
 
@@ -44,10 +49,10 @@ bool oiler::check_vars(){
 
 int oiler::send_impulse(){
 	if(Sensors.get_speed(false)>30){ // nur ölen wenn wir über 30 kmh sind
-//		OILER_PORT|=(1<<OILER_PIN);//digitalWrite(OILER_PIN,HIGH); // 150ms high
-//		_delay_ms(150);
-//		OILER_PORT|=(0<<OILER_PIN);//digitalWrite(OILER_PIN,LOW);
-//		pConfig->write("speedo.txt"); // store this
+		//GPIO_WriteBit(GPIOD,GPIO_Pin_11,Bit_SET); TODO pin ok? // 150ms high
+		_delay_ms(150);
+		//GPIO_WriteBit(GPIOD,GPIO_Pin_11,Bit_RESET); TODO pin ok? // 150ms high
+		Config.write("speedo.txt"); // store this
 		return 0;
 	} else {
 		return -1;

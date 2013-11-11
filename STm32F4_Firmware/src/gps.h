@@ -61,12 +61,12 @@ public:
 	unsigned long gps_lati[30],gps_long[30];
 	unsigned int speed;
 	float navi_ziel_lati,navi_ziel_long;//=9473208.0;
-	int navi_point;
+	int16_t navi_point;
 	int winkel; // 0-359
 	int gps_count; // aktuelle position in der gespeichert wird
 	unsigned int written_gps_points;
 	uint8_t navi_ziel_name[14];//= "Helmholtzstr."; //seperate var, muss das lÃ¤nger halten
-	int active_file; //
+	int16_t active_file; //
 	int valid;
 	bool navi_active;
 	bool use_compressed_log_format;

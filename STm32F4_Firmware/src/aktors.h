@@ -1,12 +1,15 @@
 /*
- * aktors.h
+ * akting.h
  *
  *  Created on: 16.11.2011
  *      Author: jkw
  */
 
-#ifndef AKTORS_H_
-#define AKTORS_H_
+#ifndef akting_H_
+#define akting_H_
+
+#include "oiler.h"
+#include "stepper.h"
 
 #define RGB_ACTION_TYPE_STATIC 0
 #define RGB_ACTION_TYPE_FOLLOW 1
@@ -72,11 +75,10 @@ typedef struct{
 } led;
 
 
-
-class Speedo_aktors{
+class akting{
 public:
-	Speedo_aktors(void);
-	~Speedo_aktors();
+	akting(void);
+	~akting();
 	void init();
 	bool check_vars();
 	void set_rgb_in(int r,int g,int b);
@@ -99,12 +101,12 @@ public:
 	int set_controll_lights(uint8_t oil,uint8_t flasher_left,uint8_t n_gear,uint8_t flasher_right,uint8_t high_beam, bool now);
 	int set_rbg_active(int status, bool now);
 	void rgb_action(int needle_pos);
-//	speedo_stepper m_stepper;
-//	oiler mOiler;
+	stepper mStepper;
+	oiler mOiler;
 	led RGB;
 	led_simple dz_flasher,oil_start_color,oil_end_color,water_start_color,water_end_color,kmh_start_color,kmh_end_color,dz_start_color,dz_end_color,static_color;
 	int8_t led_mode,pointer_highlight_mode;
-	int oil_max_value,oil_min_value,water_max_value,water_min_value,kmh_max_value,kmh_min_value,dz_max_value,dz_min_value,bt_pin;
+	int16_t oil_max_value,oil_min_value,water_max_value,water_min_value,kmh_max_value,kmh_min_value,dz_max_value,dz_min_value,bt_pin;
 	bool attention_required;
 
 private:
@@ -117,6 +119,6 @@ private:
 	uint8_t led_area_controll;
 
 };
-extern Speedo_aktors pAktors;
+extern akting Aktors;
 
-#endif /* AKTORS_H_ */
+#endif /* akting_H_ */

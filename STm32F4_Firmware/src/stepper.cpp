@@ -12,15 +12,15 @@
 
 
 
-speedo_stepper::speedo_stepper(void){
+stepper::stepper(void){
 	init_steps_to_go=0;
 }
 
-speedo_stepper::~speedo_stepper(){
+stepper::~stepper(){
 };
 
 
-void speedo_stepper::init(){
+void stepper::init(){
 	//	if(pConfig->get_hw_version()==7){
 	Serial.init(USART3,19200); // macht eigentlich schon der reset, aber zur sicherheit
 //	//Serial3.flush();
@@ -37,7 +37,7 @@ void speedo_stepper::init(){
 	}
 };
 
-void speedo_stepper::startup(){
+void stepper::startup(){
 	if(init_steps_to_go!=0){
 		///////////// ATM /////////////
 		if(init_steps_to_go>=5){
@@ -87,7 +87,7 @@ void speedo_stepper::startup(){
           It is also possible to set the parameter to NULL, when only the
           error flags are to be reset without the need to know the status.
  ******************************************************************************/
-bool speedo_stepper::go_to(int winkel,int accel,int speed){
+bool stepper::go_to(int winkel,int accel,int speed){
 	///////////// ATM /////////////
 	Serial.puts(USART3,"$m");
 	Serial.puts(USART3,int(round(winkel/ATM_DIV_FACTOR)));
@@ -111,13 +111,13 @@ bool speedo_stepper::go_to(int winkel,int accel,int speed){
 	return true;
 };
 
-void speedo_stepper::run_calibration(void){
+void stepper::run_calibration(void){
 	///////////// ATM /////////////
 	Serial.puts(USART3,"$c*");
 	///////////// ATM /////////////
 }
 
-bool speedo_stepper::go_to(int winkel){
+bool stepper::go_to(int winkel){
 	Serial.puts(USART3,"$m");
 	Serial.puts(USART3,int(round(winkel/ATM_DIV_FACTOR)));
 	Serial.puts(USART3,"*");
@@ -131,7 +131,7 @@ bool speedo_stepper::go_to(int winkel){
 
 
 // get Pos
-int speedo_stepper::get_pos(){
+int stepper::get_pos(){
 	int pos=0;
 	///////////// ATM /////////////
 	//Serial3.flush();
@@ -174,11 +174,11 @@ int speedo_stepper::get_pos(){
 
 
 
-void speedo_stepper::get_motor_status(int* ist_pos, int* delay, int* status){
+void stepper::get_motor_status(int* ist_pos, int* delay, int* status){
 	get_atm_motor_status(ist_pos,delay,status);
 }
 
-void speedo_stepper::loop(){
+void stepper::loop(){
 
 	if(Speedo.disp_zeile_bak[0]!=99){
 		Speedo.disp_zeile_bak[0]=99;
@@ -204,15 +204,15 @@ void speedo_stepper::loop(){
 };
 
 ///////////////////////////////////////// ATM /////////////////////////////////////////
-void speedo_stepper::overwrite_pos(int new_pos){
+void stepper::overwrite_pos(int new_pos){
 	//Serial3.flush();
-		("$o");
+	Serial.puts(USART3,"$o");
 	Serial.puts(USART3,new_pos);
 	Serial.puts(USART3,"*");
 }
 
 
-void speedo_stepper::get_atm_motor_status(int* ist_pos, int* delay, int* status){
+void stepper::get_atm_motor_status(int* ist_pos, int* delay, int* status){
 	//Serial3.flush();
 	Serial.puts(USART3,"$g*");
 

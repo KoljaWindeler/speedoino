@@ -1,5 +1,5 @@
 ///////////////////// Timer CC INTERRUPT //////////////////
-	NVIC_InitTypeDef   NVIC_InitStructure;
+	
 
 	// Clock enable (GPIO)
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
@@ -17,6 +17,7 @@
 
 
 	/* Enable the TIM5 global Interrupt */
+	NVIC_InitTypeDef   NVIC_InitStructure;
 	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;

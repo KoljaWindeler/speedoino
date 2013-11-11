@@ -41,6 +41,7 @@ ILI9325::ILI9325(){};
 ILI9325::~ILI9325(){};
 
 void ILI9325::init(void) {
+	Serial.puts(USART1,"Display init ...");
 	CtrlLinesConfig();
 	FSMCConfig();
 
@@ -135,6 +136,7 @@ void ILI9325::init(void) {
 
 	clear_screen(0, 0, 0);
 	_delay_ms(50);
+	Serial.puts_ln(USART1," done");
 }
 
 /*******************************************************************************
@@ -296,6 +298,12 @@ void ILI9325::zeichen_small_5x(const uint8_t *font,uint8_t z, uint16_t spalte, u
 void ILI9325::zeichen_small_6x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
 	zeichen_small_scale(6,font,z,spalte,zeile,offset);
 }
+void ILI9325::zeichen_small_7x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
+	zeichen_small_scale(7,font,z,spalte,zeile,offset);
+}
+void ILI9325::zeichen_small_8x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
+	zeichen_small_scale(8,font,z,spalte,zeile,offset);
+}
 
 void ILI9325::zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
 	unsigned int stelle;
@@ -361,6 +369,26 @@ void ILI9325::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8
 	case SANS_SMALL_1X_FONT:
 		for(unsigned int i=0;i<strlen(str);i++){
 			zeichen_small_1x(&dejaVuSans5ptBitmaps[0],str[i],(spalte+i),zeile,offset);
+		};
+		break;
+	case VISITOR_SMALL_8X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_8x(&visitor_code[0],str[i],(spalte+i*8),zeile,offset);
+		};
+		break;
+	case VISITOR_SMALL_7X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_7x(&visitor_code[0],str[i],(spalte+i*7),zeile,offset);
+		};
+		break;
+	case VISITOR_SMALL_6X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_6x(&visitor_code[0],str[i],(spalte+i*6),zeile,offset);
+		};
+		break;
+	case VISITOR_SMALL_5X_FONT:
+		for(unsigned int i=0;i<strlen(str);i++){
+			zeichen_small_5x(&visitor_code[0],str[i],(spalte+i*5),zeile,offset);
 		};
 		break;
 	case VISITOR_SMALL_4X_FONT:
@@ -1389,4 +1417,112 @@ int ILI9325::animation(int a){
 
 void ILI9325::draw_arrow(int arrow, int spalte, int zeile){
 
+}
+
+// check if x/y are in display range
+void ILI9325::check_coordinates(int16_t* x,int16_t* y){
+	if(*x<0){
+		*x=0;
+	} else if(*x>=320){
+		*x=319;
+	}
+
+	if(*y<0){
+		*y=0;
+	} else if(*y>=240){
+		*y=239;
+	}
+}
+
+
+void ILI9325::glow(int16_t x_start,int16_t y_start,int16_t x_end,int16_t y_end,uint8_t r,uint8_t g,uint8_t b,uint8_t loss){
+	check_coordinates(&x_start,&y_start);
+	check_coordinates(&x_end,&y_end);
+
+	// steps as max of r,g,b
+	int steps=r;
+	if(g>steps){
+		steps=g;
+	}
+	if(b>steps){
+		steps=b;
+	}
+
+	// three modes: ball, horizontal line, vertical line
+
+	if(x_start==x_end && y_start==y_end){ // just one point
+		for(int16_t x=x_start-(steps/loss);x<x_start+(steps/loss);x++){
+			for(int16_t y=y_start-(steps/loss);y<y_start+(steps/loss);y++){
+				if(x>=0 && x<320 && y>=0 && y<230){ // in visible area
+					int16_t distance=sqrt(abs(x-x_start)*abs(x-x_start)+abs(y-y_start)*abs(y-y_start))*loss;
+					int16_t t_r=r-distance;
+					int16_t t_g=g-distance;
+					int16_t t_b=b-distance;
+					if(t_r<0) t_r=0;
+					if(t_g<0) t_g=0;
+					if(t_b<0) t_b=0;
+					Pixel(x,y,t_r,t_g,t_b);
+				}
+			}
+		}
+	} else if(x_start==x_end){ // vertical line
+		int y_top,y_buttom;
+		if(y_end<y_start){
+			y_top=y_end;
+			y_buttom=y_start;
+		} else {
+			y_top=y_start;
+			y_buttom=y_end;
+		}
+
+		// upper and lower ball
+		glow(x_start,y_top,x_start,y_top,r,g,b,loss);
+		glow(x_start,y_buttom,x_start,y_buttom,r,g,b,loss);
+
+		// line in between
+		for(int16_t y=y_top-3;y<y_buttom;y++){
+			for(int16_t x=x_start-(steps/loss);x<x_start+(steps/loss);x++){
+				if(x>=0 && x<320){ // in visible area
+					int16_t distance=abs(x-x_start)*loss;
+					int16_t t_r=r-distance;
+					int16_t t_g=g-distance;
+					int16_t t_b=b-distance;
+					if(t_r<0) t_r=0;
+					if(t_g<0) t_g=0;
+					if(t_b<0) t_b=0;
+					Pixel(x,y,t_r,t_g,t_b);
+				}
+			}
+		}
+	} // vertical line end
+	else if(y_start==y_end){ // horizontal line
+		int x_left,x_right;
+		if(x_end<x_start){
+			x_left=x_end;
+			x_right=x_start;
+		} else {
+			x_left=x_start;
+			x_right=x_end;
+		}
+
+		// left and right ball
+		glow(x_left,y_start,x_left,y_start,r,g,b,loss);
+		glow(x_right,y_start,x_right,y_start,r,g,b,loss);
+
+		// line in between
+		for(int16_t x=x_left;x<x_right;x++){
+			for(int16_t y=y_start-(steps/loss);y<y_start+(steps/loss);y++){
+				if(y>=0 && y<240){ // in visible area
+					int16_t distance=abs(y-y_start)*loss;
+					int16_t t_r=r-distance;
+					int16_t t_g=g-distance;
+					int16_t t_b=b-distance;
+					if(t_r<0) t_r=0;
+					if(t_g<0) t_g=0;
+					if(t_b<0) t_b=0;
+					Pixel(x,y,t_r,t_g,t_b);
+				}
+			}
+		}
+	}// horizontal line end
 }

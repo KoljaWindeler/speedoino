@@ -759,21 +759,18 @@ void LapTime::gps_capture_loop(){
 
 /* clear file will open a file in truncate mode and close it*/
 int LapTime::clear_file(unsigned char* filename){
-//	SdFile folder;
-//	SdFile file;
-//	unsigned char temp[20];
-//	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_TRUNC|O_CREAT|O_RDWR)<0){
-//#ifdef LapTime_DEBUG_OUTPUT
-//		Serial.print("*clear_file: get_file_handle ");
-//		Serial.print((char*)filename);
-//		Serial.println(" failed");
-//#endif
-//		return -1;
-//	};
-//	file.remove();
-//	file.close();
-//	folder.close();
-//	current_sector=0;
+	FIL file;
+	unsigned char temp[20];
+	if(SD.get_file_handle(filename,temp,&file,FA_CREATE_ALWAYS|FA_WRITE)<0){
+#ifdef LapTime_DEBUG_OUTPUT
+		Serial.print("*clear_file: get_file_handle ");
+		Serial.print((char*)filename);
+		Serial.println(" failed");
+#endif
+		return -1;
+	};
+	f_close(&file);
+	current_sector=0;
 	return 0;
 };
 
@@ -797,55 +794,40 @@ int LapTime::reset_times(unsigned char* filename){
 	returns 0=ok, -2 write error, -3 open error
  */
 int LapTime::add_sector(uint32_t latitude, uint32_t longitude, unsigned char* filename){
-//	if(latitude>90000000){ // max +/-90.000000? ^
-//		latitude=90000000;
-//	};
-//	if(longitude>180000000){ // max +/-180.000000? <->
-//		longitude=180000000;
-//	};
-//
-//	latitude=Sensors.mGPS.nmea_to_dec(latitude);		// !! Saveing in dec deg format
-//	longitude=Sensors.mGPS.nmea_to_dec(longitude);
-//
-//	unsigned char temp[31]; // reused to write time
-//	SdFile folder;
-//	SdFile file;
-//	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_CREAT| O_WRITE | O_APPEND)<0){
-//		file.close();
-//		folder.close();
-//#ifdef LapTime_DEBUG_OUTPUT
-//		Serial.print("*add_sector: get_file_handle ");
-//		Serial.print((char*)filename);
-//		Serial.println(" failed");
-//#endif
-//		return -3;
-//	};
-//
-//	unsigned long time_needed=Sensors.mGPS.get_info(11)-sector_start_timestamp_ms;
-//	sector_start_timestamp_ms=Sensors.mGPS.get_info(11);
-//	if(time_needed>99999999){
-//		time_needed=99999999;
-//	}
-//
-//	sprintf((char *)temp,"%09lu,%09lu,%08lu\r\n",latitude,longitude,time_needed); // init with max time (27h)
-//	file.writeError=false;
-//	file.write((char *)temp);
-//	if(file.writeError){
-//		file.close();
-//		folder.close();
-//#ifdef LapTime_DEBUG_OUTPUT
-//		Serial.print("*add_sector: adding sector to ");
-//		Serial.print((char*)filename);
-//		Serial.println(" failed");
-//#endif
-//		return -2; // write to file failed
-//	}
-//	file.close();
-//	folder.close();
-//
-//	sector_end_longitude=longitude;
-//	sector_end_latitude=latitude;
-//	current_sector++; // we captured one ..goto next
+	if(latitude>90000000){ // max +/-90.000000? ^
+		latitude=90000000;
+	};
+	if(longitude>180000000){ // max +/-180.000000? <->
+		longitude=180000000;
+	};
+
+	latitude=Sensors.mGPS.nmea_to_dec(latitude);		// !! Saveing in dec deg format
+	longitude=Sensors.mGPS.nmea_to_dec(longitude);
+
+
+
+
+	unsigned long time_needed=Sensors.mGPS.get_info(11)-sector_start_timestamp_ms;
+	sector_start_timestamp_ms=Sensors.mGPS.get_info(11);
+	if(time_needed>99999999){
+		time_needed=99999999;
+	}
+
+	uint8_t temp[31]; // reused to write time
+	sprintf((char *)temp,"%09lu,%09lu,%08lu\r\n",latitude,longitude,time_needed); // init with max time (27h)
+	if(SD.append_string(filename,temp)!=0){
+#ifdef LapTime_DEBUG_OUTPUT
+		Serial.print("*add_sector: adding sector to ");
+		Serial.print((char*)filename);
+		Serial.println(" failed");
+#endif
+		return -2; // write to file failed
+	}
+
+
+	sector_end_longitude=longitude;
+	sector_end_latitude=latitude;
+	current_sector++; // we captured one ..goto next
 	return 0;
 };
 
@@ -860,11 +842,11 @@ int LapTime::add_sector(uint32_t latitude, uint32_t longitude, unsigned char* fi
 	%09lu,%09lu,%08lu\r\n ==> 051123423,009235342,00324577\r\n  (length per line = 30 byte)
 	means the sector ends at @51.123423?N, 9.235342?E and the best time for this sector was 324.577sec (wow 5 min) */
 int LapTime::update_sector_time(uint8_t sector_id, uint32_t sector_time, unsigned char *filename){
-//	unsigned char temp[25];
+	unsigned char temp[25];
 //	SdFile folder;
 //	SdFile file;
 //
-//	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_CREAT| O_WRITE)<0){
+//	if(SD.get_file_handle(filename,temp,&file,&folder,O_CREAT| O_WRITE)<0){
 //#ifdef LapTime_DEBUG_OUTPUT
 //		Serial.print("*update_sector_time: get_file_handle ");
 //		Serial.print((char*)filename);
@@ -902,7 +884,7 @@ int LapTime::update_sector_time(uint8_t sector_id, uint32_t sector_time, unsigne
 //	}
 //	file.close();
 //	folder.close();
-//	return 0;
+	return 0;
 };
 
 /* calc_best_lap_time() - is used to parse the SD Card and find all best sector times,
@@ -910,10 +892,10 @@ int LapTime::update_sector_time(uint8_t sector_id, uint32_t sector_time, unsigne
 	This should be the starting call!
  */
 int LapTime::calc_best_lap_time(){
-//	unsigned char temp[20];
+	unsigned char temp[20];
 //	SdFile folder;
 //	SdFile file;
-//	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_CREAT| O_RDWR)<0){
+//	if(SD.get_file_handle(filename,temp,&file,&folder,O_CREAT| O_RDWR)<0){
 //		TFT.show_storry(("File could not be read"),("Error"),DIALOG_GO_LEFT_1000MS);
 //#ifdef LapTime_DEBUG_OUTPUT
 //		Serial.print("*calc_best_theoretical_lap_time: get_file_handle ");
@@ -954,7 +936,7 @@ int LapTime::calc_best_lap_time(){
 //			delay_calc_active=false;
 //		}
 //	}
-//	return 0;
+	return 0;
 };
 
 
@@ -974,12 +956,12 @@ unsigned char* LapTime::get_active_filename(){ // overload for the menu.cpp
 	returns 0=ok,-1 seek error, -2 read error, -3 open error
  */
 int LapTime::get_sector_data(uint8_t sector_id, uint32_t* latitude,uint32_t* longitude,uint32_t* sector_time, unsigned char* filename){
-//	unsigned char temp[31];
+	unsigned char temp[31];
 //	SdFile folder;
 //	SdFile file;
 //
 //	// open file
-//	if(pFilemanager_v2->get_file_handle(filename,temp,&file,&folder,O_READ)<0){
+//	if(SD.get_file_handle(filename,temp,&file,&folder,O_READ)<0){
 //		file.close();
 //		folder.close();
 //#ifdef LapTime_DEBUG_OUTPUT
@@ -1049,5 +1031,5 @@ int LapTime::get_sector_data(uint8_t sector_id, uint32_t* latitude,uint32_t* lon
 //
 //	file.close();
 //	folder.close();
-//	return 0;
+	return 0;
 }
