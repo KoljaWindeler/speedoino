@@ -478,146 +478,116 @@ void menu::display(){
 		Config.storage_outdated=true;
 		Config.write("BASE.TXT"); // save config
 		// open SD
-//		SdFile root; TODO
-//		root.openRoot(&SD.volume);
-//		SdFile subdir;
-//		if(!subdir.open(&root, NAVI_FOLDER, O_READ)) {  Serial.puts_ln(USART1,("open subdir /config failed")); };
-//		// generate filename
-//		char navi_filename[13];
-//		sprintf(navi_filename,("NAVI%i.SMF"),Sensors.mGPS.active_file);
-//		char buffer[22]; // 21 zeichen + \0
-//		sprintf(buffer,("Navifile Nr: %i"),Sensors.mGPS.active_file);
-//		// file exists
-//		SdFile file;
-//		if (file.open(&subdir, navi_filename, O_READ)){ //kann ich offentsichtlich ?ndern, datei auslesen
-//			int n=1;
-//			int byte_read=0;
-//			// reserve buffer space
-//			char buffer_big[65];
-//
-//			while (n > 0 && byte_read<63) { // n=wieviele byte gelesen wurden
-//				char buf[2];
-//				n = file.read(buf, 1);
-//
-//				if(buf[0]!='\n'){
-//					buffer_big[byte_read]=buf[0];
-//					byte_read=byte_read+n;
-//				} else { // wenn '\n' break machen
-//					n=0;
-//					buffer_big[byte_read]='\0';
-//					break;
-//				}
-//			};
-//			// close file
-//			file.close();
-//			char title[17];
-//			sprintf(title,("Navifile Nr: %i/9"),Sensors.mGPS.active_file);
-//			if(buffer_big[0]=='#' && buffer_big[1]=='d'){
-//				for(int i=2;i<=byte_read;i++){ // remove "#d" from destriction string
-//					buffer_big[i-2]=buffer_big[i];
-//				};
-//				TFT.show_storry(buffer_big,byte_read,title,sizeof(title)/sizeof(title[0]));
-//			} else {
-//				TFT.clear_screen();
-//				TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-//				TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-//				TFT.string(Speedo.default_font,("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
-//			}
-//		} else { // if there is no file with that number
-//			TFT.clear_screen();
-//			char title[17];
-//			sprintf(title,("Navifile Nr: %i/9"),Sensors.mGPS.active_file);
-//			TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
-//			TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
-//			TFT.string(Speedo.default_font,("File not found"),2,3,0,DISP_BRIGHTNESS,0);
-//		};
-//		subdir.close();
-//		root.close();
+		char navi_filename[23];
+		sprintf(navi_filename,("/%s/NAVI%i.SMF"),NAVI_FOLDER,Sensors.mGPS.active_file);
+		char buffer_big[65];
+		if(SD.get_line_n(0,(uint8_t*)navi_filename,(uint8_t*)buffer_big,sizeof(buffer_big))==0){
+			char title[17];
+			sprintf(title,("Navifile Nr: %i/9"),Sensors.mGPS.active_file);
+			if(buffer_big[0]=='#' && buffer_big[1]=='d'){
+				for(int i=2;i<=strlen(buffer_big);i++){ // remove "#d" from destriction string
+					buffer_big[i-2]=buffer_big[i];
+				};
+				TFT.show_storry(buffer_big,strlen(buffer_big),title,sizeof(title)/sizeof(title[0]));
+			} else {
+				TFT.clear_screen();
+				TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+				TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+				TFT.string(Speedo.default_font,("No first line comment"),0,3,0,DISP_BRIGHTNESS,0);
+			}
+		} else { // if there is no file with that number
+			TFT.clear_screen();
+			char title[17];
+			sprintf(title,("Navifile Nr: %i/9"),Sensors.mGPS.active_file);
+			TFT.highlight_bar(0,0,128,8); // mit hintergrundfarbe nen kasten malen
+			TFT.string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+			TFT.string(Speedo.default_font,("File not found"),2,3,0,DISP_BRIGHTNESS,0);
+		};
 	}
 	//////////////////////// POI  finder  //////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POI_FINDER)){	// file selection
-//		bool build_complete_list=true; // TODO
-//		bool upper_one=true;	// assume we pressed the "down" button, so we have to refresh to one on top of us
-//		if(floor(old_state/10)==floor(state/10)){ // build just a short part of the list, not complee
-//			build_complete_list=false;
-//			if(old_state-1==state){ // we pressed the "up" button, so we have to refresh to one below
-//				upper_one=false;
-//			};
-//		} else { // first access of this menu . prepare
-//			TFT.clear_screen();
-//			TFT.string_centered(("= File selector ="),0,false);
-//			TFT.string(Speedo.default_font,("\x7E back      select \x7F"),0,7);
-//		}
-//
-//		if(state%10==1){ // avoid going up
-//			set_buttons(button_state,!button_state,button_state,button_state);
-//		} else if(state%10==6){	// avoid going down
-//			set_buttons(button_state,button_state,!button_state,button_state);
-//		}
-//
-//		SdFile dir_handle;
-//		SdFile file_handle;
-//		int item=0; // filecounter
-//		unsigned int file_count=0;
-//		int start=0;
-//		int stop=4; // 0..4 = 5 file + line on top + line on buttom = 7 lines of display
-//		char filename[22];
-//		strcpy((char*)filename,("/POI/"));
-//
-//
-//		if(Filemanager_v2.get_file_handle((unsigned char*)filename,(unsigned char*)filename,&file_handle,&dir_handle,O_READ|O_CREAT)<0){	// works :D
-//			TFT.show_storry(("Open POI dir failed"),("Error"),DIALOG_GO_LEFT_1000MS);
-//		} else {
-//			if(!build_complete_list){ // only "re-read" two items
-//				if(upper_one){ // e.G. state == 374, we pushed "down" 3 times (from 371.374), we want to refresh item 3 and the item above (2)
-//					start=(state%10)-2;
-//					stop=(state%10)-1;
-//				} else { // e.G. state == 374, we pushed "down" 4 times (from 371.375), and than "up" once (375.374) we want to refresh item 3 and the item below (4)
-//					start=(state%10)-1;
-//					stop=(state%10);
-//				}
-//			} else { // build complete list
-//				start=0;
-//				stop=5;
-//			}
-//
-//			item=start;
-//			while(item<=stop && item<=5){
-//				// status: 0=EOF, 1=FILE, 2=FOLDER
-//				unsigned long size;
-//				if(dir_handle.lsJKWNext((unsigned char*)filename,item,&size)){ // <- returns the filename of the file nr "item"
-//					file_count++;
-//					// check resulting filename
-//					if(strlen(filename)>=15){
-//						filename[15]='\0'; // short it
-//					};
-//					char temp[21];
-//					sprintf(temp,"%i.%s",item+1,filename); // <-- "gas.txt"."4.GAS.TXT"
-//					// fill up
-//
-//					strcpy(filename,temp);
-//					for(int i=strlen(filename);i<17;i++){
-//						filename[i]=' ';
-//					}
-//					filename[17]='\0';
-//				} else {
-//					sprintf(filename,"%i.-",item+1);
-//					if((state%10)>file_count){ // if we are explicit on this item
-//						set_buttons(button_links_valid,button_oben_valid,button_unten_valid,!button_state); // avoid go right
-//					}
-//				}
-//				// print it
-//				if((build_complete_list && (unsigned)item==(state%10)-1) || (!build_complete_list && upper_one && item==stop) || (!build_complete_list && !upper_one && item==start)){
-//					TFT.highlight_bar(0,(item+1)*8,128,8);
-//					TFT.string(Speedo.default_font,filename,2,item+1,0x0f,0x00,0);
-//				} else {
-//					TFT.filled_rect(0,(item+1)*8,128,8,0x00);
-//					TFT.string(Speedo.default_font,filename,2,item+1);
-//				}
-//
-//				item++;
-//			}
-//		}
+		//		bool build_complete_list=true; // TODO
+		//		bool upper_one=true;	// assume we pressed the "down" button, so we have to refresh to one on top of us
+		//		if(floor(old_state/10)==floor(state/10)){ // build just a short part of the list, not complee
+		//			build_complete_list=false;
+		//			if(old_state-1==state){ // we pressed the "up" button, so we have to refresh to one below
+		//				upper_one=false;
+		//			};
+		//		} else { // first access of this menu . prepare
+		//			TFT.clear_screen();
+		//			TFT.string_centered(("= File selector ="),0,false);
+		//			TFT.string(Speedo.default_font,("\x7E back      select \x7F"),0,7);
+		//		}
+		//
+		//		if(state%10==1){ // avoid going up
+		//			set_buttons(button_state,!button_state,button_state,button_state);
+		//		} else if(state%10==6){	// avoid going down
+		//			set_buttons(button_state,button_state,!button_state,button_state);
+		//		}
+		//
+		//		SdFile dir_handle;
+		//		SdFile file_handle;
+		//		int item=0; // filecounter
+		//		unsigned int file_count=0;
+		//		int start=0;
+		//		int stop=4; // 0..4 = 5 file + line on top + line on buttom = 7 lines of display
+		//		char filename[22];
+		//		strcpy((char*)filename,("/POI/"));
+		//
+		//
+		//		if(Filemanager_v2.get_file_handle((unsigned char*)filename,(unsigned char*)filename,&file_handle,&dir_handle,O_READ|O_CREAT)<0){	// works :D
+		//			TFT.show_storry(("Open POI dir failed"),("Error"),DIALOG_GO_LEFT_1000MS);
+		//		} else {
+		//			if(!build_complete_list){ // only "re-read" two items
+		//				if(upper_one){ // e.G. state == 374, we pushed "down" 3 times (from 371.374), we want to refresh item 3 and the item above (2)
+		//					start=(state%10)-2;
+		//					stop=(state%10)-1;
+		//				} else { // e.G. state == 374, we pushed "down" 4 times (from 371.375), and than "up" once (375.374) we want to refresh item 3 and the item below (4)
+		//					start=(state%10)-1;
+		//					stop=(state%10);
+		//				}
+		//			} else { // build complete list
+		//				start=0;
+		//				stop=5;
+		//			}
+		//
+		//			item=start;
+		//			while(item<=stop && item<=5){
+		//				// status: 0=EOF, 1=FILE, 2=FOLDER
+		//				unsigned long size;
+		//				if(dir_handle.lsJKWNext((unsigned char*)filename,item,&size)){ // <- returns the filename of the file nr "item"
+		//					file_count++;
+		//					// check resulting filename
+		//					if(strlen(filename)>=15){
+		//						filename[15]='\0'; // short it
+		//					};
+		//					char temp[21];
+		//					sprintf(temp,"%i.%s",item+1,filename); // <-- "gas.txt"."4.GAS.TXT"
+		//					// fill up
+		//
+		//					strcpy(filename,temp);
+		//					for(int i=strlen(filename);i<17;i++){
+		//						filename[i]=' ';
+		//					}
+		//					filename[17]='\0';
+		//				} else {
+		//					sprintf(filename,"%i.-",item+1);
+		//					if((state%10)>file_count){ // if we are explicit on this item
+		//						set_buttons(button_links_valid,button_oben_valid,button_unten_valid,!button_state); // avoid go right
+		//					}
+		//				}
+		//				// print it
+		//				if((build_complete_list && (unsigned)item==(state%10)-1) || (!build_complete_list && upper_one && item==stop) || (!build_complete_list && !upper_one && item==start)){
+		//					TFT.highlight_bar(0,(item+1)*8,128,8);
+		//					TFT.string(Speedo.default_font,filename,2,item+1,0x0f,0x00,0);
+		//				} else {
+		//					TFT.filled_rect(0,(item+1)*8,128,8,0x00);
+		//					TFT.string(Speedo.default_font,filename,2,item+1);
+		//				}
+		//
+		//				item++;
+		//			}
+		//		}
 	} else if(floor(state/100)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POI_FINDER)){	// some output
 		TFT.show_storry(("It will take some time to generate a navi file from this POI. Continue?"),("POI Navigation"),DIALOG_NO_YES);
 	} else if(floor(state/1000)==BMP(0,0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_POI_FINDER)){	// file selection
@@ -1649,16 +1619,16 @@ void menu::draw(const char* const* menu, int entries){
 	if(!just_marker_update){
 		TFT.clear_screen();
 		TFT.SetTextColor(0,0,255);
-		for(int i=0;i<15;i++){
-			int16_t x_from=270+2*i;
-			int16_t y_from=239;
-
-			int16_t x_to=319;
-			int16_t y_to=150-6*i;
-
-			TFT.DrawUniLine(x_from,y_from,x_to,y_to);
-		}
-
+//		for(int i=0;i<15;i++){
+//			int16_t x_from=270+2*i;
+//			int16_t y_from=239;
+//
+//			int16_t x_to=319;
+//			int16_t y_to=150-6*i;
+//
+//			TFT.DrawUniLine(x_from,y_from,x_to,y_to);
+//		}
+TFT.glow(319,150,319,229,0,30,0,1);
 		//TFT.glow(230,30,230,30,255,0,0,15);
 		TFT.filled_rect(0,0,320,30,0);
 		strcpy(char_buffer, menu_titel[level_1]);

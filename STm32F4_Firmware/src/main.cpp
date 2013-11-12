@@ -35,16 +35,16 @@ void init_speedo(void){
 	Serial.puts(USART1," HW:");
 	Serial.puts_ln(USART1,Config.get_hw_version());    // print Hardware release
 
-	SD.init();                 // try open SD Card
+//	SD.init();                 // try open SD Card
 	// first, set all variables to a zero value
 	Sensors.init();
 	Speedo.clear_vars();        // refresh cycle
 	// read configuration file from sd card
-	Config.read(CONFIG_FOLDER,"BASE.TXT",READ_MODE_CONFIGFILE,"");     // load base config
-	Config.read(CONFIG_FOLDER,"SPEEDO.TXT",READ_MODE_CONFIGFILE,"");    // speedovalues, avg,max,time
-	Config.read(CONFIG_FOLDER,"GANG.TXT",READ_MODE_CONFIGFILE,"");    // gang
-	Config.read(CONFIG_FOLDER,"TEMPER.TXT",READ_MODE_CONFIGFILE,"");    // Temperatur
-	Config.read_skin();        // skinning
+//	Config.read(CONFIG_FOLDER,"BASE.TXT",READ_MODE_CONFIGFILE,"");     	// load base config
+//	Config.read(CONFIG_FOLDER,"SPEEDO.TXT",READ_MODE_CONFIGFILE,"");    // speedovalues, avg,max,time
+//	Config.read(CONFIG_FOLDER,"/CONFIG/GANG.TXT",READ_MODE_CONFIGFILE,"");   	// gang
+//	Config.read(CONFIG_FOLDER,"/CONFIG/TEMPER.TXT",READ_MODE_CONFIGFILE,"");    // Temperatur
+//	Config.read_skin();        // skinning
 	// check if read SD read was okay, if not: load your default backup values
 	Aktors.check_vars();        // check if color of outer LED are OK
 	Sensors.check_vars();        // check if config read was successful

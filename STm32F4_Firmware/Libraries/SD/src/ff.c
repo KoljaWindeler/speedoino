@@ -2314,7 +2314,7 @@ FRESULT f_mount (
 	FRESULT res;
 
 
-	vol = get_ldnumber(&path);
+	vol = get_ldnumber(&path); // returns 0
 	if (vol < 0) return FR_INVALID_DRIVE;
 	cfs = FatFs[vol];					/* Pointer to fs object */
 
@@ -2339,7 +2339,7 @@ FRESULT f_mount (
 	if (!fs || opt != 1) return FR_OK;	/* Do not mount now, it will be mounted later */
 
 	res = find_volume(&fs, &path, 0);	/* Force mounted the volume */
-	LEAVE_FF(fs, res);
+	LEAVE_FF(fs, res); // returns res
 }
 
 

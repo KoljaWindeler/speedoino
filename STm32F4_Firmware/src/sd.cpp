@@ -134,7 +134,6 @@ int16_t sd::get_line_n(int16_t line_nr,uint8_t* filename,uint8_t* buffer,uint16_
 void sd::init(){
 	// p kanal runterziehen damit er leitend wird
 	power_up(3);
-	Serial.puts_ln(USART1,(" done"));
 };
 
 void sd::power_down(){
@@ -147,7 +146,7 @@ void sd::power_up(unsigned char tries){
 	//	digitalWrite(SD_EN,LOW);
 	sd_failed=false;
 	bool allright=true;
-	Serial.puts(USART1,("SD try:"));
+	Serial.puts(USART1,("SD try"));
 	while(tries>0){ //maximal 3 versuche die sd karte zu öffnen
 		Serial.puts(USART1,3-tries);
 
@@ -157,7 +156,7 @@ void sd::power_up(unsigned char tries){
 		int mounted=0;
 		allright=true;
 		int i=0;
-		Serial.puts(USART1,("mounting "));
+		Serial.puts(USART1,(" mounting "));
 
 		while(!mounted && i<100){
 			i++;
@@ -175,14 +174,13 @@ void sd::power_up(unsigned char tries){
 			break;
 		} else {
 			tries--;
-			Serial.puts(USART1,(" failed ,"));
+			Serial.puts_ln(USART1,(" failed ,"));
 		};
 		Sensors.mReset.toggle();
 	};
 	if(!allright){
 		sd_failed=true;
 	};
-
 };
 
 int sd::get_file_handle(unsigned char *pathToFile,FIL *file_handle,uint8_t flags){
@@ -201,36 +199,35 @@ int sd::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,FIL *f
 	char subdir[13];
 	subdir[0]='\0';
 	unsigned char subdir_pointer=0;
-
+	Serial.puts_ln(USART1,"Closing file");
 	f_close(file_handle);
+	Serial.puts_ln(USART1,"Open Root");
 	FRESULT res = f_chdir("/");
 	if (res){
 		return -4;
 	}
-
+	Serial.puts_ln(USART1,"Root open");
 	// check filename for subdirs and open them one by one
 	for(unsigned int i=0;i<length_of_filename;i++){
 		// we have to destinguish between normal chars and the '/'
 		if(msgBuffer[i]=='/'){ // open actual subdir
-			//Serial.puts(USART1,"Opening subdir:");
-			//Serial.println(subdir);
 			start_of_real_filename=i+1;
 			if(subdir[0]!='\0'){ // check if we have something .. just error prevention
-				//				Serial.puts(USART1,"open dir:");
-				//				Serial.println(subdir);
+				Serial.puts(USART1,"Opening subdir:");
+				Serial.puts_ln(USART1,subdir);
 				if(f_chdir(subdir)>0){ // if chdir >0 an error occured, than create it
-					//Serial.println("Failed");
+					Serial.puts_ln(USART1,"Failed");
 					if((flags && (FA_OPEN_ALWAYS | FA_CREATE_NEW | FA_CREATE_ALWAYS))==0){
 						return -3;
 					}
-					//Serial.println("creating");
+					Serial.puts_ln(USART1,"creating");
 					if(f_mkdir(subdir)>0){ // if mkdir>0 an error occured, give up
-						//Serial.println("Failed!");
+						Serial.puts_ln(USART1,"Failed!");
 						return -2; // could not create it
 					}
 
 				}
-				//Serial.println("passing on");
+				Serial.puts_ln(USART1,"passing on");
 				subdir[0]='\0';
 				subdir_pointer=0;
 			}
@@ -240,8 +237,10 @@ int sd::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,FIL *f
 			subdir[subdir_pointer]='\0';
 		}
 	}
+	Serial.puts(USART1,"check if its a file:");
 
 	if(msgBuffer[length_of_filename-1]!='/'){ // if the very last char in the filename NOT equals "/" -. then its a file
+		Serial.puts_ln(USART1,"yes");
 		// dateinamen auslesen
 		for(unsigned int i=start_of_real_filename;i<length_of_filename;i++){
 			filename[i-start_of_real_filename]=msgBuffer[i];
@@ -251,11 +250,60 @@ int sd::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,FIL *f
 				last_file[i-start_of_real_filename+1]='\0';
 			};
 		};
+		Serial.puts(USART1,"Opening file:");
+		Serial.puts_ln(USART1,filename);
 
 		// datei oeffnen
 		if(f_open(file_handle, filename, flags)!=0){ // open existing file in read and write mode, flags could be FA_OPEN_ALWAYS | FA_WRITE | FA_READ
 			return -1;
 		}
+		Serial.puts(USART1,"Done, returning.");
 	}
 	return length_of_filename;
 }
+
+// status: 0=EOF, 1=FILE, 2=FOLDER
+int16_t sd::ls_item(uint8_t* path,uint8_t* name,uint16_t item, uint16_t* size){
+	if(path[strlen((const char*)path)-1]!=(uint8_t)'/'){
+		path[strlen((const char*)path)]=(uint8_t)'/';
+	}
+
+	FRESULT res;
+	FILINFO fno;
+	DIR dir;
+	int i,count=0;
+
+	Serial.puts(USART1, "Open dir: ");
+	Serial.puts(USART1, (char*)path);
+	res = f_opendir(&dir, (const char*)path);                       /* Open the directory */
+	Serial.puts(USART1, " done!\n\r");
+	if (res == FR_OK) {
+		i = strlen((const char*)path);
+		for (;;) {
+			res = f_readdir(&dir, &fno);                   /* Read a directory item */
+			if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
+			if (fno.fname[0] == '.') continue;             /* Ignore dot entry */
+			if(count==item){
+				// looping needed? TODO
+//				*name=(uint8_t)fno.fname;
+				*size=fno.fsize;
+
+				if (fno.fattrib & AM_DIR) {                    /* It is a directory */
+					Serial.puts(USART1, "iteration with!\r\n"); // TODO remove
+					Serial.puts(USART1, (char*)path); // TODO remove
+					f_closedir(&dir);
+					return 2; // folder
+
+				} else {                                       /* It is a file. */
+					f_closedir(&dir);
+					return 1; // file
+				}
+			} else {
+				count++;
+			}
+		}
+		f_closedir(&dir);
+		return 0;
+	};
+	return -1;
+};

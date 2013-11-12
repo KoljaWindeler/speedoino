@@ -132,7 +132,7 @@ DSTATUS disk_initialize (
 		return STA_NOINIT;
 	}
 	
-	// wait for SDC to come out of idle state
+	// wait for SDC to come out of idle state TODO danger!
 	uint8_t resp = 1;
 	while(resp)
 	{
@@ -145,7 +145,7 @@ DSTATUS disk_initialize (
 	// deassert the SDC
 	sdc_deassert();
 
-	SPI_init(SPI1, SPI_BaudRatePrescaler_8);
+	SPI_init(SPI1, SPI_BaudRatePrescaler_256); // TODO, better stay slower?
 
 	return 0;
 }
@@ -198,7 +198,7 @@ DRESULT disk_read (
 	UINT count		/* Number of sectors to read (1..128) */
 )
 {
-	unsigned char result;
+//	unsigned char result;
 	unsigned char buf[2];
 	
 	// check if parameters are in valid range

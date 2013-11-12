@@ -527,7 +527,7 @@ sensing::~sensing() {
 //// initialize the sensor class, by using the build in init
 //// seqence of each sensor
 void sensing::init(){
-	mRpm.init();
+//	mRpm.init();
 	mFlasher.init();
 	mTemperature.init();
 	mClock.init();

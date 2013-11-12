@@ -23,7 +23,7 @@ class debugging{
 #undef       BLINKER_DEBUG    		 	// sehen wie der Blinkerstate ist
 #undef       DZ_DEBUG         		 	// die peaks sehen
 #undef       TEMP_DEBUG       		 	// i2c
-#define       MENU_DEBUG       		 	// sehen in welchem menu state man gerade ist etc
+#undef       MENU_DEBUG       		 	// sehen in welchem menu state man gerade ist etc
 #undef       SD_DEBUG         		 	// sehen wann/wohin und wie lange die sd karte schreibt
 #undef       GPS_DEBUG        		 	// ausgabe wenn sich was ergibt, also vollständige pakete empfangen werden
 #undef       IGPS_DEBUG       		 	// alle NMEA zeilen ansehen

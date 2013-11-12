@@ -117,7 +117,7 @@ void speedo::loop(unsigned long previousMillis){
 
 		}
 		///// Voltage ////
-		else if(Sensors.mVoltage.get()<1100){ // less than 11.0 Volts
+		else if(Sensors.mVoltage.get()<1100 && Sensors.get_RPM(RPM_TYPE_FLAT)>0){ // less than 11.0 Volts and engine standing
 			if(disp_zeile_bak[ADD_INFO2]!=111 && Millis.get()>20000){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
 				disp_zeile_bak[ADD_INFO2]=111;
 				Debug.speedo_loop(11,0,previousMillis," ");
