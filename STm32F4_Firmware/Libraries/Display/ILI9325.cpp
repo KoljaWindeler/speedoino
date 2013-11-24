@@ -314,14 +314,24 @@ void ILI9325::zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, u
 		char a = font[stelle];/* 8 px */
 		for(int repeat_y=0;repeat_y<scale;repeat_y++){
 			uint8_t mask=0x80;
+			// new
+			SetRotatedCursor(spalte*6, zeile*7 + scale*y_i+repeat_y);
+			WriteRAM_Prepare(); /* Prepare to write GRAM */
+			// new
 			for(int x_i=0;x_i<7;x_i++){ // oder <8?
 				if(a&mask){
 					for(int repeat_x=0;repeat_x<scale;repeat_x++){
-						Pixel(spalte*6 + scale*x_i+repeat_x, zeile*7 + scale*y_i+repeat_y, textRed, textGreen, textBlue);
+						// old
+						//Pixel(spalte*6 + scale*x_i+repeat_x, zeile*7 + scale*y_i+repeat_y, textRed, textGreen, textBlue);
+						// new
+						WriteRAM(textRed, textGreen, textBlue);
 					}
 				} else {
 					for(int repeat_x=0;repeat_x<scale;repeat_x++){
-						Pixel(spalte*6 + scale*x_i+repeat_x, zeile*7 + scale*y_i+repeat_y, backRed, backGreen, backBlue);
+						// old
+						//Pixel(spalte*6 + scale*x_i+repeat_x, zeile*7 + scale*y_i+repeat_y, backRed, backGreen, backBlue);
+						// new
+						WriteRAM(backRed, backGreen, backBlue);
 					}
 				}
 				mask=mask>>1;
@@ -1009,30 +1019,45 @@ void ILI9325::show_storry(const char* storry,unsigned int storry_length,char tit
 }
 
 void ILI9325::show_storry(const char* storry,unsigned int storry_length,char title[],unsigned int title_length, uint8_t type){
+#define CHARS_IN_LINE 27
+#define LINES_ON_SCREEN 12
+
 	// show title
 	clear_screen();
-	highlight_bar(0,0,320,24); // mit hintergrundfarbe nen kasten malen
-	string(Speedo.default_font,title,2,0,DISP_BRIGHTNESS,0,0);
+	highlight_bar(0,4,320,24); // mit hintergrundfarbe nen kasten malen
+	char title_centered[27];
+	strcpy(title_centered,title);
+	Menu.center_me(title_centered,25);
+	string(Speedo.default_font,title_centered,2,1,DISP_BRIGHTNESS,0,0);
 
 	// Generate borders
 	unsigned int fill_line=0; // actual line
 	unsigned int char_in_line=0; // count char in this line
-	int von[4]={0,0,0,0}; // nutzen um zu bestimmten wo wir den "\0" setzen
-	int bis[4]={0,0,0,0}; // nutzen um zu bestimmten wo wir den "\0" setzen
+	int von[LINES_ON_SCREEN];
+	int bis[LINES_ON_SCREEN];
+	for(int i=0; i<LINES_ON_SCREEN; i++){ // fuer alle anfaenge und enden die pointer setzen
+		von[i]=0;
+		bis[i]=0;
+	}; // nutzen um zu bestimmten wo wir den "\0" setzen
 
 	for(unsigned int i=0; i<storry_length;i++){
-		if(char_in_line>10){ // mindestesn mal 10 zeichen aufnehmen
-			if((storry[i]==' ' || char_in_line==21) && (fill_line+1<(sizeof(bis)/sizeof(bis[0])))){
+		if(storry[i]==' ' && char_in_line==0){ // avoid blanks in the start of a line
+			char_in_line--; // will be incread at the end -> 0
+			von[fill_line]++; // shift the start of our line one step further
+		} else if(storry[i]==0x0D || char_in_line>CHARS_IN_LINE-10){ // wenn wir ein umbruch haben oder mindestesn mal 20 zeichen aufgenommen haben
+			// entweder ist es ein umbruch, oder wir warten auf ein freizeichen, oder die line ist voll
+			if( (storry[i]==0x0D || storry[i]==' ' || char_in_line==CHARS_IN_LINE) && (fill_line+1<LINES_ON_SCREEN) ){
 				bis[fill_line]=i; // damit haben wir das ende dieser Zeile gefunden
 				fill_line++;
-				von[fill_line]=i;// und den anfang der nächsten, wobei das noch nicht save ost
+				von[fill_line]=i;// und den anfang der nächsten, wobei das noch nicht save ist
 				if(storry[i]==' '){ // wir haben hier ein freizeichen, hätten wir sinnvoll weitergucken können?
 					von[fill_line]++; // das freizeichen brauchen wie eh nicht mehr
 					//haben ein volles wort, mal sehen ob ncoh was geht
 					//aktuell sind char_in_line chars im puffer
 					int onemoreword=0; // wieviele chars gehts denn weiter, falls sinnvoll
-					for(unsigned int k=char_in_line; k<21; k++){
-						if(storry[i+k-char_in_line]==' ') onemoreword=k-char_in_line;
+					// laufe durch die verbleibenden (char_in_line-CHARS_IN_LINE=10) zeichen, und guck wo das letzte freizeichen ist
+					for(unsigned int k=char_in_line; k<CHARS_IN_LINE; k++){
+						if(storry[i+k-char_in_line]==' ') onemoreword=k-char_in_line; // wenn nach 4 zeichen ein freichen kam, steht hier 4
 					}
 					if(onemoreword>0){
 						// es scheint sinnig noch onemoreword buchstaben zu nutzen
@@ -1040,40 +1065,42 @@ void ILI9325::show_storry(const char* storry,unsigned int storry_length,char tit
 						von[fill_line]+=onemoreword;
 						bis[fill_line-1]+=onemoreword;
 					}
+				} else if(storry[i]==0x0D){ // wenn wir ein umbruch haben ueberspringen wir das zeichen
+					von[fill_line]++;
 				}
 				char_in_line=-1; // wird gleich inc -> dann sind wir fertig und der counter bei 0
 			}
 		}
 		char_in_line++;
 	};
+	// end of loop  //
+
 	if(bis[fill_line]==0){ // letztes array ding
 		bis[fill_line]=storry_length;
 	};
 	// we got the borders
 
 	// draw to display
-	for(unsigned int i=0; i<4; i++){ // nur 4 zeilen
+	// reserve buffer
+	char *buffer2;
+	buffer2 = (char*) malloc (CHARS_IN_LINE);
+	if (buffer2==NULL) Serial.puts_ln(USART1,("Malloc failed"));
+	else memset(buffer2,'\0',sizeof(buffer2)/sizeof(buffer2[0]));
+	for(unsigned int i=0; i<LINES_ON_SCREEN; i++){ // nur X zeilen
 		if(von[i]!=bis[i]){
-			// reserve buffer
-			char *buffer2;
-			buffer2 = (char*) malloc (22);
-			if (buffer2==NULL) Serial.puts_ln(USART1,("Malloc failed"));
-			else memset(buffer2,'\0',sizeof(buffer2)/sizeof(buffer2[0]));
-
 			int k=0;
-			for(int j=von[i]; j<bis[i] && k<22; j++){
+			for(int j=von[i]; j<bis[i] && k<CHARS_IN_LINE; j++){
 				if(!(i==0 && storry[j]=='#')){ // in der ersten zeile, das erste "#" an stelle 0 überlesen
 					buffer2[k]=storry[j];
 					k++;
 				};
 			};
 			buffer2[k]='\0';
-			string(Speedo.default_font,buffer2,0,i+2,0,DISP_BRIGHTNESS,0);
-
-			//delete buffer
-			free(buffer2);
+			string(Speedo.default_font,buffer2,0,i*2+5,0,DISP_BRIGHTNESS,0);
 		};
 	}
+	//delete buffer
+	free(buffer2);
 
 	//
 	unsigned int current_state=Menu.state;
@@ -1085,7 +1112,8 @@ void ILI9325::show_storry(const char* storry,unsigned int storry_length,char tit
 	}
 
 	if(type==DIALOG_NO_YES){
-		string(Speedo.default_font,("\x7E back        next \x7F"),0,7);
+		highlight_bar(0,215,320,24); // mit hintergrundfarbe nen kasten malen
+		string(Speedo.default_font,("\x7E back            next \x7F"),2,31,DISP_BRIGHTNESS,0,0);
 	}
 	else if(type==DIALOG_GO_RIGHT_200MS){
 		while(current_state==Menu.state && (Millis.get()-current_timestamp)<200){
@@ -1167,30 +1195,30 @@ void ILI9325::string_centered(const char* text, uint8_t line){
 }
 
 void ILI9325::string_centered(const char* text, uint8_t line, bool inverted){
-	//    if(strlen(text)>20){
-	//        return;
-	//    };
-	//
-	//    uint16_t front_color=0x0f;
-	//    uint16_t back_color=0x00;
-	//    uint16_t start_pos=0;
-	//    uint16_t length_of_char=22;
-	//
-	//    if(inverted){
-	//        front_color=0x00;
-	//        back_color=0x0f;
-	//        if(strlen(text)<=17){ // 6*2pixel == 2 chars. 21 Chars - 2*2 = 17chars max
-	//            length_of_char=17;
-	//            start_pos=2;
-	//            highlight_bar(0,line*8,128,8);
-	//        } else {
-	//            filled_rect(0,line*8,128,8,0x0f);
-	//        }
-	//    }
-	//    char text_char[length_of_char]; // full display width +1
-	//    strcpy(text_char,text);
-	//    Menu.center_me(text_char,length_of_char); // full display width
-	//    string(Speedo.default_font,text_char,start_pos,line,back_color,front_color,0);
+	if(strlen(text)>20){
+		return;
+	};
+
+	uint16_t front_color=0x0f;
+	uint16_t back_color=0x00;
+	uint16_t start_pos=0;
+	uint16_t length_of_char=22;
+
+	if(inverted){
+		front_color=0x00;
+		back_color=0x0f;
+		if(strlen(text)<=17){ // 6*2pixel == 2 chars. 21 Chars - 2*2 = 17chars max
+			length_of_char=17;
+			start_pos=2;
+			highlight_bar(0,line*8,128,8);
+		} else {
+			filled_rect(0,line*8,128,8,0x0f);
+		}
+	}
+	char text_char[length_of_char]; // full display width +1
+	strcpy(text_char,text);
+	Menu.center_me(text_char,length_of_char); // full display width
+	string(Speedo.default_font,text_char,start_pos,line,back_color,front_color,0);
 }
 
 
@@ -1241,181 +1269,122 @@ void ILI9325::filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,u
 	DrawFullRect(x,y,width,height);
 }
 
+void ILI9325::filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t r,uint8_t g,uint8_t b){
+	SetTextColor(r,g,b);
+	DrawFullRect(x,y,width,height);
+}
+
 
 void ILI9325::draw_gps(uint16_t x,uint16_t y, unsigned char sats){
-	//    send_command(0x15);
-	//    send_command(x);
-	//    send_command(x+3);
-	//    send_command(0x75);
-	//    send_command(y);
-	//    send_command(y+7);
-	//    char xy[2][4];
-	//    xy[0][0]=0x00;
-	//    xy[1][0]=0x00;
-	//    xy[0][1]=0x00;
-	//    xy[1][1]=0x00;
-	//    xy[0][2]=0x00;
-	//    xy[1][2]=0x00;
-	//    xy[0][3]=0x00;
-	//    xy[1][3]=0x00;
-	//
-	//    // 4 symbols:
-	//    // 0 GPS => cross
-	//    // 3 GPS => empty (indicating minimal signal)
-	//    // 4 GPS => single bow (indicating poor signal)
-	//    // 5-X GPS => dual bow (indicating strong signal)
-	//
-	//    if(sats==0){
-	//        xy[0][0]=0x0F;        //     X X
-	//        xy[1][0]=0x0F;        //      X
-	//        //xy[0][1]=0x00;    //     X X
-	//        xy[1][1]=0xF0;        //
-	//        xy[0][2]=0x0F;        //
-	//        xy[1][2]=0x0F;        //
-	//        //xy[0][3]=0x00;    //
-	//        //xy[1][3]=0x00;    //
-	//    } else if(sats==4){
-	//        //xy[0][0]=0x00;    //
-	//        //xy[1][0]=0x00;    //
-	//        //xy[0][1]=0x00;    //    X
-	//        //xy[1][1]=0x00;    //     X
-	//        xy[0][2]=0xF0;        //
-	//        //xy[1][2]=0x00;    //
-	//        xy[0][3]=0x0F;        //
-	//        //xy[1][3]=0x00;    //
-	//    } else if(sats>4){
-	//        xy[0][0]=0xFF;        //    XX
-	//        //xy[1][0]=0x00;    //      X
-	//        //xy[0][1]=0x00;    //    X  X
-	//        xy[1][1]=0xF0;        //     X X
-	//        xy[0][2]=0xF0;        //
-	//        xy[1][2]=0x0F;        //
-	//        xy[0][3]=0x0F;        //
-	//        xy[1][3]=0x0F;        //
-	//    };
-	//
-	//
-	//    send_char(0x00);  send_char(0x00);  send_char(xy[0][0]);  send_char(xy[1][0]);    //
-	//    send_char(0x00);  send_char(0x00);  send_char(xy[0][1]);  send_char(xy[1][1]);    //
-	//    send_char(0x0F);  send_char(0x00);  send_char(xy[0][2]);  send_char(xy[1][2]);    // x
-	//    send_char(0xF0);  send_char(0xF0);  send_char(xy[0][3]);  send_char(xy[1][3]);    //x x
-	//    send_char(0xF0);  send_char(0x0F);  send_char(0x00);        send_char(0x00);        //x  x
-	//    send_char(0xF0);  send_char(0x00);  send_char(0xF0);      send_char(0x00);        //x   x
-	//    send_char(0x0F);  send_char(0x00);  send_char(0x0F);      send_char(0x00);        // x   x
-	//    send_char(0x00);  send_char(0xFF);  send_char(0xF0);      send_char(0x00);        //  xxx
+	TFT.draw_bmp(x,y,(uint8_t*)"/sat.bmp");
 };
 
 void ILI9325::draw_oil(uint16_t x,uint16_t y){
-	//    send_command(0x15);
-	//    send_command(x);
-	//    send_command(x+9);
-	//    send_command(0x75);
-	//    send_command(y);
-	//    send_command(y+7);
-	//    send_char(0xFF); send_char(0xF0); send_char(0x0F); send_char(0xFF); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00);
-	//    send_char(0xF0); send_char(0x0F); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xFF); send_char(0xF0); send_char(0x00);
-	//    send_char(0xF0); send_char(0x0F); send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0x0F); send_char(0xF0); send_char(0xF0); send_char(0x00); send_char(0x00);
-	//    send_char(0x0F); send_char(0x0F); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x0F); send_char(0x00); send_char(0xF0); send_char(0x00);
-	//    send_char(0x00); send_char(0xFF); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x0F); send_char(0xFF); send_char(0x00);
-	//    send_char(0x00); send_char(0x0F); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0x00); send_char(0xFF); send_char(0x70); send_char(0xF0);
-	//    send_char(0x00); send_char(0x00); send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0xF0); send_char(0x00); send_char(0xFF); send_char(0x77); send_char(0xF0);
-	//    send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xFF); send_char(0x00);
+	TFT.draw_bmp(x,y,(uint8_t*)"/sat.bmp");
 };
 
 void ILI9325::draw_water(uint16_t x,uint16_t y){
-	//    send_command(0x15);
-	//    send_command(x);
-	//    send_command(x+9);
-	//    send_command(0x75);
-	//    send_command(y);
-	//    send_command(y+7);
-	//    send_char(0x00);  send_char(0x77);  send_char(0x00);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);  send_char(0x00);  send_char(0x00);
-	//    send_char(0x00);  send_char(0x77);  send_char(0x00);  send_char(0x00);  send_char(0x0F);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);
-	//    send_char(0x00);  send_char(0x77);  send_char(0xF0);  send_char(0x0F);  send_char(0xFF);  send_char(0xFF);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);
-	//    send_char(0x00);  send_char(0x77);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0x00);  send_char(0x00);
-	//    send_char(0x00);  send_char(0x77);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);
-	//    send_char(0x00);  send_char(0x77);  send_char(0xF0);  send_char(0x0F);  send_char(0xFF);  send_char(0xFF);  send_char(0x00);  send_char(0x0F);  send_char(0xF0);  send_char(0x00);
-	//    send_char(0x00);  send_char(0x77);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x0F);  send_char(0xF0);  send_char(0x00);
-	//    send_char(0x00);  send_char(0x77);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);  send_char(0x00);
+	TFT.draw_bmp(x,y,(uint8_t*)"/sat.bmp");
 };
 
 void ILI9325::draw_air(uint16_t x,uint16_t y){
-	//    send_command(0x15);
-	//    send_command(x);
-	//    send_command(x+2);
-	//    send_command(0x75);
-	//    send_command(y);
-	//    send_command(y+7);
-	//    send_char(0x00);  send_char(0xF0);  send_char(0x00);
-	//    send_char(0x00);  send_char(0xFF);  send_char(0xF0);
-	//    send_char(0x00);  send_char(0xF0);  send_char(0x00);
-	//    send_char(0x00);  send_char(0xFF);  send_char(0xF0);
-	//    send_char(0x00);  send_char(0xF0);  send_char(0x00);
-	//    send_char(0x0F);  send_char(0xFF);  send_char(0x00);
-	//    send_char(0xFF);  send_char(0xFF);  send_char(0xF0);
-	//    send_char(0x0F);  send_char(0xFF);  send_char(0x00);
+	TFT.draw_bmp(x,y,(uint8_t*)"/sat.bmp");
 };
 
 void ILI9325::draw_fuel(uint16_t x,uint16_t y){
-	//    send_command(0x15);
-	//    send_command(x);
-	//    send_command(x+3);
-	//    send_command(0x75);
-	//    send_command(y);
-	//    send_command(y+6);
-	//    send_char(0x0F);  send_char(0xFF);  send_char(0xF0);  send_char(0x0F);
-	//    send_char(0x0F);  send_char(0x00);  send_char(0xF0);  send_char(0xF0);
-	//    send_char(0x0F);  send_char(0x00);  send_char(0xF0);  send_char(0xF0);
-	//    send_char(0x0F);  send_char(0xFF);  send_char(0xF0);  send_char(0xF0);
-	//    send_char(0x0F);  send_char(0xFF);  send_char(0xFF);  send_char(0x00);
-	//    send_char(0x0F);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);
-	//    send_char(0xFF);  send_char(0xFF);  send_char(0xFF);  send_char(0x00);
+	Serial.puts(USART1,"Fuel at x/y:");
+	Serial.puts(USART1,x);
+	Serial.puts(USART1,"/");
+	Serial.puts_ln(USART1,y);
+	TFT.draw_bmp(x,y,(uint8_t*)"/sat.bmp");
 };
 
 void ILI9325::draw_clock(uint16_t x,uint16_t y){
-	//    send_command(0x15);
-	//    send_command(x);
-	//    send_command(x+3);
-	//    send_command(0x75);
-	//    send_command(y);
-	//    send_command(y+7);
-	//    send_char(0x00);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);
-	//    send_char(0x0F);  send_char(0x0F);  send_char(0x0F);  send_char(0x00);
-	//    send_char(0xF0);  send_char(0x0F);  send_char(0x00);  send_char(0xF0);
-	//    send_char(0xF0);  send_char(0x0F);  send_char(0xF0);  send_char(0xF0);
-	//    send_char(0xF0);  send_char(0x00);  send_char(0x00);  send_char(0xF0);
-	//    send_char(0x0F);  send_char(0x00);  send_char(0x0F);  send_char(0x00);
-	//    send_char(0x00);  send_char(0xFF);  send_char(0xF0);  send_char(0x00);
+	TFT.draw_bmp(x,y,(uint8_t*)"/sat.bmp");
 };
 
 void ILI9325::draw_blitzer(uint16_t x,uint16_t y){
-	//    send_command(0x15);
-	//    send_command(x);
-	//    send_command(x+4);
-	//    send_command(0x75);
-	//    send_command(y);
-	//    send_command(y+14);
-	//    send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0xF0);
-	//    send_char(0xFF); send_char(0xF0); send_char(0x00); send_char(0xFF); send_char(0xF0);
-	//    send_char(0xFF); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xF0);
-	//    send_char(0xFF); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xF0);
-	//    send_char(0xFF); send_char(0x00); send_char(0x00); send_char(0x0F); send_char(0xF0);
-	//    send_char(0xFF); send_char(0xF0); send_char(0x00); send_char(0xFF); send_char(0xF0);
-	//    send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0xFF); send_char(0xF0);
-	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
-	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
-	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
-	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
-	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
-	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
-	//    send_char(0x00); send_char(0x00); send_char(0xF0); send_char(0x00); send_char(0x00);
+	TFT.draw_bmp(x,y,(uint8_t*)"/sat.bmp");
 }
 
 int ILI9325::animation(int a){
 	return 0;
 };
 
-void ILI9325::draw_arrow(int arrow, int spalte, int zeile){
+void ILI9325::draw_arrow(int angle, int x_pos, int y_pos, uint8_t r, uint8_t g, uint8_t b){
+	draw_arrow(angle,x_pos,y_pos,r,g,b,true);
+}
+
+void ILI9325::draw_arrow(int angle, int x_pos, int y_pos, uint8_t r, uint8_t g, uint8_t b,bool clean){
+	// raw symbol without rotation
+	uint32_t symbol[32];
+	symbol[ 0]=0b00000000000000000000000000000000;
+	symbol[ 1]=0b00000000000000011000000000000000;
+	symbol[ 2]=0b00000000000000111100000000000000;
+	symbol[ 3]=0b00000000000001111110000000000000;
+	symbol[ 4]=0b00000000000011111111000000000000;
+	symbol[ 5]=0b00000000000111111111100000000000;
+	symbol[ 6]=0b00000000001111111111110000000000;
+	symbol[ 7]=0b00000000011111111111111000000000;
+	symbol[ 8]=0b00000000111111111111111100000000;
+	symbol[ 9]=0b00000001111111111111111110000000;
+	symbol[10]=0b00000011111111111111111111000000;
+	symbol[11]=0b00000111111111111111111111100000;
+	symbol[12]=0b00001111111111111111111111110000;
+	symbol[13]=0b00011111111111111111111111111000;
+	symbol[14]=0b00111111111111111111111111111100;
+	symbol[15]=0b01111111111111111111111111111110;
+	symbol[16]=0b01111111111111111111111111111110;
+	symbol[17]=0b01111111111111111111111111111110;
+	symbol[18]=0b01111111111111111111111111111110;
+	symbol[19]=0b00000000111111111111111100000000;
+	symbol[20]=0b00000000111111111111111100000000;
+	symbol[21]=0b00000000111111111111111100000000;
+	symbol[22]=0b00000000111111111111111100000000;
+	symbol[23]=0b00000000111111111111111100000000;
+	symbol[24]=0b00000000111111111111111100000000;
+	symbol[25]=0b00000000111111111111111100000000;
+	symbol[26]=0b00000000111111111111111100000000;
+	symbol[27]=0b00000000000000000000000000000000;
+	symbol[28]=0b00000000000000000000000000000000;
+	symbol[29]=0b00000000000000000000000000000000;
+	symbol[30]=0b00000000000000000000000000000000;
+	symbol[31]=0b00000000000000000000000000000000;
+	symbol[32]=0b00000000000000000000000000000000;
+
+	// clean matrix for incoming symbol
+	uint32_t rot_symbol[32];
+	for(int x=0;x<32;x++){
+		rot_symbol[x]=0x00;
+	}
+
+	// rotate
+	for(int8_t x=-15;x<16;x++){
+		for(int8_t y=-15;y<16;y++){
+			if(symbol[(y+16)]&(1<<(x+16))){
+				int8_t x_n=(cos(PI*angle/180)*x-sin(PI*angle/180)*y)+16;
+				int8_t y_n=(sin(PI*angle/180)*x+cos(PI*angle/180)*y)+16;
+				if(x_n>=0 && x_n<32 && y_n>=0 && y_n<32){
+					rot_symbol[y_n]|=1<<x_n;
+				}
+			}
+		}
+	}
+
+	// clean space it if required
+	if(clean){
+		filled_rect(x_pos,y_pos,32,32,0,0,0);
+	}
+
+	// now draw it
+	for(int8_t x=0;x<32;x++){
+		for(int8_t y=0;y<32;y++){
+			if(rot_symbol[y]&(1<<x)){
+				Pixel(x+x_pos,y+y_pos,r,g,b);
+			}
+		}
+	}
+
 
 }
 
@@ -1525,4 +1494,89 @@ void ILI9325::glow(int16_t x_start,int16_t y_start,int16_t x_end,int16_t y_end,u
 			}
 		}
 	}// horizontal line end
+}
+
+uint8_t ILI9325::draw_bmp(uint16_t x, uint16_t y, uint8_t* filename){
+#define DRAW_BMP_DEBUG_LEVEL 3
+#define READ_PIXEL 170
+	FIL file;
+	int16_t x_intern=x;
+	int16_t y_intern=y;
+
+	if(SD.get_file_handle((unsigned char*)filename,&file,FA_READ|FA_OPEN_EXISTING)>=0){
+#if DRAW_BMP_DEBUG_LEVEL>1
+		uint32_t start=Millis.get();
+		uint32_t read_time=0;
+#endif
+
+		//// read header ////
+		char buf_header[16];
+		UINT n_byte_read=1;
+		uint32_t byte_read_total=0;
+		f_read(&file, buf_header, 15, &n_byte_read);
+		if(n_byte_read<15){
+			return -2; // file to short, not even header inside
+		}
+		int16_t header_size=buf_header[10];
+		f_lseek(&file,18);
+		f_read(&file, buf_header, 8, &n_byte_read); // rest vom header "weglesen"
+		int32_t bmp_width= buf_header[0] | buf_header[1]<<8 | buf_header[2]<<16 | buf_header[3]<<24;
+		int32_t bmp_height=buf_header[4] | buf_header[5]<<8 | buf_header[6]<<16 | buf_header[7]<<24;
+		int64_t bmp_pixel_count=bmp_height*bmp_width;
+		y_intern+=bmp_height-1; // to map from top left corner 0,0 to bottom line 0, (bmp_height-1)
+
+#if DRAW_BMP_DEBUG_LEVEL>2
+		Serial.puts(USART1,"Header size:");
+		Serial.puts_ln(USART1,(int)header_size);
+		Serial.puts(USART1,"BMP width:");
+		Serial.puts_ln(USART1,(int)bmp_width);
+		Serial.puts(USART1,"BMP height:");
+		Serial.puts_ln(USART1,(int)bmp_height);
+#endif
+
+		//// jump to payload ////
+		f_lseek(&file,header_size);
+		char* buffer;
+		buffer =(char*) malloc (READ_PIXEL*3);
+
+		TFT.SetRotatedCursor(x, y);
+		TFT.WriteRAM_Prepare(); /* Prepare to write GRAM */
+
+		//// read pixels ////
+		while (n_byte_read > 0 && byte_read_total<=3*bmp_pixel_count) { // n=1/0=wieviele byte gelesen wurden
+#if DRAW_BMP_DEBUG_LEVEL>1
+			int32_t start_read = Millis.get();
+#endif
+			f_read(&file, buffer, 3*READ_PIXEL, &n_byte_read); // 170*3=510 byte
+#if DRAW_BMP_DEBUG_LEVEL>1
+			read_time+=Millis.get()-start_read;
+			byte_read_total+=n_byte_read;
+#endif
+			for(uint16_t i=0;i<n_byte_read/3;i++){
+				TFT.WriteRAM(buffer[2+3*i],buffer[1+3*i],buffer[0+3*i]);
+				x_intern++;
+				if(x_intern>=bmp_width+x){ // line completed
+					while((x_intern-x)%4!=0){ // bmp are padding lines with zeros unti the number is a multiple of 4
+						i++;
+						x_intern++;
+					}
+					x_intern=x;
+					y_intern--;
+					TFT.SetRotatedCursor(x_intern, y_intern);
+					TFT.WriteRAM_Prepare(); /* Prepare to write GRAM */
+				}
+			}
+		}
+#if DRAW_BMP_DEBUG_LEVEL>1
+		//// time debug ////
+		uint32_t time=Millis.get()-start;
+		Serial.puts(USART1,"Time:");
+		Serial.puts_ln(USART1,time);
+		Serial.puts(USART1,"Time for reading:");
+		Serial.puts_ln(USART1,read_time);
+#endif
+		free(buffer);
+		return 0;
+	}
+	return -1; // fopen failed
 }

@@ -150,8 +150,6 @@ void sd::power_up(unsigned char tries){
 	while(tries>0){ //maximal 3 versuche die sd karte zu öffnen
 		Serial.puts(USART1,3-tries);
 
-		FATFS FatFs;
-		FRESULT res;
 
 		int mounted=0;
 		allright=true;
@@ -160,8 +158,7 @@ void sd::power_up(unsigned char tries){
 
 		while(!mounted && i<100){
 			i++;
-			res = f_mount(&FatFs, "", 1); // mount the drive
-			if (res) { // res=0 <- no error, res>0 <- error nr
+			if (f_mount(0, &FatFs) != FR_OK) { // res=0 <- no error, res>0 <- error nr
 				allright=false;
 				Serial.puts(USART1,("."));
 			} else {
@@ -176,11 +173,67 @@ void sd::power_up(unsigned char tries){
 			tries--;
 			Serial.puts_ln(USART1,(" failed ,"));
 		};
-		Sensors.mReset.toggle();
+		Sensors.mReset.toggle();// geht das hier schon?
 	};
 	if(!allright){
 		sd_failed=true;
 	};
+
+	//	FRESULT ret;
+	//	FIL file;
+	//	UINT bw, br;
+	//	uint8_t buff[128];
+	//
+	//	if (f_mount(0, &FatFs) != FR_OK) {
+	//		Serial.puts_ln(USART1,"could not open filesystem \n\r");
+	//	}
+	//
+	//
+	//	/*  hello.txt write test*/
+	//	Serial.puts_ln(USART1,"Create a new file (hello.txt)\n\r");
+	//	ret = f_open(&file, "HELL.TXT", FA_WRITE | FA_CREATE_ALWAYS);
+	//	if (ret) {
+	//		Serial.puts_ln(USART1,"Create a new file error\n\r");
+	//	} else {
+	//		Serial.puts_ln(USART1,"Write a text data. (hello.txt)\n\r");
+	//		ret = f_write(&file, "yeah  world Kolja!", 17, &bw);
+	//		if (ret) {
+	//			Serial.puts_ln(USART1,"Write a text data to file error\n\r");
+	//		} else {
+	//			Serial.puts_ln(USART1,"%u bytes written\n\r");
+	//		}
+	//		Serial.puts_ln(USART1,"Close the file\n\r");
+	//		ret = f_close(&file);
+	//		if (ret) {
+	//			Serial.puts_ln(USART1,"Close the hello.txt file error\n\r");
+	//		}
+	//	}
+	//	Serial.puts_ln(USART1,"read the file (hello.txt)\n\r");
+	//	  ret = f_open(&file, "HELLO.TXT", FA_READ);
+	//	  if (ret) {
+	//	   Serial.puts_ln(USART1,"open hello.txt file error\n\r");
+	//	  } else {
+	//	    for (;;) {
+	//	      ret = f_read(&file, buff, sizeof(buff), &br);	/* Read a chunk of file */
+	//	      if (ret || !br) {
+	//	        break;			/* Error or end of file */
+	//	      }
+	//	      buff[br] = 0;
+	//	     Serial.puts_ln(USART1,(char*)buff);
+	//	     Serial.puts_ln(USART1,"\n\r");
+	//	    }
+	//	    if (ret) {
+	//	     Serial.puts_ln(USART1,"Read file (hello.txt) error\n\r");
+	//	    }
+	//
+	//	   Serial.puts_ln(USART1,"Close the file (hello.txt)\n\r");
+	//	    ret = f_close(&file);
+	//	    if (ret) {
+	//	     Serial.puts_ln(USART1,"Close the file (hello.txt) error\n\r");
+	//	    }
+	//	  }
+
+//	Config.read(CONFIG_FOLDER,"/CONFIG/BASE.TXT",READ_MODE_CONFIGFILE,"");
 };
 
 int sd::get_file_handle(unsigned char *pathToFile,FIL *file_handle,uint8_t flags){
@@ -200,7 +253,7 @@ int sd::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,FIL *f
 	subdir[0]='\0';
 	unsigned char subdir_pointer=0;
 	Serial.puts_ln(USART1,"Closing file");
-	f_close(file_handle);
+//	f_close(file_handle);
 	Serial.puts_ln(USART1,"Open Root");
 	FRESULT res = f_chdir("/");
 	if (res){
@@ -237,7 +290,7 @@ int sd::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,FIL *f
 			subdir[subdir_pointer]='\0';
 		}
 	}
-	Serial.puts(USART1,"check if its a file:");
+	Serial.puts(USART1,"check if a is requested file:");
 
 	if(msgBuffer[length_of_filename-1]!='/'){ // if the very last char in the filename NOT equals "/" -. then its a file
 		Serial.puts_ln(USART1,"yes");
@@ -264,46 +317,46 @@ int sd::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,FIL *f
 
 // status: 0=EOF, 1=FILE, 2=FOLDER
 int16_t sd::ls_item(uint8_t* path,uint8_t* name,uint16_t item, uint16_t* size){
-	if(path[strlen((const char*)path)-1]!=(uint8_t)'/'){
-		path[strlen((const char*)path)]=(uint8_t)'/';
-	}
-
-	FRESULT res;
-	FILINFO fno;
-	DIR dir;
-	int i,count=0;
-
-	Serial.puts(USART1, "Open dir: ");
-	Serial.puts(USART1, (char*)path);
-	res = f_opendir(&dir, (const char*)path);                       /* Open the directory */
-	Serial.puts(USART1, " done!\n\r");
-	if (res == FR_OK) {
-		i = strlen((const char*)path);
-		for (;;) {
-			res = f_readdir(&dir, &fno);                   /* Read a directory item */
-			if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
-			if (fno.fname[0] == '.') continue;             /* Ignore dot entry */
-			if(count==item){
-				// looping needed? TODO
-//				*name=(uint8_t)fno.fname;
-				*size=fno.fsize;
-
-				if (fno.fattrib & AM_DIR) {                    /* It is a directory */
-					Serial.puts(USART1, "iteration with!\r\n"); // TODO remove
-					Serial.puts(USART1, (char*)path); // TODO remove
-					f_closedir(&dir);
-					return 2; // folder
-
-				} else {                                       /* It is a file. */
-					f_closedir(&dir);
-					return 1; // file
-				}
-			} else {
-				count++;
-			}
-		}
-		f_closedir(&dir);
-		return 0;
-	};
-	return -1;
+	//	if(path[strlen((const char*)path)-1]!=(uint8_t)'/'){
+	//		path[strlen((const char*)path)]=(uint8_t)'/';
+	//	}
+	//
+	//	FRESULT res;
+	//	FILINFO fno;
+	//	DIR dir;
+	//	int i,count=0;
+	//
+	//	Serial.puts(USART1, "Open dir: ");
+	//	Serial.puts(USART1, (char*)path);
+	//	res = f_opendir(&dir, (const char*)path);                       /* Open the directory */
+	//	Serial.puts(USART1, " done!\n\r");
+	//	if (res == FR_OK) {
+	//		i = strlen((const char*)path);
+	//		for (;;) {
+	//			res = f_readdir(&dir, &fno);                   /* Read a directory item */
+	//			if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
+	//			if (fno.fname[0] == '.') continue;             /* Ignore dot entry */
+	//			if(count==item){
+	//				// looping needed? TODO
+	////				*name=(uint8_t)fno.fname;
+	//				*size=fno.fsize;
+	//
+	//				if (fno.fattrib & AM_DIR) {                    /* It is a directory */
+	//					Serial.puts(USART1, "iteration with!\r\n"); // TODO remove
+	//					Serial.puts(USART1, (char*)path); // TODO remove
+	//					f_closedir(&dir);
+	//					return 2; // folder
+	//
+	//				} else {                                       /* It is a file. */
+	//					f_closedir(&dir);
+	//					return 1; // file
+	//				}
+	//			} else {
+	//				count++;
+	//			}
+	//		}
+	//		f_closedir(&dir);
+	//		return 0;
+	//	};
+	//	return -1;
 };

@@ -279,7 +279,7 @@ void menu::display(){
 
 	/********************************************* Menu [M_LAP_T], Race mode  *********************************************
 	 * Submenus:
-	 * [M_LAP_T]1 Race Mode";   // "String 0" etc are strings to store - change to suit.
+	 * [M_LAP_T]1 Race Mode;   // "String 0" etc are strings to store - change to suit.
 	 * [M_LAP_T]2 Select file
 	 * [M_LAP_T]3 Set Sectors
 	 * [M_LAP_T]4 Clear Besttimes
@@ -645,14 +645,29 @@ void menu::display(){
 	else if(floor(state/10)==BMP(0,0,0,0,0,5,1)) { // 51[X]
 		set_buttons(button_state,!button_state,!button_state,!button_state); // left only
 		TFT.clear_screen();
-		TFT.string(Speedo.default_font,("GPS_time"),0,0);
-		TFT.string(Speedo.default_font,("GPS_date"),0,1);
-		TFT.string(Speedo.default_font,("GPS_long"),0,2);
-		TFT.string(Speedo.default_font,("GPS_lati"),0,3);
-		TFT.string(Speedo.default_font,("GPS_alti"),0,4);
-		TFT.string(Speedo.default_font,("GPS_speed"),0,5);
-		TFT.string(Speedo.default_font,("GPS_sats"),0,6);
-		TFT.string(Speedo.default_font,("Counter"),0,7);
+		TFT.string(Speedo.default_font,("GPS_time"),0,4);
+		TFT.string(VISITOR_SMALL_1X_FONT,("(raw)"),17,5);
+
+		TFT.string(Speedo.default_font,("GPS_date"),0,7);
+		TFT.string(VISITOR_SMALL_1X_FONT,("(raw)"),17,8);
+
+		TFT.string(Speedo.default_font,("GPS_long"),0,10);
+		TFT.string(VISITOR_SMALL_1X_FONT,("(NMEA)"),17,11);
+
+		TFT.string(Speedo.default_font,("GPS_lati"),0,13);
+		TFT.string(VISITOR_SMALL_1X_FONT,("(NMEA)"),17,14);
+
+		TFT.string(Speedo.default_font,("GPS_alti"),0,16);
+
+		TFT.string(Speedo.default_font,("GPS_speed"),0,19);
+
+		TFT.string(Speedo.default_font,("GPS_sats"),0,22);
+		TFT.string(VISITOR_SMALL_1X_FONT,("(+Fix?)"),17,23);
+
+		TFT.string(Speedo.default_font,("Counter"),0,25);
+		TFT.string(VISITOR_SMALL_1X_FONT,("(SD writes)"),15,26);
+
+		TFT.string(Speedo.default_font,("GPS_Course"),0,28);
 
 		Speedo.reset_bak(); // alle disp_zeile_bak auf -99 setzen
 	}
@@ -1223,19 +1238,17 @@ void menu::display(){
 	}
 	//////////////F/////// Gear calibration //////////////////////////
 	else if(floor(state/10)==BMP(0,0,0,0,0,7,1)) { // 00071[X]
-		if(state%10>6){	// g?nge h?her als 6
+		if(state%10==9){ // smaller than 1
 			state=BMP(0,0,0,0,7,1,6);
 			update_display=true;
+		} else if(state%10>6){ // higher than 6
+			state=BMP(0,0,0,0,7,1,1);
+			update_display=true;
 		} else {		// erstmal ne message
-			TFT.clear_screen();
-			TFT.highlight_bar(0,0,128,8);
-			TFT.string(Speedo.default_font,("Calibrate Gear"),2,0,15,0,0);
-			char temp[2];
-			sprintf(temp,"%i",int(state%10));
-			TFT.string(Speedo.default_font,temp,17,0,15,0,0);
-			TFT.string(Speedo.default_font,("Change Gear up/down"),0,3);
-			TFT.string(Speedo.default_font,("!Keep driving!"),3,4);
-			TFT.string(Speedo.default_font,("\x7E continue"),0,7);
+			char temp[20];
+			sprintf(temp,"Calibrate Gear %i",int(state%10));
+			TFT.show_storry("The following measurements will help you to calibrate the gear module.\x0D\x0DSelect the gear by pushing the up/down button.After selecting press right to start the calibration.\x0D\x0D Drive faster and slower within that gear but don't shift before you save!",temp,DIALOG_NO_YES);
+			Menu.set_buttons(true,true,true,true); // reenable buttons
 			Sensors.mGear.faktor_counter=0;
 		};
 	}
@@ -1619,16 +1632,16 @@ void menu::draw(const char* const* menu, int entries){
 	if(!just_marker_update){
 		TFT.clear_screen();
 		TFT.SetTextColor(0,0,255);
-//		for(int i=0;i<15;i++){
-//			int16_t x_from=270+2*i;
-//			int16_t y_from=239;
-//
-//			int16_t x_to=319;
-//			int16_t y_to=150-6*i;
-//
-//			TFT.DrawUniLine(x_from,y_from,x_to,y_to);
-//		}
-TFT.glow(319,150,319,229,0,30,0,1);
+		//		for(int i=0;i<15;i++){
+		//			int16_t x_from=270+2*i;
+		//			int16_t y_from=239;
+		//
+		//			int16_t x_to=319;
+		//			int16_t y_to=150-6*i;
+		//
+		//			TFT.DrawUniLine(x_from,y_from,x_to,y_to);
+		//		}
+		//TFT.glow(319,150,319,229,0,30,0,1);
 		//TFT.glow(230,30,230,30,255,0,0,15);
 		TFT.filled_rect(0,0,320,30,0);
 		strcpy(char_buffer, menu_titel[level_1]);
@@ -1846,7 +1859,7 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	 *  and
 	 *  2. the shorter delay is passed (Millis.get()>(menu_button_fast_timeout+button_time)) (0.1sec)
 	 */
-
+	hw_keys_en=false;
 	if((hw_keys_en || button_first_push!=0) && Speedo.startup_by_ignition){ // hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedr?ckt ist
 		if((Millis.get()>(button_time+menu_button_timeout)) ||
 				((button_first_push>0 && Millis.get()>(button_first_push+menu_button_fast_delay)) && Millis.get()>(menu_button_fast_timeout+button_time)) ){ // halbe sek timeout

@@ -56,7 +56,7 @@ unsigned int  speedo_demo::get_RPM(){
 		unsigned int max_k_rpm[6]={7,10,10,12,10,12};
 		unsigned int min_k_rpm[6]={0,4,6,8,9,8};
 
-		unsigned long my_millis=pSensors->m_gps->mod((Millis.get()-30000),100000); // das wird so ja wahrscheinlich eher nicht gehen
+		unsigned long my_millis=Sensors.mGPS.mod((Millis.get()-30000),100000); // das wird so ja wahrscheinlich eher nicht gehen
 		int i=0;
 		while(my_millis>(1000*(unsigned long)timing_sec[i]) && i<5){
 			i++;
@@ -82,23 +82,23 @@ unsigned int  speedo_demo::get_RPM(){
 unsigned int speedo_demo::get_speed(){
 	// rpm/speed=n_gang ==> speed = rpm/ngang
 	if(Millis.get()>30000){
-		unsigned long my_millis=pSensors->m_gps->mod((Millis.get()-30000),100000); // das wird so ja wahrscheinlich eher nicht gehen
+		unsigned long my_millis=Sensors.mGPS.mod((Millis.get()-30000),100000); // das wird so ja wahrscheinlich eher nicht gehen
 		int i=0;
 		while(my_millis>1000*timing_sec[i] && i<5){
 			i++;
 		};
-		// pSensors->m_gear->faktor_counter=0; // sollte den tiefpass brücken, ist das gut?
-		if(pSensors->m_gear->n_gang[i+1]<1){
+		// Sensors.m_gear->faktor_counter=0; // sollte den tiefpass brücken, ist das gut?
+		if(Sensors.mGear.n_gang[i+1]<1){
 			return 222;
 		}
-		return ((unsigned long)(pSensors->get_RPM(RPM_TYPE_FLAT))*10)/pSensors->m_gear->n_gang[i+1];
+		return ((unsigned long)(Sensors.get_RPM(RPM_TYPE_FLAT))*10)/Sensors.mGear.n_gang[i+1];
 	}
 	return 0;
 }
 
 int speedo_demo::get_water_temperature(){
 	if(Millis.get()>30000){
-		unsigned long my_millis=pSensors->m_gps->mod((Millis.get()-30000),100000); // das wird so ja wahrscheinlich eher nicht gehen
+		unsigned long my_millis=Sensors.mGPS.mod((Millis.get()-30000),100000); // das wird so ja wahrscheinlich eher nicht gehen
 		if(my_millis<50000){
 			return (900-200)*my_millis/50000+200; //linear
 		} else {
@@ -109,9 +109,9 @@ int speedo_demo::get_water_temperature(){
 }
 
 int speedo_demo::get_oil_temperature(){
-	pSensors->m_temperature->oil_temp_fail_status=1;
+	Sensors.mTemperature.oil_temp_fail_status=1;
 	if(Millis.get()>30000){
-		unsigned long my_millis=pSensors->m_gps->mod((Millis.get()-30000),100000); // das wird so ja wahrscheinlich eher nicht gehen
+		unsigned long my_millis=Sensors.mGPS.mod((Millis.get()-30000),100000); // das wird so ja wahrscheinlich eher nicht gehen
 		if(my_millis<70000){
 			return (950-200)*my_millis/70000+200; //linear
 		} else {

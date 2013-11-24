@@ -958,8 +958,8 @@ void GPS::generate_new_order(){ // eine neue Order auslesen
  * quasi als "zeig mir alle werte die ich so kenne" - ding
  ***************************************************************/
 void GPS::loop(){
-	for(int i=0;i<8;i++){ // ob das so schlau ist, 3 mal get_info aufzurufen ?!
-		if(Speedo.disp_zeile_bak[i]!=get_info(i)){ // nur aktualisiern wenn sich was ändert
+	for(int i=0;i<=8;i++){ // ob das so schlau ist, 3 mal get_info aufzurufen ?!
+		if(Speedo.disp_zeile_bak[i]!=(int16_t)(get_info(i))){ // nur aktualisiern wenn sich was ändert
 			uint8_t buffer[10];
 			switch(i){
 			case 0: sprintf((char*)buffer,"%06lu",get_info(i)); break;
@@ -968,11 +968,12 @@ void GPS::loop(){
 			case 3: sprintf((char*)buffer,"%09lu{",get_info(i)); break;
 			case 4: sprintf((char*)buffer,"%05lu dm",get_info(i)); break;
 			case 5: sprintf((char*)buffer,"%03i km/h",int(get_info(i))); break;
-			case 6: sprintf((char*)buffer,"#%i | %i",int(get_info(i)),int(get_info(8))); break;
+			case 6: sprintf((char*)buffer,"#%i | %i",int(get_info(i)),int(get_info(7))); break;
 			case 7: sprintf((char*)buffer,"%i",gps_write_status); break; // fix
+			case 8: sprintf((char*)buffer,"%03i{",int(get_info(i))); break;
 			};
-			TFT.string(Speedo.default_font,(char*)buffer,10,i,0,DISP_BRIGHTNESS,0);
-			Speedo.disp_zeile_bak[i]=int(get_info(i));
+			TFT.string(Speedo.default_font,(char*)buffer,30,i*3+4,0,DISP_BRIGHTNESS,0);
+			Speedo.disp_zeile_bak[i]=(int16_t)(get_info(i));
 		}
 	};
 };

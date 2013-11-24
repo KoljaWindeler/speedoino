@@ -229,9 +229,12 @@ public:
 	void draw_clock(uint16_t x,uint16_t y);
 	void draw_gps(uint16_t x,uint16_t y, unsigned char sats);
 	void draw_blitzer(uint16_t x,uint16_t y);
-	void draw_arrow(int arrow, int spalte, int zeile);
+	void draw_arrow(int arrow, int spalte, int zeile, uint8_t r, uint8_t g, uint8_t b);
+	void draw_arrow(int angle, int x_pos, int y_pos, uint8_t r, uint8_t g, uint8_t b,bool clean);
+	uint8_t draw_bmp(uint16_t x, uint16_t y, uint8_t* filename);
 
 	void filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,unsigned char color);
+	void filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t r,uint8_t g,uint8_t b);
 	void glow(int16_t x_start,int16_t y_start,int16_t xend,int16_t y_end,uint8_t r,uint8_t g,uint8_t b,uint8_t loss);
 	void check_coordinates(int16_t* x,int16_t* y);
 

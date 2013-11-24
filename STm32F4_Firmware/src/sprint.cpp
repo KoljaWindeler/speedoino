@@ -77,6 +77,30 @@ void sprint::loop(){
 		if(Speedo.disp_zeile_bak[0]==-99){ // wenn es gerade reseted wurde -> alles hinmalen
 			sprintf(char_buffer,"%3i km/h",speed);
 			TFT.string(Speedo.default_font+1,char_buffer,2,3,0,DISP_BRIGHTNESS,0);
+
+			for(int i=0;i<6;i+=3){
+				bool override=true;
+				int color=120;
+				int j=i;
+				int h=i;
+				if(i>0){
+					override=false;
+					color=220;
+					j++;
+					h--;
+				}
+
+				TFT.filled_rect( 10-i,100-j,45,45,color-80,0,0);
+				TFT.filled_rect( 40-i,155-j,40,40,color-75,0,0);
+				TFT.filled_rect( 90-i,180-j,30,30,color-70,0,0);
+				TFT.filled_rect(130-i,190-j,20,20,color-60,0,0);
+				TFT.filled_rect(160-i,200-j,16,16,color-40,0,0);
+				TFT.filled_rect(185-i,205-j,16,16,color-20,0,0);
+
+				TFT.draw_arrow(90,205-h,200-j,color,0,0,override);
+			}
+
+
 		}   else if(Speedo.disp_zeile_bak[0]!=speed+1){ // wenn er anders ist als beim letzen refresh -> nur Zahl schreiben
 			sprintf(char_buffer,"%3i",speed);
 			TFT.string(Speedo.default_font+1,char_buffer,2,3,0,DISP_BRIGHTNESS,0);

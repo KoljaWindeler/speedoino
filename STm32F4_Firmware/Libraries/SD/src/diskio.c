@@ -1,190 +1,65 @@
 /*-----------------------------------------------------------------------*/
-/* Low level disk I/O module skeleton for FatFs     (C)ChaN, 2013        */
+/* Low level disk I/O module skeleton for FatFs     (C)ChaN, 2007        */
 /*-----------------------------------------------------------------------*/
-/* If a working storage control module is available, it should be        */
-/* attached to the FatFs via a glue function rather than modifying it.   */
-/* This is an example of glue functions to attach various exsisting      */
-/* storage control module to the FatFs module with a defined API.        */
+/* This is a stub disk I/O module that acts as front end of the existing */
+/* disk I/O modules and attach it to FatFs module with common interface. */
 /*-----------------------------------------------------------------------*/
 
-#include "diskio.h"		/* FatFs lower layer API */
+#include "diskio.h"
+#include "stm32f4xx.h"
+#include "ffconf.h"
+#include "stm32f4_discovery_sdio_sd.h"
 
-unsigned char sdcCommand[6];
+/*-----------------------------------------------------------------------*/
+/* Correspondence between physical drive number and physical drive.      */
+/*-----------------------------------------------------------------------*/
 
-void sdc_assert(void)
-{
-	GPIOA->ODR &= ~GPIO_Pin_4;
-}
-
-void sdc_deassert(void)
-{
-	GPIOA->ODR |= GPIO_Pin_4;
-	SPI_send_single(SPI1, 0xFF); // send 8 clocks for SDC to set SDO tristate
-}
-
-uint8_t sdc_isConn(void)
-{
-	return 0;
-	if (GPIOC->IDR & GPIO_Pin_5)
-	{
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
-}
-
-void sdc_sendCommand(uint8_t command, uint8_t par1, uint8_t par2, uint8_t par3, uint8_t par4)
-{
-	sdcCommand[0] = 0x40 | command;
-	sdcCommand[1] = par1;
-	sdcCommand[2] = par2;
-	sdcCommand[3] = par3;
-	sdcCommand[4] = par4;
-	
-	if (command == SDC_GO_IDLE_STATE)
-	{
-		sdcCommand[5] = 0x95; // precalculated CRC
-	}
-	else 
-	{
-		sdcCommand[5] = 0xFF;
-	}
-	SPI_send(SPI1, sdcCommand, 6);
-}
-
-uint8_t sdc_getResponse(uint8_t response)
-{
-	for(uint8_t n = 0; n < 8; n++)
-	{
-		if (SPI_receive_single(SPI1) == response)
-		{
-			return 0;
-		}
-	}
-	return 1;
-}
+#define ATA		0
+#define MMC		1
+#define USB		2
 
 /*-----------------------------------------------------------------------*/
 /* Inidialize a Drive                                                    */
 /*-----------------------------------------------------------------------*/
-void USART_putc2(USART_TypeDef* USARTx, unsigned char c){
-	// wait until data register is empty
-	while( !(USARTx->SR & 0x00000040) );
-	USART_SendData(USARTx, c);
-}
-
-
-void USART_puts2(USART_TypeDef* USARTx, volatile char *s){
-	while(*s){
-		USART_putc2(USARTx, *s);
-		s++;
-	}
-}
 
 DSTATUS disk_initialize (
-	BYTE pdrv				/* Physical drive nmuber (0..) */
+	BYTE drv				/* Physical drive nmuber (0..) */
 )
-{	
-	// initialize chip select line
-	// chip select is PC4
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_4;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(GPIOA, &GPIO_InitStruct);
+{
+  NVIC_InitTypeDef NVIC_InitStructure;
+  SD_Error res = SD_OK;
 
-	GPIOA->ODR |= GPIO_Pin_4;
+  /* Configure the NVIC Preemption Priority Bits */
+  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 
-	// initialize card detect line
-	// card detect is PC5
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_5;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(GPIOC, &GPIO_InitStruct);
+  NVIC_InitStructure.NVIC_IRQChannel = SDIO_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure); 
 
-	SPI_init(SPI1, SPI_BaudRatePrescaler_256);
+  res =  SD_Init(); 
 
-	// check wether SDC is inserted into socket
-	/*if (!sdc_isConn())
-	{
-		return STA_NODISK;
-	}*/
-	
-	// send 10 dummy bytes to wake up SDC
-	for (uint8_t i = 0; i < 10; i++)
-	{
-		SPI_send_single(SPI1, 0xFF);
-	}
-	//USART_puts2(USART1, "10 nops...");
-
-	// assert SDC
-	sdc_assert();
-	// software reset the SDC
-	sdc_sendCommand(SDC_GO_IDLE_STATE, 0, 0, 0, 0);
-
-	if (sdc_getResponse(0x01))
-	{
-		return STA_NOINIT;
-	}
-	
-	// wait for SDC to come out of idle state TODO danger!
-	uint8_t resp = 1;
-	while(resp)
-	{
-		sdc_sendCommand(SDC_SEND_OP_COND, 0, 0, 0, 0);
-		if (!sdc_getResponse(0x00))
-		{
-			resp = 0;
-		}
-	}
-	// deassert the SDC
-	sdc_deassert();
-
-	SPI_init(SPI1, SPI_BaudRatePrescaler_256); // TODO, better stay slower?
-
-	return 0;
+  if(res == SD_OK)
+  {
+    res = (SD_Error)0x0;
+  }
+  return ((DSTATUS)res);
 }
 
 
 
 /*-----------------------------------------------------------------------*/
-/* Get Disk Status                                                       */
+/* Return Disk Status                                                    */
 /*-----------------------------------------------------------------------*/
 
 DSTATUS disk_status (
-	BYTE pdrv		/* Physical drive nmuber (0..) */
+	BYTE drv		/* Physical drive nmuber (0) */
 )
 {
-	unsigned char result[2];
-
-	if (!sdc_isConn())
-	{
-		return STA_NODISK;
-	}
-	/*
-	sdc_assert();
-	sdc_sendCommand(SDC_SEND_STATUS, 0, 0, 0, 0);
-	SPI_receive(SPI1, result, 2);
-	sdc_deassert();
-	
-	if (result[0] & 0x01)
-	{
-		return STA_NOINIT; 
-	}
-	else if (result[1] & 0x01)
-	{
-		return STA_PROTECT;
-	}
-	*/
-	
-	return 0;
+  if (drv) return STA_NOINIT;		/* Supports only single drive */
+  return 0;
 }
-
 
 
 /*-----------------------------------------------------------------------*/
@@ -192,57 +67,25 @@ DSTATUS disk_status (
 /*-----------------------------------------------------------------------*/
 
 DRESULT disk_read (
-	BYTE pdrv,		/* Physical drive nmuber (0..) */
+	BYTE drv,		/* Physical drive nmuber (0..) */
 	BYTE *buff,		/* Data buffer to store read data */
 	DWORD sector,	/* Sector address (LBA) */
-	UINT count		/* Number of sectors to read (1..128) */
+	BYTE count		/* Number of sectors to read (1..255) */
 )
 {
-//	unsigned char result;
-	unsigned char buf[2];
-	
-	// check if parameters are in valid range
-	if( count > 128 )
-	{
-		return RES_PARERR;
-	}
-	
-	sector *= 512; // convert LBA to physical address
-	sdc_assert(); // assert SDC
-	
-	// if multiple sectors are to be read
-	if(count > 1)
-	{
-		// start multiple sector read
-		sdc_sendCommand(SDC_READ_MULTIPLE_BLOCK, ((sector>>24)&0xFF), ((sector>>16)&0xFF), ((sector>>8)&0xFF), (sector&0xFF));
-		while(sdc_getResponse(0x00)); // wait for command acknowledgement
-		
-		while(count)
-		{
-			while(sdc_getResponse(0xFE)); // wait for data token 0xFE
-			SPI_receive(SPI1, buff, 512); // read 512 bytes
-			SPI_receive(SPI1, buf, 2); // receive two byte CRC
-			count--;
-			buff += 512;
-		}
-		// stop multiple sector read
-		sdc_sendCommand(SDC_STOP_TRANSMISSION, 0, 0, 0, 0);
-		while(sdc_getResponse(0x00)); // wait for R1 response
-	}
-	else // if single sector is to be read
-	{
-		sdc_sendCommand(SDC_READ_SINGLE_BLOCK, ((sector>>24)&0xFF), ((sector>>16)&0xFF), ((sector>>8)&0xFF), (sector&0xFF));
-		while(sdc_getResponse(0x00)); // wait for command acknowledgement
-		while(sdc_getResponse(0xFE)); // wait for data token 0xFE
-		SPI_receive(SPI1, buff, 512); // receive data
-		SPI_receive(SPI1, buf, 2); // receive two byte CRC
-	}
-	
-	while(!SPI_receive_single(SPI1)); // wait until card is not busy anymore
-	
-	sdc_deassert(); // deassert SDC 
-	
-	return RES_OK;
+  SD_Error status = SD_OK;
+
+  SD_ReadMultiBlocks(buff, sector << 9, 512, 1);
+
+  /* Check if the Transfer is finished */
+  status =  SD_WaitReadOperation();
+  while (SD_GetStatus() != SD_TRANSFER_OK);
+
+  if (status == SD_OK) {
+    return RES_OK;
+  } else {
+    return RES_ERROR;
+  }
 }
 
 
@@ -250,101 +93,78 @@ DRESULT disk_read (
 /*-----------------------------------------------------------------------*/
 /* Write Sector(s)                                                       */
 /*-----------------------------------------------------------------------*/
+/* The FatFs module will issue multiple sector transfer request
+/  (count > 1) to the disk I/O layer. The disk function should process
+/  the multiple sector transfer properly Do. not translate it into
+/  multiple single sector transfers to the media, or the data read/write
+/  performance may be drasticaly decreased. */
 
-#if _USE_WRITE
+#if _READONLY == 0
 DRESULT disk_write (
-	BYTE pdrv,			/* Physical drive nmuber (0..) */
-	const BYTE* buff,	/* Data to be written */
+	BYTE drv,			/* Physical drive nmuber (0..) */
+	const BYTE *buff,	/* Data to be written */
 	DWORD sector,		/* Sector address (LBA) */
-	UINT count			/* Number of sectors to write (1..128) */
+	BYTE count			/* Number of sectors to write (1..255) */
 )
 {
-	unsigned char result;
-	unsigned char buf[2];
-	buf[0] = 0xFF;
-	buf[1] = 0xFF;
-	
-	// check if parameters are in valid range
-	if( count > 128 )
-	{
-		return RES_PARERR;
-	}
-	
-	sector *= 512; // convert LBA to physical address
-	sdc_assert(); // assert SDC
-	
-	// if multiple sectors are to be written
-	if(count > 1)
-	{
-		// start multiple sector write
-		sdc_sendCommand(SDC_WRITE_MULTIPLE_BLOCK, ((sector>>24)&0xFF), ((sector>>16)&0xFF), ((sector>>8)&0xFF), (sector&0xFF));
-		while(sdc_getResponse(0x00)); // wait for R1 response
-		SPI_send_single(SPI1, 0xFF);  // send one byte gap
-		
-		while(count--)
-		{
-			SPI_send_single(SPI1, 0xFC); // send multi byte data token 0xFC
-			SPI_send(SPI1, (unsigned char*)buff, 512); // send 512 bytes
-			SPI_send(SPI1, buf, 2); // send two byte CRC
-			
-			// check if card has accepted data
-			result = SPI_receive_single(SPI1);
-			if( (result & 0x1F) != 0x05)
-			{
-				return RES_ERROR;
-			}
-			count--;
-			buff += 512;
-			while(!SPI_receive_single(SPI1)); // wait until SD card is ready
-		}
-		
-		SPI_send_single(SPI1, 0xFD); // send stop transmission data token 0xFD		
-		SPI_send_single(SPI1, 0xFF);  // send one byte gap
-	}
-	else // if single sector is to be written
-	{
-		sdc_sendCommand(SDC_WRITE_BLOCK, ((sector>>24)&0xFF), ((sector>>16)&0xFF), ((sector>>8)&0xFF), (sector&0xFF));
-		while(sdc_getResponse(0x00)); // wait for R1 response
-		SPI_send_single(SPI1, 0xFF);  // send one byte gap
-		SPI_send_single(SPI1, 0xFE); // send data token 0xFE
-		SPI_send(SPI1, (unsigned char*)buff, 512); // send data
-		SPI_send(SPI1, buf, 2); // send two byte CRC
-		// check if card has accepted data
-		result = SPI_receive_single(SPI1);
-		if( (result & 0x1F) != 0x05)
-		{
-			return RES_ERROR;
-		}
-	}
-	
-	while(!SPI_receive_single(SPI1)); // wait until card is not busy anymore
-	
-	sdc_deassert(); // deassert SDC 
-	
-	return RES_OK;
-}
-#endif
+  SD_Error status = SD_OK;
 
+  SD_WriteMultiBlocks((BYTE *)buff, sector << 9, 512, 1);
+
+  /* Check if the Transfer is finished */
+  status = SD_WaitWriteOperation();
+  while(SD_GetStatus() != SD_TRANSFER_OK);     
+  if (status == SD_OK) {
+    return RES_OK;
+  } else {
+    return RES_ERROR;
+  }
+}
+#endif /* _READONLY */
+
+/*-----------------------------------------------------------------------*/
+/* Get current time                                                      */
+/*-----------------------------------------------------------------------*/
+
+DWORD get_fattime ()
+{
+  return ((2006UL-1980) << 25)	      // Year = 2006
+          | (2UL << 21)	      // Month = Feb
+          | (9UL << 16)	      // Day = 9
+          | (22U << 11)	      // Hour = 22
+          | (30U << 5)	      // Min = 30
+          | (0U >> 1)	      // Sec = 0
+          ;
+}
 
 /*-----------------------------------------------------------------------*/
 /* Miscellaneous Functions                                               */
 /*-----------------------------------------------------------------------*/
 
-#if _USE_IOCTL
 DRESULT disk_ioctl (
-	BYTE pdrv,		/* Physical drive nmuber (0..) */
-	BYTE cmd,		/* Control code */
+	BYTE drv,		/* Physical drive nmuber (0..) */
+	BYTE ctrl,		/* Control code */
 	void *buff		/* Buffer to send/receive control data */
 )
 {
-	DRESULT res;
-	int result;
+  DRESULT res = RES_OK;
+  switch (ctrl) {
 	
-	return RES_OK;
-}
-#endif
 
-DWORD get_fattime (void)
-{
-	return 0;
+    case GET_SECTOR_COUNT :	  // Get number of sectors on the disk (DWORD)
+      *(DWORD*)buff = 131072;	// 4*1024*32 = 131072
+      res = RES_OK;
+      break;
+
+    case GET_SECTOR_SIZE :	  // Get R/W sector size (WORD) 
+      *(WORD*)buff = 512;
+      res = RES_OK;
+      break;
+
+    case GET_BLOCK_SIZE :	    // Get erase block size in unit of sector (DWORD)
+      *(DWORD*)buff = 32;
+      res = RES_OK;
+  }
+	  
+  return res;
 }

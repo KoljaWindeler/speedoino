@@ -117,8 +117,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Libraries/SD/doc|Libraries/SD/src/option|Libraries/SD/Trash|Libraries/SD/Trash/stm32_ub_fatfs.c|Libraries/SD/Trash/SdStream.cpp|Libraries/SD/Trash/ostream.cpp|Libraries/SD/Trash/istream.cpp|Libraries/SD/ostream.cpp|Libraries/SD/istream.cpp|Libraries/SD/SdStream.cpp|Libraries/SD/stm32_ub_fatfs.c|Libraries/SD/SDIO.c|Libraries/SD/fatfs|Libraries/Display/ssd1325.cpp|zzz_trash|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="sensors.cpp|tetris.cpp|clock_me.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="Libraries/SD/src/spi.c|Libraries/SD/doc|Libraries/SD/src/option|Libraries/SD/Trash|Libraries/SD/Trash/stm32_ub_fatfs.c|Libraries/SD/Trash/SdStream.cpp|Libraries/SD/Trash/ostream.cpp|Libraries/SD/Trash/istream.cpp|Libraries/SD/ostream.cpp|Libraries/SD/istream.cpp|Libraries/SD/SdStream.cpp|Libraries/SD/stm32_ub_fatfs.c|Libraries/SD/SDIO.c|Libraries/SD/fatfs|Libraries/Display/ssd1325.cpp|zzz_trash|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="tetris.cpp|fonts.c|stm32f4_discovery_lis302dl.c|stm32f4_discovery_debug.c|system_stm32f4xx.c|sensors.cpp|clock_me.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

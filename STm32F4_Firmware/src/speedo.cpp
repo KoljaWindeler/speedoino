@@ -148,7 +148,7 @@ void speedo::loop(unsigned long previousMillis){
 					strcpy(char_buffer,("No GPS"));
 					Menu.center_me(char_buffer,17);
 					TFT.string(addinfo2_widget.font,char_buffer,addinfo2_widget.x+2,addinfo2_widget.y,15,0,1); // 2,6
-					TFT.draw_arrow(-1,arrow_widget.x,arrow_widget.y); // clears arrow
+					TFT.draw_arrow(-1,arrow_widget.x,arrow_widget.y,0,0,0); // clears arrow
 				};
 			};
 		}
@@ -333,7 +333,7 @@ void speedo::loop(unsigned long previousMillis){
 			int result_value;
 			Sensors.mGPS.get_order((uint8_t*)char_buffer,&result_value); // distance will be calculated on the parse routine, this call just copies it
 			if(disp_zeile_bak[ARROW]!=result_value+Sensors.mGPS.valid){
-				TFT.draw_arrow(Sensors.mGPS.winkel,arrow_widget.x,arrow_widget.y);
+				TFT.draw_arrow(Sensors.mGPS.winkel,arrow_widget.x,arrow_widget.y,255,0,0);
 				//TFT.draw_arrow((Sensors.mClock.get_ss()*9+1)%360,arrow_widget.x,arrow_widget.y);
 				disp_zeile_bak[ARROW]=int(result_value+Sensors.mGPS.valid);
 			}
@@ -655,17 +655,17 @@ bool speedo::check_no_collision_with_addinfo2(int16_t current_widget_y){
 
 void speedo::initial_draw_screen(){
 	if(oil_widget.symbol && !(oil_widget.x==-1 && oil_widget.y==-1))
-		TFT.draw_oil(oil_widget.x*3,oil_widget.y*8); //3=6/2 weil doppelpixxel
+		TFT.draw_oil(oil_widget.x*5,oil_widget.y*7); //3=6/2 weil doppelpixxel
 	if(water_widget.symbol && !(water_widget.x==-1 && water_widget.y==-1))
-		TFT.draw_water(water_widget.x*3,water_widget.y*8); // bisher oil icon
+		TFT.draw_water(water_widget.x*5,water_widget.y*7); // bisher oil icon
 	if(fuel_widget.symbol && !(fuel_widget.x==-1 && fuel_widget.y==-1))
-		TFT.draw_fuel(fuel_widget.x*3,fuel_widget.y*8); // 7 => 56
+		TFT.draw_fuel(fuel_widget.x*5,fuel_widget.y*7); // 7 => 56
 	if(air_widget.symbol && !(air_widget.x==-1 && air_widget.y==-1))
-		TFT.draw_air(air_widget.x*3,air_widget.y*8);
+		TFT.draw_air(air_widget.x*5,air_widget.y*7);
 	if(clock_widget.symbol && !(clock_widget.x==-1 && clock_widget.y==-1))
-		TFT.draw_clock(clock_widget.x*3,clock_widget.y*8);
+		TFT.draw_clock((clock_widget.x-3)*5,clock_widget.y*7);
 	if(gps_widget.symbol && !(gps_widget.x==-1 && gps_widget.y==-1))
-		TFT.draw_gps(gps_widget.x*3,gps_widget.y*8,Sensors.mGPS.get_info(6));
+		TFT.draw_gps(gps_widget.x*5,gps_widget.y*7,Sensors.mGPS.get_info(6));
 
 	reset_bak(); // alle disp_zeile_bak auf -99 setzen
 
@@ -691,7 +691,8 @@ void speedo::clear_vars(){
 }
 
 void speedo::check_vars(){
-	if(SD.sd_failed==true){
+//	if(SD.sd_failed==true){
+	if(1){
 		//		// skinning
 		water_widget.x=0;
 		water_widget.y=0;
@@ -703,7 +704,7 @@ void speedo::check_vars(){
 		oil_widget.symbol=true;
 		oil_widget.font=VISITOR_SMALL_2X_FONT;
 
-		air_widget.x=35;
+		air_widget.x=34;
 		air_widget.y=0;
 		air_widget.symbol=true;
 		air_widget.font=VISITOR_SMALL_3X_FONT;
@@ -735,12 +736,12 @@ void speedo::check_vars(){
 		addinfo2_widget.y=22;
 		addinfo2_widget.font=VISITOR_SMALL_2X_FONT;
 
-		clock_widget.x=1;
+		clock_widget.x=3;
 		clock_widget.y=31;
 		clock_widget.symbol=true;
 		clock_widget.font=VISITOR_SMALL_3X_FONT;
 
-		gear_widget.x=25;
+		gear_widget.x=30;
 		gear_widget.y=31;
 		gear_widget.font=VISITOR_SMALL_3X_FONT;
 

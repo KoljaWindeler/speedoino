@@ -357,7 +357,7 @@ void filemanager_v2::parse_command(){
 
 					//status=fm_handle.lsJKWNext(name,item,&size); BIG TODO
 					f_close(&fm_file);
-					f_closedir(&fm_dir);
+//					f_closedir(&fm_dir); TODO
 				}
 
 				if(status>0) {
@@ -738,7 +738,7 @@ void filemanager_v2::parse_command(){
 	}; // while isLeave!=1
 	//	Menu.display();
 	f_close(&fm_file);
-	f_closedir(&fm_dir);
+//	f_closedir(&fm_dir); TODO
 	Sensors.mReset.set_active(false,true);
 }; // fkt ende
 

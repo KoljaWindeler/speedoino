@@ -43,6 +43,7 @@ public:
 	bool sd_failed;
 	DIR sd_dir;
 	FIL sd_file;
+	FATFS FatFs;
 };
 extern sd SD;
 

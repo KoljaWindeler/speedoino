@@ -618,7 +618,7 @@ int configuration::write(const char *filename){
  */
 int configuration::read_skin(){
 	if(skin_file>-1 && skin_file<9){
-		char filename[10];
+		char filename[18];
 		sprintf(filename,"SKIN%i.SSF",skin_file);
 		return read(CONFIG_FOLDER,filename,READ_MODE_CONFIGFILE,"");
 	} else {
@@ -633,11 +633,16 @@ int configuration::read_skin(){
  ***************************************************/
 int configuration::read( const char* folder, const char* filename, int read_mode, char* search_string){
 	FIL file;
+	char c_filename[23];
+	sprintf(c_filename,"/%s/%s",folder,filename);
+
 	Serial.puts(USART1,("Reading: "));
-	Serial.puts(USART1,(char*)filename);
+	Serial.puts(USART1,(char*)c_filename);
 	Serial.puts(USART1,(" ... "));
 
-	if(SD.get_file_handle((unsigned char*)filename,&file,FA_READ|FA_OPEN_EXISTING)>=0){
+	if(SD.get_file_handle((unsigned char*)c_filename,&file,FA_READ|FA_OPEN_EXISTING)>=0){
+//	if(!f_open(&file, (const TCHAR *)filename, FA_READ)){
+
 		int i=0;
 		boolean skip_row=false;
 		// store string
@@ -659,7 +664,7 @@ int configuration::read( const char* folder, const char* filename, int read_mode
 						// wir haben mehr als kein zeichen gelesen, und einen Zeilenumbruch gefunden => attake
 						if(read_mode==READ_MODE_CONFIGFILE){
 							int return_value=parse(&buf[0]);
-							if(return_value<0|| true) {
+							if(return_value<0) {
 								Serial.puts(USART1,("parse_config erzeugte Fehlercode "));
 								Serial.puts(USART1,return_value);
 								Serial.puts(USART1,(".\r\nEingabe war:"));

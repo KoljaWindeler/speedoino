@@ -11,7 +11,7 @@
 ////////////// menu ///////////////////////
 class menu {
 
-#define	 menu_button_timeout		300                        // wartezeit zwischen 2 steps
+#define	menu_button_timeout		300                        // wartezeit zwischen 2 steps
 #define menu_button_fast_delay		menu_button_timeout*4   // wartezeit bis schneller
 #define menu_button_fast_timeout	100                   // wartezeit zwischen 2 steps -> schnell
 #define menu_button_links PINJ4 // 26

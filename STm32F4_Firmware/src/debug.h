@@ -32,7 +32,7 @@ class debugging{
 #undef       DEBUG_TRANSFER           	// show traffic on filemanager
 #undef       DEBUG_TRANSFER_INTENSIV  	// show every traffic on filemanager
 #undef		 STEPPER_DEBUG				// Show stepper info
-#undef		 DEMO_MODE					// show fancy demo values
+#define		 DEMO_MODE					// show fancy demo values
 #undef		 LOAD_CALC					// show calc load
 #undef		 GPS_FAKE_MODE				// simply fake some data
 
