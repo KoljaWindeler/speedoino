@@ -285,7 +285,7 @@ void speedo::loop(unsigned long previousMillis){
 
 			Debug.speedo_loop(1,0,previousMillis," "); // debug
 			// depend on skinsettings
-			TFT.string(water_widget.font,char_buffer,water_widget.x+4,water_widget.y,0,DISP_BRIGHTNESS,-4);
+			TFT.string(water_widget.font,char_buffer,water_widget.x+2,water_widget.y,0,DISP_BRIGHTNESS,-4);
 		};
 	};
 #ifdef TACHO_SMALLDEBUG
@@ -655,13 +655,13 @@ bool speedo::check_no_collision_with_addinfo2(int16_t current_widget_y){
 
 void speedo::initial_draw_screen(){
 	if(oil_widget.symbol && !(oil_widget.x==-1 && oil_widget.y==-1))
-		TFT.draw_oil(oil_widget.x*5,oil_widget.y*7); //3=6/2 weil doppelpixxel
+		TFT.draw_oil(oil_widget.x*5+16,oil_widget.y*7); //3=6/2 weil doppelpixxel
 	if(water_widget.symbol && !(water_widget.x==-1 && water_widget.y==-1))
 		TFT.draw_water(water_widget.x*5,water_widget.y*7); // bisher oil icon
 	if(fuel_widget.symbol && !(fuel_widget.x==-1 && fuel_widget.y==-1))
-		TFT.draw_fuel(fuel_widget.x*5,fuel_widget.y*7); // 7 => 56
+		TFT.draw_fuel(fuel_widget.x*5+29,fuel_widget.y*7); // 7 => 56
 	if(air_widget.symbol && !(air_widget.x==-1 && air_widget.y==-1))
-		TFT.draw_air(air_widget.x*5,air_widget.y*7);
+		TFT.draw_air(air_widget.x*5+29,air_widget.y*7);
 	if(clock_widget.symbol && !(clock_widget.x==-1 && clock_widget.y==-1))
 		TFT.draw_clock((clock_widget.x-3)*5,clock_widget.y*7);
 	if(gps_widget.symbol && !(gps_widget.x==-1 && gps_widget.y==-1))
@@ -716,7 +716,7 @@ void speedo::check_vars(){
 		kmh_widget.y=12;
 		kmh_widget.font=VISITOR_SMALL_8X_FONT;
 
-		kmhchar_widget.x=35;
+		kmhchar_widget.x=37;
 		kmhchar_widget.y=17;
 		kmhchar_widget.font=VISITOR_SMALL_1X_FONT;
 

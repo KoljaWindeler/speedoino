@@ -151,11 +151,172 @@
 #define R19_VAL		   0x0F00   		//F00
 #define R41_VAL        0x0005
 
+#define   GRAPHIC_USE_JPG     0   // Jpg-Funktionen
+
+//--------------------------------------------------------------
+// Struktur von einem Image
+//--------------------------------------------------------------
+typedef struct UB_Image_t
+{
+	const uint16_t *table; // Tabelle mit den Daten
+	uint16_t width;        // Breite des Bildes (in Pixel)
+	uint16_t height;       // Hoehe des Bildes  (in Pixel)
+}UB_Image;
+
+
+
+//--------------------------------------------------------------
+// Struktur von einem Picture
+//--------------------------------------------------------------
+typedef struct UB_Picture_t
+{
+	const uint8_t *table; // Tabelle mit den Daten
+	uint32_t size;        // Anzahl der Bytes
+}UB_Picture;
+
+
+//--------------------------------------------------------------
+// Return Werte beim zeichnen
+//--------------------------------------------------------------
+typedef enum {
+	GRAPHIC_OK =0,
+	GRAPHIC_FILE_ERR,
+	GRAPHIC_SIZE_ERR,
+	GRAPHIC_ID_ERR,
+	GRAPHIC_HEAD_ERR,
+	GRAPHIC_WIDTH_ERR,
+	GRAPHIC_HEIGHT_ERR,
+	GRAPHIC_BPP_ERR,
+	GRAPHIC_COMPR_ERR
+}GRAPHIC_ERR_t;
+
+
+//--------------------------------------------------------------
+// Typedef für Windows-Jpg-File
+//--------------------------------------------------------------
+typedef uint8_t       BYTE;
+typedef uint16_t      WORD;
+typedef uint32_t      DWORD;
+
+
+
+//--------------------------------------------------------------
+// Defines für Windows-Jpg-File
+//--------------------------------------------------------------
+#define M_SOF0  0xc0
+#define M_DHT   0xc4
+#define M_EOI   0xd9
+#define M_SOS   0xda
+#define M_DQT   0xdb
+#define M_DRI   0xdd
+#define M_APP0  0xe0
+
+#define W1 2841
+#define W2 2676
+#define W3 2408
+#define W5 1609
+#define W6 1108
+#define W7 565
+
+#define MAKEWORD(a, b)      ((WORD)(((BYTE)(a)) | ((WORD)((BYTE)(b))) << 8))
+
+#define FUNC_OK 0
+#define FUNC_FORMAT_ERROR 3
+
+
+
+//--------------------------------------------------------------
+// Struktur von einem Windows-Jpg-File
+//--------------------------------------------------------------
+typedef struct{
+	long CurX;
+	long CurY;
+	DWORD ImgWidth;
+	DWORD ImgHeight;
+	short SampRate_Y_H;
+	short SampRate_Y_V;
+	short SampRate_U_H;
+	short SampRate_U_V;
+	short SampRate_V_H;
+	short SampRate_V_V;
+	short H_YtoU;
+	short V_YtoU;
+	short H_YtoV;
+	short V_YtoV;
+	short Y_in_MCU;
+	short U_in_MCU;
+	short V_in_MCU;  // notwendig ??
+	unsigned char *lpJpegBuf;
+	unsigned char *lp;
+	short qt_table[3][64];
+	short comp_num;
+	BYTE comp_index[3];
+	BYTE YDcIndex;
+	BYTE YAcIndex;
+	BYTE UVDcIndex;
+	BYTE UVAcIndex;
+	BYTE HufTabIndex;
+	short *YQtTable;
+	short *UQtTable;
+	short *VQtTable;
+	short code_pos_table[4][16];
+	short code_len_table[4][16];
+	unsigned short code_value_table[4][256];
+	unsigned short huf_max_value[4][16];
+	unsigned short huf_min_value[4][16];
+	short BitPos;
+	short CurByte;
+	short rrun;
+	short vvalue;
+	short MCUBuffer[10*64];
+	short QtZzMCUBuffer[10*64];
+	short BlockBuffer[64];
+	short ycoef;
+	short ucoef;
+	short vcoef;
+	BYTE IntervalFlag;
+	short interval;
+	short Y[4*64];
+	short U[4*64];
+	short V[4*64];
+	DWORD sizei;
+	DWORD sizej;
+	short restart;
+	long iclip[1024];
+	long *iclp;
+}GRAPHIC_JPG_t;
+
+
+
 class ILI9325 {
 
 private:
 	void CtrlLinesConfig();
 	void FSMCConfig();
+
+	//--------------------------------------------------------------
+	// Globale Funktionen
+	//--------------------------------------------------------------
+
+	int16_t P_Graphic_sgn(int16_t x);
+	int InitTag(void);
+	void InitTable(void);
+	int Decode(void);
+	void GetYUV(short flag);
+	void StoreBuffer(void);
+	int DecodeMCUBlock(void);
+	int HufBlock(BYTE dchufindex,BYTE achufindex);
+	int DecodeElement(void);
+	void IQtIZzMCUComponent(short flag);
+	void IQtIZzBlock(short  *s ,short * d,short flag);
+	void Fast_IDCT(int * block);
+	BYTE ReadByte(void);
+	void Initialize_Fast_IDCT(void);
+	void idctrow(int * blk);
+	void idctcol(int * blk);
+
+	GRAPHIC_JPG_t GRAPHIC_JPG;
+
 public:
 	/* Exported functions ------------------------------------------------------- */
 	ILI9325();
@@ -232,6 +393,7 @@ public:
 	void draw_arrow(int arrow, int spalte, int zeile, uint8_t r, uint8_t g, uint8_t b);
 	void draw_arrow(int angle, int x_pos, int y_pos, uint8_t r, uint8_t g, uint8_t b,bool clean);
 	uint8_t draw_bmp(uint16_t x, uint16_t y, uint8_t* filename);
+	GRAPHIC_ERR_t UB_Graphic_DrawJpg(UB_Picture *jpg, uint16_t xpos, uint16_t ypos);
 
 	void filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,unsigned char color);
 	void filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t r,uint8_t g,uint8_t b);
@@ -239,6 +401,19 @@ public:
 	void check_coordinates(int16_t* x,int16_t* y);
 
 	unsigned char startup[35]; // asdfghjk.asd,1234,1234,1234\0 == 28
+	//////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
 };
 extern ILI9325 TFT;
 #endif
