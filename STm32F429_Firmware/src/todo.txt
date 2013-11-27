@@ -1,0 +1,39 @@
+Aktor: 
+ - PWM
+ - I2C
+CAN:
+ - complete!
+Config: 
+ - Get HW Id 
+ - day_trip_check->EEPROM
+ Filemanager:
+ - TFT.show_animation(msgBuffer); TODO
+ Flasher:
+ - interrupt to call toggle
+ Gear:
+ - inputpin to sense clutsh
+ GPS:
+ - generate_new_order eeprom
+ Menu:
+ - Tetris
+ Oiler:
+ - Activate pins
+ Reset:
+ - Pins
+ - EEPROM
+ SD:
+ - Transistor pin
+ Sensors:
+ - wait time
+ - Check input
+ - Configure pins
+ Speed:
+  - input pin (timer input)
+ Temp:
+  - I2C
+ Timer
+ - complete
+ Voltage
+ - complete
+ LapTimer
+ - file handling
