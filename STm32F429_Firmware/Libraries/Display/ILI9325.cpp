@@ -485,6 +485,7 @@ void ILI9325::DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Wi
 	}
 }
 
+
 void ILI9325::DrawSquare(uint16_t Xpos, uint16_t Ypos, uint16_t a) {
 	int x, y;
 	x = 0;
@@ -934,7 +935,7 @@ void ILI9325::GetType(char model[]) {
 	model[3] = (LCD_RegValue & 0x0F) + zero;
 	model[4] = 0;
 }
-
+---------------------------------
 /**
  * Function Name  : SetBackLightLevel
  * Description    : Set back light intensity
@@ -1388,20 +1389,7 @@ void ILI9325::draw_arrow(int angle, int x_pos, int y_pos, uint8_t r, uint8_t g, 
 
 }
 
-// check if x/y are in display range
-void ILI9325::check_coordinates(int16_t* x,int16_t* y){
-	if(*x<0){
-		*x=0;
-	} else if(*x>=320){
-		*x=319;
-	}
 
-	if(*y<0){
-		*y=0;
-	} else if(*y>=240){
-		*y=239;
-	}
-}
 
 
 void ILI9325::glow(int16_t x_start,int16_t y_start,int16_t x_end,int16_t y_end,uint8_t r,uint8_t g,uint8_t b,uint8_t loss){

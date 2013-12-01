@@ -74,9 +74,9 @@
 /** @defgroup STM32F429I-DISCOVERY_LOW_LEVEL_Private_Variables
   * @{
   */ 
-GPIO_TypeDef* GPIO_PORT[LEDn] = {LED3_GPIO_PORT, LED4_GPIO_PORT};
-const uint16_t GPIO_PIN[LEDn] = {LED3_PIN, LED4_PIN};
-const uint32_t GPIO_CLK[LEDn] = {LED3_GPIO_CLK, LED4_GPIO_CLK};
+//GPIO_TypeDef* GPIO_PORT[LEDn] = {LED3_GPIO_PORT, LED4_GPIO_PORT};
+//const uint16_t GPIO_PIN[LEDn] = {LED3_PIN, LED4_PIN};
+//const uint32_t GPIO_CLK[LEDn] = {LED3_GPIO_CLK, LED4_GPIO_CLK};
 
 GPIO_TypeDef* BUTTON_PORT[BUTTONn] = {USER_BUTTON_GPIO_PORT}; 
 
@@ -122,7 +122,7 @@ NVIC_InitTypeDef   NVIC_InitStructure;
   */
 void STM_EVAL_LEDOn(Led_TypeDef Led)
 {
-  GPIO_PORT[Led]->BSRRL = GPIO_PIN[Led];
+//  GPIO_PORT[Led]->BSRRL = GPIO_PIN[Led];
 }
 
 /**
@@ -135,7 +135,7 @@ void STM_EVAL_LEDOn(Led_TypeDef Led)
   */
 void STM_EVAL_LEDOff(Led_TypeDef Led)
 {
-  GPIO_PORT[Led]->BSRRH = GPIO_PIN[Led];  
+//  GPIO_PORT[Led]->BSRRH = GPIO_PIN[Led];
 }
 
 /**
@@ -148,7 +148,7 @@ void STM_EVAL_LEDOff(Led_TypeDef Led)
   */
 void STM_EVAL_LEDToggle(Led_TypeDef Led)
 {
-  GPIO_PORT[Led]->ODR ^= GPIO_PIN[Led];
+//  GPIO_PORT[Led]->ODR ^= GPIO_PIN[Led];
 }
 
 /**

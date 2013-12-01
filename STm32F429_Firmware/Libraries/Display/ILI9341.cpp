@@ -130,7 +130,7 @@ void ILI9341::LCD_DeInit(void)
  * @param  None
  * @retval None
  */
-void ILI9341::Init(void)
+void ILI9341::init(void)
 { 
 	LTDC_InitTypeDef       LTDC_InitStruct;
 
@@ -208,6 +208,17 @@ void ILI9341::Init(void)
 	LTDC_InitStruct.LTDC_TotalHeigh = 327;
 
 	LTDC_Init(&LTDC_InitStruct);
+
+	/* Initialize the LCD */
+	TFT.LayerInit();
+	LTDC_Cmd(ENABLE);
+	TFT.SetLayer(LCD_FOREGROUND_LAYER);
+	TFT.clear_screen(LCD_COLOR_BLACK);
+	TFT.SetTransparency(0);
+	LTDC_ReloadConfig(LTDC_IMReload);
+	SDRAM_Init();												/* SDRAM Initialization */
+	SDRAM_GPIOConfig();											/* FMC SDRAM GPIOs Configuration */
+	FMC_SDRAMWriteProtectionConfig(FMC_Bank2_SDRAM,DISABLE);	/* Disable write protection */
 }  
 
 /**
@@ -313,7 +324,7 @@ void ILI9341::LCD_ChipSelect(FunctionalState NewState)
  * @param  Layerx: specifies the Layer foreground or background.
  * @retval None
  */
-void ILI9341::LCD_SetLayer(uint32_t Layerx)
+void ILI9341::SetLayer(uint32_t Layerx)
 {
 	if (Layerx == LCD_BACKGROUND_LAYER)
 	{
@@ -327,38 +338,14 @@ void ILI9341::LCD_SetLayer(uint32_t Layerx)
 	}
 }  
 
-/**
- * @brief  Sets the LCD Text and Background colors.
- * @param  TextColor: specifies the Text Color.
- * @param  BackColor: specifies the Background Color.
- * @retval None
- */
-void ILI9341::LCD_SetColors(uint16_t TextColor, uint16_t BackColor)
-{
-	CurrentTextColor = TextColor;
-	CurrentBackColor = BackColor;
-}
 
-/**
- * @brief  Gets the LCD Text and Background colors.
- * @param  TextColor: pointer to the variable that will contain the Text
-            Color.
- * @param  BackColor: pointer to the variable that will contain the Background
-            Color.
- * @retval None
- */
-void ILI9341::LCD_GetColors(uint16_t *TextColor, uint16_t *BackColor)
-{
-	*TextColor = CurrentTextColor;
-	*BackColor = CurrentBackColor;
-}
 
 /**
  * @brief  Sets the Text color.
  * @param  Color: specifies the Text color code RGB(5-6-5).
  * @retval None
  */
-void ILI9341::LCD_SetTextColor(uint16_t Color)
+void ILI9341::SetTextColor(uint16_t Color)
 {
 	CurrentTextColor = Color;
 }
@@ -368,7 +355,7 @@ void ILI9341::LCD_SetTextColor(uint16_t Color)
  * @param  Color: specifies the Background color code RGB(5-6-5).
  * @retval None
  */
-void ILI9341::LCD_SetBackColor(uint16_t Color)
+void ILI9341::SetBackColor(uint16_t Color)
 {
 	CurrentBackColor = Color;
 }
@@ -388,16 +375,67 @@ void ILI9341::LCD_SetBackColor(uint16_t Color)
  * @param  transparency: specifies the transparency,
  *         This parameter must range from 0x00 to 0xFF.
  * @retval None
+ * 000 = no transparence
+ * 255 = not visible
+ *
+ // Setting the Background to "a lot transparancy" green + foregroud to "complete transparent" results in a dark green
+ //	TFT.SetLayer(LCD_BACKGROUND_LAYER); 	TFT.clear_screen(LCD_COLOR_GREEN); 	TFT.SetTransparency(200);
+ //	TFT.SetLayer(LCD_FOREGROUND_LAYER);	TFT.SetTransparency(255);	TFT.clear_screen(LCD_COLOR_BLUE);
+
+ // Setting the Background to 100% green + Foreground to 100% transparent => full green
+ //	TFT.SetLayer(LCD_BACKGROUND_LAYER);		TFT.clear_screen(LCD_COLOR_GREEN);	TFT.SetTransparency(0);
+ //	TFT.SetLayer(LCD_FOREGROUND_LAYER); 	TFT.SetTransparency(255);	TFT.clear_screen(LCD_COLOR_BLUE);
+
+ // setting back to 100%green + foreground to 180/255 transparent blue => türkies
+
+ // setting foreground to blue 0 transparency and background to green 0 trans => green (written later!)
+ //TFT.SetLayer(LCD_FOREGROUND_LAYER); 	TFT.SetTransparency(0);	TFT.clear_screen(LCD_COLOR_BLUE);
+ //TFT.SetLayer(LCD_BACKGROUND_LAYER);		TFT.clear_screen(LCD_COLOR_GREEN);	TFT.SetTransparency(0);
+
+	//////////// fading ////////////
+
+ //	TFT.SetLayer(LCD_BACKGROUND_LAYER);
+ //	TFT.clear_screen(LCD_COLOR_GREEN);
+ //	TFT.filled_rect(250,170,50,50,TFT.convert_color(0,0,255));
+ //	TFT.SetTransparency(0);
+ //
+ //	TFT.SetLayer(LCD_FOREGROUND_LAYER);
+ //	TFT.clear_screen(LCD_COLOR_BLUE);
+ //	TFT.filled_rect(20,20,50,50,TFT.convert_color(255,0,0));
+ //
+ //	bool up=true;
+ //	for(int a=0;;){
+ //		char temp[80];
+ //		sprintf(temp,"%3i%% trans",int(a/2.55));
+ //		TFT.string(temp,20,16);
+ //		TFT.SetTransparency(a);
+ //		_delay_ms(10);
+ //		if(up){
+ //			if(a<255){
+ //				a++;
+ //			} else {
+ //				a--;
+ //				up=false;
+ //			}
+ //		} else {
+ //			if(a>0){
+ //				a--;
+ //			} else {
+ //				a++;
+ //				up=true;
+ //			}
+ //		}
+ //	}
  */
 void ILI9341::SetTransparency(uint8_t transparency)
 {
 	if (CurrentLayer == LCD_BACKGROUND_LAYER)
 	{
-		LTDC_LayerAlpha(LTDC_Layer1, transparency);
+		LTDC_LayerAlpha(LTDC_Layer1, 0xff-transparency);
 	}
 	else
 	{
-		LTDC_LayerAlpha(LTDC_Layer2, transparency);
+		LTDC_LayerAlpha(LTDC_Layer2, 0xff-transparency);
 	}
 	LTDC_ReloadConfig(LTDC_IMReload);
 }
@@ -408,12 +446,17 @@ void ILI9341::SetTransparency(uint8_t transparency)
  * @param  Color: the color of the background.
  * @retval None
  */
-void ILI9341::clear(uint16_t Color)
+void ILI9341::clear_screen(){
+	clear_screen(CurrentTextColor);
+}
+
+void ILI9341::clear_screen(uint16_t Color)
 {
 	uint32_t index = 0;
 
 	/* erase memory */
 	for (index = 0x00; index < BUFFER_OFFSET; index++)
+		//	for (index = 0x00; index < 240*320; index++)
 	{
 		*(__IO uint16_t*)(CurrentFrameBuffer + (2*index)) = Color;
 	}
@@ -425,9 +468,9 @@ void ILI9341::clear(uint16_t Color)
  * @param  Ypos: specifies the Y position.
  * @retval Display Address
  */
-uint32_t ILI9341::SetCursor(uint16_t Xpos, uint16_t Ypos)
+uint32_t ILI9341::SetCursor(uint32_t Xpos, uint32_t Ypos)
 {  
-	return CurrentFrameBuffer + 2*((239-Xpos)*LCD_PIXEL_HEIGHT + Ypos);
+	return CurrentFrameBuffer + (((uint32_t)(320-Xpos)*(uint32_t)(240)	+	Ypos)<<1); // *2
 }
 
 /**
@@ -481,44 +524,6 @@ void ILI9341::LCD_ReSetColorKeying(void)
 	}
 } 
 
-///**
-// * @brief  Draws a character on LCD.
-// * @param  Xpos: the Line where to display the character shape.
-// * @param  Ypos: start column address.
-// * @param  c: pointer to the character data.
-// * @retval None
-// */
-//void ILI9341::LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, const uint16_t *c)
-//{
-//	uint32_t index = 0, counter = 0, xpos =0;
-//	uint32_t  Xaddress = 0;
-//
-//	xpos = Xpos*LCD_PIXEL_WIDTH*2;
-//	Xaddress += Ypos;
-//
-//
-//	for(index = 0; index < LCD_Currentfonts->Height; index++)
-//	{
-//
-//		for(counter = 0; counter < LCD_Currentfonts->Width; counter++)
-//		{
-//
-//			if((((c[index] & ((0x80 << ((LCD_Currentfonts->Width / 12 ) * 8 ) ) >> counter)) == 0x00) &&(LCD_Currentfonts->Width <= 12))||
-//					(((c[index] & (0x1 << counter)) == 0x00)&&(LCD_Currentfonts->Width > 12 )))
-//			{
-//				/* Write data value to all SDRAM memory */
-//				*(__IO uint16_t*) (CurrentFrameBuffer + (2*Xaddress) + xpos) = CurrentBackColor;
-//			}
-//			else
-//			{
-//				/* Write data value to all SDRAM memory */
-//				*(__IO uint16_t*) (CurrentFrameBuffer + (2*Xaddress) + xpos) = CurrentTextColor;
-//			}
-//			Xaddress++;
-//		}
-//		Xaddress += (LCD_PIXEL_WIDTH - LCD_Currentfonts->Width);
-//	}
-//}
 
 void ILI9341::zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
 	unsigned int stelle;
@@ -538,7 +543,7 @@ void ILI9341::zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, u
 						//	PutPixel(spalte*6 + scale*x_i+repeat_x, zeile*7 + scale*y_i+repeat_y);
 						uint16_t px_x=spalte*6 + scale*x_i+repeat_x;
 						uint16_t px_y=zeile*7 + scale*y_i+repeat_y;
-						*(__IO uint16_t*) (CurrentFrameBuffer + (239-px_x)*LCD_PIXEL_HEIGHT*2+2*px_y) = 0xffff;
+						*(__IO uint16_t*)(SetCursor(px_x,px_y))= CurrentTextColor;
 						//*(__IO uint16_t*)(LCD_SetCursor(px_x,px_y))=0xffff;
 
 
@@ -549,7 +554,7 @@ void ILI9341::zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, u
 						//	PutPixel(spalte*6 + scale*x_i+repeat_x, zeile*7 + scale*y_i+repeat_y);
 						uint16_t px_x=spalte*6 + scale*x_i+repeat_x;
 						uint16_t px_y=zeile*7 + scale*y_i+repeat_y;
-						*(__IO uint16_t*) (CurrentFrameBuffer + (239-px_x)*LCD_PIXEL_HEIGHT*2+2*px_y) = 0x0000;
+						*(__IO uint16_t*)(SetCursor(px_x,px_y))= CurrentBackColor;
 					}
 				}
 				mask=mask>>1;
@@ -593,16 +598,16 @@ void ILI9341::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile){
 }
 
 void ILI9341::string(char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text){
-	string(Speedo.default_font,str,spalte,zeile,text*15,text*15,text*15,back*15,0,0,0);
+	string(Speedo.default_font,str,spalte,zeile,text*15,text*15,text*15,back*15,back*15,back*15,0);
 }
 
 void ILI9341::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text, uint8_t offset){
-	string(font,str,spalte,zeile,text*15,text*15,text*15,back*15,0,0,offset);
+	string(font,str,spalte,zeile,text*15,text*15,text*15,back*15,back*15,back*15,offset);
 }
 
 void ILI9341::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8_t text_r, uint8_t text_g, uint8_t text_b, uint8_t back_r, uint8_t back_g, uint8_t back_b, uint8_t offset){
-	LCD_SetBackColor(back_r<<24|back_g<<16|back_b);
-	LCD_SetTextColor(text_r<<24|text_g<<16|text_b);
+	SetBackColor(convert_color(back_r,back_g,back_b));
+	SetTextColor(convert_color(text_r,text_g,text_b));
 
 	switch(font){
 	case SANS_SMALL_4X_FONT:
@@ -702,7 +707,7 @@ void ILI9341::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8
  * @param  Width: display window width, can be a value from 0 to 240.
  * @retval None
  */
-void ILI9341::LCD_SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width)
+void ILI9341::SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width)
 {
 
 	if (CurrentLayer == LCD_BACKGROUND_LAYER)
@@ -734,7 +739,7 @@ void ILI9341::LCD_SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Height
  */
 void ILI9341::LCD_WindowModeDisable(void)
 {
-	LCD_SetDisplayWindow(0, 0, LCD_PIXEL_HEIGHT, LCD_PIXEL_WIDTH);
+	SetDisplayWindow(0, 0, LCD_PIXEL_HEIGHT, LCD_PIXEL_WIDTH);
 }
 
 /**
@@ -746,48 +751,118 @@ void ILI9341::LCD_WindowModeDisable(void)
  *   This parameter can be one of the following values: LCD_DIR_HORIZONTAL or LCD_DIR_VERTICAL.
  * @retval None
  */
-void ILI9341::LCD_DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Direction)
-{
-	DMA2D_InitTypeDef      DMA2D_InitStruct;
+void ILI9341::draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint8_t r, uint8_t g, uint8_t b){
+	SetTextColor(convert_color(r,g,b));
+	draw_line(x1,y1,x2,y2);
+}
 
-	uint32_t  Xaddress = 0;
-	uint16_t Red_Value = 0, Green_Value = 0, Blue_Value = 0;
+void ILI9341::draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2){
+	if(x1==x2 || y1==y2){ // if it is horizontal or vertical we can use DMA Transfere
+		uint16_t Red_Value = 0, Green_Value = 0, Blue_Value = 0;
+		uint32_t  Xaddress = 0;
+		DMA2D_InitTypeDef      DMA2D_InitStruct;
+		if(x1>x2){
+			uint16_t temp=x1;
+			x1=x2;
+			x2=temp;
+		}
+		if(y1>y2){
+			uint16_t temp=y1;
+			y1=y2;
+			y2=temp;
+		}
 
-	Xaddress = CurrentFrameBuffer + 2*(Ypos + LCD_PIXEL_WIDTH*Xpos);
+		if(x1==x2){
+			DMA2D_InitStruct.DMA2D_OutputOffset = 0;
+			DMA2D_InitStruct.DMA2D_NumberOfLine = 1;
+			DMA2D_InitStruct.DMA2D_PixelPerLine = y2-y1;
+			Xaddress = SetCursor(x1,y1);
+		} else {
+			DMA2D_InitStruct.DMA2D_OutputOffset = LCD_PIXEL_WIDTH - 1;
+			DMA2D_InitStruct.DMA2D_NumberOfLine = x2-x1;
+			DMA2D_InitStruct.DMA2D_PixelPerLine = 1;
+			Xaddress = SetCursor(x2,y1);
+		}
+		Red_Value = (0xF800 & CurrentTextColor) >> 11;
+		Blue_Value = 0x001F & CurrentTextColor;
+		Green_Value = (0x07E0 & CurrentTextColor) >> 5;
 
-	Red_Value = (0xF800 & CurrentTextColor) >> 11;
-	Blue_Value = 0x001F & CurrentTextColor;
-	Green_Value = (0x07E0 & CurrentTextColor) >> 5;
+		/* Configure DMA2D */
+		DMA2D_DeInit();
+		DMA2D_InitStruct.DMA2D_Mode = DMA2D_R2M;
+		DMA2D_InitStruct.DMA2D_CMode = DMA2D_RGB565;
+		DMA2D_InitStruct.DMA2D_OutputGreen = Green_Value;
+		DMA2D_InitStruct.DMA2D_OutputBlue = Blue_Value;
+		DMA2D_InitStruct.DMA2D_OutputRed = Red_Value;
+		DMA2D_InitStruct.DMA2D_OutputAlpha = 0x0F;
+		DMA2D_InitStruct.DMA2D_OutputMemoryAdd = Xaddress;
 
-	/* Configure DMA2D */
-	DMA2D_DeInit();
-	DMA2D_InitStruct.DMA2D_Mode = DMA2D_R2M;
-	DMA2D_InitStruct.DMA2D_CMode = DMA2D_RGB565;
-	DMA2D_InitStruct.DMA2D_OutputGreen = Green_Value;
-	DMA2D_InitStruct.DMA2D_OutputBlue = Blue_Value;
-	DMA2D_InitStruct.DMA2D_OutputRed = Red_Value;
-	DMA2D_InitStruct.DMA2D_OutputAlpha = 0x0F;
-	DMA2D_InitStruct.DMA2D_OutputMemoryAdd = Xaddress;
-
-	if(Direction == LCD_DIR_HORIZONTAL)
-	{
-		DMA2D_InitStruct.DMA2D_OutputOffset = 0;
-		DMA2D_InitStruct.DMA2D_NumberOfLine = 1;
-		DMA2D_InitStruct.DMA2D_PixelPerLine = Length;
+		DMA2D_Init(&DMA2D_InitStruct);
+		/* Start Transfer */
+		DMA2D_StartTransfer();
+		/* Wait for CTC Flag activation */
+		while(DMA2D_GetFlagStatus(DMA2D_FLAG_TC) == RESET){};
 	}
-	else
-	{
-		DMA2D_InitStruct.DMA2D_OutputOffset = LCD_PIXEL_WIDTH - 1;
-		DMA2D_InitStruct.DMA2D_NumberOfLine = Length;
-		DMA2D_InitStruct.DMA2D_PixelPerLine = 1;
-	}
 
-	DMA2D_Init(&DMA2D_InitStruct);
-	/* Start Transfer */
-	DMA2D_StartTransfer();
-	/* Wait for CTC Flag activation */
-	while(DMA2D_GetFlagStatus(DMA2D_FLAG_TC) == RESET)
-	{
+	// increasing line
+	else {
+		int16_t deltax = 0, deltay = 0, x = 0, y = 0, xinc1 = 0, xinc2 = 0, yinc1 =	0, yinc2 = 0, den = 0, num = 0, numadd = 0, numpixels = 0, curpixel = 0;
+
+		deltax = abs(x2 - x1); /* The difference between the x's */
+		deltay = abs(y2 - y1); /* The difference between the y's */
+		x = x1; /* Start x off at the first pixel */
+		y = y1; /* Start y off at the first pixel */
+
+		if (x2 >= x1) /* The x-values are increasing */
+		{
+			xinc1 = 1;
+			xinc2 = 1;
+		} else /* The x-values are decreasing */
+		{
+			xinc1 = -1;
+			xinc2 = -1;
+		}
+
+		if (y2 >= y1) /* The y-values are increasing */
+		{
+			yinc1 = 1;
+			yinc2 = 1;
+		} else /* The y-values are decreasing */
+		{
+			yinc1 = -1;
+			yinc2 = -1;
+		}
+
+		if (deltax >= deltay) /* There is at least one x-value for every y-value */
+		{
+			xinc1 = 0; /* Don't change the x when numerator >= denominator */
+			yinc2 = 0; /* Don't change the y for every iteration */
+			den = deltax;
+			num = deltax / 2;
+			numadd = deltay;
+			numpixels = deltax; /* There are more x-values than y-values */
+		} else /* There is at least one y-value for every x-value */
+		{
+			xinc2 = 0; /* Don't change the x for every iteration */
+			yinc1 = 0; /* Don't change the y when numerator >= denominator */
+			den = deltay;
+			num = deltay / 2;
+			numadd = deltax;
+			numpixels = deltay; /* There are more y-values than x-values */
+		}
+
+		for (curpixel = 0; curpixel <= numpixels; curpixel++) {
+			Pixel(x, y); /* Draw the current pixel */
+			num += numadd; /* Increase the numerator by the top of the fraction */
+			if (num >= den) /* Check if numerator >= denominator */
+			{
+				num -= den; /* Calculate the new numerator value */
+				x += xinc1; /* Change the x as appropriate */
+				y += yinc1; /* Change the y as appropriate */
+			}
+			x += xinc2; /* Change the x as appropriate */
+			y += yinc2; /* Change the y as appropriate */
+		}
 	}
 
 }
@@ -803,12 +878,12 @@ void ILI9341::LCD_DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_
 void ILI9341::LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width)
 {
 	/* draw horizontal lines */
-	LCD_DrawLine(Xpos, Ypos, Width, LCD_DIR_HORIZONTAL);
-	LCD_DrawLine(Xpos, (Ypos+ Height), Width, LCD_DIR_HORIZONTAL);
+	draw_line(Xpos, Ypos, Width, LCD_DIR_HORIZONTAL);
+	draw_line(Xpos, (Ypos+ Height), Width, LCD_DIR_HORIZONTAL);
 
 	/* draw vertical lines */
-	LCD_DrawLine(Xpos, Ypos, Height, LCD_DIR_VERTICAL);
-	LCD_DrawLine((Xpos + Width), Ypos, Height, LCD_DIR_VERTICAL);
+	draw_line(Xpos, Ypos, Height, LCD_DIR_VERTICAL);
+	draw_line((Xpos + Width), Ypos, Height, LCD_DIR_VERTICAL);
 }
 
 /**
@@ -858,8 +933,8 @@ void ILI9341::LCD_DrawFullEllipse(int Xpos, int Ypos, int Radius, int Radius2)
 		do
 		{
 			K = (float)(rad1/rad2);
-			LCD_DrawLine((Xpos+x), (Ypos-(uint16_t)(y/K)), (2*(uint16_t)(y/K) + 1), LCD_DIR_VERTICAL);
-			LCD_DrawLine((Xpos-x), (Ypos-(uint16_t)(y/K)), (2*(uint16_t)(y/K) + 1), LCD_DIR_VERTICAL);
+			draw_line((Xpos+x), (Ypos-(uint16_t)(y/K)), (2*(uint16_t)(y/K) + 1), LCD_DIR_VERTICAL);
+			draw_line((Xpos-x), (Ypos-(uint16_t)(y/K)), (2*(uint16_t)(y/K) + 1), LCD_DIR_VERTICAL);
 
 			e2 = err;
 			if (e2 <= y)
@@ -879,8 +954,8 @@ void ILI9341::LCD_DrawFullEllipse(int Xpos, int Ypos, int Radius, int Radius2)
 		do
 		{
 			K = (float)(rad2/rad1);
-			LCD_DrawLine((Xpos-(uint16_t)(x/K)), (Ypos+y), (2*(uint16_t)(x/K) + 1), LCD_DIR_HORIZONTAL);
-			LCD_DrawLine((Xpos-(uint16_t)(x/K)), (Ypos-y), (2*(uint16_t)(x/K) + 1), LCD_DIR_HORIZONTAL);
+			draw_line((Xpos-(uint16_t)(x/K)), (Ypos+y), (2*(uint16_t)(x/K) + 1), LCD_DIR_HORIZONTAL);
+			draw_line((Xpos-(uint16_t)(x/K)), (Ypos-y), (2*(uint16_t)(x/K) + 1), LCD_DIR_HORIZONTAL);
 
 			e2 = err;
 			if (e2 <= x)
@@ -1093,18 +1168,21 @@ void ILI9341::LCD_WriteBMP(uint32_t BmpAddress)
  * @param  Width: rectangle width.
  * @retval None
  */
-void ILI9341::LCD_DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height)
-{
+void ILI9341::filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t r,uint8_t g,uint8_t b){
+	filled_rect(x,y,width,height,convert_color(r,g,b));
+}
+
+void ILI9341::filled_rect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t color){
 	DMA2D_InitTypeDef      DMA2D_InitStruct;
 
 	uint32_t  Xaddress = 0;
 	uint16_t Red_Value = 0, Green_Value = 0, Blue_Value = 0;
 
-	Red_Value = (0xF800 & CurrentTextColor) >> 11;
-	Blue_Value = 0x001F & CurrentTextColor;
-	Green_Value = (0x07E0 & CurrentTextColor) >> 5;
+	Red_Value = (0xF800 & color) >> 11;
+	Blue_Value = 0x001F & color;
+	Green_Value = (0x07E0 & color) >> 5;
 
-	Xaddress = CurrentFrameBuffer + 2*(LCD_PIXEL_WIDTH*Ypos + Xpos);
+	Xaddress = SetCursor(Xpos+Width,Ypos);
 
 	/* configure DMA2D */
 	DMA2D_DeInit();
@@ -1115,9 +1193,9 @@ void ILI9341::LCD_DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uin
 	DMA2D_InitStruct.DMA2D_OutputRed = Red_Value;
 	DMA2D_InitStruct.DMA2D_OutputAlpha = 0x0F;
 	DMA2D_InitStruct.DMA2D_OutputMemoryAdd = Xaddress;
-	DMA2D_InitStruct.DMA2D_OutputOffset = (LCD_PIXEL_WIDTH - Width);
-	DMA2D_InitStruct.DMA2D_NumberOfLine = Height;
-	DMA2D_InitStruct.DMA2D_PixelPerLine = Width;
+	DMA2D_InitStruct.DMA2D_OutputOffset = (LCD_PIXEL_WIDTH - Height);
+	DMA2D_InitStruct.DMA2D_NumberOfLine = Width;
+	DMA2D_InitStruct.DMA2D_PixelPerLine = Height;
 	DMA2D_Init(&DMA2D_InitStruct);
 
 	/* Start Transfer */
@@ -1128,7 +1206,7 @@ void ILI9341::LCD_DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uin
 	{
 	}
 
-	LCD_SetTextColor(CurrentTextColor);
+	SetTextColor(CurrentTextColor);
 }
 
 /**
@@ -1153,14 +1231,14 @@ void ILI9341::LCD_DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius)
 	{
 		if(CurY > 0)
 		{
-			LCD_DrawLine(Xpos - CurX, Ypos - CurY, 2*CurY, LCD_DIR_VERTICAL);
-			LCD_DrawLine(Xpos + CurX, Ypos - CurY, 2*CurY, LCD_DIR_VERTICAL);
+			draw_line(Xpos - CurX, Ypos - CurY, 2*CurY, LCD_DIR_VERTICAL);
+			draw_line(Xpos + CurX, Ypos - CurY, 2*CurY, LCD_DIR_VERTICAL);
 		}
 
 		if(CurX > 0)
 		{
-			LCD_DrawLine(Xpos - CurY, Ypos - CurX, 2*CurX, LCD_DIR_VERTICAL);
-			LCD_DrawLine(Xpos + CurY, Ypos - CurX, 2*CurX, LCD_DIR_VERTICAL);
+			draw_line(Xpos - CurY, Ypos - CurX, 2*CurX, LCD_DIR_VERTICAL);
+			draw_line(Xpos + CurY, Ypos - CurX, 2*CurX, LCD_DIR_VERTICAL);
 		}
 		if (D < 0)
 		{
@@ -1177,80 +1255,7 @@ void ILI9341::LCD_DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius)
 	LCD_DrawCircle(Xpos, Ypos, Radius);
 }
 
-/**
- * @brief  Displays an uni-line (between two points).
- * @param  x1: specifies the point 1 x position.
- * @param  y1: specifies the point 1 y position.
- * @param  x2: specifies the point 2 x position.
- * @param  y2: specifies the point 2 y position.
- * @retval None
- */
-void ILI9341::LCD_DrawUniLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
-{
-	int16_t deltax = 0, deltay = 0, x = 0, y = 0, xinc1 = 0, xinc2 = 0,
-			yinc1 = 0, yinc2 = 0, den = 0, num = 0, numadd = 0, numpixels = 0,
-			curpixel = 0;
 
-	deltax = ABS(x2 - x1);        /* The difference between the x's */
-	deltay = ABS(y2 - y1);        /* The difference between the y's */
-	x = x1;                       /* Start x off at the first pixel */
-	y = y1;                       /* Start y off at the first pixel */
-
-	if (x2 >= x1)                 /* The x-values are increasing */
-	{
-		xinc1 = 1;
-		xinc2 = 1;
-	}
-	else                          /* The x-values are decreasing */
-	{
-		xinc1 = -1;
-		xinc2 = -1;
-	}
-
-	if (y2 >= y1)                 /* The y-values are increasing */
-	{
-		yinc1 = 1;
-		yinc2 = 1;
-	}
-	else                          /* The y-values are decreasing */
-	{
-		yinc1 = -1;
-		yinc2 = -1;
-	}
-
-	if (deltax >= deltay)         /* There is at least one x-value for every y-value */
-	{
-		xinc1 = 0;                  /* Don't change the x when numerator >= denominator */
-		yinc2 = 0;                  /* Don't change the y for every iteration */
-		den = deltax;
-		num = deltax / 2;
-		numadd = deltay;
-		numpixels = deltax;         /* There are more x-values than y-values */
-	}
-	else                          /* There is at least one y-value for every x-value */
-	{
-		xinc2 = 0;                  /* Don't change the x for every iteration */
-		yinc1 = 0;                  /* Don't change the y when numerator >= denominator */
-		den = deltay;
-		num = deltay / 2;
-		numadd = deltax;
-		numpixels = deltay;         /* There are more y-values than x-values */
-	}
-
-	for (curpixel = 0; curpixel <= numpixels; curpixel++)
-	{
-		PutPixel(x, y);             /* Draw the current pixel */
-		num += numadd;              /* Increase the numerator by the top of the fraction */
-		if (num >= den)             /* Check if numerator >= denominator */
-		{
-			num -= den;               /* Calculate the new numerator value */
-			x += xinc1;               /* Change the x as appropriate */
-			y += yinc1;               /* Change the y as appropriate */
-		}
-		x += xinc2;                 /* Change the x as appropriate */
-		y += yinc2;                 /* Change the y as appropriate */
-	}
-}
 
 /**
  * @brief  Displays an triangle.
@@ -1272,9 +1277,9 @@ void ILI9341::LCD_Triangle(pPoint Points, uint16_t PointCount)
 		X = Points->X;
 		Y = Points->Y;
 		Points++;
-		LCD_DrawUniLine(X, Y, Points->X, Points->Y);
+		draw_line(X, Y, Points->X, Points->Y);
 	}
-	LCD_DrawUniLine(First->X, First->Y, Points->X, Points->Y);
+	draw_line(First->X, First->Y, Points->X, Points->Y);
 }
 
 /**
@@ -1338,7 +1343,7 @@ void ILI9341::LCD_FillTriangle(uint16_t x1, uint16_t x2, uint16_t x3, uint16_t y
 
 	for (curpixel = 0; curpixel <= numpixels; curpixel++)
 	{
-		LCD_DrawUniLine(x, y, x3, y3);
+		draw_line(x, y, x3, y3);
 
 		num += numadd;              /* Increase the numerator by the top of the fraction */
 		if (num >= den)             /* Check if numerator >= denominator */
@@ -1373,7 +1378,7 @@ void ILI9341::LCD_PolyLine(pPoint Points, uint16_t PointCount)
 		X = Points->X;
 		Y = Points->Y;
 		Points++;
-		LCD_DrawUniLine(X, Y, Points->X, Points->Y);
+		draw_line(X, Y, Points->X, Points->Y);
 	}
 }
 
@@ -1399,13 +1404,13 @@ void ILI9341::LCD_PolyLineRelativeClosed(pPoint Points, uint16_t PointCount, uin
 	while(--PointCount)
 	{
 		Points++;
-		LCD_DrawUniLine(X, Y, X + Points->X, Y + Points->Y);
+		draw_line(X, Y, X + Points->X, Y + Points->Y);
 		X = X + Points->X;
 		Y = Y + Points->Y;
 	}
 	if(Closed)
 	{
-		LCD_DrawUniLine(First->X, First->Y, X, Y);
+		draw_line(First->X, First->Y, X, Y);
 	}
 }
 
@@ -1418,7 +1423,7 @@ void ILI9341::LCD_PolyLineRelativeClosed(pPoint Points, uint16_t PointCount, uin
 void ILI9341::LCD_ClosedPolyLine(pPoint Points, uint16_t PointCount)
 {
 	LCD_PolyLine(Points, PointCount);
-	LCD_DrawUniLine(Points->X, Points->Y, (Points+PointCount-1)->X, (Points+PointCount-1)->Y);
+	draw_line(Points->X, Points->Y, (Points+PointCount-1)->X, (Points+PointCount-1)->Y);
 }
 
 /**
@@ -1927,9 +1932,8 @@ void ILI9341::LCD_AF_GPIOConfig(void)
  * @param  y: pixel y.
  * @retval None
  */
-void ILI9341::PutPixel(int16_t x, int16_t y)
-{ 
-	if(x < 0 || x > 319 || y < 0 || y > 234)
+void ILI9341::Pixel(int16_t x, int16_t y){
+	if(x < 0 || x > 319 || y < 0 || y > 239)
 	{
 		return;
 	}
@@ -1937,4 +1941,461 @@ void ILI9341::PutPixel(int16_t x, int16_t y)
 	*(__IO uint16_t*)(SetCursor(x,y))=CurrentTextColor;
 }
 
+void ILI9341::Pixel(int16_t x, int16_t y,uint8_t r,uint8_t g,uint8_t b){
+	if(x < 0 || x > 319 || y < 0 || y > 239) {	return;		}
+	*(__IO uint16_t*)(SetCursor(x,y))=convert_color(r,g,b);
+}
 
+
+uint16_t ILI9341::convert_color(uint8_t r,uint8_t g,uint8_t b){
+	return (((r>>3)&0b00011111) << 11) | (((g>>2)&0b00111111) << 5) | ((b>>3)&0b00011111);
+}
+
+void ILI9341::highlight_bar(uint16_t x,uint16_t y,uint16_t width,uint16_t height){
+	for(int i=0;i<16;i++){
+		SetTextColor(convert_color(15*i,0,0));
+		draw_line(x+i,y,x+i,y+height);
+		draw_line(x+width-i,y,x+width-i,y+height);
+	}
+
+	filled_rect(x+15,y,width-31,height,convert_color(255,0,0));
+}
+
+
+void ILI9341::show_storry(const char* storry,const char* title){
+	show_storry(storry,title,0x00);
+}
+
+void ILI9341::show_storry(const char* storry,const char* title, uint8_t type){
+	char storry_char[strlen(storry)+1];
+	char title_char[strlen(title)+1];
+
+	strcpy(storry_char,storry);
+	strcpy(title_char,title);
+
+	show_storry(storry_char,strlen(storry),title_char,strlen(title),type);
+}
+
+void ILI9341::show_storry(const char* storry,unsigned int storry_length,char title[],unsigned int title_length){
+	show_storry(storry,storry_length,title, title_length, 0x00);
+}
+
+void ILI9341::show_storry(const char* storry,unsigned int storry_length,char title[],unsigned int title_length, uint8_t type){
+#define CHARS_IN_LINE 27
+#define LINES_ON_SCREEN 12
+
+	// show title
+	clear_screen();
+	highlight_bar(0,4,320,24); // mit hintergrundfarbe nen kasten malen
+	char title_centered[27];
+	strcpy(title_centered,title);
+	Menu.center_me(title_centered,25);
+	string(Speedo.default_font,title_centered,2,1,DISP_BRIGHTNESS,0,0);
+
+	// Generate borders
+	unsigned int fill_line=0; // actual line
+	unsigned int char_in_line=0; // count char in this line
+	int von[LINES_ON_SCREEN];
+	int bis[LINES_ON_SCREEN];
+	for(int i=0; i<LINES_ON_SCREEN; i++){ // fuer alle anfaenge und enden die pointer setzen
+		von[i]=0;
+		bis[i]=0;
+	}; // nutzen um zu bestimmten wo wir den "\0" setzen
+
+	for(unsigned int i=0; i<storry_length;i++){
+		if(storry[i]==' ' && char_in_line==0){ // avoid blanks in the start of a line
+			char_in_line--; // will be incread at the end -> 0
+			von[fill_line]++; // shift the start of our line one step further
+		} else if(storry[i]==0x0D || char_in_line>CHARS_IN_LINE-10){ // wenn wir ein umbruch haben oder mindestesn mal 20 zeichen aufgenommen haben
+			// entweder ist es ein umbruch, oder wir warten auf ein freizeichen, oder die line ist voll
+			if( (storry[i]==0x0D || storry[i]==' ' || char_in_line==CHARS_IN_LINE) && (fill_line+1<LINES_ON_SCREEN) ){
+				bis[fill_line]=i; // damit haben wir das ende dieser Zeile gefunden
+				fill_line++;
+				von[fill_line]=i;// und den anfang der nächsten, wobei das noch nicht save ist
+				if(storry[i]==' '){ // wir haben hier ein freizeichen, hätten wir sinnvoll weitergucken können?
+					von[fill_line]++; // das freizeichen brauchen wie eh nicht mehr
+					//haben ein volles wort, mal sehen ob ncoh was geht
+					//aktuell sind char_in_line chars im puffer
+					int onemoreword=0; // wieviele chars gehts denn weiter, falls sinnvoll
+					// laufe durch die verbleibenden (char_in_line-CHARS_IN_LINE=10) zeichen, und guck wo das letzte freizeichen ist
+					for(unsigned int k=char_in_line; k<CHARS_IN_LINE; k++){
+						if(storry[i+k-char_in_line]==' ') onemoreword=k-char_in_line; // wenn nach 4 zeichen ein freichen kam, steht hier 4
+					}
+					if(onemoreword>0){
+						// es scheint sinnig noch onemoreword buchstaben zu nutzen
+						i+=onemoreword;
+						von[fill_line]+=onemoreword;
+						bis[fill_line-1]+=onemoreword;
+					}
+				} else if(storry[i]==0x0D){ // wenn wir ein umbruch haben ueberspringen wir das zeichen
+					von[fill_line]++;
+				}
+				char_in_line=-1; // wird gleich inc -> dann sind wir fertig und der counter bei 0
+			}
+		}
+		char_in_line++;
+	};
+	// end of loop  //
+
+	if(bis[fill_line]==0){ // letztes array ding
+		bis[fill_line]=storry_length;
+	};
+	// we got the borders
+
+	// draw to display
+	// reserve buffer
+	char *buffer2;
+	buffer2 = (char*) malloc (CHARS_IN_LINE);
+	if (buffer2==NULL) Serial.puts_ln(USART1,("Malloc failed"));
+	else memset(buffer2,'\0',sizeof(buffer2)/sizeof(buffer2[0]));
+	for(unsigned int i=0; i<LINES_ON_SCREEN; i++){ // nur X zeilen
+		if(von[i]!=bis[i]){
+			int k=0;
+			for(int j=von[i]; j<bis[i] && k<CHARS_IN_LINE; j++){
+				if(!(i==0 && storry[j]=='#')){ // in der ersten zeile, das erste "#" an stelle 0 überlesen
+					buffer2[k]=storry[j];
+					k++;
+				};
+			};
+			buffer2[k]='\0';
+			string(Speedo.default_font,buffer2,0,i*2+5,0,DISP_BRIGHTNESS,0);
+		};
+	}
+	//delete buffer
+	free(buffer2);
+
+	//
+	unsigned int current_state=Menu.state;
+	unsigned long current_timestamp=Millis.get();
+
+	// set buttons if needed
+	if(type>=DIALOG_NO_YES){
+		Menu.set_buttons(true,false,false,true);
+	}
+
+	if(type==DIALOG_NO_YES){
+		highlight_bar(0,215,320,24); // mit hintergrundfarbe nen kasten malen
+		string(Speedo.default_font,("\x7E back            next \x7F"),2,31,DISP_BRIGHTNESS,0,0);
+	}
+	else if(type==DIALOG_GO_RIGHT_200MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<200){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_200MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<200){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_500MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<500){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_500MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<500){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_1000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<1000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_1000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<1000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_2000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<2000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_2000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<2000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_left(true);
+		}
+	} else if(type==DIALOG_GO_RIGHT_5000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<5000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_right(true);
+		}
+	} else if(type==DIALOG_GO_LEFT_5000MS){
+		while(current_state==Menu.state && (Millis.get()-current_timestamp)<5000){
+			_delay_ms(1);
+		}
+		if(current_state==Menu.state){
+			Menu.go_left(true);
+		}
+	} else if(type==DIALOG_SHOW_500MS){
+		_delay_ms(500);
+	}
+}
+
+void ILI9341::string_centered(const char* text, uint8_t line){
+	string_centered(text,line,false);
+}
+
+void ILI9341::string_centered(const char* text, uint8_t line, bool inverted){
+	if(strlen(text)>20){
+		return;
+	};
+
+	uint16_t front_color=255;
+	uint16_t back_color=0;
+	uint16_t start_pos=0;
+	uint16_t length_of_char=27;
+
+	if(inverted){
+		front_color=255;
+		back_color=255;
+		if(strlen(text)<=23){ // 6*2pixel == 2 chars. (320/12=)27 Chars - 2*2 = 23chars max
+			length_of_char=23;
+			start_pos=2;
+			highlight_bar(0,line*7,320,16);
+		} else {
+			filled_rect(0,line*7,320,12,0x0f);
+		}
+	}
+	char text_char[length_of_char]; // full display width +1
+	strcpy(text_char,text);
+	Menu.center_me(text_char,length_of_char); // full display width
+	string(Speedo.default_font,text_char,start_pos,line,front_color,front_color,front_color,back_color,0,0,0);
+}
+
+
+void ILI9341::draw_gps(uint16_t x,uint16_t y, unsigned char sats){
+	TFT.draw_bmp(x,y,(uint8_t*)"/sat.bmp");
+};
+
+void ILI9341::draw_oil(uint16_t x,uint16_t y){
+	TFT.draw_bmp(x,y,(uint8_t*)"/temp.bmp");
+};
+
+void ILI9341::draw_water(uint16_t x,uint16_t y){
+	TFT.draw_bmp(x,y,(uint8_t*)"/temp.bmp");
+};
+
+void ILI9341::draw_air(uint16_t x,uint16_t y){
+	TFT.draw_bmp(x,y,(uint8_t*)"/temp.bmp");
+};
+
+void ILI9341::draw_fuel(uint16_t x,uint16_t y){
+	Serial.puts(USART1,"Fuel at x/y:");
+	Serial.puts(USART1,x);
+	Serial.puts(USART1,"/");
+	Serial.puts_ln(USART1,y);
+	TFT.draw_bmp(x,y,(uint8_t*)"/fuel.bmp");
+};
+
+void ILI9341::draw_clock(uint16_t x,uint16_t y){
+	TFT.draw_bmp(x,y,(uint8_t*)"/time.bmp");
+};
+
+void ILI9341::draw_blitzer(uint16_t x,uint16_t y){
+	TFT.draw_bmp(x,y,(uint8_t*)"/sat.bmp");
+}
+
+uint8_t ILI9341::draw_bmp(uint16_t x, uint16_t y, uint8_t* filename){
+//#define DRAW_BMP_DEBUG_LEVEL 3
+//#define READ_PIXEL 170
+//	FIL file;
+//	int16_t x_intern=x;
+//	int16_t y_intern=y;
+////	if(SD.get_file_handle((unsigned char*)filename,&file,FA_READ|FA_OPEN_EXISTING)>=0){
+//	if(UB_Fatfs_OpenFile(&file, (char*)filename, F_RD)==FATFS_OK) {
+//#if DRAW_BMP_DEBUG_LEVEL>1
+//		uint32_t start=Millis.get();
+//		uint32_t read_time=0;
+//#endif
+//
+//		//// read header ////
+//		char buf_header[16];
+//		UINT n_byte_read=1;
+//		uint32_t byte_read_total=0;
+//		f_read(&file, buf_header, 15, &n_byte_read);
+//		if(n_byte_read<15){
+//			return -2; // file to short, not even header inside
+//		}
+//		int16_t header_size=buf_header[10];
+//		f_lseek(&file,18);
+//		f_read(&file, buf_header, 8, &n_byte_read); // rest vom header "weglesen"
+//		int32_t bmp_width= buf_header[0] | buf_header[1]<<8 | buf_header[2]<<16 | buf_header[3]<<24;
+//		int32_t bmp_height=buf_header[4] | buf_header[5]<<8 | buf_header[6]<<16 | buf_header[7]<<24;
+//		int64_t bmp_pixel_count=bmp_height*bmp_width;
+//		y_intern+=bmp_height; // to map from top left corner 0,0 to bottom line 0, (bmp_height-1)
+//
+//#if DRAW_BMP_DEBUG_LEVEL>2
+//		Serial.puts(USART1,"Header size:");
+//		Serial.puts_ln(USART1,(int)header_size);
+//		Serial.puts(USART1,"BMP width:");
+//		Serial.puts_ln(USART1,(int)bmp_width);
+//		Serial.puts(USART1,"BMP height:");
+//		Serial.puts_ln(USART1,(int)bmp_height);
+//#endif
+//
+//		//// jump to payload ////
+//		f_lseek(&file,header_size);
+//		char* buffer;
+//		buffer =(char*) malloc (READ_PIXEL*3);
+//
+////		TFT.(x, y);
+////		TFT.WriteRAM_Prepare(); /* Prepare to write GRAM */
+//
+//		//// read pixels ////
+//		while (n_byte_read > 0 && byte_read_total<=3*bmp_pixel_count) { // n=1/0=wieviele byte gelesen wurden
+//#if DRAW_BMP_DEBUG_LEVEL>1
+//			int32_t start_read = Millis.get();
+//#endif
+//			f_read(&file, buffer, 3*READ_PIXEL, &n_byte_read); // 170*3=510 byte
+//#if DRAW_BMP_DEBUG_LEVEL>1
+//			read_time+=Millis.get()-start_read;
+//			byte_read_total+=n_byte_read;
+//#endif
+//			for(uint16_t i=0;i<n_byte_read/3;i++){
+////				TFT.WriteRAM(buffer[2+3*i],buffer[1+3*i],buffer[0+3*i]);
+//				TFT.Pixel(x_intern,y_intern,buffer[2+3*i],buffer[1+3*i],buffer[0+3*i]);
+//				x_intern++;
+//				if(x_intern>=bmp_width+x){ // line completed
+//					while((x_intern-x)%4!=0){ // bmp are padding lines with zeros unti the number is a multiple of 4
+//						i++;
+//						x_intern++;
+//					}
+//					x_intern=x;
+//					y_intern--;
+////					TFT.SetRotatedCursor(x_intern, y_intern);
+////					TFT.WriteRAM_Prepare(); /* Prepare to write GRAM */
+//				}
+//			}
+//		}
+//#if DRAW_BMP_DEBUG_LEVEL>1
+//		//// time debug ////
+//		uint32_t time=Millis.get()-start;
+//		Serial.puts(USART1,"Time:");
+//		Serial.puts_ln(USART1,time);
+//		Serial.puts(USART1,"Time for reading:");
+//		Serial.puts_ln(USART1,read_time);
+//#endif
+//		free(buffer);
+//		return 0;
+//	}
+	return -1; // fopen failed
+}
+
+int ILI9341::animation(int a){
+	return 0;
+};
+
+
+void ILI9341::draw_arrow(int angle, int x_pos, int y_pos, uint8_t r, uint8_t g, uint8_t b){
+	draw_arrow(angle,x_pos,y_pos,r,g,b,true);
+}
+
+void ILI9341::draw_arrow(int angle, int x_pos, int y_pos, uint8_t r, uint8_t g, uint8_t b,bool clean){
+	angle=(angle+360)%360;
+	// raw symbol without rotation
+	uint32_t symbol[32];
+	symbol[ 0]=0b00000000000000000000000000000000;
+	symbol[ 1]=0b00000000000000011000000000000000;
+	symbol[ 2]=0b00000000000000111100000000000000;
+	symbol[ 3]=0b00000000000001111110000000000000;
+	symbol[ 4]=0b00000000000011111111000000000000;
+	symbol[ 5]=0b00000000000111111111100000000000;
+	symbol[ 6]=0b00000000001111111111110000000000;
+	symbol[ 7]=0b00000000011111111111111000000000;
+	symbol[ 8]=0b00000000111111111111111100000000;
+	symbol[ 9]=0b00000001111111111111111110000000;
+	symbol[10]=0b00000011111111111111111111000000;
+	symbol[11]=0b00000111111111111111111111100000;
+	symbol[12]=0b00001111111111111111111111110000;
+	symbol[13]=0b00011111111111111111111111111000;
+	symbol[14]=0b00111111111111111111111111111100;
+	symbol[15]=0b01111111111111111111111111111110;
+	symbol[16]=0b01111111111111111111111111111110;
+	symbol[17]=0b01111111111111111111111111111110;
+	symbol[18]=0b01111111111111111111111111111110;
+	symbol[19]=0b00000000111111111111111100000000;
+	symbol[20]=0b00000000111111111111111100000000;
+	symbol[21]=0b00000000111111111111111100000000;
+	symbol[22]=0b00000000111111111111111100000000;
+	symbol[23]=0b00000000111111111111111100000000;
+	symbol[24]=0b00000000111111111111111100000000;
+	symbol[25]=0b00000000111111111111111100000000;
+	symbol[26]=0b00000000111111111111111100000000;
+	symbol[27]=0b00000000000000000000000000000000;
+	symbol[28]=0b00000000000000000000000000000000;
+	symbol[29]=0b00000000000000000000000000000000;
+	symbol[30]=0b00000000000000000000000000000000;
+	symbol[31]=0b00000000000000000000000000000000;
+	symbol[32]=0b00000000000000000000000000000000;
+
+	// clean matrix for incoming symbol
+	uint32_t rot_symbol[32];
+	for(int x=0;x<32;x++){
+		rot_symbol[x]=0x00;
+	}
+
+	// rotate
+	for(int8_t x=-15;x<16;x++){
+		for(int8_t y=-15;y<16;y++){
+			if(symbol[(y+16)]&(1<<(x+16))){
+				int8_t x_n=(cos(PI*angle/180)*x-sin(PI*angle/180)*y)+16;
+				int8_t y_n=(sin(PI*angle/180)*x+cos(PI*angle/180)*y)+16;
+				if(x_n>=0 && x_n<32 && y_n>=0 && y_n<32){
+					rot_symbol[y_n]|=1<<x_n;
+				}
+			}
+		}
+	}
+
+	// clean space it if required
+	if(clean){
+		filled_rect(x_pos,y_pos,32,32,0,0,0);
+	}
+
+	// now draw it
+	for(int8_t x=0;x<32;x++){
+		for(int8_t y=0;y<32;y++){
+			if(rot_symbol[y]&(1<<x)){
+				Pixel(x+x_pos,y+y_pos,r,g,b);
+			}
+		}
+	}
+
+
+}
+
+// check if x/y are in display range
+void ILI9341::check_coordinates(int16_t* x,int16_t* y){
+	if(*x<0){
+		*x=0;
+	} else if(*x>=320){
+		*x=319;
+	}
+
+	if(*y<0){
+		*y=0;
+	} else if(*y>=240){
+		*y=239;
+	}
+}

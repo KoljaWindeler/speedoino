@@ -415,5 +415,5 @@ public:
 
 
 };
-extern ILI9325 TFT;
+//extern ILI9325 TFT;
 #endif

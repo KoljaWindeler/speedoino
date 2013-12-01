@@ -38,6 +38,10 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/src/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/SD/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage/fatfs}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage/usb_msc_host_lolevel}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage/fatfs/lo_level_ub}&quot;"/>
 								</option>
 								<option id="org.eclipse.cdt.cross.arm.gnu.assembler.option.preprocessor.def.1255606109" name="Defined symbols (-D)" superClass="org.eclipse.cdt.cross.arm.gnu.assembler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__FPU_PRESENT"/>
@@ -59,6 +63,10 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/src/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/SD/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage/fatfs}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage/usb_msc_host_lolevel}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage/fatfs/lo_level_ub}&quot;"/>
 								</option>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.compiler.option.preprocessor.def.40628459" name="Defined symbols (-D)" superClass="org.eclipse.cdt.cross.arm.gnu.c.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__FPU_PRESENT"/>
@@ -80,6 +88,10 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/src/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/SD/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage/fatfs}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage/usb_msc_host_lolevel}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STm32F429_Firmware/Libraries/USB_storage/fatfs/lo_level_ub}&quot;"/>
 								</option>
 								<option id="org.eclipse.cdt.cross.arm.gnu.cpp.compiler.option.preprocessor.def.29222326" name="Defined symbols (-D)" superClass="org.eclipse.cdt.cross.arm.gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__FPU_PRESENT"/>
@@ -119,7 +131,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Libraries/SD/src/spi.c|Libraries/SD/doc|Libraries/SD/src/option|Libraries/SD/Trash|Libraries/SD/Trash/stm32_ub_fatfs.c|Libraries/SD/Trash/SdStream.cpp|Libraries/SD/Trash/ostream.cpp|Libraries/SD/Trash/istream.cpp|Libraries/SD/ostream.cpp|Libraries/SD/istream.cpp|Libraries/SD/SdStream.cpp|Libraries/SD/stm32_ub_fatfs.c|Libraries/SD/SDIO.c|Libraries/SD/fatfs|Libraries/Display/ssd1325.cpp|zzz_trash|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Libraries/SD|Libraries/Display/ILI9325.cpp|Libraries/SD/src/spi.c|Libraries/SD/doc|Libraries/SD/src/option|Libraries/SD/Trash|Libraries/SD/Trash/stm32_ub_fatfs.c|Libraries/SD/Trash/SdStream.cpp|Libraries/SD/Trash/ostream.cpp|Libraries/SD/Trash/istream.cpp|Libraries/SD/ostream.cpp|Libraries/SD/istream.cpp|Libraries/SD/SdStream.cpp|Libraries/SD/stm32_ub_fatfs.c|Libraries/SD/SDIO.c|Libraries/SD/fatfs|Libraries/Display/ssd1325.cpp|zzz_trash|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry excluding="tetris.cpp|fonts.c|stm32f4_discovery_lis302dl.c|stm32f4_discovery_debug.c|system_stm32f4xx.c|sensors.cpp|clock_me.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>

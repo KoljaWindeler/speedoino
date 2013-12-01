@@ -104,11 +104,11 @@ void SysTick_Handler(void)
   * @param  None
   * @retval None
   */
-void SD_SDIO_DMA_IRQHANDLER(void)
-{
-  /* Process DMA2 Stream3 or DMA2 Stream6 Interrupt Sources */
-  SD_ProcessDMAIRQ();
-}
+//void SD_SDIO_DMA_IRQHANDLER(void)
+//{
+//  /* Process DMA2 Stream3 or DMA2 Stream6 Interrupt Sources */
+//  SD_ProcessDMAIRQ();
+//}
 /******************************************************************************/
 /*                 STM32F4xx Peripherals Interrupt Handlers                   */
 /******************************************************************************/

@@ -14,8 +14,8 @@ typedef struct
 } Point, * pPoint;   
 
 /* LCD Size (Width and Height) */
-#define  LCD_PIXEL_HEIGHT    ((uint16_t)240)
-#define  LCD_PIXEL_WIDTH     ((uint16_t)320)
+#define  LCD_PIXEL_HEIGHT    ((uint16_t)320)
+#define  LCD_PIXEL_WIDTH     ((uint16_t)240)
 
 #define LCD_FRAME_BUFFER       ((uint32_t)0xD0000000)
 #define BUFFER_OFFSET          ((uint32_t)0x50000)
@@ -185,59 +185,98 @@ typedef struct
  */
 class ILI9341 {
 public:
-	void    Init(void);
-	void    clear(uint16_t Color);
-	void    LayerInit(void);
-	void    LCD_SetLayer(uint32_t Layerx);
-	void    SetTransparency(uint8_t transparency);
-	void    DisplayOn(void);
-	void    DisplayOff(void);
+	// control functions
+	void     init(void);
+	void     clear_screen();
+	void     clear_screen(uint16_t Color);
+	void     LayerInit(void);
+	void     SetLayer(uint32_t Layerx);
+	void     SetTransparency(uint8_t transparency);
+	void     DisplayOn(void);
+	void     DisplayOff(void);
+	void     SetTextColor(uint16_t Color);
+	void     SetBackColor(uint16_t Color);
+	void     SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width);
 
-	void	LCD_DisplayStringLine(uint16_t Line, uint8_t *ptr);
-	void	zeichen_small_1x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
-	void 	zeichen_small_2x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
-	void 	zeichen_small_3x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
-	void 	zeichen_small_4x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
-	void 	zeichen_small_5x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
-	void 	zeichen_small_6x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
-	void 	zeichen_small_7x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
-	void 	zeichen_small_8x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	// text functions
+	void 	 string(char *str,uint8_t spalte, uint8_t zeile);
+	void 	 string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile);
+	void 	 string(char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text);
+	void 	 string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text, uint8_t offset);
+	void 	 string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8_t text_r, uint8_t text_g, uint8_t text_b, uint8_t back_r, uint8_t back_g, uint8_t back_b, uint8_t offset);
 
-	void 	string(char *str,uint8_t spalte, uint8_t zeile);
-	void 	string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile);
-	void 	string(char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text);
-	void 	string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text, uint8_t offset);
-	void 	string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8_t text_r, uint8_t text_g, uint8_t text_b, uint8_t back_r, uint8_t back_g, uint8_t back_b, uint8_t offset);
+	void 	 show_storry(const char* storry,const char* title);
+	void 	 show_storry(const char* storry,unsigned int storry_length,char title[],unsigned int title_length, uint8_t type);
+	void 	 show_storry(const char* storry,unsigned int storry_length,char title[],unsigned int title_length);
+	void 	 show_storry(const char* storry,const char* title, uint8_t type);
+	void 	 string_centered(const char* text, uint8_t line);
+	void 	 string_centered(const char* text, uint8_t line, bool inverted);
 
-	void 	 PutPixel(int16_t x, int16_t y);
+	// icon functions
+	void 	 draw_oil(uint16_t x,uint16_t y);
+	void 	 draw_water(uint16_t x,uint16_t y);
+	void 	 draw_air(uint16_t x,uint16_t y);
+	void 	 draw_fuel(uint16_t x,uint16_t y);
+	void 	 draw_clock(uint16_t x,uint16_t y);
+	void 	 draw_gps(uint16_t x,uint16_t y, unsigned char sats);
+	void 	 draw_blitzer(uint16_t x,uint16_t y);
+	void 	 draw_arrow(int arrow, int spalte, int zeile, uint8_t r, uint8_t g, uint8_t b);
+	void 	 draw_arrow(int angle, int x_pos, int y_pos, uint8_t r, uint8_t g, uint8_t b,bool clean);
+	uint8_t  draw_bmp(uint16_t x, uint16_t y, uint8_t* filename);
+	int 	 animation(int a);
+
+	// basic drawing functions
+	void 	 Pixel(int16_t x, int16_t y);
+	void	 Pixel(int16_t x, int16_t y,uint8_t r,uint8_t g,uint8_t b);
+	uint16_t convert_color(uint8_t r,uint8_t g,uint8_t b);
+	void 	 draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
+	void 	 draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint8_t r, uint8_t g, uint8_t b);
+
+	// extended drawing functions
+	void     filled_rect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t color);
+	void 	 filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t r,uint8_t g,uint8_t b);
+	void 	 highlight_bar(uint16_t x,uint16_t y,uint16_t width,uint16_t height);
+
+
+
+	unsigned char startup[35]; // asdfghjk.asd,1234,1234,1234\0 == 28
 
 private:
-	void zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void	 zeichen_small_1x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void 	 zeichen_small_2x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void 	 zeichen_small_3x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void 	 zeichen_small_4x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void 	 zeichen_small_5x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void 	 zeichen_small_6x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void 	 zeichen_small_7x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void 	 zeichen_small_8x(const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+	void 	 zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
+
+	void 	 check_coordinates(int16_t* x,int16_t* y);
+	uint32_t SetCursor(uint32_t Xpos, uint32_t Ypos);
+
 	void     LCD_DeInit(void);
 	void     LCD_ChipSelect(FunctionalState NewState);
-	void     LCD_SetColors(uint16_t _TextColor, uint16_t _BackColor);
-	void     LCD_GetColors(uint16_t *_TextColor, uint16_t *_BackColor);
-	void     LCD_SetTextColor(uint16_t Color);
-	void     LCD_SetBackColor(uint16_t Color);
+//	void     LCD_SetColors(uint16_t _TextColor, uint16_t _BackColor);
+//	void     LCD_GetColors(uint16_t *_TextColor, uint16_t *_BackColor);
 	void     LCD_ClearLine(uint16_t Line);
-	uint32_t SetCursor(uint16_t Xpos, uint16_t Ypos);
+
 	void     LCD_SetColorKeying(uint32_t RGBValue);
 	void     LCD_ReSetColorKeying(void);
 	void     LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, const uint16_t *c);
 	void     LCD_DisplayChar(uint16_t Line, uint16_t Column, uint8_t Ascii);
 	//void     LCD_SetFont(sFONT *fonts);
 	//sFONT *  LCD_GetFont(void);
-	void     LCD_SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width);
+
 	void     LCD_WindowModeDisable(void);
-	void     LCD_DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Direction);
+
 	void     LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width);
 	void     LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
 	void     LCD_DrawEllipse(int Xpos, int Ypos, int Radius, int Radius2);
 	void     LCD_DrawFullEllipse(int Xpos, int Ypos, int Radius, int Radius2);
 	void     LCD_DrawMonoPict(const uint32_t *Pict);
 	void     LCD_WriteBMP(uint32_t BmpAddress);
-	void     LCD_DrawUniLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
-	void     LCD_DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height);
+
 	void     LCD_DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
 	void     LCD_PolyLine(pPoint Points, uint16_t PointCount);
 	void     LCD_PolyLineRelative(pPoint Points, uint16_t PointCount);
@@ -260,5 +299,5 @@ private:
 	 */
 
 };
-extern ILI9341 TFT2;
+extern ILI9341 TFT;
 #endif

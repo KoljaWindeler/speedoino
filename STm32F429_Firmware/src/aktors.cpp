@@ -529,7 +529,7 @@ int akting::set_bt_pin(){
 	}
 
 	if(connection_established){
-		TFT.filled_rect(0,8,128,56,0x00); // clear the lower lines
+		TFT.filled_rect(0,8,128,56,0x0000); // clear the lower lines
 		TFT.string(Speedo.default_font,("OK"),14,1);
 		TFT.string(Speedo.default_font,("Activating responses"),0,2);
 		sprintf(at_commands,"ATQ0%c",0x0D); // schaltet result codes ein				// jetzt richtig

@@ -19,6 +19,11 @@
 #include "ff.h"
 #include "diskio.h"
 
+extern "C" {
+#include "stm32_ub_usb_msc_host.h"
+}
+
+
 sd::sd(){
 };
 
@@ -133,7 +138,9 @@ int16_t sd::get_line_n(int16_t line_nr,uint8_t* filename,uint8_t* buffer,uint16_
 
 void sd::init(){
 	// p kanal runterziehen damit er leitend wird
-	power_up(3);
+	//	power_up(3);
+	USB_MSC_HOST_STATUS=USB_MSC_DEV_DETACHED;
+	USBH_Init(&USB_OTG_Core, USB_OTG_HS_CORE_ID, &USB_Host, &USBH_MSC_cb, &USR_Callbacks);
 };
 
 void sd::power_down(){
@@ -233,7 +240,7 @@ void sd::power_up(unsigned char tries){
 	//	    }
 	//	  }
 
-//	Config.read(CONFIG_FOLDER,"/CONFIG/BASE.TXT",READ_MODE_CONFIGFILE,"");
+	//	Config.read(CONFIG_FOLDER,"/CONFIG/BASE.TXT",READ_MODE_CONFIGFILE,"");
 };
 
 int sd::get_file_handle(unsigned char *pathToFile,FIL *file_handle,uint8_t flags){
@@ -253,9 +260,9 @@ int sd::get_file_handle(unsigned char *msgBuffer,unsigned char *last_file,FIL *f
 	subdir[0]='\0';
 	unsigned char subdir_pointer=0;
 	Serial.puts_ln(USART1,"Closing file");
-//	f_close(file_handle);
+	//	f_close(file_handle);
 	Serial.puts_ln(USART1,"Open Root");
-	FRESULT res = f_chdir("/");
+	uint8_t res = f_chdir("/");
 	if (res){
 		return -4;
 	}

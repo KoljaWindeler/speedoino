@@ -758,7 +758,7 @@ uint8_t CAN::can_send_message(CANMessage *p_message){
 }
 
 uint8_t CAN::mcp2515_read_rx_status(void){
-	uint8_t data;
+	uint8_t data=0;
 //
 //	// /CS des MCP2515 auf Low ziehen
 //	set_cs_high(false); //CS low
@@ -832,6 +832,7 @@ uint8_t CAN::can_get_message(CANMessage *p_message){ //dauert so etwa 72µS
 //		mcp2515_bit_modify(CANINTF, (1<<RX1IF), 0);
 //	}
 //	return (status & 0x07);
+	return 0;
 }
 
 unsigned char CAN::get_active_can_type(){

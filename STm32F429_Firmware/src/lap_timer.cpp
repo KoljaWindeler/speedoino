@@ -244,7 +244,7 @@ void LapTime::waiting_on_speed_up(){
 void LapTime::init_race_screen(bool reset_vars){
 	TFT.clear_screen();
 
-	TFT.filled_rect(70,0,56,16,15);		// yellow rectangle for delay
+	TFT.filled_rect(70,0,56,16,0xffff);		// yellow rectangle for delay
 	TFT.string(Speedo.default_font,("Delay"),13,0,15,0,0);
 	TFT.string(Speedo.default_font,("+--:--.--"),12,1,15,0,0);
 

@@ -20,8 +20,14 @@ extern "C" {
 #include "stm32f4xx.h"
 #include "stm32f4xx_conf.h"
 #include "stm32f4xx_spi.h"
-#include "stm32f4_discovery_sdio_sd.h"
+//#include "stm32f4_discovery_sdio_sd.h"
+#include "stm32f429i_discovery.h"
+#include "stm32f429i_discovery_sdram.h"
+#include "stm32f4xx_fmc.h"
+//#include "stm32_ub_usb_msc_host.h"
 }
+
+
 
 #include <stddef.h>
 #include "stdlib.h"

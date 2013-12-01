@@ -1020,20 +1020,20 @@ void menu::display(){
 
 			// bedienelemente anzeigen
 			if(floor(state/1000)==BMP(0,0,0,0,0,0,6)){
-				TFT.filled_rect(0,0,128,20,0x00);
+				TFT.filled_rect(0,0,128,20,0x0000);
 				TFT.string(Speedo.default_font,("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
 				TFT.string(Speedo.default_font,("Down = inactive"),4,1,0,DISP_BRIGHTNESS,0);
 
-				TFT.filled_rect(0,56,128,8,0x00);
+				TFT.filled_rect(0,56,128,8,0x0000);
 				if(Sensors.mRpm.blitz_en){
 					TFT.string(Speedo.default_font,("\x7F to adjust level"),0,7);
 				};
 			} else if(floor(state/10000)==6){
-				TFT.filled_rect(0,0,128,20,0x00);
+				TFT.filled_rect(0,0,128,20,0x0000);
 				TFT.string(Speedo.default_font,("Select the RPM"),4,0,0,DISP_BRIGHTNESS,0);
 				TFT.string(Speedo.default_font,("for Shiftlight"),4,1,0,DISP_BRIGHTNESS,0);
 
-				TFT.filled_rect(0,56,128,8,0x00);
+				TFT.filled_rect(0,56,128,8,0x0000);
 				TFT.string(Speedo.default_font,("\x7E to adjust color"),0,7);
 			}
 		};
@@ -1631,7 +1631,7 @@ void menu::draw(const char* const* menu, int entries){
 	char char_buffer[22];
 	if(!just_marker_update){
 		TFT.clear_screen();
-		TFT.SetTextColor(0,0,255);
+//		TFT.SetTextColor(0,0,255);
 		//		for(int i=0;i<15;i++){
 		//			int16_t x_from=270+2*i;
 		//			int16_t y_from=239;
