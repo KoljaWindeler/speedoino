@@ -15,17 +15,13 @@
 #define SD_EN 4
 
 #include "ff.h"
-extern "C" {
-#include "stm32_ub_usb_msc_host.h"
-#include "usb_defines.h"
-}
-
 
 class sd{
 #define       CONFIG_FOLDER "config"
 public:
-	USB_OTG_CORE_HANDLE          USB_OTG_Core;
-	USBH_HOST                    USB_Host;
+	int bildchen();
+	int prepare_bildchen();
+
 
 	sd(void);
 	~sd();

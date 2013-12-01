@@ -1957,45 +1957,45 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 
 void menu::init(){
 	Serial.puts(USART1,("Menu init ..."));
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 
 	/* This sequence sets up the TX and RX pins
 	 * so they work correctly with the USART1 peripheral
 	 */
-	GPIO_InitTypeDef GPIO_InitStruct;
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN; 			// the pins are configured as alternate function so the USART peripheral has access to them
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;		// this defines the IO speed and has nothing to do with the baudrate!
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;			// this defines the output type as push pull mode (as opposed to open drain)
-	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;			// this activates the pullup resistors on the IO pins
-	GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-	///////////////////// INPUT INTERRUPT //////////////////
-	EXTI_InitTypeDef   EXTI_InitStructure;
-	NVIC_InitTypeDef   NVIC_InitStructure;
-
-	// Clock enable (SYSCONFIG)
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-
-	// EXT_INT0 mit Pin verbinden
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource15);
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource14);
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource13);
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource12);
-
-	// EXT_INT0 config
-	EXTI_InitStructure.EXTI_Line = EXTI_Line12|EXTI_Line13|EXTI_Line14|EXTI_Line15;
-	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
-	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-	EXTI_Init(&EXTI_InitStructure);
-
-	// NVIC config
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x04;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
+//	GPIO_InitTypeDef GPIO_InitStruct;
+//	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12;
+//	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN; 			// the pins are configured as alternate function so the USART peripheral has access to them
+//	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;		// this defines the IO speed and has nothing to do with the baudrate!
+//	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;			// this defines the output type as push pull mode (as opposed to open drain)
+//	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;			// this activates the pullup resistors on the IO pins
+//	GPIO_Init(GPIOB, &GPIO_InitStruct);
+//
+//	///////////////////// INPUT INTERRUPT //////////////////
+//	EXTI_InitTypeDef   EXTI_InitStructure;
+//	NVIC_InitTypeDef   NVIC_InitStructure;
+//
+//	// Clock enable (SYSCONFIG)
+//	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+//
+//	// EXT_INT0 mit Pin verbinden
+//	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource15);
+//	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource14);
+//	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource13);
+//	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource12);
+//
+//	// EXT_INT0 config
+//	EXTI_InitStructure.EXTI_Line = EXTI_Line12|EXTI_Line13|EXTI_Line14|EXTI_Line15;
+//	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+//	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+//	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+//	EXTI_Init(&EXTI_InitStructure);
+//
+//	// NVIC config
+//	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
+//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x04;
+//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
+//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//	NVIC_Init(&NVIC_InitStructure);
 
 
 	// see if its a clock startup or a regular startup
