@@ -23,105 +23,11 @@ extern "C" {
 #include "stm32_ub_usb_msc_host.h"
 }
 
-int sd::prepare_bildchen(){
-#define DRAW_BMP_DEBUG_LEVEL 3
-#define READ_PIXEL 170
-	FIL file;
-	int16_t x_intern = 0;
-	int16_t y_intern = 0;
-	//	if(SD.get_file_handle((unsigned char*)filename,&file,FA_READ|FA_OPEN_EXISTING)>=0){
-	if (UB_Fatfs_OpenFile(&file, "/logo.bmp", F_RD)== FATFS_OK) {
-#if DRAW_BMP_DEBUG_LEVEL>1
-		uint32_t start = Millis.get();
-		uint32_t read_time = 0;
-#endif
-
-		//// read header ////
-		char buf_header[16];
-		UINT n_byte_read = 1;
-		uint32_t byte_read_total = 0;
-		f_read(&file, buf_header, 15, &n_byte_read);
-		if (n_byte_read < 15) {
-			return -2; // file to short, not even header inside
-		}
-		int16_t header_size = buf_header[10];
-		f_lseek(&file, 18);
-		f_read(&file, buf_header, 8, &n_byte_read); // rest vom header "weglesen"
-		int32_t bmp_width = buf_header[0] | buf_header[1] << 8
-				| buf_header[2] << 16 | buf_header[3] << 24;
-		int32_t bmp_height = buf_header[4] | buf_header[5] << 8
-				| buf_header[6] << 16 | buf_header[7] << 24;
-		int64_t bmp_pixel_count = bmp_height * bmp_width;
-		y_intern += bmp_height; // to map from top left corner 0,0 to bottom line 0, (bmp_height-1)
-
-#if DRAW_BMP_DEBUG_LEVEL>2
-		Serial.puts(USART1, "Header size:");
-		Serial.puts_ln(USART1, (int) header_size);
-		Serial.puts(USART1, "BMP width:");
-		Serial.puts_ln(USART1, (int) bmp_width);
-		Serial.puts(USART1, "BMP height:");
-		Serial.puts_ln(USART1, (int) bmp_height);
-#endif
-
-		//// jump to payload ////
-		f_lseek(&file, header_size);
-		char* buffer;
-		buffer = (char*) malloc(READ_PIXEL * 3);
-
-		//		TFT.(x, y);
-		//		TFT.WriteRAM_Prepare(); /* Prepare to write GRAM */
-
-		//// read pixels ////
-		while (n_byte_read > 0
-				&& byte_read_total <= 3 * bmp_pixel_count) { // n=1/0=wieviele byte gelesen wurden
-#if DRAW_BMP_DEBUG_LEVEL>1
-			int32_t start_read = Millis.get();
-#endif
-			f_read(&file, buffer, 3 * READ_PIXEL, &n_byte_read); // 170*3=510 byte
-#if DRAW_BMP_DEBUG_LEVEL>1
-			read_time += Millis.get() - start_read;
-			byte_read_total += n_byte_read;
-#endif
-			for (uint16_t i = 0; i < n_byte_read / 3; i++) {
-				//				TFT.WriteRAM(buffer[2+3*i],buffer[1+3*i],buffer[0+3*i]);
-				TFT.Pixel(x_intern, y_intern, buffer[2 + 3 * i],buffer[1 + 3 * i], buffer[0 + 3 * i]);
-				x_intern++;
-				if (x_intern >= bmp_width) { // line completed
-					while ((x_intern - 0) % 4 != 0) { // bmp are padding lines with zeros unti the number is a multiple of 4
-						i++;
-						x_intern++;
-					}
-					x_intern = 0;
-					y_intern--;
-					//					TFT.SetRotatedCursor(x_intern, y_intern);
-					//					TFT.WriteRAM_Prepare(); /* Prepare to write GRAM */
-				}
-			}
-		}
-#if DRAW_BMP_DEBUG_LEVEL>1
-		//// time debug ////
-		uint32_t time = Millis.get() - start;
-		Serial.puts(USART1, "Time:");
-		Serial.puts_ln(USART1, time);
-		Serial.puts(USART1, "Time for reading:");
-		Serial.puts_ln(USART1, read_time);
-
-		char buffer2[80];
-		sprintf(buffer2,"Times: %i / %i",time,read_time);
-		TFT.string(buffer2,0,0);
-
-#endif
-		free(buffer);
-
-	}
-}
-
-
 int sd::bildchen(){
 	//	UB_USB_MSC_HOST_Init();
 	uint8_t write_ok = 0;
 
-	while (1) {
+	while (write_ok==0) {
 		// pollen vom USB-Status
 		if (UB_USB_MSC_HOST_Do() == USB_MSC_DEV_CONNECTED) {
 
@@ -130,7 +36,16 @@ int sd::bildchen(){
 				write_ok = 1;
 				// Media mounten
 				if (UB_Fatfs_Mount(USB_0) == FATFS_OK) {
-					prepare_bildchen();
+					//					prepare_bildchen();
+					TFT.SetLayer(LCD_BACKGROUND_LAYER);
+					TFT.clear_screen(0x0);
+					TFT.string(VISITOR_SMALL_1X_FONT,"loading...",25,15);
+					TFT.SetTransparency(0);
+
+					TFT.SetLayer(LCD_FOREGROUND_LAYER);
+					TFT.SetTransparency(255);
+					TFT.draw_bmp(0,0,(uint8_t*)"/Kojla2.bmp");
+					TFT.SetTransparency(0);
 
 					// Media unmounten
 					UB_Fatfs_UnMount(USB_0);

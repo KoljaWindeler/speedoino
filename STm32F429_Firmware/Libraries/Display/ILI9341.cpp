@@ -8,12 +8,14 @@
 #define POLY_X(Z)          ((int32_t)((Points + Z)->Y))   
 #define ABS(X)  ((X) > 0 ? (X) : -(X))
 
-/* Global variables to set the written text color */
-static uint16_t CurrentTextColor   = 0x0000;
-static uint16_t CurrentBackColor   = 0xFFFF;
-/* Default LCD configuration with LCD Layer 1 */
-static uint32_t CurrentFrameBuffer = LCD_FRAME_BUFFER;
-static uint32_t CurrentLayer = LCD_BACKGROUND_LAYER;
+ILI9341::ILI9341(){
+	CurrentTextColor   = 0x0000;
+	CurrentBackColor   = 0xFFFF;
+	/* Default LCD configuration with LCD Layer 1 */
+	CurrentFrameBuffer = LCD_FRAME_BUFFER;
+	CurrentLayer = LCD_BACKGROUND_LAYER;
+	transparent_font=false;
+}
 
 
 void ILI9341::LCD_DeInit(void)
@@ -524,6 +526,10 @@ void ILI9341::LCD_ReSetColorKeying(void)
 	}
 } 
 
+void ILI9341::set_transparent_font(bool in){
+	transparent_font=in;
+}
+
 
 void ILI9341::zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset){
 	unsigned int stelle;
@@ -548,7 +554,7 @@ void ILI9341::zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, u
 
 
 					}
-				} else {
+				} else if(!transparent_font) {
 					for(int repeat_x=0;repeat_x<scale;repeat_x++){
 						//	LCD_SetTextColor(0x0000);
 						//	PutPixel(spalte*6 + scale*x_i+repeat_x, zeile*7 + scale*y_i+repeat_y);
@@ -1941,6 +1947,11 @@ void ILI9341::Pixel(int16_t x, int16_t y){
 	*(__IO uint16_t*)(SetCursor(x,y))=CurrentTextColor;
 }
 
+void ILI9341::Pixel(int16_t x, int16_t y,uint16_t color){
+//	if(x < 0 || x > 319 || y < 0 || y > 239) {	return;		}
+	*(__IO uint16_t*)(SetCursor(x,y))=color;
+}
+
 void ILI9341::Pixel(int16_t x, int16_t y,uint8_t r,uint8_t g,uint8_t b){
 	if(x < 0 || x > 319 || y < 0 || y > 239) {	return;		}
 	*(__IO uint16_t*)(SetCursor(x,y))=convert_color(r,g,b);
@@ -2216,90 +2227,146 @@ void ILI9341::draw_blitzer(uint16_t x,uint16_t y){
 	TFT.draw_bmp(x,y,(uint8_t*)"/sat.bmp");
 }
 
-uint8_t ILI9341::draw_bmp(uint16_t x, uint16_t y, uint8_t* filename){
-//#define DRAW_BMP_DEBUG_LEVEL 3
-//#define READ_PIXEL 170
-//	FIL file;
-//	int16_t x_intern=x;
-//	int16_t y_intern=y;
-////	if(SD.get_file_handle((unsigned char*)filename,&file,FA_READ|FA_OPEN_EXISTING)>=0){
-//	if(UB_Fatfs_OpenFile(&file, (char*)filename, F_RD)==FATFS_OK) {
-//#if DRAW_BMP_DEBUG_LEVEL>1
-//		uint32_t start=Millis.get();
-//		uint32_t read_time=0;
-//#endif
-//
-//		//// read header ////
-//		char buf_header[16];
-//		UINT n_byte_read=1;
-//		uint32_t byte_read_total=0;
-//		f_read(&file, buf_header, 15, &n_byte_read);
-//		if(n_byte_read<15){
-//			return -2; // file to short, not even header inside
-//		}
-//		int16_t header_size=buf_header[10];
-//		f_lseek(&file,18);
-//		f_read(&file, buf_header, 8, &n_byte_read); // rest vom header "weglesen"
-//		int32_t bmp_width= buf_header[0] | buf_header[1]<<8 | buf_header[2]<<16 | buf_header[3]<<24;
-//		int32_t bmp_height=buf_header[4] | buf_header[5]<<8 | buf_header[6]<<16 | buf_header[7]<<24;
-//		int64_t bmp_pixel_count=bmp_height*bmp_width;
-//		y_intern+=bmp_height; // to map from top left corner 0,0 to bottom line 0, (bmp_height-1)
-//
-//#if DRAW_BMP_DEBUG_LEVEL>2
-//		Serial.puts(USART1,"Header size:");
-//		Serial.puts_ln(USART1,(int)header_size);
-//		Serial.puts(USART1,"BMP width:");
-//		Serial.puts_ln(USART1,(int)bmp_width);
-//		Serial.puts(USART1,"BMP height:");
-//		Serial.puts_ln(USART1,(int)bmp_height);
-//#endif
-//
-//		//// jump to payload ////
-//		f_lseek(&file,header_size);
-//		char* buffer;
-//		buffer =(char*) malloc (READ_PIXEL*3);
-//
-////		TFT.(x, y);
-////		TFT.WriteRAM_Prepare(); /* Prepare to write GRAM */
-//
-//		//// read pixels ////
-//		while (n_byte_read > 0 && byte_read_total<=3*bmp_pixel_count) { // n=1/0=wieviele byte gelesen wurden
-//#if DRAW_BMP_DEBUG_LEVEL>1
-//			int32_t start_read = Millis.get();
-//#endif
-//			f_read(&file, buffer, 3*READ_PIXEL, &n_byte_read); // 170*3=510 byte
-//#if DRAW_BMP_DEBUG_LEVEL>1
-//			read_time+=Millis.get()-start_read;
-//			byte_read_total+=n_byte_read;
-//#endif
-//			for(uint16_t i=0;i<n_byte_read/3;i++){
-////				TFT.WriteRAM(buffer[2+3*i],buffer[1+3*i],buffer[0+3*i]);
-//				TFT.Pixel(x_intern,y_intern,buffer[2+3*i],buffer[1+3*i],buffer[0+3*i]);
-//				x_intern++;
-//				if(x_intern>=bmp_width+x){ // line completed
-//					while((x_intern-x)%4!=0){ // bmp are padding lines with zeros unti the number is a multiple of 4
-//						i++;
-//						x_intern++;
-//					}
-//					x_intern=x;
-//					y_intern--;
-////					TFT.SetRotatedCursor(x_intern, y_intern);
-////					TFT.WriteRAM_Prepare(); /* Prepare to write GRAM */
-//				}
-//			}
-//		}
-//#if DRAW_BMP_DEBUG_LEVEL>1
-//		//// time debug ////
-//		uint32_t time=Millis.get()-start;
-//		Serial.puts(USART1,"Time:");
-//		Serial.puts_ln(USART1,time);
-//		Serial.puts(USART1,"Time for reading:");
-//		Serial.puts_ln(USART1,read_time);
-//#endif
-//		free(buffer);
-//		return 0;
-//	}
-	return -1; // fopen failed
+uint8_t ILI9341::draw_bmp(uint16_t x, uint16_t y,uint8_t* filename){
+#define DRAW_BMP_DEBUG_LEVEL 3
+	FIL file;
+//	if (UB_Fatfs_OpenFile(&file, "/Kojla2.bmp", F_RD)== FATFS_OK) {
+	if(f_open(&file, (TCHAR*)filename, FA_OPEN_EXISTING | FA_READ)==0){
+		// used vars
+		uint32_t index = 0, size = 0, width = 0, height = 0, bit_pixel = 0;
+		uint32_t currentline = 0, linenumber = 0;
+		char* buffer;
+		buffer = (char*) malloc(513);
+
+		//// read header ////
+		UINT n_byte_read;
+		uint32_t byte_read_total = 0;
+		f_read(&file, buffer, 29, &n_byte_read);
+		if (n_byte_read < 29) {
+			return -2; // file to short, not even header inside
+		} else {
+			index = buffer[10] 	| buffer[11] << 8 	| buffer[12] << 16 	| buffer[13] << 24;		/* Get bitmap data address offset */
+			width = buffer[18] 	| buffer[19] << 8 	| buffer[20] << 16 	| buffer[21] << 24;		/* Read bitmap width */
+			height = buffer[22] | buffer[23] << 8 	| buffer[24] << 16 	| buffer[25] << 24;		/* Read bitmap height */
+			bit_pixel = buffer[28];																/* Read bit/pixel */
+			size = width*height;																/* bitmap size */
+		}
+
+		f_lseek(&file, index-1);								/* bypass the bitmap header */
+
+#if DRAW_BMP_DEBUG_LEVEL>1
+		//// time debug ////
+		uint32_t start = Millis.get();
+		uint32_t read_time = 0;
+		//// time debug ////
+#endif
+		// read pixels 512 byte per read
+		while (n_byte_read > 0 && byte_read_total/(bit_pixel/8) <= size) {
+#if DRAW_BMP_DEBUG_LEVEL>1
+			//// time debug ////
+			int32_t start_read = Millis.get();
+			//// time debug ////
+#endif
+			f_read(&file, buffer, 512, &n_byte_read); // read complete cluster
+#if DRAW_BMP_DEBUG_LEVEL>1
+			//// time debug ////
+			read_time += Millis.get() - start_read;
+			//// time debug ////
+#endif
+			byte_read_total+=n_byte_read;
+
+			// draw "512/(bit per pixel)"-pixels
+			for(unsigned int i=0;i<n_byte_read;i+=2){
+				TFT.Pixel(currentline,y+height-linenumber,buffer[i]<<8|buffer[i+1]);
+				/*jump on next byte */
+				currentline++;
+				if(currentline == width){
+					if(linenumber < height)	{
+						linenumber++;
+						currentline = 0;
+					}
+				}
+			} // draw pixels
+		} // read file
+
+#if DRAW_BMP_DEBUG_LEVEL>1
+		//// time debug ////
+		uint32_t time = Millis.get() - start;
+		sprintf(buffer,"Times: %i / %i",time,read_time);
+		TFT.set_transparent_font(true);
+		TFT.string(buffer,0,0);
+		TFT.set_transparent_font(false);
+		//// time debug ////
+#endif
+		free(buffer);
+		return 0;
+	} // open file
+	return -2; // open file failed
+	//	headerless
+	//#define DRAW_BMP_DEBUG_LEVEL 3
+	//	uint16_t x=0,y=0;
+	//	FIL file;
+	//	if (UB_Fatfs_OpenFile(&file, "/logo_r.bmp", F_RD)== FATFS_OK) {
+	//		// used vars
+	//		uint32_t index = 0, size = 0, width = 320, height = 240, bit_pixel = 0;
+	//		uint32_t currentline = 0, linenumber = 0;
+	//		char* buffer;
+	//		buffer = (char*) malloc(513);
+	//
+	//		//// read header ////
+	//		UINT n_byte_read;
+	//
+	//#if DRAW_BMP_DEBUG_LEVEL>1
+	//		//// time debug ////
+	//		uint32_t start = Millis.get();
+	//		uint32_t read_time = 0;
+	//		//// time debug ////
+	//#endif
+	//		// read pixels 512 byte per read
+	//		while (n_byte_read > 0) {
+	//#if DRAW_BMP_DEBUG_LEVEL>1
+	//			//// time debug ////
+	//			int32_t start_read = Millis.get();
+	//			//// time debug ////
+	//#endif
+	//			f_read(&file, buffer, 512, &n_byte_read); // read complete cluster
+	//#if DRAW_BMP_DEBUG_LEVEL>1
+	//			//// time debug ////
+	//			read_time += Millis.get() - start_read;
+	//			//// time debug ////
+	//#endif
+	////			byte_read_total+=n_byte_read;
+	//
+	//			// draw "512/(bit per pixel)"-pixels
+	//			for(unsigned int i=0;i<n_byte_read;i+=2){
+	//				TFT.Pixel(currentline,y+height-linenumber,buffer[i]<<8|buffer[i+1]);
+	//				/*jump on next byte */
+	//				currentline++;
+	//				if(currentline >= width){
+	//					if(linenumber < height)	{
+	//						linenumber++;
+	//						currentline = 0;
+	//					}
+	//				}
+	//			} // draw pixels
+	//		} // read file
+	//
+	//#if DRAW_BMP_DEBUG_LEVEL>1
+	//		//// time debug ////
+	//		uint32_t time = Millis.get() - start;
+	//		Serial.puts(USART1, "Time:");
+	//		Serial.puts_ln(USART1, time);
+	//		Serial.puts(USART1, "Time for reading:");
+	//		Serial.puts_ln(USART1, read_time);
+	//
+	//		sprintf(buffer,"Times: %i / %i",time,read_time);
+	//		TFT.string(buffer,0,0);
+	//		//// time debug ////
+	//#endif
+	//		free(buffer);
+	//		return 0;
+	//	} // open file
+	//	return -2; // open file failed
 }
 
 int ILI9341::animation(int a){

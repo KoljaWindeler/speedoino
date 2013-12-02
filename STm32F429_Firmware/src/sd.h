@@ -23,6 +23,7 @@ public:
 	int prepare_bildchen();
 
 
+
 	sd(void);
 	~sd();
 	void init();

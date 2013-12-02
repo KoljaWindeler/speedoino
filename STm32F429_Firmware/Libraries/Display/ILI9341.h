@@ -186,6 +186,7 @@ typedef struct
 class ILI9341 {
 public:
 	// control functions
+	ILI9341();
 	void     init(void);
 	void     clear_screen();
 	void     clear_screen(uint16_t Color);
@@ -197,8 +198,10 @@ public:
 	void     SetTextColor(uint16_t Color);
 	void     SetBackColor(uint16_t Color);
 	void     SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width);
+	uint32_t SetCursor(uint32_t Xpos, uint32_t Ypos);
 
 	// text functions
+	void 	 set_transparent_font(bool in);
 	void 	 string(char *str,uint8_t spalte, uint8_t zeile);
 	void 	 string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile);
 	void 	 string(char *str,uint8_t spalte, uint8_t zeile, uint8_t back, uint8_t text);
@@ -222,12 +225,13 @@ public:
 	void 	 draw_blitzer(uint16_t x,uint16_t y);
 	void 	 draw_arrow(int arrow, int spalte, int zeile, uint8_t r, uint8_t g, uint8_t b);
 	void 	 draw_arrow(int angle, int x_pos, int y_pos, uint8_t r, uint8_t g, uint8_t b,bool clean);
-	uint8_t  draw_bmp(uint16_t x, uint16_t y, uint8_t* filename);
+	uint8_t	 draw_bmp(uint16_t x, uint16_t y,uint8_t* filename);
 	int 	 animation(int a);
 
 	// basic drawing functions
 	void 	 Pixel(int16_t x, int16_t y);
 	void	 Pixel(int16_t x, int16_t y,uint8_t r,uint8_t g,uint8_t b);
+	void	 Pixel(int16_t x, int16_t y,uint16_t color);
 	uint16_t convert_color(uint8_t r,uint8_t g,uint8_t b);
 	void 	 draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 	void 	 draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint8_t r, uint8_t g, uint8_t b);
@@ -237,7 +241,12 @@ public:
 	void 	 filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t r,uint8_t g,uint8_t b);
 	void 	 highlight_bar(uint16_t x,uint16_t y,uint16_t width,uint16_t height);
 
-
+	/* Global variables to set the written text color */
+	uint16_t CurrentTextColor   = 0x0000;
+	uint16_t CurrentBackColor   = 0xFFFF;
+	/* Default LCD configuration with LCD Layer 1 */
+	uint32_t CurrentFrameBuffer = LCD_FRAME_BUFFER;
+	uint32_t CurrentLayer = LCD_BACKGROUND_LAYER;
 
 	unsigned char startup[35]; // asdfghjk.asd,1234,1234,1234\0 == 28
 
@@ -253,7 +262,7 @@ private:
 	void 	 zeichen_small_scale(uint8_t scale,const uint8_t *font,uint8_t z, uint16_t spalte, uint16_t zeile, uint8_t offset);
 
 	void 	 check_coordinates(int16_t* x,int16_t* y);
-	uint32_t SetCursor(uint32_t Xpos, uint32_t Ypos);
+
 
 	void     LCD_DeInit(void);
 	void     LCD_ChipSelect(FunctionalState NewState);
@@ -297,7 +306,7 @@ private:
 	/**
 	 * @}
 	 */
-
+	bool transparent_font;
 };
 extern ILI9341 TFT;
 #endif

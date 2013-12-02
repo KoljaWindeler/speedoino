@@ -49,7 +49,11 @@ void init_speedo(void) {
 	Sensors.single_read(); // read all sensor values once to ensure we are ready to show them
 	Aktors.init(); // Start outer LEDs // ausschlag des zeigers // Motorausschlag und block bis motor voll ausgeschlagen, solange das letzte intro bild halten
 	TFT.init();
+
 	//	pOLED.init_speedo();         // Start Screen //execute this AFTER Config->init(), init() will load  phase,config,startup. PopUp will be shown if sd access fails
+	SD.bildchen();
+	_delay_ms(3000);
+
 	Menu.init();    // Start butons // adds the connection between pins and vars
 	Menu.display(); // execute this AFTER pOLED.init_speedo!! this will show the menu and, if state==11, draws speedosymbols
 	Speedo.reset_bak(); // reset all storages, to force the redraw of the speedo
@@ -64,7 +68,6 @@ int main(void) {
 	SystemInit(); // Quarz Einstellungen aktivieren
 	init_speedo();
 
-	SD.bildchen();
 
 	/******************** setup procedure ********************************************
 	 * all initialisations must been made before the main loop, before THIS
