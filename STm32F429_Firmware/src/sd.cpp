@@ -23,40 +23,61 @@ extern "C" {
 #include "stm32_ub_usb_msc_host.h"
 }
 
-int sd::bildchen(){
-	//	UB_USB_MSC_HOST_Init();
-	uint8_t write_ok = 0;
+void sd::prefetched_animation(int frame_count){
+	TFT.SetLayer(FOREGROUND_LAYER);
+	TFT.clear_screen(0);
+	TFT.string(VISITOR_SMALL_1X_FONT,"loading...",25,15);
+	TFT.SetTransparency(0);
 
+	char temp[40];
+	for(int frames=0; frames<frame_count; frames++){
+		TFT.SetLayer(HIDDEN_LAYER_1+frames);
+		sprintf(temp,"/ani-%i.bmp",frames);
+		TFT.draw_bmp(0,0,(uint8_t*)temp);
+		sprintf(temp,"%2i/%2i loaded",frames,frame_count);
+		TFT.SetLayer(FOREGROUND_LAYER);
+		TFT.string(VISITOR_SMALL_1X_FONT,temp,25,16);
+		for(int x=0;x<(320*frames)/frame_count;x++){
+			TFT.Pixel(x,140,TFT.convert_color(255,0,0));
+		}
+	}
+
+	TFT.SetLayer(FOREGROUND_LAYER);
+	TFT.SetTransparency(255); // FOREGROUND_LAYER Transparent
+	TFT.SetLayer(BACKGROUND_LAYER);
+	TFT.SetTransparency(0);
+
+	for(int frames=0; frames<frame_count; frames++){
+		TFT.CopyPicture(HIDDEN_LAYER_1+frames,BACKGROUND_LAYER,0,0,320,240);
+		_delay_ms(50);
+	}
+
+	TFT.SetLayer(BACKGROUND_LAYER);
+	TFT.SetTransparency(255);
+	TFT.SetLayer(FOREGROUND_LAYER);
+	TFT.SetTransparency(0); // FOREGROUND_LAYER Transparent
+	TFT.clear_screen(0);
+}
+
+int sd::open(){
+	uint8_t write_ok = 0;
 	while (write_ok==0) {
 		// pollen vom USB-Status
 		if (UB_USB_MSC_HOST_Do() == USB_MSC_DEV_CONNECTED) {
-
-			// wenn File noch nicht geschrieben wurde
-			if (write_ok == 0) {
+			// Media mounten
+			if (UB_Fatfs_Mount(USB_0) == FATFS_OK) {
 				write_ok = 1;
-				// Media mounten
-				if (UB_Fatfs_Mount(USB_0) == FATFS_OK) {
-					//					prepare_bildchen();
-					TFT.SetLayer(LCD_BACKGROUND_LAYER);
-					TFT.clear_screen(0x0);
-					TFT.string(VISITOR_SMALL_1X_FONT,"loading...",25,15);
-					TFT.SetTransparency(0);
-
-					TFT.SetLayer(LCD_FOREGROUND_LAYER);
-					TFT.SetTransparency(255);
-					TFT.draw_bmp(0,0,(uint8_t*)"/Kojla2.bmp");
-					TFT.SetTransparency(0);
-
-					// Media unmounten
-					UB_Fatfs_UnMount(USB_0);
-				}
+				//					UB_Fatfs_UnMount(USB_0);
+				return 0;
 			}
 		} else if (UB_USB_MSC_HOST_Do() == USB_MSC_DEV_NOT_SUPPORTED) {
 			TFT.string(VISITOR_SMALL_1X_FONT, "Unsupported", 0, 0);
+			return -1;
 		} else {
-			// wenn kein USB-Stick vorhanden
+			// wenn NOCH kein USB-Stick vorhanden/bereit
 		}
 	}
+	return 1;
 }
 
 sd::sd(){

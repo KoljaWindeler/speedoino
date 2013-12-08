@@ -19,9 +19,9 @@
 class sd{
 #define       CONFIG_FOLDER "config"
 public:
-	int bildchen();
+	int open();
 	int prepare_bildchen();
-
+	void prefetched_animation(int frame_count);
 
 
 	sd(void);

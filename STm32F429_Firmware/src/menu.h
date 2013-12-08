@@ -62,6 +62,7 @@ public:
 	bool update_display;
 
 private:
+	bool menu_image_background_preloaded;
 	unsigned long button_time;                      // Zeitpunkt des letzen Button kontakt
 	unsigned long button_first_push;                // für "halten". Zeitpunkt des ersten Kontakt
 	bool just_marker_update;

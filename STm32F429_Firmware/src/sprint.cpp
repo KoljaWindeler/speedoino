@@ -90,12 +90,12 @@ void sprint::loop(){
 					h--;
 				}
 
-				TFT.filled_rect( 10-i,100-j,45,45,color-80,0,0);
-				TFT.filled_rect( 40-i,155-j,40,40,color-75,0,0);
-				TFT.filled_rect( 90-i,180-j,30,30,color-70,0,0);
-				TFT.filled_rect(130-i,190-j,20,20,color-60,0,0);
-				TFT.filled_rect(160-i,200-j,16,16,color-40,0,0);
-				TFT.filled_rect(185-i,205-j,16,16,color-20,0,0);
+				TFT.draw_filled_rect( 10-i,100-j,45,45,color-80,0,0);
+				TFT.draw_filled_rect( 40-i,155-j,40,40,color-75,0,0);
+				TFT.draw_filled_rect( 90-i,180-j,30,30,color-70,0,0);
+				TFT.draw_filled_rect(130-i,190-j,20,20,color-60,0,0);
+				TFT.draw_filled_rect(160-i,200-j,16,16,color-40,0,0);
+				TFT.draw_filled_rect(185-i,205-j,16,16,color-20,0,0);
 
 				TFT.draw_arrow(90,205-h,200-j,color,0,0,override);
 			}

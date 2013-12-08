@@ -244,7 +244,7 @@ void LapTime::waiting_on_speed_up(){
 void LapTime::init_race_screen(bool reset_vars){
 	TFT.clear_screen();
 
-	TFT.filled_rect(70,0,56,16,0xffff);		// yellow rectangle for delay
+	TFT.draw_filled_rect(70,0,56,16,0xffff);		// yellow rectangle for delay
 	TFT.string(Speedo.default_font,("Delay"),13,0,15,0,0);
 	TFT.string(Speedo.default_font,("+--:--.--"),12,1,15,0,0);
 
@@ -511,7 +511,7 @@ void LapTime::race_loop(){
 					Serial.println("Setze last_gps_valid=false, da gps nicht valid ist.");
 #endif
 					last_gps_valid=false;																// remember that
-					TFT.filled_rect(0,24,128,24,0x00);												// show some nice message
+					TFT.draw_filled_rect(0,24,128,24,0x00);												// show some nice message
 					TFT.string_centered(("no GPS"),4,true);
 				}
 			} else if(!last_gps_valid){ 																// we have now a valid gps signal but we were offline before
@@ -740,7 +740,7 @@ void LapTime::gps_capture_loop(){
 		if(Sensors.mGPS.get_info(6)<3){
 			if(Speedo.disp_zeile_bak[1]!=1){
 				Speedo.disp_zeile_bak[1]=1;
-				TFT.filled_rect(0,48,128,16,0);
+				TFT.draw_filled_rect(0,48,128,16,0);
 				TFT.string_centered(("no GPS"),6,true);
 				TFT.string(Speedo.default_font,("\x7E back"),0,7);
 				Menu.set_buttons(true,false,false,false); // only back
@@ -748,7 +748,7 @@ void LapTime::gps_capture_loop(){
 		} else {
 			if(Speedo.disp_zeile_bak[1]!=2){
 				Speedo.disp_zeile_bak[1]=2;
-				TFT.filled_rect(0,48,128,16,0);
+				TFT.draw_filled_rect(0,48,128,16,0);
 				TFT.string(Speedo.default_font,("\x7F to set sector end"),0,6);
 				TFT.string(Speedo.default_font,("\x7E to set finish line"),0,7);
 				Menu.set_buttons(true,false,false,true); // only left and right

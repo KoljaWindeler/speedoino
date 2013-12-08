@@ -243,7 +243,7 @@ void menu::display(){
 #ifdef MENU_DEBUG
 		Serial.puts_ln(USART1,"Menustate 00001X, Bin jetzt im Tacho menu, zeichne icons");
 #endif
-		TFT.clear_screen();
+		TFT.clear_screen(0x0000);
 		Speedo.initial_draw_screen(); // draw symbols
 
 		// wenn wir nicht in der navigation sind, die tasten f?r hoch und runter deaktiveren
@@ -1020,20 +1020,20 @@ void menu::display(){
 
 			// bedienelemente anzeigen
 			if(floor(state/1000)==BMP(0,0,0,0,0,0,6)){
-				TFT.filled_rect(0,0,128,20,0x0000);
+				TFT.draw_filled_rect(0,0,128,20,0x0000);
 				TFT.string(Speedo.default_font,("Up = active"),4,0,0,DISP_BRIGHTNESS,0);
 				TFT.string(Speedo.default_font,("Down = inactive"),4,1,0,DISP_BRIGHTNESS,0);
 
-				TFT.filled_rect(0,56,128,8,0x0000);
+				TFT.draw_filled_rect(0,56,128,8,0x0000);
 				if(Sensors.mRpm.blitz_en){
 					TFT.string(Speedo.default_font,("\x7F to adjust level"),0,7);
 				};
 			} else if(floor(state/10000)==6){
-				TFT.filled_rect(0,0,128,20,0x0000);
+				TFT.draw_filled_rect(0,0,128,20,0x0000);
 				TFT.string(Speedo.default_font,("Select the RPM"),4,0,0,DISP_BRIGHTNESS,0);
 				TFT.string(Speedo.default_font,("for Shiftlight"),4,1,0,DISP_BRIGHTNESS,0);
 
-				TFT.filled_rect(0,56,128,8,0x0000);
+				TFT.draw_filled_rect(0,56,128,8,0x0000);
 				TFT.string(Speedo.default_font,("\x7E to adjust color"),0,7);
 			}
 		};
@@ -1608,16 +1608,22 @@ void menu::back(){
 
 ///// draw the menu ////////////
 void menu::draw(const char* const* menu, int entries){
-	//show "main menu" in mainmenu (state < 10 )
-	//otherwise, show caption of the particular menu
-	unsigned long level_1=state;
-	if(level_1>10){
-		while(level_1>=10){
-			level_1/=10;
-		};
-	} else {
-		level_1=0; // main
+#define MENU_USE_BG 1
+#define MENU_MARKER_LENGHT 225
+
+	//// BACKGROUND HANDLING ////
+	// if we are using a background image we have to load it, but just once.
+	// saving the state in the var: menu_image_background_preloaded
+	if(MENU_USE_BG==1){
+		if(!menu_image_background_preloaded){
+			menu_image_background_preloaded=true;
+			TFT.SetLayer(MENU_BG_LAYER);
+			TFT.draw_bmp(0,0,(uint8_t*)"/nebel.bmp"); // 320x240
+			TFT.SetLayer(FOREGROUND_LAYER);
+		}
+		TFT.set_transparent_font(true);
 	}
+	//// BACKGROUND HANDLING ////
 
 #ifdef MENU_DEBUG
 	Serial.puts(USART1,"Bin im menue, menu_marker:");
@@ -1627,36 +1633,47 @@ void menu::draw(const char* const* menu, int entries){
 	Serial.puts(USART1,", menu_start:");
 	Serial.puts_ln(USART1,menu_start);
 #endif
+
 	////////// Menu Caption /////////////
+	//show the string "main menu" in mainmenu (state < 10 )
+	//otherwise, show caption of the particular menu
+	unsigned long level_1=state;
+	if(level_1>10){
+		while(level_1>=10){
+			level_1/=10;
+		};
+	} else {
+		level_1=0; // main
+	}
 	char char_buffer[22];
 	if(!just_marker_update){
-		TFT.clear_screen();
-//		TFT.SetTextColor(0,0,255);
-		//		for(int i=0;i<15;i++){
-		//			int16_t x_from=270+2*i;
-		//			int16_t y_from=239;
-		//
-		//			int16_t x_to=319;
-		//			int16_t y_to=150-6*i;
-		//
-		//			TFT.DrawUniLine(x_from,y_from,x_to,y_to);
-		//		}
-		//TFT.glow(319,150,319,229,0,30,0,1);
-		//TFT.glow(230,30,230,30,255,0,0,15);
-		TFT.filled_rect(0,0,320,30,0);
+		if(MENU_USE_BG==1){
+			TFT.CopyPicture(MENU_BG_LAYER,FOREGROUND_LAYER);
+		} else {
+			TFT.clear_screen(0x0000);
+		}
+
 		strcpy(char_buffer, menu_titel[level_1]);
 		TFT.string(Speedo.default_font+1,char_buffer,0,0,0,DISP_BRIGHTNESS,0);
 	}
-	sprintf(char_buffer,"%04lu",state);
-	TFT.string(Speedo.default_font,char_buffer,44,1,0,DISP_BRIGHTNESS,0);
 	////////// Menu Caption /////////////
+
+	////////// Menu state /////////////
+	// if we use a background, we will rewrite the state. With BG we are writing
+	// in transparent mode-> so first redraw that area
+	if(MENU_USE_BG==1){
+		TFT.CopyPicture(MENU_BG_LAYER,FOREGROUND_LAYER,260,0,260,0,59,20);
+	}
+	sprintf(char_buffer,"%04lu",state);
+	TFT.string(Speedo.default_font,char_buffer,44,0);
+	////////// Menu state /////////////
 
 	///////// Menu ausgeben ////////////
 	if(menu_ende>entries-1){
 		menu_ende=entries-1;
 	};
-	unsigned char fg;
-	unsigned char hg;
+	uint8_t fg_r,fg_g,fg_b;
+	uint8_t hg_r,hg_g,hg_b;
 	int   y=1;
 
 	// prepare buffer
@@ -1664,13 +1681,44 @@ void menu::draw(const char* const* menu, int entries){
 	int line_scaler=4;
 	int line_mover=1;
 
+	// line from bullet to straight above
+	if(MENU_USE_BG==1){
+		TFT.CopyPicture(MENU_BG_LAYER,FOREGROUND_LAYER,15,40,15,40,20,180);
+	} else {
+		TFT.draw_filled_rect(15,40,20,180,TFT.convert_color(0,0,0)); // delete line to "selected item"
+	}
+
 	// we got two modes, seperated by "just_marker_update" if its true,
 	// that just update the marker bar, eg draw two line,
 	// else update the whole screen
 	if(just_marker_update){
 		// we just have to repaint two lines, the actual "menu_marker" line plus the one above/below
+
+		//// Draw the "menu_marker" line - placed from now on "under the marker" ////
+		fg_r=255;
+		fg_g=255;
+		fg_b=255;
+
+		hg_r=100;
+		hg_g=0;
+		hg_b=0;
 		// draw maker line
-		TFT.highlight_bar(14,28*(menu_marker+1)+3,240,24);
+		///////////////
+		TFT.draw_filled_rect(40,28*(menu_marker+1)+4,MENU_MARKER_LENGHT,24,TFT.convert_color(100,0,0)); // mit rote nen kasten malen
+		TFT.SetTextColor(TFT.convert_color(255,0,0));
+		// open clamber
+		TFT.draw_line(40,28*(menu_marker+1)+3,40,28*((menu_marker+1)+1)); //vertical
+		TFT.draw_line(40,28*(menu_marker+1)+3,55,28*(menu_marker+1)+3); // horizonal upper
+		TFT.draw_line(40,28*((menu_marker+1)+1),55,28*((menu_marker+1)+1)); // horizonal lower
+		// closing clamber
+		TFT.draw_line(40+MENU_MARKER_LENGHT,28*(menu_marker+1)+3,	40+MENU_MARKER_LENGHT,		28*((menu_marker+1)+1)); //vertical
+		TFT.draw_line(40+MENU_MARKER_LENGHT,28*(menu_marker+1)+3,	25+MENU_MARKER_LENGHT,		28*(menu_marker+1)+3); // horizonal upper
+		TFT.draw_line(40+MENU_MARKER_LENGHT,28*((menu_marker+1)+1),	25+MENU_MARKER_LENGHT,		28*((menu_marker+1)+1)); // horizonal lower
+		// line to opening clamber
+		TFT.draw_line(10,135,15,135);
+		TFT.draw_line(15,135,35,28*(menu_marker+1)+15);
+		TFT.draw_line(35,28*(menu_marker+1)+15,40,28*(menu_marker+1)+15);
+		///////////////
 		strcpy(buffer, menu[menu_start+menu_marker]);
 		// move to the back and insert number
 		for(int i=21;i>1;i--){
@@ -1679,8 +1727,10 @@ void menu::draw(const char* const* menu, int entries){
 		buffer[0]=menu_start+menu_marker+'1';
 		buffer[1]='.';
 		buffer[2]=' ';
-		TFT.string(Speedo.default_font,buffer,5,(menu_marker+1)*line_scaler+line_mover,DISP_BRIGHTNESS,0,0);
+		TFT.string(Speedo.default_font,buffer,8,(menu_marker+1)*line_scaler+line_mover,fg_r,fg_g,fg_b,hg_r,hg_g,hg_b,0);
+		//// Draw the marker now on the new line - placed from now on "under the marker" ////
 
+		//// redraw that line, that was placed under the marker the last time ////
 		// lets see which one is the second: assuming that its the one below so the menu_marker_line + 1
 		int second_line_switch=+1;
 		if(old_state<state){
@@ -1688,7 +1738,8 @@ void menu::draw(const char* const* menu, int entries){
 			second_line_switch=-1;
 		}
 		//draw it
-		TFT.filled_rect(14,28*(menu_marker+second_line_switch+1)+3,240,24,0); // mit hintergrundfarbe nen kasten malen
+		//		TFT.draw_filled_rect(14,28*(menu_marker+second_line_switch+1)+3,240,24,0); // mit hintergrundfarbe nen kasten malen
+		TFT.CopyPicture(MENU_BG_LAYER,FOREGROUND_LAYER,35,28*(menu_marker+second_line_switch+1)+3,35,28*(menu_marker+second_line_switch+1)+3,MENU_MARKER_LENGHT+6,28);
 		strcpy(buffer, menu[int(menu_start+menu_marker+second_line_switch)]);
 		// move to the back and insert number
 		for(int i=21;i>1;i--){
@@ -1697,20 +1748,49 @@ void menu::draw(const char* const* menu, int entries){
 		buffer[0]=int(menu_start+menu_marker+second_line_switch)+'1';
 		buffer[1]='.';
 		buffer[2]=' ';
-		TFT.string(Speedo.default_font,buffer,5,int(menu_marker+second_line_switch+1)*line_scaler+line_mover,0,DISP_BRIGHTNESS,0);
+		TFT.string(Speedo.default_font,buffer,8,int(menu_marker+second_line_switch+1)*line_scaler+line_mover,0,DISP_BRIGHTNESS,0);
+		//// redraw that line, that was placed under the marker the last time ////
+
 		just_marker_update=false;
 
 	} else {
 		// draw it all
 		for(int k=menu_start;k<=menu_ende;k++){
 			if(y==(menu_marker+1)){
-				fg=0;
-				hg=DISP_BRIGHTNESS;
-				TFT.highlight_bar(14,28*y+3,240,24); // mit hintergrundfarbe nen kasten malen
+				fg_r=255;
+				fg_g=255;
+				fg_b=255;
+
+				hg_r=100;
+				hg_g=0;
+				hg_b=0;
+				TFT.draw_filled_rect(40,28*y+4,MENU_MARKER_LENGHT,24,TFT.convert_color(100,0,0)); // mit rote nen kasten malen
+
+				TFT.SetTextColor(TFT.convert_color(255,0,0));
+				TFT.draw_circle(5,135,4);
+				// open clamber
+				TFT.draw_line(40,	28*y+3,		40,	28*(y+1)); //vertical
+				TFT.draw_line(40,	28*y+3,		55,	28*y+3); // horizonal upper
+				TFT.draw_line(40,	28*(y+1),	55,	28*(y+1)); // horizonal lower
+				// closing clamber
+				TFT.draw_line(40+MENU_MARKER_LENGHT,	28*y+3,		40+MENU_MARKER_LENGHT,	28*(y+1)); //vertical
+				TFT.draw_line(40+MENU_MARKER_LENGHT,	28*y+3,		25+MENU_MARKER_LENGHT,	28*y+3); // horizonal upper
+				TFT.draw_line(40+MENU_MARKER_LENGHT,	28*(y+1),	25+MENU_MARKER_LENGHT,	28*(y+1)); // horizonal lower
+				// line to opening clamber
+				TFT.draw_line(10,135,15,135);
+				TFT.draw_line(15,135,35,28*y+15);
+				TFT.draw_line(35,28*y+15,40,28*y+15);
+
 			} else {
-				fg=DISP_BRIGHTNESS;
-				hg=0;
-				TFT.filled_rect(14,28*y+3,240,24,0); // mit hintergrundfarbe nen kasten malen
+				fg_r=255;
+				fg_g=255;
+				fg_b=255;
+				hg_r=0;
+				hg_g=0;
+				hg_b=0;
+				if(MENU_USE_BG!=1){
+					TFT.draw_filled_rect(40,28*y+3,MENU_MARKER_LENGHT,24,0); // mit schwarz nen kasten malen
+				}
 			};
 			// copy string vom flash
 			strcpy(buffer, menu[k]);
@@ -1721,17 +1801,21 @@ void menu::draw(const char* const* menu, int entries){
 			buffer[0]=k+'1';
 			buffer[1]='.';
 			buffer[2]=' ';
-			TFT.string(Speedo.default_font,buffer,5,y*line_scaler+line_mover,hg,fg,0);
+			TFT.string(Speedo.default_font,buffer,8,y*line_scaler+line_mover,fg_r,fg_g,fg_b,hg_r,hg_g,hg_b,0);
 			// copy string vom flash
 			y++; // abstand festlegen
 		};
 
-		while(y<8){ // die zeilen unter dem Men? ausmmalen
-			TFT.filled_rect(14,28*y+3,240,24,0); // mit hintergrundfarbe nen kasten malen
+		while(y<8 && MENU_USE_BG!=1){ // die zeilen unter dem Men? ausmmalen
+			TFT.draw_filled_rect(14,28*y+3,240,24,0); // mit hintergrundfarbe nen kasten malen
 			y++;
 		}
 	}
 	///////// Menu ausgeben ////////////
+	if(MENU_USE_BG==1){
+		TFT.set_transparent_font(false);
+		TFT.SetTextColor(TFT.convert_color(255,255,255));
+	}
 };
 ///// ein text men? zeichnen ////////////
 // go_left(update_twice)
@@ -1859,12 +1943,11 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 	 *  and
 	 *  2. the shorter delay is passed (Millis.get()>(menu_button_fast_timeout+button_time)) (0.1sec)
 	 */
-	hw_keys_en=false;
 	if((hw_keys_en || button_first_push!=0) && Speedo.startup_by_ignition){ // hier gehen wir nur rein wenn ein interrupt da war und einer der buttons noch gedr?ckt ist
 		if((Millis.get()>(button_time+menu_button_timeout)) ||
 				((button_first_push>0 && Millis.get()>(button_first_push+menu_button_fast_delay)) && Millis.get()>(menu_button_fast_timeout+button_time)) ){ // halbe sek timeout
 			//////////////////////// rechts ist gedr?ckt ////////////////////////
-			if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_12)==Bit_RESET && button_rechts_valid){
+			if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_12)==Bit_RESET && button_rechts_valid){
 				if(button_first_push==0){
 					button_first_push=Millis.get();
 				};
@@ -1874,7 +1957,7 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr?cken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				// wenn nach der Wartezeit der button immernoch gedr?ckt ist
-				if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_12)==Bit_RESET){
+				if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_12)==Bit_RESET){
 					go_right(true); // update display() via menu
 					return true;
 				} else {
@@ -1883,7 +1966,7 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 			}
 
 			//////////////////////// links ist gedr?ckt ////////////////////////
-			else if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_13)==Bit_RESET && button_links_valid){
+			else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13)==Bit_RESET && button_links_valid){
 				if(button_first_push==0){
 					button_first_push=Millis.get();
 				};
@@ -1893,7 +1976,7 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr?cken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				// wenn nach der Wartezeit der button immernoch gedr?ckt ist
-				if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_13)==Bit_RESET){
+				if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13)==Bit_RESET){
 					go_left(true); // update display() via menu
 					return true;
 					// wenn der pegel doch nicht mehr anliegt ( spike )
@@ -1903,7 +1986,7 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 			}
 
 			//////////////////////// oben ist gedr?ckt ////////////////////////
-			else if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14)==Bit_RESET && button_oben_valid){
+			else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_14)==Bit_RESET && button_oben_valid){
 				if(button_first_push==0){
 					button_first_push=Millis.get();
 				};
@@ -1914,7 +1997,7 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr?cken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				// wenn nach der Wartezeit der button immernoch gedr?ckt ist
-				if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14)==Bit_RESET){
+				if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_14)==Bit_RESET){
 					go_up(true); // update display() via menu
 					return true;
 				} else {
@@ -1923,7 +2006,7 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 			}
 
 			//////////////////////// unten ist gedr?ckt ////////////////////////
-			else if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15)==Bit_RESET && button_unten_valid){
+			else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_15)==Bit_RESET && button_unten_valid){
 				if(button_first_push==0){
 					button_first_push=Millis.get();
 				};
@@ -1934,7 +2017,7 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 				_delay_ms(menu_second_wait); // warte ein backup intervall um einen spike zu unterdr?cken
 				// erst wenn nach dem _delay_ms noch der pegel anliegt
 				// wenn nach der Wartezeit der button immernoch gedr?ckt ist
-				if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15)==Bit_RESET){
+				if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_15)==Bit_RESET){
 					go_down(true); // update display() via menu
 					return true;
 				} else {
@@ -1957,50 +2040,51 @@ bool menu::button_test(bool bt_keys_en, bool hw_keys_en){
 
 void menu::init(){
 	Serial.puts(USART1,("Menu init ..."));
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 
 	/* This sequence sets up the TX and RX pins
 	 * so they work correctly with the USART1 peripheral
 	 */
-//	GPIO_InitTypeDef GPIO_InitStruct;
-//	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12;
-//	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN; 			// the pins are configured as alternate function so the USART peripheral has access to them
-//	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;		// this defines the IO speed and has nothing to do with the baudrate!
-//	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;			// this defines the output type as push pull mode (as opposed to open drain)
-//	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;			// this activates the pullup resistors on the IO pins
-//	GPIO_Init(GPIOB, &GPIO_InitStruct);
-//
-//	///////////////////// INPUT INTERRUPT //////////////////
-//	EXTI_InitTypeDef   EXTI_InitStructure;
-//	NVIC_InitTypeDef   NVIC_InitStructure;
-//
-//	// Clock enable (SYSCONFIG)
-//	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-//
-//	// EXT_INT0 mit Pin verbinden
-//	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource15);
-//	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource14);
-//	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource13);
-//	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource12);
-//
-//	// EXT_INT0 config
-//	EXTI_InitStructure.EXTI_Line = EXTI_Line12|EXTI_Line13|EXTI_Line14|EXTI_Line15;
-//	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-//	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
-//	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-//	EXTI_Init(&EXTI_InitStructure);
-//
-//	// NVIC config
-//	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
-//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x04;
-//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
-//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//	NVIC_Init(&NVIC_InitStructure);
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN; 			// the pins are configured as alternate function so the USART peripheral has access to them
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;		// this defines the IO speed and has nothing to do with the baudrate!
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;			// this defines the output type as push pull mode (as opposed to open drain)
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;			// this activates the pullup resistors on the IO pins
+	GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	///////////////////// INPUT INTERRUPT //////////////////
+	EXTI_InitTypeDef   EXTI_InitStructure;
+	NVIC_InitTypeDef   NVIC_InitStructure;
+
+	// Clock enable (SYSCONFIG)
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+
+	// EXT_INT0 mit Pin verbinden
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource15);
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource14);
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource13);
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource12);
+
+	// EXT_INT0 config
+	EXTI_InitStructure.EXTI_Line = EXTI_Line12|EXTI_Line13|EXTI_Line14|EXTI_Line15;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+
+	// NVIC config
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x04;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 
 
 	// see if its a clock startup or a regular startup
 	if(Speedo.startup_by_ignition){
-		state=BMP(0,0,0,0,0,1,1);
+		//		state=BMP(0,0,0,0,0,1,1);
+		state=BMP(0,0,0,0,0,0,1);
 	} else {
 		state=BMP(0,0,0,0,2,9,1); // clock mode
 	}
@@ -2009,6 +2093,7 @@ void menu::init(){
 	button_first_push=Millis.get();
 	update_display=false;
 	just_marker_update=false;
+	menu_image_background_preloaded=false;
 
 	Serial.puts_ln(USART1,(" done"));
 };

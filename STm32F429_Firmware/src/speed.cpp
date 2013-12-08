@@ -179,7 +179,7 @@ void Speed::check_umfang(){
 		TFT.string(Speedo.default_font,("Speed up!"),5,0,15,0,0);
 		flat_counter_calibrate_umfang=0;
 	} else if(gps_speed>gps_takeover && Speedo.disp_zeile_bak[0]==1){
-		TFT.filled_rect(0,0,128,8,0);
+		TFT.draw_filled_rect(0,0,128,8,0);
 		Speedo.disp_zeile_bak[0]=0;
 	}
 

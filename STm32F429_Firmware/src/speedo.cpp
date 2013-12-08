@@ -141,7 +141,7 @@ void speedo::loop(unsigned long previousMillis){
 				disp_zeile_bak[ADD_INFO2]=int(dist);
 				Debug.speedo_loop(13,0,previousMillis," ");
 				if(result_value>-1){ // -1 => no gps
-					TFT.filled_rect(0,8*addinfo2_widget.y,128,8,0xffff); // den bereich am ende der Zeile leeren ??
+					TFT.draw_filled_rect(0,8*addinfo2_widget.y,128,8,0xffff); // den bereich am ende der Zeile leeren ??
 					TFT.string(addinfo2_widget.font,char_buffer,addinfo2_widget.x,addinfo2_widget.y,15,0,1); // die Ziel ausgabe
 				} else {
 					TFT.highlight_bar(0,8*addinfo2_widget.y,128,8);

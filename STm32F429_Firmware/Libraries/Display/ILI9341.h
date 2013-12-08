@@ -17,8 +17,12 @@ typedef struct
 #define  LCD_PIXEL_HEIGHT    ((uint16_t)320)
 #define  LCD_PIXEL_WIDTH     ((uint16_t)240)
 
+#define  LCD_PIXEL  LCD_PIXEL_HEIGHT*LCD_PIXEL_WIDTH
+
+
 #define LCD_FRAME_BUFFER       ((uint32_t)0xD0000000)
-#define BUFFER_OFFSET          ((uint32_t)0x50000)
+//#define BUFFER_OFFSET          ((uint32_t)0x50000)
+#define BUFFER_OFFSET 			((uint32_t)(LCD_PIXEL*2))
 
 /** 
  * @brief  LCD Control pin
@@ -164,8 +168,10 @@ typedef struct
 /** 
  * @brief  LCD Layer
  */
-#define LCD_BACKGROUND_LAYER     0x0000
-#define LCD_FOREGROUND_LAYER     0x0001
+#define BACKGROUND_LAYER     0x0000
+#define FOREGROUND_LAYER     0x0001
+#define HIDDEN_LAYER_1     	 0x0002
+#define MENU_BG_LAYER     	 50
 
 /**
  * @}
@@ -199,6 +205,9 @@ public:
 	void     SetBackColor(uint16_t Color);
 	void     SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width);
 	uint32_t SetCursor(uint32_t Xpos, uint32_t Ypos);
+	uint16_t CopyPicture(uint32_t Layer_src,uint32_t Layer_dest);
+	uint16_t CopyPicture(uint32_t Layer_src,uint32_t Layer_dest, uint16_t to_x,uint16_t to_y, uint16_t width,uint16_t height);
+	uint16_t CopyPicture(uint32_t Layer_src,uint32_t Layer_dest, uint16_t to_x,uint16_t to_y, uint16_t from_x, uint16_t from_y ,uint16_t width,uint16_t height);
 
 	// text functions
 	void 	 set_transparent_font(bool in);
@@ -235,10 +244,11 @@ public:
 	uint16_t convert_color(uint8_t r,uint8_t g,uint8_t b);
 	void 	 draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 	void 	 draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint8_t r, uint8_t g, uint8_t b);
+	void     draw_circle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
 
 	// extended drawing functions
-	void     filled_rect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t color);
-	void 	 filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t r,uint8_t g,uint8_t b);
+	void     draw_filled_rect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t color);
+	void 	 draw_filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t r,uint8_t g,uint8_t b);
 	void 	 highlight_bar(uint16_t x,uint16_t y,uint16_t width,uint16_t height);
 
 	/* Global variables to set the written text color */
@@ -246,7 +256,7 @@ public:
 	uint16_t CurrentBackColor   = 0xFFFF;
 	/* Default LCD configuration with LCD Layer 1 */
 	uint32_t CurrentFrameBuffer = LCD_FRAME_BUFFER;
-	uint32_t CurrentLayer = LCD_BACKGROUND_LAYER;
+	uint32_t CurrentLayer = BACKGROUND_LAYER;
 
 	unsigned char startup[35]; // asdfghjk.asd,1234,1234,1234\0 == 28
 
@@ -280,7 +290,6 @@ private:
 	void     LCD_WindowModeDisable(void);
 
 	void     LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width);
-	void     LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
 	void     LCD_DrawEllipse(int Xpos, int Ypos, int Radius, int Radius2);
 	void     LCD_DrawFullEllipse(int Xpos, int Ypos, int Radius, int Radius2);
 	void     LCD_DrawMonoPict(const uint32_t *Pict);

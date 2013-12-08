@@ -13,7 +13,7 @@ ILI9341::ILI9341(){
 	CurrentBackColor   = 0xFFFF;
 	/* Default LCD configuration with LCD Layer 1 */
 	CurrentFrameBuffer = LCD_FRAME_BUFFER;
-	CurrentLayer = LCD_BACKGROUND_LAYER;
+	CurrentLayer = BACKGROUND_LAYER;
 	transparent_font=false;
 }
 
@@ -214,7 +214,7 @@ void ILI9341::init(void)
 	/* Initialize the LCD */
 	TFT.LayerInit();
 	LTDC_Cmd(ENABLE);
-	TFT.SetLayer(LCD_FOREGROUND_LAYER);
+	TFT.SetLayer(FOREGROUND_LAYER);
 	TFT.clear_screen(LCD_COLOR_BLACK);
 	TFT.SetTransparency(0);
 	LTDC_ReloadConfig(LTDC_IMReload);
@@ -328,19 +328,65 @@ void ILI9341::LCD_ChipSelect(FunctionalState NewState)
  */
 void ILI9341::SetLayer(uint32_t Layerx)
 {
-	if (Layerx == LCD_BACKGROUND_LAYER)
-	{
-		CurrentFrameBuffer = LCD_FRAME_BUFFER;
-		CurrentLayer = LCD_BACKGROUND_LAYER;
-	}
-	else
-	{
-		CurrentFrameBuffer = LCD_FRAME_BUFFER + BUFFER_OFFSET;
-		CurrentLayer = LCD_FOREGROUND_LAYER;
-	}
+	//	if (Layerx == BACKGROUND_LAYER)
+	//	{
+	//		CurrentFrameBuffer = LCD_FRAME_BUFFER;
+	//		//		CurrentLayer = BACKGROUND_LAYER;
+	//	} else if(Layerx == FOREGROUND_LAYER) {
+	//		CurrentFrameBuffer = LCD_FRAME_BUFFER + BUFFER_OFFSET;
+	//		//		CurrentLayer = FOREGROUND_LAYER;
+	//	} else  {
+	CurrentFrameBuffer = LCD_FRAME_BUFFER + Layerx*BUFFER_OFFSET;
+	//		CurrentLayer = HIDDEN_LAYER_1;
+	//	}
+	CurrentLayer=Layerx;
 }  
 
+uint16_t ILI9341::CopyPicture(uint32_t Layer_src,uint32_t Layer_dest){
+	return CopyPicture(Layer_src,Layer_dest,0,0,0,0,320,240);
+};
 
+uint16_t ILI9341::CopyPicture(uint32_t Layer_src,uint32_t Layer_dest, uint16_t to_x,uint16_t to_y, uint16_t width,uint16_t height){
+	return CopyPicture(Layer_src,Layer_dest,to_x,to_y,0,0,width,height);
+};
+
+uint16_t ILI9341::CopyPicture(uint32_t Layer_src,uint32_t Layer_dest, uint16_t to_x,uint16_t to_y, uint16_t from_x, uint16_t from_y ,uint16_t width,uint16_t height){
+	uint32_t start=Millis.get();
+
+	DMA2D_InitTypeDef      DMA2D_InitStruct;
+	DMA2D_FG_InitTypeDef   DMA2D_FG_InitStruct;
+
+
+	uint32_t  dest_address = Layer_dest*BUFFER_OFFSET+LCD_FRAME_BUFFER+((320-width-to_x)*240+to_y)*2;
+	uint32_t  source_address = Layer_src*BUFFER_OFFSET+LCD_FRAME_BUFFER+((320-width-from_x)*240+from_y)*2;
+
+	DMA2D_DeInit();
+	DMA2D_InitStruct.DMA2D_Mode = DMA2D_M2M;
+	DMA2D_InitStruct.DMA2D_CMode = DMA2D_RGB565;
+	DMA2D_InitStruct.DMA2D_OutputMemoryAdd = dest_address;
+	DMA2D_InitStruct.DMA2D_OutputGreen = 0;
+	DMA2D_InitStruct.DMA2D_OutputBlue = 0;
+	DMA2D_InitStruct.DMA2D_OutputRed = 0;
+	DMA2D_InitStruct.DMA2D_OutputAlpha = 0;
+	DMA2D_InitStruct.DMA2D_OutputOffset = 240-height;
+	DMA2D_InitStruct.DMA2D_NumberOfLine = width;
+	DMA2D_InitStruct.DMA2D_PixelPerLine = height;
+	DMA2D_Init(&DMA2D_InitStruct);
+
+	DMA2D_FG_StructInit(&DMA2D_FG_InitStruct);
+	DMA2D_FG_InitStruct.DMA2D_FGMA = source_address;
+	DMA2D_FG_InitStruct.DMA2D_FGCM = CM_RGB565;
+	DMA2D_FG_InitStruct.DMA2D_FGPFC_ALPHA_MODE = NO_MODIF_ALPHA_VALUE;
+	DMA2D_FG_InitStruct.DMA2D_FGPFC_ALPHA_VALUE = 0;
+	DMA2D_FG_InitStruct.DMA2D_FGO=240-height;//0;//picture_width-koord.source_w;
+	DMA2D_FGConfig(&DMA2D_FG_InitStruct);
+
+	DMA2D_StartTransfer();
+
+	while(DMA2D_GetFlagStatus(DMA2D_FLAG_TC) == RESET);
+
+	return Millis.get()-start;
+}
 
 /**
  * @brief  Sets the Text color.
@@ -381,27 +427,27 @@ void ILI9341::SetBackColor(uint16_t Color)
  * 255 = not visible
  *
  // Setting the Background to "a lot transparancy" green + foregroud to "complete transparent" results in a dark green
- //	TFT.SetLayer(LCD_BACKGROUND_LAYER); 	TFT.clear_screen(LCD_COLOR_GREEN); 	TFT.SetTransparency(200);
- //	TFT.SetLayer(LCD_FOREGROUND_LAYER);	TFT.SetTransparency(255);	TFT.clear_screen(LCD_COLOR_BLUE);
+ //	TFT.SetLayer(BACKGROUND_LAYER); 	TFT.clear_screen(LCD_COLOR_GREEN); 	TFT.SetTransparency(200);
+ //	TFT.SetLayer(FOREGROUND_LAYER);	TFT.SetTransparency(255);	TFT.clear_screen(LCD_COLOR_BLUE);
 
  // Setting the Background to 100% green + Foreground to 100% transparent => full green
- //	TFT.SetLayer(LCD_BACKGROUND_LAYER);		TFT.clear_screen(LCD_COLOR_GREEN);	TFT.SetTransparency(0);
- //	TFT.SetLayer(LCD_FOREGROUND_LAYER); 	TFT.SetTransparency(255);	TFT.clear_screen(LCD_COLOR_BLUE);
+ //	TFT.SetLayer(BACKGROUND_LAYER);		TFT.clear_screen(LCD_COLOR_GREEN);	TFT.SetTransparency(0);
+ //	TFT.SetLayer(FOREGROUND_LAYER); 	TFT.SetTransparency(255);	TFT.clear_screen(LCD_COLOR_BLUE);
 
  // setting back to 100%green + foreground to 180/255 transparent blue => türkies
 
  // setting foreground to blue 0 transparency and background to green 0 trans => green (written later!)
- //TFT.SetLayer(LCD_FOREGROUND_LAYER); 	TFT.SetTransparency(0);	TFT.clear_screen(LCD_COLOR_BLUE);
- //TFT.SetLayer(LCD_BACKGROUND_LAYER);		TFT.clear_screen(LCD_COLOR_GREEN);	TFT.SetTransparency(0);
+ //TFT.SetLayer(FOREGROUND_LAYER); 	TFT.SetTransparency(0);	TFT.clear_screen(LCD_COLOR_BLUE);
+ //TFT.SetLayer(BACKGROUND_LAYER);		TFT.clear_screen(LCD_COLOR_GREEN);	TFT.SetTransparency(0);
 
 	//////////// fading ////////////
 
- //	TFT.SetLayer(LCD_BACKGROUND_LAYER);
+ //	TFT.SetLayer(BACKGROUND_LAYER);
  //	TFT.clear_screen(LCD_COLOR_GREEN);
  //	TFT.filled_rect(250,170,50,50,TFT.convert_color(0,0,255));
  //	TFT.SetTransparency(0);
  //
- //	TFT.SetLayer(LCD_FOREGROUND_LAYER);
+ //	TFT.SetLayer(FOREGROUND_LAYER);
  //	TFT.clear_screen(LCD_COLOR_BLUE);
  //	TFT.filled_rect(20,20,50,50,TFT.convert_color(255,0,0));
  //
@@ -431,13 +477,12 @@ void ILI9341::SetBackColor(uint16_t Color)
  */
 void ILI9341::SetTransparency(uint8_t transparency)
 {
-	if (CurrentLayer == LCD_BACKGROUND_LAYER)
-	{
+	if (CurrentLayer == BACKGROUND_LAYER){
 		LTDC_LayerAlpha(LTDC_Layer1, 0xff-transparency);
-	}
-	else
-	{
+	} else if( CurrentLayer == FOREGROUND_LAYER ){
 		LTDC_LayerAlpha(LTDC_Layer2, 0xff-transparency);
+	} else {
+		return;
 	}
 	LTDC_ReloadConfig(LTDC_IMReload);
 }
@@ -472,7 +517,7 @@ void ILI9341::clear_screen(uint16_t Color)
  */
 uint32_t ILI9341::SetCursor(uint32_t Xpos, uint32_t Ypos)
 {  
-	return CurrentFrameBuffer + (((uint32_t)(320-Xpos)*(uint32_t)(240)	+	Ypos)<<1); // *2
+	return CurrentFrameBuffer + (((uint32_t)(319-Xpos)*(uint32_t)(240)	+	Ypos)<<1); // *2
 }
 
 /**
@@ -489,7 +534,7 @@ void ILI9341::LCD_SetColorKeying(uint32_t RGBValue)
 	LTDC_colorkeying_InitStruct.LTDC_ColorKeyGreen = (0x00FF00 & RGBValue) >> 8;
 	LTDC_colorkeying_InitStruct.LTDC_ColorKeyRed = (0xFF0000 & RGBValue) >> 16;
 
-	if (CurrentLayer == LCD_BACKGROUND_LAYER)
+	if (CurrentLayer == BACKGROUND_LAYER)
 	{
 		/* Enable the color Keying for Layer1 */
 		LTDC_ColorKeyingConfig(LTDC_Layer1, &LTDC_colorkeying_InitStruct, ENABLE);
@@ -512,7 +557,7 @@ void ILI9341::LCD_ReSetColorKeying(void)
 {
 	LTDC_ColorKeying_InitTypeDef   LTDC_colorkeying_InitStruct;
 
-	if (CurrentLayer == LCD_BACKGROUND_LAYER)
+	if (CurrentLayer == BACKGROUND_LAYER)
 	{
 		/* Disable the color Keying for Layer1 */
 		LTDC_ColorKeyingConfig(LTDC_Layer1, &LTDC_colorkeying_InitStruct, DISABLE);
@@ -716,7 +761,7 @@ void ILI9341::string(uint8_t font,char *str,uint8_t spalte, uint8_t zeile, uint8
 void ILI9341::SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width)
 {
 
-	if (CurrentLayer == LCD_BACKGROUND_LAYER)
+	if (CurrentLayer == BACKGROUND_LAYER)
 	{
 		/* reconfigure the layer1 position */
 		LTDC_LayerPosition(LTDC_Layer1, Xpos, Ypos);
@@ -899,14 +944,19 @@ void ILI9341::LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16
  * @param  Radius: radius of the circle.
  * @retval None
  */
-void ILI9341::LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius)
+void ILI9341::draw_circle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius)
 {
 	int x = -Radius, y = 0, err = 2-2*Radius, e2;
 	do {
-		*(__IO uint16_t*) (CurrentFrameBuffer + (2*((Xpos-x) + LCD_PIXEL_WIDTH*(Ypos+y)))) = CurrentTextColor;
-		*(__IO uint16_t*) (CurrentFrameBuffer + (2*((Xpos+x) + LCD_PIXEL_WIDTH*(Ypos+y)))) = CurrentTextColor;
-		*(__IO uint16_t*) (CurrentFrameBuffer + (2*((Xpos+x) + LCD_PIXEL_WIDTH*(Ypos-y)))) = CurrentTextColor;
-		*(__IO uint16_t*) (CurrentFrameBuffer + (2*((Xpos-x) + LCD_PIXEL_WIDTH*(Ypos-y)))) = CurrentTextColor;
+//		*(__IO uint16_t*) (CurrentFrameBuffer + (2*((Xpos-x) + LCD_PIXEL_WIDTH*(Ypos+y)))) = CurrentTextColor;
+//		*(__IO uint16_t*) (CurrentFrameBuffer + (2*((Xpos+x) + LCD_PIXEL_WIDTH*(Ypos+y)))) = CurrentTextColor;
+//		*(__IO uint16_t*) (CurrentFrameBuffer + (2*((Xpos+x) + LCD_PIXEL_WIDTH*(Ypos-y)))) = CurrentTextColor;
+//		*(__IO uint16_t*) (CurrentFrameBuffer + (2*((Xpos-x) + LCD_PIXEL_WIDTH*(Ypos-y)))) = CurrentTextColor;
+
+		Pixel(Xpos-x,Ypos+y,CurrentTextColor);
+		Pixel(Xpos+x,Ypos+y,CurrentTextColor);
+		Pixel(Xpos+x,Ypos-y,CurrentTextColor);
+		Pixel(Xpos-x,Ypos-y,CurrentTextColor);
 
 		e2 = err;
 		if (e2 <= y) {
@@ -1062,109 +1112,109 @@ void ILI9341::LCD_DrawMonoPict(const uint32_t *Pict)
  * @param  BmpAddress: Bmp picture address in the internal Flash.
  * @retval None
  */
-void ILI9341::LCD_WriteBMP(uint32_t BmpAddress)
-{
-	uint32_t index = 0, size = 0, width = 0, height = 0, bit_pixel = 0;
-	uint32_t Address;
-	uint32_t currentline = 0, linenumber = 0;
-
-	Address = CurrentFrameBuffer;
-
-	/* Read bitmap size */
-	size = *(__IO uint16_t *) (BmpAddress + 2);
-	size |= (*(__IO uint16_t *) (BmpAddress + 4)) << 16;
-
-	/* Get bitmap data address offset */
-	index = *(__IO uint16_t *) (BmpAddress + 10);
-	index |= (*(__IO uint16_t *) (BmpAddress + 12)) << 16;
-
-	/* Read bitmap width */
-	width = *(uint16_t *) (BmpAddress + 18);
-	width |= (*(uint16_t *) (BmpAddress + 20)) << 16;
-
-	/* Read bitmap height */
-	height = *(uint16_t *) (BmpAddress + 22);
-	height |= (*(uint16_t *) (BmpAddress + 24)) << 16;
-
-	/* Read bit/pixel */
-	bit_pixel = *(uint16_t *) (BmpAddress + 28);
-
-	if (CurrentLayer == LCD_BACKGROUND_LAYER)
-	{
-		/* reconfigure layer size in accordance with the picture */
-		LTDC_LayerSize(LTDC_Layer1, width, height);
-		LTDC_ReloadConfig(LTDC_VBReload);
-
-		/* Reconfigure the Layer pixel format in accordance with the picture */
-		if ((bit_pixel/8) == 4)
-		{
-			LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_ARGB8888);
-			LTDC_ReloadConfig(LTDC_VBReload);
-		}
-		else if ((bit_pixel/8) == 2)
-		{
-			LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_RGB565);
-			LTDC_ReloadConfig(LTDC_VBReload);
-		}
-		else
-		{
-			LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_RGB888);
-			LTDC_ReloadConfig(LTDC_VBReload);
-		}
-	}
-	else
-	{
-		/* reconfigure layer size in accordance with the picture */
-		LTDC_LayerSize(LTDC_Layer2, width, height);
-		LTDC_ReloadConfig(LTDC_VBReload);
-
-		/* Reconfigure the Layer pixel format in accordance with the picture */
-		if ((bit_pixel/8) == 4)
-		{
-			LTDC_LayerPixelFormat(LTDC_Layer2, LTDC_Pixelformat_ARGB8888);
-			LTDC_ReloadConfig(LTDC_VBReload);
-		}
-		else if ((bit_pixel/8) == 2)
-		{
-			LTDC_LayerPixelFormat(LTDC_Layer2, LTDC_Pixelformat_RGB565);
-			LTDC_ReloadConfig(LTDC_VBReload);
-		}
-		else
-		{
-			LTDC_LayerPixelFormat(LTDC_Layer2, LTDC_Pixelformat_RGB888);
-			LTDC_ReloadConfig(LTDC_VBReload);
-		}
-	}
-
-	/* compute the real size of the picture (without the header)) */
-	size = (size - index);
-
-	/* bypass the bitmap header */
-	BmpAddress += index;
-
-	/* start copie image from the bottom */
-	Address += width*(height-1)*(bit_pixel/8);
-
-	for(index = 0; index < size; index++)
-	{
-		*(__IO uint8_t*) (Address) = *(__IO uint8_t *)BmpAddress;
-
-		/*jump on next byte */
-		BmpAddress++;
-		Address++;
-		currentline++;
-
-		if((currentline/(bit_pixel/8)) == width)
-		{
-			if(linenumber < height)
-			{
-				linenumber++;
-				Address -=(2*width*(bit_pixel/8));
-				currentline = 0;
-			}
-		}
-	}
-}
+//void ILI9341::LCD_WriteBMP(uint32_t BmpAddress)
+//{
+//	uint32_t index = 0, size = 0, width = 0, height = 0, bit_pixel = 0;
+//	uint32_t Address;
+//	uint32_t currentline = 0, linenumber = 0;
+//
+//	Address = CurrentFrameBuffer;
+//
+//	/* Read bitmap size */
+//	size = *(__IO uint16_t *) (BmpAddress + 2);
+//	size |= (*(__IO uint16_t *) (BmpAddress + 4)) << 16;
+//
+//	/* Get bitmap data address offset */
+//	index = *(__IO uint16_t *) (BmpAddress + 10);
+//	index |= (*(__IO uint16_t *) (BmpAddress + 12)) << 16;
+//
+//	/* Read bitmap width */
+//	width = *(uint16_t *) (BmpAddress + 18);
+//	width |= (*(uint16_t *) (BmpAddress + 20)) << 16;
+//
+//	/* Read bitmap height */
+//	height = *(uint16_t *) (BmpAddress + 22);
+//	height |= (*(uint16_t *) (BmpAddress + 24)) << 16;
+//
+//	/* Read bit/pixel */
+//	bit_pixel = *(uint16_t *) (BmpAddress + 28);
+//
+//	if (CurrentLayer == BACKGROUND_LAYER)
+//	{
+//		/* reconfigure layer size in accordance with the picture */
+//		LTDC_LayerSize(LTDC_Layer1, width, height);
+//		LTDC_ReloadConfig(LTDC_VBReload);
+//
+//		/* Reconfigure the Layer pixel format in accordance with the picture */
+//		if ((bit_pixel/8) == 4)
+//		{
+//			LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_ARGB8888);
+//			LTDC_ReloadConfig(LTDC_VBReload);
+//		}
+//		else if ((bit_pixel/8) == 2)
+//		{
+//			LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_RGB565);
+//			LTDC_ReloadConfig(LTDC_VBReload);
+//		}
+//		else
+//		{
+//			LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_RGB888);
+//			LTDC_ReloadConfig(LTDC_VBReload);
+//		}
+//	}
+//	else
+//	{
+//		/* reconfigure layer size in accordance with the picture */
+//		LTDC_LayerSize(LTDC_Layer2, width, height);
+//		LTDC_ReloadConfig(LTDC_VBReload);
+//
+//		/* Reconfigure the Layer pixel format in accordance with the picture */
+//		if ((bit_pixel/8) == 4)
+//		{
+//			LTDC_LayerPixelFormat(LTDC_Layer2, LTDC_Pixelformat_ARGB8888);
+//			LTDC_ReloadConfig(LTDC_VBReload);
+//		}
+//		else if ((bit_pixel/8) == 2)
+//		{
+//			LTDC_LayerPixelFormat(LTDC_Layer2, LTDC_Pixelformat_RGB565);
+//			LTDC_ReloadConfig(LTDC_VBReload);
+//		}
+//		else
+//		{
+//			LTDC_LayerPixelFormat(LTDC_Layer2, LTDC_Pixelformat_RGB888);
+//			LTDC_ReloadConfig(LTDC_VBReload);
+//		}
+//	}
+//
+//	/* compute the real size of the picture (without the header)) */
+//	size = (size - index);
+//
+//	/* bypass the bitmap header */
+//	BmpAddress += index;
+//
+//	/* start copie image from the bottom */
+//	Address += width*(height-1)*(bit_pixel/8);
+//
+//	for(index = 0; index < size; index++)
+//	{
+//		*(__IO uint8_t*) (Address) = *(__IO uint8_t *)BmpAddress;
+//
+//		/*jump on next byte */
+//		BmpAddress++;
+//		Address++;
+//		currentline++;
+//
+//		if((currentline/(bit_pixel/8)) == width)
+//		{
+//			if(linenumber < height)
+//			{
+//				linenumber++;
+//				Address -=(2*width*(bit_pixel/8));
+//				currentline = 0;
+//			}
+//		}
+//	}
+//}
 
 /**
  * @brief  Displays a full rectangle.
@@ -1174,11 +1224,11 @@ void ILI9341::LCD_WriteBMP(uint32_t BmpAddress)
  * @param  Width: rectangle width.
  * @retval None
  */
-void ILI9341::filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t r,uint8_t g,uint8_t b){
-	filled_rect(x,y,width,height,convert_color(r,g,b));
+void ILI9341::draw_filled_rect(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t r,uint8_t g,uint8_t b){
+	draw_filled_rect(x,y,width,height,convert_color(r,g,b));
 }
 
-void ILI9341::filled_rect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t color){
+void ILI9341::draw_filled_rect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t color){
 	DMA2D_InitTypeDef      DMA2D_InitStruct;
 
 	uint32_t  Xaddress = 0;
@@ -1188,7 +1238,7 @@ void ILI9341::filled_rect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t
 	Blue_Value = 0x001F & color;
 	Green_Value = (0x07E0 & color) >> 5;
 
-	Xaddress = SetCursor(Xpos+Width,Ypos);
+	Xaddress = SetCursor(Xpos+Width-1,Ypos);
 
 	/* configure DMA2D */
 	DMA2D_DeInit();
@@ -1258,7 +1308,7 @@ void ILI9341::LCD_DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius)
 		CurX++;
 	}
 
-	LCD_DrawCircle(Xpos, Ypos, Radius);
+	draw_circle(Xpos, Ypos, Radius);
 }
 
 
@@ -1948,7 +1998,7 @@ void ILI9341::Pixel(int16_t x, int16_t y){
 }
 
 void ILI9341::Pixel(int16_t x, int16_t y,uint16_t color){
-//	if(x < 0 || x > 319 || y < 0 || y > 239) {	return;		}
+	//	if(x < 0 || x > 319 || y < 0 || y > 239) {	return;		}
 	*(__IO uint16_t*)(SetCursor(x,y))=color;
 }
 
@@ -1969,7 +2019,7 @@ void ILI9341::highlight_bar(uint16_t x,uint16_t y,uint16_t width,uint16_t height
 		draw_line(x+width-i,y,x+width-i,y+height);
 	}
 
-	filled_rect(x+15,y,width-31,height,convert_color(255,0,0));
+	draw_filled_rect(x+15,y,width-31,height,convert_color(255,0,0));
 }
 
 
@@ -2185,7 +2235,7 @@ void ILI9341::string_centered(const char* text, uint8_t line, bool inverted){
 			start_pos=2;
 			highlight_bar(0,line*7,320,16);
 		} else {
-			filled_rect(0,line*7,320,12,0x0f);
+			draw_filled_rect(0,line*7,320,12,0x0f);
 		}
 	}
 	char text_char[length_of_char]; // full display width +1
@@ -2228,9 +2278,9 @@ void ILI9341::draw_blitzer(uint16_t x,uint16_t y){
 }
 
 uint8_t ILI9341::draw_bmp(uint16_t x, uint16_t y,uint8_t* filename){
-#define DRAW_BMP_DEBUG_LEVEL 3
+#define DRAW_BMP_DEBUG_LEVEL 0
 	FIL file;
-//	if (UB_Fatfs_OpenFile(&file, "/Kojla2.bmp", F_RD)== FATFS_OK) {
+	//	if (UB_Fatfs_OpenFile(&file, "/Kojla2.bmp", F_RD)== FATFS_OK) {
 	if(f_open(&file, (TCHAR*)filename, FA_OPEN_EXISTING | FA_READ)==0){
 		// used vars
 		uint32_t index = 0, size = 0, width = 0, height = 0, bit_pixel = 0;
@@ -2277,13 +2327,14 @@ uint8_t ILI9341::draw_bmp(uint16_t x, uint16_t y,uint8_t* filename){
 
 			// draw "512/(bit per pixel)"-pixels
 			for(unsigned int i=0;i<n_byte_read;i+=2){
-				TFT.Pixel(currentline,y+height-linenumber,buffer[i]<<8|buffer[i+1]);
+				TFT.Pixel(x+currentline,y+height-linenumber-1,buffer[i]<<8|buffer[i+1]); // y-1 to start with line 239 instead of 240
 				/*jump on next byte */
 				currentline++;
 				if(currentline == width){
-					if(linenumber < height)	{
-						linenumber++;
-						currentline = 0;
+					linenumber++;
+					currentline = 0;
+					if(linenumber >= height)	{ // linenumber: 0 .. height-1
+						break;
 					}
 				}
 			} // draw pixels
@@ -2292,9 +2343,13 @@ uint8_t ILI9341::draw_bmp(uint16_t x, uint16_t y,uint8_t* filename){
 #if DRAW_BMP_DEBUG_LEVEL>1
 		//// time debug ////
 		uint32_t time = Millis.get() - start;
-		sprintf(buffer,"Times: %i / %i",time,read_time);
+		sprintf(buffer,"Times: %lums total / %lums read",time,read_time);
 		TFT.set_transparent_font(true);
-		TFT.string(buffer,0,0);
+		TFT.string(VISITOR_SMALL_1X_FONT,buffer,1,0);
+		sprintf(buffer,"Height/Width: %lu / %lu",height,width);
+		TFT.string(VISITOR_SMALL_1X_FONT,buffer,1,1);
+		sprintf(buffer,"Index %lu ",index);
+		TFT.string(VISITOR_SMALL_1X_FONT,buffer,1,2);
 		TFT.set_transparent_font(false);
 		//// time debug ////
 #endif
@@ -2437,7 +2492,7 @@ void ILI9341::draw_arrow(int angle, int x_pos, int y_pos, uint8_t r, uint8_t g, 
 
 	// clean space it if required
 	if(clean){
-		filled_rect(x_pos,y_pos,32,32,0,0,0);
+		draw_filled_rect(x_pos,y_pos,32,32,0,0,0);
 	}
 
 	// now draw it
