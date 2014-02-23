@@ -2019,7 +2019,7 @@ void ILI9341::highlight_bar(uint16_t x,uint16_t y,uint16_t width,uint16_t height
 		draw_line(x+width-i,y,x+width-i,y+height);
 	}
 
-	draw_filled_rect(x+15,y,width-31,height,convert_color(255,0,0));
+	draw_filled_rect(x+15,y,width-30,height,convert_color(255,0,0));
 }
 
 

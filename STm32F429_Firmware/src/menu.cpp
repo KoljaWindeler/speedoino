@@ -2083,8 +2083,8 @@ void menu::init(){
 
 	// see if its a clock startup or a regular startup
 	if(Speedo.startup_by_ignition){
-		//		state=BMP(0,0,0,0,0,1,1);
-		state=BMP(0,0,0,0,0,0,1);
+		state=BMP(0,0,0,0,0,1,1);
+		//		state=BMP(0,0,0,0,0,0,1);
 	} else {
 		state=BMP(0,0,0,0,2,9,1); // clock mode
 	}

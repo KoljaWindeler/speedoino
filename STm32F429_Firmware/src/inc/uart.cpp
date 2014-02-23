@@ -22,16 +22,15 @@ void uart::init(USART_TypeDef* USARTx,uint32_t baudrate){
 		 * They make our life easier because we don't have to mess around with
 		 * the low level stuff of setting bits in the correct registers
 		 */
-		GPIO_InitTypeDef GPIO_InitStruct; // this is for the GPIO pins used as TX and RX
+		GPIO_InitTypeDef  GPIO_InitStruct; // this is for the GPIO pins used as TX and RX
 		USART_InitTypeDef USART_InitStruct; // this is for the USART1 initilization
-		NVIC_InitTypeDef NVIC_InitStructure; // this is used to configure the NVIC (nested vector interrupt controller)
+		NVIC_InitTypeDef  NVIC_InitStructure; // this is used to configure the NVIC (nested vector interrupt controller)
 
 		/* enable APB2 peripheral clock for USART1
 		 * note that only USART1 and USART6 are connected to APB2
 		 * the other USARTs are connected to APB1
 		 */
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
-
 
 		/* enable the peripheral clock for the pins used by
 		 * USART1, PA9 for TX and PA10 for RX
@@ -41,18 +40,19 @@ void uart::init(USART_TypeDef* USARTx,uint32_t baudrate){
 		/* This sequence sets up the TX and RX pins
 		 * so they work correctly with the USART1 peripheral
 		 */
-		GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9 | 10; // Pins 9 (TX) and 10 (RX) are used
-		GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF; 			// the pins are configured as alternate function so the USART peripheral has access to them
-		GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;		// this defines the IO speed and has nothing to do with the baudrate!
-		GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;			// this defines the output type as push pull mode (as opposed to open drain)
-		GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;			// this activates the pullup resistors on the IO pins
-		GPIO_Init(GPIOA, &GPIO_InitStruct);					// now all the values are passed to the GPIO_Init() function which sets the GPIO registers
+		GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10; 	// Pins 9 (TX) and 10 (RX) are used
+		GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF; 				// the pins are configured as alternate function so the USART peripheral has access to them
+		GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;			// this defines the IO speed and has nothing to do with the baudrate!
+		GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;				// this defines the output type as push pull mode (as opposed to open drain)
+		GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;				// this activates the pullup resistors on the IO pins
+		GPIO_Init(GPIOA, &GPIO_InitStruct);						// now all the values are passed to the GPIO_Init() function which sets the GPIO registers
 
+	    USART_OverSampling8Cmd(USART1, ENABLE);
 		/* The RX and TX pins are now connected to their AF
 		 * so that the USART1 can take over control of the
 		 * pins
 		 */
-		GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1); //
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource9,  GPIO_AF_USART1);
 		GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
 
 		/* Now the USART_InitStruct is used to define the

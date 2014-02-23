@@ -23,9 +23,9 @@ speedo_demo Demo;
 
 void init_speedo(void) {
 	Millis.init();
-	Serial.init(USART1, 115200);
-	Serial.init(USART2, 115200);
-	Serial.init(USART3, 115200);
+	Serial.init(USART1, 115200L);
+	Serial.init(USART2, 115200L);
+	Serial.init(USART3, 115200L);
 
 	Serial.puts_ln(USART1, "=== Speedoino ===");
 	Serial.puts(USART1, GIT_REV);                // print Software release
@@ -52,6 +52,8 @@ void init_speedo(void) {
 	Aktors.init(); // Start outer LEDs // ausschlag des zeigers // Motorausschlag und block bis motor voll ausgeschlagen, solange das letzte intro bild halten
 	TFT.init();
 
+//	SD.prefetched_animation(37); // 37
+
 	Menu.init();    // Start butons // adds the connection between pins and vars
 	Menu.display(); // execute this AFTER pOLED.init_speedo!! this will show the menu and, if state==11, draws speedosymbols
 	Speedo.reset_bak(); // reset all storages, to force the redraw of the speedo
@@ -65,22 +67,6 @@ void init_speedo(void) {
 int main(void) {
 	SystemInit(); // Quarz Einstellungen aktivieren
 	init_speedo();
-
-	//	TFT.SetLayer(FOREGROUND_LAYER);
-	//	TFT.clear_screen(0xFFFF);
-	//
-	//	TFT.SetLayer(HIDDEN_LAYER_1);
-	//	TFT.draw_bmp(0,0,(uint8_t*)"/temp.bmp"); // 12x23
-	//	TFT.draw_bmp(100,0,(uint8_t*)"/time.bmp"); // 24x24
-	//
-	//	TFT.SetLayer(FOREGROUND_LAYER);
-	//	for(int y=10; y<180; y+=50){
-	//		for(int x=10; x<290; x+=30){
-	//			TFT.CopyPicture(HIDDEN_LAYER_1,FOREGROUND_LAYER,x ,y, 0, 0, 12 ,23);
-	//			TFT.CopyPicture(HIDDEN_LAYER_1,FOREGROUND_LAYER,x ,y+25, 100, 0, 24 ,24);
-	//		}
-	//	}
-
 
 	//	SD.prefetched_animation(37); // 37
 	//	Speedo.initial_draw_screen(); // draw symbols
