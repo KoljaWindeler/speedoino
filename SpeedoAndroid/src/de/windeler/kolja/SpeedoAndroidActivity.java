@@ -315,7 +315,6 @@ OnClickListener {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		// Stop the Bluetooth chat services
 		if (mSerialService != null)
 			mSerialService.stop();
 		Log.e(TAG, "--- ON DESTROY ---");

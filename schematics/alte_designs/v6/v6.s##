@@ -26504,11 +26504,6 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 </net>
 <net name="D53" class="0">
 <segment>
-<wire x1="-157.48" y1="198.12" x2="-142.24" y2="198.12" width="0.1524" layer="91"/>
-<label x="-154.94" y="198.12" size="1.778" layer="95"/>
-<pinref part="IC4" gate="1" pin="(SS/PCINT0)PB0"/>
-</segment>
-<segment>
 <wire x1="-96.52" y1="105.41" x2="-88.9" y2="105.41" width="0.1524" layer="91"/>
 <label x="-93.98" y="105.41" size="1.778" layer="95"/>
 <pinref part="R_DI_H" gate="G$1" pin="2"/>
@@ -27754,10 +27749,11 @@ Source: http://www.vishay.com .. dcrcw.pdf</description>
 <junction x="284" y="91.54"/>
 </segment>
 </net>
-<net name="N$25" class="0">
+<net name="CS" class="0">
 <segment>
-<pinref part="IC4" gate="1" pin="(ICP1)PD4"/>
-<wire x1="-157.48" y1="162.56" x2="-147.32" y2="162.56" width="0.1524" layer="91"/>
+<wire x1="-157.48" y1="198.12" x2="-142.24" y2="198.12" width="0.1524" layer="91"/>
+<label x="-154.94" y="198.12" size="1.778" layer="95"/>
+<pinref part="IC4" gate="1" pin="(SS/PCINT0)PB0"/>
 </segment>
 </net>
 </nets>

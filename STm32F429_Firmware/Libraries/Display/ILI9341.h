@@ -252,11 +252,11 @@ public:
 	void 	 highlight_bar(uint16_t x,uint16_t y,uint16_t width,uint16_t height);
 
 	/* Global variables to set the written text color */
-	uint16_t CurrentTextColor   = 0x0000;
-	uint16_t CurrentBackColor   = 0xFFFF;
+	uint16_t CurrentTextColor;;
+	uint16_t CurrentBackColor;
 	/* Default LCD configuration with LCD Layer 1 */
-	uint32_t CurrentFrameBuffer = LCD_FRAME_BUFFER;
-	uint32_t CurrentLayer = BACKGROUND_LAYER;
+	uint32_t CurrentFrameBuffer;
+	uint32_t CurrentLayer;
 
 	unsigned char startup[35]; // asdfghjk.asd,1234,1234,1234\0 == 28
 

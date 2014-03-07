@@ -4188,12 +4188,10 @@ min. Width 0,18mm</description>
 <via x="64.25" y="68.8" extent="1-16" drill="0.3"/>
 </signal>
 <signal name="D53">
-<contactref element="IC4" pad="19"/>
 <contactref element="R_DI_H" pad="2"/>
 <wire x1="25.9" y1="54.05" x2="27.11" y2="54.05" width="0.3048" layer="16"/>
 <wire x1="25.45" y1="54.5" x2="25.9" y2="54.05" width="0.3048" layer="16"/>
 <wire x1="25.45" y1="55.25" x2="25.45" y2="54.5" width="0.3048" layer="16"/>
-<wire x1="37.04" y1="46.66" x2="40.5" y2="46.66" width="0.3048" layer="16"/>
 <wire x1="34.9" y1="48.8" x2="37.04" y2="46.66" width="0.3048" layer="16"/>
 <wire x1="34.9" y1="51.3" x2="34.9" y2="48.8" width="0.3048" layer="16"/>
 <wire x1="29.86" y1="51.3" x2="34.9" y2="51.3" width="0.3048" layer="16"/>
@@ -5674,8 +5672,8 @@ min. Width 0,18mm</description>
 <vertex x="8.2" y="95.9"/>
 </polygon>
 </signal>
-<signal name="N$25">
-<contactref element="IC4" pad="47"/>
+<signal name="CS">
+<contactref element="IC4" pad="19"/>
 </signal>
 </signals>
 </board>
