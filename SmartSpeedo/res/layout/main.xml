@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@layout/main_header_selector" >
+
+    <!-- <com.google.android.gms.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" /> -->
+
+    <com.jkw.smartspeedo.GaugeCustomView
+        android:id="@+id/rpm"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="10dp" />
+    <!-- "Loaded" flash bar layout -->
+
+
+    <!-- gear -->
+
+    <FrameLayout
+        android:id="@+id/GearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="170dp"
+        android:layout_marginBottom="30dp" >
+
+        <com.jkw.smartspeedo.GaugeCustomView
+            android:id="@+id/gear"
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
+    </FrameLayout>
+    <!-- Gear -->
+    
+     <!-- temp -->
+
+    <FrameLayout
+        android:id="@+id/TemperatureLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="4dp" >
+
+        <com.jkw.smartspeedo.GaugeCustomView
+            android:id="@+id/temp"
+            android:layout_width="150dp"
+            android:layout_height="150dp" />
+    </FrameLayout>
+    <!-- temp -->
+    
+    <!-- speed -->
+
+    <FrameLayout
+        android:id="@+id/TemperatureLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="4dp" >
+
+        <com.jkw.smartspeedo.GaugeCustomView
+            android:id="@+id/speed"
+            android:layout_width="150dp"
+            android:layout_height="150dp" />
+    </FrameLayout>
+    <!-- speed -->
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect" />
+
+</FrameLayout>

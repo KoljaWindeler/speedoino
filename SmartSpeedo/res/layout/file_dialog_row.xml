@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@layout/selector" >
+
+    <ImageView
+        android:id="@+id/fdrowimage"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="3dp"
+        android:paddingRight="5dp" >
+    </ImageView>
+   
+    
+     <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/fdrowimage"
+        android:layout_alignTop="@+id/fdrowimage"
+        android:layout_toRightOf="@+id/fdrowimage"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/fdrowtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:shadowColor="#555555"
+            android:shadowDx="1.0"
+            android:shadowDy="1.0"
+            android:shadowRadius="3.0"
+            android:text="Med Text"
+            android:textColor="#FFFFFF" 
+            android:textSize="15dp" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/fdrowtext_lower"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#AAAAAA"
+            android:text="Small Text"
+            android:textSize="12dp" />
+    </LinearLayout>
+
+</RelativeLayout>

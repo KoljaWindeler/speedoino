@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SmartSpeedo</string>
+    <string name="action_settings">Settings</string>
+    <string name="cancel">Cancel</string>
+    <string name="select">select</string>
+    <string name="no_data">no data</string>
+    <string name="location">Location</string>
+    <string name="filter">Filter</string>
+    <string name="cant_read_folder">folder can\'t be read!</string>
+    <string name="title_paired_devices">Paired devices</string>
+    <string name="select_device">Select device</string>
+    <string name="button_scan">Scan</string>
+    <string name="scanning">scanning..</string>
+    <string name="bindestrich">-</string>
+    <string name="title_other_devices">Other devices</string>
+    <string name="none_paired">None paired</string>
+    <string name="none_found">None found</string>
+    <string name="Select_file">Select file</string>
+
+</resources>
