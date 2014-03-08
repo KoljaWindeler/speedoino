@@ -37,6 +37,9 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	public static final String DEVICE_NAME = "device_name";
 	public static final String TOAST = "toast";
 	public static final String result = "result";
+	
+	public static final String SENSOR_VALUE = "value";
+	public static final String SENSOR_TYPE = "sensor";	
 
 	private static final int REQUEST_CONNECT_DEVICE = 1;
 	private static final int REQUEST_ENABLE_BT = 2;
@@ -59,20 +62,25 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		temp=(GaugeCustomView)findViewById(R.id.temp);
 
 		rpm.setLimits(0, 18000);
-		rpm.setStartAngle(180);
+		rpm.setLayout(180, 270, 1000, 200, 18000);
 		rpm.setValue(0);
+		rpm.setType(GaugeCustomView.TYPE_RPM);
+		
 
 		speed.setLimits(0, 300);
-		speed.setStartAngle(180);
+		speed.setLayout(180, 270, 10, 2, 100);
 		speed.setValue(0);
+		speed.setType(GaugeCustomView.TYPE_KMH);
 
 		gear.setLimits(0, 6);
-		gear.setStartAngle(240);
+		gear.setLayout(240, 240, 1, 0, 6);
 		gear.setValue(0);
+		gear.setType(GaugeCustomView.TYPE_GEAR);
 
 		temp.setLimits(40, 120);
-		temp.setStartAngle(240);
-		temp.setValue(80);
+		temp.setLayout(240, 240, 10, 2, 100);
+		temp.setValue(70);
+		temp.setType(GaugeCustomView.TYPE_TEMP);
 
 		// let the scree stay on
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -107,9 +115,9 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 			}
 		} else {
 			// TODO Auto-generated method stub
-			speed.setValue(speed.getValue() + (int)(Math.random()*30)-12);
-			temp.setValue(temp.getValue() + (int)(Math.random()*5)-3);
-			gear.setValue(gear.getValue() + (int)(Math.random()*2)-1);
+			speed.setValue(speed.getValue() + 10);
+			temp.setValue(temp.getValue() + 5);
+			gear.setValue(gear.getValue() + 1);
 			rpm.setValue(rpm.getValue() + (int)(Math.random()*500)-200);
 		}
 	}
@@ -157,6 +165,10 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 			switch (msg.what) {
 
 			// state switch
+			case BluetoothSerialService.MESSAGE_SENSOR_VALUE:
+				rpm.setValue(msg.getData().getInt(SENSOR_VALUE));
+				break;
+			
 			case BluetoothSerialService.MESSAGE_STATE_CHANGE:
 				Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
 

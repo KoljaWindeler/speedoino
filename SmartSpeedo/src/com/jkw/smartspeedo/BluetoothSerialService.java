@@ -55,7 +55,7 @@ public class BluetoothSerialService {
 	private int		ii			= 0;
 	private Handler mTimerHandle = new Handler();
 	private boolean silent=false;
-	
+
 	public static final int ST_IDLE				= -1;
 	public static final int ST_START 			= 0;
 	public static final int ST_GET_SEQ_NUM		= 1;
@@ -67,7 +67,7 @@ public class BluetoothSerialService {
 	public static final int ST_PROCESS			= 7;
 	public static final int ST_EMERGENCY_RELEASE= 999;
 
-	
+
 	// Message types sent by the BluetoothReadService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
 	public static final int MESSAGE_READ = 2;
@@ -81,6 +81,7 @@ public class BluetoothSerialService {
 	public static final int MESSAGE_SET_LOG = 10;
 	public static final int MESSAGE_DIR_APPEND = 11;
 	public static final int MESSAGE_CREATE_CONNECTION = 12;
+	public static final int MESSAGE_SENSOR_VALUE = 13;
 
 	private static final UUID SerialPortServiceClass_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -89,7 +90,7 @@ public class BluetoothSerialService {
 	// Member fields
 	private final BluetoothAdapter mAdapter;
 	private final Handler mHandler;
-//	private Context mContext;
+	//	private Context mContext;
 	private ConnectThread mConnectThread;
 	private ConnectedThread mConnectedThread;
 	private int mState;
@@ -126,6 +127,11 @@ public class BluetoothSerialService {
 	public static final byte CMD_RESET_SMALL_AVR	=  0x40;
 	public static final byte CMD_SIGN_ON_FIRMWARE	=  0x41;
 	public static final byte CMD_SET_STARTUP		=  0x42;
+	
+	public static final byte CMD_GET_WATER_TEMP_ANALOG	=  0x43;
+	public static final byte CMD_GET_WATER_TEMP_DIGITAL	=  0x44;
+	public static final byte CMD_GET_OIL_TEMP_ANALOG	=  0x45;
+	public static final byte CMD_GET_OIL_TEMP_DIGITAL	=  0x46;
 
 
 	public static final char STATUS_CMD_OK      	=  0x00;
@@ -140,17 +146,10 @@ public class BluetoothSerialService {
 	 * Ablauf des Verbindungsaufbau:
 	 * 1. Diese Klasse wird in einer externen Activity Instaziert (die externe Activity gibt einen callBackHandle mit)
 	 * 2. Die Methode connect() wird aufgerufen mit einer Bluetooth Device ID als Argument
-	 * 3. Connect() startet einen neuen Hintergrund Thread: ConnectThread
+	 * 3. Connect() startet einen neuen Hintergrund Thread: ConnectThread damit das UI nicht einfriert beim verbinden
 	 * 4. Der ConnectThread ruft in seinem constructor schon die Android connect API funktion auf
-	 * 5. Die Funktion run vom ConnectThread baut dann einen Socket auf. Wenn das klappt wird die Funktion connected() gestartet
-	 * 6. Die Funktion connected() erzeugt einen neuen Thread vom Typ ConnectedThread
+	 * 5. Die Funktion run vom ConnectThread baut dann einen Socket auf. Wenn das klappt wird ein weiterer neuer Thread vom Typ ConnectedThread gestartet connectThread ist damit zuende und läuft aus
 	 * 7. Der ConnectedThread öffnet den Socket und läuft auf ewig in einer Endlosschleife und wartet auf neue Daten
-	 * 
-	 * Könnte man nicht:
-	 * 
-	 * 3. Connect() ruft die api funktion auf, verbindet den socket und startet einen Hintergrund thread dann bei run den socket öffnet und ewig läuft
-	 * 
-	 * 
 	 * 
 	 * Ablauf des Empfangens:
 	 * 1. Der ConnectedThread liest Daten ein und schickt diese byte für byte an process_incoming()
@@ -166,8 +165,8 @@ public class BluetoothSerialService {
 	 * 4.1.2 send_save gibt den semaphore zurück und versucht den vorgang erneut (wenn die anzahl der retries es zulässt)
 	 * 4.2.1 wenn eine antwort kommt wird sie von process_incoming() empfangen und der semaphore wird zurück gegeben (den send geholt hatte)
 	 */
-	
-	
+
+
 	/**
 	 * Constructor. Prepares a new Bluetooth session.
 	 * @param context  The UI Activity Context
@@ -177,7 +176,7 @@ public class BluetoothSerialService {
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		mState = STATE_NONE;
 		mHandler = handler;
-//		mContext = context;
+		//		mContext = context;
 	}
 
 	/**
@@ -190,7 +189,7 @@ public class BluetoothSerialService {
 		// Give the new state to the Handler so the UI Activity can update
 		mHandler.obtainMessage(MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
 		if(state == STATE_NONE){
-//			preamble_found=false;
+			//			preamble_found=false;
 		} else if(state == STATE_CONNECTED){
 			rx_tx_state	= ST_IDLE;
 		};
@@ -228,18 +227,14 @@ public class BluetoothSerialService {
 	 * @throws InterruptedException 
 	 */
 	public synchronized void connect(BluetoothDevice device,boolean goto_bootloader) throws InterruptedException {
-//		// Cancel any thread attempting to make a connection
-//		if (mState == STATE_CONNECTING) {
-//			if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
-//		}
 
 		// Cancel any thread currently running a connection
 		if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
 
-
 		// Start the thread to connect with the given device
 		Log.e("connect","start thread to connect...");
 		last_connected_device=device; // remember for reconnect
+
 		mConnectThread = new ConnectThread(device);
 		Log.i("connect","starte jetzt mConnectedThread");
 		mConnectThread.setGotoBootloader(goto_bootloader);
@@ -248,65 +243,6 @@ public class BluetoothSerialService {
 		setState(STATE_CONNECTING);
 	}
 
-	/**
-	 * Start the ConnectedThread to begin managing a Bluetooth connection
-	 * @param socket  The BluetoothSocket on which the connection was made
-	 * @param device  The BluetoothDevice that has been connected
-	 * @throws InterruptedException 
-	 */
-	public synchronized void connected(BluetoothSocket socket, BluetoothDevice device, boolean goto_bootloader) throws InterruptedException {
-		Log.i(TAG, "connected");
-
-		// Cancel the thread that completed the connection
-		if (mConnectThread != null) {
-			mConnectThread.cancel(); 
-			mConnectThread = null;
-		}
-
-		// Cancel any thread currently running a connection
-		if (mConnectedThread != null) {
-			mConnectedThread.cancel(); 
-			mConnectedThread = null;
-		}
-
-		// Start the thread to manage the connection and perform transmissions
-		mConnectedThread = new ConnectedThread(socket);
-		Log.i(TAG,"starte jetzt mConnectedThread");
-		mConnectedThread.start();
-		Log.i(TAG,"mConnectedThread start fertig");
-
-		// Send the name of the connected device back to the UI Activity
-		Message msg = mHandler.obtainMessage(MESSAGE_DEVICE_NAME);
-		Bundle bundle = new Bundle();
-		bundle.putString(SmartSpeedoMain.DEVICE_NAME, device.getName());
-		msg.setData(bundle);
-		mHandler.sendMessage(msg);
-
-		setState(STATE_CONNECTED_AND_SEARCHING);
-
-		// if we don't need the bootloader, lets connect right here to the 
-		// firmware and set the State to connected 
-		if(!goto_bootloader){
-			//wait 2 sec to prevent goint to bootloader
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			// check if connected
-			silent=true; // kein popup, da wir durchaus mal 1...2... timeouts abwarten m�ssen f�r den bootloader
-			byte send[] = new byte[1];
-			send[0] = CMD_SIGN_ON_FIRMWARE;
-			if(send_save(send,1,400,60)==0){ // 24 sec versuchen
-				setState(STATE_CONNECTED);
-			} else {
-				setState(STATE_NONE);
-			}
-			silent=false;
-		}
-	}
 
 	/**
 	 * Stop all threads
@@ -437,12 +373,55 @@ public class BluetoothSerialService {
 				mConnectThread = null;
 			}
 
-			// Start the connected thread
-			try {
-				connected(mmSocket, mmDevice, goto_bootloader);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			// Cancel the thread that completed the connection
+			if (mConnectThread != null) {
+				mConnectThread.cancel(); 
+				mConnectThread = null;
+			}
+
+			// Cancel any thread currently running a connection
+			if (mConnectedThread != null) {
+				mConnectedThread.cancel(); 
+				mConnectedThread = null;
+			}
+
+			// Start the thread to manage the connection and perform transmissions
+			mConnectedThread = new ConnectedThread(mmSocket);
+			Log.i(TAG,"starte jetzt mConnectedThread");
+			mConnectedThread.start();
+			Log.i(TAG,"mConnectedThread start fertig");
+
+			// Send the name of the connected device back to the UI Activity
+			Message msg = mHandler.obtainMessage(MESSAGE_DEVICE_NAME);
+			Bundle bundle = new Bundle();
+			bundle.putString(SmartSpeedoMain.DEVICE_NAME, mmDevice.getName());
+			msg.setData(bundle);
+			mHandler.sendMessage(msg);
+
+			setState(STATE_CONNECTED_AND_SEARCHING);
+
+			// if we don't need the bootloader, lets connect right here to the 
+			// firmware and set the State to connected 
+
+			if(!goto_bootloader){
+				//wait 2 sec to prevent goint to bootloader
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// check if connected
+				silent=true; // kein popup, da wir durchaus mal 1...2... timeouts abwarten m�ssen f�r den bootloader
+				byte send[] = new byte[1];
+				send[0] = CMD_SIGN_ON_FIRMWARE;
+				if(send_save(send,1,400,100)==0){ // 4 sec versuchen
+					setState(STATE_CONNECTED);
+				} else {
+					setState(STATE_NONE);
+				}
+				silent=false;
 			}
 		}
 
@@ -488,15 +467,12 @@ public class BluetoothSerialService {
 			byte[] buffer = new byte[1024];
 			int bytes;
 
-//			String temp= new String("finished");
-//			char finished_str[]= new char[temp.length()+1];
-//			temp.getChars(0, temp.length(), finished_str, 0);
-
 			// Keep listening to the InputStream while connected
 			while (true) {
 				try {
 					// Read from the InputStream
 					bytes = mmInStream.read(buffer);
+					String str = new String(buffer, "UTF-8");
 					for(int i=0;i<bytes;i++){
 						process_incoming((char)buffer[i]);
 					}
@@ -689,6 +665,7 @@ public class BluetoothSerialService {
 		//		Log.i(TAG,"process_incoming gestartet mit:"+String.valueOf((int)(data&0x00ff))+"/"+((char)(data&0x00ff))+" rx_state:"+String.valueOf((int)rx_tx_state));			
 		switch(rx_tx_state){
 		case ST_START:
+		case ST_IDLE:
 			if ( data == MESSAGE_START){
 				Log.i(TAG,"Message start erhalten");
 				Log.i(TAG_TIME,"MSG_START recv");
@@ -790,42 +767,27 @@ public class BluetoothSerialService {
 					}
 					break;
 					// da alle richtungen zwar betaetigt werden, danach die schleife auf dem AVR aber unterbrochen wird -> seqNr resetten
-				case CMD_GO_LEFT:
-					msg = mHandler.obtainMessage(MESSAGE_SET_LOG);
+				case CMD_GET_WATER_TEMP_ANALOG:
+					msg = mHandler.obtainMessage(MESSAGE_SENSOR_VALUE);
 					bundle = new Bundle();
-					bundle.putString(SmartSpeedoMain.TOAST, "go_left OK");
+					int value = (msgBuffer[1] << 8) + (msgBuffer[2] & 0xff);
+					bundle.putInt(SmartSpeedoMain.SENSOR_TYPE, 1);
+					bundle.putInt(SmartSpeedoMain.SENSOR_VALUE, value);
+					
 					msg.setData(bundle);
 					mHandler.sendMessage(msg); 
-
-					reset_seq();
+					Log.i(TAG,"statemachine ok, gebe semaphore zurueck");
 					break;
-				case CMD_GO_RIGHT:
-					msg = mHandler.obtainMessage(MESSAGE_SET_LOG);
-					bundle = new Bundle();
-					bundle.putString(SmartSpeedoMain.TOAST, "go_right OK");
-					msg.setData(bundle);
-					mHandler.sendMessage(msg); 
-
-					reset_seq();
-					break;
-				case CMD_GO_UP:
-					msg = mHandler.obtainMessage(MESSAGE_SET_LOG);
-					bundle = new Bundle();
-					bundle.putString(SmartSpeedoMain.TOAST, "go_up OK");
-					msg.setData(bundle);
-					mHandler.sendMessage(msg);
-
-					reset_seq();
-					break;
-				case CMD_GO_DOWN:
-					msg = mHandler.obtainMessage(MESSAGE_SET_LOG);
-					bundle = new Bundle();
-					bundle.putString(SmartSpeedoMain.TOAST, "go_down OK");
-					msg.setData(bundle);
-					mHandler.sendMessage(msg);
-
-					reset_seq();
-					break;
+					
+//				case CMD_GO_DOWN:
+//					msg = mHandler.obtainMessage(MESSAGE_SET_LOG);
+//					bundle = new Bundle();
+//					bundle.putString(SmartSpeedoMain.TOAST, "go_down OK");
+//					msg.setData(bundle);
+//					mHandler.sendMessage(msg);
+//
+//					reset_seq();
+//					break;
 
 					// list of valid commands, the active task will process the data
 				case CMD_DIR: 		// durch einen doofen zufall kann das hier auch LEAVE_PRGM_MODE sein, dann ist die l?nge aber nur 2, bei dem dir ist sie >2 daher kann man das unterscheiden
@@ -884,7 +846,7 @@ public class BluetoothSerialService {
 	 * 5. Die ID des Bootloaders abzufragen
 	 * 6. Die Firmware aus dem HexFile in den Controller schreiben
 	 */
-	
+
 	public int uploadFirmware(String filename,Handler mHandlerUpdate,String flashingDevice) throws IOException, InterruptedException {
 		/*
 		Log.i(TAG, "uploadFirmware soll laden:"+filename);
@@ -1532,10 +1494,10 @@ public class BluetoothSerialService {
 		mHandlerUpdate.sendMessage(msg37);
 		Thread.sleep(10000);
 
-*/
+		 */
 		return 0;
 	}
-	
+
 	///////////////////////////// FIRMWARE UPDATE /////////////////////////////
 
 	///////////////////////////// get_speed_text /////////////////////////////
