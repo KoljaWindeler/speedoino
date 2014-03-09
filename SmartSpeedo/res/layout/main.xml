@@ -25,8 +25,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
-        android:layout_marginRight="170dp"
-        android:layout_marginBottom="30dp" >
+        android:layout_marginRight="190dp"
+        android:layout_marginBottom="20dp" >
 
         <com.jkw.smartspeedo.GaugeCustomView
             android:id="@+id/gear"
@@ -64,8 +64,8 @@
 
         <com.jkw.smartspeedo.GaugeCustomView
             android:id="@+id/speed"
-            android:layout_width="150dp"
-            android:layout_height="150dp" />
+            android:layout_width="200dp"
+            android:layout_height="200dp" />
     </FrameLayout>
     <!-- speed -->
 
@@ -80,5 +80,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:text="Connect" />
+    
+    <TextView
+        android:id="@+id/sat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"
+        android:text="Sats" />
 
 </FrameLayout>

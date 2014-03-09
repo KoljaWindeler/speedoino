@@ -132,6 +132,12 @@ public class BluetoothSerialService {
 	public static final byte CMD_GET_WATER_TEMP_DIGITAL	=  0x44;
 	public static final byte CMD_GET_OIL_TEMP_ANALOG	=  0x45;
 	public static final byte CMD_GET_OIL_TEMP_DIGITAL	=  0x46;
+	
+	public static final int SENSOR_RPM = 1;
+	public static final int SENSOR_SPEED = 2;
+	public static final int SENSOR_WATER_TEMP = 3;
+	public static final int SENSOR_OIL_TEMP = 4;
+	public static final int SENSOR_VOLTAGE = 5;
 
 
 	public static final char STATUS_CMD_OK      	=  0x00;
@@ -771,7 +777,7 @@ public class BluetoothSerialService {
 					msg = mHandler.obtainMessage(MESSAGE_SENSOR_VALUE);
 					bundle = new Bundle();
 					int value = (msgBuffer[1] << 8) + (msgBuffer[2] & 0xff);
-					bundle.putInt(SmartSpeedoMain.SENSOR_TYPE, 1);
+					bundle.putInt(SmartSpeedoMain.SENSOR_TYPE, SENSOR_RPM);
 					bundle.putInt(SmartSpeedoMain.SENSOR_VALUE, value);
 					
 					msg.setData(bundle);
