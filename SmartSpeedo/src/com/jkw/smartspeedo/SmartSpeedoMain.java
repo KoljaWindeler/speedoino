@@ -1,9 +1,5 @@
 package com.jkw.smartspeedo;
 
-import android.location.GpsSatellite;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,7 +18,7 @@ import android.widget.Toast;
 import android.view.View; 
 import android.view.View.OnClickListener;
 
-public class SmartSpeedoMain extends Activity implements OnClickListener,android.location.GpsStatus.Listener {
+public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 	// surface
 	GaugeCustomView speed;
@@ -39,19 +35,12 @@ public class SmartSpeedoMain extends Activity implements OnClickListener,android
 	public static BluetoothSerialService mSerialService = null;
 
 	// gps
-	LocationManager locationManager;
-	
-	// open public visible vars for the bluetooth class to write in
-	public static final String DEVICE_NAME = "device_name";
-	public static final String TOAST = "toast";
-	public static final String result = "result";
+	@SuppressWarnings("unused")
+	private static gps_service mGPS = null;
 
-	public static final String SENSOR_VALUE = "value";
-	public static final String SENSOR_TYPE = "sensor";	
-
+	// activity codes
 	private static final int REQUEST_CONNECT_DEVICE = 1;
 	private static final int REQUEST_ENABLE_BT = 2;
-
 
 	// Debug
 	private static final String TAG = "JKW - SmartSpeedo";
@@ -62,17 +51,8 @@ public class SmartSpeedoMain extends Activity implements OnClickListener,android
 		setContentView(R.layout.main);
 
 		// activate GPS 
-		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		LocationListener locationListener = new LocationListener() {
-			public void onLocationChanged(Location location) {	speed.setValue((int)location.getSpeed());	}
-			public void onStatusChanged(String provider, int status, Bundle extras) { }
-			public void onProviderEnabled(String provider) 	{	}
-			public void onProviderDisabled(String provider) {	}
-		};
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,	0, locationListener);
-		locationManager.addGpsStatusListener(this);
-				
-		
+		mGPS = new gps_service(this, mHandlerGPS);
+
 		// buttons
 		((Button)findViewById(R.id.button1)).setOnClickListener(this);
 		((Button)findViewById(R.id.connect)).setOnClickListener(this);
@@ -85,8 +65,8 @@ public class SmartSpeedoMain extends Activity implements OnClickListener,android
 
 		rpm.setLimits(0, 5500);
 		rpm.setLayout(180, 270, 1000, 50);
-//		rpm.setLimits(0, 18000);
-//		rpm.setLayout(180, 270, 1000, 200);
+		//		rpm.setLimits(0, 18000);
+		//		rpm.setLayout(180, 270, 1000, 200);
 		rpm.setValue(0);
 		rpm.setType(GaugeCustomView.TYPE_RPM);
 
@@ -137,7 +117,6 @@ public class SmartSpeedoMain extends Activity implements OnClickListener,android
 				mSerialService.start();
 			}
 		} else {
-			// TODO Auto-generated method stub
 			speed.setValue(speed.getValue() + 10);
 			temp.setValue(temp.getValue() + 5);
 			gear.setValue(gear.getValue() + 1);
@@ -187,8 +166,8 @@ public class SmartSpeedoMain extends Activity implements OnClickListener,android
 			switch (msg.what) {
 			// state switch
 			case BluetoothSerialService.MESSAGE_SENSOR_VALUE:
-				if(msg.getData().getInt(SENSOR_TYPE)==BluetoothSerialService.SENSOR_RPM){
-					rpm.setValue(msg.getData().getInt(SENSOR_VALUE));
+				if(msg.getData().getInt(BluetoothSerialService.SENSOR_TYPE)==BluetoothSerialService.SENSOR_RPM){
+					rpm.setValue(msg.getData().getInt(BluetoothSerialService.SENSOR_VALUE));
 				}
 				break;
 
@@ -237,7 +216,6 @@ public class SmartSpeedoMain extends Activity implements OnClickListener,android
 				try {
 					mSerialService.connect(device,false);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -260,7 +238,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener,android
 			} else {
 				// User did not enable Bluetooth or an error occurred
 				Log.d(TAG, "BT not enabled");
-				Toast.makeText(this, "byby",1).show();
+				Toast.makeText(this, "byby",Toast.LENGTH_LONG).show();
 				finish();
 			}
 			break;
@@ -286,21 +264,22 @@ public class SmartSpeedoMain extends Activity implements OnClickListener,android
 	//////////////////////////////// externe activitys steuern ///////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
-	
-	@Override
-	public void onGpsStatusChanged(int event) {
-		int Satellites = 0;
-	    int SatellitesInFix = 0;
-//	    int timetofix = locationManager.getGpsStatus(null).getTimeToFirstFix();
-//	    Log.i(TAG, "Time to first fix = "+String.valueOf(timetofix));
-	    for (GpsSatellite sat : locationManager.getGpsStatus(null).getSatellites()) {
-	        if(sat.usedInFix()) {
-	            SatellitesInFix++;              
-	        }
-	        Satellites++;
-	    }	
-	    ((TextView)findViewById(R.id.sat)).setText("GPS Status:"+String.valueOf(SatellitesInFix)+"/"+String.valueOf(Satellites));
-	}
-
-
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////// GPS steuern //////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// The Handler that gets information back from the GPS
+	private final Handler mHandlerGPS = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			if(msg.what==gps_service.MESSAGE_SPEED){
+				speed.setValue(msg.getData().getInt(gps_service.GPS_SPEED));
+			}
+			else if(msg.what==gps_service.MESSAGE_SATS){
+				((TextView)findViewById(R.id.sat)).setText("GPS Status:"+String.valueOf(msg.getData().getInt(gps_service.GPS_SAT_INFIX))+"/"+String.valueOf(msg.getData().getInt(gps_service.GPS_SAT_TOTAL)));
+			}
+		};
+	};
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////// GPS steuern //////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 }

@@ -67,6 +67,12 @@ public class BluetoothSerialService {
 	public static final int ST_PROCESS			= 7;
 	public static final int ST_EMERGENCY_RELEASE= 999;
 
+	public static final String DEVICE_NAME = "device_name";
+	public static final String TOAST = "toast";
+	public static final String result = "result";
+
+	public static final String SENSOR_VALUE = "value";
+	public static final String SENSOR_TYPE = "sensor";
 
 	// Message types sent by the BluetoothReadService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
@@ -310,7 +316,7 @@ public class BluetoothSerialService {
 		// Send a failure message back to the Activity
 		Message msg = mHandler.obtainMessage(MESSAGE_TOAST);
 		Bundle bundle = new Bundle();
-		bundle.putString(SmartSpeedoMain.TOAST, "Unable to connect device");
+		bundle.putString(TOAST, "Unable to connect device");
 		msg.setData(bundle);
 		mHandler.sendMessage(msg);
 
@@ -400,7 +406,7 @@ public class BluetoothSerialService {
 			// Send the name of the connected device back to the UI Activity
 			Message msg = mHandler.obtainMessage(MESSAGE_DEVICE_NAME);
 			Bundle bundle = new Bundle();
-			bundle.putString(SmartSpeedoMain.DEVICE_NAME, mmDevice.getName());
+			bundle.putString(DEVICE_NAME, mmDevice.getName());
 			msg.setData(bundle);
 			mHandler.sendMessage(msg);
 
@@ -574,8 +580,8 @@ public class BluetoothSerialService {
 		if(getState()!=STATE_CONNECTED && data[0]!=CMD_SIGN_ON && data[0]!=CMD_SIGN_ON_FIRMWARE && data[0]!=CMD_RESET_SMALL_AVR){
 			Message msg = mHandler.obtainMessage(MESSAGE_TOAST);
 			Bundle bundle = new Bundle();
-			bundle.putString(SmartSpeedoMain.TOAST, "You are not connected to a SmartSpeedo");
-			bundle.putInt(SmartSpeedoMain.result, -1);
+			bundle.putString(TOAST, "You are not connected to a SmartSpeedo");
+			bundle.putInt(result, -1);
 			msg.setData(bundle);
 			mHandler.sendMessage(msg);
 
@@ -658,7 +664,7 @@ public class BluetoothSerialService {
 				if(!silent){
 					Message msg = mHandler.obtainMessage(MESSAGE_TOAST);
 					Bundle bundle = new Bundle();
-					bundle.putString(SmartSpeedoMain.TOAST, "No response from target");
+					bundle.putString(TOAST, "No response from target");
 					msg.setData(bundle);
 					mHandler.sendMessage(msg);
 				}
@@ -763,7 +769,7 @@ public class BluetoothSerialService {
 
 						msg = mHandler.obtainMessage(MESSAGE_SET_VERSION);
 						bundle = new Bundle();
-						bundle.putString(SmartSpeedoMain.TOAST, str.substring(2,msgLength));
+						bundle.putString(TOAST, str.substring(2,msgLength));
 						msg.setData(bundle);
 						mHandler.sendMessage(msg); 
 						Log.i(TAG,"statemachine ok, gebe semaphore zurueck");
@@ -777,8 +783,8 @@ public class BluetoothSerialService {
 					msg = mHandler.obtainMessage(MESSAGE_SENSOR_VALUE);
 					bundle = new Bundle();
 					int value = (msgBuffer[1] << 8) + (msgBuffer[2] & 0xff);
-					bundle.putInt(SmartSpeedoMain.SENSOR_TYPE, SENSOR_RPM);
-					bundle.putInt(SmartSpeedoMain.SENSOR_VALUE, value);
+					bundle.putInt(SENSOR_TYPE, SENSOR_RPM);
+					bundle.putInt(SENSOR_VALUE, value);
 					
 					msg.setData(bundle);
 					mHandler.sendMessage(msg); 
@@ -788,7 +794,7 @@ public class BluetoothSerialService {
 //				case CMD_GO_DOWN:
 //					msg = mHandler.obtainMessage(MESSAGE_SET_LOG);
 //					bundle = new Bundle();
-//					bundle.putString(SmartSpeedoMain.TOAST, "go_down OK");
+//					bundle.putString(TOAST, "go_down OK");
 //					msg.setData(bundle);
 //					mHandler.sendMessage(msg);
 //
@@ -818,7 +824,7 @@ public class BluetoothSerialService {
 					// irgendwie das commando nochmal senden
 					msg = mHandler.obtainMessage(MESSAGE_TOAST);
 					bundle = new Bundle();
-					bundle.putString(SmartSpeedoMain.TOAST, "unknown command from speedo received");
+					bundle.putString(TOAST, "unknown command from speedo received");
 					msg.setData(bundle);
 					mHandler.sendMessage(msg);
 					break;
@@ -834,7 +840,7 @@ public class BluetoothSerialService {
 				Log.i(TAG,"Checksum FALSCH");
 				Message msg = mHandler.obtainMessage(MESSAGE_SET_LOG);
 				Bundle bundle = new Bundle();
-				bundle.putString(SmartSpeedoMain.TOAST, "Checksum failed");
+				bundle.putString(TOAST, "Checksum failed");
 				msg.setData(bundle);
 				mHandler.sendMessage(msg);
 				// ankommenden nachricht war nicht korrekt uebertragen
