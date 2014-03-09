@@ -1,0 +1,1 @@
+/usr/bin/avrdude -pm2560 -cstk500v2 -P/dev/rfcomm0 -b115200 -V -y -Uflash:w:Speedoino.hex:a
