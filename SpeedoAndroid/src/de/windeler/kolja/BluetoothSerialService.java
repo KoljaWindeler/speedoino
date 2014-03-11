@@ -79,6 +79,19 @@ public class BluetoothSerialService {
 	public static final int ST_GET_CHECK		= 6;
 	public static final int ST_PROCESS			= 7;
 	public static final int ST_EMERGENCY_RELEASE= 999;
+	
+	public static final int MESSAGE_STATE_CHANGE = 1;
+	public static final int MESSAGE_READ = 2;
+	public static final int MESSAGE_WRITE = 3;
+	public static final int MESSAGE_DEVICE_NAME = 4;
+	public static final int MESSAGE_TOAST = 5;
+	public static final int MESSAGE_CMD_OK = 6;
+	public static final int MESSAGE_CMD_FAILED = 7;
+	public static final int MESSAGE_CMD_UNKNOWN = 8;
+	public static final int MESSAGE_SET_VERSION = 9;
+	public static final int MESSAGE_SET_LOG = 10;
+	public static final int MESSAGE_DIR_APPEND = 11;
+	public static final int MESSAGE_CREATE_CONNECTION = 12;
 
 
 	private static final UUID SerialPortServiceClass_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
