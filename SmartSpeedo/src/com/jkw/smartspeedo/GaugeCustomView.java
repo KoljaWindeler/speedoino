@@ -475,13 +475,6 @@ public class GaugeCustomView extends View {
 	}
 
 
-	private void sendMessageToHandler(Bundle b) {
-		if (mHandler != null) {
-			Message msg = mHandler.obtainMessage();
-			msg.setData(b);
-			mHandler.sendMessage(msg);
-		}
-	}
 
 
 }

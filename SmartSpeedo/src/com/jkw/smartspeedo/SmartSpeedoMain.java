@@ -8,8 +8,11 @@ import android.os.PowerManager.WakeLock;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.Button;
@@ -30,13 +33,8 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	PowerManager pm;
 	WakeLock wl;
 
-	// Bluetooth
-	public BluetoothAdapter mBluetoothAdapter = null;
-	public static BluetoothSerialService mSerialService = null;
-
-	// gps
-	@SuppressWarnings("unused")
-	private static gps_service mGPS = null;
+	// bluetooth
+	private int bt_state=bluetooth_service.STATE_NONE;
 
 	// activity codes
 	private static final int REQUEST_CONNECT_DEVICE = 1;
@@ -51,7 +49,12 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		setContentView(R.layout.main);
 
 		// activate GPS 
-		mGPS = new gps_service(this, mHandlerGPS);
+		startService(new Intent(getBaseContext(), gps_service.class));
+		LocalBroadcastManager.getInstance(this).registerReceiver(mGPSMsgRcv, new IntentFilter(gps_service.short_name));
+
+		// activate BT
+		startService(new Intent(getBaseContext(), bluetooth_service.class));
+		LocalBroadcastManager.getInstance(this).registerReceiver(mBTMsgRcv, new IntentFilter(bluetooth_service.short_name));
 
 		// buttons
 		((Button)findViewById(R.id.button1)).setOnClickListener(this);
@@ -89,14 +92,6 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		// let the scree stay on
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wl =  pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
-
-		// prepare bluetooth
-		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		// If the adapter is null, then Bluetooth is not supported
-		if (mBluetoothAdapter == null) {
-			Toast.makeText(this, "Bluetooth is not available",Toast.LENGTH_LONG).show();
-			return;
-		}
 	}
 
 	@Override
@@ -108,13 +103,14 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if(v.getId()==R.id.connect) {
-			if (mSerialService.getState() == BluetoothSerialService.STATE_NONE) {
+			if(bt_state == bluetooth_service.STATE_NONE){
 				// Launch the DeviceListActivity to see devices and do scan
 				Intent serverIntent = new Intent(this, DeviceListActivity.class);
 				startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
 			} else {
-				mSerialService.stop();
-				mSerialService.start();
+				Intent intent = new Intent(bluetooth_service.to_name);
+				intent.putExtra(bluetooth_service.BT_ACTION, bluetooth_service.BT_RESTART);
+				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 			}
 		} else {
 			speed.setValue(speed.getValue() + 10);
@@ -127,71 +123,13 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////// Bluetooth startup & shutdown /////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-	@Override
-	public void onStart() {
-		super.onStart();
-		// If BT is not on, request that it be enabled.
-		// setupChat() will then be called during onActivityResult
-		if (mBluetoothAdapter != null) {
-			if (!mBluetoothAdapter.isEnabled()) {
-				Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-				startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-				// Otherwise, setup the chat session
-			} else {
-				if (mSerialService == null){
-					setupBT();
-				}
-			}
-		}
-	}
-
-	private void setupBT() {
-		Log.d(TAG, "setupBT()");
-		// Initialize the BluetoothChatService to perform bluetooth connections
-		mSerialService = new BluetoothSerialService(this, mHandlerBT);
-	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if (mSerialService != null){
-			mSerialService.stop();
-		}
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mGPSMsgRcv);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mBTMsgRcv);
 	}
-
-	// The Handler that gets information back from the BluetoothService
-	private final Handler mHandlerBT = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			// state switch
-			case BluetoothSerialService.MESSAGE_SENSOR_VALUE:
-				if(msg.getData().getInt(BluetoothSerialService.SENSOR_TYPE)==BluetoothSerialService.SENSOR_RPM){
-					rpm.setValue(msg.getData().getInt(BluetoothSerialService.SENSOR_VALUE));
-				}
-				break;
-
-			case BluetoothSerialService.MESSAGE_STATE_CHANGE:
-				Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-
-				switch (msg.arg1) {
-				case BluetoothSerialService.STATE_CONNECTED:
-					Toast.makeText(getApplicationContext(),"Connected, Speedoino found", Toast.LENGTH_SHORT).show();
-					break;
-				case BluetoothSerialService.STATE_CONNECTING:
-					Toast.makeText(getApplicationContext(),"Connecting ...", Toast.LENGTH_SHORT).show();
-					break;
-				case BluetoothSerialService.STATE_NONE:
-					Toast.makeText(getApplicationContext(),"Connection closed...", Toast.LENGTH_SHORT).show();
-					break;
-				case BluetoothSerialService.STATE_CONNECTED_AND_SEARCHING:
-					Toast.makeText(getApplicationContext(),"Connected, scan for ID ...", Toast.LENGTH_SHORT).show();
-					break;
-				}
-				break;
-			}
-		}
-	};
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////// Bluetooth startup & shutdown /////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,17 +145,16 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 			// When DeviceListActivity returns with a device to connect
 			if (resultCode == Activity.RESULT_OK) {
 				// Get the device MAC address
-				String address = data.getExtras().getString(
-						DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+				String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 				// Get the BLuetoothDevice object
-				BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-				// Attempt to connect to the device
-				Log.e(TAG, "Device selected, connecting ...");
-				try {
-					mSerialService.connect(device,false);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				Intent intent = new Intent(bluetooth_service.to_name);
+				intent.putExtra(bluetooth_service.BT_ACTION, bluetooth_service.BT_CONNECT);
+				intent.putExtra(bluetooth_service.TARGET_ADDRESS, address);
+				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+			} 
+
+			else {
+				bt_state=bluetooth_service.STATE_NONE;
 			}
 			break;
 
@@ -233,10 +170,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 		case REQUEST_ENABLE_BT:
 			// When the request to enable Bluetooth returns
-			if (resultCode == Activity.RESULT_OK) {
-				setupBT();
-			} else {
-				// User did not enable Bluetooth or an error occurred
+			if (resultCode != Activity.RESULT_OK) {
 				Log.d(TAG, "BT not enabled");
 				Toast.makeText(this, "byby",Toast.LENGTH_LONG).show();
 				finish();
@@ -252,9 +186,9 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 			//				startActivityForResult(intent, REQUEST_SHOW_MAP_DONE);
 			//			};
 			//			break;
-		case RESULT_CANCELED:
-			Log.i(TAG, "File open abgebrochen");
-			break;
+			//		case RESULT_CANCELED:
+			//			Log.i(TAG, "File open abgebrochen");
+			//			break;
 		default:
 			Log.i(TAG, "nicht gut, keine ActivityResultHandle gefunden");
 			break;
@@ -267,19 +201,59 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////// GPS steuern //////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// The Handler that gets information back from the GPS
-	private final Handler mHandlerGPS = new Handler() {
+	private BroadcastReceiver mGPSMsgRcv = new BroadcastReceiver() {
 		@Override
-		public void handleMessage(Message msg) {
-			if(msg.what==gps_service.MESSAGE_SPEED){
-				speed.setValue(msg.getData().getInt(gps_service.GPS_SPEED));
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getStringExtra(gps_service.MESSAGE)==gps_service.GPS_SPEED){
+				speed.setValue(intent.getIntExtra(gps_service.GPS_SPEED, 0));
 			}
-			else if(msg.what==gps_service.MESSAGE_SATS){
-				((TextView)findViewById(R.id.sat)).setText("GPS Status:"+String.valueOf(msg.getData().getInt(gps_service.GPS_SAT_INFIX))+"/"+String.valueOf(msg.getData().getInt(gps_service.GPS_SAT_TOTAL)));
+			else if(intent.getStringExtra(gps_service.MESSAGE)==gps_service.GPS_SAT){
+				String temp="GPS Status:";
+				temp+=String.valueOf(intent.getIntExtra(gps_service.GPS_SAT_INFIX,0));
+				temp+="/";
+				temp+=String.valueOf(intent.getIntExtra(gps_service.GPS_SAT_TOTAL,0));
+
+				((TextView)findViewById(R.id.sat)).setText(temp);
 			}
-		};
+		}
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////// GPS steuern //////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////// Bluetooth steuern ///////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	private BroadcastReceiver mBTMsgRcv = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// This is used to activate the bluetooth 
+			if(intent.getStringExtra(bluetooth_service.BT_ACTION)==bluetooth_service.ENABLE_BT){
+				Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+			}
+			// update state
+			else if(intent.getStringExtra(bluetooth_service.BT_ACTION)==bluetooth_service.BT_STATE_CHANGE){
+				if(intent.getIntExtra(bluetooth_service.BT_STATE_CHANGE,0)==bluetooth_service.STATE_CONNECTED){
+					Toast.makeText(getApplicationContext(),"Connected, Speedoino found", Toast.LENGTH_SHORT).show();
+				} else if(intent.getIntExtra(bluetooth_service.BT_STATE_CHANGE,0)==bluetooth_service.STATE_CONNECTING){
+					Toast.makeText(getApplicationContext(),"Connecting ...", Toast.LENGTH_SHORT).show();
+				} else if(intent.getIntExtra(bluetooth_service.BT_STATE_CHANGE,0)==bluetooth_service.STATE_NONE){
+					Toast.makeText(getApplicationContext(),"Connection closed...", Toast.LENGTH_SHORT).show();
+				} else if(intent.getIntExtra(bluetooth_service.BT_STATE_CHANGE,0)==bluetooth_service.STATE_CONNECTED_AND_SEARCHING){
+					Toast.makeText(getApplicationContext(),"Connected, scan for ID ...", Toast.LENGTH_SHORT).show();
+				}
+				bt_state=intent.getIntExtra(bluetooth_service.BT_STATE_CHANGE,0);
+			}
+			// update a sensor value
+			else if(intent.getStringExtra(bluetooth_service.BT_ACTION)==bluetooth_service.BT_SENSOR_UPDATE){
+				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_WATER_TEMP_ANALOG){
+					rpm.setValue(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0));
+				}
+			}
+		}
+	};
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////// Bluetooth steuern ///////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 }
