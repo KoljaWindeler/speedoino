@@ -209,7 +209,7 @@ public class bluetooth_service extends Service {
 			}
 		};
 
-		setState(STATE_NONE);
+		mState=STATE_NONE;
 	}
 
 	// listen to every input from the controlling activity, which ever app that might be

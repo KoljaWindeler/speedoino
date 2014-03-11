@@ -295,14 +295,17 @@ public class GaugeCustomView extends View {
 	}
 
 
-	public void setValue(final int value){
-		if(value>=min_value && value<=max_value){
-			set_value[0]=value;
-			//			mSecsAngle=(set_value*twoPI)/max_value+start_angle;
-			invalidate();
+	public void setValue(int value){
+		if(value<=min_value){
+			value=min_value;
+		} else if(value>=max_value){
+			value=max_value;
 		}
+
+		set_value[0]=value;
+		invalidate();
 	}
-	
+
 	public void setSecondValue(final int value){
 		if(value>=min_value && value<=max_value){
 			set_value[1]=value;

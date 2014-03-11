@@ -42,6 +42,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 	// Debug
 	private static final String TAG = "JKW - SmartSpeedo";
+	private Handler mTimerHandle = new Handler();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +112,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 				Intent intent = new Intent(bluetooth_service.to_name);
 				intent.putExtra(bluetooth_service.BT_ACTION, bluetooth_service.BT_RESTART);
 				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+				((Button)findViewById(R.id.connect)).setText("Connect");
 			}
 		} else {
 			speed.setValue(speed.getValue() + 10);
@@ -151,22 +153,14 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 				intent.putExtra(bluetooth_service.BT_ACTION, bluetooth_service.BT_CONNECT);
 				intent.putExtra(bluetooth_service.TARGET_ADDRESS, address);
 				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+				
+				((Button)findViewById(R.id.connect)).setText("Disconnect");
 			} 
 
 			else {
 				bt_state=bluetooth_service.STATE_NONE;
 			}
 			break;
-
-			//		case REQUEST_SELECTED_DEVICE:
-			//			if (resultCode == Activity.RESULT_OK) {
-			//				// Get the device MAC address
-			//				String address = data.getExtras().getString(
-			//						DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-			//				// tell firmware update which device has been selected
-			//				firmware_update(0,null,address);
-			//			}
-			//			break;
 
 		case REQUEST_ENABLE_BT:
 			// When the request to enable Bluetooth returns
@@ -176,19 +170,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 				finish();
 			}
 			break;
-			//		case REQUEST_SHOW_MAP:
-			//			Log.i(TAG, "Image converter hat was zurueckgegeben ");
-			//			if (resultCode == RESULT_OK) {
-			//				filePath = data.getStringExtra(FileDialog.RESULT_PATH);
-			//				Log.i(TAG, "Der Resultcode war OK, der Pfad:" + filePath);
-			//				intent = new Intent(getBaseContext(), RouteMap.class);
-			//				intent.putExtra(RouteMap.INPUT_FILE_NAME, filePath);
-			//				startActivityForResult(intent, REQUEST_SHOW_MAP_DONE);
-			//			};
-			//			break;
-			//		case RESULT_CANCELED:
-			//			Log.i(TAG, "File open abgebrochen");
-			//			break;
+
 		default:
 			Log.i(TAG, "nicht gut, keine ActivityResultHandle gefunden");
 			break;
@@ -247,10 +229,25 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 			}
 			// update a sensor value
 			else if(intent.getStringExtra(bluetooth_service.BT_ACTION)==bluetooth_service.BT_SENSOR_UPDATE){
+				// reset time
+				mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
+				mTimerHandle.postDelayed(mCheckResponseTimeTask, 2000);
+				
+				// set new values
 				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_WATER_TEMP_ANALOG){
 					rpm.setValue(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0));
 				}
 			}
+		}
+	};
+	
+	// resetter
+	private Runnable mCheckResponseTimeTask = new Runnable() {
+		public void run() {
+			rpm.setValue(0);
+			speed.setValue(0);
+			temp.setValue(0);
+			gear.setValue(0);
 		}
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////////////
