@@ -26,19 +26,13 @@
 // CS PK5 to PB5
 // INT PK4 to PB4
 
-#define CAN_DDR_CS_TILL_V7      	DDRK
-#define CAN_PORT_CS_TILL_V7     	PORTK
-#define CAN_PIN_CS_TILL_V7      	5
-#define CAN_INTERRUPT_PIN_V7		PK4
-#define CAN_INTERRUPT_PIN_PORT_V7 	PINK
-
-
-
 #define CAN_DDR_CS_FROM_V8        DDRB
 #define CAN_PORT_CS_FROM_V8       PORTB
 #define CAN_PIN_CS_FROM_V8        5
 #define CAN_INTERRUPT_PIN_FROM_V8 PB4
 #define CAN_INTERRUPT_PIN_PORT_V8 PINB
+#define CAN_INTERRUPT_PIN_V8      PK4
+
 
 #define SPEED_TRIPPLE 0
 

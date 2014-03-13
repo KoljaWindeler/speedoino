@@ -61,22 +61,13 @@ void Speedo_CAN::init(){
 	// Interrupt for CAN Interface active, auf pk4, pcint20
 	can_missed_count=0;
 	// Chipselect as output
-	if(pConfig->get_hw_version()==7){
-		// Interrupt as Input with pull up
-		CAN_DDR_CS_TILL_V7 &= ~(1<<CAN_INTERRUPT_PIN_V7); // input
-		CAN_PORT_CS_TILL_V7 |= (1<<CAN_INTERRUPT_PIN_V7); //  active low => pull up
-		// CS as output
-		CAN_DDR_CS_TILL_V7 |= (1<<CAN_PIN_CS_TILL_V7);
-		PCMSK2|=(1<<PCINT20); // CAN interrupt pin v7
-	} else if(pConfig->get_hw_version()>7){
-		// CS Input with pull up
-		CAN_DDR_CS_FROM_V8 &= ~(1<<CAN_INTERRUPT_PIN_FROM_V8); // input
-		CAN_PORT_CS_FROM_V8 |= (1<<CAN_INTERRUPT_PIN_FROM_V8); //  active low => pull up
-		// CS as output
-		CAN_DDR_CS_FROM_V8 |= (1<<CAN_PIN_CS_FROM_V8);
-		PCMSK0|=(1<<PCINT4); // CAN interrupt pin v(>7)
-		PCICR |=(1<<PCIE0); //new interrupt just for CAN
-	};
+	// CS Input with pull up
+	CAN_DDR_CS_FROM_V8 &= ~(1<<CAN_INTERRUPT_PIN_FROM_V8); // input
+	CAN_PORT_CS_FROM_V8 |= (1<<CAN_INTERRUPT_PIN_FROM_V8); //  active low => pull up
+	// CS as output
+	CAN_DDR_CS_FROM_V8 |= (1<<CAN_PIN_CS_FROM_V8);
+	PCMSK0|=(1<<PCINT4); // CAN interrupt pin v(>7)
+	PCICR |=(1<<PCIE0); //new interrupt just for CAN
 
 
 	/********************************************* MCP2515 SETUP ***********************************/
@@ -250,24 +241,18 @@ void Speedo_CAN::init(){
 
 bool Speedo_CAN::check_message(){
 	if(pSensors->CAN_active){		 // is the CAN mode active
-		if(!(CAN_INTERRUPT_PIN_PORT_V7&(1<<CAN_INTERRUPT_PIN_V7))){	 // if the CAN pin is low, low active interrupt
+		if(!(CAN_INTERRUPT_PIN_PORT_V8&(1<<CAN_INTERRUPT_PIN_V8))){	 // if the CAN pin is low, low active interrupt
 			pSensors->m_CAN->message_available=true;
 
-			// if we are in the mode, forcing us to answere fast .. to it! :D
-			if(pSensors->m_CAN->high_prio_processing){
-				if(PINB&(1<<PB0)){ // SD CS pin has to be high to access Bus
-					cli(); // stop interrupts
-					pSensors->m_CAN->process_incoming_messages();
-					sei(); // activate them again
-				}
-			}
+			cli(); // stop interrupts
+			pSensors->m_CAN->process_incoming_messages();
+			sei(); // activate them again
 #ifdef CAN_DEBUG
 			Serial.println("Interrupt: Msg available");
 #endif
 			return true;
 		};
-
-	}
+	};
 	return false;
 }
 
@@ -281,15 +266,8 @@ int Speedo_CAN::check_vars(){
 
 bool Speedo_CAN::init_comm_possible(bool* CAN_active){
 	if(last_received==0){ // we have never ever received a pecket from CAN
-		// starthilfe, nicht schön mit den zwei versionen ..
-		if(pConfig->get_hw_version()==7){
-			if(!CAN_INTERRUPT_PIN_PORT_V7&(1<<CAN_INTERRUPT_PIN_V7)){	 // if the CAN pin is low, low active interrupt
-				message_available=true; // init with true, may be its one there
-			}
-		} else if(pConfig->get_hw_version()>7){
-			if(!CAN_INTERRUPT_PIN_PORT_V8&(1<<CAN_INTERRUPT_PIN_FROM_V8)){	 // if the CAN pin is low, low active interrupt
-				message_available=true; // init with true, may be its one there
-			}
+		if(!CAN_INTERRUPT_PIN_PORT_V8&(1<<CAN_INTERRUPT_PIN_FROM_V8)){	 // if the CAN pin is low, low active interrupt
+			message_available=true; // init with true, may be its one there
 		}
 		if(can_missed_count>10){ // see "strategy", in auto 10 lost frames indicates CAN offline, TODO: increase nr?
 			*CAN_active=false;
@@ -592,21 +570,21 @@ void Speedo_CAN::process_incoming_messages(){
 #endif /////////////// DEBUG //////////
 	}
 #ifdef CAN_DEBUG /////////////// DEBUG //////////
-		Serial.println("?");
+	Serial.println("?");
 #endif
 	message_available=false; // all messages processed
 	return;
 }
 
-bool Speedo_CAN::decode_dtc(char* char_buffer,char ECU_type){
-	if(ECU_type==SPEED_TRIPPLE){
-		if(pConfig->read(CONFIG_FOLDER,"SPEED_T.TXT",READ_MODE_TEXTREPLACEMENT,char_buffer)!=0){ // char_buffer serves two ways, incoming is "error code i'm looking for", outgoing "cleartext of error"
-			sprintf(char_buffer,"Errortext not found");
-			return false;
-		};
-	};
-	return true;
-}
+//bool Speedo_CAN::decode_dtc(char* char_buffer,char ECU_type){
+//	if(ECU_type==SPEED_TRIPPLE){
+//		if(pConfig->read(CONFIG_FOLDER,"SPEED_T.TXT",READ_MODE_TEXTREPLACEMENT,char_buffer)!=0){ // char_buffer serves two ways, incoming is "error code i'm looking for", outgoing "cleartext of error"
+//			sprintf(char_buffer,"Errortext not found");
+//			return false;
+//		};
+//	};
+//	return true;
+//}
 
 
 uint8_t Speedo_CAN::spi_putc( uint8_t data ){
@@ -850,18 +828,10 @@ void Speedo_CAN::set_active_can_type(unsigned char new_type){
 void Speedo_CAN::set_cs_high(bool high){
 	if(high){
 		// CS high
-		if(pConfig->get_hw_version()==7){
-			CAN_PORT_CS_TILL_V7 |= (1<<CAN_PIN_CS_TILL_V7);
-		} else {
-			CAN_PORT_CS_FROM_V8 |= (1<<CAN_PIN_CS_FROM_V8);
-		}
+		CAN_PORT_CS_FROM_V8 |= (1<<CAN_PIN_CS_FROM_V8);
 	} else {
 		// CS Low
-		if(pConfig->get_hw_version()==7){
-			CAN_PORT_CS_TILL_V7 &= ~(1<<CAN_PIN_CS_TILL_V7);
-		} else {
-			CAN_PORT_CS_FROM_V8 &= ~(1<<CAN_PIN_CS_FROM_V8);
-		}
+		CAN_PORT_CS_FROM_V8 &= ~(1<<CAN_PIN_CS_FROM_V8);
 	}
 }
 /********************************************* CAN FUNCTIONS ***********************************/

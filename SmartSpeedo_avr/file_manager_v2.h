@@ -48,6 +48,14 @@ class speedo_filemanager_v2{
 #define CMD_RESET_SMALL_AVR		0x40
 #define CMD_SIGN_ON_FIRMWARE	0x41
 #define CMD_SET_STARTUP 		0x42
+#define CMD_POST_OIL_R			0x43
+#define CMD_POST_WATER_R		0x44
+#define CMD_POST_WATER_TEMP		0x45
+#define CMD_POST_AIR_TEMP		0x46
+#define CMD_POST_SPEED			0x47
+#define CMD_POST_RPM			0x48
+
+#define CMD_PULSE_OILER 		0x51
 
 #define FAILURE_FILE_OPEN 0x01
 #define FAILURE_FILE_SEEK 0x02
@@ -69,20 +77,13 @@ public:
 	//void get_filename(char* buffer);
 	void run();
 	void parse_command();
-	int get_file_handle(unsigned char *pathToFile, SdFile *fm_file, uint8_t flags);
-	int get_file_handle(unsigned char *msgBuffer,unsigned char *last_file, SdFile *fm_file, SdFile *fm_handle,uint8_t flags);
+	void check_input();
+	int send_answere(unsigned char *msgBuffer,unsigned int msgLength);
 	int send_answere(unsigned char *msgBuffer,unsigned int msgLength,unsigned char *seqNum, unsigned char *msgParseState);
 private:
 
-	bool cd(char dir[20]);
-	bool recv_file(char filename[13]);
-	bool send_file(char filename[13]);
-	bool ls();
-	bool mkdir(char dir[20]);
-	bool rm(char filename[13]);
-	bool rmdir();
-	SdFile fm_handle;
-	SdFile fm_file;
+	unsigned char	msgParseState;
+	unsigned char	seqNum;
 };
 extern speedo_filemanager_v2* pFilemanager_v2;
 

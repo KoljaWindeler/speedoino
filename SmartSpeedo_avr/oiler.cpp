@@ -18,7 +18,6 @@
 #include "global.h"
 
 speedo_oiler::speedo_oiler(void){
-	grenze=0;
 }
 
 speedo_oiler::~speedo_oiler(){
@@ -31,41 +30,16 @@ void speedo_oiler::init(){
 	pDebug->sprintlnp(PSTR("Oiler init done"));
 };
 
-bool speedo_oiler::check_vars(){
-	if(grenze==0){
-		grenze=4000;
-		pDebug->sprintp(PSTR("oiler failed"));
-		return true;
-	}
-	return false;
-};
-
 
 
 int speedo_oiler::send_impulse(){
-	if(pSensors->get_speed(false)>30){ // nur ölen wenn wir über 30 kmh sind
+	if(pSensors->get_speed()>30){ // nur ölen wenn wir über 30 kmh sind
 		OILER_PORT|=(1<<OILER_PIN);//digitalWrite(OILER_PIN,HIGH); // 150ms high
 		_delay_ms(150);
 		OILER_PORT|=(0<<OILER_PIN);//digitalWrite(OILER_PIN,LOW);
-		pConfig->write("speedo.txt"); // store this
 		return 0;
 	} else {
 		return -1;
 	}
 };
 
-void speedo_oiler::check_value(){
-	/* hier noch die geschwindigkeitsprogression einbauen
-	 * sowas wie
-	 * if(pSpeedo->trip_dist[6]/pSpeedo->avg_timebase[6]*3.6>140 && pSpeedo->trip_dist[6]>grenze*0.85){
-	 * da kann man noch ne ganze Latte hinterlegen wenn man das umbedingt wollen würde
-	 */
-
-	if(pSpeedo->trip_dist[6]>unsigned(grenze)){
-		if(send_impulse()>=0){ // nur ölen wenn wir über 30 kmh sind
-			pSpeedo->trip_dist[6]=0;
-			pSpeedo->max_speed[6]=0;
-			pSpeedo->avg_timebase[6]=0;
-		};
-	};
-}

@@ -156,7 +156,7 @@ void debugging::speedo_loop(int state,int intensive,unsigned long previousMillis
 			sprintp(PSTR(" ms"));
 		} else if(state==21){
 			sprintp(PSTR("Loop Durchlauf, menustate ist "));
-			Serial.print(pMenu->state);
+//			Serial.print(pMenu->state);
 			sprintp(PSTR("\n"));
 		} else if(state==22){
 			sprintlnp(PSTR("Oel fertig"));

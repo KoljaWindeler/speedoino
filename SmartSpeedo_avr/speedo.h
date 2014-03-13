@@ -41,7 +41,6 @@ class speedo_speedo{
 public:
 	void loop(unsigned long previousMillis);
 	void reset_bak();
-	void clear_vars();
 	void check_vars();
 	void initial_draw_screen();
 	int 	  	  m_trip_mode; // welcher mode .. ob zeit, avg oder was auch immer

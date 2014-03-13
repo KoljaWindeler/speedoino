@@ -45,44 +45,23 @@ void speedo_timer::every_sec(configuration* pConfig) {
 		pDebug->sprintp(PSTR("-t1"));
 #endif
 		every_second_timer=millis();
-		//pConfig->ram_info(); // nur zum testen 19.12. 2900 free
-		pAktors->m_oiler->check_value(); // gucken ob wir ölen müssten
-		pConfig->km_save();    // avg,max,trips hochzählen, immer wenn ss==59 ist store to sd card
 		pSensors->check_inputs(); // check once a second the state of the PINs
-
-		if(pSD->sd_failed && (millis()/1000)%30==0 && pSensors->m_reset->reboots_caused_by_sd_problems<2){ // just two ties .. after that: die SD!
-			Serial.print(millis());
-			Serial.print("-");
-			pSD->power_up(1);
-			Serial.println(millis());
-			if(!pSD->sd_failed){
-				pSensors->m_reset->reboots_caused_by_sd_problems++;
-				pDebug->sprintlnp(PSTR("SD reboot successful, rebooting speedo!"));
-				init_speedo();
-			}
-		}
 
 		// check if MIL should be active
 		if((millis()/1000)%30==0 && pSensors->CAN_active && pSensors->m_CAN->get_active_can_type()==CAN_TYPE_OBD2){
 			pSensors->m_CAN->request(CAN_CURRENT_INFO,CAN_MIL_STATUS);
 		}
 
-		// check gps
-		if((millis()/1000)%10==0 && pSensors->m_gps->wait_on_gps()){
-			pSensors->m_gps->reconfigure(); // default 9600
-			pSensors->m_gps->update_rate_1Hz();
-		}
-
-		if((millis()/1000)==60){
-			uint8_t result=0xff;
-			bool comm_check;
-			if(!pAktors->check_mac_key(&result,&comm_check)){
-				pOLED->clear_screen();
-				pOLED->string_P_centered(PSTR("Please contact"),2,true);
-				pOLED->string_P_centered(PSTR("KKoolljjaa@gmail.com"),3,true);
-				pOLED->string_P_centered(PSTR("FAQ #1"),4,true);
-			}
-		}
+//		if((millis()/1000)==60){
+//			uint8_t result=0xff;
+//			bool comm_check;
+//			if(!pAktors->check_mac_key(&result,&comm_check)){
+//				pOLED->clear_screen();
+//				pOLED->string_P_centered(PSTR("Please contact"),2,true);
+//				pOLED->string_P_centered(PSTR("KKoolljjaa@gmail.com"),3,true);
+//				pOLED->string_P_centered(PSTR("FAQ #1"),4,true);
+//			}
+//		}
 #ifdef TACHO_SMALLDEBUG
 		pDebug->sprintlnp(PSTR("."));
 #endif
@@ -99,20 +78,12 @@ void speedo_timer::every_qsec() {
 #endif
 		every_qsecond_timer=millis();
 
-		// TODO, testen mit meinem krams dran!
-		if(pSensors->last_int_state!=(CAN_INTERRUPT_PIN_PORT_V7&0x07)){
+		// TODO, testen mit meinem krams dran! -> das sollte doch der interrupt triggern!
+		if(pSensors->last_int_state!=(CAN_INTERRUPT_PIN_PORT_V8&0x07)){
 			pSensors->check_inputs();
-			pSensors->last_int_state=(CAN_INTERRUPT_PIN_PORT_V7&0x07);
+			pSensors->last_int_state=(CAN_INTERRUPT_PIN_PORT_V8&0x07);
 		}
 
-		// see if its a clock startup or a regular startup
-		if(pSpeedo->startup_by_ignition){
-			// TODO: warum so häufig?
-			pAktors->update_outer_leds(false,false);
-
-			// könntem mit 250ms update rate fast etwas lahm sein
-			pAktors->m_stepper->startup();
-		}
 #ifdef TACHO_SMALLDEBUG
 		pDebug->sprintlnp(PSTR("."));
 #endif
@@ -120,21 +91,21 @@ void speedo_timer::every_qsec() {
 };
 
 void speedo_timer::every_custom() {
-	if((signed(millis()-every_custom_timer)>=pSpeedo->refresh_cycle) && (pSpeedo->refresh_cycle>1)){
-		if((pMenu->state/10)==1 || pMenu->state==8511111)  {
-			pOLED->clear_screen(); // Brauchen wir noch ein "clean" ?  <- für den Moment, ja!
-			// einfach mal alle zeichen übermalen
-			if(pSpeedo->oil_widget.symbol==1)
-				pOLED->draw_oil(0,0);
-			if(pSpeedo->fuel_widget.symbol==1)
-				pOLED->draw_fuel(44,56);
-			if(pSpeedo->air_widget.symbol==1)
-				pOLED->draw_air(41,0);
-			if(pSpeedo->clock_widget.symbol==1)
-				pOLED->draw_clock(0,56);
-			// und hier alle kontrollregister auf -99 zu setzen, zack werden alle Sachen erstellt
-			pSpeedo->reset_bak();
-		};
-		every_custom_timer=millis();
-	}
+//	if((signed(millis()-every_custom_timer)>=pSpeedo->refresh_cycle) && (pSpeedo->refresh_cycle>1)){
+//		if((pMenu->state/10)==1 || pMenu->state==8511111)  {
+//			pOLED->clear_screen(); // Brauchen wir noch ein "clean" ?  <- für den Moment, ja!
+//			// einfach mal alle zeichen übermalen
+//			if(pSpeedo->oil_widget.symbol==1)
+//				pOLED->draw_oil(0,0);
+//			if(pSpeedo->fuel_widget.symbol==1)
+//				pOLED->draw_fuel(44,56);
+//			if(pSpeedo->air_widget.symbol==1)
+//				pOLED->draw_air(41,0);
+//			if(pSpeedo->clock_widget.symbol==1)
+//				pOLED->draw_clock(0,56);
+//			// und hier alle kontrollregister auf -99 zu setzen, zack werden alle Sachen erstellt
+//			pSpeedo->reset_bak();
+//		};
+//		every_custom_timer=millis();
+//	}
 }

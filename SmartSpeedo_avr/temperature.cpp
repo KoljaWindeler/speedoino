@@ -18,60 +18,20 @@
 #include "global.h"
 
 speedo_temperature::speedo_temperature(){
-	oil_temp_value_counter=0;
-	oil_temp_value=0;
-	oil_temp_fail_status=0; // 0 = no failed read, 1-5 = Number of shorts read, 6-9 = Number of open read
+	oil_r_value_counter=0;
+	oil_r_value=0;
+	oil_r_fail_status=0; // 0 = no failed read, 1-5 = Number of shorts read, 6-9 = Number of open read
 
-	water_temp_value_counter=0;
-	water_temp_value=0;
-	water_temp_fail_status=0; // 0 = no failed read, 1-5 = Number of shorts read, 6-9 = Number of open read
+	water_r_value_counter=0;
+	water_r_value=0;
+	water_r_fail_status=0; // 0 = no failed read, 1-5 = Number of shorts read, 6-9 = Number of open read
 
 	air_temp_value=0;
-
-	water_warning_temp=0; // 95 C
-	oil_warning_temp=0; // 120 C
-	// values for
-	for(unsigned int j=0; j<sizeof(oil_r_werte)/sizeof(oil_r_werte[0]); j++){
-		oil_r_werte[j]=0;
-		oil_t_werte[j]=0;
-
-		water_r_werte[j]=0;
-		water_t_werte[0]=0;
-	};
 };
 
 speedo_temperature::~speedo_temperature(){
 };
 
-int speedo_temperature::check_vars(){
-	if(water_r_werte[0]==0 || water_t_werte[0]==0 || oil_t_werte[0]==0 || oil_r_werte[0]==0){
-		// Temperatur und Widerstands LookUp
-		// OIL
-		int r_werte[19]={1000,700,550,400,330,250,230,210,195,150,140,135,110,100, 90, 80, 20, 15, 10}; // widerstandswerte
-		int t_werte[19]={  27, 35, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95,100,105,110,115,120,125}; // passender Temperaturwert
-
-		for(unsigned int j=0; j<sizeof(oil_r_werte)/sizeof(oil_r_werte[0]); j++){
-			oil_r_werte[j]=r_werte[j];
-			oil_t_werte[j]=t_werte[j];
-		};
-
-		// Water
-		//TODO
-		int r_werte2[19]={354,323,241,198,157,135,111,93,80,64,52,43,37,30, 23, 18, 15, 10,  9}; // widerstandswerte
-		int t_werte2[19]={ 30, 35, 40, 45, 50, 55, 60,65,70,75,80,85,90,95,100,105,110,115,116}; // passender Temperaturwert
-		for(unsigned int j=0; j<sizeof(water_r_werte)/sizeof(water_r_werte[0]); j++){
-			water_r_werte[j]=r_werte2[j];
-			water_t_werte[j]=t_werte2[j];
-		};
-
-		water_warning_temp=950; // 95 C
-		oil_warning_temp=1200; // 120 C
-		pDebug->sprintp(PSTR("temp failed"));
-		return 1;
-	};
-
-	return 0;
-}
 
 void speedo_temperature::init(){
 	I2c.begin();
@@ -80,7 +40,7 @@ void speedo_temperature::init(){
 	pDebug->sprintlnp(PSTR("Temp init done."));
 }
 
-void speedo_temperature::read_oil_temp() {
+void speedo_temperature::read_oil_r() {
 	// werte in array speichern in °C*10 für Nachkommastelle
 #ifdef TEMP_DEBUG
 	Serial.println("\n\rTemp: Beginne Öl zu lesen");
@@ -103,57 +63,26 @@ void speedo_temperature::read_oil_temp() {
 	unsigned int oil_value=analogRead(OIL_TEMP_PIN);
 	int temp=(1024-oil_value)/10; // max 102
 	if(temp>0 && temp<102){
-		int r_temp=round((oil_value*22)/temp); // 22*1024 < 32000
-
-		unsigned char buffer[3];
-		unsigned char buffer2;
-		unsigned char buffer3=1;
-		buffer[0]=0x43;
-		buffer[1]=r_temp>>8;
-		buffer[2]=(r_temp)&0xff;
-
-		pFilemanager_v2->send_answere(buffer,3,&buffer3,&buffer2);
-		//send_answere(buffer,3,1,&unsigned char)
-		Serial.print("Oel Wert eingelesen: "); Serial.print(oil_value); Serial.print(" zwischenschritt "); Serial.println(r_temp);
-		// LUT  wert ist z.B. 94°C somit 102 ohm => dann wird hier in der for schleife bei i=13 ausgelößt, also guck ich mir den her + den davor an
-		for(int i=0;i<19;i++){ // 0 .. 18 müssen durchsucht werden das sind die LUT positionen
-			if(r_temp>=oil_r_werte[i]){ // den einen richtigen raussuchen
-				int j=i-1;  if(j<0) j=0; // j=12
-				int offset=r_temp-oil_r_werte[i]; // wieviel höher ist mein messwert als den, den ich nicht wollte => 102R-100R => 2R
-				int differ_r=oil_r_werte[j]-oil_r_werte[i]; // wie weit sind die realen widerstands werte auseinander 10R
-				int differ_t=oil_t_werte[i]-oil_t_werte[j]; // wie weit sind die realen temp werte auseinander 5°C
-				int aktueller_wert=round(10*(oil_t_werte[i]-offset*differ_t/differ_r));
-				oil_temp_value=pSensors->flatIt(aktueller_wert,&oil_temp_value_counter,20,oil_temp_value);
-
-#ifdef TEMP_DEBUG
-				Serial.print("Oel Wert eingelesen: ");
-				Serial.print(oil_value);
-				Serial.print(" und interpretiert ");
-				Serial.print(aktueller_wert);
-				Serial.print(" und geplaettet: ");
-				Serial.println(int(round(oil_temp_value)));
-#endif
-				oil_temp_fail_status=0;
-				break; // break the for loop
-			};
-		};
+		int r_oil_temp_value=round((oil_value*22)/temp); // 22*1024 < 32000
+		oil_r_value=pSensors->flatIt(r_oil_temp_value,&oil_r_value_counter,20,oil_r_value);
+		oil_r_fail_status=0; //?
 	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
 #ifdef TEMP_DEBUG
 		Serial.print("@");
 		Serial.print(millis());
 		Serial.print(": oil Wert -> OPEN");
 		Serial.print(" | Oil fail status:");
-		Serial.println((int)oil_temp_fail_status);
+		Serial.println((int)oil_r_fail_status);
 #endif
 
-		if(oil_temp_fail_status<6){
-			oil_temp_fail_status=6;
-		} else if(oil_temp_fail_status<9){
-			oil_temp_fail_status++;
+		if(oil_r_fail_status<6){
+			oil_r_fail_status=6;
+		} else if(oil_r_fail_status<9){
+			oil_r_fail_status++;
 		}
 	} else { // Kurzschluss nach masse: 102=(1024-x)/10  	x<=4
-		if(oil_temp_fail_status<5){ // nach sechs maligem fehler => ausgabe!
-			oil_temp_fail_status++;
+		if(oil_r_fail_status<5){ // nach sechs maligem fehler => ausgabe!
+			oil_r_fail_status++;
 		};
 
 #ifdef TEMP_DEBUG
@@ -161,12 +90,12 @@ void speedo_temperature::read_oil_temp() {
 		Serial.print(millis());
 		Serial.print(": oil Wert -> Short to GND");
 		Serial.print(" | Oil fail status:");
-		Serial.println((int)oil_temp_fail_status);
+		Serial.println((int)oil_r_fail_status);
 #endif
 	}
 };
 
-void speedo_temperature::read_water_temp() {
+void speedo_temperature::read_water_r() {
 	// werte in array speichern in °C*10 für Nachkommastelle
 #ifdef TEMP_DEBUG
 	Serial.println("\n\rTemp: Beginne Water zu lesen");
@@ -185,40 +114,17 @@ void speedo_temperature::read_water_temp() {
 		//Serial.print("Oel Wert eingelesen: "); Serial.print(oil_value); Serial.print(" zwischenschritt "); Serial.println(r_temp);
 		// LUT  wert ist z.B. 94°C somit 102 ohm => dann wird hier in der for schleife bei i=13 ausgelößt, also guck ich mir den her + den davor an
 		// wenn unser ermittelter R KLEINER ist als der kleinste R, dann haben wir da mehr grad als maximum und brauchen nicht interpolieren
-		if(r_temp<water_r_werte[18]){
-			water_temp_value=pSensors->flatIt(10*water_t_werte[18],&water_temp_value_counter,60,water_temp_value);
-		} else {
-			for(int i=0;i<19;i++){ // 0 .. 18 müssen durchsucht werden das sind die LUT positionen
-				if(r_temp>=water_r_werte[i]){ // den einen richtigen raussuchen
-					int j=i-1;  if(j<0) j=0; // j=12
-					int offset=r_temp-water_r_werte[i]; // wieviel höher ist mein messwert als den, den ich nicht wollte => 102R-100R => 2R
-					int differ_r=water_r_werte[j]-water_r_werte[i]; // wie weit sind die realen widerstands werte auseinander 10R
-					int differ_t=water_t_werte[i]-water_t_werte[j]; // wie weit sind die realen temp werte auseinander 5°C
-					int aktueller_wert=round(10*(water_t_werte[i]-offset*differ_t/differ_r));
-					water_temp_value=pSensors->flatIt(aktueller_wert,&water_temp_value_counter,60,water_temp_value);
-
-#ifdef TEMP_DEBUG
-					Serial.print("Water Wert eingelesen: ");
-					Serial.print(water_value);
-					Serial.print(" und interpretiert als R ");
-					Serial.print(r_temp);
-					Serial.print(" und geplaettet: ");
-					Serial.println(int(round(water_temp_value)));
-#endif
-					water_temp_fail_status=0;
-					break; // break the for loop
-				};
-			};
-		};
+		water_r_value=pSensors->flatIt(r_temp,&water_r_value_counter,60,water_r_value);
+		water_r_fail_status=0;
 	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
-		if(water_temp_fail_status<6){
-			water_temp_fail_status=6;
-		} else if(water_temp_fail_status<9){
-			water_temp_fail_status++;
+		if(water_r_fail_status<6){
+			water_r_fail_status=6;
+		} else if(water_r_fail_status<9){
+			water_r_fail_status++;
 		}
 	} else { // Kurzschluss nach masse: 102=(1024-x)/10  	x<=4
-		if(water_temp_fail_status<5){ // nach sechs maligem fehler => ausgabe!
-			water_temp_fail_status++;
+		if(water_r_fail_status<5){ // nach sechs maligem fehler => ausgabe!
+			water_r_fail_status++;
 		};
 
 #ifdef TEMP_DEBUG
@@ -268,16 +174,10 @@ int speedo_temperature::get_air_temp(){
 		return air_temp_value;
 }
 
-int speedo_temperature::get_oil_temp(){
-	if(pSpeedo->trip_dist[2]==0 && get_air_temp()!=999 && oil_temp_value!=8888 && oil_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
-		return get_air_temp()-1;
-	else
-		return int(round(oil_temp_value));
+int speedo_temperature::get_oil_r(){
+	return int(round(oil_r_value));
 }
 
-int speedo_temperature::get_water_temp(){
-	if(pSpeedo->trip_dist[2]==0  && get_air_temp()!=999 && water_temp_value!=8888 && water_temp_value!=9999) // wir sind heute noch exakt gar nicht gefahren
-		return get_air_temp()-1;
-	else
-		return int(round(water_temp_value));
+int speedo_temperature::get_water_r(){
+	return int(round(water_r_value));
 }

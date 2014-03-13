@@ -20,20 +20,12 @@
 //** create objects **//
 speedo_filemanager_v2*	pFilemanager_v2=new speedo_filemanager_v2();
 debugging*				pDebug=new debugging();
-speedo_sd*				pSD=new speedo_sd();
 configuration*			pConfig=new configuration();
-speedo_disp* 			pOLED=new speedo_disp();		// vor menu_disp();
 speedo_menu* 			pMenu=new speedo_menu();		// pins aktivieren, sonst nix
 speedo_speedo*			pSpeedo=new speedo_speedo();
-speedo_sprint* 			pSprint=new speedo_sprint();
 Speedo_sensors*			pSensors=new Speedo_sensors();
 Speedo_aktors*			pAktors=new Speedo_aktors();
 speedo_timer*   		pTimer=new speedo_timer(); 		// brauch ich ja nur hier, den braucht sonst keiner
-LapTimer*				pLapTimer=new LapTimer();
-speedo_speedcams*		pSpeedCams=new speedo_speedcams();
-#ifdef DEMO_MODE
-speedo_demo*			pDemo=new speedo_demo();
-#endif
 //** create objects **//
 
 
@@ -68,33 +60,20 @@ speedo_demo*			pDemo=new speedo_demo();
 void init_speedo(void){
 	Serial.begin(115200);
 
-	pDebug->sprintlnp(PSTR("=== Speedoino ==="));
+	pDebug->sprintlnp(PSTR("=== SmartSpeedo ==="));
 	pDebug->sprintp(PSTR(GIT_REV));				// print Software release
 	pDebug->sprintp(PSTR(" HW:"));
 	Serial.println(pConfig->get_hw_version());	// print Hardware release
 
-//	pSD->init(); 				// try open SD Card
 	// first, set all variables to a zero value
 	pSensors->init(); 			// start every init sequence of each sensor
-	pSensors->clear_vars();		// clear all sensor values;
-	pSpeedo->clear_vars();		// refresh cycle
-	// read configuration file from sd card
-//	pConfig->read(CONFIG_FOLDER,"BASE.TXT",READ_MODE_CONFIGFILE,""); 	// load base config
-//	pConfig->read(CONFIG_FOLDER,"SPEEDO.TXT",READ_MODE_CONFIGFILE,"");	// speedovalues, avg,max,time
-//	pConfig->read(CONFIG_FOLDER,"GANG.TXT",READ_MODE_CONFIGFILE,"");	// gang
-//	pConfig->read(CONFIG_FOLDER,"TEMPER.TXT",READ_MODE_CONFIGFILE,"");	// Temperatur
-//	pConfig->read_skin();		// skinning
-	// check if read SD read was okay, if not: load your default backup values
-	pAktors->check_vars();		// check if color of outer LED are OK
+
+	// set can on/off
 	pSensors->check_vars();		// check if config read was successful
-	pSpeedo->check_vars();		// rettet das Skinning wenn SD_failed von den sensoren auf true gesetzt wird
 	pSensors->single_read();	// read all sensor values once to ensure we are ready to show them
 	pAktors->init();			// Start outer LEDs // ausschlag des zeigers // Motorausschlag und block bis motor voll ausgeschlagen, solange das letzte intro bild halten
-//	pOLED->init_speedo(); 		// Start Screen //execute this AFTER Config->init(), init() will load  phase,config,startup. PopUp will be shown if sd access fails
-//	pMenu->init(); 				// Start butons // adds the connection between pins and vars
-//	pMenu->display(); 			// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
 	pSpeedo->reset_bak(); 		// reset all storages, to force the redraw of the speedo
-//	pSensors->m_CAN->init();	// hast to be the very last to ensure startup and to load values from SD to configure correct filter
+	//	pSensors->m_CAN->init();	// hast to be the very last to ensure startup and to load values from SD to configure correct filter
 	pConfig->ram_info();
 	pDebug->sprintlnp(PSTR("=== Setup finished ==="));
 	Serial.flush(); // jaja, hallo liebes bluetooth modul, will keiner wissen das du alles echos solange wir nicht mit dem pc verbunden sind ...
@@ -135,8 +114,6 @@ int main(void) {
 
 		pSensors->m_reset->toggle(); 		// toggle pin, if we don't toggle it, the ATmega8 will reset us, kind of watchdog<
 		pDebug->speedo_loop(21,1,0," "); 	// intensive debug= EVERY loop access reports the Menustate
-		pSensors->m_gps->check_flag();    	// check if a GPS sentence is ready
-		pAktors->check_flag(); 				// updated expander
 		pSensors->pull_values();			// very important, updates all the sensor values
 
 		/************************* timer *********************/
@@ -146,59 +123,16 @@ int main(void) {
 		/************************* push buttons *********************
 		 * using true as argument, this will activate bluetooth input as well
 		 ************************* push buttons*********************/
-		pMenu->button_test(true,false);     // important!! if we have a pushed button we will draw something, depending on the menustate
+		pMenu->button_test();     // important!! if we have a pushed button we will draw something, depending on the menustate
+		pFilemanager_v2->check_input(); // check serial input from bluetooth
 		/************************ every deamon activity is clear, now draw speedo ********************
 		 * we are round about 0000[1]1 - 0000[1]9
 		 ************************ every deamon activity is clear, now draw speedo ********************/
 		pSensors->m_CAN->check_message();
 
-		if((pMenu->state/10)==1 || pMenu->state==7311111)  {
-			pSpeedo->loop(previousMillis);
-		}
-		//////////////////// Sprint Speedo ///////////////////
-		else if( pMenu->state==MENU_SPRINT*10+1 ) {
-			pSprint->loop();
-		}
-		////////////////// Clock Mode ////////////////////////
-		else if(pMenu->state==291){
-			pSensors->m_clock->loop();
-		}
-		////////////////// Speed Cam Check - Mode ////////////////////////
-		else if(pMenu->state==BMP(0,0,0,0,M_TOUR_ASSISTS,SM_TOUR_ASSISTS_SPEEDCAM_STATUS,1)){
-			pSpeedCams->calc();
-			pSpeedCams->interface();
-		}
-		////////////////// race mode ////////////////////
-		else if(pMenu->state==M_LAP_T*100+11){
-			pLapTimer->waiting_on_speed_up();
-		}
-		else if(pMenu->state==M_LAP_T*1000+111){
-			pLapTimer->race_loop();
-		}
-		////////////////// set gps point ////////////////////
-		else if(pMenu->state==M_LAP_T*10000L+3111){
-			pLapTimer->gps_capture_loop();
-		}
-		//////////////////// voltage mode ///////////////////
-		else if(pMenu->state==531){
-			pSensors->addinfo_show_loop();
-		}
-		//////////////////// stepper mode ///////////////////
-		else if(pMenu->state==541){
-			pAktors->m_stepper->loop();
-		}
-		//////////////////// gps scan ///////////////////
-		else if(pMenu->state==511){
-			pSensors->m_gps->loop();
-		}
-		//////////////////// outline scan ///////////////////
-		else if(pMenu->state==721){
-			pSensors->m_speed->check_umfang();
-		}
-		////////////////// gear scan ///////////////
-		else if(floor(pMenu->state/100)==71){
-			pSensors->m_gear->calibrate();
-		}
+		// send the data via bluetooth
+		pSpeedo->loop(previousMillis);
+
 
 #ifdef LOAD_CALC
 		load_calc++;

@@ -113,7 +113,6 @@ void speedo_dz::init() {
 	pDebug->sprintlnp(PSTR("DZ init done"));
 	blitz_en=false;
 	overruns=0;
-	Serial3.flush();
 };
 
 void speedo_dz::shutdown(){
@@ -122,12 +121,3 @@ void speedo_dz::shutdown(){
 };
 
 
-int speedo_dz::check_vars(){
-	if(blitz_dz==0){
-		pDebug->sprintp(PSTR("DZ failed"));
-		blitz_dz=12500; // hornet maessig
-		blitz_en=true; // gehen wir mal von "an" aus
-		return 1;
-	}
-	return 0;
-};

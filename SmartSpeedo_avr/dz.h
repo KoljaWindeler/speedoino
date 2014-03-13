@@ -22,7 +22,6 @@ public:
 	void counter();
 	void shutdown();
 	void init();
-	int check_vars();
 	uint16_t get_dz();
 	void set_exact(uint16_t i);
 

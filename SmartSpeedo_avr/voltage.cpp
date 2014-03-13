@@ -61,7 +61,7 @@ void speedo_voltage::calc(bool first_start){
 				keep_me_alive(false); // shut down
 				_delay_ms(9999);
 			} else if((start_time+CLOCK_UP_TIME-1)<(millis()/1000)){ // 1sek previous
-				pOLED->string_P(pSpeedo->default_font,PSTR("ByeBye "),7,7);
+//				pOLED->string_P(pSpeedo->default_font,PSTR("ByeBye "),7,7);
 			};
 
 			// main power turn up while in clock mode
@@ -69,9 +69,7 @@ void speedo_voltage::calc(bool first_start){
 				value_counter=0; 					// reset counter to avoid "voltage below 11V" - warning, cause we are at >45 but not at >110
 				pSpeedo->startup_by_ignition=true; 	// since we have power on the power switch, it should be a regular startup
 				pDebug->sprintlnp(PSTR("Power up during Clock Mode"));
-				pOLED->init_speedo();
-				pMenu->init(); 						// restart init process
-				pMenu->display(); 					// execute this AFTER pOLED->init_speedo!! this will show the menu and, if state==11, draws speedosymbols
+//				pMenu->init(); 						// restart init process
 				pSpeedo->reset_bak(); 				// reset all storages, to force the redraw of the speedo
 			}
 		};

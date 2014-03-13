@@ -19,22 +19,17 @@
 
 // SENSOR Class holds a member of each Sensor needed
 Speedo_sensors::Speedo_sensors(){
-	m_blinker=new moped_blinker;
-	m_clock=new speedo_clock;
 	m_dz=new speedo_dz;
-	m_gps=new speedo_gps();
 	m_temperature=new speedo_temperature();
-	m_fuel=new speedo_fuel();
 	m_speed=new speedo_speed();
 	m_reset=new speedo_reset();
-	m_gear=new speedo_gear();
 	m_voltage=new speedo_voltage();
 	m_CAN=new Speedo_CAN();
 
 	fourty_Hz_counter=0;
 	fourty_Hz_timer=millis();
 	CAN_active=true; // don't care, will change it in init
-	sensor_source=0;
+	sensor_source=SENSOR_AUTO;
 	last_highbeam_on=0;
 	last_oil_off=0;
 	rpm_flatted_counter=0;
@@ -47,22 +42,17 @@ Speedo_sensors::~Speedo_sensors(){
 // initialize the sensor class, by using the build in init
 // seqence of each sensor
 void Speedo_sensors::init(){
-	m_blinker->init();
-	m_clock->init();
 	m_dz->init();
 	m_temperature->init();
-	m_fuel->init();
 	m_speed->init();
-//	m_reset->init();
-	m_gear->init();
+	//	m_reset->init();
 	m_voltage->init();
-	m_gps->init();
 	//	m_CAN->init(); // done later in main startup
 
-	cli(); //  ... unschön, aber gps macht interrupts an
+	cli(); //  ... unschÃ¶n, aber gps macht interrupts an
 	// Blinker LINKS Interrupt
-	EIMSK |= (1<<INT6); // Enable Interrupt
-	EICRB |= (1<<ISC60); // any change on INT5
+	EIMSK |= (1<<INT5); // Enable Interrupt
+	EICRB |= (1<<ISC50); // any change on INT5
 
 	// Blinker RECHTS Interrupt
 	EIMSK |= (1<<INT7); // Enable Interrupt
@@ -78,18 +68,12 @@ void Speedo_sensors::init(){
 	sei();
 	// High Beam
 	PCMSK2|=(1<<PCINT18) | (1<<PCINT17) | (1<<PCINT16); //Oil in, High beam in, Neutral gear
-	PCICR |=(1<<PCIE2); // general interrupt PC aktivieren für SK2
+	PCICR |=(1<<PCIE2); // general interrupt PC aktivieren fÃ¼r SK2
 
 	rpm_flatted_counter=0;
 	pDebug->sprintlnp(PSTR("Sensors init done"));
 }
 
-
-
-// initialize every var, and write clean blank value to it (base config) ... moved to constructor
-void Speedo_sensors::clear_vars(){
-	pDebug->sprintlnp(PSTR("Sensors values clear"));
-};
 
 // check each and every sensor end return result
 void Speedo_sensors::check_vars(){
@@ -108,35 +92,15 @@ void Speedo_sensors::check_vars(){
 	} else {
 		pDebug->sprintlnp(PSTR("Analog sensor mode"));
 		CAN_active=false;
-		any_failed+=m_dz->check_vars();
 		any_failed+=m_speed->check_vars();
 		m_CAN->shutdown();
 	}
 
 	/* CHECK ALL SENSORS */
 
-	any_failed+=m_blinker->check_vars();
-	any_failed+=m_clock->check_vars();
-	any_failed+=m_gps->check_vars();
-	any_failed+=m_temperature->check_vars(); // needed for oiltemp
-	any_failed+=m_fuel->check_vars();
 	any_failed+=m_reset->check_vars();
-	any_failed+=m_gear->check_vars();
 	any_failed+=m_voltage->check_vars();
 
-	if(any_failed){
-
-		pDebug->sprintp(PSTR("!!!! WARNING !!!!"));
-		pDebug->sprintp(PSTR("SD access strange"));
-		pDebug->sprintlnp(PSTR("!!!! WARNING !!!!"));
-
-		Serial.println(any_failed);
-		pDebug->sprintlnp(PSTR(" failures"));
-
-		pSD->sd_failed=true;
-		//_delay_ms(5000);
-		//pOLED->clear_screen();
-	}
 	/* CHECK ALL SENSORS */
 };
 
@@ -175,7 +139,7 @@ unsigned int Speedo_sensors::get_RPM(int mode){ // 0=exact, 1=flated, 2=hard
 	return exact_value;
 };
 
-unsigned int Speedo_sensors::get_speed(bool mag_if_possible){
+unsigned int Speedo_sensors::get_speed(){
 #ifdef DEMO_MODE
 	return pDemo->get_speed();
 #endif
@@ -183,12 +147,8 @@ unsigned int Speedo_sensors::get_speed(bool mag_if_possible){
 	if(CAN_active && !m_CAN->failed){
 		return_value=m_CAN->get_Speed();
 	} else {
-		if(mag_if_possible){
-			return_value=(unsigned)m_speed->get_mag_speed();
-		}else {
-			return_value=(unsigned)m_speed->getSpeed();
-		};
-	}
+		return_value=(unsigned)m_speed->get_mag_speed();
+	};
 	return return_value;
 };
 
@@ -199,7 +159,7 @@ int Speedo_sensors::get_water_temperature(){
 	if(CAN_active && !m_CAN->failed){
 		return m_CAN->get_water_temp();
 	} else {
-		return m_temperature->get_water_temp();
+		return m_temperature->get_water_r();
 	}
 };
 
@@ -213,7 +173,7 @@ int Speedo_sensors::get_water_temperature_fail_status(){
 	if(CAN_active && !m_CAN->failed){
 		return m_CAN->get_CAN_missed_count();
 	} else {
-		return m_temperature->water_temp_fail_status;
+		return m_temperature->water_r_fail_status;
 	}
 };
 
@@ -225,14 +185,11 @@ int Speedo_sensors::get_air_temperature(){
 	//	}
 };
 
-int Speedo_sensors::get_oil_temperature(){
-#ifdef DEMO_MODE
-	return pDemo->get_oil_temperature();
-#endif
+int Speedo_sensors::get_oil_r(){
 	//	if(CAN_active && !m_CAN->failed){ // no can sensor available
 	//		return m_CAN->get_oil_temp();
 	//	} else {
-	return m_temperature->get_oil_temp();
+	return m_temperature->get_oil_r();
 	//	}
 };
 /********************************** GET section *************************************/
@@ -246,16 +203,12 @@ int Speedo_sensors::get_oil_temperature(){
 
 void Speedo_sensors::single_read(){
 	pDebug->sprintlnp(PSTR("Sensor single read ... "));
-	pDebug->sprintp(PSTR("Reading: clock ... "));
-	pSensors->m_clock->inc();  // sekunden hochzählen
-	pDebug->sprintp(PSTR("Done\r\nReading: GPS ... "));
-	pSensors->m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
 	pDebug->sprintp(PSTR("Done\r\nReading: Air temp ... "));
 	pSensors->m_temperature->read_air_temp();  // temperaturen aktualisieren
 	pDebug->sprintp(PSTR("Done\r\nReading: Oil temp ... "));
-	pSensors->m_temperature->read_oil_temp();  // temperaturen aktualisieren
+	pSensors->m_temperature->read_oil_r();  // temperaturen aktualisieren
 	pDebug->sprintp(PSTR("Done\r\nReading: Water temp ... "));
-	pSensors->m_temperature->read_water_temp();  // temperaturen aktualisieren, useless if we use CAN but no problem
+	pSensors->m_temperature->read_water_r();  // temperaturen aktualisieren, useless if we use CAN but no problem
 	pDebug->sprintp(PSTR("Done\r\nReading: Voltages ... "));
 	pSensors->m_voltage->calc(false); // spannungscheck
 	char temp[6];
@@ -324,9 +277,7 @@ void Speedo_sensors::pull_values(){
 
 		if(fourty_Hz_counter==0){ // 1 Hz
 			m_voltage->calc(false); // spannungscheck
-			m_temperature->read_oil_temp();  // temperaturen aktualisieren
-			m_clock->inc();  // sekunden hochzählen
-			m_gps->valid++;  // vor wievielen sekunden war es das letzte mal gültig
+			m_temperature->read_oil_r();  // temperaturen aktualisieren
 			// auto CAN detection ...
 			if(sensor_source==SENSOR_AUTO){
 				if(!m_CAN->init_comm_possible(&CAN_active)){ // returns always true, exept the communcation was NOT possible even if it should
@@ -341,26 +292,14 @@ void Speedo_sensors::pull_values(){
 		}
 
 		if(fourty_Hz_counter%4==0){			//do this, every 10Hz, 100ms
-			m_blinker->check();    // blinken wir?
-			m_gear->calc();// blockt intern alle aufrufe die vor ablauf von 250 ms kommen
-
-
-			// IIR mit Rückführungsfaktor 3 für Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
+			// IIR mit RÃ¼ckfÃ¼hrungsfaktor 3 fÃ¼r Anzeige, 20*4 Pulse, 1400U/min = 2,5 sec | 14000U/min = 0,25 sec
 			rpm_flatted=flatIt(get_RPM(RPM_TYPE_DIRECT),&rpm_flatted_counter,2,get_RPM(RPM_TYPE_FLAT));
-			pAktors->rgb_action(get_RPM(RPM_TYPE_FLAT));
 
-//			////////////// TODO
-//			char rpm_buffer[20];
-//			sprintf(rpm_buffer,"%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT));
-//			Serial.println(rpm_buffer);
-//			////////////// TODO
-		}
-
-		if(pAktors->m_stepper->init_steps_to_go==0){
-			// to this with 40hz, 25ms
-			// in addtion to the message above: handling of RPM and aktor
-			pAktors->m_stepper->go_to(get_RPM(pAktors->m_stepper->shown_mode)); //3.10.2013 ran good
-			//pAktors->m_stepper->go_to(get_RPM(RPM_TYPE_DIRECT));
+			//			////////////// TODO
+			//			char rpm_buffer[20];
+			//			sprintf(rpm_buffer,"%i,%i",get_RPM(RPM_TYPE_DIRECT),get_RPM(RPM_TYPE_FLAT));
+			//			Serial.println(rpm_buffer);
+			//			////////////// TODO
 		}
 	}
 
@@ -377,7 +316,7 @@ void Speedo_sensors::pull_values(){
 	// CAN is present and should be used
 	if(CAN_active && !m_CAN->failed){
 		// fetch new message first
-		if(m_CAN->message_available){ // muss hier die pin abfrage rein? dafür gibts doch den interrupt
+		if(m_CAN->message_available){ // muss hier die pin abfrage rein? dafÃ¼r gibts doch den interrupt
 			m_CAN->process_incoming_messages();
 		}
 		if(update_required && m_CAN->get_active_can_type()==CAN_TYPE_OBD2 && fourty_Hz_counter%4==0){ // 10Hz, request can OBD2 msg
@@ -404,7 +343,7 @@ void Speedo_sensors::pull_values(){
 			// do this, once a second
 			if(fourty_Hz_counter==0){
 				m_temperature->read_air_temp();  // temperaturen aktualisieren
-				m_temperature->read_water_temp();  // temperaturen aktualisieren
+				m_temperature->read_water_r();  // temperaturen aktualisieren
 			}
 #ifdef TACHO_SMALLDEBUG
 			pDebug->sprintlnp(PSTR("."));
@@ -438,12 +377,12 @@ float Speedo_sensors::flatIt(int actual, unsigned char *counter, char max_counte
 		*counter=1;
 		return actual;
 	}
-	// hier besteht die gefahr das ein messwert nur [INTmax]/max_counter groß sein darf
+	// hier besteht die gefahr das ein messwert nur [INTmax]/max_counter groÃŸ sein darf
 	// bei 20 Werten also nur 3276,8
 }
 
 float Speedo_sensors::flatIt_shift(int actual, uint8_t *counter, uint8_t shift, float old_flat){
-	if(*counter==1<<(shift+1)){ // e.G. shift == 4 (2⁴=16) = (0b10000=16)
+	if(*counter==1<<(shift+1)){ // e.G. shift == 4 (2â�´=16) = (0b10000=16)
 		return (float)(old_flat+((int)(actual-old_flat)>>shift)); // e.g. shift = 2, old_flat=1, actual=2, result should be 1.25: (old_flat*3+actual)/4=5/4=1.25 OR BY SHIFT: 1+((2-1)>>2=1+1>>2=1+0.25=1.25
 	} else if(*counter<1<<shift && *counter>=0){
 		*counter=*counter+1;
@@ -452,82 +391,24 @@ float Speedo_sensors::flatIt_shift(int actual, uint8_t *counter, uint8_t shift, 
 		*counter=1;
 		return actual;
 	}
-	// hier besteht die gefahr das ein messwert nur [INTmax]/max_counter groß sein darf
+	// hier besteht die gefahr das ein messwert nur [INTmax]/max_counter groÃŸ sein darf
 	// bei 20 Werten also nur 3276,8
 }
 
 uint16_t Speedo_sensors::flatIt_shift_mask(uint16_t actual, uint8_t shift, uint16_t old_flat, uint16_t nmask){
 	return old_flat+(((int)(actual-old_flat)>>shift)&~nmask); // e.g. shift = 2, old_flat=1, actual=2, result should be 1.25: (old_flat*3+actual)/4=5/4=1.25 OR BY SHIFT: 1+((2-1)>>2=1+1>>2=1+0.25=1.25
-	// hier besteht die gefahr das ein messwert nur [INTmax]/max_counter groß sein darf
+	// hier besteht die gefahr das ein messwert nur [INTmax]/max_counter groÃŸ sein darf
 	// bei 20 Werten also nur 3276,8
 }
 
 
-void Speedo_sensors::addinfo_show_loop(){
-	char *char_buffer;
-	char_buffer = (char*)malloc(22);
-	////////////////////// water //////////////
-	if(pSensors->get_water_temperature()!=pSpeedo->disp_zeile_bak[2]){
-		pSpeedo->disp_zeile_bak[2]=pSensors->get_water_temperature();
 
-		if(pSensors->get_water_temperature()==8888){
-			sprintf(char_buffer," -     "); // error occored -> no sensor
-		} else if(pSensors->get_water_temperature()==9999){
-			sprintf(char_buffer," --    "); // error occored -> short to gnd
-		} else 	if(pSensors->get_water_temperature()>1100){
-			sprintf(char_buffer,">110{C  "); // more then 110°C add a space to have 5 chars
-		} else 	{
-			sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_water_temperature()/10))%1000,pSensors->get_water_temperature()%10); // _32.3°C  7 stellen
-		};
-		// depend on skinsettings
-		pOLED->string(pSpeedo->default_font,char_buffer,9,2,0,DISP_BRIGHTNESS,-4);
-	};
-
-	////////////////////// air //////////////
-	if(pSensors->get_air_temperature()!=pSpeedo->disp_zeile_bak[3]){
-
-		pSpeedo->disp_zeile_bak[3]=pSensors->get_air_temperature();
-		sprintf(char_buffer,"%2i.%i{C",int(floor(pSensors->get_air_temperature()/10))%100,pSensors->get_air_temperature()%10);
-		// depend on skinsettings
-		pOLED->string(pSpeedo->default_font,char_buffer,9,3,0,DISP_BRIGHTNESS,2);
-	};
-
-	////////////////////// oil //////////////
-	if(pSensors->get_oil_temperature()!=pSpeedo->disp_zeile_bak[4]){
-
-		pSpeedo->disp_zeile_bak[4]=pSensors->get_oil_temperature();
-
-		if(pSensors->get_oil_temperature()==8888){
-			sprintf(char_buffer," -     "); // error occored -> no sensor
-		} else if(pSensors->get_oil_temperature()==9999){
-			sprintf(char_buffer," --    "); // error occored -> short to gnd
-		} else {
-			sprintf(char_buffer,"%3i.%i{C",int(floor(pSensors->get_oil_temperature()/10))%1000,pSensors->get_oil_temperature()%10); // _32.3°C  7 stellen
-		};
-		// depend on skinsettings
-		pOLED->string(pSpeedo->default_font,char_buffer,9,4,0,DISP_BRIGHTNESS,-4);
-	};
-
-	////////////////////// voltage //////////////
-	if(pSpeedo->disp_zeile_bak[0]!=1){
-		pOLED->string_P(pSpeedo->default_font,PSTR("Voltage "),1,7);
-		pSpeedo->disp_zeile_bak[0]=1;
-	}
-	int voltage=pSensors->m_voltage->get();
-	if(voltage!=pSpeedo->disp_zeile_bak[1]){
-		pSpeedo->disp_zeile_bak[1]=voltage;
-		char temp[6];
-		sprintf(temp,"%2i,%iV",int(floor(voltage/100)),int(voltage%100));
-		pOLED->string(pSpeedo->default_font,temp,9,7);
-	};
-	free(char_buffer);
-};
 
 /********************************** WARN light section *************************************
  * all light depeding infos are processed here
  ********************************** WARN light section *************************************/
 // interrupt to update sensors
-ISR(INT6_vect ){
+ISR(INT5_vect ){
 	pSensors->check_inputs();
 }
 // interrupt to update sensors
@@ -598,27 +479,22 @@ void Speedo_sensors::check_inputs(){
 	// depending on CAN or non CAN mode ... and if CAN on CAN TYPE
 	if(CAN_active && m_CAN->get_active_can_type()==CAN_TYPE_TRIUMPH){
 		neutral_gear=m_CAN->get_neutral_gear_state();
-		pSensors->m_gear->set_neutral(neutral_gear);
 	} else {
 		if(PINK&(1<<NEUTRAL_GEAR_PIN)){	 // if the pin is still high, the pulldown is not active, signal is not active
 			neutral_gear=0x00;
-			pSensors->m_gear->set_neutral(false);
 		} else {
 			neutral_gear=0x01;
-			pSensors->m_gear->set_neutral(true);
 		}
 	}
 
 	if(PINE&(1<<FLASHER_LEFT_PIN)){
 		flasher_left=0x01;
-		pSensors->m_blinker->pin_toogled();
 	}
 
 	if(PINE&(1<<FLASHER_RIGHT_PIN)){
 		flasher_right=0x01;
-		pSensors->m_blinker->pin_toogled();
 	}
 
-	pAktors->set_controll_lights(oil_pressure,flasher_left,neutral_gear,flasher_right,high_beam,false);
+	// TODO output values?
 }
 /********************************** WARN light section *************************************/

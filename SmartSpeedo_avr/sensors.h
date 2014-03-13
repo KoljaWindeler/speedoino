@@ -43,21 +43,16 @@ public:
 	void pull_values();
 
 	unsigned int get_RPM(int mode); // 0=exact, 1=flated, 2=flatted_display_ready
-	unsigned int get_speed(bool mag_if_possible);
+	unsigned int get_speed();
 	int get_water_temperature();
 	int get_water_temperature_fail_status();
 	int get_air_temperature();
-	int get_oil_temperature();
+	int get_oil_r();
 
-	speedo_clock* m_clock;
 	speedo_dz* m_dz;
-	moped_blinker* m_blinker;
-	speedo_gps* m_gps;
 	speedo_temperature* m_temperature;
-	speedo_fuel* m_fuel;
 	speedo_speed* m_speed;
 	speedo_reset* m_reset;
-	speedo_gear* m_gear;
 	speedo_voltage* m_voltage;
 	Speedo_CAN* m_CAN;
 	int8_t sensor_source;
