@@ -54,6 +54,7 @@ class speedo_filemanager_v2{
 #define CMD_POST_AIR_TEMP		0x46
 #define CMD_POST_SPEED			0x47
 #define CMD_POST_RPM			0x48
+#define CMD_POST_SPEED_PSEUDO	0x49
 
 #define CMD_PULSE_OILER 		0x51
 

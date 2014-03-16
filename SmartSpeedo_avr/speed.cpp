@@ -17,160 +17,107 @@
 
 #include "global.h"
 
-speedo_speed::speedo_speed(){
-	last_time=millis();
-	reed_speed=0;
-	speed_peaks=1; // avoid speed at startup
-	reifen_umfang=0; // Reifenumfang in metern
-	gps_takeover=0; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
-	flat_counter_calibrate_umfang=0;
-	flat_value_calibrate_umfang=2.00;
+/* estimate number of pulses
+ * given that there are x pulses per wheel rotation (ca 2m), at high speed (250km/h = 70m/s) we'll have
+ * 70[m/s]/2[m/rotation]*x[pulse/rotation]=35*x[pulse/s]
+ *
+ * :: 250km/h ::
+ * for a reed: 35 Hz
+ * 8 pulses (T3): 280 Hz
+ * 64 Pulses (Hornet): 2240 Hz (<- 8 Bit timer + overflow char?)
+ *
+ * :: 10 km/h ::
+ * Reed: 1.38 Hz
+ * 8 Pulses: 11.11 Hz
+ * 64 Pulses: 89 Hz
+ *
+ * Possible ways to count:
+ *
+ * 1. On every Peak well jump in the interrupt and substact the time between two pulses ..
+ * Pro: Easy to calclate, slow speed is very precise
+ * Contra: very un-precise if time between pulses is short (<100ms), lots of interrupts!
+ *
+ * 2. Let a time run, grab timer value on interrupt
+ * Pro: done in RPM calculation, working stable
+ * Contra: lots of interrupts!
+ *
+ * 3. count peaks with a timer, ask on a fixed time base for values
+ * Pro: very well suited for high pulse speed
+ * contra: might be slow?
+ * -> Read every 500ms + store millis of last read + only read if at least two pulses captured
+ * 			Szenario 2hz:
+ * 				Read at time 0: 0 pulses
+ * 				Pulse at time 500ms
+ * 				Read at time 600ms, not enought pulses
+ * 				Pulse at time 1000ms
+ * 				Read at 1200: two pulses -> 600ms per pulse ... grrr, reset counter
+ * 				Pulse at 1500ms,2000ms
+ * 				Read at 2400 -> 600ms/Pulse ... grrr
+ * 				Pulse at 2500,3000
+ * 				Read at 3000 -> 250ms/Pulse ... grrr
+ *
+ *			Szenario 2hz, read every 100ms
+ * 				Worst Case: pulse at 1,501,1001,1501,2001
+ * 							read at 0,100..600 -> 600/2 -> 300
+ * 							read at 1600 -> 500
+ * 							read at 2600 -> 500
+ *
+ */
 
-	// erstmal alle zwischenspeicher loeschen
-	for(unsigned int i=0; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
-		pSpeedo->trip_dist[i]=0;
-		pSpeedo->avg_timebase[i]=0;
-		pSpeedo->max_speed[i]=-99;
-	};
+speedo_speed::speedo_speed(){
+	last_time_read=millis();
+	reed_speed=0;
 };
+
 speedo_speed::~speedo_speed(){
 };
 
-void speedo_speed::calc(){ // TODO: an stelle des prevent => if(digitalRead(3)==HIGH){ // außen drum herum
-	unsigned long jetzt=millis();
-	unsigned long differ=jetzt-last_time;
-	status=SPEED_REED_OK;
-	if(differ>250){ // mit max 10 hz und nach peak anzahl neu berechnen
-		int temp_reed_speed=round(((reifen_umfang*1000*speed_peaks)/differ) * 3.6 ); // 1 Magnet // eventuell /360*280 => wenn 280° zwischen dem letzen und dem ersten flattern liegen, aber ich denke das werden eher 358° sein
-
-#ifdef SPEED_DEBUG
-		pDebug->sprintp(PSTR("Differ > 250 : "));
-		Serial.print(differ);
-		pDebug->sprintp(PSTR(" speed_peaks: "));
-		Serial.print(speed_peaks);
-		pDebug->sprintp(PSTR(" reifen umfang: "));
-		Serial.print(reifen_umfang);
-		pDebug->sprintp(PSTR(" temp_reed_speed: "));
-		Serial.println(temp_reed_speed);
-#endif
-
-		if(temp_reed_speed<350 && temp_reed_speed>=0){
-			reed_speed=temp_reed_speed;
-		}
-		last_time=jetzt;
-		prevent_double_count=jetzt; // wir bekommen immer 2 peaks zur gleichen millis(), daher diese prevent_double_count
-		speed_peaks=1;
-	} else if((jetzt-prevent_double_count)>15) { // bis zu 470 km/h
-		speed_peaks++;
-		prevent_double_count=jetzt; // wir bekommen immer 2 peaks zur gleichen millis(), daher diese prevent_double_count
-	};
-};
-
-
-ISR(INT6_vect){
-	pSensors->m_speed->calc();
-} // der eingentliche
-
 void speedo_speed::init (){
-	//DDRE  &=~(1<<SPEED_PIN); // interrupt 6 eingang
-	last_time=millis(); //prevent calculation of rpm
-	EIMSK |= (1<<INT6); // Enable Interrupt
-	EICRB |= (1<<ISC60) | (1<<ISC61); // rising edge on INT5
-	speed_peaks=0; // clear
+	// timer
+	TCNT3=0x00; // reset value
+	TIMSK3=(0<<TOIE3); // <- deactivate Timer overflow interrupt
+	TCCR3B=(1<<CS32) | (1<<CS31) | (1<<CS30); // selects external clock on rising edge
+	TCCR3A=0; // WGM=0 -> normal mode
+	last_time_read=millis(); //prevent calculation of rpm
 
-	status=SPEED_REED_OK; // alles gut
 	pDebug->sprintlnp(PSTR("Speed init done"));
 };
 
 void speedo_speed::shutdown(){
-	EIMSK &= ~(1<<INT6); // DISABLE Interrupt
-	EICRB &= ~((1<<ISC60) | (1<<ISC61)); // no edge on INT5
+	TCCR3B=(0<<CS32) | (0<<CS31) | (0<<CS30); // off
 }
-
-
-int speedo_speed::check_vars(){
-	/********** check values ********************
-	 * zumindest in den trip, max und avg nachsehen ob werte
-	 * drinstehen. Falls die sd karte nicht gelesen werden konnte
-	 * wird das schon gemeldet, aber falls nur die datei fuer trips
-	 * nicht gelesen werden kann sollte man das hier merken weil
-	 * alle(!) max value=0 sind wie von der initialisierung
-	 ********** check values ********************/
-
-	int nulls=0;
-	for(unsigned int i=2; i<sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]); i++){
-		if(pSpeedo->max_speed[i]==-99){
-			nulls++;
-		}
-	};
-
-	if((nulls == (sizeof(pSpeedo->max_speed)/sizeof(pSpeedo->max_speed[0]))-2) || reifen_umfang==0){
-		reifen_umfang=1.99; // Reifenumfang in metern
-		gps_takeover=120; // bei 120 km/h nehmen wir die Daten vom GPS statt des Reed wenn moeglich
-		pDebug->sprintp(PSTR("speedo failed"));
-		return 1;
-	};
-
-	return 0;
-};
 
 
 // für die gang berechnung ist der speed am magnet geiler als der vom gps weil beim beschleunigen sonst fehler kommen
 int speedo_speed::get_mag_speed(){
+	if(millis()-last_time_read>100){
+		uint8_t sreg;
+		uint16_t timerValue=0;
+		sreg = SREG;		/* Save global interrupt flag */
+		cli();				/* Disable interrupts */
+		if(TCNT3>1){
+			timerValue = TCNT3;	/* Read TCNTn into i */
+			TCNT3=0;			/* Reset Timer value */
+		}
+		SREG = sreg;		/* Restore global interrupt flag */
+		if(timerValue>1){
+			unsigned long differ=millis()-last_time_read; // value around 2000ms to 100ms
+			reed_speed=(((unsigned long)timerValue)<<11)/differ; // this could be 2 to 240
+
+			// ticks per time:
+			// reed low speed: 2/2000, hornet high speed: 240/100
+			// scale by 2048 -> 2 .. 2400 [ticks per 2.048sec]
+			// to be recalculated by: value*[way/tick]/(2,048*3,6)
+
+			// one digit represets 1*[way/tick]/(2,048*3,6)= [Hornet]: 1[Tick]* 2[m/Tick] / 7,3728 = 0,27 km/h
+			// one digit represets 1*[way/tick]/(2,048*3,6)= [T3]: 1[Tick]* 0,25[m/Tick] / 7,3728 = 0,016875 km/h
+
+			last_time_read=millis();
+		} else {
+			reed_speed=0;
+		}
+	}
 	return reed_speed;
 };
 
-//void speedo_speed::check_umfang(){
-//	int gps_speed=get_sat_speed();
-//	int mag_speed=pSensors->get_speed(true);
-//	if(pSensors->m_gps->get_info(6)<3 && pSpeedo->disp_zeile_bak[0]!=2){
-//		pSpeedo->disp_zeile_bak[0]=2;
-//		pOLED->highlight_bar(0,0,128,8);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("No GPS!"),5,0,15,0,0);
-//		flat_counter_calibrate_umfang=0;
-//	} else if(gps_speed<round(pSensors->m_speed->gps_takeover/0.6) && pSpeedo->disp_zeile_bak[0]!=1 && pSensors->m_gps->get_info(6)>=2){
-//		pSpeedo->disp_zeile_bak[0]=1;
-//		pOLED->highlight_bar(0,0,128,8);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("Speed up!"),5,0,15,0,0);
-//		flat_counter_calibrate_umfang=0;
-//	} else if(gps_speed>pSensors->m_speed->gps_takeover && pSpeedo->disp_zeile_bak[0]==1){
-//		pOLED->filled_rect(0,0,128,8,0);
-//		pSpeedo->disp_zeile_bak[0]=0;
-//	}
-//
-//	if(gps_speed!=pSpeedo->disp_zeile_bak[1]){
-//		pSpeedo->disp_zeile_bak[1]=gps_speed;
-//		char speed_a[13];
-//		sprintf(speed_a,"GPS %3i km/h",gps_speed);
-//		pOLED->string(pSpeedo->default_font,speed_a,5,2);
-//	}
-//
-//	if(mag_speed!=pSpeedo->disp_zeile_bak[2]){
-//		pSpeedo->disp_zeile_bak[2]=mag_speed;
-//		char speed_a[13];
-//		sprintf(speed_a,"MAG %3i km/h",mag_speed);
-//		pOLED->string(pSpeedo->default_font,speed_a,5,3);
-//	}
-//
-//	//gps_geschwindigkeit/realer_reifenumfang = mag_speed/aktueller_umfang
-//	//wenn ich eingestellt hätte das mein reifen nur 1m im umfang ist, dann wäre ich bei 196 km/h erst 98km/h schnell
-//	// (196km/h) / (196cm/tick) = (98km/h) / (98cm/tick)
-//	// also gps / ( mag / aktuell ) = realer umfang = gps * aktuell / mag
-//	_delay_ms(150);
-//	int new_length=(int)((unsigned long)(gps_speed*(int(pSensors->m_speed->reifen_umfang*100))/mag_speed));
-//	flat_value_calibrate_umfang=pSensors->flatIt(new_length,&flat_counter_calibrate_umfang,64,flat_value_calibrate_umfang);
-//
-//	if(flat_value_calibrate_umfang!=pSpeedo->disp_zeile_bak[3]){
-//		pSpeedo->disp_zeile_bak[2]=flat_value_calibrate_umfang;
-//		char speed_a[13];
-//		sprintf(speed_a,"outline now %3i cm",int(round(flat_value_calibrate_umfang)));
-//		pOLED->string(pSpeedo->default_font,speed_a,1,6);
-//	}
-//
-//	if(int(pSensors->m_speed->reifen_umfang*100)!=pSpeedo->disp_zeile_bak[4]){
-//		pSpeedo->disp_zeile_bak[4]=int(pSensors->m_speed->reifen_umfang*100);
-//		char speed_a[13];
-//		sprintf(speed_a,"from file   %3i cm",int(pSensors->m_speed->reifen_umfang*100));
-//		pOLED->string(pSpeedo->default_font,speed_a,1,7);
-//	}
-//}
+

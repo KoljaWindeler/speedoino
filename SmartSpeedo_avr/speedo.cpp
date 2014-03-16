@@ -180,6 +180,9 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		// send data
 		unsigned char data[3];
 		data[0]=CMD_POST_SPEED;
+		if(!pSensors->CAN_active){
+			data[0]=CMD_POST_SPEED_PSEUDO;
+		}
 		data[1]=temp_speed>>8 & 0xff;
 		data[2]=temp_speed & 0xff;
 		pFilemanager_v2->send_answere(data,3);

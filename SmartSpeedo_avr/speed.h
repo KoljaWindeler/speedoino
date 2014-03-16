@@ -15,26 +15,12 @@ class speedo_speed{
 public:
 	speedo_speed();
 	~speedo_speed();
-	void calc();
-	int getSpeed();
 	void init();
 	void shutdown();
-	int check_vars();
-	void check_umfang();
-	int get_sat_speed();
 	int get_mag_speed();
-	int 		  gps_takeover;
-	unsigned char status;
-	float 		  reifen_umfang;
-	// für die kalibrierung
-	float flat_value_calibrate_umfang;
 private:
 	int           reed_speed;  // speichere speed darin, wenn valid_time noch < 1000 ist gib das hier aus
-	unsigned long last_time;  // wenn dieser Zeitpunkt über 1000 msec her ist stehen wir
-	unsigned long prevent_double_count;
-	volatile unsigned int speed_peaks;
-	// für die kalibrierung
-	unsigned char flat_counter_calibrate_umfang;
+	unsigned long last_time_read;  // wenn dieser Zeitpunkt über 1000 msec her ist stehen wir
 };
 
 #endif /* SPEED_H_ */

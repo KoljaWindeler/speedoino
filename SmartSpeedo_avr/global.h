@@ -15,6 +15,7 @@ typedef struct {
 #include "oiler.h"
 #include "voltage.h"
 #include "CAN.h"
+#include "KKL.h"
 
 
 #include "config.h" 	// vor timer

@@ -92,7 +92,6 @@ void Speedo_sensors::check_vars(){
 	} else {
 		pDebug->sprintlnp(PSTR("Analog sensor mode"));
 		CAN_active=false;
-		any_failed+=m_speed->check_vars();
 		m_CAN->shutdown();
 	}
 
