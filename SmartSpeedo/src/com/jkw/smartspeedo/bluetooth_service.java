@@ -63,10 +63,15 @@ public class bluetooth_service extends Service {
 	public static final String BT_SENSOR_VALUE = "BT_SENSOR_VALUE";
 	public static final String BT_SENSOR_RPM = "rpm";
 	public static final String BT_SENSOR_SPEED = "speed";
+	public static final String BT_SENSOR_GEAR = "BT_SENSOR_GEAR";
+	public static final String BT_SENSOR_SPEED_REED = "reedspeed";
 	public static final String BT_SENSOR_WATER_TEMP = "water";
 	public static final String BT_SENSOR_WATER_TEMP_ANALOG = "BT_SENSOR_WATER_TEMP_ANALOG";
 	public static final String BT_SENSOR_OIL_TEMP = "oil";
 	public static final String BT_SENSOR_VOLTAGE = "voltage";
+	public static final String BT_SENSOR_FLASHER ="flasher";
+	public static final String BT_FLASHER_R ="BT_FLASHER_R";
+	public static final String BT_FLASHER_L ="BT_FLASHER_L";
 	//////////////////////////////////////// BROADCAST COMMUNICATIONS ////////////////////////////////////////
 
 	private static final String TAG = "JKW";
@@ -98,7 +103,7 @@ public class bluetooth_service extends Service {
 	public static final int ST_PROCESS			= 7;
 	public static final int ST_EMERGENCY_RELEASE= 999;
 
-	
+
 	// Message types sent by the BluetoothReadService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
 	public static final int MESSAGE_READ = 2;
@@ -116,6 +121,7 @@ public class bluetooth_service extends Service {
 
 	public BluetoothDevice last_connected_device=null;
 	private BluetoothAdapter mAdapter = null;
+	private Sensors mSensors = null;
 
 	private ConnectThread mConnectThread;
 	private ConnectedThread mConnectedThread;
@@ -158,6 +164,11 @@ public class bluetooth_service extends Service {
 	public static final byte CMD_GET_WATER_TEMP_DIGITAL	=  0x44;
 	public static final byte CMD_GET_OIL_TEMP_ANALOG	=  0x45;
 	public static final byte CMD_GET_OIL_TEMP_DIGITAL	=  0x46;
+	public static final byte CMD_GET_FLASHER_LEFT		=  0x47;
+	public static final byte CMD_GET_FLASHER_RIGHT		=  0x48;
+	public static final byte CMD_GET_RPM				=  0x49;
+	public static final byte CMD_GET_SPEED				=  0x4A;
+	public static final byte CMD_GET_PSEUDO_SPEED		=  0x4B;
 
 	public static final char STATUS_CMD_OK      	=  0x00;
 	public static final char STATUS_CMD_FAILED  	=  0xC0;
@@ -210,6 +221,7 @@ public class bluetooth_service extends Service {
 		};
 
 		mState=STATE_NONE;
+		mSensors = new Sensors(this);
 	}
 
 	// listen to every input from the controlling activity, which ever app that might be
@@ -803,10 +815,9 @@ public class bluetooth_service extends Service {
 					//					mHandler.obtainMessage(MESSAGE_CMD_UNKNOWN, 0, -1).sendToTarget();
 				}
 
+				boolean value_b = false;
 
-				switch((msgBuffer[0])){
-				case CMD_SIGN_ON:
-				case CMD_SIGN_ON_FIRMWARE:
+				if(msgBuffer[0]==CMD_SIGN_ON || msgBuffer[0]==CMD_SIGN_ON_FIRMWARE){
 					// hier jetzt in unsere oberflche die id eintragen
 					if((msgBuffer[1] & 0xff)==STATUS_CMD_OK){
 						//						msg = mHandler.obtainMessage(MESSAGE_SET_VERSION);
@@ -819,37 +830,32 @@ public class bluetooth_service extends Service {
 					} else {
 						// irgendwie das command nochmal senden
 					}
-					break;
 					// da alle richtungen zwar betaetigt werden, danach die schleife auf dem AVR aber unterbrochen wird -> seqNr resetten
-				case CMD_GET_WATER_TEMP_ANALOG:
-					int value = (msgBuffer[1] << 8) + (msgBuffer[2] & 0xff);					
-					Intent intent = new Intent(short_name);
-					intent.putExtra(BT_ACTION, BT_SENSOR_UPDATE);
-					intent.putExtra(BT_SENSOR_UPDATE, BT_SENSOR_WATER_TEMP_ANALOG);
-					intent.putExtra(BT_SENSOR_VALUE, value);
-					LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
-					Log.i(TAG,"statemachine ok, gebe semaphore zurueck");
-					break;
+				} else if(msgBuffer[0]==CMD_GET_WATER_TEMP_ANALOG){				
+					mSensors.set_water_analog((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
+				} else if(msgBuffer[0]==CMD_GET_FLASHER_LEFT){
+					mSensors.set_flasher_left(msgBuffer[1]);
+				} else if(msgBuffer[0]==CMD_GET_FLASHER_RIGHT){
+					mSensors.set_flasher_right(msgBuffer[1]);
+				} else if(msgBuffer[0]==CMD_GET_RPM){
+					mSensors.set_rpm((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));				
+				} else if(msgBuffer[0]==CMD_GET_SPEED){
+					mSensors.set_speed_CAN((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
+				} else if(msgBuffer[0]==CMD_GET_PSEUDO_SPEED){
+					mSensors.set_speed_reed((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
+
 					// list of valid commands, the active task will process the data
-				case CMD_DIR: 		// durch einen doofen zufall kann das hier auch LEAVE_PRGM_MODE sein, dann ist die l?nge aber nur 2, bei dem dir ist sie >2 daher kann man das unterscheiden
-				case CMD_GET_FILE: 	// nothing to do, just keep it in buffer, get_file() will care for it.
-				case CMD_PUT_FILE: 	// this is the same like CMD_PROGRAM_FLASH_ISP 	// nothing to do, just keep it in buffer, put_file() or fireware() will care for it. // depending on who asked for this
-				case CMD_SPI_MULTI:
-				case CMD_LEAVE_FM:
-				case CMD_LOAD_ADDRESS:
-				case CMD_LEAVE_PROGMODE_ISP:
-				case CMD_CHIP_ERASE_ISP:
-				case CMD_PROGRAM_FLASH_ISP:
-				case CMD_READ_FLASH_ISP:
-				case CMD_DEL_FILE:
-				case CMD_SHOW_GFX:
-				case CMD_FILE_RECEIVE:
-				case CMD_RESET_SMALL_AVR:
-				case CMD_SET_STARTUP:
-					break;
-
-				default:
+				} else if(msgBuffer[0]==CMD_SPI_MULTI || 
+						msgBuffer[0]==CMD_LEAVE_FM ||
+						msgBuffer[0]==CMD_LOAD_ADDRESS ||
+						msgBuffer[0]==CMD_LEAVE_PROGMODE_ISP ||
+						msgBuffer[0]==CMD_CHIP_ERASE_ISP ||
+						msgBuffer[0]==CMD_PROGRAM_FLASH_ISP ||
+						msgBuffer[0]==CMD_READ_FLASH_ISP ||
+						msgBuffer[0]==CMD_RESET_SMALL_AVR
+						){
+				} else {
 					Log.i(TAG,"unknown command received:"+String.valueOf(msgBuffer[0]));
 					// irgendwie das commando nochmal senden
 					//					msg = mHandler.obtainMessage(MESSAGE_TOAST);
@@ -857,7 +863,6 @@ public class bluetooth_service extends Service {
 					//					bundle.putString(TOAST, "unknown command from speedo received");
 					//					msg.setData(bundle);
 					//					mHandler.sendMessage(msg);
-					break;
 				}
 				semaphore.release();
 				Log.i(TAG_SEM,String.valueOf(semaphore.availablePermits())+" frei");

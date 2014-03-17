@@ -30,6 +30,7 @@ public class GaugeCustomView extends View {
 
 	private int max_value=200;
 	private int min_value=0;
+	private int value_count=1;
 	private int [] set_value = new int[] { 0,0,0};
 	private float start_angle=0;
 
@@ -78,7 +79,8 @@ public class GaugeCustomView extends View {
 	private void init() {
 		int minDim = Math.min(mCanvasHeight, mCanvasWidth);
 		// the gradient
-		int [] colors = new int[] { 0xff000000,0xff000000, 0xffff0000 };
+		int [] colors = new int[] { 0xff000000,0xff000000, 0xff999999 };
+		//				int [] colors = new int[] { 0xFFffffff,0xFFffffff, 0xFFff0000};
 		float [] positions = new float[] {0.1f,0.8f, 1f };
 		gradient = new RadialGradient(mCanvasWidth/2, mCanvasWidth/2, minDim/2-15, colors, positions, TileMode.CLAMP);
 
@@ -143,6 +145,7 @@ public class GaugeCustomView extends View {
 
 		//		paint.setStyle(Paint.Style.STROKE);
 		paint.setStyle(Paint.Style.FILL);
+		paint.setStrokeWidth(2);
 		radius-=thickness_blackring;
 
 
@@ -167,18 +170,32 @@ public class GaugeCustomView extends View {
 					marker_value+=(marker_value-progression_high);
 				}
 			}
-			if(marker_value<=set_value[0]){
-				paint.setColor(0xffffffff);
+
+			paint.setColor(0xff333333);
+			if(value_count>1){
+				if(marker_value<=Math.min(set_value[0],set_value[1])){
+					paint.setColor(0xffffffff);
+				} else if (marker_value<=set_value[0] && marker_value>=set_value[1]){ // 0:water, 1:oil
+					paint.setColor(0xff3333ff); // blue if water is hotter than oil
+				} else if (marker_value>=set_value[0] && marker_value<=set_value[1]){
+					paint.setColor(0xffff3333); // red if oil is hotter than water
+				}
 			} else {
-				paint.setColor(0xff333333);
+				if(marker_value<=set_value[0]){
+					paint.setColor(0xffffffff);
+				}
 			}
 
 			// draw the big stroke
 			canvas.drawLine(x_start, y_start, x_end, y_end, paint);
 
 			// write a number next to it
-			x_start=(float) ((mCanvasWidth/2)+Math.sin(twoPI/360*(angle_big_strokes*i)+start_angle)*(radius-length_big_stroke*1.6));
-			y_start=(float)((mCanvasHeight/2)-Math.cos(twoPI/360*(angle_big_strokes*i)+start_angle)*(radius-length_big_stroke*1.6));
+			float distance=(float) (radius-length_big_stroke*1.6);
+			if(radius<200){
+				distance=(float) (radius-length_big_stroke*2.2);
+			}
+			x_start=(float) ((mCanvasWidth/2)+Math.sin(twoPI/360*(angle_big_strokes*i)+start_angle)*distance);
+			y_start=(float)((mCanvasHeight/2)-Math.cos(twoPI/360*(angle_big_strokes*i)+start_angle)*distance);
 			paint.setTextSize(Math.max(Math.round(minDim*1/5)-150,25));
 
 			String shownText=String.valueOf(marker_value);
@@ -207,10 +224,19 @@ public class GaugeCustomView extends View {
 						}
 					}
 
-					if(inner_marker_value<=set_value[0]){
-						paint.setColor(0xffffffff);
+					paint.setColor(0xff333333);
+					if(value_count>1){
+						if(inner_marker_value<=Math.min(set_value[0],set_value[1])){
+							paint.setColor(0xffffffff);
+						} else if (inner_marker_value<=set_value[0] && inner_marker_value>=set_value[1]){
+							paint.setColor(0xff3333ff); // blue if water is hotter than oil
+						} else if (inner_marker_value>=set_value[0] && inner_marker_value<=set_value[1]){
+							paint.setColor(0xffff3333); // red if oil is hotter than water
+						}
 					} else {
-						paint.setColor(0xff333333);
+						if(inner_marker_value<=set_value[0]){
+							paint.setColor(0xffffffff);
+						}
 					}
 
 					canvas.drawLine(x_start, y_start, x_end, y_end, paint);
@@ -218,8 +244,6 @@ public class GaugeCustomView extends View {
 				}
 			}
 		}
-
-
 
 
 		paint.setColor(Color.WHITE);
@@ -314,6 +338,10 @@ public class GaugeCustomView extends View {
 		}
 	}
 
+	public void setValueCount(final int valuecount){
+		value_count=valuecount;
+	}
+
 	public int getValue(){
 		return set_value[0];
 	}
@@ -384,12 +412,12 @@ public class GaugeCustomView extends View {
 	// Deal with touch events, either start/stop or swipe
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (event.getAction() == MotionEvent.ACTION_UP) {
-			setValue((int) (getValue()*1.1+3));
-		} else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			setValue((int) (getValue()*0.9+3));
-		}
-		invalidate();
+		//		if (event.getAction() == MotionEvent.ACTION_UP) {
+		//			setValue((int) (getValue()*1.1+3));
+		//		} else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+		//			setValue((int) (getValue()*0.9+3));
+		//		}
+		//		invalidate();
 		return true;
 	}
 
@@ -471,13 +499,5 @@ public class GaugeCustomView extends View {
 	public boolean isOpaque() {
 		return true;
 	}
-
-	//Message Handling between Activity/Fragment and View
-	public void setHandler(Handler handler) {
-		this.mHandler = handler;
-	}
-
-
-
 
 }

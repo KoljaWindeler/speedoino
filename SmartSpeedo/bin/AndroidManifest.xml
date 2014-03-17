@@ -8,21 +8,38 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="18" />
 
+    <permission
+        android:name="com.jkw.maptest.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.jkw.maptest.permission.MAP_RECEIVE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.NoTitleBar" >
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyAt0fCot45Q0Or13z7iqnPGpPR18pChG10" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity
             android:name="com.jkw.smartspeedo.SmartSpeedoMain"
             android:configChanges="orientation"
@@ -45,8 +62,10 @@
             android:label="@string/Select_file"
             android:theme="@android:style/Theme.Dialog" />
 
-        <service android:name=".gps_service"> </service>
-        <service android:name=".bluetooth_service"> </service>
+        <service android:name=".gps_service" >
+        </service>
+        <service android:name=".bluetooth_service" >
+        </service>
     </application>
 
 </manifest>

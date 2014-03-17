@@ -16,9 +16,9 @@
         android:id="@+id/SpeedLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|right"
+        android:layout_gravity="left|bottom"
         android:layout_marginBottom="0dp"
-        android:layout_marginRight="-10dp" >
+        android:layout_marginLeft="10dp" >
 
         <com.jkw.smartspeedo.GaugeCustomView
             android:id="@+id/speed"
@@ -33,9 +33,9 @@
         android:id="@+id/rpmLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|left"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="-10dp" >
+        android:layout_gravity="right|bottom"
+        android:layout_marginBottom="30dp"
+        android:layout_marginRight="4dp" >
 
         <com.jkw.smartspeedo.GaugeCustomView
             android:id="@+id/rpm"
@@ -51,8 +51,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left|bottom"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="150dp" >
+        android:layout_marginBottom="110dp"
+        android:layout_marginLeft="0dp" >
 
         <com.jkw.smartspeedo.GaugeCustomView
             android:id="@+id/gear"
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
         android:layout_marginBottom="4dp"
-        android:layout_marginRight="150dp" >
+        android:layout_marginRight="110dp" >
 
         <com.jkw.smartspeedo.GaugeCustomView
             android:id="@+id/temp"
