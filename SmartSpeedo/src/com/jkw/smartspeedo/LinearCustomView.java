@@ -111,8 +111,8 @@ public class LinearCustomView extends View {
 
 		int number_of_separators=number_of_bars-1; // e.g. 7
 		int total_bardisplay_length=mCanvasWidth-offset_left-offset_right;  // e.g. 2000-400-400 = 1200
-		float length_of_bars=total_bardisplay_length/((float)number_of_separators/partial_lengh_of_separators+number_of_bars); // e.g. 120/(7/10+8)=137,9
-		float length_of_separtors=length_of_bars/partial_lengh_of_separators;	// 13,79
+		float length_of_bars=total_bardisplay_length/((float)number_of_separators/partial_lengh_of_separators+number_of_bars); // 580/(6,5)=89.23
+		float length_of_separtors=length_of_bars/partial_lengh_of_separators;	// 8.923
 
 		scale_low=((Math.max(progression_start,min)-min)/progression_hardness+	Math.min(progression_end,max)-Math.max(progression_start,min) + (Math.max(max,progression_end)-progression_end)/progression_hardness)/total_bardisplay_length; 	// e.g. ((60-40)/2 + 100-60 + (120-100)/2)/100 = (10+40+10)/100 = 0.06
 		scale_high=scale_low*progression_hardness; // e.g. 0.12
@@ -121,14 +121,14 @@ public class LinearCustomView extends View {
 		x_startof_progression_end=total_bardisplay_length-(Math.max(progression_end,max)-progression_end)/scale_high; // e.g. 1000-(120-100)/0.12=833.33
 
 		for(int i=0;i<number_of_bars;i++){ // 0..7
-			float start_x=i*length_of_bars+(i+1)*length_of_separtors; // 13,79 | 165,48 | 317,17 ... 
-			float start_value=pos_to_value(start_x); //  1,6548 | 19,8576  | ...
+			float start_x=i*length_of_bars+(i)*length_of_separtors; // 8,92 | ... 
+			float start_value=pos_to_value(start_x); //  41,84 | ...
 
 			// check if we have to draw anything at all
 			if(start_value < set_value[0]) {
 				// now lets see if we are able to draw the complete bar 
-				float end_x=(i+1)*length_of_bars+(i+1)*length_of_separtors;
-				float end_value=pos_to_value(end_x);				
+				float end_x=(i+1)*length_of_bars+(i)*length_of_separtors; //98.15
+				float end_value=pos_to_value(end_x); // 60.15				
 				if(set_value[0]<end_value){
 					// do NOT draw the complete box
 					// lets see if we crossed a border of a progression or we have at least a "static" increase
