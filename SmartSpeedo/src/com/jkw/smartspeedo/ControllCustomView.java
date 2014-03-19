@@ -29,13 +29,13 @@ public class ControllCustomView extends View  {
 	private Bitmap sym_highbeam;
 	private Bitmap sym_ngear;
 
-	private int hl_gps=0;
-	private int hl_bt=0;
-	private int hl_left=0;
-	private int hl_right=0;
-	private int hl_oil=0;
-	private int hl_hb=0;
-	private int hl_ng=0;
+	private boolean hl_gps=false;
+	private boolean hl_bt=false;
+	private boolean hl_left=false;
+	private boolean hl_right=false;
+	private boolean hl_oil=false;
+	private boolean hl_hb=false;
+	private boolean hl_ng=false;
 
 	Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	Path wallpath = new Path();
@@ -55,16 +55,27 @@ public class ControllCustomView extends View  {
 		int maxHeight=(int) (mCanvasHeight-paint.getStrokeWidth());
 		wallpath.reset(); // only needed when reusing this path for a new build
 		wallpath.moveTo(0,0); // used for first point
-		wallpath.lineTo(mCanvasWidth/edges, maxHeight);
-		wallpath.lineTo(mCanvasWidth*(edges-1)/edges, maxHeight);
-		wallpath.lineTo(mCanvasWidth,0);
-		wallpath.lineTo(0,0); // there is a setLastPoint action but i found it not to work as expected
-
-
-
+		wallpath.lineTo(0, mCanvasHeight/8);
+		wallpath.lineTo(mCanvasWidth/6, mCanvasHeight/8);
+		wallpath.lineTo(mCanvasWidth*5/6, mCanvasHeight/8);
+		wallpath.lineTo(mCanvasWidth, mCanvasHeight/8);
+		wallpath.lineTo(mCanvasWidth, 0);
+		wallpath.lineTo(0,0);
+		
 		paint.setStyle(Paint.Style.FILL);
 		paint.setShader(new LinearGradient(0,0,0,(int)(maxHeight*2),0xff000000,0xff999999,Shader.TileMode.CLAMP));
 		paint.setColor(0xBB000000);
+		canvas.drawPath(wallpath, paint);
+		
+		wallpath.reset(); // only needed when reusing this path for a new build
+		wallpath.moveTo(0,mCanvasHeight); // used for first point
+		wallpath.lineTo(0, mCanvasHeight*7/8);
+		wallpath.lineTo(mCanvasWidth/6, mCanvasHeight*7/8);
+		wallpath.lineTo(mCanvasWidth*5/6, mCanvasHeight*7/8);
+		wallpath.lineTo(mCanvasWidth, mCanvasHeight*7/8);
+		wallpath.lineTo(mCanvasWidth, mCanvasHeight);
+		wallpath.lineTo(0,mCanvasHeight);
+		
 		canvas.drawPath(wallpath, paint);
 
 		//		paint.setStyle(Paint.Style.STROKE);
@@ -83,42 +94,62 @@ public class ControllCustomView extends View  {
 
 
 		///////////////////// left ///////////
-		if(hl_left==1){
+		if(hl_left){
 			rel_obj=null;
 		} else {
 			rel_obj=paint;
 		}
-		canvas.drawBitmap(sym_fl_left, getSlot(0), (float) (0.15 * maxHeight), rel_obj);
+		canvas.drawBitmap(sym_fl_left, getSlot(0), (float) (0.35/16 * maxHeight), rel_obj);
 		///////////////////// left ///////////
 		///////////////////// bt ///////////
-		if(hl_bt==1){
+		if(hl_bt){
 			rel_obj=null;
 		} else {
 			rel_obj=paint;
 		}
-		canvas.drawBitmap(sym_bt, getSlot(1), (float) (0.15 * maxHeight), rel_obj);
+		canvas.drawBitmap(sym_bt, getSlot(1), (float) (0.35/16 * maxHeight), rel_obj);
 		///////////////////// bt ///////////
 		///////////////////// gps ///////////
-		if(hl_gps==1){ 
+		if(hl_gps){ 
 			rel_obj=null;
 		} else {
 			rel_obj=paint;
 		}
-		canvas.drawBitmap(sym_gps, getSlot(2), (float) (0.15 * maxHeight), rel_obj);
+		canvas.drawBitmap(sym_gps, getSlot(2), (float) (0.35/16 * maxHeight), rel_obj);
 		///////////////////// gps ///////////
-		paint.setAlpha(low+high*hl_ng);
-		canvas.drawBitmap(sym_ngear, getSlot(3), (float) (0.15 * maxHeight), paint);
-		paint.setAlpha(low+high*hl_oil);
-		canvas.drawBitmap(sym_oil, getSlot(4), (float) (0.15 * maxHeight), paint);
-		paint.setAlpha(low+high*hl_hb);
-		canvas.drawBitmap(sym_highbeam, getSlot(5), (float) (0.15 * maxHeight), paint);	
-		paint.setAlpha(low+high*hl_right);
-		canvas.drawBitmap(sym_fl_right, getSlot(6), (float) (0.15 * maxHeight), paint);
+		if(hl_ng){ 
+			rel_obj=null;
+		} else {
+			rel_obj=paint;
+		}
+		canvas.drawBitmap(sym_ngear, getSlot(3), (float) (0.35/16 * maxHeight), rel_obj);
+		if(hl_oil){ 
+			rel_obj=null;
+		} else {
+			rel_obj=paint;
+		}
+		canvas.drawBitmap(sym_oil, getSlot(4), (float) (0.35/16 * maxHeight), rel_obj);
+		if(hl_hb){ 
+			rel_obj=null;
+		} else {
+			rel_obj=paint;
+		}
+		canvas.drawBitmap(sym_highbeam, getSlot(5), (float) (0.35/16 * maxHeight), rel_obj);	
+		if(hl_right){ 
+			rel_obj=null;
+		} else {
+			rel_obj=paint;
+		}
+		canvas.drawBitmap(sym_fl_right, getSlot(6), (float) (0.35/16 * maxHeight), rel_obj);
 
 	}
 
 	private int getSlot(final int slot){
-		return (slot*mCanvasWidth*(edges-2))/(edges*total_slots)+mCanvasWidth/edges;
+		float left_offset=mCanvasWidth/6;
+		float remaining_space=mCanvasWidth-2*left_offset;
+		float space_per_item=remaining_space/7;
+		return (int) (slot*space_per_item+left_offset+mCanvasWidth/48);
+//		return (slot*mCanvasWidth*(edges-2))/(edges*total_slots)+mCanvasWidth/edges;
 	}
 
 	@Override
@@ -135,61 +166,56 @@ public class ControllCustomView extends View  {
 
 	private void init() {
 		Bitmap bMap = BitmapFactory.decodeResource(getResources(), R.drawable.gps_icon);
-		sym_gps = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight ),true );
+		sym_gps = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/8/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight/8 ),true );
 
 		bMap = BitmapFactory.decodeResource(getResources(), R.drawable.bluetooth_icon);
-		sym_bt = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight ),true );
+		sym_bt = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/8/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight/8 ),true );
 
 		bMap = BitmapFactory.decodeResource(getResources(), R.drawable.pfeil_l);
-		sym_fl_left = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight ),true );
+		sym_fl_left = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/8/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight/8 ),true );
 
 		bMap = BitmapFactory.decodeResource(getResources(), R.drawable.pfeil);
-		sym_fl_right = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight ),true );
+		sym_fl_right = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/8/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight/8 ),true );
 
 		bMap = BitmapFactory.decodeResource(getResources(), R.drawable.oil);
-		sym_oil = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight ),true );
+		sym_oil = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/8/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight/8 ),true );
 
 		bMap = BitmapFactory.decodeResource(getResources(), R.drawable.hb);
-		sym_highbeam = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight ),true );
+		sym_highbeam = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/8/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight/8 ),true );
 
 		bMap = BitmapFactory.decodeResource(getResources(), R.drawable.ng);
-		sym_ngear = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight ),true );
+		sym_ngear = Bitmap.createScaledBitmap(bMap, (int)(0.7*mCanvasHeight/8/bMap.getHeight()*bMap.getWidth()),(int)(0.7*mCanvasHeight/8 ),true );
 	};
 
 	public void set_BT(boolean active){
-		hl_bt=0;
-		if(active){
-			hl_bt=1;
+		if(active!=hl_bt){
+			hl_bt=active;
+			invalidate();
 		}
-		invalidate();
 	}
 
 	public void set_GPS(boolean active){
-		hl_gps=0;
-		if(active){
-			hl_gps=1;
+		if(active!=hl_gps){
+			hl_gps=active;
+			invalidate();
 		}
-		invalidate();
 	}
 
 	public void set_left(boolean active){
-		hl_left=0;
-		if(active){
-			hl_left=1;
+		if(active!=hl_left){
+			hl_left=active;
+			invalidate();
 		}
-		invalidate();
 	}
 
 	public void set_right(boolean active){
-		hl_right=0;
-		if(active){
-			hl_right=1;
+		if(active!=hl_right){
+			hl_right=active;
+			invalidate();
 		}
-		invalidate();
 	}
 
 	public boolean get_left(){
-		if(hl_left>0) return true;
-		return false;
+		return hl_left;
 	}
 }

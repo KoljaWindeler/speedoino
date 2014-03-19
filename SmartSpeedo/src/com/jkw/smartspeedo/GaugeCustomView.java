@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -24,6 +25,7 @@ public class GaugeCustomView extends View {
 	public static final int TYPE_KMH =  2;
 	public static final int TYPE_TEMP = 3;
 	public static final int TYPE_GEAR = 4;
+	public static final int TYPE_KMH_RPM = 5;
 
 
 	private int type=TYPE_KMH;
@@ -121,6 +123,7 @@ public class GaugeCustomView extends View {
 
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
+		Log.i("draw", "und los");
 
 		int minDim = Math.min(mCanvasHeight, mCanvasWidth);
 		float radius = minDim/2;
@@ -196,10 +199,10 @@ public class GaugeCustomView extends View {
 			}
 			x_start=(float) ((mCanvasWidth/2)+Math.sin(twoPI/360*(angle_big_strokes*i)+start_angle)*distance);
 			y_start=(float)((mCanvasHeight/2)-Math.cos(twoPI/360*(angle_big_strokes*i)+start_angle)*distance);
-			paint.setTextSize(Math.max(Math.round(minDim*1/5)-150,25));
+			paint.setTextSize(Math.max(Math.round(minDim*1/15),25));
 
 			String shownText=String.valueOf(marker_value);
-			if(type==TYPE_RPM){
+			if(type==TYPE_RPM || type==TYPE_KMH_RPM){
 				shownText=String.valueOf((int)marker_value/1000);
 			}
 			paint.getTextBounds(shownText, 0, shownText.length(), rectText);
@@ -302,6 +305,44 @@ public class GaugeCustomView extends View {
 			canvas.drawText(shownText,  (mCanvasWidth-rectText.width())/2, (float) (save_height+rectText.height()*1.2), paint);	
 		} 
 
+		else if(type==TYPE_KMH_RPM){
+			// 
+			paint.setTextSize(Math.max(mCanvasHeight*3/16,40));
+			Rect rectText = new Rect();
+			String shownText=String.valueOf(set_value[1]);
+			paint.getTextBounds(shownText, 0, shownText.length(), rectText);
+			canvas.drawText(shownText,  (mCanvasWidth-rectText.width())/2, mCanvasHeight/4+rectText.height()*3/2, paint);
+			int tmp=rectText.height()*3/2;
+
+			paint.setTextSize(Math.max(mCanvasHeight*1/32,40));
+			shownText="km/h";
+			paint.getTextBounds(shownText, 0, shownText.length(), rectText);
+			canvas.drawText(shownText,  (mCanvasWidth-rectText.width())/2, (float) (mCanvasHeight/4+rectText.height()*3/2+tmp), paint);
+			//
+
+			paint.setTextSize(Math.max(mCanvasHeight*3/16,40));
+			rectText = new Rect();
+			shownText=String.valueOf(set_value[2]);
+			paint.getTextBounds(shownText, 0, shownText.length(), rectText);
+			canvas.drawText(shownText,  (mCanvasWidth-rectText.width())/2, mCanvasHeight*2/4+rectText.height()*3/2, paint);
+			if(set_value[2]>1){
+				int tmp2=rectText.height()*3/2;
+				shownText=String.valueOf(set_value[2]-1);
+				paint.setTextSize(Math.max(mCanvasHeight*3/32,40));
+				paint.getTextBounds(shownText, 0, shownText.length(), rectText);
+				paint.setColor(0xff333333);
+				canvas.drawText(shownText,  (mCanvasWidth-rectText.width())/2-rectText.width()*2, mCanvasHeight*2/4+tmp2, paint);
+				if(set_value[2]<6){
+					shownText=String.valueOf(set_value[2]+1);
+					paint.setTextSize(Math.max(mCanvasHeight*3/32,40));
+					paint.getTextBounds(shownText, 0, shownText.length(), rectText);
+					paint.setColor(0xff333333);
+					canvas.drawText(shownText,  (mCanvasWidth-rectText.width())/2+rectText.width()*2, mCanvasHeight*2/4+tmp2, paint);	
+				}
+			}
+
+		}
+
 		else {
 			paint.setTextSize(Math.max(Math.round(minDim*2/3)-200,40));
 			Rect rectText = new Rect();
@@ -326,15 +367,19 @@ public class GaugeCustomView extends View {
 			value=max_value;
 		}
 
-		set_value[0]=value;
-		invalidate();
+		if(set_value[0]!=value){
+			set_value[0]=value;
+			invalidate();
+		}
 	}
 
-	public void setSecondValue(final int value){
-		if(value>=min_value && value<=max_value){
-			set_value[1]=value;
-			//			mSecsAngle=(set_value*twoPI)/max_value+start_angle;
-			invalidate();
+	public void setSecondValue(final int value,final int place){
+		if(place==2||place==3){
+			if(value>=min_value && value<=max_value && value!=set_value[place-1]){
+				set_value[place-1]=value;
+				//			mSecsAngle=(set_value*twoPI)/max_value+start_angle;
+				invalidate();
+			}
 		}
 	}
 
