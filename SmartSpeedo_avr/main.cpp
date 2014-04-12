@@ -58,7 +58,7 @@ speedo_timer*   		pTimer=new speedo_timer(); 		// brauch ich ja nur hier, den br
  ******************* Basics *************************/
 
 void init_speedo(void){
-	Serial.begin(115200);
+	Serial.begin(TARGET_UART_SPEED);
 
 	pDebug->sprintlnp(PSTR("=== SmartSpeedo ==="));
 	pDebug->sprintp(PSTR(GIT_REV));				// print Software release
@@ -98,6 +98,7 @@ int main(void) {
 
 	for (;;) {
 		pSensors->m_CAN->check_message();
+
 		//////////////////////////////////////////////////
 		//		pSensors->m_reset->set_deactive(false,false);
 		//		Serial3.end();
@@ -133,7 +134,7 @@ int main(void) {
 		// send the data via bluetooth
 		pSpeedo->loop(previousMillis);
 
-
+		_delay_ms(1000);
 #ifdef LOAD_CALC
 		load_calc++;
 		if(millis()-lasttime_calc>1000){

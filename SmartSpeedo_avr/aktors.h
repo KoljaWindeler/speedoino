@@ -28,6 +28,7 @@ public:
 	void init();
 	void run_reset_on_ATm328(char mode);
 	int set_bt_pin();
+	int set_bt_pin(bool reset);
 	bool check_mac_key(uint8_t* result,bool* comm_error);
 	int ask_bt(char *command);
 	int ask_bt(char *buffer, bool answere_needed, int8_t max_length, uint8_t* char_rec);

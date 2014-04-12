@@ -12,7 +12,13 @@
 #define NEUTRAL_GEAR_PIN PK1
 #define OIL_PRESSURE_PIN PK0
 
-#define FLASHER_LEFT_PIN PE6
+#define FLASHER_LEFT_SHIFT 0
+#define FLASHER_RIGHT_SHIFT 1
+#define OIL_PRESSURE_SHIFT 2
+#define NEUTRAL_GEAR_SHIFT 3
+#define HIGH_BEAM_SHIFT 4
+
+#define FLASHER_LEFT_PIN PE5
 #define FLASHER_RIGHT_PIN PE7
 
 #define SENSOR_AUTO 1
@@ -41,6 +47,7 @@ public:
 	float flatIt_shift(int actual, uint8_t *counter, uint8_t shift, float old_flat);
 	uint16_t flatIt_shift_mask(uint16_t actual, uint8_t shift, uint16_t old_flat, uint16_t nmask);
 	void pull_values();
+	uint16_t pulldown_of_divider(uint32_t mV_supply, uint16_t mV_center, uint16_t pull_up);
 
 	unsigned int get_RPM(int mode); // 0=exact, 1=flated, 2=flatted_display_ready
 	unsigned int get_speed();
@@ -59,6 +66,7 @@ public:
 	bool CAN_active;
 
 	unsigned char last_int_state;
+	unsigned char sensor_state;
 private:
 	unsigned long fourty_Hz_timer;
 	short fourty_Hz_counter;

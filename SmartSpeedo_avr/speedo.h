@@ -29,8 +29,8 @@ class speedo_speedo{
 #define       	AIR_TEMP 1
 #define       	SPEED_VALUE 2
 #define       	DZ_VALUE 3
-#define       	ADD_INFO 4
-#define       	ADD_INFO2 5
+#define       	LIGHT_VALUES 4
+#define       	VOLTAGE_VALUE 5
 #define       	TIME_BAK 6
 #define       	GEAR_VALUE 7
 #define       	FUEL_VALUE 8

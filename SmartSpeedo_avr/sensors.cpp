@@ -486,7 +486,7 @@ void Speedo_sensors::check_inputs(){
 		}
 	}
 
-	if(PINE&(1<<FLASHER_LEFT_PIN)){
+	if(PINE&(1<<FLASHER_LEFT_PIN)){// TODO Layout has pin moved to 5, check board
 		flasher_left=0x01;
 	}
 
@@ -494,6 +494,18 @@ void Speedo_sensors::check_inputs(){
 		flasher_right=0x01;
 	}
 
-	// TODO output values?
+
+	sensor_state = flasher_left << FLASHER_LEFT_SHIFT;
+	sensor_state|= flasher_right << FLASHER_RIGHT_SHIFT;
+	sensor_state|= high_beam << HIGH_BEAM_SHIFT;
+	sensor_state|= oil_pressure << OIL_PRESSURE_SHIFT;
+	sensor_state|= neutral_gear << NEUTRAL_GEAR_SHIFT;
 }
 /********************************** WARN light section *************************************/
+
+uint16_t Speedo_sensors::pulldown_of_divider(uint32_t mV_supply, uint16_t mV_center, uint16_t pull_up){
+	uint32_t uV_center=((uint32_t)1000)*((uint32_t)mV_center);		// e.g. uV_center=2500*1000=2.500.000
+	uint32_t pull_up_mV=mV_supply-mV_center; 	// e.g. pull_up_mV=12000-2500=9500
+	uint32_t current_uA=(pull_up_mV*1000)/pull_up;	// e.g. current_uA=9.500.000/3000=3166
+	return (uint16_t)(uV_center/current_uA); 	// e.g.	2.500.000/3166=789 Ohm
+}

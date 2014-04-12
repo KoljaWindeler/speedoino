@@ -106,85 +106,89 @@ void Speedo_aktors::init(){
 };
 
 
-int Speedo_aktors::set_bt_pin(){
-////	pOLED->clear_screen();
-//	char at_commands[22];
-//	bool connection_established=true;
-//
-//	// check connection
-////	pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
-//
-//	sprintf(at_commands,"ATQ0%c",0x0D);
-//	if(ask_bt(&at_commands[0])!=0){														// fehler aufgetreten
-//		connection_established=false;
-////		pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,1);								// hat nicht geklappt
-//		Serial.end();																	// setzte neue serielle Geschwindigkeit
-//		_delay_ms(500);
-////		pOLED->string_P(pSpeedo->default_font,PSTR("TRYING 19200 BAUD"),0,2);					// hat nicht geklappt
-//		Serial.begin(19200);
-//		_delay_ms(2000);
-//		if(ask_bt(&at_commands[0])==0){
-////			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
-//			_delay_ms(500);
-////			pOLED->string_P(pSpeedo->default_font,PSTR("BASIC SETUP"),0,4);
-//			sprintf(at_commands,"ATE0%c",0x0D);
-//			if(ask_bt(&at_commands[0])==0){
-//				sprintf(at_commands,"ATN=SPEEDOINO%c",0x0D);
-//				if(ask_bt(&at_commands[0])==0){
-//					sprintf(at_commands,"ATL5%c",0x0D);
-//					ask_bt(&at_commands[0]);											// fire && forget
-////					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, können wir hier nicht testen
-//					Serial.end();														// setzte neue serielle Geschwindigkeit
-////					pOLED->string_P(pSpeedo->default_font,PSTR("RETRYING"),0,6);		// hat nicht geklappt
-//					Serial.begin(115200);
-//					_delay_ms(2000);
-////					pOLED->clear_screen();
-////					pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
-//					sprintf(at_commands,"AT%c",0x0D);									// gleich neu testen
-//					if(ask_bt(&at_commands[0])==0){
-//						connection_established=true;
-////						pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,1);
-//					};
-//				}
-//			}
-//		} else {
-////			pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,3);
-////			pOLED->string_P(pSpeedo->default_font,PSTR("DAMN"),14,4); // add message to make sure no active bt connection disturbs TODO
-//			_delay_ms(4000);
-//			Serial.end();
-//			Serial.begin(115200);
-//			return -9;
-//		}
-//	}
-//
-//	if(connection_established){
+int Speedo_aktors::set_bt_pin(bool reset){
+//	pOLED->clear_screen();
+	char at_commands[22];
+	bool connection_established=true;
+
+	// check connection
+//	pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
+
+	sprintf(at_commands,"ATQ0%c",0x0D);
+	if(ask_bt(&at_commands[0])!=0 || reset){											// fehler aufgetreten
+		connection_established=false;
+//		pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,1);								// hat nicht geklappt
+		Serial.end();																	// setzte neue serielle Geschwindigkeit
+		_delay_ms(500);
+//		pOLED->string_P(pSpeedo->default_font,PSTR("TRYING 19200 BAUD"),0,2);					// hat nicht geklappt
+		Serial.begin(19200);
+		_delay_ms(2000);
+		if(ask_bt(&at_commands[0])==0){
+//			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
+			_delay_ms(500);
+//			pOLED->string_P(pSpeedo->default_font,PSTR("BASIC SETUP"),0,4);
+			sprintf(at_commands,"ATE0%c",0x0D);
+			if(ask_bt(&at_commands[0])==0){
+				sprintf(at_commands,"ATN=SMARTSPEEDO%c",0x0D);
+				if(ask_bt(&at_commands[0])==0){
+#if TARGET_UART_SPEED == 115200
+					sprintf(at_commands,"ATL5%c",0x0D);
+					ask_bt(&at_commands[0]);											// fire && forget
+#endif
+//					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, können wir hier nicht testen
+					Serial.end();														// setzte neue serielle Geschwindigkeit
+//					pOLED->string_P(pSpeedo->default_font,PSTR("RETRYING"),0,6);		// hat nicht geklappt
+					Serial.begin(TARGET_UART_SPEED);
+					_delay_ms(2000);
+//					pOLED->clear_screen();
+//					pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
+					sprintf(at_commands,"AT%c",0x0D);									// gleich neu testen
+					if(ask_bt(&at_commands[0])==0){
+						connection_established=true;
+//						pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,1);
+					};
+				}
+			}
+		} else {
+//			pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,3);
+//			pOLED->string_P(pSpeedo->default_font,PSTR("DAMN"),14,4); // add message to make sure no active bt connection disturbs TODO
+			_delay_ms(4000);
+			Serial.end();
+			Serial.begin(115200);
+			return -9;
+		}
+	}
+	Serial.println("Verbindung hergestellt"); //TODO
+
+	if(connection_established){
 //		pOLED->filled_rect(0,8,128,56,0x00); // clear the lower lines
-////		pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,1);
-////		pOLED->string_P(pSpeedo->default_font,PSTR("Activating responses"),0,2);
-//		sprintf(at_commands,"ATQ0%c",0x0D); // schaltet result codes ein				// jetzt richtig
-//		if(ask_bt(&at_commands[0])==0){
-////			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
-////			pOLED->string_P(pSpeedo->default_font,PSTR("Setting PIN Code"),0,4);
-//			sprintf(at_commands,"ATP=%04i%c",bt_pin,13);
-//
-//			if(ask_bt(&at_commands[0])==0){
-////				pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);
-////				pOLED->string_P(pSpeedo->default_font,PSTR("Deactivating response"),0,6);
-//				sprintf(at_commands,"ATQ0%c",13); // schaltet result codes ein
-//
-//				if(ask_bt(&at_commands[0])==0){
-////					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,7);
-//					_delay_ms(2000);
-//					return 0;
-//				}
-//			}
-//		}
-//	} else {
-//		ask_bt(&at_commands[0]);
-////		pOLED->string_P(pSpeedo->default_font,PSTR("failed, hmmm"),0,1);
-//		_delay_ms(5000);
-//	}
-//	_delay_ms(2000);
+//		pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,1);
+//		pOLED->string_P(pSpeedo->default_font,PSTR("Activating responses"),0,2);
+		sprintf(at_commands,"ATQ0%c",0x0D); // schaltet result codes ein				// jetzt richtig
+		if(ask_bt(&at_commands[0])==0){
+//			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
+//			pOLED->string_P(pSpeedo->default_font,PSTR("Setting PIN Code"),0,4);
+			int bt_pin=0000;
+			sprintf(at_commands,"ATP=%04i%c",bt_pin,13);
+
+			if(ask_bt(&at_commands[0])==0){
+//				pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);
+//				pOLED->string_P(pSpeedo->default_font,PSTR("Deactivating response"),0,6);
+				sprintf(at_commands,"ATQ0%c",13); // schaltet result codes ein
+
+				if(ask_bt(&at_commands[0])==0){
+//					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,7);
+					_delay_ms(2000);
+					return 0;
+				}
+			}
+		}
+	} else {
+		ask_bt(&at_commands[0]);
+//		pOLED->string_P(pSpeedo->default_font,PSTR("failed, hmmm"),0,1);
+		_delay_ms(5000);
+	}
+	_delay_ms(2000);
 	return -2;
 }
 

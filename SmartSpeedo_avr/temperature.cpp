@@ -60,13 +60,12 @@ void speedo_temperature::read_oil_r() {
 	 *   Widerstandsberechnung *////
 
 	// werte auslesen
-	unsigned int oil_value=analogRead(OIL_TEMP_PIN);
-	int temp=(1024-oil_value)/10; // max 102
-	if(temp>0 && temp<102){
-		int r_oil_temp_value=round((oil_value*22)/temp); // 22*1024 < 32000
+	unsigned int oil_value=analogRead(OIL_TEMP_PIN)*4.8828125;
+	if(oil_value>10 && oil_value<4900){ // between 10mV and 4,9V
+		int r_oil_temp_value=pSensors->pulldown_of_divider(5000,oil_value,220);
 		oil_r_value=pSensors->flatIt(r_oil_temp_value,&oil_r_value_counter,20,oil_r_value);
 		oil_r_fail_status=0; //?
-	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
+	} else if(oil_value>=4900) { // kein Sensor  0=(1024-x)/10		x>=1015
 #ifdef TEMP_DEBUG
 		Serial.print("@");
 		Serial.print(millis());
@@ -102,21 +101,19 @@ void speedo_temperature::read_water_r() {
 #endif
 
 	// werte auslesen
-	unsigned int water_value=analogRead(WATER_TEMP_PIN);
+	unsigned int water_value=analogRead(WATER_TEMP_PIN)*4.8828125;
 	/* kann bis zu 225.060 werden bei 40°C etwa 470 ohm: 470+220=690 Ohm, U/R=I => 5/690=0,007246377A, R*I=U, 1,594202899V, Wert=326
 	 * wenn temp < 102 sein soll, dann ergibt 1020 schon ein error, bei 102=(1024-X)/10 => x <= 4
 	 * Da haben wir also 4*5V/1024 über dem PT100 und den Rest über 390Ohm
 	 * 0,01953125 V über dem PT100 und 4,98046875V über 390Ohm, -> PT100: 1,529411765 Ohm
 	 */
-	int temp=(1024-water_value)/10; // max 102
-	if(temp>0 && temp<102){
-		int r_temp=round((int)((unsigned long)(water_value*39)/temp)); // 39*1024 > 32000
-		//Serial.print("Oel Wert eingelesen: "); Serial.print(oil_value); Serial.print(" zwischenschritt "); Serial.println(r_temp);
+	if(water_value>10 && water_value<4900){ // between 10mV and 4,9V
+		int r_temp=pSensors->pulldown_of_divider(5000,water_value,390); // 5V supply, 390 Pullup
 		// LUT  wert ist z.B. 94°C somit 102 ohm => dann wird hier in der for schleife bei i=13 ausgelößt, also guck ich mir den her + den davor an
 		// wenn unser ermittelter R KLEINER ist als der kleinste R, dann haben wir da mehr grad als maximum und brauchen nicht interpolieren
 		water_r_value=pSensors->flatIt(r_temp,&water_r_value_counter,60,water_r_value);
 		water_r_fail_status=0;
-	} else if(temp==0) { // kein Sensor  0=(1024-x)/10		x>=1015
+	} else if(water_value>=4900) { // kein Sensor  0=(1024-x)/10		x>=1015
 		if(water_r_fail_status<6){
 			water_r_fail_status=6;
 		} else if(water_r_fail_status<9){

@@ -23,7 +23,6 @@ class debugging{
 #undef       DZ_DEBUG         		 	// die peaks sehen
 #undef       TEMP_DEBUG       		 	// i2c
 #undef       MENU_DEBUG       		 	// sehen in welchem menu state man gerade ist etc
-#undef       SD_DEBUG         		 	// sehen wann/wohin und wie lange die sd karte schreibt
 #undef       GPS_DEBUG        		 	// ausgabe wenn sich was ergibt, also vollständige pakete empfangen werden
 #undef       IGPS_DEBUG       		 	// alle NMEA zeilen ansehen
 #undef       NAVI_DEBUG       		 	// berechnung der distanz checken
@@ -34,6 +33,11 @@ class debugging{
 #undef		 DEMO_MODE					// show fancy demo values
 #undef		 LOAD_CALC					// show calc load
 #undef		 GPS_FAKE_MODE				// simply fake some data
+#define		 CONTROLLIGHTS_DEBUG		// blinker state etc
+#define		 VOLTAGE_DEBUG
+#define		 AIR_DEBUG
+#define 	 WATER_DEBUG
+#define		 OIL_DEBUG
 
 public:
 	debugging(void);

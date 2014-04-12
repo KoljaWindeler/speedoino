@@ -55,6 +55,7 @@ class speedo_filemanager_v2{
 #define CMD_POST_SPEED			0x47
 #define CMD_POST_RPM			0x48
 #define CMD_POST_SPEED_PSEUDO	0x49
+#define CMD_POST_LIGHTS			0x50
 
 #define CMD_PULSE_OILER 		0x51
 

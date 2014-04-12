@@ -32,26 +32,6 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	previousMillis=millis(); // get time for this loop
 	pDebug->speedo_loop(0,1,previousMillis,(char *)" "); // debug
 
-	/********************* additional informations II *****************************
-	 * The following block has to be the first in line, to set the var addinfo2currenctly_shown.
-	 * If the var is set to TRUE no other widget should be drawn in the same line
-	 * To ensure this the function check_no_collision_with_addinfo2() should be called in the
-	 * header of each value check
-	 *
-	 */
-	//		else if(kmh_widget.x!=-1 && kmh_widget.y!=-1 && pSensors->m_speed->status==SPEED_REED_ERROR){
-	//			if(disp_zeile_bak[ADD_INFO2]!=110){ // erst die bedingung um den Block abzuklopfen dann gucken ob refresh!
-	//				disp_zeile_bak[ADD_INFO2]=110;
-	//				pDebug->speedo_loop(14,0,previousMillis," ");
-	//				pOLED->string_P_centered(PSTR("Reed sensor error"),addinfo2_widget.y,true);
-	//			};
-	//
-	//		}
-#ifdef TACHO_SMALLDEBUG
-	pDebug->sprintlnp(PSTR("."));
-#endif
-	/********************* additional informations II *****************************/
-
 	/************************* oil temperature *********************
 	 * Oil Temperature will be read out in the every_sec routine
 	 * the measured value will be available in the variable
@@ -62,7 +42,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintp(PSTR("-o"));
 #endif
-	if(disp_zeile_bak[OIL_TEMP]!=pSensors->get_oil_r()+pSensors->m_temperature->oil_r_fail_status){
+	if(disp_zeile_bak[OIL_TEMP]!=pSensors->get_oil_r()+pSensors->m_temperature->oil_r_fail_status || true){
 		disp_zeile_bak[OIL_TEMP]=int(pSensors->get_oil_r()+pSensors->m_temperature->oil_r_fail_status);
 		// below 20 degree the PTC is very antiliear so we won't show it
 		int value=pSensors->get_oil_r();
@@ -74,12 +54,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		};
 		pDebug->speedo_loop(1,0,previousMillis," "); // debug
 
+#ifdef OIL_DEBUG
+		char buffer[30];
+		sprintf(buffer,"Widerstand Oel:%i",value);
+		Serial.println(buffer);
+#else
 		// send data
 		unsigned char data[3];
 		data[0]=CMD_POST_OIL_R;
 		data[1]=value>>8 & 0xff;
 		data[2]=value & 0xff;
 		pFilemanager_v2->send_answere(data,3);
+#endif
 	};
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintlnp(PSTR("."));
@@ -105,7 +91,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintp(PSTR("-w"));
 #endif
-	if(disp_zeile_bak[WATER_TEMP]!=pSensors->get_water_temperature()+pSensors->get_water_temperature_fail_status()){
+	if(disp_zeile_bak[WATER_TEMP]!=pSensors->get_water_temperature()+pSensors->get_water_temperature_fail_status() || true){
 		disp_zeile_bak[WATER_TEMP]=int(pSensors->get_water_temperature()+pSensors->get_water_temperature_fail_status());
 
 		int value=pSensors->get_water_temperature();
@@ -117,6 +103,11 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		};
 		pDebug->speedo_loop(1,0,previousMillis," "); // debug
 
+#ifdef WATER_DEBUG
+		char buffer[30];
+		sprintf(buffer,"Widerstand Wasser:%i",value);
+		Serial.println(buffer);
+#else
 		// send data
 		unsigned char data[3];
 		if(pSensors->CAN_active){
@@ -127,6 +118,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		data[1]=value>>8 & 0xff;
 		data[2]=value & 0xff;
 		pFilemanager_v2->send_answere(data,3);
+#endif
 	};
 
 	pDebug->speedo_loop(1,0,previousMillis," "); // debug
@@ -152,12 +144,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		disp_zeile_bak[AIR_TEMP]=int(pSensors->get_air_temperature());
 		pDebug->speedo_loop(2,0,previousMillis," ");
 
+#ifdef AIR_DEBUG
+		char buffer[30];
+		sprintf(buffer,"Aussentemperatur:%i",disp_zeile_bak[AIR_TEMP]);
+		Serial.println(buffer);
+#else
 		// send data
 		unsigned char data[3];
 		data[0]=CMD_POST_AIR_TEMP;
 		data[1]=disp_zeile_bak[AIR_TEMP]>>8 & 0xff;
 		data[2]=disp_zeile_bak[AIR_TEMP] & 0xff;
 		pFilemanager_v2->send_answere(data,3);
+#endif;
 	};
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintlnp(PSTR("."));
@@ -214,5 +212,54 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	pDebug->sprintlnp(PSTR("."));
 #endif
 	/********************* dz *****************************/
+
+	/********************* digi in *****************************/
+	if(disp_zeile_bak[LIGHT_VALUES]!=pSensors->sensor_state || true){
+		pDebug->speedo_loop(6,0,previousMillis," ");
+		disp_zeile_bak[LIGHT_VALUES]=pSensors->sensor_state;
+
+#ifdef CONTROLLIGHTS_DEBUG
+		char output[30];
+		Serial.println("-----------------------------------");
+		sprintf(output,"Digi Input value:%i",pSensors->sensor_state);
+		Serial.println(output);
+		if(pSensors->sensor_state&(1<<FLASHER_LEFT_SHIFT))	{ Serial.println("1. Flasher links");		};
+		if(pSensors->sensor_state&(1<<FLASHER_RIGHT_SHIFT))	{ Serial.println("2. Flasher rechts");		};
+		if(pSensors->sensor_state&(1<<HIGH_BEAM_SHIFT))		{ Serial.println("3. Fernlicht ");			};
+		if(pSensors->sensor_state&(1<<OIL_PRESSURE_SHIFT))	{ Serial.println("4. Oeldruck ein");		};
+		if(pSensors->sensor_state&(1<<NEUTRAL_GEAR_SHIFT))	{ Serial.println("5. Leerlauf eingelegt");	};
+		Serial.println("-----------------------------------");
+#else
+		// send data
+		unsigned char data[2];
+		data[0]=CMD_POST_LIGHTS;
+		data[1]=pSensors->sensor_state;
+		pFilemanager_v2->send_answere(data,2);
+#endif
+	};
+	/********************* digi in *****************************/
+
+	/********************* analog voltage *****************************/
+	if(disp_zeile_bak[VOLTAGE_VALUE]!=pSensors->m_voltage->get()){
+		pDebug->speedo_loop(6,0,previousMillis," ");
+		disp_zeile_bak[VOLTAGE_VALUE]=pSensors->sensor_state;
+
+#ifdef VOLTAGE_DEBUG
+		char output[30];
+		sprintf(output,"Voltage value:%i",pSensors->m_voltage->get());
+		Serial.println(output);
+#else
+		// send data
+		unsigned char data[3];
+		int voltage=pSensors->m_voltage->get();
+		data[0]=CMD_POST_LIGHTS;
+		data[1]=(voltage>>8)&0xff;
+		data[1]=(voltage)&0xff;
+		pFilemanager_v2->send_answere(data,3);
+#endif
+
+	};
+	/********************* analog voltage *****************************/
+
 }
 
