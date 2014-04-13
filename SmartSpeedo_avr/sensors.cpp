@@ -29,7 +29,7 @@ Speedo_sensors::Speedo_sensors(){
 	fourty_Hz_counter=0;
 	fourty_Hz_timer=millis();
 	CAN_active=true; // don't care, will change it in init
-	sensor_source=SENSOR_AUTO;
+	sensor_source=SENSOR_ANALOG;
 	last_highbeam_on=0;
 	last_oil_off=0;
 	rpm_flatted_counter=0;

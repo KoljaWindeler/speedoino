@@ -18,9 +18,12 @@ public:
 	void init();
 	void shutdown();
 	int get_mag_speed();
+	volatile unsigned long last_pulse_ts;
+
 private:
 	int           reed_speed;  // speichere speed darin, wenn valid_time noch < 1000 ist gib das hier aus
 	unsigned long last_time_read;  // wenn dieser Zeitpunkt über 1000 msec her ist stehen wir
+	unsigned long last_calc_pulse_ts;
 };
 
 #endif /* SPEED_H_ */

@@ -1,5 +1,5 @@
-/* Speedoino - This file is part of the firmware.
- * Copyright (C) 2011 Kolja Windeler
+/* SmartSpeedo - This file is part of the firmware.
+ * Copyright (C) 2014 Kolja Windeler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,28 +45,14 @@
  * Pro: very well suited for high pulse speed
  * contra: might be slow?
  * -> Read every 500ms + store millis of last read + only read if at least two pulses captured
- * 			Szenario 2hz:
- * 				Read at time 0: 0 pulses
- * 				Pulse at time 500ms
- * 				Read at time 600ms, not enought pulses
- * 				Pulse at time 1000ms
- * 				Read at 1200: two pulses -> 600ms per pulse ... grrr, reset counter
- * 				Pulse at 1500ms,2000ms
- * 				Read at 2400 -> 600ms/Pulse ... grrr
- * 				Pulse at 2500,3000
- * 				Read at 3000 -> 250ms/Pulse ... grrr
- *
- *			Szenario 2hz, read every 100ms
- * 				Worst Case: pulse at 1,501,1001,1501,2001
- * 							read at 0,100..600 -> 600/2 -> 300
- * 							read at 1600 -> 500
- * 							read at 2600 -> 500
- *
  */
+
 
 speedo_speed::speedo_speed(){
 	last_time_read=millis();
 	reed_speed=0;
+	last_calc_pulse_ts=0;
+	last_pulse_ts=0;
 };
 
 speedo_speed::~speedo_speed(){
@@ -78,6 +64,11 @@ void speedo_speed::init (){
 	TIMSK3=(0<<TOIE3); // <- deactivate Timer overflow interrupt
 	TCCR3B=(1<<CS32) | (1<<CS31) | (1<<CS30); // selects external clock on rising edge
 	TCCR3A=0; // WGM=0 -> normal mode
+
+	EIMSK |= (1<<INT6); // Enable Interrupt
+	EICRB |= (1<<ISC60) ; // rising edge on INT5
+	EICRB |= (1<<ISC61) ; // rising edge on INT5
+
 	last_time_read=millis(); //prevent calculation of rpm
 
 	pDebug->sprintlnp(PSTR("Speed init done"));
@@ -88,9 +79,14 @@ void speedo_speed::shutdown(){
 }
 
 
-// für die gang berechnung ist der speed am magnet geiler als der vom gps weil beim beschleunigen sonst fehler kommen
+/* output: frequency of reed input, >> SCALED BY 8.192 << !
+ * to get the km/h with
+ * e.g. one pulse per 2.5m, you have to get_mag_speed()/8.192*2.5m*3.6[km/h]/[m/s]
+ * => get_mag_speed() * 1.098632813 = km/h
+ * */
+
 int speedo_speed::get_mag_speed(){
-	if(millis()-last_time_read>100){
+	if(millis()-last_time_read>200){
 		uint8_t sreg;
 		uint16_t timerValue=0;
 		sreg = SREG;		/* Save global interrupt flag */
@@ -101,16 +97,20 @@ int speedo_speed::get_mag_speed(){
 		}
 		SREG = sreg;		/* Restore global interrupt flag */
 		if(timerValue>1){
-			unsigned long differ=millis()-last_time_read; // value around 2000ms to 100ms
-			reed_speed=(((unsigned long)timerValue)<<11)/differ; // this could be 2 to 240
+			int32_t differ=last_pulse_ts-last_calc_pulse_ts; // value around 2000ms to 100ms
+			if(differ<0){
+				differ=((uint32_t)-1)-differ;
+			}
+			last_calc_pulse_ts=last_pulse_ts;
+			reed_speed=(((uint32_t)timerValue)<<23)/(differ); // this could be 2 to 240
 
-			// ticks per time:
-			// reed low speed: 2/2000, hornet high speed: 240/100
-			// scale by 2048 -> 2 .. 2400 [ticks per 2.048sec]
-			// to be recalculated by: value*[way/tick]/(2,048*3,6)
-
-			// one digit represets 1*[way/tick]/(2,048*3,6)= [Hornet]: 1[Tick]* 2[m/Tick] / 7,3728 = 0,27 km/h
-			// one digit represets 1*[way/tick]/(2,048*3,6)= [T3]: 1[Tick]* 0,25[m/Tick] / 7,3728 = 0,016875 km/h
+			//			Serial.print(differ);
+			//			Serial.print(" | ");
+			//			Serial.print(timerValue);
+			//			Serial.print(" | ");
+			//			Serial.print(reed_speed);
+			//			Serial.print(" | ");
+			//			Serial.println(reed_speed/8.192);
 
 			last_time_read=millis();
 		} else {
@@ -121,3 +121,6 @@ int speedo_speed::get_mag_speed(){
 };
 
 
+ISR(INT6_vect ){
+	pSensors->m_speed->last_pulse_ts = micros();
+}

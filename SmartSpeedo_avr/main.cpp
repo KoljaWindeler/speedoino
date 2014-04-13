@@ -98,7 +98,6 @@ int main(void) {
 
 	for (;;) {
 		pSensors->m_CAN->check_message();
-
 		//////////////////////////////////////////////////
 		//		pSensors->m_reset->set_deactive(false,false);
 		//		Serial3.end();
