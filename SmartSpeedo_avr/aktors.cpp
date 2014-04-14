@@ -18,7 +18,7 @@
 
 Speedo_aktors::Speedo_aktors(){
 	m_oiler=new speedo_oiler();
-//	bt_pin=1234;
+	//	bt_pin=1234;
 };
 
 Speedo_aktors::~Speedo_aktors(){
@@ -39,17 +39,17 @@ void Speedo_aktors::run_reset_on_ATm328(char mode){
 		_delay_ms(100);// give serial 3 some time to send the messeage
 		Serial3.end();
 		Serial3.begin(115200);
-//		pOLED->clear_screen();
-//		pOLED->string_P(pSpeedo->default_font,PSTR("Running Update"),3,2);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("on AT328P"),5,3);
+		//		pOLED->clear_screen();
+		//		pOLED->string_P(pSpeedo->default_font,PSTR("Running Update"),3,2);
+		//		pOLED->string_P(pSpeedo->default_font,PSTR("on AT328P"),5,3);
 	};
 
 	// show "_R_to_trigger_reset__" only if in "preparation" mode
 	if(mode==RESET_PREPARE){
 		char temp[2];
-//		sprintf(temp,"%c",127);
-//		pOLED->string(pSpeedo->default_font,temp,1,7);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("to trigger reset"),3,7);
+		//		sprintf(temp,"%c",127);
+		//		pOLED->string(pSpeedo->default_font,temp,1,7);
+		//		pOLED->string_P(pSpeedo->default_font,PSTR("to trigger reset"),3,7);
 	}
 
 	// run the reset
@@ -83,14 +83,14 @@ void Speedo_aktors::run_reset_on_ATm328(char mode){
 				timeout=millis();
 			}
 			if(mode==RESET_PREPARE){
-//				if(menu_state_on_enter==((pMenu->state/10))){ // button "right" was pushed
-//					run_reset_on_ATm328(RESET_KICK_TO_RESET); // to the reset
-//					pMenu->state=menu_state_on_enter; // reset menu state
-//				} else if(menu_state_on_enter==((pMenu->state*10)+1)){ // button "left" was pushed
-//					pMenu->state=menu_state_on_enter; // reset menu state, because menu->back will otherwise recaluclate two steps back
-//					max_time=0;
-//					break;
-//				}
+				//				if(menu_state_on_enter==((pMenu->state/10))){ // button "right" was pushed
+				//					run_reset_on_ATm328(RESET_KICK_TO_RESET); // to the reset
+				//					pMenu->state=menu_state_on_enter; // reset menu state
+				//				} else if(menu_state_on_enter==((pMenu->state*10)+1)){ // button "left" was pushed
+				//					pMenu->state=menu_state_on_enter; // reset menu state, because menu->back will otherwise recaluclate two steps back
+				//					max_time=0;
+				//					break;
+				//				}
 			}
 		}
 		Serial3.end();
@@ -104,91 +104,79 @@ void Speedo_aktors::init(){
 	m_oiler->init();
 	pDebug->sprintlnp(PSTR("Aktoren init ... Done"));
 };
+int Speedo_aktors::set_bt_pin(){
+	return set_bt_pin(false);
+}
+
+bool Speedo_aktors::check_bt_connection(){
+	// check connection
+	char at_commands[22];
+	sprintf(at_commands,"ATQ0%c",0x0D);
+	if(ask_bt(&at_commands[0])!=0){
+		set_bt_pin();
+	}
+	return false;
+}
 
 
 int Speedo_aktors::set_bt_pin(bool reset){
-//	pOLED->clear_screen();
+	//	pOLED->clear_screen();
 	char at_commands[22];
 	bool connection_established=true;
 
-	// check connection
-//	pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
-
 	sprintf(at_commands,"ATQ0%c",0x0D);
 	if(ask_bt(&at_commands[0])!=0 || reset){											// fehler aufgetreten
+		// we enter this if we have NO answere (or reset is true)
+		// so we have to assume that the Bluetooth is not configured
+		// we'll have to switch to 19200 baud
 		connection_established=false;
-//		pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,1);								// hat nicht geklappt
-		Serial.end();																	// setzte neue serielle Geschwindigkeit
+		Serial.end();
 		_delay_ms(500);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("TRYING 19200 BAUD"),0,2);					// hat nicht geklappt
-		Serial.begin(19200);
+		// wait for the uart to finish
+		Serial.begin(19200); // 19200 is default baudrate
 		_delay_ms(2000);
+		//try again
 		if(ask_bt(&at_commands[0])==0){
-//			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
-			_delay_ms(500);
-//			pOLED->string_P(pSpeedo->default_font,PSTR("BASIC SETUP"),0,4);
-			sprintf(at_commands,"ATE0%c",0x0D);
+			// huray, contact at 19200, startin basic config
+			sprintf(at_commands,"ATE0%c",0x0D); // echo off
 			if(ask_bt(&at_commands[0])==0){
-				sprintf(at_commands,"ATN=SMARTSPEEDO%c",0x0D);
+				sprintf(at_commands,"ATN=SMARTSPEEDO%c",0x0D); // rename
 				if(ask_bt(&at_commands[0])==0){
 #if TARGET_UART_SPEED == 115200
-					sprintf(at_commands,"ATL5%c",0x0D);
+					sprintf(at_commands,"ATL5%c",0x0D); // set speed
 					ask_bt(&at_commands[0]);											// fire && forget
 #endif
-//					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);				// wird schon auf anderer geschwindigkeit geantwortet, können wir hier nicht testen
-					Serial.end();														// setzte neue serielle Geschwindigkeit
-//					pOLED->string_P(pSpeedo->default_font,PSTR("RETRYING"),0,6);		// hat nicht geklappt
+					// ok, we switched the uart speed, so we have to switch as well
+					Serial.end();
 					Serial.begin(TARGET_UART_SPEED);
 					_delay_ms(2000);
-//					pOLED->clear_screen();
-//					pOLED->string_P(pSpeedo->default_font,PSTR("Checking connection"),0,0);
+					// connection check to finish
 					sprintf(at_commands,"AT%c",0x0D);									// gleich neu testen
 					if(ask_bt(&at_commands[0])==0){
 						connection_established=true;
-//						pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,1);
+						// success!! resume operation below.
 					};
 				}
 			}
 		} else {
-//			pOLED->string_P(pSpeedo->default_font,PSTR("FAILED"),14,3);
-//			pOLED->string_P(pSpeedo->default_font,PSTR("DAMN"),14,4); // add message to make sure no active bt connection disturbs TODO
-			_delay_ms(4000);
+			// even with anothder connection speed we had no luck, giving up
 			Serial.end();
-			Serial.begin(115200);
+			Serial.begin(TARGET_UART_SPEED);
 			return -9;
 		}
 	}
-	Serial.println("Verbindung hergestellt"); //TODO
 
 	if(connection_established){
-//		pOLED->filled_rect(0,8,128,56,0x00); // clear the lower lines
-//		pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,1);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("Activating responses"),0,2);
-		sprintf(at_commands,"ATQ0%c",0x0D); // schaltet result codes ein				// jetzt richtig
+		sprintf(at_commands,"ATQ0%c",0x0D); // result codes ON
 		if(ask_bt(&at_commands[0])==0){
-//			pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,3);
-//			pOLED->string_P(pSpeedo->default_font,PSTR("Setting PIN Code"),0,4);
-			int bt_pin=0000;
+			int bt_pin=6666;
 			sprintf(at_commands,"ATP=%04i%c",bt_pin,13);
 
-			if(ask_bt(&at_commands[0])==0){
-//				pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,5);
-//				pOLED->string_P(pSpeedo->default_font,PSTR("Deactivating response"),0,6);
-				sprintf(at_commands,"ATQ0%c",13); // schaltet result codes ein
-
-				if(ask_bt(&at_commands[0])==0){
-//					pOLED->string_P(pSpeedo->default_font,PSTR("OK"),14,7);
-					_delay_ms(2000);
-					return 0;
-				}
+			if(ask_bt(&at_commands[0])==0){ // set bt key
+				return 0;
 			}
 		}
-	} else {
-		ask_bt(&at_commands[0]);
-//		pOLED->string_P(pSpeedo->default_font,PSTR("failed, hmmm"),0,1);
-		_delay_ms(5000);
 	}
-	_delay_ms(2000);
 	return -2;
 }
 
@@ -261,31 +249,54 @@ int Speedo_aktors::ask_bt(char *buffer, bool answere_needed, int8_t max_length, 
 		Serial.print(buffer);
 		// A T \r \n O K \r \n = 8
 		//warte bis der Buffer nicht voller wird
-		_delay_ms(200);
 
 		uint8_t ok_state=0; // 0 teile von "o" "k"
+		uint8_t error_state=0; // 0 teile von "error"
 		int8_t n=0;
 		*char_rec=0;
 		char answere[20];
-		while(Serial.available()){
-			char temp = Serial.read();
-			if(answere_needed){
-				*char_rec=*char_rec+1;
-				if(n<(max_length-1)){
-					answere[n]=temp;
-					n++;
-					answere[n]=0x00; // EOString, 0x00 will be MAX in (max-length-1)
+		uint32_t now=millis();
+		while(Serial.available() || (millis()-now)<200){ // max 200ms timeout
+			if(Serial.available()){
+				char temp = Serial.read();
+				if(answere_needed){
+					*char_rec=*char_rec+1;
+					if(n<(max_length-1)){
+						answere[n]=temp;
+						n++;
+						answere[n]=0x00; // EOString, 0x00 will be MAX in (max-length-1)
+					};
 				};
-			};
 
-			if(temp=='O'){
-				ok_state=1; // 1. TEIL
-			} else if(temp=='K' && ok_state==1){
-				strcpy(buffer,answere);
-				return 0;
+				// search for ok
+				if(temp=='O'){
+					ok_state=1; // 1. TEIL
+				} else if(temp=='K' && ok_state==1){
+					if(answere_needed){
+						strcpy(buffer,answere);
+					}
+					return 0;
 
-			} else {
-				ok_state=0;
+				} else {
+					ok_state=0;
+				}
+
+				// search for error
+				if(temp=='E'){
+					error_state=1; // 1. TEIL
+				} else if(temp=='R' && error_state==1){
+					error_state++;
+				} else if(temp=='R' && error_state==2){
+					error_state++;
+				} else if(temp=='O' && error_state==3){
+					error_state++;
+				} else if(temp=='R' && error_state==4){
+					break;
+				} else {
+					error_state=0;
+				}
+
+
 			}
 		};
 	};

@@ -96,7 +96,10 @@ int main(void) {
 	unsigned long lasttime_calc=0;
 #endif
 
+//	pAktors->check_bt_connection();
+
 	for (;;) {
+//		pSensors->m_speed->get_mag_speed();
 		pSensors->m_CAN->check_message();
 		//////////////////////////////////////////////////
 		//		pSensors->m_reset->set_deactive(false,false);
@@ -133,7 +136,6 @@ int main(void) {
 		// send the data via bluetooth
 		pSpeedo->loop(previousMillis);
 
-		_delay_ms(1000);
 #ifdef LOAD_CALC
 		load_calc++;
 		if(millis()-lasttime_calc>1000){

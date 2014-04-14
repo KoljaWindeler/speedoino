@@ -61,13 +61,13 @@ speedo_speed::~speedo_speed(){
 void speedo_speed::init (){
 	// timer
 	TCNT3=0x00; // reset value
-	TIMSK3=(0<<TOIE3); // <- deactivate Timer overflow interrupt
+	TIMSK3=(1<<TOIE3); // <- activate Timer overflow interrupt
 	TCCR3B=(1<<CS32) | (1<<CS31) | (1<<CS30); // selects external clock on rising edge
 	TCCR3A=0; // WGM=0 -> normal mode
 
 	EIMSK |= (1<<INT6); // Enable Interrupt
-	EICRB |= (1<<ISC60) ; // rising edge on INT5
-	EICRB |= (1<<ISC61) ; // rising edge on INT5
+	EICRB |= (1<<ISC60) ; // rising edge on INT6
+	EICRB |= (1<<ISC61) ; // rising edge on INT6
 
 	last_time_read=millis(); //prevent calculation of rpm
 
@@ -78,6 +78,10 @@ void speedo_speed::shutdown(){
 	TCCR3B=(0<<CS32) | (0<<CS31) | (0<<CS30); // off
 }
 
+
+ISR(TIMER3_OVF_vect){
+	Serial.println("-----------------überlauf!--------------------");
+}
 
 /* output: frequency of reed input, >> SCALED BY 8.192 << !
  * to get the km/h with
@@ -102,15 +106,22 @@ int speedo_speed::get_mag_speed(){
 				differ=((uint32_t)-1)-differ;
 			}
 			last_calc_pulse_ts=last_pulse_ts;
-			reed_speed=(((uint32_t)timerValue)<<23)/(differ); // this could be 2 to 240
+			if(timerValue>(1<<8)){
+				reed_speed=(((uint32_t)timerValue)<<16)/(differ>>7); // this could be 2 to 240
+			} else {
+				reed_speed=(((uint32_t)timerValue)<<23)/(differ); // this could be 2 to 240
+			}
 
-			//			Serial.print(differ);
-			//			Serial.print(" | ");
-			//			Serial.print(timerValue);
-			//			Serial.print(" | ");
-			//			Serial.print(reed_speed);
-			//			Serial.print(" | ");
-			//			Serial.println(reed_speed/8.192);
+//			Serial.print(differ);
+//			Serial.print(" | ");
+//			Serial.print(timerValue);
+//			Serial.print(" | ");
+//			Serial.print(reed_speed);
+
+//			Serial.print(" | ");
+//			Serial.println(reed_speed/8.192);
+			// in 576 hz, 1256376, 764
+			// in 12 hz,  1274432, 14
 
 			last_time_read=millis();
 		} else {

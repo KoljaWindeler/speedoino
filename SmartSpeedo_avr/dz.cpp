@@ -20,7 +20,7 @@
  * Timer0 -  8 Bit - Used by the Arduino Base to calc the millis() timestamp
  * Timer1 - 16 Bit - Used by the RPM capturing module, normal mode, 2MHz
  * Timer2 -  8 Bit - Used by the Arduino Base to generate Phase correct PWM, 250kHz, Pins: PH6 (outer RGB), PB4 (not used)
- * Timer3 - 16 Bit - Used by the Aktor Module to switch the color-fade providing PWM values of the outer LEDs at the correct time
+ * Timer3 - 16 Bit - Used by the Speed module
  * Timer4 - 16 Bit - Used by the Arduino Base to generate Phase correct PWM, 250kHz, Pins: PH3 (not used), PH4..5 (outer RGB)
  * Timer5 - 16 Bit - not in use now, could be used by the correct Wheel speed detection, OCM on "pulse per rotation" and MATCH ISR on trigger
  */

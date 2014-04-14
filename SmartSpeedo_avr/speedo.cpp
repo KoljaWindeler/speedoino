@@ -42,7 +42,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintp(PSTR("-o"));
 #endif
-	if(disp_zeile_bak[OIL_TEMP]!=pSensors->get_oil_r()+pSensors->m_temperature->oil_r_fail_status || true){
+	if(disp_zeile_bak[OIL_TEMP]!=pSensors->get_oil_r()+pSensors->m_temperature->oil_r_fail_status){
 		disp_zeile_bak[OIL_TEMP]=int(pSensors->get_oil_r()+pSensors->m_temperature->oil_r_fail_status);
 		// below 20 degree the PTC is very antiliear so we won't show it
 		int value=pSensors->get_oil_r();
@@ -91,7 +91,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintp(PSTR("-w"));
 #endif
-	if(disp_zeile_bak[WATER_TEMP]!=pSensors->get_water_temperature()+pSensors->get_water_temperature_fail_status() || true){
+	if(disp_zeile_bak[WATER_TEMP]!=pSensors->get_water_temperature()+pSensors->get_water_temperature_fail_status()){
 		disp_zeile_bak[WATER_TEMP]=int(pSensors->get_water_temperature()+pSensors->get_water_temperature_fail_status());
 
 		int value=pSensors->get_water_temperature();
@@ -174,7 +174,13 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	int temp_speed=pSensors->get_speed();
 	if( (abs(disp_zeile_bak[SPEED_VALUE]-(temp_speed+1))>1) || (abs(disp_zeile_bak[SPEED_VALUE]-(temp_speed+1))==1 && temp_speed<10) ) {
 		pDebug->speedo_loop(4,0,previousMillis," "); // debug
+		disp_zeile_bak[SPEED_VALUE]=temp_speed+1;
 
+#ifdef SPEED_DEBUG
+		char buffer[30];
+		sprintf(buffer,"Speed unscaled:%i",temp_speed);
+		Serial.println(buffer);
+#else
 		// send data
 		unsigned char data[3];
 		data[0]=CMD_POST_SPEED;
@@ -184,6 +190,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		data[1]=temp_speed>>8 & 0xff;
 		data[2]=temp_speed & 0xff;
 		pFilemanager_v2->send_answere(data,3);
+#endif
 	}
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintlnp(PSTR("."));
@@ -201,12 +208,18 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		disp_zeile_bak[DZ_VALUE]=int(pSensors->get_RPM(RPM_TYPE_FLAT_ROUNDED)+1);
 		int value = pSensors->get_RPM(RPM_TYPE_FLAT_ROUNDED);
 
+#ifdef DZ_DEBUG
+		char buffer[30];
+		sprintf(buffer,"DZ :%i",value);
+		Serial.println(buffer);
+#else
 		// send data
 		unsigned char data[3];
 		data[0]=CMD_POST_RPM;
 		data[1]=value>>8 & 0xff;
 		data[2]=value & 0xff;
 		pFilemanager_v2->send_answere(data,3);
+#endif
 	};
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintlnp(PSTR("."));
@@ -214,13 +227,12 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	/********************* dz *****************************/
 
 	/********************* digi in *****************************/
-	if(disp_zeile_bak[LIGHT_VALUES]!=pSensors->sensor_state || true){
+	if(disp_zeile_bak[LIGHT_VALUES]!=pSensors->sensor_state){
 		pDebug->speedo_loop(6,0,previousMillis," ");
 		disp_zeile_bak[LIGHT_VALUES]=pSensors->sensor_state;
 
 #ifdef CONTROLLIGHTS_DEBUG
 		char output[30];
-		Serial.println("-----------------------------------");
 		sprintf(output,"Digi Input value:%i",pSensors->sensor_state);
 		Serial.println(output);
 		if(pSensors->sensor_state&(1<<FLASHER_LEFT_SHIFT))	{ Serial.println("1. Flasher links");		};
@@ -228,7 +240,6 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		if(pSensors->sensor_state&(1<<HIGH_BEAM_SHIFT))		{ Serial.println("3. Fernlicht ");			};
 		if(pSensors->sensor_state&(1<<OIL_PRESSURE_SHIFT))	{ Serial.println("4. Oeldruck ein");		};
 		if(pSensors->sensor_state&(1<<NEUTRAL_GEAR_SHIFT))	{ Serial.println("5. Leerlauf eingelegt");	};
-		Serial.println("-----------------------------------");
 #else
 		// send data
 		unsigned char data[2];
@@ -242,7 +253,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 	/********************* analog voltage *****************************/
 	if(disp_zeile_bak[VOLTAGE_VALUE]!=pSensors->m_voltage->get()){
 		pDebug->speedo_loop(6,0,previousMillis," ");
-		disp_zeile_bak[VOLTAGE_VALUE]=pSensors->sensor_state;
+		disp_zeile_bak[VOLTAGE_VALUE]=pSensors->m_voltage->get();
 
 #ifdef VOLTAGE_DEBUG
 		char output[30];
