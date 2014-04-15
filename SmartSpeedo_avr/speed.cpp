@@ -90,7 +90,7 @@ ISR(TIMER3_OVF_vect){
  * */
 
 int speedo_speed::get_mag_speed(){
-	if(millis()-last_time_read>200){
+	if(millis()-last_time_read>200){ // update this with max 5hz, 200ms
 		uint8_t sreg;
 		uint16_t timerValue=0;
 		sreg = SREG;		/* Save global interrupt flag */
@@ -112,20 +112,29 @@ int speedo_speed::get_mag_speed(){
 				reed_speed=(((uint32_t)timerValue)<<23)/(differ); // this could be 2 to 240
 			}
 
-//			Serial.print(differ);
-//			Serial.print(" | ");
-//			Serial.print(timerValue);
-//			Serial.print(" | ");
-//			Serial.print(reed_speed);
+			//			Serial.print(differ);
+			//			Serial.print(" | ");
+			//			Serial.print(timerValue);
+			//			Serial.print(" | ");
+			//			Serial.print(reed_speed);
+			//			Serial.print(" | ");
+			//			Serial.println(reed_speed/8.192);
 
-//			Serial.print(" | ");
-//			Serial.println(reed_speed/8.192);
-			// in 576 hz, 1256376, 764
-			// in 12 hz,  1274432, 14
+			// absolute minimal update rate: e.g. 5km/h = 1,38m/s, 2 pulses,
+			// reed: 4m, so an update will need 		4/1,38 = 2,88 sec
+			// 8 pulses: 0,5m so an update will need  0,5/1,38 = 0,36 sec
+			// 64 pulses: less
 
 			last_time_read=millis();
 		} else {
-			reed_speed=0;
+			// if we haven't even received a pulse in one sec than we are driving
+			// reed sensor: less then 2m in one sec, less than 7.2 km/h
+			// 8 pulses: less then 2m/8 in one sec, less than 0,9 km/h
+			// hornet:  less then 2m/64 in one sec, less than 0,1125 km/h
+			if(millis()-last_time_read>1000 && timerValue==0){
+				reed_speed=0;
+				last_time_read=millis();
+			}
 		}
 	}
 	return reed_speed;
