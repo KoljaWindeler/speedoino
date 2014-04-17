@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.5.0">
+<eagle version="6.4">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -16228,7 +16228,6 @@ Source: 1765.pdf</description>
 <part name="RX_L" library="resistor" deviceset="R-EU_" device="M0805" value="2k7"/>
 <part name="RX_H" library="resistor" deviceset="R-EU_" device="M0805" value="1k2"/>
 <part name="GND9" library="SparkFun" deviceset="GND" device=""/>
-<part name="D6" library="diode" deviceset="ZENER-DIODE" device="SOT23" value="20V-Zdiode"/>
 <part name="GND12" library="SparkFun" deviceset="GND" device=""/>
 <part name="GND14" library="SparkFun" deviceset="GND" device=""/>
 <part name="S1" library="SWITCH+RELAIS" deviceset="SW-TASTER" device="ECO-DIAGONAL"/>
@@ -16238,7 +16237,6 @@ Source: 1765.pdf</description>
 <part name="U$12" library="SUPPLY" deviceset="GND" device=""/>
 <part name="R_REED" library="RCLDT" deviceset="R" device="0805" value="7k "/>
 <part name="D_VERPOL" library="RCLDT" deviceset="D-S" device="SMB-A+K" value="SS24T3G"/>
-<part name="D18" library="diode" deviceset="ZENER-DIODE" device="SOT23" value="78-MMBZ5232B-V"/>
 <part name="GND6" library="supply1" deviceset="GND" device=""/>
 <part name="R_V_LOW" library="RCLDT" deviceset="R" device="0805" value="1k"/>
 <part name="R_V_HIGH" library="RCLDT" deviceset="R" device="0805" value="2k2"/>
@@ -16407,6 +16405,8 @@ Source: 1765.pdf</description>
 <part name="SUPPLY2" library="supply2" deviceset="VDD" device=""/>
 <part name="500MA_LITTLEFUSE" library="resistor" deviceset="R-EU_" device="R1210" value="1210L050YR"/>
 <part name="700MA_LITTLEFUSE" library="resistor" deviceset="R-EU_" device="R1210" value="1210L075YR"/>
+<part name="D6" library="diode" deviceset="ZENER-DIODE" device="SOT23" value="5.5V"/>
+<part name="D15" library="diode" deviceset="ZENER-DIODE" device="SOT23" value="5.5V"/>
 </parts>
 <sheets>
 <sheet>
@@ -16615,10 +16615,6 @@ Source: 1765.pdf</description>
 <instance part="RX_L" gate="G$1" x="-33.02" y="147.32" rot="R90"/>
 <instance part="RX_H" gate="G$1" x="-33.02" y="160.02" rot="R270"/>
 <instance part="GND9" gate="1" x="-33.02" y="137.16"/>
-<instance part="D6" gate="G$1" x="91.44" y="236.22" smashed="yes" rot="MR270">
-<attribute name="NAME" x="89.535" y="245.618" size="1.778" layer="95" rot="MR270"/>
-<attribute name="VALUE" x="94.869" y="250.698" size="1.778" layer="96" rot="MR270"/>
-</instance>
 <instance part="GND12" gate="1" x="-307.34" y="215.9"/>
 <instance part="GND14" gate="1" x="-279.4" y="200.66" rot="R270"/>
 <instance part="S1" gate="G$1" x="-307.34" y="231.14" rot="R90"/>
@@ -16640,10 +16636,6 @@ Source: 1765.pdf</description>
 <instance part="D_VERPOL" gate="G$1" x="-27.94" y="15.24" smashed="yes">
 <attribute name="NAME" x="-29.845" y="20.32" size="2.032" layer="95"/>
 <attribute name="VALUE" x="-29.845" y="17.78" size="1.778" layer="96"/>
-</instance>
-<instance part="D18" gate="G$1" x="167.64" y="114.3" smashed="yes" rot="R90">
-<attribute name="NAME" x="165.735" y="112.522" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="171.069" y="102.362" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="GND6" gate="1" x="167.64" y="106.68"/>
 <instance part="R_V_LOW" gate="G$1" x="-254" y="-109.22"/>
@@ -16935,6 +16927,8 @@ Source: 1765.pdf</description>
 <instance part="SUPPLY2" gate="G$1" x="-12.7" y="-50.8"/>
 <instance part="500MA_LITTLEFUSE" gate="G$1" x="139.7" y="33.02"/>
 <instance part="700MA_LITTLEFUSE" gate="G$1" x="-12.7" y="15.24"/>
+<instance part="D6" gate="G$1" x="91.44" y="236.22" rot="MR270"/>
+<instance part="D15" gate="G$1" x="167.64" y="114.3" rot="MR90"/>
 </instances>
 <busses>
 </busses>
@@ -16954,7 +16948,6 @@ Source: 1765.pdf</description>
 <net name="GND" class="0">
 <segment>
 <pinref part="GND1" gate="1" pin="GND"/>
-<pinref part="D6" gate="G$1" pin="A"/>
 <wire x1="91.44" y1="238.76" x2="91.44" y2="243.84" width="0.1524" layer="91"/>
 <wire x1="91.44" y1="243.84" x2="86.36" y2="243.84" width="0.1524" layer="91"/>
 <pinref part="R_DZ_DOWN" gate="G$1" pin="2"/>
@@ -16967,6 +16960,7 @@ Source: 1765.pdf</description>
 <junction x="81.28" y="243.84"/>
 <wire x1="81.28" y1="246.38" x2="81.28" y2="248.92" width="0.1524" layer="91"/>
 <junction x="86.36" y="243.84"/>
+<pinref part="D6" gate="G$1" pin="A"/>
 </segment>
 <segment>
 <wire x1="-7.62" y1="48.26" x2="2.54" y2="48.26" width="0.1524" layer="91"/>
@@ -17133,10 +17127,10 @@ Source: 1765.pdf</description>
 <segment>
 <wire x1="167.64" y1="109.22" x2="167.64" y2="111.76" width="0.1524" layer="91"/>
 <pinref part="GND6" gate="1" pin="GND"/>
-<pinref part="D18" gate="G$1" pin="A"/>
 <wire x1="144.78" y1="111.76" x2="167.64" y2="111.76" width="0.1524" layer="91"/>
-<junction x="167.64" y="111.76"/>
 <pinref part="R_E1_3" gate="G$1" pin="1"/>
+<pinref part="D15" gate="G$1" pin="A"/>
+<junction x="167.64" y="111.76"/>
 </segment>
 <segment>
 <wire x1="-228.6" y1="-111.76" x2="-228.6" y2="-109.22" width="0.1524" layer="91"/>
@@ -17456,7 +17450,6 @@ Source: 1765.pdf</description>
 <wire x1="91.44" y1="220.98" x2="86.36" y2="220.98" width="0.1524" layer="91"/>
 <label x="71.12" y="193.04" size="1.778" layer="95" rot="R270"/>
 <pinref part="R_DZ" gate="G$1" pin="2"/>
-<pinref part="D6" gate="G$1" pin="C"/>
 <pinref part="IC1" gate="A" pin="I1"/>
 <pinref part="R_DZ_DOWN" gate="G$1" pin="1"/>
 <wire x1="81.28" y1="231.14" x2="81.28" y2="220.98" width="0.1524" layer="91"/>
@@ -17469,6 +17462,7 @@ Source: 1765.pdf</description>
 <wire x1="71.12" y1="220.98" x2="81.28" y2="220.98" width="0.1524" layer="91"/>
 <junction x="81.28" y="220.98"/>
 <junction x="86.36" y="220.98"/>
+<pinref part="D6" gate="G$1" pin="C"/>
 </segment>
 </net>
 <net name="BAT+" class="0">
@@ -18932,10 +18926,10 @@ Source: 1765.pdf</description>
 <net name="N$90" class="0">
 <segment>
 <pinref part="R_HB3" gate="G$1" pin="2"/>
-<pinref part="D18" gate="G$1" pin="C"/>
 <pinref part="R_E1_1" gate="G$1" pin="1"/>
 <wire x1="167.64" y1="116.84" x2="167.64" y2="137.16" width="0.1524" layer="91"/>
 <wire x1="167.64" y1="116.84" x2="144.78" y2="116.84" width="0.1524" layer="91"/>
+<pinref part="D15" gate="G$1" pin="C"/>
 <junction x="167.64" y="116.84"/>
 </segment>
 </net>

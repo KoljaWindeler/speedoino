@@ -50,7 +50,7 @@
 
 speedo_speed::speedo_speed(){
 	last_time_read=millis();
-	reed_speed=0;
+	analog_speed=0;
 	last_calc_pulse_ts=0;
 	last_pulse_ts=0;
 };
@@ -107,9 +107,9 @@ int speedo_speed::get_mag_speed(){
 			}
 			last_calc_pulse_ts=last_pulse_ts;
 			if(timerValue>(1<<8)){
-				reed_speed=(((uint32_t)timerValue)<<16)/(differ>>7); // this could be 2 to 240
+				analog_speed=(((uint32_t)timerValue)<<16)/(differ>>7); // this could be 2 to 240
 			} else {
-				reed_speed=(((uint32_t)timerValue)<<23)/(differ); // this could be 2 to 240
+				analog_speed=(((uint32_t)timerValue)<<23)/(differ); // this could be 2 to 240
 			}
 
 			//			Serial.print(differ);
@@ -132,12 +132,12 @@ int speedo_speed::get_mag_speed(){
 			// 8 pulses: less then 2m/8 in one sec, less than 0,9 km/h
 			// hornet:  less then 2m/64 in one sec, less than 0,1125 km/h
 			if(millis()-last_time_read>1000 && timerValue==0){
-				reed_speed=0;
+				analog_speed=0;
 				last_time_read=millis();
 			}
 		}
 	}
-	return reed_speed;
+	return analog_speed;
 };
 
 

@@ -18,7 +18,9 @@
 #include "global.h"
 
 
-speedo_filemanager_v2::speedo_filemanager_v2(){};
+speedo_filemanager_v2::speedo_filemanager_v2(){
+//	msgParseState=0;
+};
 
 speedo_filemanager_v2::~speedo_filemanager_v2(){};
 
@@ -269,6 +271,7 @@ void speedo_filemanager_v2::parse_command(){
 					i++;
 				};
 				msgLength=i+2;
+				pSpeedo->reset_bak();
 
 			} else if(msgBuffer[0]==CMD_LEAVE_FM){
 				isLeave	=	1;

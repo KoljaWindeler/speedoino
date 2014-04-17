@@ -155,7 +155,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 		data[1]=disp_zeile_bak[AIR_TEMP]>>8 & 0xff;
 		data[2]=disp_zeile_bak[AIR_TEMP] & 0xff;
 		pFilemanager_v2->send_answere(data,3);
-#endif;
+#endif
 	};
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintlnp(PSTR("."));

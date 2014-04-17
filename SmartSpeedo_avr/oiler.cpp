@@ -18,6 +18,7 @@
 #include "global.h"
 
 speedo_oiler::speedo_oiler(void){
+	grenze=0;
 }
 
 speedo_oiler::~speedo_oiler(){

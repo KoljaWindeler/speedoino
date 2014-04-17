@@ -47,6 +47,7 @@ Speedo_CAN::Speedo_CAN(){
 	can_bus_type=CAN_TYPE_TRIUMPH;
 	can_fuel_lamp_active=false;
 	can_neutral_gear_lamp_active=false;
+	can_speed_counter=0;
 };
 
 Speedo_CAN::~Speedo_CAN(){

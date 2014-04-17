@@ -398,6 +398,7 @@ bool Speedo_CAN::get_fuel_blink(){
 void Speedo_CAN::request(char mode,char PID){
 	byte can_first_byte=0x02; //frame im Datenstrom
 
+
 	//check valid msg
 	if(mode!=CAN_CURRENT_INFO && mode!=CAN_DTC){
 		return;

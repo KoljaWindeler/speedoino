@@ -21,7 +21,7 @@ public:
 	volatile uint32_t last_pulse_ts;
 
 private:
-	int      reed_speed;  // speichere speed darin, wenn valid_time noch < 1000 ist gib das hier aus
+	int      analog_speed;  // speichere speed darin, wenn valid_time noch < 1000 ist gib das hier aus
 	uint32_t last_time_read;  // wenn dieser Zeitpunkt über 1000 msec her ist stehen wir
 	uint32_t last_calc_pulse_ts;
 };

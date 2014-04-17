@@ -20,7 +20,7 @@ class debugging{
 #undef       CLOCK_DEBUG     		 	// haha fehler gefunden -> nie wieder abs() nutzen
 #undef       STORAGE_DEBUG   		 	// sehen ob das Datum richtig geladen wird
 #undef       BLINKER_DEBUG    		 	// sehen wie der Blinkerstate ist
-#define       DZ_DEBUG         		 	// die peaks sehen
+#undef       DZ_DEBUG         		 	// die peaks sehen
 #undef       TEMP_DEBUG       		 	// i2c
 #undef       MENU_DEBUG       		 	// sehen in welchem menu state man gerade ist etc
 #undef       GPS_DEBUG        		 	// ausgabe wenn sich was ergibt, also vollständige pakete empfangen werden
@@ -33,12 +33,12 @@ class debugging{
 #undef		 DEMO_MODE					// show fancy demo values
 #undef		 LOAD_CALC					// show calc load
 #undef		 GPS_FAKE_MODE				// simply fake some data
-#define		 CONTROLLIGHTS_DEBUG		// blinker state etc
-#define		 VOLTAGE_DEBUG
-#define		 AIR_DEBUG
-#define 	 WATER_DEBUG
-#define		 OIL_DEBUG
-#define		 SPEED_DEBUG
+#undef		 CONTROLLIGHTS_DEBUG		// blinker state etc
+#undef		 VOLTAGE_DEBUG
+#undef		 AIR_DEBUG
+#undef 	 	 WATER_DEBUG
+#undef		 OIL_DEBUG
+#undef		 SPEED_DEBUG
 
 public:
 	debugging(void);

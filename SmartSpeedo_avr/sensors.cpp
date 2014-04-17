@@ -33,6 +33,8 @@ Speedo_sensors::Speedo_sensors(){
 	last_highbeam_on=0;
 	last_oil_off=0;
 	rpm_flatted_counter=0;
+	rpm_flatted=0;
+	last_int_state=0;
 };
 
 // destructor just for nuts

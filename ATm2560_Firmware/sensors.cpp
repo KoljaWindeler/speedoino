@@ -517,7 +517,7 @@ void Speedo_sensors::addinfo_show_loop(){
 	if(voltage!=pSpeedo->disp_zeile_bak[1]){
 		pSpeedo->disp_zeile_bak[1]=voltage;
 		char temp[6];
-		sprintf(temp,"%2i,%iV",int(floor(voltage/100)),int(voltage%100));
+		sprintf(temp,"%2i,%02iV",int(floor(voltage/100)),int(voltage%100));
 		pOLED->string(pSpeedo->default_font,temp,9,7);
 	};
 	free(char_buffer);
