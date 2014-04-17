@@ -44,7 +44,7 @@ public class gps_service extends Service implements android.location.GpsStatus.L
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);                
 		locationManager.addGpsStatusListener(this);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,	0, this);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000,	0, this);
 
 		return Service.START_STICKY;
 	}

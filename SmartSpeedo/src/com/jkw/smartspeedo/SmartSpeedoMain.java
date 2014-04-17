@@ -31,6 +31,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	// surface
 	GaugeCustomView rpm_speed_gear;
 	GaugeCustomView temp;
+	GaugeCustomView airTemp;
 	LinearCustomView engine_temp;
 
 	// surface 2
@@ -81,6 +82,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		temp=(GaugeCustomView)findViewById(R.id.temp);
 		ctrl=((ControllCustomView)findViewById(R.id.ctrl));
 		engine_temp=((LinearCustomView)findViewById(R.id.engineTemp));
+		airTemp=((GaugeCustomView)findViewById(R.id.airTemp));
 
 		//		rpm.getLayoutParams().height *= 1.8;
 		//		rpm.getLayoutParams().width *= 1.8;
@@ -93,7 +95,12 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		//		
 		//		temp.getLayoutParams().width *= 1.8;
 		//		temp.getLayoutParams().height *= 1.8;
-		
+
+		airTemp.setLimits(0, 50);
+		airTemp.setLayout(180, 270, 10, 1);
+		airTemp.setValue(0);
+		airTemp.setType(GaugeCustomView.TYPE_TEMP);
+
 		engine_temp.setLimits(40, 120);
 		engine_temp.setLayout(0, 0, 15, 5, 70,90);
 		engine_temp.setValue(40);
@@ -167,7 +174,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 			rpm_speed_gear.setValue(rpm_speed_gear.getValue() + (int)(Math.random()*500));
 
 			ctrl.set_left(!ctrl.get_left());
-			
+
 			engine_temp.setValue(engine_temp.getValue()+5);
 		}
 	}
@@ -236,6 +243,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	private BroadcastReceiver mGPSMsgRcv = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			Log.i("test","jetzt");
 			if(intent.getStringExtra(gps_service.MESSAGE)==gps_service.GPS_SPEED){
 				rpm_speed_gear.setSecondValue(intent.getIntExtra(gps_service.GPS_SPEED, 0),2);
 				mTimerHandle.removeCallbacks(mCheckResponseTimeTaskGPS);
@@ -316,6 +324,10 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_GEAR){
 					rpm_speed_gear.setSecondValue(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0),3);
+				}
+
+				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_AIR_ANALOG_TEMP){
+					airTemp.setValue(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE,0)/10);
 				}
 			}
 		}

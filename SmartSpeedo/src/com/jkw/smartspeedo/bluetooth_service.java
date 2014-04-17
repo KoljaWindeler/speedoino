@@ -66,6 +66,7 @@ public class bluetooth_service extends Service {
 	public static final String BT_SENSOR_GEAR = "BT_SENSOR_GEAR";
 	public static final String BT_SENSOR_SPEED_REED = "reedspeed";
 	public static final String BT_SENSOR_WATER_TEMP = "water";
+	public static final String BT_SENSOR_AIR_ANALOG_TEMP = "air_analog";
 	public static final String BT_SENSOR_WATER_TEMP_ANALOG = "BT_SENSOR_WATER_TEMP_ANALOG";
 	public static final String BT_SENSOR_OIL_TEMP = "oil";
 	public static final String BT_SENSOR_VOLTAGE = "voltage";
@@ -160,15 +161,16 @@ public class bluetooth_service extends Service {
 	public static final byte CMD_SIGN_ON_FIRMWARE	=  0x41;
 	public static final byte CMD_SET_STARTUP		=  0x42;
 
-	public static final byte CMD_GET_WATER_TEMP_ANALOG	=  0x43;
-	public static final byte CMD_GET_WATER_TEMP_DIGITAL	=  0x44;
-	public static final byte CMD_GET_OIL_TEMP_ANALOG	=  0x45;
-	public static final byte CMD_GET_OIL_TEMP_DIGITAL	=  0x46;
+	public static final byte CMD_GET_WATER_TEMP_ANALOG	=  0x53;
+	public static final byte CMD_GET_WATER_TEMP_DIGITAL	=  0x54;
+	public static final byte CMD_GET_OIL_TEMP_ANALOG	=  0x55;
+	public static final byte CMD_GET_OIL_TEMP_DIGITAL	=  0x56;
 	public static final byte CMD_GET_FLASHER_LEFT		=  0x47;
 	public static final byte CMD_GET_FLASHER_RIGHT		=  0x48;
 	public static final byte CMD_GET_RPM				=  0x49;
 	public static final byte CMD_GET_SPEED				=  0x4A;
-	public static final byte CMD_GET_PSEUDO_SPEED		=  0x4B;
+	public static final byte CMD_GET_PSEUDO_SPEED		=  0x59;
+	public static final byte CMD_GET_AIR_TEMP_ANALOG	=  0x46; // set !
 
 	public static final char STATUS_CMD_OK      	=  0x00;
 	public static final char STATUS_CMD_FAILED  	=  0xC0;
@@ -578,7 +580,7 @@ public class bluetooth_service extends Service {
 	}
 
 	public void reset_seq() {
-		seqNum=0;
+		seqNum=1;
 	}
 
 	// beim save send gucken wir uns an ob wir auf die anfrage hin auch noch eine antwort erhalten
@@ -744,7 +746,7 @@ public class bluetooth_service extends Service {
 			}
 			break;
 
-		case ST_GET_SEQ_NUM:
+		case ST_GET_SEQ_NUM: // smart speedo exclusion: ignore seqNum, the avr will post messages without request, therefore its useless
 			if ( (int)data == 1 || (data&0xff) == (seqNum&0xff) ){
 				Log.i(TAG,"Seq nr erhalten");
 				seqNum		=	data  & 0xff;
@@ -752,7 +754,10 @@ public class bluetooth_service extends Service {
 				checksum	^=	data;
 			} else {
 				Log.i(TAG,"Seq unpassend:"+String.valueOf((int)data)+" erwartet "+String.valueOf((int)seqNum));
-				rx_tx_state	=	ST_START;
+//				rx_tx_state	=	ST_START;
+				seqNum		=	data  & 0xff;
+				rx_tx_state	=	ST_MSG_SIZE;
+				checksum	^=	data;
 			}
 			break;
 
@@ -844,6 +849,8 @@ public class bluetooth_service extends Service {
 					mSensors.set_speed_CAN((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
 				} else if(msgBuffer[0]==CMD_GET_PSEUDO_SPEED){
 					mSensors.set_speed_reed((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
+				} else if(msgBuffer[0]==CMD_GET_AIR_TEMP_ANALOG){
+					mSensors.set_air_temp((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
 
 					// list of valid commands, the active task will process the data
 				} else if(msgBuffer[0]==CMD_SPI_MULTI || 

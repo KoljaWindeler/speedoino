@@ -113,6 +113,22 @@
     </FrameLayout>
     <!-- temp linear-->
     
+    <!-- temp -->
+    <FrameLayout
+        android:id="@+id/AirTemperatureLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|top"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp" >
+
+        <com.jkw.smartspeedo.GaugeCustomView
+            android:id="@+id/airTemp"
+            android:layout_width="200dp"
+            android:layout_height="200dp" />
+    </FrameLayout>
+    <!-- temp linear-->
+    
 
     <Button
         android:id="@+id/button1"

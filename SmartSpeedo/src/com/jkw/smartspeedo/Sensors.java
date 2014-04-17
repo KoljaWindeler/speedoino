@@ -14,6 +14,7 @@ public class Sensors {
 	private int mReedSpeed;
 	private int mRPM;
 	private int mGear;
+	private int mTempAirAnalog;
 
 	private boolean CAN_active=false;
 
@@ -89,6 +90,15 @@ public class Sensors {
 		LocalBroadcastManager.getInstance(mBTservice).sendBroadcast(intent);
 		mReedSpeed=i;
 		calc_gear();
+	}
+	
+	public void set_air_temp(int i){
+		Intent intent = new Intent(bluetooth_service.short_name);
+		intent.putExtra(bluetooth_service.BT_ACTION, bluetooth_service.BT_SENSOR_UPDATE);
+		intent.putExtra(bluetooth_service.BT_SENSOR_UPDATE, bluetooth_service.BT_SENSOR_AIR_ANALOG_TEMP);
+		intent.putExtra(bluetooth_service.BT_SENSOR_VALUE, i);
+		LocalBroadcastManager.getInstance(mBTservice).sendBroadcast(intent);
+		mTempAirAnalog=i;
 	}
 
 	public void set_speed_CAN(int i) {
