@@ -106,19 +106,28 @@ int speedo_speed::get_mag_speed(){
 				differ=((uint32_t)-1)-differ;
 			}
 			last_calc_pulse_ts=last_pulse_ts;
-			if(timerValue>(1<<8)){
+			if(timerValue>=(1<<8)){ // if timer > 256
 				analog_speed=(((uint32_t)timerValue)<<16)/(differ>>7); // this could be 2 to 240
 			} else {
 				analog_speed=(((uint32_t)timerValue)<<23)/(differ); // this could be 2 to 240
 			}
 
-			//			Serial.print(differ);
-			//			Serial.print(" | ");
-			//			Serial.print(timerValue);
-			//			Serial.print(" | ");
-			//			Serial.print(reed_speed);
-			//			Serial.print(" | ");
-			//			Serial.println(reed_speed/8.192);
+//						Serial.print(differ);
+//						Serial.print(" | ");
+//						Serial.print(timerValue);
+//						Serial.print(" | ");
+//						Serial.print(analog_speed);
+//						Serial.print(" | ");
+//						Serial.println(analog_speed/(8.192*1.0225));
+
+						// TODO, I don't know why, but we have an error of 2.25%! Static!
+						// 225,23 Hz : 230.22 -> 2,2%
+						// 82,42  Hz :  84.35 -> 2,3%
+						// 450,64 Hz : 461.67 -> 2,4%
+						// correction is possible by:
+						// division 8,37632 instead of 8,125 ...
+
+
 
 			// absolute minimal update rate: e.g. 5km/h = 1,38m/s, 2 pulses,
 			// reed: 4m, so an update will need 		4/1,38 = 2,88 sec

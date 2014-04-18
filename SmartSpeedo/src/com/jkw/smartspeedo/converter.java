@@ -5,7 +5,8 @@ public class converter {
 
 	public converter(){
 		// load conversion factor
-		meter_per_pulse=2.5;		
+		meter_per_pulse=2.5;	
+		
 	}
 	
 	public float water_r_to_t(int r){
@@ -21,10 +22,12 @@ public class converter {
 	}
 
 	public int rpm(int rpm_in) {
+		// der smartspeedo gibt schon U/min allerdings mit faktor 1/2 aus (hz*30)
 		return rpm_in*2;
 	}
 	
 	public int speed_freq_to_kmh(int freq){
-		return (int)(freq*meter_per_pulse);
+		///8.192*2.5m*3.6
+		return (int)(freq*meter_per_pulse*3.6/8.192);
 	}
 }

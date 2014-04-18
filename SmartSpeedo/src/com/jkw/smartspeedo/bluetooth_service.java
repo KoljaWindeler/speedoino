@@ -61,11 +61,10 @@ public class bluetooth_service extends Service {
 	// sub-arguments
 	public static final String TARGET_ADDRESS = "target_address";	
 	public static final String BT_SENSOR_VALUE = "BT_SENSOR_VALUE";
-	public static final String BT_SENSOR_RPM = "rpm";
+	public static final String BT_SENSOR_ANALOG_RPM = "analog_rpm";
 	public static final String BT_SENSOR_SPEED = "speed";
-	public static final String BT_SENSOR_ANALOG_SPEED = "analogspeed";
 	public static final String BT_SENSOR_GEAR = "BT_SENSOR_GEAR";
-	public static final String BT_SENSOR_SPEED_REED = "reedspeed";
+	public static final String BT_SENSOR_SPEED_FREQ = "reedspeed";
 	public static final String BT_SENSOR_WATER_TEMP = "water";
 	public static final String BT_SENSOR_AIR_ANALOG_TEMP = "air_analog";
 	public static final String BT_SENSOR_WATER_TEMP_ANALOG = "BT_SENSOR_WATER_TEMP_ANALOG";
@@ -167,10 +166,10 @@ public class bluetooth_service extends Service {
 	public static final byte CMD_GET_OIL_TEMP_ANALOG	=  0x55;
 	public static final byte CMD_GET_OIL_TEMP_DIGITAL	=  0x56;
 	public static final byte CMD_GET_FLASHER_LEFT		=  0x47;
-	public static final byte CMD_GET_FLASHER_RIGHT		=  0x48;
-	public static final byte CMD_GET_RPM				=  0x49;
+	public static final byte CMD_GET_FLASHER_RIGHT		=  0x58;
+	public static final byte CMD_GET_RPM_ANALOG			=  0x48; // set !
 	public static final byte CMD_GET_SPEED				=  0x4A;
-	public static final byte CMD_GET_PSEUDO_SPEED		=  0x59;
+	public static final byte CMD_GET_FREQ_SPEED			=  0x49; // set !
 	public static final byte CMD_GET_AIR_TEMP_ANALOG	=  0x46; // set !
 
 	public static final char STATUS_CMD_OK      	=  0x00;
@@ -844,11 +843,11 @@ public class bluetooth_service extends Service {
 					mSensors.set_flasher_left(msgBuffer[1]);
 				} else if(msgBuffer[0]==CMD_GET_FLASHER_RIGHT){
 					mSensors.set_flasher_right(msgBuffer[1]);
-				} else if(msgBuffer[0]==CMD_GET_RPM){
+				} else if(msgBuffer[0]==CMD_GET_RPM_ANALOG){
 					mSensors.set_rpm((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));				
 				} else if(msgBuffer[0]==CMD_GET_SPEED){
 					mSensors.set_speed_CAN((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
-				} else if(msgBuffer[0]==CMD_GET_PSEUDO_SPEED){
+				} else if(msgBuffer[0]==CMD_GET_FREQ_SPEED){
 					mSensors.set_speed_reed((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
 				} else if(msgBuffer[0]==CMD_GET_AIR_TEMP_ANALOG){
 					mSensors.set_air_temp((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));

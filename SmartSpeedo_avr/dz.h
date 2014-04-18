@@ -25,15 +25,15 @@ public:
 	uint16_t get_dz();
 	void set_exact(uint16_t i);
 
-	unsigned char dz_faktor_counter;
-	int blitz_dz;
 	bool blitz_en;
 
-	volatile uint8_t overruns;
+	volatile uint32_t last_pulse_ts;
+	volatile uint16_t pulse_count;
+
 private:
-	volatile int16_t exact;                 // real rotation speed
-	int16_t e_sum;
-	int16_t e_old;
+	uint32_t last_time_read;
+	uint32_t last_calc_pulse_ts;
+	volatile uint16_t analog_dz;
 };
 /**************** DZ *******************/
 

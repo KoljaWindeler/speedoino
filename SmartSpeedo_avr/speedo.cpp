@@ -140,7 +140,7 @@ void speedo_speedo::loop(unsigned long previousMillis){
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintp(PSTR("-at"));
 #endif
-	if(disp_zeile_bak[AIR_TEMP]!=pSensors->get_air_temperature()){
+	if(disp_zeile_bak[AIR_TEMP]!=int(pSensors->get_air_temperature())){
 		disp_zeile_bak[AIR_TEMP]=int(pSensors->get_air_temperature());
 		pDebug->speedo_loop(2,0,previousMillis," ");
 
@@ -199,14 +199,13 @@ void speedo_speedo::loop(unsigned long previousMillis){
 
 
 	/********************* dz *****************************/
-	//pSensors->m_dz->calc(); // calc in main loop to run the stepper in every menu
 #ifdef TACHO_SMALLDEBUG
 	pDebug->sprintp(PSTR("-dz"));
 #endif
-	if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->get_RPM(RPM_TYPE_FLAT_ROUNDED)+1)){
+	if(disp_zeile_bak[DZ_VALUE]!=signed(pSensors->get_RPM(RPM_TYPE_DIRECT)+1)){
 		pDebug->speedo_loop(6,0,previousMillis," ");
-		disp_zeile_bak[DZ_VALUE]=int(pSensors->get_RPM(RPM_TYPE_FLAT_ROUNDED)+1);
-		int value = pSensors->get_RPM(RPM_TYPE_FLAT_ROUNDED);
+		disp_zeile_bak[DZ_VALUE]=int(pSensors->get_RPM(RPM_TYPE_DIRECT)+1);
+		int value = disp_zeile_bak[DZ_VALUE];
 
 #ifdef DZ_DEBUG
 		char buffer[30];

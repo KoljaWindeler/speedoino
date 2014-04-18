@@ -74,7 +74,7 @@ public class Sensors {
 	public void set_rpm(int i) {
 		Intent intent = new Intent(bluetooth_service.short_name);
 		intent.putExtra(bluetooth_service.BT_ACTION, bluetooth_service.BT_SENSOR_UPDATE);
-		intent.putExtra(bluetooth_service.BT_SENSOR_UPDATE, bluetooth_service.BT_SENSOR_RPM);
+		intent.putExtra(bluetooth_service.BT_SENSOR_UPDATE, bluetooth_service.BT_SENSOR_ANALOG_RPM);
 		intent.putExtra(bluetooth_service.BT_SENSOR_VALUE, i);
 		LocalBroadcastManager.getInstance(mBTservice).sendBroadcast(intent);
 		mRPM=i;
@@ -85,7 +85,7 @@ public class Sensors {
 		CAN_active=false;
 		Intent intent = new Intent(bluetooth_service.short_name);
 		intent.putExtra(bluetooth_service.BT_ACTION, bluetooth_service.BT_SENSOR_UPDATE);
-		intent.putExtra(bluetooth_service.BT_SENSOR_UPDATE, bluetooth_service.BT_SENSOR_SPEED_REED);
+		intent.putExtra(bluetooth_service.BT_SENSOR_UPDATE, bluetooth_service.BT_SENSOR_SPEED_FREQ);
 		intent.putExtra(bluetooth_service.BT_SENSOR_VALUE, i);
 		LocalBroadcastManager.getInstance(mBTservice).sendBroadcast(intent);
 		mReedSpeed=i;

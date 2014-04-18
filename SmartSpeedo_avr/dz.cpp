@@ -27,92 +27,71 @@
 
 
 speedo_dz::speedo_dz(){
-	exact=0;                 // real rotation speed
-	blitz_dz=0;
 	blitz_en=false;
-	dz_faktor_counter=0;
-	e_sum=0;
-	e_old=0;
+	last_calc_pulse_ts=0;
+	last_time_read=0;
 }
 
 uint16_t speedo_dz::get_dz(){
-	return exact;
+	if(millis()-last_time_read>200){ // update this with max 5hz, 200ms
+		uint16_t timerValue=0;
+		uint8_t sreg = SREG;		/* Save global interrupt flag */
+		cli();				/* Disable interrupts */
+		if(pulse_count>0){
+			timerValue = pulse_count;
+			pulse_count=0;
+		}
+		SREG = sreg;		/* Restore global interrupt flag */
+		if(timerValue>1){
+			int32_t differ=last_pulse_ts-last_calc_pulse_ts; // value around 2000ms to 100ms
+			if(differ<0){
+				differ=((uint32_t)-1)-differ;
+			}
+			last_calc_pulse_ts=last_pulse_ts;
+			if(timerValue>=(1<<8)){ // if timer > 256
+				analog_dz=(((uint32_t)timerValue)<<16)/(differ>>7); // this could be 2 to 240
+			} else {
+				analog_dz=(((uint32_t)timerValue)<<23)/(differ); // this could be 2 to 240
+			}
+
+//			Serial.print(differ);
+//			Serial.print(" | ");
+//			Serial.print(timerValue);
+//			Serial.print(" | ");
+//			Serial.print(analog_dz);
+//			Serial.print(" | ");
+//			Serial.print(analog_dz/(8.192*1.0225));
+//			Serial.print(" | ");
+//			Serial.println(analog_dz*3.581525061);
+
+			analog_dz*=3.581525061;
+			last_time_read=millis();
+		} else {
+			// if we haven't even received a pulse in one sec than we are driving
+			// reed sensor: less then 2m in one sec, less than 7.2 km/h
+			// 8 pulses: less then 2m/8 in one sec, less than 0,9 km/h
+			// hornet:  less then 2m/64 in one sec, less than 0,1125 km/h
+			if(millis()-last_time_read>1000 && timerValue==0){
+				analog_dz=0;
+				last_time_read=millis();
+			}
+		}
+	}
+	return analog_dz;
 }
 
 ISR(INT4_vect){
-	uint8_t sreg;
-	uint16_t timerValue;
-	sreg = SREG;		/* Save global interrupt flag */
-	cli();				/* Disable interrupts */
-	timerValue = TCNT1;	/* Read TCNTn into i */
-	TCNT1=0;			/* Reset Timer value */
-	SREG = sreg;		/* Restore global interrupt flag */
-	// timer runs with 2 MHz
-	// if the engine runs with 3.000 rpm we should have 3000/60*2(double ignition)=100 pulses per second
-	// that leads to 10ms per Pulse. Timer1 value will be at 20.000 after 10ms.
-	pSensors->m_dz->set_exact((uint32_t)60000000UL / (((uint32_t)pSensors->m_dz->overruns<<16) + timerValue));
-	pSensors->m_dz->overruns=0;
-}
-
-// this overflow will occure after 65536/2000000=0,032768 sec, 0,032768=30/RPM, RPM=30/0,032768=915 min
-ISR(TIMER1_OVF_vect){
-	uint8_t sreg;
-	sreg = SREG;	/* Save global interrupt flag */
-	cli();			/* Disable interrupts */
-	TCNT1=0;
-	SREG = sreg;	/* Restore global interrupt flag */
-
-	pSensors->m_dz->overruns++;
-	if(pSensors->m_dz->overruns>4){ // no spark for 164ms -> less than 183 rpm
-		pSensors->m_dz->set_exact(0);
-		pSensors->m_dz->overruns=0;
-	}
-}
-
-void speedo_dz::set_exact(uint16_t i){
-	if(i>15000){
-		exact=15000;
-	} else if(i==0) {
-		exact=0;
-	} else {
-		/* PID - Track
-		 * kp=1/4
-		 * kd=1/2
-		 * ki=1/256
-		 * Ta=4
-		 * --------------------
-		 * esum=esum+differ
-		 * regler_P=int(kp*differ)
-		 * regler_I=int(ki*Ta*esum)
-		 * regler_D=int(kd*(differ-ealt)/Ta)
-		 * ealt=differ
-		 * --------------------
-		 * P=1/4*differ				= differ>>2
-		 * I=(1/256)*4*esum			= 1/64*esum = e_sum>>6
-		 * D=(1/2)/4*(differ-ealt)	= 1/8*(differ-ealt) = (differ-ealt)>>3
-		 */
-		int16_t differ=i-exact;
-		e_sum+=differ;
-		//exact+=(differ>>2)+(e_sum>>6)+((differ-e_old)>>3); // great!! 10.10.2013
-		exact+=(differ>>3)+(e_sum>>7)+((differ-e_old)>>4); // since the above was very fast and a bit bouncy ... lets try to low pass it even more
-		e_old=differ;
-	}
-}
+		pSensors->m_dz->last_pulse_ts = micros();
+		pSensors->m_dz->pulse_count++;
+};
 
 
 void speedo_dz::init() {
 	EIMSK |= (1<<INT4); // Enable Interrupt
 	EICRB |= (1<<ISC41)|(0<<ISC40); // falling edge on INT4 <- rising edge on RPM pin
 
-	// timer
-	TCNT1=0x00; // reset value
-	TIMSK1=(1<<TOIE1); // <- activate Timer overflow interrupt
-	TCCR1B=(0<<CS12) | (1<<CS11) | (0<<CS10); // selects clock to "/8" => 16Mhz/8=2MHz,
-	TCCR1A=0; // WGM=0 -> normal mode
-
 	pDebug->sprintlnp(PSTR("DZ init done"));
 	blitz_en=false;
-	overruns=0;
 };
 
 void speedo_dz::shutdown(){

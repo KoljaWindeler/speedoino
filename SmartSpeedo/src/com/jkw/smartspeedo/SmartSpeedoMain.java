@@ -201,7 +201,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		public void onReceive(Context context, Intent intent) {
 			Log.i("test","jetzt");
 			if(intent.getStringExtra(gps_service.MESSAGE)==gps_service.GPS_SPEED){
-				GUI.setSpeed(intent.getIntExtra(gps_service.GPS_SPEED, 0));
+//				GUI.setSpeed(intent.getIntExtra(gps_service.GPS_SPEED, 0));
 
 				mTimerHandle.removeCallbacks(mCheckResponseTimeTaskGPS);
 				mTimerHandle.postDelayed(mCheckResponseTimeTaskGPS, 1100);
@@ -255,14 +255,14 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 			else if(intent.getStringExtra(bluetooth_service.BT_ACTION)==bluetooth_service.BT_SENSOR_UPDATE){
 				// reset time
 				mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
-				mTimerHandle.postDelayed(mCheckResponseTimeTask, 2000);
+//				mTimerHandle.postDelayed(mCheckResponseTimeTask, 2000);
 
 				// set new values
-				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_RPM){
+				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_ANALOG_RPM){
 					GUI.setRPM(convert.rpm(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0)));
 				}
 				
-				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_ANALOG_SPEED){
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_SPEED_FREQ){
 					GUI.setSpeed(convert.speed_freq_to_kmh(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0)));
 				}
 
@@ -288,7 +288,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	// resetter
 	private Runnable mCheckResponseTimeTask = new Runnable() {
 		public void run() {
-			GUI.setSpeed(0);
+//			GUI.setSpeed(0);
 			GUI.setRPM(0);
 			GUI.setGear(0);
 		}
@@ -296,7 +296,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 	private Runnable mCheckResponseTimeTaskGPS = new Runnable() {
 		public void run() {
-			GUI.setSpeed(0);
+//			GUI.setSpeed(0);
 		}
 	};
 
