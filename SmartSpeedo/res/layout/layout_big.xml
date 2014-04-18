@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@layout/main_header_selector" >
+
+
+    <!-- ctrl -->
+    <FrameLayout
+        android:id="@+id/CtrlLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center|top"
+        android:layout_marginBottom="0dp"
+        android:layout_marginRight="0dp" >
+
+        <com.jkw.smartspeedo.ControllCustomView
+            android:id="@+id/ctrl"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+    </FrameLayout>
+    <!-- ctrl -->
+    
+    
+    <!-- speed -->
+ <FrameLayout
+        android:id="@+id/SpeedLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_marginBottom="0dp"
+        android:layout_marginRight="0dp" >
+
+        <com.jkw.smartspeedo.GaugeCustomView
+            android:id="@+id/speed"
+            android:layout_width="160dp"
+            android:layout_height="160dp" />
+    </FrameLayout> 
+    <!-- speed -->
+    
+       <!-- temp -->
+    <FrameLayout
+        android:id="@+id/AirTemperatureLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp" >
+
+        <com.jkw.smartspeedo.GaugeCustomView
+            android:id="@+id/airTemp"
+            android:layout_width="160dp"
+            android:layout_height="160dp" />
+    </FrameLayout>
+    <!-- temp linear-->
+
+
+    <!-- rpm -->
+    <FrameLayout
+        android:id="@+id/rpm_speed_gearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="-20dp" >
+
+        <com.jkw.smartspeedo.GaugeCustomView
+            android:id="@+id/rpm"
+            android:layout_width="300dp"
+            android:layout_height="300dp" />
+    </FrameLayout>
+    <!-- rpm -->
+
+
+    <!-- gear -->
+    <!-- <FrameLayout
+        android:id="@+id/GearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:layout_marginBottom="-20dp"
+        android:layout_marginLeft="0dp" >
+
+        <com.jkw.smartspeedo.GaugeCustomView
+            android:id="@+id/gear"
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
+    </FrameLayout> -->
+    <!-- Gear -->
+
+
+
+<!-- temp -->
+    <FrameLayout
+        android:id="@+id/CoolantTemperatureLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="10dp" >
+
+        <com.jkw.smartspeedo.GaugeCustomView
+            android:id="@+id/coolantTemp"
+            android:layout_width="200dp"
+            android:layout_height="200dp" />
+    </FrameLayout>
+    <!-- temp linear-->
+    
+    <!-- temp -->
+    <FrameLayout
+        android:id="@+id/EngineTemperatureLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp" >
+
+        <com.jkw.smartspeedo.LinearCustomView
+            android:id="@+id/engineTemp"
+            android:layout_width="200dp"
+            android:layout_height="10dp" />
+    </FrameLayout>
+    <!-- temp linear-->
+    
+ 
+    
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="70dp"
+        android:layout_height="35dp"
+        android:layout_gravity="right|bottom"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="70dp"
+        android:layout_height="35dp"
+        android:layout_marginBottom="30dp"
+        android:layout_gravity="right|bottom"
+        android:text="Connect" />
+
+    <TextView
+        android:id="@+id/sat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"
+        android:layout_marginRight="10dp"
+        android:text="Sats" />
+    
+    <TextView
+        android:id="@+id/BT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="15dp"
+        android:text="no BT" />
+
+    <FrameLayout
+        android:id="@+id/BlinkerLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="10dp" >
+
+    <ImageView
+        android:id="@+id/blinker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:src="@drawable/pfeil" />
+
+      </FrameLayout>
+    <!-- temp -->
+
+</FrameLayout>

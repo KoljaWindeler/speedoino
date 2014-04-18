@@ -5,16 +5,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
@@ -28,14 +31,11 @@ import android.view.View.OnClickListener;
 
 public class SmartSpeedoMain extends Activity implements OnClickListener {
 
-	// surface
-	GaugeCustomView rpm_speed_gear;
-	GaugeCustomView temp;
-	GaugeCustomView airTemp;
-	LinearCustomView engine_temp;
+	Layout GUI_map = new Layout_map();
+	Layout GUI_big = new Layout_big();
+	Layout GUI;
 
-	// surface 2
-	ControllCustomView ctrl;
+	converter convert = new converter();
 
 	// to avoid shutdown
 	PowerManager pm;
@@ -46,7 +46,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 	//map
 	private boolean map_Zoom_changed=false;
-	private GoogleMap map;
+	
 
 	// activity codes
 	private static final int REQUEST_CONNECT_DEVICE = 1;
@@ -59,11 +59,9 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
-		map = ((MapFragment)getFragmentManager().findFragmentById(R.id.map)).getMap();
-		map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-		map.setMyLocationEnabled(true);
-		map.setTrafficEnabled(true);
+		GUI = GUI_big;
+		setContentView(GUI.get_layout());
+		GUI.find_elements(this);
 
 		// activate GPS  
 		startService(new Intent(getBaseContext(), gps_service.class));
@@ -73,55 +71,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		startService(new Intent(getBaseContext(), bluetooth_service.class));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mBTMsgRcv, new IntentFilter(bluetooth_service.short_name));
 
-		// buttons
-		((Button)findViewById(R.id.button1)).setOnClickListener(this);
-		((Button)findViewById(R.id.connect)).setOnClickListener(this);
-
-		//views
-		rpm_speed_gear=(GaugeCustomView)findViewById(R.id.rpm_speed_gear);
-		temp=(GaugeCustomView)findViewById(R.id.temp);
-		ctrl=((ControllCustomView)findViewById(R.id.ctrl));
-		engine_temp=((LinearCustomView)findViewById(R.id.engineTemp));
-		airTemp=((GaugeCustomView)findViewById(R.id.airTemp));
-
-		//		rpm.getLayoutParams().height *= 1.8;
-		//		rpm.getLayoutParams().width *= 1.8;
-		//		
-		//		speed.getLayoutParams().width *= 1.8;
-		//		speed.getLayoutParams().height *= 1.8;
-		//		
-		//		gear.getLayoutParams().width *= 1.8;
-		//		gear.getLayoutParams().height *= 1.8;
-		//		
-		//		temp.getLayoutParams().width *= 1.8;
-		//		temp.getLayoutParams().height *= 1.8;
-
-		airTemp.setLimits(0, 50);
-		airTemp.setLayout(180, 270, 10, 1);
-		airTemp.setValue(0);
-		airTemp.setType(GaugeCustomView.TYPE_TEMP);
-
-		engine_temp.setLimits(40, 120);
-		engine_temp.setLayout(0, 0, 15, 5, 70,90);
-		engine_temp.setValue(40);
-
-		rpm_speed_gear.setLimits(0, 5500);
-		rpm_speed_gear.setLayout(180, 270, 1000, 50);
-		//		rpm.setLimits(0, 18000);
-		//		rpm.setLayout(180, 270, 1000, 200);
-		rpm_speed_gear.setValue(3255); // rpm
-		rpm_speed_gear.setType(GaugeCustomView.TYPE_KMH_RPM);
-		rpm_speed_gear.setSecondValue(84,2); // km/h
-		rpm_speed_gear.setSecondValue(4,3); // gang
-
-
-		temp.setLimits(40, 120);
-		temp.setLayout(240, 240, 10, 2,60, 100);
-		temp.setValue(40);
-		temp.setSecondValue(40,2);
-		temp.setType(GaugeCustomView.TYPE_TEMP);
-		//		temp.setValueCount(2);
-
+		
 		// let the scree stay on
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wl =  pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
@@ -154,7 +104,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	}
 
 	@Override
-	public void onClick(View v) {
+	public void onClick(View v) {	
 		if(v.getId()==R.id.connect) {
 			if(bt_state == bluetooth_service.STATE_NONE){
 				// Launch the DeviceListActivity to see devices and do scan
@@ -167,15 +117,21 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 				((Button)findViewById(R.id.connect)).setText("Connect");
 			}
 		} else {
-			rpm_speed_gear.setSecondValue(84 + 10,2);
-			temp.setValue(temp.getValue() + 5);
-			//			temp.setSecondValue(temp.getValue() - 5);
-			rpm_speed_gear.setSecondValue(3,3);
-			rpm_speed_gear.setValue(rpm_speed_gear.getValue() + (int)(Math.random()*500));
-
-			ctrl.set_left(!ctrl.get_left());
-
-			engine_temp.setValue(engine_temp.getValue()+5);
+			if(GUI.equals(GUI_map)){
+				GUI.unregister_elements(this);
+				GUI=GUI_big;
+			} else {
+				GUI=GUI_map;
+			}
+			setContentView(GUI.get_layout());
+			GUI.find_elements(this);
+			
+			
+//			GUI.setSpeed(84+10);
+//			GUI.setGear(3);
+//			GUI.setRPM((int)(Math.random()*500));
+//			GUI.setCTRL_left(true);
+//			GUI.setOILtemp(55);
 		}
 	}
 
@@ -245,19 +201,12 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		public void onReceive(Context context, Intent intent) {
 			Log.i("test","jetzt");
 			if(intent.getStringExtra(gps_service.MESSAGE)==gps_service.GPS_SPEED){
-				rpm_speed_gear.setSecondValue(intent.getIntExtra(gps_service.GPS_SPEED, 0),2);
+				GUI.setSpeed(intent.getIntExtra(gps_service.GPS_SPEED, 0));
+
 				mTimerHandle.removeCallbacks(mCheckResponseTimeTaskGPS);
 				mTimerHandle.postDelayed(mCheckResponseTimeTaskGPS, 1100);
 
-				LatLng pos = new LatLng(intent.getDoubleExtra(gps_service.GPS_LAT, 0), intent.getDoubleExtra(gps_service.GPS_LNG, 0));
-				float zoom;
-				if(map_Zoom_changed){
-					zoom=map.getCameraPosition().zoom;
-				} else {
-					zoom=15;
-				}
-				CameraPosition CamPos = new CameraPosition.Builder().target(pos).zoom(zoom).tilt(85).build();
-				map.animateCamera(CameraUpdateFactory.newCameraPosition(CamPos));
+				GUI.setMap(intent.getDoubleExtra(gps_service.GPS_LAT, 0), intent.getDoubleExtra(gps_service.GPS_LNG, 0));
 			}
 			else if(intent.getStringExtra(gps_service.MESSAGE)==gps_service.GPS_SAT){
 				String temp="GPS:";
@@ -266,11 +215,10 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 				temp+=String.valueOf(intent.getIntExtra(gps_service.GPS_SAT_TOTAL,0));
 
 				((TextView)findViewById(R.id.sat)).setText(temp);
-
 				if(intent.getIntExtra(gps_service.GPS_SAT_INFIX,0)>2){
-					ctrl.set_GPS(true);
+					GUI.setCTRL_GPS(true);
 				} else {
-					ctrl.set_GPS(false);
+					GUI.setCTRL_GPS(false);
 				}
 			}
 		}
@@ -311,23 +259,27 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 				// set new values
 				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_RPM){
-					rpm_speed_gear.setValue(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0));
+					GUI.setRPM(convert.rpm(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0)));
+				}
+				
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_ANALOG_SPEED){
+					GUI.setSpeed(convert.speed_freq_to_kmh(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0)));
 				}
 
-				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_FLASHER_L){
-					ctrl.set_left(intent.getBooleanExtra(bluetooth_service.BT_SENSOR_VALUE, false));
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_FLASHER_L){
+					GUI.setCTRL_left(intent.getBooleanExtra(bluetooth_service.BT_SENSOR_VALUE, false));
 				}
 
-				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_FLASHER_R){
-					ctrl.set_right(intent.getBooleanExtra(bluetooth_service.BT_SENSOR_VALUE, false));
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_FLASHER_R){
+					GUI.setCTRL_right(intent.getBooleanExtra(bluetooth_service.BT_SENSOR_VALUE, false));
 				}
 
-				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_GEAR){
-					rpm_speed_gear.setSecondValue(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0),3);
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_GEAR){
+					GUI.setGear(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0));
 				}
-
-				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_AIR_ANALOG_TEMP){
-					airTemp.setValue(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE,0)/10);
+				
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_AIR_ANALOG_TEMP){
+					GUI.setAirTemp(convert.air(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE,0)));
 				}
 			}
 		}
@@ -336,16 +288,15 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	// resetter
 	private Runnable mCheckResponseTimeTask = new Runnable() {
 		public void run() {
-			rpm_speed_gear.setValue(0);
-			temp.setValue(0);
-			rpm_speed_gear.setSecondValue(0, 2);
-			rpm_speed_gear.setSecondValue(0, 3);
+			GUI.setSpeed(0);
+			GUI.setRPM(0);
+			GUI.setGear(0);
 		}
 	};
 
 	private Runnable mCheckResponseTimeTaskGPS = new Runnable() {
 		public void run() {
-			rpm_speed_gear.setValue(0);
+			GUI.setSpeed(0);
 		}
 	};
 

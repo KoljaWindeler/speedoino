@@ -63,6 +63,7 @@ public class bluetooth_service extends Service {
 	public static final String BT_SENSOR_VALUE = "BT_SENSOR_VALUE";
 	public static final String BT_SENSOR_RPM = "rpm";
 	public static final String BT_SENSOR_SPEED = "speed";
+	public static final String BT_SENSOR_ANALOG_SPEED = "analogspeed";
 	public static final String BT_SENSOR_GEAR = "BT_SENSOR_GEAR";
 	public static final String BT_SENSOR_SPEED_REED = "reedspeed";
 	public static final String BT_SENSOR_WATER_TEMP = "water";
