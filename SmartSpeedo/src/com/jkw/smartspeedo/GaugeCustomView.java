@@ -56,27 +56,24 @@ public class GaugeCustomView extends View {
 
 	private int mCanvasWidth = 320;
 	private int mCanvasHeight = 480;
+	private boolean lockSize = false;
 
 	//pass back messages to UI thread
 	private Handler mHandler;
 
 	public GaugeCustomView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-		//find out if this view is specificed as a stopwatch or countdown view
-		//        TypedArray a = context.getTheme().obtainStyledAttributes(
-		//                attrs,
-		//                R.styleable.StopwatchCustomView,
-		//                0, 0);
-
-		//        try {
-		//            mIsStopwatch = a.getBoolean(R.styleable.StopwatchCustomView_watchType, true);
-		//        } finally {
-		//            a.recycle();
-		//        }
-
 		init();
 	}
+
+	public GaugeCustomView(Context context, int width, int height) {
+		super(context);
+		mCanvasHeight = height;
+		mCanvasWidth = width;
+		lockSize=true;
+		init();
+	}
+
 
 	private void init() {
 		int minDim = Math.min(mCanvasHeight, mCanvasWidth);
@@ -116,8 +113,10 @@ public class GaugeCustomView extends View {
 		int xpad = (getPaddingLeft() + getPaddingRight());
 		int ypad = (getPaddingTop() + getPaddingBottom());
 
-		mCanvasWidth = w - xpad;
-		mCanvasHeight = h - ypad;
+		if(!lockSize){
+			mCanvasWidth = w - xpad;
+			mCanvasHeight = h - ypad;
+		}
 		init();
 	}
 

@@ -1,5 +1,7 @@
 package com.jkw.smartspeedo;
 
+import java.util.Calendar;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -46,7 +48,8 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 	//map
 	private boolean map_Zoom_changed=false;
-	
+	private Intent bluetooth;
+	private Intent gps;
 
 	// activity codes
 	private static final int REQUEST_CONNECT_DEVICE = 1;
@@ -64,17 +67,20 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		GUI.find_elements(this);
 
 		// activate GPS  
-		startService(new Intent(getBaseContext(), gps_service.class));
+		gps = new Intent(getBaseContext(), gps_service.class);
+		startService(gps);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mGPSMsgRcv, new IntentFilter(gps_service.short_name));
 
 		// activate BT
-		startService(new Intent(getBaseContext(), bluetooth_service.class));
+		bluetooth = new Intent(getBaseContext(), bluetooth_service.class);
+		startService(bluetooth);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mBTMsgRcv, new IntentFilter(bluetooth_service.short_name));
 
 		
 		// let the scree stay on
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wl =  pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
+		
 	}
 
 
@@ -118,6 +124,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 			}
 		} else {
 			if(GUI.equals(GUI_map)){
+//				startService(new Intent(getBaseContext(), Layout_overlay.class));
 				GUI.unregister_elements(this);
 				GUI=GUI_big;
 			} else {
@@ -125,13 +132,6 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 			}
 			setContentView(GUI.get_layout());
 			GUI.find_elements(this);
-			
-			
-//			GUI.setSpeed(84+10);
-//			GUI.setGear(3);
-//			GUI.setRPM((int)(Math.random()*500));
-//			GUI.setCTRL_left(true);
-//			GUI.setOILtemp(55);
 		}
 	}
 
@@ -144,6 +144,13 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		super.onDestroy();
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mGPSMsgRcv);
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mBTMsgRcv);
+	}
+	
+	@Override
+	public void onStop(){
+		stopService(bluetooth); // todo
+		stopService(gps);
+		super.onStop();
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////// Bluetooth startup & shutdown /////////////////////////////////////
@@ -233,6 +240,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	private BroadcastReceiver mBTMsgRcv = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			
 			// This is used to activate the bluetooth 
 			if(intent.getStringExtra(bluetooth_service.BT_ACTION)==bluetooth_service.ENABLE_BT){
 				Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -288,7 +296,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	// resetter
 	private Runnable mCheckResponseTimeTask = new Runnable() {
 		public void run() {
-//			GUI.setSpeed(0);
+			GUI.setSpeed(0);
 			GUI.setRPM(0);
 			GUI.setGear(0);
 		}
@@ -296,7 +304,6 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 	private Runnable mCheckResponseTimeTaskGPS = new Runnable() {
 		public void run() {
-//			GUI.setSpeed(0);
 		}
 	};
 
