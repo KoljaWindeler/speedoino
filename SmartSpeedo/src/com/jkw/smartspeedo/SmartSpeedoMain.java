@@ -1,25 +1,15 @@
 package com.jkw.smartspeedo;
 
-import java.util.Calendar;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
@@ -37,7 +27,8 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	Layout GUI_big = new Layout_big();
 	Layout GUI;
 
-	converter convert = new converter();
+	// intents to be able to kill the sensor service
+	private Intent sensor_intent;
 
 	// to avoid shutdown
 	PowerManager pm;
@@ -46,10 +37,9 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	// bluetooth
 	private int bt_state=bluetooth_service.STATE_NONE;
 
-	//map
+	//mapcontroll
 	private boolean map_Zoom_changed=false;
-	private Intent bluetooth;
-	private Intent gps;
+
 
 	// activity codes
 	private static final int REQUEST_CONNECT_DEVICE = 1;
@@ -66,21 +56,15 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		setContentView(GUI.get_layout());
 		GUI.find_elements(this);
 
-		// activate GPS  
-		gps = new Intent(getBaseContext(), gps_service.class);
-		startService(gps);
-		LocalBroadcastManager.getInstance(this).registerReceiver(mGPSMsgRcv, new IntentFilter(gps_service.short_name));
 
-		// activate BT
-		bluetooth = new Intent(getBaseContext(), bluetooth_service.class);
-		startService(bluetooth);
-		LocalBroadcastManager.getInstance(this).registerReceiver(mBTMsgRcv, new IntentFilter(bluetooth_service.short_name));
+		// activate sensors service
+		sensor_intent = new Intent(getBaseContext(), Sensors.class);
+		startService(sensor_intent);
+		LocalBroadcastManager.getInstance(this).registerReceiver(mSensorMsgRcv, new IntentFilter(Sensors.short_name));
 
-		
 		// let the scree stay on
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wl =  pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
-		
 	}
 
 
@@ -100,7 +84,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 				Intent serverIntent = new Intent(this, DeviceListActivity.class);
 				startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
 			} else {
-				Intent intent = new Intent(bluetooth_service.to_name);
+				Intent intent = new Intent(Sensors.to_name);
 				intent.putExtra(bluetooth_service.BT_ACTION, bluetooth_service.BT_RESTART);
 				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 				((Button)findViewById(R.id.connect)).setText("Connect");
@@ -117,14 +101,14 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 				Intent serverIntent = new Intent(this, DeviceListActivity.class);
 				startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
 			} else {
-				Intent intent = new Intent(bluetooth_service.to_name);
+				Intent intent = new Intent(Sensors.to_name);
 				intent.putExtra(bluetooth_service.BT_ACTION, bluetooth_service.BT_RESTART);
 				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 				((Button)findViewById(R.id.connect)).setText("Connect");
 			}
 		} else {
 			if(GUI.equals(GUI_map)){
-//				startService(new Intent(getBaseContext(), Layout_overlay.class));
+				//				startService(new Intent(getBaseContext(), Layout_overlay.class));
 				GUI.unregister_elements(this);
 				GUI=GUI_big;
 			} else {
@@ -142,14 +126,12 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mGPSMsgRcv);
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mBTMsgRcv);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mSensorMsgRcv);
 	}
-	
+
 	@Override
 	public void onStop(){
-		stopService(bluetooth); // todo
-		stopService(gps);
+		stopService(sensor_intent); // todo
 		super.onStop();
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,7 +151,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 				// Get the device MAC address
 				String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 				// Get the BLuetoothDevice object
-				Intent intent = new Intent(bluetooth_service.to_name);
+				Intent intent = new Intent(Sensors.to_name);
 				intent.putExtra(bluetooth_service.BT_ACTION, bluetooth_service.BT_CONNECT);
 				intent.putExtra(bluetooth_service.TARGET_ADDRESS, address);
 				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
@@ -201,21 +183,21 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////// GPS steuern //////////////////////////////////////////////
+	///////////////////////////////// GPS / Bluetooth steuern ////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-	private BroadcastReceiver mGPSMsgRcv = new BroadcastReceiver() {
+	private BroadcastReceiver mSensorMsgRcv = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.i("test","jetzt");
 			if(intent.getStringExtra(gps_service.MESSAGE)==gps_service.GPS_SPEED){
-//				GUI.setSpeed(intent.getIntExtra(gps_service.GPS_SPEED, 0));
+				//				GUI.setSpeed(intent.getIntExtra(gps_service.GPS_SPEED, 0));
 
 				mTimerHandle.removeCallbacks(mCheckResponseTimeTaskGPS);
 				mTimerHandle.postDelayed(mCheckResponseTimeTaskGPS, 1100);
 
 				GUI.setMap(intent.getDoubleExtra(gps_service.GPS_LAT, 0), intent.getDoubleExtra(gps_service.GPS_LNG, 0));
 			}
-			else if(intent.getStringExtra(gps_service.MESSAGE)==gps_service.GPS_SAT){
+			else if(intent.getStringExtra(gps_service.MESSAGE)==gps_service.GPS_SAT_BC){
 				String temp="GPS:";
 				temp+=String.valueOf(intent.getIntExtra(gps_service.GPS_SAT_INFIX,0));
 				temp+="/";
@@ -228,21 +210,8 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 					GUI.setCTRL_GPS(false);
 				}
 			}
-		}
-	};
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////// GPS steuern //////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////// Bluetooth steuern ///////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	private BroadcastReceiver mBTMsgRcv = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			
-			// This is used to activate the bluetooth 
-			if(intent.getStringExtra(bluetooth_service.BT_ACTION)==bluetooth_service.ENABLE_BT){
+			else if(intent.getStringExtra(bluetooth_service.BT_ACTION)==bluetooth_service.ENABLE_BT){
 				Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 				startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
 			}
@@ -263,31 +232,31 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 			else if(intent.getStringExtra(bluetooth_service.BT_ACTION)==bluetooth_service.BT_SENSOR_UPDATE){
 				// reset time
 				mTimerHandle.removeCallbacks(mCheckResponseTimeTask);
-//				mTimerHandle.postDelayed(mCheckResponseTimeTask, 2000);
+				//				mTimerHandle.postDelayed(mCheckResponseTimeTask, 2000);
 
 				// set new values
-				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_ANALOG_RPM){
-					GUI.setRPM(convert.rpm(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0)));
-				}
-				
-				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_SPEED_FREQ){
-					GUI.setSpeed(convert.speed_freq_to_kmh(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0)));
+				if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==Sensors.SENSOR_ANALOG_RPM){
+					GUI.setRPM(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0));
 				}
 
-				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_FLASHER_L){
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==Sensors.SENSOR_SPEED){
+					GUI.setSpeed(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0));
+				}
+
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==Sensors.FLASHER_L){
 					GUI.setCTRL_left(intent.getBooleanExtra(bluetooth_service.BT_SENSOR_VALUE, false));
 				}
 
-				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_FLASHER_R){
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==Sensors.FLASHER_R){
 					GUI.setCTRL_right(intent.getBooleanExtra(bluetooth_service.BT_SENSOR_VALUE, false));
 				}
 
-				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_GEAR){
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==Sensors.SENSOR_GEAR){
 					GUI.setGear(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE, 0));
 				}
-				
-				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==bluetooth_service.BT_SENSOR_AIR_ANALOG_TEMP){
-					GUI.setAirTemp(convert.air(intent.getIntExtra(bluetooth_service.BT_SENSOR_VALUE,0)));
+
+				else if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==Sensors.SENSOR_AIR_TEMP){
+					GUI.setAirTemp(intent.getFloatExtra(bluetooth_service.BT_SENSOR_VALUE,0));
 				}
 			}
 		}
@@ -307,6 +276,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		}
 	};
 
-	//////////////////////////////////// Bluetooth steuern ///////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////// GPS / Bluetooth steuern ////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 }

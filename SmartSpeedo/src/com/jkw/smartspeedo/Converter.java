@@ -1,9 +1,9 @@
 package com.jkw.smartspeedo;
 
-public class converter {
+public class Converter {
 	private double meter_per_pulse;
 
-	public converter(){
+	public Converter(){
 		// load conversion factor
 		meter_per_pulse=2.5;	
 		
@@ -21,7 +21,7 @@ public class converter {
 		return r/10;
 	}
 
-	public int rpm(int rpm_in) {
+	public int engine_freq_to_rpm(int rpm_in) {
 		// der smartspeedo gibt schon U/min allerdings mit faktor 1/2 aus (hz*30)
 		return rpm_in*2;
 	}

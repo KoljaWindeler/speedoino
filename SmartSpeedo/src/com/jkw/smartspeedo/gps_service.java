@@ -17,36 +17,44 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-public class gps_service extends Service implements android.location.GpsStatus.Listener, LocationListener {
+public class gps_service implements android.location.GpsStatus.Listener, LocationListener {
 
 	public static final String short_name = "gps_service";
 	public static final String MESSAGE = "gps_message";
+	private Handler mHandle;
+	private Context mContext;
+	
+	// handle identifier kategorie
+	public static final int GPS_SPEED_MSG = 1;
+	public static final int GPS_SAT_MSG = 0;
 
-	// kategorie
-	public static final String GPS_SPEED = "speed";
-	public static final String GPS_SAT = "sat";
-
+	// broadcast identifier
+	public static final String GPS_SPEED_BC = "speed update";
+	public static final String GPS_SAT_BC = "sat upate";
+	
 	// sub kat
 	public static final String GPS_SAT_INFIX = "in_fix";
 	public static final String GPS_SAT_TOTAL = "total";
+	public static final String GPS_SPEED = "speed";
 	public static final String GPS_LAT = "LAT";
 	public static final String GPS_LNG = "LNG";
 
 	private LocationManager locationManager;
 	List<Location> gps_List = new ArrayList<Location>();
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);                
+	public gps_service(Handler mGPShandle, Context context) {
+		mHandle = mGPShandle;
+		mContext = context;
+		locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);                
 		locationManager.addGpsStatusListener(this);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000,	0, this);
-
-		return Service.START_STICKY;
 	}
 
 
@@ -62,27 +70,26 @@ public class gps_service extends Service implements android.location.GpsStatus.L
 			Satellites++;
 		}
 
-		Intent intent = new Intent(short_name);
-
-		intent.putExtra(MESSAGE, GPS_SAT);
-		intent.putExtra(GPS_SAT_INFIX, (int)SatellitesInFix);
-		intent.putExtra(GPS_SAT_TOTAL, (int)Satellites);
-
-		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+		// Send the name of the connected device back to the UI Activity
+        Message msg = mHandle.obtainMessage(GPS_SAT_MSG);
+        Bundle bundle = new Bundle();
+        bundle.putInt(GPS_SAT_INFIX, (int)SatellitesInFix);
+        bundle.putInt(GPS_SAT_TOTAL, (int)Satellites);
+        msg.setData(bundle);
+        mHandle.sendMessage(msg);
 
 	}
 
 	@Override
-	public void onLocationChanged(Location location) {
-		Intent intent = new Intent(short_name);
-
-		intent.putExtra(MESSAGE, GPS_SPEED);
-		intent.putExtra(GPS_SPEED, (int)(location.getSpeed()*3.6));
-
-		intent.putExtra(GPS_LAT, location.getLatitude());
-		intent.putExtra(GPS_LNG, location.getLongitude());
-
-		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+	public void onLocationChanged(Location location) {		
+		// Send the name of the connected device back to the UI Activity
+        Message msg = mHandle.obtainMessage(GPS_SPEED_MSG);
+        Bundle bundle = new Bundle();
+        bundle.putInt(GPS_SPEED, (int)(location.getSpeed()*3.6));
+        bundle.putDouble(GPS_LAT, location.getLatitude());
+        bundle.putDouble(GPS_LNG, location.getLongitude());
+        msg.setData(bundle);
+        mHandle.sendMessage(msg);
 
 		gps_List.add(location);
 		if(gps_List.size()>60){
@@ -105,7 +112,7 @@ public class gps_service extends Service implements android.location.GpsStatus.L
 				dl_basedir = dir.getAbsolutePath() + "/";
 			} else {
 				dl_basedir = sdCard.getAbsolutePath() + "/";
-				Toast.makeText(this,"Can't create directory on SD card", Toast.LENGTH_LONG).show();
+				Toast.makeText(mContext,"Can't create directory on SD card", Toast.LENGTH_LONG).show();
 			}
 		} else {
 			dl_basedir = dir.getAbsolutePath() + "/";
@@ -145,13 +152,4 @@ public class gps_service extends Service implements android.location.GpsStatus.L
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {	}
 
-
-	@Override
-	public IBinder onBind(Intent arg0) {		return null;	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		//		Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
-	}
 }

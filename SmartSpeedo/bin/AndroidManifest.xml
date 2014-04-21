@@ -63,9 +63,7 @@
             android:label="@string/Select_file"
             android:theme="@android:style/Theme.Dialog" />
 
-        <service android:name=".gps_service" >
-        </service>
-        <service android:name=".bluetooth_service" >
+        <service android:name=".Sensors" >
         </service>
         <service android:name=".Layout_overlay" >
         </service>

@@ -30,8 +30,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -42,37 +44,30 @@ import android.widget.Toast;
  * incoming connections, a thread for connecting with a device, and a
  * thread for performing data transmissions when connected.
  */
-public class bluetooth_service extends Service {
+public class bluetooth_service {
 	////////////////////////////////////////BROADCAST COMMUNICATIONS ////////////////////////////////////////
 	// Interprocess communications
-	public static final String short_name = "bluetooth_service";
-	public static final String to_name = "to_bluetooth_service";
+	public static final int short_name = 19;
+	public static final int update = 1;
+	
 
 	// Main Identifier 
-	public static final String BT_ACTION = "BT_ACTION";
+	public static final String BT_ACTION = "BT_ACTION";   	// send as identifier to sensor if the message is a sensor update or bluetooth toggle or or or
+	public static final String BT_COMMAND = "BT_COMMAND"; 	// send as identifier to send to BT command byte to sensor class
+	public static final String BT_VALUE = "BT_VALUE";		// send as identifier to send to BT value to sensor class
 
 	// argument for main identifier
-	public static final String BT_RESTART = "restart";
-	public static final String ENABLE_BT = "ENABLE_BT";
-	public static final String BT_CONNECT = "BT_CONNECT";
-	public static final String BT_STATE_CHANGE = "BT_STATE_CHANGE";
-	public static final String BT_SENSOR_UPDATE = "BT_SENSOR_UPDATE";
+	public static final String BT_RESTART = "restart";					// argument for BT action
+	public static final String ENABLE_BT = "ENABLE_BT";					// argument for BT action
+	public static final String BT_CONNECT = "BT_CONNECT";				// argument for BT action
+	public static final String BT_STATE_CHANGE = "BT_STATE_CHANGE";		// argument for BT action
+	public static final String BT_SENSOR_UPDATE = "BT_SENSOR_UPDATE";	// argument for BT action
 
 	// sub-arguments
-	public static final String TARGET_ADDRESS = "target_address";	
-	public static final String BT_SENSOR_VALUE = "BT_SENSOR_VALUE";
-	public static final String BT_SENSOR_ANALOG_RPM = "analog_rpm";
-	public static final String BT_SENSOR_SPEED = "speed";
-	public static final String BT_SENSOR_GEAR = "BT_SENSOR_GEAR";
-	public static final String BT_SENSOR_SPEED_FREQ = "reedspeed";
-	public static final String BT_SENSOR_WATER_TEMP = "water";
-	public static final String BT_SENSOR_AIR_ANALOG_TEMP = "air_analog";
-	public static final String BT_SENSOR_WATER_TEMP_ANALOG = "BT_SENSOR_WATER_TEMP_ANALOG";
-	public static final String BT_SENSOR_OIL_TEMP = "oil";
-	public static final String BT_SENSOR_VOLTAGE = "voltage";
-	public static final String BT_SENSOR_FLASHER ="flasher";
-	public static final String BT_FLASHER_R ="BT_FLASHER_R";
-	public static final String BT_FLASHER_L ="BT_FLASHER_L";
+	public static final String TARGET_ADDRESS = "target_address";		// subargument for BT_CONNECT
+	public static final String BT_SENSOR_VALUE = "BT_SENSOR_VALUE";		// subargument for BT_SENSOR_UPDATE
+
+
 	//////////////////////////////////////// BROADCAST COMMUNICATIONS ////////////////////////////////////////
 
 	private static final String TAG = "JKW";
@@ -122,7 +117,6 @@ public class bluetooth_service extends Service {
 
 	public BluetoothDevice last_connected_device=null;
 	private BluetoothAdapter mAdapter = null;
-	private Sensors mSensors = null;
 
 	private ConnectThread mConnectThread;
 	private ConnectedThread mConnectedThread;
@@ -167,8 +161,9 @@ public class bluetooth_service extends Service {
 	public static final byte CMD_GET_OIL_TEMP_DIGITAL	=  0x56;
 	public static final byte CMD_GET_FLASHER_LEFT		=  0x47;
 	public static final byte CMD_GET_FLASHER_RIGHT		=  0x58;
-	public static final byte CMD_GET_RPM_ANALOG			=  0x48; // set !
 	public static final byte CMD_GET_SPEED				=  0x4A;
+	
+	public static final byte CMD_GET_FREQ_RPM			=  0x48; // set !
 	public static final byte CMD_GET_FREQ_SPEED			=  0x49; // set !
 	public static final byte CMD_GET_AIR_TEMP_ANALOG	=  0x46; // set !
 
@@ -179,6 +174,8 @@ public class bluetooth_service extends Service {
 	public static final char STATUS_EOF		   		=  0x10;
 
 	public static final String PREFS_NAME = "SmartSpeedoSettings";
+	private Handler mHandle;
+	private Context mContext;
 
 	/**
 	 * Ablauf des Verbindungsaufbau:
@@ -204,54 +201,45 @@ public class bluetooth_service extends Service {
 	 * 4.2.1 wenn eine antwort kommt wird sie von process_incoming() empfangen und der semaphore wird zurück gegeben (den send geholt hatte)
 	 */
 
-	@Override
-	public void onCreate(){
-		// the Receiver mMsgRcv is connected to the keyword bluetooth_service.to_name 
-		LocalBroadcastManager.getInstance(this).registerReceiver(mMsgRcv, new IntentFilter(bluetooth_service.to_name));
+	public bluetooth_service(Handler mBluetoothHandle,Context applicationContext) {
+		mHandle = mBluetoothHandle;
+		mContext = applicationContext;
+	
 
 		// prepare bluetooth
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		// If the adapter is null, then Bluetooth is not supported
 		if (mAdapter == null) {
-			Toast.makeText(this, "Bluetooth is not available",Toast.LENGTH_LONG).show(); 
+			Toast.makeText(mContext, "Bluetooth is not available",Toast.LENGTH_LONG).show(); 
 		} else {
 			if (!mAdapter.isEnabled()) {
-				Intent intent = new Intent(short_name);
-				intent.putExtra(BT_ACTION, ENABLE_BT);
-				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+				Message msg = mHandle.obtainMessage(short_name);
+		        Bundle bundle = new Bundle();
+		        bundle.putString(BT_ACTION, ENABLE_BT); // TODO
+		        msg.setData(bundle);
+		        mHandle.sendMessage(msg);
 			}
 		};
 
 		mState=STATE_NONE;
-		mSensors = new Sensors(this);
+		//		mSensors = new Sensors(this);
 	}
 
-	// listen to every input from the controlling activity, which ever app that might be
-	private BroadcastReceiver mMsgRcv = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// Restart bluetooth
-			if(intent.getStringExtra(BT_ACTION)==BT_RESTART){
-				stop();
-				start();
+	public void restart(){
+		stop();
+		start();
+	}
+
+	public void connect(String bt_adr){
+		if(bt_adr!=""){
+			BluetoothDevice device = mAdapter.getRemoteDevice(bt_adr);
+			try {
+				connect(device,false);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-
-			// connect 
-			else if(intent.getStringExtra(BT_ACTION)==BT_CONNECT){
-				String bt_adr=intent.getStringExtra(TARGET_ADDRESS);
-				if(bt_adr!=""){
-					BluetoothDevice device = mAdapter.getRemoteDevice(bt_adr);
-					try {
-						connect(device,false);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-
 		}
-	};
+	}
 
 
 	/**
@@ -262,10 +250,12 @@ public class bluetooth_service extends Service {
 		Log.i(TAG,"Setting state to "+String.valueOf(state));
 		mState = state;
 		// Give the new state to the Handler so the UI Activity can update		
-		Intent intent = new Intent(short_name);
-		intent.putExtra(BT_ACTION, BT_STATE_CHANGE);
-		intent.putExtra(BT_STATE_CHANGE, (int)state);
-		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        Message msg = mHandle.obtainMessage(short_name);
+        Bundle bundle = new Bundle();
+        bundle.putString(BT_ACTION, BT_STATE_CHANGE);
+        bundle.putInt(BT_STATE_CHANGE, (int)state);
+        msg.setData(bundle);
+        mHandle.sendMessage(msg);
 
 
 		if(state == STATE_CONNECTED){
@@ -708,6 +698,15 @@ public class bluetooth_service extends Service {
 			return 2;
 		}
 	};
+	
+	private void return_helper(char command, int value){
+		Message msg = mHandle.obtainMessage(update);
+        Bundle bundle = new Bundle();
+        bundle.putInt(BT_COMMAND, (int)command);
+        bundle.putInt(BT_VALUE, value);
+        msg.setData(bundle);
+        mHandle.sendMessage(msg);
+	}
 
 	private Runnable mCheckResponseTimeTask = new Runnable() {
 		public void run() {
@@ -722,11 +721,11 @@ public class bluetooth_service extends Service {
 				Log.i(TAG,"schreibe status:"+String.valueOf(status));
 
 				if(!silent){
-					//					Message msg = mHandler.obtainMessage(MESSAGE_TOAST);
-					//					Bundle bundle = new Bundle();
-					//					bundle.putString(TOAST, "No response from target");
-					//					msg.setData(bundle);
-					//					mHandler.sendMessage(msg);
+					Message msg = mHandle.obtainMessage(MESSAGE_TOAST);
+					Bundle bundle = new Bundle();
+//					bundle.putString(TOAST, "No response from target");
+					msg.setData(bundle);
+					mHandle.sendMessage(msg);
 				}
 				semaphore.release(); // als letztes !!
 			};
@@ -754,7 +753,7 @@ public class bluetooth_service extends Service {
 				checksum	^=	data;
 			} else {
 				Log.i(TAG,"Seq unpassend:"+String.valueOf((int)data)+" erwartet "+String.valueOf((int)seqNum));
-//				rx_tx_state	=	ST_START;
+				//				rx_tx_state	=	ST_START;
 				seqNum		=	data  & 0xff;
 				rx_tx_state	=	ST_MSG_SIZE;
 				checksum	^=	data;
@@ -837,20 +836,20 @@ public class bluetooth_service extends Service {
 					}
 					// da alle richtungen zwar betaetigt werden, danach die schleife auf dem AVR aber unterbrochen wird -> seqNr resetten
 
-				} else if(msgBuffer[0]==CMD_GET_WATER_TEMP_ANALOG){				
-					mSensors.set_water_analog((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
+				} else if(msgBuffer[0]==CMD_GET_WATER_TEMP_ANALOG){		
+					return_helper(msgBuffer[0], (msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
 				} else if(msgBuffer[0]==CMD_GET_FLASHER_LEFT){
-					mSensors.set_flasher_left(msgBuffer[1]);
+					return_helper(msgBuffer[0], (msgBuffer[1]));
 				} else if(msgBuffer[0]==CMD_GET_FLASHER_RIGHT){
-					mSensors.set_flasher_right(msgBuffer[1]);
-				} else if(msgBuffer[0]==CMD_GET_RPM_ANALOG){
-					mSensors.set_rpm((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));				
+					return_helper(msgBuffer[0], (msgBuffer[1]));
+				} else if(msgBuffer[0]==CMD_GET_FREQ_RPM){
+					return_helper(msgBuffer[0], (msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));				
 				} else if(msgBuffer[0]==CMD_GET_SPEED){
-					mSensors.set_speed_CAN((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
+					return_helper(msgBuffer[0], (msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
 				} else if(msgBuffer[0]==CMD_GET_FREQ_SPEED){
-					mSensors.set_speed_reed((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
+					return_helper(msgBuffer[0], (msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
 				} else if(msgBuffer[0]==CMD_GET_AIR_TEMP_ANALOG){
-					mSensors.set_air_temp((msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
+					return_helper(msgBuffer[0], (msgBuffer[1] << 8) + (msgBuffer[2] & 0xff));
 
 					// list of valid commands, the active task will process the data
 				} else if(msgBuffer[0]==CMD_SPI_MULTI || 
@@ -1605,9 +1604,4 @@ public class bluetooth_service extends Service {
 		// fortschritt schreiben
 	}
 
-	@Override
-	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	};
 }

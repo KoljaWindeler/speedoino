@@ -48,7 +48,7 @@ public class Layout_overlay extends Service {
         kmh_rpm.setLayout(225, 255, 1000, 100);
         
         
-        LocalBroadcastManager.getInstance(this).registerReceiver(mGPSMsgRcv, new IntentFilter(gps_service.short_name));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSensorMsgRcv, new IntentFilter(Sensors.short_name));
     }
 
     @Override
@@ -62,9 +62,12 @@ public class Layout_overlay extends Service {
         }
     }
     
-    private BroadcastReceiver mGPSMsgRcv = new BroadcastReceiver() {
+    private BroadcastReceiver mSensorMsgRcv = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			if(intent.getStringExtra(bluetooth_service.BT_SENSOR_UPDATE)==Sensors.SENSOR_AIR_TEMP){
+//				GUI.setAirTemp(intent.getFloatExtra(bluetooth_service.BT_SENSOR_VALUE,0));
+			}
 			Calendar c = Calendar.getInstance(); 
 	        int seconds = c.get(Calendar.SECOND);
 	        kmh_rpm.setValue(seconds*100);
