@@ -122,7 +122,6 @@ public class GaugeCustomView extends View {
 
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		Log.i("draw", "und los");
 
 		int minDim = Math.min(mCanvasHeight, mCanvasWidth);
 		float radius = minDim/2;

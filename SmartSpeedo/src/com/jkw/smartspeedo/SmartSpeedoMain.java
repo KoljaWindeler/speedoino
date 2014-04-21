@@ -10,15 +10,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Point;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.Display;
+import android.view.KeyEvent;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View; 
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 
 public class SmartSpeedoMain extends Activity implements OnClickListener {
@@ -26,9 +30,6 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	Layout GUI_map = new Layout_map();
 	Layout GUI_big = new Layout_big();
 	Layout GUI;
-
-	// intents to be able to kill the sensor service
-	private Intent sensor_intent;
 
 	// to avoid shutdown
 	PowerManager pm;
@@ -39,7 +40,9 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 	//mapcontroll
 	private boolean map_Zoom_changed=false;
-
+	private int gui_mode=0;
+	private int back_pushed=0;
+	public static View remove_view;
 
 	// activity codes
 	private static final int REQUEST_CONNECT_DEVICE = 1;
@@ -58,13 +61,18 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 
 		// activate sensors service
-		sensor_intent = new Intent(getBaseContext(), Sensors.class);
-		startService(sensor_intent);
+//		sensor_intent = new Intent(getBaseContext(), Sensors.class);
+		startService(new Intent(getBaseContext(), Sensors.class));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mSensorMsgRcv, new IntentFilter(Sensors.short_name));
 
 		// let the scree stay on
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wl =  pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
+
+		// remove on top view, if there is one
+		if(remove_view != null){
+			((WindowManager) getSystemService(WINDOW_SERVICE)).removeView(remove_view);
+		}
 	}
 
 
@@ -107,15 +115,43 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 				((Button)findViewById(R.id.connect)).setText("Connect");
 			}
 		} else {
-			if(GUI.equals(GUI_map)){
-				//				startService(new Intent(getBaseContext(), Layout_overlay.class));
+			if(gui_mode==0){
+				GUI.unregister_elements(this);
+				GUI=GUI_map;
+				gui_mode=2;
+				setContentView(GUI.get_layout());
+				GUI.find_elements(this);
+			} else if(gui_mode==1){
 				GUI.unregister_elements(this);
 				GUI=GUI_big;
-			} else {
+				gui_mode=2;
+				setContentView(GUI.get_layout());
+				GUI.find_elements(this);
+			} else if(gui_mode==2){
+				GUI.unregister_elements(this);
 				GUI=GUI_map;
+				gui_mode=0;
+
+
+				Display display = getWindowManager().getDefaultDisplay();
+				Point size = new Point();
+				display.getSize(size);
+				
+				Intent service = new Intent(getBaseContext(), Layout_overlay.class);
+				Layout_overlay.width=size.x;
+				Layout_overlay.height=size.y;
+				startService(service);
+				finish();
 			}
-			setContentView(GUI.get_layout());
-			GUI.find_elements(this);
+
+			//			if(GUI.equals(GUI_map)){
+			//				//				startService(new Intent(getBaseContext(), Layout_overlay.class));
+			//				GUI.unregister_elements(this);
+			//				GUI=GUI_big;
+			//			} else {
+			//				GUI=GUI_map;
+			//			}
+
 		}
 	}
 
@@ -131,7 +167,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 	@Override
 	public void onStop(){
-		stopService(sensor_intent); // todo
+//		stopService(sensor_intent); // todo
 		super.onStop();
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -275,8 +311,37 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		public void run() {
 		}
 	};
+	
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// GPS / Bluetooth steuern ////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            if (back_pushed == 1) {
+            	stopService(new Intent(getBaseContext(), Sensors.class));          // todo  	
+                finish();
+            } else {
+                Toast.makeText(this,"push twice to exit",Toast.LENGTH_LONG).show();
+                back_pushed = 1;
+                // install guard, 2sec until check of receive
+                mTimerHandle.removeCallbacks(mCheckDoublePushBack);
+                mTimerHandle.postDelayed(mCheckDoublePushBack, 2000);
+            }
+        } else if (keyCode == KeyEvent.KEYCODE_HOME) {
+            finish();
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+        return true;
+    }
+
+    // just resetting the "back" pushed
+    private Runnable mCheckDoublePushBack = new Runnable() {
+        public void run() {
+            back_pushed = 0;
+        }
+    };
 }

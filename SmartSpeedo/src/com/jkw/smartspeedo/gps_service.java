@@ -47,7 +47,7 @@ public class gps_service implements android.location.GpsStatus.Listener, Locatio
 	public static final String GPS_LNG = "LNG";
 
 	private LocationManager locationManager;
-	List<Location> gps_List = new ArrayList<Location>();
+	
 
 	public gps_service(Handler mGPShandle, Context context) {
 		mHandle = mGPShandle;
@@ -90,57 +90,6 @@ public class gps_service implements android.location.GpsStatus.Listener, Locatio
         bundle.putDouble(GPS_LNG, location.getLongitude());
         msg.setData(bundle);
         mHandle.sendMessage(msg);
-
-		gps_List.add(location);
-		if(gps_List.size()>60){
-			save_to_file();
-		}
-	}
-
-	public void save_to_file(){
-		Log.d("update", "onActivityResult ");
-
-		//////////////////// FOLDER //////////////////////////////////
-		// create dir if not existent
-		File sdCard = Environment.getExternalStorageDirectory(); //
-		File dir = new File(sdCard.getAbsolutePath() + "/SmartSpeedo"); // /mnt/sdcard/Download/
-		String dl_basedir;
-		if (!dir.exists()) {
-			if (dir.mkdir()) {
-				File temp_dir = new File(dir.getAbsolutePath() + "/GPS");
-				temp_dir.mkdir();
-				dl_basedir = dir.getAbsolutePath() + "/";
-			} else {
-				dl_basedir = sdCard.getAbsolutePath() + "/";
-				Toast.makeText(mContext,"Can't create directory on SD card", Toast.LENGTH_LONG).show();
-			}
-		} else {
-			dl_basedir = dir.getAbsolutePath() + "/";
-		}
-		//////////////////// FOLDER //////////////////////////////////
-		//////////////////// FILE //////////////////////////////////
-
-		Calendar c = Calendar.getInstance();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd");
-		String formattedDate = df.format(c.getTime())+".gps";
-		File output = new File(dl_basedir+"GPS/"+formattedDate);
-
-		////////////////////FILE //////////////////////////////////
-
-		FileOutputStream out = null;
-		try {
-			out = new FileOutputStream(output,true);
-			for(int i=0; i<gps_List.size(); i++){
-				out.write((String.valueOf(gps_List.get(i).getLatitude())+","+String.valueOf(gps_List.get(i).getLongitude())).getBytes());
-				out.write("\r\n".getBytes());
-			}
-			out.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//////////////
-		gps_List.clear();
 	}
 
 	@Override

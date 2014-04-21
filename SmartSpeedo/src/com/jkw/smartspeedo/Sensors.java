@@ -1,16 +1,28 @@
 package com.jkw.smartspeedo;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.location.LocationManager;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+import android.widget.Toast;
 
 public class Sensors extends Service {
 
@@ -18,7 +30,7 @@ public class Sensors extends Service {
 	public static final String short_name = "sensor_service";
 	public static final String to_name = "to_sensor_service";
 	SharedPreferences settings;
-	
+
 	// message id between sensor class and the main "layout" 
 	public static final String SENSOR_ANALOG_RPM = "analog_rpm";
 	public static final String SENSOR_SPEED = "speed";
@@ -45,6 +57,7 @@ public class Sensors extends Service {
 	private boolean CAN_active=false;
 
 	private float[] gear_rations = new float[] { 0,0,0,0,0,0,0 };
+	List<Location> gps_List = new ArrayList<Location>();
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -64,7 +77,9 @@ public class Sensors extends Service {
 
 		return Service.START_STICKY;
 	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// communication to us /////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////
 	// listen to every input from the controlling activity, which ever app that might be
 	private BroadcastReceiver mMsgRcv = new BroadcastReceiver() {
 		@Override
@@ -98,9 +113,9 @@ public class Sensors extends Service {
 				} else if(msg.getData().getInt(bluetooth_service.BT_COMMAND)==bluetooth_service.CMD_GET_FREQ_RPM){
 					set_rpm(convert.engine_freq_to_rpm(msg.getData().getInt(bluetooth_service.BT_VALUE)));
 				}
-				
-				
-				
+
+
+
 			} else if (msg.getData().getString(bluetooth_service.BT_ACTION)==bluetooth.BT_STATE_CHANGE){
 				set_bluetooth_state((int)msg.getData().getInt(bluetooth.BT_STATE_CHANGE));
 			}
@@ -121,6 +136,8 @@ public class Sensors extends Service {
 		}
 	};
 	///////////////////////////////// gps handling ///////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////// setter & getter //////////////////////////////////////////
 
 	public void set_water(float temp) {
 		// hier die best fit umrechnung 
@@ -146,9 +163,14 @@ public class Sensors extends Service {
 		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}
 
-	protected void set_gps_pos(double double1, double double2) {
-		// TODO Auto-generated method stub
-
+	protected void set_gps_pos(double lati, double longi) {
+		Location location = new Location("");
+		location.setLatitude(lati);
+		location.setLongitude(longi);
+		gps_List.add(location);
+		if(gps_List.size()>60){
+			save_gps_pos_to_file();
+		}
 	}
 
 	public void set_flasher_left(int value) {
@@ -211,6 +233,9 @@ public class Sensors extends Service {
 		mTempAirAnalog=i;
 	}
 
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////// extendet functions //////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////
 
 
 	public void calc_gear(){
@@ -266,6 +291,56 @@ public class Sensors extends Service {
 		editor.putFloat("G"+String.valueOf(gear), value);
 		editor.commit();
 	}
+
+
+	public void save_gps_pos_to_file(){
+		Log.d("update", "onActivityResult ");
+
+		//////////////////// FOLDER //////////////////////////////////
+		// create dir if not existent
+		File sdCard = Environment.getExternalStorageDirectory(); //
+		File dir = new File(sdCard.getAbsolutePath() + "/SmartSpeedo"); // /mnt/sdcard/Download/
+		String dl_basedir;
+		if (!dir.exists()) {
+			if (dir.mkdir()) {
+				File temp_dir = new File(dir.getAbsolutePath() + "/GPS");
+				temp_dir.mkdir();
+				dl_basedir = dir.getAbsolutePath() + "/";
+			} else {
+				dl_basedir = sdCard.getAbsolutePath() + "/";
+				Toast.makeText(this,"Can't create directory on SD card", Toast.LENGTH_LONG).show();
+			}
+		} else {
+			dl_basedir = dir.getAbsolutePath() + "/";
+		}
+		//////////////////// FOLDER //////////////////////////////////
+		//////////////////// FILE //////////////////////////////////
+
+		Calendar c = Calendar.getInstance();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd");
+		String formattedDate = df.format(c.getTime())+".gps";
+		File output = new File(dl_basedir+"GPS/"+formattedDate);
+
+		////////////////////FILE //////////////////////////////////
+
+		FileOutputStream out = null;
+		try {
+			out = new FileOutputStream(output,true);
+			for(int i=0; i<gps_List.size(); i++){
+				out.write((String.valueOf(gps_List.get(i).getLatitude())+","+String.valueOf(gps_List.get(i).getLongitude())).getBytes());
+				out.write("\r\n".getBytes());
+			}
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//////////////
+		gps_List.clear();
+	}
+	
+	/////////////////////////////// extendet functions //////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////
 
 	@Override
 	public IBinder onBind(Intent arg0) {
