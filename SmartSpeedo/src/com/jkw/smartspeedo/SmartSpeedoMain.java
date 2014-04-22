@@ -5,6 +5,9 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,7 +45,6 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	private boolean map_Zoom_changed=false;
 	private int gui_mode=0;
 	private int back_pushed=0;
-	public static View remove_view;
 
 	// activity codes
 	private static final int REQUEST_CONNECT_DEVICE = 1;
@@ -51,7 +53,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 	// Debug
 	private static final String TAG = "JKW - SmartSpeedo";
 	private Handler mTimerHandle = new Handler();
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,7 +63,6 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 
 		// activate sensors service
-//		sensor_intent = new Intent(getBaseContext(), Sensors.class);
 		startService(new Intent(getBaseContext(), Sensors.class));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mSensorMsgRcv, new IntentFilter(Sensors.short_name));
 
@@ -70,9 +71,9 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 		wl =  pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
 
 		// remove on top view, if there is one
-		if(remove_view != null){
-			((WindowManager) getSystemService(WINDOW_SERVICE)).removeView(remove_view);
-		}
+		Intent intent = new Intent(Layout_overlay.LAYOUT_OVERLAY_SERVICE);
+		intent.putExtra(Layout_overlay.STOP_SERVICE, Layout_overlay.STOP_SERVICE);
+		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}
 
 
@@ -103,6 +104,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {	
+	
 		if(v.getId()==R.id.connect) {
 			if(bt_state == bluetooth_service.STATE_NONE){
 				// Launch the DeviceListActivity to see devices and do scan
@@ -140,6 +142,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 				Intent service = new Intent(getBaseContext(), Layout_overlay.class);
 				Layout_overlay.width=size.x;
 				Layout_overlay.height=size.y;
+								
 				startService(service);
 				finish();
 			}
@@ -170,6 +173,7 @@ public class SmartSpeedoMain extends Activity implements OnClickListener {
 //		stopService(sensor_intent); // todo
 		super.onStop();
 	}
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////// Bluetooth startup & shutdown /////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////

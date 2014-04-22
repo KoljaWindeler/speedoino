@@ -96,8 +96,6 @@ public class Sensors extends Service {
 					bluetooth.connect(bt_adr);
 				}
 			}
-
-
 		}
 	};
 	///////////////////////////////// communication to us /////////////////////////////////////////////

@@ -60,6 +60,7 @@ public class bluetooth_service {
 	public static final String BT_RESTART = "restart";					// argument for BT action
 	public static final String ENABLE_BT = "ENABLE_BT";					// argument for BT action
 	public static final String BT_CONNECT = "BT_CONNECT";				// argument for BT action
+	public static final String BT_STOP = "STOP";
 	public static final String BT_STATE_CHANGE = "BT_STATE_CHANGE";		// argument for BT action
 	public static final String BT_SENSOR_UPDATE = "BT_SENSOR_UPDATE";	// argument for BT action
 
